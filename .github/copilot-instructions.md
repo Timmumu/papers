@@ -1,0 +1,1 @@
+This project is a Cognitive Digital Twin (DT) PhD research project for architecture, engineering, construction and operation (AECO) industry. Focused in both AECO as well as BIM-to-DT, IoT and natural language processing, machine learning, prediction and forecasting.
