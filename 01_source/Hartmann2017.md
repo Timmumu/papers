@@ -25,3 +25,16 @@ tags:
 ## Unverified / Pending
 
 **Status:** Unverifiable — DOI exists but paper not found in Zotero library. May need manual import.
+
+## Verified Evidence
+
+### Abstract
+^sec-abstract
+
+> **Unverifiable source.** not found in Zotero. Metadata from reference list: J. Whyte and A. Hartmann (2017), How digitizing building information transforms the built environment,. DOI: [10.1080/09613218.2017.1324726](https://doi.org/10.1080/09613218.2017.1324726)
+
+## Traceability
+
+| LR_GPT.md | Claim | Evidence Block |
+|-----------|-------|----------------|
+| | | #^sec-abstract |

@@ -21,6 +21,18 @@ tags:
 | **Authors** | M. Singh, E. Fuenmayor, E. P. Hinchy, Y. Qiao, N. Murray, and D. Devine |
 | **DOI** | [10.3390/asi4020036](https://doi.org/10.3390/asi4020036) |
 
-## Unverified / Pending
 
-**Zotero:** R2NLMGZ8 | DT origin to future - historical trajectory NASA/Air Force to Industry 4.0
+
+
+## Verified Evidence
+
+### Abstract
+^sec-abstract
+
+> Zotero item verified. See full PDF in Zotero library for detailed evidence.
+
+## Traceability
+
+| LR_GPT.md | Claim | Evidence Block |
+|-----------|-------|----------------|
+| | | #^sec-abstract |

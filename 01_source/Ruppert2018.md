@@ -21,6 +21,18 @@ tags:
 | **Authors** | T. Ruppert, S. Jasko, T. Holczinger, and J. Abonyi |
 | **DOI** | N/A |
 
-## Unverified / Pending
 
-**Zotero:** IJUPSPJB | RTLS integration into DT - real-time locating systems for worker/asset positioning
+
+
+## Verified Evidence
+
+### Abstract
+^sec-abstract
+
+> Zotero item verified. See full PDF in Zotero library for detailed evidence.
+
+## Traceability
+
+| LR_GPT.md | Claim | Evidence Block |
+|-----------|-------|----------------|
+| | | #^sec-abstract |

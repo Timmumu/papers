@@ -78,3 +78,9 @@ Limitation:
    - 高保真模型计算成本高，难以实时运行[限制1]。  
    - 医疗等领域的数据隐私与伦理问题未彻底解决[限制2]。  
 通过多维度分析，本文为数字孪生的理论发展和工程落地提供了重要参考，但跨领域通用性仍需进一步验证。
+## Verified Evidence
+
+### Abstract
+^sec-abstract
+
+> See Zotero for full text.

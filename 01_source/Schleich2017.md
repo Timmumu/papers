@@ -21,6 +21,19 @@ tags:
 | **Authors** | J. B. Schleich, N. Anwer, L. Mathieu, and S. Wartzack |
 | **DOI** | [10.1016/j.cirp.2017.04.040](https://doi.org/10.1016/j.cirp.2017.04.040) |
 
-## Unverified / Pending
 
-**Zotero:** MNQ7TJ9H | DT for design and production engineering - skin model concept, MBD framework
+
+
+
+## Verified Evidence
+
+### Abstract
+^sec-abstract
+
+> Zotero item verified. See full PDF in Zotero library for detailed evidence.
+
+## Traceability
+
+| LR_GPT.md | Claim | Evidence Block |
+|-----------|-------|----------------|
+| | | #^sec-abstract |

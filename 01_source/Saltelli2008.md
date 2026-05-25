@@ -25,3 +25,16 @@ tags:
 ## Unverified / Pending
 
 **Status:** Unverifiable — No DOI available — likely a book, standard, technical report, or older publication not indexed in academic databases.
+
+## Verified Evidence
+
+### Abstract
+^sec-abstract
+
+> **Unverifiable source.** not found in Zotero. Metadata from reference list: A. Saltelli et al. (2008), Global sensitivity analysis: The primer,. DOI: N/A
+
+## Traceability
+
+| LR_GPT.md | Claim | Evidence Block |
+|-----------|-------|----------------|
+| | | #^sec-abstract |

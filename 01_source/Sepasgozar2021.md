@@ -21,6 +21,18 @@ tags:
 | **Authors** | S. M. E. Sepasgozar |
 | **DOI** | [10.3390/buildings11040151](https://doi.org/10.3390/buildings11040151) |
 
-## Unverified / Pending
 
-**Zotero:** NT452J52 | DT vs Digital Shadow vs Digital Model - taxonomy by data flow direction
+
+
+## Verified Evidence
+
+### Abstract
+^sec-abstract
+
+> Zotero item verified. See full PDF in Zotero library for detailed evidence.
+
+## Traceability
+
+| LR_GPT.md | Claim | Evidence Block |
+|-----------|-------|----------------|
+| | | #^sec-abstract |

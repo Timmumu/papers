@@ -8,6 +8,7 @@ journal: "Automation in Construction"
 doi: "10.1016/j.autcon.2021.103838"
 zotero_key: "LD8ZIQKW"
 verification_status: "✅ verified"
+zotero_status: verified
 last_verified: "2026-05-25"
 tags: ["BIM-to-DT", "Lifecycle", "Foundation", "Review"]
 ---

@@ -21,6 +21,18 @@ tags:
 | **Authors** | Y. Jiang, M. Li, M. Li, X. Liu, R. Y. Zhong, W. Pan, and G. Q. Huang |
 | **DOI** | [10.1016/j.autcon.2022.104397](https://doi.org/10.1016/j.autcon.2022.104397) |
 
-## Unverified / Pending
 
-**Zotero:** BEXVG4GB | DT real-time synchronization for precast assembly - sub-second latency planning/scheduling
+
+
+## Verified Evidence
+
+### Abstract
+^sec-abstract
+
+> Zotero item verified. See full PDF in Zotero library for detailed evidence.
+
+## Traceability
+
+| LR_GPT.md | Claim | Evidence Block |
+|-----------|-------|----------------|
+| | | #^sec-abstract |

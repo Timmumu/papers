@@ -25,3 +25,16 @@ tags:
 ## Unverified / Pending
 
 **Status:** Unverifiable — No DOI available — likely a book, standard, technical report, or older publication not indexed in academic databases.
+
+## Verified Evidence
+
+### Abstract
+^sec-abstract
+
+> **Unverifiable source.** not found in Zotero. Metadata from reference list: A. Akinci, M. Fischer, and J. Kunz (2002), Automated generation of work spaces required by construction activities,. DOI: N/A
+
+## Traceability
+
+| LR_GPT.md | Claim | Evidence Block |
+|-----------|-------|----------------|
+| | | #^sec-abstract |

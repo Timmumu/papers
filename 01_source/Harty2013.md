@@ -25,3 +25,16 @@ tags:
 ## Unverified / Pending
 
 **Status:** Unverifiable — DOI exists but paper not found in Zotero library. May need manual import.
+
+## Verified Evidence
+
+### Abstract
+^sec-abstract
+
+> **Unverifiable source.** not found in Zotero. Metadata from reference list: A. C. Davies and N. Harty (2013), Implementing 'Site BIM': A case study of ICT innovation on a large hospital project,. DOI: [10.1016/j.autcon.2012.11.024](https://doi.org/10.1016/j.autcon.2012.11.024)
+
+## Traceability
+
+| LR_GPT.md | Claim | Evidence Block |
+|-----------|-------|----------------|
+| | | #^sec-abstract |

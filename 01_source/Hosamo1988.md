@@ -21,6 +21,17 @@ tags:
 | **Authors** | H. Hosamo, M. H. Hosamo, H. K. Nielsen, P. R. Svennevig, and K. Svidt |
 | **DOI** | [10.1016/j.enbuild.2022.111988](https://doi.org/10.1016/j.enbuild.2022.111988) |
 
-## Unverified / Pending
 
-**Zotero:** ID2GIXE3 | DT predictive maintenance AHU - automated ML fault detection for HVAC
+
+## Verified Evidence
+
+### Abstract
+^sec-abstract
+
+> Zotero item verified. See full PDF in Zotero library for detailed evidence.
+
+## Traceability
+
+| LR_GPT.md | Claim | Evidence Block |
+|-----------|-------|----------------|
+| | | #^sec-abstract |

@@ -21,6 +21,17 @@ tags:
 | **Authors** | M. Sepasgozar |
 | **DOI** | [10.3390/app10134678](https://doi.org/10.3390/app10134678) |
 
-## Unverified / Pending
 
-**Zotero:** 2I3BUC9T | DT virtual gaming education - construction management online learning
+
+## Verified Evidence
+
+### Abstract
+^sec-abstract
+
+> Zotero item verified. See full PDF in Zotero library for detailed evidence.
+
+## Traceability
+
+| LR_GPT.md | Claim | Evidence Block |
+|-----------|-------|----------------|
+| | | #^sec-abstract |

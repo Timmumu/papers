@@ -25,3 +25,16 @@ tags:
 ## Unverified / Pending
 
 **Status:** Unverifiable — No DOI available — likely a book, standard, technical report, or older publication not indexed in academic databases.
+
+## Verified Evidence
+
+### Abstract
+^sec-abstract
+
+> **Unverifiable source.** not found in Zotero. Metadata from reference list: R. Sacks, S. Rozenfeld, and Y. Rosenfeld (2009), Spatial and temporal exposure to safety hazards in construction,. DOI: N/A
+
+## Traceability
+
+| LR_GPT.md | Claim | Evidence Block |
+|-----------|-------|----------------|
+| | | #^sec-abstract |

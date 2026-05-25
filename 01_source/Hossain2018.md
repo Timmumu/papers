@@ -21,6 +21,17 @@ tags:
 | **Authors** | M. A. Hossain, E. L. S. Abbott, D. K. H. Chua, T. Q. Nguyen, and Y. M. Goh |
 | **DOI** | [10.1016/j.autcon.2018.07.010](https://doi.org/10.1016/j.autcon.2018.07.010) |
 
-## Unverified / Pending
 
-**Zotero:** 7JMAKZYT | DfS knowledge library - BIM-integrated safety risk reviews with rule-based checking
+
+## Verified Evidence
+
+### Abstract
+^sec-abstract
+
+> Zotero item verified. See full PDF in Zotero library for detailed evidence.
+
+## Traceability
+
+| LR_GPT.md | Claim | Evidence Block |
+|-----------|-------|----------------|
+| | | #^sec-abstract |

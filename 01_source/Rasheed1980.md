@@ -21,6 +21,17 @@ tags:
 | **Authors** | A. Rasheed, O. San, and T. Kvamsdal |
 | **DOI** | [10.1109/ACCESS.2020.2970143](https://doi.org/10.1109/ACCESS.2020.2970143) |
 
-## Unverified / Pending
 
-**Zotero:** MKZ3HU7D | DT values challenges enablers - modeling perspective survey (1722 citations)
+
+## Verified Evidence
+
+### Abstract
+^sec-abstract
+
+> Zotero item verified. See full PDF in Zotero library for detailed evidence.
+
+## Traceability
+
+| LR_GPT.md | Claim | Evidence Block |
+|-----------|-------|----------------|
+| | | #^sec-abstract |

@@ -25,3 +25,16 @@ tags:
 ## Unverified / Pending
 
 **Status:** Unverifiable — No DOI available — likely a book, standard, technical report, or older publication not indexed in academic databases.
+
+## Verified Evidence
+
+### Abstract
+^sec-abstract
+
+> **Unverifiable source.** not found in Zotero. Metadata from reference list: F. Tao and M. Zhang (2041), Digital twin shop-floor: A new shop-floor paradigm toward smart manufacturing,. DOI: [10.1109/ACCESS.2017.2756069](https://doi.org/10.1109/ACCESS.2017.2756069)
+
+## Traceability
+
+| LR_GPT.md | Claim | Evidence Block |
+|-----------|-------|----------------|
+| | | #^sec-abstract |

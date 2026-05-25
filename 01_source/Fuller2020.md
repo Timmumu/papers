@@ -90,3 +90,9 @@ Limitation:
   - 论文分类依赖主观判断，未使用机器学习辅助聚类[5.1]  
   - 未能验证功能框架（表4）在具体案例中的适用性  
 通过结构化分析，本文为数字孪生研究建立了跨领域的技术基准，但需注意其结论在非英语语境和工业保密项目中的局限性。
+## Verified Evidence
+
+### Abstract
+^sec-abstract
+
+> See Zotero for full text.

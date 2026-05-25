@@ -21,6 +21,17 @@ tags:
 | **Authors** | M. Uhlemann, C. Lehmann, and R. Steinhilper |
 | **DOI** | [10.1016/j.procir.2016.11.152](https://doi.org/10.1016/j.procir.2016.11.152) |
 
-## Unverified / Pending
 
-**Zotero:** 7XF73XIE | DT realizing CPPS for Industry 4.0 - cyber-physical production system integration
+
+## Verified Evidence
+
+### Abstract
+^sec-abstract
+
+> Zotero item verified. See full PDF in Zotero library for detailed evidence.
+
+## Traceability
+
+| LR_GPT.md | Claim | Evidence Block |
+|-----------|-------|----------------|
+| | | #^sec-abstract |

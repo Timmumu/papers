@@ -36,3 +36,9 @@ Limitation:
 - "Corpus bias toward manufacturing (67% of papers), limiting generalizability to other domains [Table 2, 3.2.3]."
 - "Relies on existing literature without empirical testing of the proposed framework [5]."
 ---
+## Verified Evidence
+
+### Abstract
+^sec-abstract
+
+> See Zotero for full text.

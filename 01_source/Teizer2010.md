@@ -25,3 +25,16 @@ tags:
 ## Unverified / Pending
 
 **Status:** Unverifiable — DOI exists but paper not found in Zotero library. May need manual import.
+
+## Verified Evidence
+
+### Abstract
+^sec-abstract
+
+> **Unverifiable source.** not found in Zotero. Metadata from reference list: J. Teizer, B. Allread, C. Fullerton, and J. Hinze (2010), Autonomous pro-active real-time construction worker and equipment operator proximity safety alert system,. DOI: [10.1016/j.autcon.2010.02.009](https://doi.org/10.1016/j.autcon.2010.02.009)
+
+## Traceability
+
+| LR_GPT.md | Claim | Evidence Block |
+|-----------|-------|----------------|
+| | | #^sec-abstract |

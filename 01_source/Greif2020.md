@@ -21,6 +21,18 @@ tags:
 | **Authors** | T. Greif, N. Stein, and C. M. Flath |
 | **DOI** | [10.1016/j.compind.2020.103264](https://doi.org/10.1016/j.compind.2020.103264) |
 
-## Unverified / Pending
 
-**Zotero:** 3MAJ4UNU | DT construction site logistics - material flow modeling and spatial conflict detection
+
+
+## Verified Evidence
+
+### Abstract
+^sec-abstract
+
+> Zotero item verified. See full PDF in Zotero library for detailed evidence.
+
+## Traceability
+
+| LR_GPT.md | Claim | Evidence Block |
+|-----------|-------|----------------|
+| | | #^sec-abstract |

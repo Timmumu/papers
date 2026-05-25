@@ -25,3 +25,16 @@ tags:
 ## Unverified / Pending
 
 **Status:** Unverifiable — DOI exists but paper not found in Zotero library. May need manual import.
+
+## Verified Evidence
+
+### Abstract
+^sec-abstract
+
+> **Unverifiable source.** not found in Zotero. Metadata from reference list: M. D. Martinez-Aires, M. Lopez-Alonso, and M. Martinez-Rojas (2018), Building information modeling and safety management: A systematic review,. DOI: [10.1016/j.ssci.2017.08.015](https://doi.org/10.1016/j.ssci.2017.08.015)
+
+## Traceability
+
+| LR_GPT.md | Claim | Evidence Block |
+|-----------|-------|----------------|
+| | | #^sec-abstract |

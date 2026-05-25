@@ -21,6 +21,17 @@ tags:
 | **Authors** | R. Sacks, I. Brilakis, P. Pikas, H. Xie, and M. Girolami |
 | **DOI** | [10.1017/dce.2020.16](https://doi.org/10.1017/dce.2020.16) |
 
-## Unverified / Pending
 
-**Zotero:** FBV29DAQ | Construction with DT information systems - data-centric engineering approach
+
+## Verified Evidence
+
+### Abstract
+^sec-abstract
+
+> Zotero item verified. See full PDF in Zotero library for detailed evidence.
+
+## Traceability
+
+| LR_GPT.md | Claim | Evidence Block |
+|-----------|-------|----------------|
+| | | #^sec-abstract |

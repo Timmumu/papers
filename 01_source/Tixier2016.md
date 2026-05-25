@@ -25,3 +25,16 @@ tags:
 ## Unverified / Pending
 
 **Status:** Unverifiable — DOI exists but paper not found in Zotero library. May need manual import.
+
+## Verified Evidence
+
+### Abstract
+^sec-abstract
+
+> **Unverifiable source.** not found in Zotero. Metadata from reference list: J. P. Tixier, G. Hallowell, B. Rajagopalan, and D. Bowman (2016), Automated content analysis for construction safety: A natural language processing system to extract precursors and outcomes from injury reports,. DOI: [10.1016/j.autcon.2015.11.001](https://doi.org/10.1016/j.autcon.2015.11.001)
+
+## Traceability
+
+| LR_GPT.md | Claim | Evidence Block |
+|-----------|-------|----------------|
+| | | #^sec-abstract |

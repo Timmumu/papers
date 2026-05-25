@@ -25,3 +25,16 @@ tags:
 ## Unverified / Pending
 
 **Status:** Unverifiable — No DOI available — likely a book, standard, technical report, or older publication not indexed in academic databases.
+
+## Verified Evidence
+
+### Abstract
+^sec-abstract
+
+> **Unverifiable source.** not found in Zotero. Metadata from reference list: J. Zhang and N. M. El-Gohary (2016), Semantic NLP-based information extraction from construction regulatory documents for automated compliance checking,. DOI: N/A
+
+## Traceability
+
+| LR_GPT.md | Claim | Evidence Block |
+|-----------|-------|----------------|
+| | | #^sec-abstract |

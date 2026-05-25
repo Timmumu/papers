@@ -21,6 +21,18 @@ tags:
 | **Authors** | M. Shahzad, M. T. Shafiq, D. Sturges, and S. Riaz |
 | **DOI** | [10.3390/buildings12020120](https://doi.org/10.3390/buildings12020120) |
 
-## Unverified / Pending
 
-**Zotero:** IX4N6UJ9 | DT built environments - 8 attributes, monitoring/visualization dominance
+
+
+## Verified Evidence
+
+### Abstract
+^sec-abstract
+
+> Zotero item verified. See full PDF in Zotero library for detailed evidence.
+
+## Traceability
+
+| LR_GPT.md | Claim | Evidence Block |
+|-----------|-------|----------------|
+| | | #^sec-abstract |

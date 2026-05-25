@@ -8,6 +8,7 @@ journal: "Journal of Manufacturing Systems"
 doi: "10.1016/j.jmsy.2020.04.015"
 zotero_key: "HK9GVDQT"
 verification_status: "✅ verified"
+zotero_status: verified
 last_verified: "2026-05-25"
 tags: ["Foundation", "Manufacturing"]
 ---

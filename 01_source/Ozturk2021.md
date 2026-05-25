@@ -21,6 +21,18 @@ tags:
 | **Authors** | G. B. Ozturk |
 | **DOI** | [10.1016/j.jobe.2021.102730](https://doi.org/10.1016/j.jobe.2021.102730) |
 
-## Unverified / Pending
 
-**Zotero:** BLMII5EA | DT research AECO-FM - bibliometric+scientometric, 5 research clusters
+
+
+## Verified Evidence
+
+### Abstract
+^sec-abstract
+
+> Zotero item verified. See full PDF in Zotero library for detailed evidence.
+
+## Traceability
+
+| LR_GPT.md | Claim | Evidence Block |
+|-----------|-------|----------------|
+| | | #^sec-abstract |

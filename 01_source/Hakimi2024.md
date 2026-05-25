@@ -21,6 +21,18 @@ tags:
 | **Authors** | A. Hakimi, M. Gunduz, and F. O. Ehiagwina |
 | **DOI** | [10.1108/FEBE-10-2023-0046](https://doi.org/10.1108/FEBE-10-2023-0046) |
 
-## Unverified / Pending
 
-**Zotero:** 9EYC52IG | DT smart FM bibliometric - research trends, leading authors, research gaps
+
+
+## Verified Evidence
+
+### Abstract
+^sec-abstract
+
+> Zotero item verified. See full PDF in Zotero library for detailed evidence.
+
+## Traceability
+
+| LR_GPT.md | Claim | Evidence Block |
+|-----------|-------|----------------|
+| | | #^sec-abstract |

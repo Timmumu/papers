@@ -21,6 +21,17 @@ tags:
 | **Authors** | A. Zhang, J. Yang, and F. Wang |
 | **DOI** | [10.1016/j.jobe.2023.107859](https://doi.org/10.1016/j.jobe.2023.107859) |
 
-## Unverified / Pending
 
-**Zotero:** S49XVYIT | DT O&M AEC enabling technologies review - construction-to-operation transition gap
+
+## Verified Evidence
+
+### Abstract
+^sec-abstract
+
+> Zotero item verified. See full PDF in Zotero library for detailed evidence.
+
+## Traceability
+
+| LR_GPT.md | Claim | Evidence Block |
+|-----------|-------|----------------|
+| | | #^sec-abstract |

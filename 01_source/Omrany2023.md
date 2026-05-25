@@ -21,6 +21,18 @@ tags:
 | **Authors** | H. Omrany, K. M. Al-Obaidi, A. Husain, and A. Ghaffarianhoseini |
 | **DOI** | [10.3390/su151410908](https://doi.org/10.3390/su151410908) |
 
-## Unverified / Pending
 
-**Zotero:** CW78JTWI | Construction DT comprehensive review 2023 - implementations, technologies, challenges
+
+
+## Verified Evidence
+
+### Abstract
+^sec-abstract
+
+> Zotero item verified. See full PDF in Zotero library for detailed evidence.
+
+## Traceability
+
+| LR_GPT.md | Claim | Evidence Block |
+|-----------|-------|----------------|
+| | | #^sec-abstract |

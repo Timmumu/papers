@@ -21,6 +21,18 @@ tags:
 | **Authors** | D.-G. Opoku, S. Perera, R. Osei-Kyei, and M. Rashidi |
 | **DOI** | [10.1016/j.jobe.2021.102726](https://doi.org/10.1016/j.jobe.2021.102726) |
 
-## Unverified / Pending
 
-**Zotero:** LUGQBL7W | DT application in construction - literature review, benefits and barriers
+
+
+## Verified Evidence
+
+### Abstract
+^sec-abstract
+
+> Zotero item verified. See full PDF in Zotero library for detailed evidence.
+
+## Traceability
+
+| LR_GPT.md | Claim | Evidence Block |
+|-----------|-------|----------------|
+| | | #^sec-abstract |
