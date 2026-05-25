@@ -5,10 +5,12 @@ title: "Case-based evaluation of BIM-enabled planning and control,"
 authors: "T. Olofsson, T. Lee, and M. Eastman"
 year: 2010
 doi: ""
-zotero_status: not_checked
+zotero_status: unverifiable
+unverified_reason: "no_DOI_or_book_standard"
+unverified_note: "No DOI available — likely a book, standard, technical report, or older publication not indexed in academic databases."
 created: "2026-05-25"
 tags:
-  - Needs-Verification
+  - Unverifiable
 ---
 
 # Olofsson2010
@@ -22,4 +24,4 @@ tags:
 
 ## Unverified / Pending
 
-Skeleton note - not yet verified against Zotero fulltext.
+**Status:** Unverifiable — No DOI available — likely a book, standard, technical report, or older publication not indexed in academic databases.

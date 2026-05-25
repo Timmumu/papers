@@ -5,10 +5,11 @@ title: "Digital twins in the construction industry: A comprehensive review of cu
 authors: "H. Omrany, K. M. Al-Obaidi, A. Husain, and A. Ghaffarianhoseini"
 year: 2023
 doi: "10.3390/su151410908"
-zotero_status: not_checked
+zotero_key: "CW78JTWI"
+zotero_status: verified
 created: "2026-05-25"
 tags:
-  - Needs-Verification
+  - Verified
 ---
 
 # Omrany2023
@@ -22,4 +23,4 @@ tags:
 
 ## Unverified / Pending
 
-Skeleton note - not yet verified against Zotero fulltext.
+**Zotero:** CW78JTWI | Construction DT comprehensive review 2023 - implementations, technologies, challenges

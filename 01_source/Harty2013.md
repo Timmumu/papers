@@ -5,10 +5,12 @@ title: "Implementing 'Site BIM': A case study of ICT innovation on a large hospi
 authors: "A. C. Davies and N. Harty"
 year: 2013
 doi: "10.1016/j.autcon.2012.11.024"
-zotero_status: not_checked
+zotero_status: unverifiable
+unverified_reason: "doi_not_found_in_zotero"
+unverified_note: "DOI exists but paper not found in Zotero library. May need manual import."
 created: "2026-05-25"
 tags:
-  - Needs-Verification
+  - Unverifiable
 ---
 
 # Harty2013
@@ -22,4 +24,4 @@ tags:
 
 ## Unverified / Pending
 
-Skeleton note - not yet verified against Zotero fulltext.
+**Status:** Unverifiable — DOI exists but paper not found in Zotero library. May need manual import.

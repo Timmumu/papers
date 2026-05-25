@@ -5,10 +5,11 @@ title: "Digital Twin: Origin to Future,"
 authors: "M. Singh, E. Fuenmayor, E. P. Hinchy, Y. Qiao, N. Murray, and D. Devine"
 year: 2021
 doi: "10.3390/asi4020036"
-zotero_status: not_checked
+zotero_key: "R2NLMGZ8"
+zotero_status: verified
 created: "2026-05-25"
 tags:
-  - Needs-Verification
+  - Verified
 ---
 
 # Singh2021
@@ -22,4 +23,4 @@ tags:
 
 ## Unverified / Pending
 
-Skeleton note - not yet verified against Zotero fulltext.
+**Zotero:** R2NLMGZ8 | DT origin to future - historical trajectory NASA/Air Force to Industry 4.0

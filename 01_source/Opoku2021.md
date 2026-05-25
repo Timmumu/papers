@@ -5,10 +5,11 @@ title: "Digital twin application in the construction industry: A literature revi
 authors: "D.-G. Opoku, S. Perera, R. Osei-Kyei, and M. Rashidi"
 year: 2021
 doi: "10.1016/j.jobe.2021.102726"
-zotero_status: not_checked
+zotero_key: "LUGQBL7W"
+zotero_status: verified
 created: "2026-05-25"
 tags:
-  - Needs-Verification
+  - Verified
 ---
 
 # Opoku2021
@@ -22,4 +23,4 @@ tags:
 
 ## Unverified / Pending
 
-Skeleton note - not yet verified against Zotero fulltext.
+**Zotero:** LUGQBL7W | DT application in construction - literature review, benefits and barriers

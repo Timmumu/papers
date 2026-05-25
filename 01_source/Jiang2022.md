@@ -5,10 +5,11 @@ title: "Digital twin-enabled real-time synchronization for planning, scheduling,
 authors: "Y. Jiang, M. Li, M. Li, X. Liu, R. Y. Zhong, W. Pan, and G. Q. Huang"
 year: 2022
 doi: "10.1016/j.autcon.2022.104397"
-zotero_status: not_checked
+zotero_key: "BEXVG4GB"
+zotero_status: verified
 created: "2026-05-25"
 tags:
-  - Needs-Verification
+  - Verified
 ---
 
 # Jiang2022
@@ -22,4 +23,4 @@ tags:
 
 ## Unverified / Pending
 
-Skeleton note - not yet verified against Zotero fulltext.
+**Zotero:** BEXVG4GB | DT real-time synchronization for precast assembly - sub-second latency planning/scheduling

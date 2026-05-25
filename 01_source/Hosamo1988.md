@@ -1,14 +1,15 @@
 ---
 ref: "[87]"
-citekey: "Hosamo1988"
+citekey: "Hosamo2022b"
 title: "A digital twin predictive maintenance framework for air handling units based on automation and machine learning,"
 authors: "H. Hosamo, M. H. Hosamo, H. K. Nielsen, P. R. Svennevig, and K. Svidt"
-year: 1988
+year: 2022
 doi: "10.1016/j.enbuild.2022.111988"
-zotero_status: not_checked
+zotero_key: "ID2GIXE3"
+zotero_status: verified
 created: "2026-05-25"
 tags:
-  - Needs-Verification
+  - Verified
 ---
 
 # Hosamo1988
@@ -22,4 +23,4 @@ tags:
 
 ## Unverified / Pending
 
-Skeleton note - not yet verified against Zotero fulltext.
+**Zotero:** ID2GIXE3 | DT predictive maintenance AHU - automated ML fault detection for HVAC

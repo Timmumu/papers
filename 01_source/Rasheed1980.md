@@ -1,14 +1,15 @@
 ---
 ref: "[54]"
-citekey: "Rasheed1980"
+citekey: "Rasheed2020"
 title: "Digital twin: Values, challenges and enablers from a modeling perspective,"
 authors: "A. Rasheed, O. San, and T. Kvamsdal"
-year: 1980
+year: 2020
 doi: "10.1109/ACCESS.2020.2970143"
-zotero_status: not_checked
+zotero_key: "MKZ3HU7D"
+zotero_status: verified
 created: "2026-05-25"
 tags:
-  - Needs-Verification
+  - Verified
 ---
 
 # Rasheed1980
@@ -22,4 +23,4 @@ tags:
 
 ## Unverified / Pending
 
-Skeleton note - not yet verified against Zotero fulltext.
+**Zotero:** MKZ3HU7D | DT values challenges enablers - modeling perspective survey (1722 citations)

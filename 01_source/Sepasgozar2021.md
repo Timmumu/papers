@@ -5,10 +5,11 @@ title: "Differentiating digital twin from digital shadow: Elucidating a paradigm
 authors: "S. M. E. Sepasgozar"
 year: 2021
 doi: "10.3390/buildings11040151"
-zotero_status: not_checked
+zotero_key: "NT452J52"
+zotero_status: verified
 created: "2026-05-25"
 tags:
-  - Needs-Verification
+  - Verified
 ---
 
 # Sepasgozar2021
@@ -22,4 +23,4 @@ tags:
 
 ## Unverified / Pending
 
-Skeleton note - not yet verified against Zotero fulltext.
+**Zotero:** NT452J52 | DT vs Digital Shadow vs Digital Model - taxonomy by data flow direction

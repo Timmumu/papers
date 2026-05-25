@@ -5,10 +5,12 @@ title: "Building information modeling and safety management: A systematic review
 authors: "M. D. Martinez-Aires, M. Lopez-Alonso, and M. Martinez-Rojas"
 year: 2018
 doi: "10.1016/j.ssci.2017.08.015"
-zotero_status: not_checked
+zotero_status: unverifiable
+unverified_reason: "doi_not_found_in_zotero"
+unverified_note: "DOI exists but paper not found in Zotero library. May need manual import."
 created: "2026-05-25"
 tags:
-  - Needs-Verification
+  - Unverifiable
 ---
 
 # Martinez-Aires2018
@@ -22,4 +24,4 @@ tags:
 
 ## Unverified / Pending
 
-Skeleton note - not yet verified against Zotero fulltext.
+**Status:** Unverifiable — DOI exists but paper not found in Zotero library. May need manual import.

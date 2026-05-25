@@ -5,10 +5,11 @@ title: "Design-for-Safety knowledge library for BIM-integrated safety risk revie
 authors: "M. A. Hossain, E. L. S. Abbott, D. K. H. Chua, T. Q. Nguyen, and Y. M. Goh"
 year: 2018
 doi: "10.1016/j.autcon.2018.07.010"
-zotero_status: not_checked
+zotero_key: "7JMAKZYT"
+zotero_status: verified
 created: "2026-05-25"
 tags:
-  - Needs-Verification
+  - Verified
 ---
 
 # Hossain2018
@@ -22,4 +23,4 @@ tags:
 
 ## Unverified / Pending
 
-Skeleton note - not yet verified against Zotero fulltext.
+**Zotero:** 7JMAKZYT | DfS knowledge library - BIM-integrated safety risk reviews with rule-based checking

@@ -5,10 +5,11 @@ title: "Peeking into the void: Digital twins for construction site logistics,"
 authors: "T. Greif, N. Stein, and C. M. Flath"
 year: 2020
 doi: "10.1016/j.compind.2020.103264"
-zotero_status: not_checked
+zotero_key: "3MAJ4UNU"
+zotero_status: verified
 created: "2026-05-25"
 tags:
-  - Needs-Verification
+  - Verified
 ---
 
 # Greif2020
@@ -22,4 +23,4 @@ tags:
 
 ## Unverified / Pending
 
-Skeleton note - not yet verified against Zotero fulltext.
+**Zotero:** 3MAJ4UNU | DT construction site logistics - material flow modeling and spatial conflict detection

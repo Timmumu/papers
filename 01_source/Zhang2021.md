@@ -5,10 +5,11 @@ title: "A BIM-data mining integrated digital twin framework for advanced project
 authors: "Y. Pan and L. Zhang"
 year: 2021
 doi: "10.1016/j.autcon.2021.103564"
-zotero_status: not_checked
+zotero_key: "YGJSXUXV"
+zotero_status: verified
 created: "2026-05-25"
 tags:
-  - Needs-Verification
+  - Verified
 ---
 
 # Zhang2021
@@ -22,4 +23,4 @@ tags:
 
 ## Unverified / Pending
 
-Skeleton note - not yet verified against Zotero fulltext.
+**Zotero:** YGJSXUXV | BIM-data mining DT framework - cross-phase data fusion for project management

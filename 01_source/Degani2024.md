@@ -1,14 +1,16 @@
 ---
 ref: "[11]"
-citekey: "Degani2024"
+citekey: "Spinner2024"
 title: "Online as-built building information model update for robotic monitoring in construction sites,"
 authors: "A. Spinner and A. Degani"
 year: 2024
 doi: ""
-zotero_status: not_checked
+zotero_status: unverifiable
+unverified_reason: "no_DOI_or_book_standard"
+unverified_note: "No DOI available — likely a book, standard, technical report, or older publication not indexed in academic databases."
 created: "2026-05-25"
 tags:
-  - Needs-Verification
+  - Unverifiable
 ---
 
 # Degani2024
@@ -22,4 +24,4 @@ tags:
 
 ## Unverified / Pending
 
-Skeleton note - not yet verified against Zotero fulltext.
+**Status:** Unverifiable — No DOI available — likely a book, standard, technical report, or older publication not indexed in academic databases.

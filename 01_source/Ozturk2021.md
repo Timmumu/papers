@@ -5,10 +5,11 @@ title: "Digital Twin Research in the AECO-FM Industry,"
 authors: "G. B. Ozturk"
 year: 2021
 doi: "10.1016/j.jobe.2021.102730"
-zotero_status: not_checked
+zotero_key: "BLMII5EA"
+zotero_status: verified
 created: "2026-05-25"
 tags:
-  - Needs-Verification
+  - Verified
 ---
 
 # Ozturk2021
@@ -22,4 +23,4 @@ tags:
 
 ## Unverified / Pending
 
-Skeleton note - not yet verified against Zotero fulltext.
+**Zotero:** BLMII5EA | DT research AECO-FM - bibliometric+scientometric, 5 research clusters

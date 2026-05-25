@@ -5,10 +5,12 @@ title: "Semantic NLP-based information extraction from construction regulatory d
 authors: "J. Zhang and N. M. El-Gohary"
 year: 2016
 doi: ""
-zotero_status: not_checked
+zotero_status: unverifiable
+unverified_reason: "no_DOI_or_book_standard"
+unverified_note: "No DOI available — likely a book, standard, technical report, or older publication not indexed in academic databases."
 created: "2026-05-25"
 tags:
-  - Needs-Verification
+  - Unverifiable
 ---
 
 # El-Gohary2016
@@ -22,4 +24,4 @@ tags:
 
 ## Unverified / Pending
 
-Skeleton note - not yet verified against Zotero fulltext.
+**Status:** Unverifiable — No DOI available — likely a book, standard, technical report, or older publication not indexed in academic databases.

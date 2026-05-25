@@ -5,10 +5,11 @@ title: "Digital twin and web-based virtual gaming technologies for online educat
 authors: "M. Sepasgozar"
 year: 2020
 doi: "10.3390/app10134678"
-zotero_status: not_checked
+zotero_key: "2I3BUC9T"
+zotero_status: verified
 created: "2026-05-25"
 tags:
-  - Needs-Verification
+  - Verified
 ---
 
 # Sepasgozar2020
@@ -22,4 +23,4 @@ tags:
 
 ## Unverified / Pending
 
-Skeleton note - not yet verified against Zotero fulltext.
+**Zotero:** 2I3BUC9T | DT virtual gaming education - construction management online learning

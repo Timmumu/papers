@@ -5,10 +5,11 @@ title: "Digital twin-enabled smart facility management: A bibliometric review,"
 authors: "A. Hakimi, M. Gunduz, and F. O. Ehiagwina"
 year: 2024
 doi: "10.1108/FEBE-10-2023-0046"
-zotero_status: not_checked
+zotero_key: "9EYC52IG"
+zotero_status: verified
 created: "2026-05-25"
 tags:
-  - Needs-Verification
+  - Verified
 ---
 
 # Hakimi2024
@@ -22,4 +23,4 @@ tags:
 
 ## Unverified / Pending
 
-Skeleton note - not yet verified against Zotero fulltext.
+**Zotero:** 9EYC52IG | DT smart FM bibliometric - research trends, leading authors, research gaps

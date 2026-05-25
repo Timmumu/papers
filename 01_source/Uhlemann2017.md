@@ -5,10 +5,11 @@ title: "The Digital Twin: Realizing the cyber-physical production system for ind
 authors: "M. Uhlemann, C. Lehmann, and R. Steinhilper"
 year: 2017
 doi: "10.1016/j.procir.2016.11.152"
-zotero_status: not_checked
+zotero_key: "7XF73XIE"
+zotero_status: verified
 created: "2026-05-25"
 tags:
-  - Needs-Verification
+  - Verified
 ---
 
 # Uhlemann2017
@@ -22,4 +23,4 @@ tags:
 
 ## Unverified / Pending
 
-Skeleton note - not yet verified against Zotero fulltext.
+**Zotero:** 7XF73XIE | DT realizing CPPS for Industry 4.0 - cyber-physical production system integration

@@ -5,10 +5,12 @@ title: "Autonomous pro-active real-time construction worker and equipment operat
 authors: "J. Teizer, B. Allread, C. Fullerton, and J. Hinze"
 year: 2010
 doi: "10.1016/j.autcon.2010.02.009"
-zotero_status: not_checked
+zotero_status: unverifiable
+unverified_reason: "doi_not_found_in_zotero"
+unverified_note: "DOI exists but paper not found in Zotero library. May need manual import."
 created: "2026-05-25"
 tags:
-  - Needs-Verification
+  - Unverifiable
 ---
 
 # Teizer2010
@@ -22,4 +24,4 @@ tags:
 
 ## Unverified / Pending
 
-Skeleton note - not yet verified against Zotero fulltext.
+**Status:** Unverifiable — DOI exists but paper not found in Zotero library. May need manual import.

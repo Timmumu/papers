@@ -5,10 +5,11 @@ title: "Shaping the digital twin for design and production engineering,"
 authors: "J. B. Schleich, N. Anwer, L. Mathieu, and S. Wartzack"
 year: 2017
 doi: "10.1016/j.cirp.2017.04.040"
-zotero_status: not_checked
+zotero_key: "MNQ7TJ9H"
+zotero_status: verified
 created: "2026-05-25"
 tags:
-  - Needs-Verification
+  - Verified
 ---
 
 # Schleich2017
@@ -22,4 +23,4 @@ tags:
 
 ## Unverified / Pending
 
-Skeleton note - not yet verified against Zotero fulltext.
+**Zotero:** MNQ7TJ9H | DT for design and production engineering - skin model concept, MBD framework

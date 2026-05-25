@@ -5,10 +5,11 @@ title: "Digital twins in built environments: An investigation of the characteris
 authors: "M. Shahzad, M. T. Shafiq, D. Sturges, and S. Riaz"
 year: 2022
 doi: "10.3390/buildings12020120"
-zotero_status: not_checked
+zotero_key: "IX4N6UJ9"
+zotero_status: verified
 created: "2026-05-25"
 tags:
-  - Needs-Verification
+  - Verified
 ---
 
 # Shahzad2022
@@ -22,4 +23,4 @@ tags:
 
 ## Unverified / Pending
 
-Skeleton note - not yet verified against Zotero fulltext.
+**Zotero:** IX4N6UJ9 | DT built environments - 8 attributes, monitoring/visualization dominance

@@ -5,10 +5,11 @@ title: "Ontology-based semantic modeling of construction safety knowledge: Towar
 authors: "S. Zhang, F. Boukamp, and J. Teizer"
 year: 2015
 doi: "10.1016/j.autcon.2015.02.005"
-zotero_status: not_checked
+zotero_key: "GPNWB45Y"
+zotero_status: verified
 created: "2026-05-25"
 tags:
-  - Needs-Verification
+  - Verified
 ---
 
 # Zhang2015
@@ -22,4 +23,4 @@ tags:
 
 ## Unverified / Pending
 
-Skeleton note - not yet verified against Zotero fulltext.
+**Zotero:** GPNWB45Y | Ontology-based JHA - semantic modeling of construction safety knowledge

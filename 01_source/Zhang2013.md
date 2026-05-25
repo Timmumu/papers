@@ -5,10 +5,11 @@ title: "Building Information Modeling (BIM) and Safety: Automatic Safety Checkin
 authors: "S. Zhang, J. Teizer, J.-K. Lee, C. M. Eastman, and M. Venugopal"
 year: 2013
 doi: "10.1016/j.autcon.2012.05.006"
-zotero_status: not_checked
+zotero_key: "9X7JKF5U"
+zotero_status: verified
 created: "2026-05-25"
 tags:
-  - Needs-Verification
+  - Verified
 ---
 
 # Zhang2013
@@ -22,4 +23,4 @@ tags:
 
 ## Unverified / Pending
 
-Skeleton note - not yet verified against Zotero fulltext.
+**Zotero:** 9X7JKF5U | BIM safety checking for construction - IFC integration for automated safety rule checking

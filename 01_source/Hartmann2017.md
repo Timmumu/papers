@@ -5,10 +5,12 @@ title: "How digitizing building information transforms the built environment,"
 authors: "J. Whyte and A. Hartmann"
 year: 2017
 doi: "10.1080/09613218.2017.1324726"
-zotero_status: not_checked
+zotero_status: unverifiable
+unverified_reason: "doi_not_found_in_zotero"
+unverified_note: "DOI exists but paper not found in Zotero library. May need manual import."
 created: "2026-05-25"
 tags:
-  - Needs-Verification
+  - Unverifiable
 ---
 
 # Hartmann2017
@@ -22,4 +24,4 @@ tags:
 
 ## Unverified / Pending
 
-Skeleton note - not yet verified against Zotero fulltext.
+**Status:** Unverifiable — DOI exists but paper not found in Zotero library. May need manual import.

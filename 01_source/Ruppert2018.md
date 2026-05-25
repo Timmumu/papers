@@ -5,10 +5,11 @@ title: "Enabling technologies for operator 4.0: A survey,"
 authors: "T. Ruppert, S. Jasko, T. Holczinger, and J. Abonyi"
 year: 2018
 doi: ""
-zotero_status: not_checked
+zotero_key: "IJUPSPJB"
+zotero_status: verified
 created: "2026-05-25"
 tags:
-  - Needs-Verification
+  - Verified
 ---
 
 # Ruppert2018
@@ -22,4 +23,4 @@ tags:
 
 ## Unverified / Pending
 
-Skeleton note - not yet verified against Zotero fulltext.
+**Zotero:** IJUPSPJB | RTLS integration into DT - real-time locating systems for worker/asset positioning
