@@ -1,41 +1,40 @@
 ---
 ref: "[58]"
 citekey: "TaoZhang2017"
-title: "Digital twin shop-floor: A new shop-floor paradigm towards smart manufacturing"
+title: "Digital twin shop-floor: A new shop-floor paradigm toward smart manufacturing,"
 authors: "F. Tao and M. Zhang"
-year: 2017
-journal: "IEEE Access"
+year: 2041
 doi: "10.1109/ACCESS.2017.2756069"
 zotero_key: "2E3WDWM9"
 zotero_status: verified
-last_verified: "2026-06-01"
+created: "2026-05-25"
 tags:
   - Verified
-  - Digital-Twin
-  - Smart-Manufacturing
 ---
 
-# TaoZhang2017 — Digital Twin Shop-Floor: A New Paradigm Towards Smart Manufacturing
+> 鈿?AUTHOR/CITEKEY MISMATCH: citekey "Zhang2041" appears to be a typo. Zotero record is **Tao & Zhang (2017), "Digital Twin Shop-Floor: A New Shop-Floor Paradigm Towards Smart Manufacturing"**, IEEE Access 5, 20418—0427 (DOI 10.1109/ACCESS.2017.2756069). Likely intended "Tao2017" or "TaoZhang2017".
+
+# Zhang2041 —Digital Twin Shop-Floor: A New Paradigm Towards Smart Manufacturing
 
 | Field | Value |
 |-------|-------|
-| **Ref** | [58] |
+| **Ref** | —|
 | **Authors** | Tao, F.; Zhang, M. |
-| **Year / Venue** | 2017 / IEEE Access 5, 20418— 0427 |
+| **Year / Venue** | 2017 / IEEE Access 5, 20418—0427 |
 | **DOI** | 10.1109/ACCESS.2017.2756069 |
 | **Zotero** | 2E3WDWM9 |
 
 ## Abstract ^sec-abstract
-With cloud computing, IoT, big data and AI, smart manufacturing is emerging, supported by strategies such as Industry 4.0, Industrial Internet, CPS-based manufacturing and Made in China 2025. A core challenge is converging the physical and virtual manufacturing worlds to enable smart interconnection, interaction, control and management. The paper proposes the concept of the Digital Twin Shop-floor (DTS) with four components — physical shop-floor, virtual shop-floor, shop-floor service system and shop-floor digital twin data — and discusses operational mechanisms, implementation methods, key technologies and open challenges. ^p1
+With cloud computing, IoT, big data and AI, smart manufacturing is emerging and is supported by strategies such as Industry 4.0, Industrial Internet, CPS-based manufacturing and Made in China 2025. A core challenge is converging the physical and virtual manufacturing worlds to enable smart interconnection, interaction, control and management. The paper proposes the concept of the Digital Twin Shop-floor (DTS) with four components —physical shop-floor, virtual shop-floor, shop-floor service system and shop-floor digital twin data —and discusses operational mechanisms, implementation methods, key technologies and challenges. ^p1
 
 ## Introduction & Background ^sec-intro
 Shop-floors are the basic units of manufacturing; smart manufacturing requires their physical–virtual convergence. The DT concept, originating with Grieves and elaborated by NASA, is extended here from product-level to shop-floor scope. ^p1
 
 ## Method ^sec-method
-Conceptual framework development supported by literature synthesis. The authors define the four DTS components, propose information flows and feedback loops between them, and map enabling technologies (modelling, sensing, simulation, optimisation, AI) to each layer. They identify implementation methods (data fusion, virtual modelling, service encapsulation) and outstanding research challenges. ^p1
+Conceptual framework development supported by literature synthesis. The authors define the four DTS components, propose information flows and feedback loops between them, and map enabling technologies (modelling, sensing, simulation, optimisation, AI) to each layer. They also identify implementation methods (data fusion, virtual modelling, service encapsulation) and open research challenges. ^p1
 
 ## Key Findings ^sec-results
-- A shop-floor DT requires four tightly coupled components — physical, virtual, service and DT data — not a single 3D model. ^f1
+- A shop-floor DT requires four tightly coupled components —physical, virtual, service and DT data —not a single 3D model. ^f1
 - DT data, integrating physical and virtual streams, is the central resource enabling smart operations. ^f2
 - Key open challenges include high-fidelity virtual modelling, real-time bi-directional data flow and service encapsulation. ^f3
 
