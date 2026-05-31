@@ -1,33 +1,21 @@
 ---
-CiteKey: "Adibi2024"
-Year: 2024
+ref: ""
+citekey: "Adibi2024"
+title: "Sensor-driven digital twin platforms for smart environments: A systematic review and a proposed framework"
+authors: "Sasan Adibi, Abbas Rajabifard, Davood Shojaei, Nilmini Wickramasinghe"
+year: 2024
+journal: "Sensors"
+doi: "10.3390/s24092793"
+zotero_key: "HHRE3QTR"
+zotero_status: verified
+last_verified: "2026-06-01"
 tags:
-  - literature_review
-  - Digital_Twin
+  - Verified
+  - Digital-Twin
   - Healthcare
-Method:
-  - "Systematic Literature Review (SLR)"
-  - "Thematic Analysis"
-  - "Case Study Analysis"
-Argument:
-  - "Sensor-driven digital twins integrated with IoT, AI, and location-based services can revolutionize healthcare delivery."
-  - "Digital twins enable real-time monitoring, personalized interventions, and operational optimization in smart environments."
-  - "The Enhanced Intelligent Connectivity Framework (E-ICF) addresses current limitations in smart environments."
-Contribution:
-  - "Proposes the Enhanced Intelligent Connectivity Framework (E-ICF) for digital twin applications in healthcare."
-  - "Identifies 7 key challenges (e.g., interoperability, privacy) for smart healthcare systems."
-  - "Synthesizes fragmented research into a unified framework for digital twin applications in healthcare."
-Gap:
-  - "Empirical Gap - Lack of real-world validation for digital twin applications in diverse healthcare settings."
-  - "Theoretical Gap - Inconsistent definitions of digital twins in healthcare contexts."
-  - "Practical Gap - Limited scalable implementations in non-manufacturing healthcare domains."
-Limitation:
-  - "Limited empirical validation of the proposed E-ICF framework."
-  - "Case study bias toward smart hospitals (67% of analyzed papers), limiting generalizability."
-  - "Over-reliance on theoretical models without empirical testing."
-
+  - Smart-Environment
+  - Review
 ---
-
 ### **Obsidian YAML Draft**  
 ---  
 1. **tags**: "Digital Twin in Healthcare"  

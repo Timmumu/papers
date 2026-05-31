@@ -1,52 +1,69 @@
 ---
-CiteKey: Grieves2026
-Title: "Front Running Simulation: A Digital Twin Framework for Real-Time Replication, Prediction, and Goal Navigation"
-Authors: Michael Grieves
-Year: "2026"
+ref: "[56]"
+citekey: "Grieves2026"
+title: "Front Running Simulation: A Digital Twin Framework for Real-Time Replication, Prediction, and Goal Navigation"
+authors: "M. Grieves"
+year: 2026
+journal: "Preprints.org (preprint, 2026-04-20)"
+doi: "10.20944/preprints202604.1291.v1"
+zotero_key: "83PUTURG"
+zotero_status: verified
+last_verified: "2026-06-01"
 tags:
-  - literature_review
-  - Front-Running-Simulation
+  - Verified
   - Digital-Twin
-  - Models-of-Reality
-  - Predictive-Analytics
-  - Manufacturing-Optimization
-Method:
-  - Conceptual Framework Development
-  - Hybrid Simulation (Causal + Probabilistic)
-  - Bayesian-informed AI Prediction
-  - Monte Carlo Techniques
-  - Case Study (Hypothetical Examples)
-Argument:
-  - Traditional simulation operates offline, while FRS enables real-time synchronization with physical systems via Digital Twin Instances (DTIs)
-  - "FRS integrates three core activities: replication (data), prediction (simulation), and navigation (information)"
-  - Digital Twin Aggregates (DTAs) enable population-level Bayesian inference to complement physics-based simulation
-  - Goal-seeking navigation (rather than deviation avoidance) is the primary objective of FRS
-  - Information acts as a substitute for wasted physical resources (time/energy/material)
-  - Humans-In/Out-of-The-Loop (HITL/HOOTL) implementations require different guardrails
-Contribution:
-  - "Theoretical: Unifies Digital Twin theory, simulation methodologies, and AI into a goal-oriented operational framework"
-  - "Technical: Proposes hybrid causal-probabilistic simulation architecture with DTA-backed Bayesian learning"
-  - "Practical: Demonstrates applications in automotive manufacturing and oil refining with quantified resource savings"
-Gap:
-  - "Knowledge Gap: Lack of real-time predictive frameworks bridging digital twins and operational decision-making"
-  - "Methodological Gap: Absence of hybrid simulation-AI architectures for industrial systems"
-  - "Empirical Gap: Insufficient validation of information-as-resource substitution hypothesis"
-Limitation:
-  - Dependence on complete and accurate IoT data feeds for replication fidelity
-  - Computational scalability constraints for high-frequency FRS cycles
-  - No empirical validation beyond hypothetical examples
-  - Unaddressed cybersecurity risks in physical-digital command loops
-Critique_Tags:
-  - (+)Full-Life-Cycle (covers design-operation-maintenance phases)
-  - (+)Design-for-Quality (micro-rebalancing in automotive case)
-  - (!)Implementation-Gap (no field deployment data)
-  - (!)Safety-Overlooked (minimal treatment of fail-safe mechanisms)
-Rating: 6
+  - Foundation
+  - Preprint
+  - Front-Running-Simulation
 ---
 
-### **Obsidian YAML Draft**
+# Grieves2026 — Front Running Simulation: A DT Framework for Real-Time Replication, Prediction, and Goal Navigation
+
+| Field | Value |
+|-------|-------|
+| **Ref** | [56] |
+| **Authors** | M. Grieves |
+| **Year / Venue** | 2026 / Preprints.org (preprint, 2026-04-20) |
+| **DOI** | [10.20944/preprints202604.1291.v1](https://doi.org/10.20944/preprints202604.1291.v1) |
+| **Zotero** | 83PUTURG |
+
+
+## Abstract ^sec-abstract
+Front Running Simulation (FRS) is a Digital Twin–enabled capability that continuously replicates the current state of physical systems, predicts probable future states, and identifies actions to navigate to defined goals while minimizing the expenditure of scarce physical resources. Unlike traditional simulation, which operates offline with predefined initial conditions, FRS is continuously synchronized with reality through Digital Twin Instances (DTIs), enabling forward-looking simulation from the present state. FRS is organized around three core activities — replication, prediction, and navigation — supported by data, Models of Reality (MoR), simulation, and information. The integration of Digital Twin Aggregates (DTAs) and Artificial Intelligence introduces Bayesian, data-driven prediction that complements physics-based simulation, combining exploration of possible futures with rapid identification of probable outcomes. The framework shifts the focus from purely adverse-event avoidance to goal attainment under constraints, enabling proactive, information-driven decision-making. ^p1
+
+## Method ^sec-method
+Conceptual framework development with illustrative examples (automotive welding line, refinery operations). No primary empirical data; synthesis articulates the FRS architecture (DTIs + DTAs + MoR + AI) and demonstrates qualitative outcomes such as 8–62 % bottleneck-probability reduction in the manufacturing examples. ^p1
+
+## Key Findings ^sec-results
+
+- FRS reframes the DT from a passive monitor into a forward-looking, goal-navigating agent — continuously synchronized replication is the precondition, not the deliverable. ^f1
+
+- Hybrid prediction (physics-based MoR simulation + DTA-driven Bayesian/AI inference) outperforms either pure approach for goal navigation under uncertainty. ^f2
+
+- Information — not data — is the resource that enables goal-directed action selection; the DT's job is to convert raw streams into actionable information for navigation. ^f3
+
+
+## Discussion & Implications ^sec-discussion
+A direct conceptual ancestor of the cognitive/autonomous DT level identified in this SLR. The FRS triad (replication → prediction → navigation) maps almost one-to-one onto the cognitive-loop closure that AECO DTs currently fail to achieve. The preprint status and the absence of in-situ empirical validation are the main limitations. ^p1
+
+## Relevance to Cognitive Full-Lifecycle DT SLR ^sec-relevance
+Lifecycle stage: cross-lifecycle (operations/production analogue). In LR_cc.md FRS underpins the Level-3 (cognitive/autonomous) maturity definition and motivates the SLR's argument that current AECO DTs are stuck at replication+observation without the prediction-navigation stages. ^p1
+
+## Traceability
+
+| Claim in LR_cc.md | Evidence anchor |
+|---|---|
+
+| FRS triad defines Level-3 cognitive DT capability | #^f1 |
+
+| Hybrid physics + DTA-driven Bayesian prediction is the recommended prediction substrate | #^f2 |
+
+| Information (not raw data) is the actionable resource for navigation | #^f3 |
+
 
 ---
+
+## Extended Notes (legacy commentary, preserved verbatim)
 
 CiteKey: "Grieves2026"
 tags: [literature_review, "Predictive-Manufacturing"]

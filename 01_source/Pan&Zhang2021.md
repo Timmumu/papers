@@ -1,47 +1,20 @@
 ---
-CiteKey: Pan2021
-Year: 2021
+ref: "[19]"
+citekey: "Pan&Zhang2021"
+title: "A BIM-data mining integrated digital twin framework for advanced project management"
+authors: "Yue Pan, Limao Zhang"
+year: 2021
+journal: "Automation in Construction"
+doi: "10.1016/j.autcon.2021.103564"
+zotero_key: "YGJSXUXV"
+zotero_status: verified
+last_verified: "2026-06-01"
 tags:
-  - literature_review
-  - DigitalTwin
-  - ProjectManagement
-  - DataMining
-  - BottleneckAnalysis
-  - ProcessMining
-  - CaseStudy
-  - ProM
-Method:
-  - Qualitative case study
-  - BIM-IoT-DM integration framework
-  - Process mining (fuzzy miner, inductive miner)
-  - Time series analysis (ARIMAX)
-  - 4D visualization
-  - Process Mining ProM
-Argument:
-  - Digital Twin (DT) enhances construction management through BIM-IoT-data mining integration
-  - Process mining enables bottleneck detection in construction workflows
-  - ARIMAX model predicts task completion rates using worker activity data
-  - 4D BIM visualization synchronizes with IoT for real-time progress monitoring
-  - Event logs from IFC files provide actionable insights for process optimization
-Contribution:
-  - "Theoretical: Proposes a closed-loop DT framework for construction lifecycle management"
-  - "Technical: Develops ARIMAX (2,1,2) model with worker covariates (RMSE 2.635)"
-  - "Practical: Validates framework in a 3-story building case (26,970 event logs)"
-Gap:
-  - "Evidence Gap: Lack of empirical DT implementations with bidirectional data flows (only 1 case)"
-  - "Methodological Gap: Absence of standardized semantic integration between BIM and IoT"
-Limitation:
-  - Single data source (UAV point clouds) limits multi-perspective analysis
-  - No explicit DfQ/DfS integration despite process optimization focus
-  - Worker skill levels not modeled in task predictions
-Critique_Tags:
-  - (+)Full-Life-Cycle
-  - (!)Quality-Neglected
-Rating: 5
-Authors: Yue Pan, Limao Zhang
-Title: A BIM-data mining integrated digital twin framework for advanced project management
+  - Verified
+  - Digital-Twin
+  - BIM
+  - Project-Management
 ---
-
 ### **Obsidian YAML Draft**  
 
 ---

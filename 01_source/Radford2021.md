@@ -1,3 +1,23 @@
+---
+ref: ""
+citekey: "Radford2021"
+title: "Learning Transferable Visual Models From Natural Language Supervision (CLIP)"
+authors: "Alec Radford, Jong Wook Kim, Chris Hallacy, Aditya Ramesh, Gabriel Goh, Sandhini Agarwal, Girish Sastry, Amanda Askell, Pamela Mishkin, Jack Clark, Gretchen Krueger, Ilya Sutskever"
+year: 2021
+journal: "arXiv preprint arXiv:2103.00020 (PMLR ICML 2021)"
+doi: "10.48550/arXiv.2103.00020"
+zotero_key: "WMDJY52E"
+zotero_status: verified
+last_verified: "2026-06-01"
+tags:
+  - Verified
+  - Foundation-Model
+  - Vision-Language
+  - Cross-Domain
+  - CLIP
+---
+
+> 📝 Renamed from `OpenAI2021` on 2026-06-01 and imported into Zotero (collection: NLP, key `WMDJY52E`). A pre-existing conference-paper stub (`G6GCKPSX`) also exists in the library and may be merged manually.
 OpenAI’s landmark (>60,000 citation) publication introducing **CLIP (Contrastive Language-Image Pre-training)**. It fundamentally shifted the computer vision paradigm away from predicting fixed, brittle machine-labeled categories (like ImageNet's 1,000 classes) toward **jointly understanding images and natural language** through a shared embedding space.
 
 Below is an academic and strategic review of the paper, followed by a detailed blueprint of how your **AECO (Architecture, Engineering, Construction, and Operations) Digital Twin** can adapt these principles to solve its most complex multi-modal data integration problems.

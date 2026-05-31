@@ -1,43 +1,20 @@
 ---
-CiteKey: Kritzinger2018
-Year: 2018
+ref: "[28]"
+citekey: "Kritzinger2018"
+title: "Digital Twin in manufacturing: A categorical literature review and classification"
+authors: "Werner Kritzinger, Matthias Karner, Georg Traar, Jan Henjes, Wilfried Sihn"
+year: 2018
+journal: "IFAC-PapersOnLine"
+doi: "10.1016/j.ifacol.2018.08.474"
+zotero_key: "J4XB34RN"
+zotero_status: verified
+last_verified: "2026-06-01"
 tags:
-  - literature_review
-  - DigitalTwin
-  - Manufacturing
-Method:
-  - Systematic literature review
-  - Keyword-based search (Google Scholar, Scopus)
-  - Content analysis of 42 papers (2014-2018)
-  - Tripartite classification (DM/DS/DT)
-Argument:
-  - many concept papers without concrete case-studies. Some applied case-studies exist at levels of integration (DM and DS).
-  - Implementation levels vary (Digital Model-DM/Digital Shadow-DS/Digital Twin_DT)
-  - Need for standardized classification framework
-  - Most literature focuses on DM/DS rather than full DT implementations
-Contribution:
-  - "Theoretical: DM/DS/DT framework for integration-level clarity"
-  - "Technical: Identifies enabling technologies (IoT, OPC-UA, simulation)"
-  - "Practical: Reveals scarcity of empirical DT cases (only 18% meet criteria)"
-Gap:
-  - "Evidence Gap: Lack of real-world DT implementations (only 26% case studies)"
-  - "Integration Gap: Siloed applications in production planning/maintenance"
-  - "Knowledge Gap: No consideration of DfQ/DfS in DT frameworks"
-Limitation:
-  - Scope limited to manufacturing (no cross-industry analysis)
-  - 55% conceptual papers analyzed (limited empirical basis)
-  - No quantitative validation of proposed taxonomy
-  - No lifecycle-wide integration analysis
-  - Complete omission of quality/safety considerations
-Critique_Tags:
-  - (+)Seminal-Framework
-  - (!)Lifecycle-Fragmented
-  - (!)Quality-Neglected
-  - (!)Safety-Overlooked
-Status: Read
-Rating: 3
+  - Verified
+  - Digital-Twin
+  - Foundation
+  - Classification
 ---
-
 ### **Obsidian YAML Draft**
 
 ---

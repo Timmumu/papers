@@ -1,35 +1,20 @@
 ---
-CiteKey: Machado2023
-Year: 2023
+ref: ""
+citekey: "Machado2023"
+title: "Construction 4.0 maturity model: A survey of academia and the construction industry"
+authors: "F. V. Machado, F. T. Berssaneti"
+year: 2023
+journal: "Heliyon"
+doi: "10.1016/j.heliyon.2023.e19390"
+zotero_key: "PTD7AVWZ"
+zotero_status: verified
+last_verified: "2026-06-01"
 tags:
-  - literature_review
-  - Digital_Twin_in_Healthcare
-  - PRISMA
-Method:
-  - Systematic Literature Review (PRISMA-guided)
-  - Bibliometric Analysis (VOSviewer/Excel)
-  - Content Analysis (Abstract/Thematic Coding)
-Argument:
-  - DT healthcare publications increased exponentially post-2019 (65% in 2021-2022) [3.1]
-  - Research primarily published in tech sources (62%) vs medical/biological [3.1]
-  - Patient DT dominates research (52%) but hospital/device applications are more mature [3.2]
-  - Precision medicine (29%) and policy/issues (25%) are top subthemes despite low keyword visibility [3.2]
-  - Healthcare DT transitioning from infancy phase (application publications surpassed others in 2022) [4]
-Contribution:
-  - First bibliometric SLR classifying 121 healthcare DT papers into 5 content types/6 theme groups [3]
-  - "Identifies 3 maturity levels: infant (patient DT), emerging (precision medicine), mature (hospital/device DT) [4]"
-  - Proposes E-ICF framework adoption roadmap from manufacturing to healthcare [4]
-  - "Quantifies keyword network: DT/healthcare centrality (2071/1387 link strength) [3.1]"
-Gap:
-  - Empirical Gap - Lack real-world validation for non-hospital settings (e.g., chronic care) [5]
-  - Population Gap - Underrepresented geriatric/pediatric applications [5]
-  - Practical Gap - No whole-body/hospital DTs exist despite being envisioned [5]
-Limitation:
-  - English-only publications (potential 17% relevant studies excluded) [5]
-  - Manufacturing bias (67% hospital cases) limits generalizability [5]
-  - No quality assessment of included studies [2.2]
+  - Verified
+  - Construction-4.0
+  - Maturity-Model
+  - Survey
 ---
-
 ### **Obsidian YAML Draft**
 ---  
 1. **tags**: "Digital_Twin_in_Healthcare"  

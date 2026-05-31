@@ -1,36 +1,20 @@
 ---
-CiteKey: Hosamo2022
-Year: 2022
+ref: ""
+citekey: "Hosamo2022"
+title: "A review of the digital twin technology in the AEC-FM industry"
+authors: "Haidar Hosamo Hosamo, Hassan Hosamo, Mazen A. Al-Sinan, Khalid Al-Tarazi"
+year: 2022
+journal: "Advances in Civil Engineering"
+doi: "10.1155/2022/2185170"
+zotero_key: "3QSAUVYC"
+zotero_status: verified
+last_verified: "2026-06-01"
 tags:
-  - literature_review
-  - digital_twin
-  - AEC_FM_industry
-  - PRISMA
-Method:
-  - Scientometric analysis using VOSviewer
-  - Bibliometric search across Web of Science, Scopus, Google Scholar
-  - Keyword co-occurrence analysis
-  - Cluster analysis
-Argument:
-  - Digital Twin (DT) technology can revolutionize the AEC-FM industry by integrating physical and digital worlds for lifecycle management.
-  - Information standardization is the primary hurdle for DT adoption in AEC-FM.
-  - BIM alone is insufficient for automation; DT complements it with dynamic data integration (IoT, ML).
-  - DT enables predictive maintenance, occupant-centric design, and semantic interoperability in facility management.
-Contribution:
-  - Comprehensive review of 77 publications on DT in AEC-FM, identifying 6 research clusters.
-  - Proposes a conceptual framework for DT in building management.
-  - Highlights gaps in predictive maintenance, ontology-based integration, and human-building interaction.
-Gap:
-  - "Evidence gap: Lack of standardized information integration methods for DT in AEC-FM [4.2]."
-  - "Knowledge gap: Insufficient research on occupant comfort modeling using DT [4.3]."
-  - "Practical gap: Limited real-world applications of DT for predictive maintenance [4.5]."
-  - "Methodological gap: Absence of unified ontology frameworks for BIM-IoT-FM integration [4.4]."
-Limitation:
-  - Limited to English-language publications, excluding non-academic innovations [5].
-  - Reliance on three databases (Scopus, WoS, Google Scholar) may miss relevant studies [5].
-  - Subjective bias in literature selection and clustering [5].
+  - Verified
+  - Digital-Twin
+  - AEC-FM
+  - Review
 ---
-
 ### **Obsidian YAML Draft**
 
 ---

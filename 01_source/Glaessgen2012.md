@@ -1,20 +1,20 @@
 ---
-tags: 
-- literature_review
-- aerospace-digital-twin
-Method:
-  - "Qualitative - Conceptual Framework Development"
-  - "Mixed-Methods - Case-Based Demonstration"
-Argument: "Digital Twin replaces heuristic safety factors with physics-based prognostics for aerospace."
-Contribution: 
-  - "First formalized DT definition integrating multiphysics simulation."
-  - "Proposed DT applications: virtual certification, in-situ forensics."
-Gap:
-  - "Practical - Lack of validation beyond aerospace."
-  - "Methodological - No standards for real-time data fusion."
+ref: "[55]"
+citekey: "Glaessgen2012"
+title: "The digital twin paradigm for future NASA and U.S. Air Force vehicles"
+authors: "Edward Glaessgen, David Stargel"
+year: 2012
+journal: "AIAA Conference (53rd Structures, Structural Dynamics, and Materials)"
+doi: "10.2514/6.2012-1818"
+zotero_key: "8B7R5BZU"
+zotero_status: verified
+last_verified: "2026-06-01"
+tags:
+  - Verified
+  - Digital-Twin
+  - Aerospace
+  - Foundation
 ---
-
-
 ### **1. Tags**  
 `aerospace-digital-twin`  
 ### **2. Research Method**  

@@ -1,41 +1,20 @@
 ---
-CiteKey: "Rasheed2020"
-Year: 2020
+ref: "[54]"
+citekey: "Rasheed2020"
+title: "Digital Twin: Values, Challenges and Enablers From a Modeling Perspective"
+authors: "Adil Rasheed, Omer San, Trond Kvamsdal"
+year: 2020
+journal: "IEEE Access"
+doi: "10.1109/ACCESS.2020.2970143"
+zotero_key: "MKZ3HU7D"
+zotero_status: verified
+last_verified: "2026-06-01"
 tags:
-  - literature_review
-  - digital_twin
-  - modeling_perspective
-Method:
-  - "Physics-based modeling"
-  - "Data-driven modeling (Machine Learning, Deep Learning, Reinforcement Learning)"
-  - "Big Data Cybernetics"
-  - "Hybrid Analysis and Modeling (HAM)"
-  - "Reduced Order Modeling (ROM)"
-  - "Data assimilation techniques (4D-VAR, EnKF)"
-  - "Blockchain for data security"
-  - "IoT and 5G communication technologies"
-  - "Augmented/Virtual Reality for human-machine interface"
-Argument:
-  - "Digital twins (DTs) are transformative for cyber-physical systems by enabling real-time prediction and decision-making."
-  - "Hybrid modeling (combining physics-based and data-driven approaches) is essential for accurate DTs."
-  - "Challenges include data privacy, real-time synchronization, and model interpretability."
-  - "Enabling technologies (e.g., AI, IoT, blockchain) are critical for DT adoption."
-Contribution:
-  - "Comprehensive review of DT methodologies from a modeling perspective."
-  - "Taxonomy of challenges (data, model evolution, security, user interface)."
-  - "Framework for hybrid modeling (HAM) to integrate physics and data-driven methods."
-  - "Identification of socio-economic impacts and stakeholder recommendations."
-Gap:
-  - "Knowledge gap: Lack of standardized frameworks for DT development [Methodological]."
-  - "Practical gap: Real-world implementation challenges (e.g., latency, scalability) [Empirical]."
-  - "Theoretical gap: Need for interpretable AI models in safety-critical applications [Theoretical]."
-Limitation:
-  - "Computational demands of high-fidelity simulations limit real-time DT applications."
-  - "Data privacy and ethical concerns in sectors like healthcare."
-  - "Generalizability of hybrid models across diverse applications."
-
+  - Verified
+  - Digital-Twin
+  - Modeling
+  - Foundation
 ---
-
 ### **Obsidian YAML Draft**
 
 ---

@@ -1,37 +1,24 @@
 ---
 ref: "[54]"
-citekey: "Rasheed2020"
-title: "Digital twin: Values, challenges and enablers from a modeling perspective,"
-authors: "A. Rasheed, O. San, and T. Kvamsdal"
+citekey: "Rasheed1980"
+title: "(duplicate) Digital Twin: Values, Challenges and Enablers From a Modeling Perspective"
+authors: "A. Rasheed, O. San, T. Kvamsdal"
 year: 2020
+journal: "IEEE Access 8, 21980–22012"
 doi: "10.1109/ACCESS.2020.2970143"
 zotero_key: "MKZ3HU7D"
-zotero_status: verified
-created: "2026-05-25"
+zotero_status: duplicate
+last_verified: "2026-06-01"
 tags:
-  - Verified
+  - Duplicate
+  - Digital-Twin
+  - Redirect
 ---
 
-# Rasheed1980
+# Rasheed1980 — DUPLICATE of Rasheed2020
 
-| Field | Value |
-|-------|-------|
-| **Ref** | [54] |
-| **Title** | Digital twin: Values, challenges and enablers from a modeling perspective, |
-| **Authors** | A. Rasheed, O. San, and T. Kvamsdal |
-| **DOI** | [10.1109/ACCESS.2020.2970143](https://doi.org/10.1109/ACCESS.2020.2970143) |
+> ⚠ **DUPLICATE NOTE (2026-06-01).** This note shares Zotero key `MKZ3HU7D` with [[Rasheed2020]] and refers to the same paper (Rasheed, San & Kvamsdal, 2020, *IEEE Access*, DOI `10.1109/ACCESS.2020.2970143`). The filename `Rasheed1980` is a legacy typo (the paper appears on pages 21980–22012; the page number leaked into the citekey). Use [[Rasheed2020]] for all citations going forward.
 
+## Canonical Note
 
-
-## Verified Evidence
-
-### Abstract
-^sec-abstract
-
-> Zotero item verified. See full PDF in Zotero library for detailed evidence.
-
-## Traceability
-
-| LR_GPT.md | Claim | Evidence Block |
-|-----------|-------|----------------|
-| | | #^sec-abstract |
+See [[Rasheed2020]].

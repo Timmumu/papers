@@ -1,39 +1,20 @@
 ---
-CiteKey: "Fuller2020"
-Year: 2020
+ref: "[29]"
+citekey: "Fuller2020"
+title: "Digital Twin: Enabling technologies, challenges and open research"
+authors: "Aidan Fuller, Zhong Fan, Charles Day, Chris Barlow"
+year: 2020
+journal: "IEEE Access"
+doi: "10.1109/ACCESS.2020.2998358"
+zotero_key: "SSR5IGBW"
+zotero_status: verified
+last_verified: "2026-06-01"
 tags:
-  - literature_review
-  - "digital_twin"
-  - "IoT"
-  - "AI"
-Method:
-  - "Comprehensive review of Digital Twin publications from 2015-2019"
-  - "Keyword searches in ACM, IEEE, and Science Direct repositories"
-  - "Categorical review methodology based on Kritzinger et al. (2018)"
-  - "Analysis of 177 papers, focusing on 42 pre-2017 and 26 key sources"
-Argument:
-  - "Digital Twins require seamless bidirectional integration between physical and virtual entities"
-  - "Misconceptions exist in literature between Digital Twins vs. Digital Models/Shadows [Fig.1]"
-  - "Manufacturing dominates current DT research (59% of papers) vs. healthcare (10%) and smart cities (31%) [Fig.5]"
-  - "AI, IoT, and data analytics are key enabling technologies for Digital Twins [Tables 2-4]"
-  - "Standardization is the primary challenge for DT adoption across industries"
-Contribution:
-  - "First categorical review covering manufacturing, healthcare AND smart cities (unlike prior manufacturing-focused reviews)"
-  - "Functional domain framework for DT enabling technologies (D9-D12 in Table 4)"
-  - "Identified 7 shared challenges across data analytics, IoT and DTs [Table 1]"
-  - "Clarified DT definitions by distinguishing from Digital Models/Shadows"
-Gap:
-  - "Evidence gap: Lack of large-scale industrial DT implementations despite prototypes [6.1]"
-  - "Methodological gap: No standardized modeling approaches for DTs [3.6]"
-  - "Theoretical gap: Absence of unified architecture for heterogeneous DT systems [6.4]"
-  - "Knowledge gap: Limited research on human-DT interaction in healthcare [5.3]"
-Limitation:
-  - "Literature search limited to English publications [5]"
-  - "Potential bias from using only three academic databases [5]"
-  - "Subjective classification of papers in categorical review [5.1]"
-
+  - Verified
+  - Digital-Twin
+  - Foundation
+  - Survey
 ---
-
 ### **Obsidian YAML Draft**
 
 ---

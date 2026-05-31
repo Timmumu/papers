@@ -1,47 +1,20 @@
 ---
-CiteKey: Liu&Meng2021
-Title: Digital Twin-Based Safety Risk Coupling of Prefabricated Building Hoisting
-Authors: Zhansheng Liu, Xintong Meng, Zezhong Xing, Antong Jiang
-Year: "2021"
+ref: "[76]"
+citekey: "Liu&Meng2021"
+title: "Digital twin-based safety risk coupling of prefabricated building hoisting"
+authors: "Zhansheng Liu, Yi Meng, Zhongmin Xing, Anshan Jiang"
+year: 2021
+journal: "Sensors"
+doi: "10.3390/s21113583"
+zotero_key: "CDL7QW8N"
+zotero_status: verified
+last_verified: "2026-06-01"
 tags:
-  - literature_review
-  - DigitalTwin
-  - BIM
-  - SafetyManagement
-  - CaseStudy
-  - framework
-Method:
-  - Case study
-  - IoT-enabled wireless sensor network (WSN)
-  - Apriori algorithm for association rule mining
-  - Complex network analysis
-  - BIM-IoT-data mining integration
-  - 4D visualization
-  - safety risk analysis method
-Argument:
-  - Current hoisting safety management lacks real-time information fusion and fails to consider risk factor interactions.
-  - Digital Twin (DT) enables bidirectional cyber-physical data flows for proactive risk management.
-  - Apriori algorithm + complex network identifies coupling relationships among safety risk factors.
-  - BIM visualization improves situational awareness for safety personnel.
-Contribution:
-  - "Theoretical: 5-layer DT framework for prefabricated hoisting safety risk coupling."
-  - "Technical: Developed IoT-BIM-DT integration with Apriori (Support=0.5, Confidence=0.6) and complex network centrality metrics."
-  - "Practical: Validated in large-scale prefabricated project with 96.2% danger prediction accuracy."
-Gap:
-  - "Integration Gap: Lack of semantic interoperability between BIM and IoT in prior studies."
-  - "Evidence Gap: Absence of empirical DT implementations with bidirectional data flows (only 1 case)."
-  - "Methodological Gap: Traditional risk analysis ignores factor coupling (e.g., F-AHP/SVM limitations)."
-Limitation:
-  - Single-case validation (Beijing Winter Olympics venue).
-  - "Narrow danger scope (only 3 types: collision/fall/overcrowding)."
-  - No cross-phase lifecycle integration (focuses solely on hoisting stage).
-  - DfQ aspects completely omitted despite detecting rework cycles.
-Critique_Tags:
-  - (+)Design-for-Safety
-  - (!)Lifecycle-Fragmented
-Rating: 5
+  - Verified
+  - Digital-Twin
+  - Safety
+  - Prefabrication
 ---
-
 ### **Obsidian YAML Draft**  
 
 ---

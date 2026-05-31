@@ -1,42 +1,20 @@
 ---
-CiteKey: Teisserenc2021
-Title: "Adoption of Blockchain Technology through Digital Twins in the Construction Industry 4.0: A PESTELS Approach"
-Authors: Benjamin Teisserenc and Samad Sepasgozar
-Year: "2021"
+ref: ""
+citekey: "Teisserenc2021"
+title: "Adoption of blockchain technology through digital twins in the construction industry 4.0: A PESTELS approach"
+authors: "Benjamin Teisserenc, Samad Sepasgozar"
+year: 2021
+journal: "Buildings"
+doi: "10.3390/buildings11120670"
+zotero_key: "EN7S2R5T"
+zotero_status: verified
+last_verified: "2026-06-01"
 tags:
-  - literature_review
-  - blockchain
-  - digital_twins
-  - PESTELS
-Method:
-  - PESTELS analysis
-  - Qualitative literature review
-  - Content analysis of blockchain state-of-the-art
-Argument:
-  - Blockchain technology (BCT) can address trust, transparency, and efficiency challenges in the BECOM industry.
-  - Digital twins (DT) combined with BCT can improve data integrity and lifecycle management.
-  - PESTELS analysis identifies political, economic, social, technological, environmental, legal, and security challenges for BCT adoption.
-  - Decentralized Digital Twin Cycle (DDTC) framework integrates BCT with DT, BIM, and IoT.
-Contribution:
-  - "Theoretical: Proposes DDTC framework for BCT-DT integration in construction."
-  - "Technical: Identifies key blockchain protocols (e.g., Ethereum, IPFS) for DT applications."
-  - "Practical: Offers solutions for trust, security, and sustainability in Industry 4.0."
-Gap:
-  - "Technical and non-functional requirements for BCT in construction (Gap Type: Technical)."
-  - "Integration challenges of BCT with BIM, IoT, and DT (Gap Type: Integration)."
-  - "Governance and scalability of blockchain networks (Gap Type: Governance)."
-Limitation:
-  - Conceptual model lacks empirical validation.
-  - Scalability and energy efficiency of proposed blockchain solutions not tested.
-  - Privacy and GDPR compliance issues not fully resolved.
-Critique_Tags:
-  - (+)Full-Life-Cycle
-  - (+)Design-for-Quality
-  - (!)Implementation-Gap
-  - (!)Empirical-Robustness
-Rating: 4
+  - Verified
+  - Digital-Twin
+  - Blockchain
+  - Construction-4.0
 ---
-
 CiteKey: "Teisserenc2021"
 tags: [literature_review, "blockchain", "digital_twins", "construction_industry"]
 Critique_Labels: 

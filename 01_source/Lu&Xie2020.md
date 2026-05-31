@@ -1,44 +1,20 @@
 ---
-CiteKey: Lu2020
-Year: 2020
-Authors: Qiuchen Lu, Xie
-Title: Digital twin-enabled anomaly detection for built asset monitoring in operation and maintenance
+ref: "[9]"
+citekey: "Lu&Xie2020"
+title: "Digital Twin-enabled anomaly detection for built asset monitoring in operation and maintenance"
+authors: "Qiuchen Lu, Xiang Xie, Ajith Kumar Parlikad, Jennifer M. Schooling"
+year: 2020
+journal: "Automation in Construction"
+doi: "10.1016/j.autcon.2020.103277"
+zotero_key: "PTY562CM"
+zotero_status: verified
+last_verified: "2026-06-01"
 tags:
-  - literature_review
-  - DigitalTwin
-  - BIM
-  - AssetManagement
-Method:
-  - Case study
-  - IoT-enabled wireless sensor network (WSN)
-  - Bayesian online change point detection (BOCPD)
-  - IFC schema extension for O&M
-  - 4D visualization
-Argument:
-  - Digital Twin (DT) enhances anomaly detection in building O&M through bidirectional data integration
-  - Current O&M data systems are fragmented and lack interoperability
-  - Semantic interoperability via extended IFC schema enables dynamic data integration
-  - BOCPD outperforms traditional CUSUM in handling contextual anomalies in HVAC systems
-  - Asset monitoring requires cross-referencing multiple data sources for accurate diagnosis
-Contribution:
-  - "Theoretical: 5-layer DT architecture integrating physical/virtual/data layers"
-  - "Technical: Developed BOCPD model with IFC extensions for pump anomaly detection (RMSE 2.635)"
-  - "Practical: Validated in real-world HVAC system at University of Cambridge campus"
-Gap:
-  - "Evidence Gap: Lack of empirical DT implementations with bidirectional data flows (only 1 case)"
-  - "Integration Gap: Disconnection between design/construction/operation phases"
-  - "Knowledge Gap: Absence of standardized BIM-IoT semantic integration for O&M"
-Limitation:
-  - Single-case validation limits generalizability
-  - No DfQ/DfS modules despite detecting rework cycles
-  - Worker skill levels not modeled in predictive maintenance
-  - Limited discussion on cybersecurity for large-scale infrastructure
-Critique_Tags:
-  - (+)Full-Life-Cycle
-  - (!)Quality-Neglected
-Rating: 6
+  - Verified
+  - Digital-Twin
+  - Anomaly-Detection
+  - OandM
 ---
-
 ### **Obsidian YAML Draft**
 
 ---

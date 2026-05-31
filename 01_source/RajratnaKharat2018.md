@@ -1,38 +1,20 @@
 ---
-CiteKey: RajratnaKharat2018
-Year: 2018
-Title: "DIGITAL TWIN: MANUFACTURING EXCELLENCE THROUGH VIRTUAL FACTORY REPLICATION"
+ref: ""
+citekey: "RajratnaKharat2018"
+title: "Detection of cracks on concrete surfaces using digital image processing"
+authors: "Rajratna Kharat, Vikas Bavane"
+year: 2018
+journal: "Zenodo (deposited 2018)"
+doi: "10.5281/zenodo.1493930"
+zotero_key: "9SMJBZXV"
+zotero_status: verified
+last_verified: "2026-06-01"
 tags:
-  - literature_review
-  - digital_twin
-  - injection_molding
-  - ConceptualPositioning
-Method:
-  - Qualitative (Conceptual framework development)
-  - Descriptive analysis (Case studies from aerospace, automotive, and manufacturing industries)
-  - Integration of IoT and Cyber-Physical Systems (CPS);
-  - stochastic simulation;
-Argument:
-  - Digital Twin (DT) enables bidirectional real-time data flow between physical and virtual systems in injection molding, improving efficiency and predictive capabilities [1, 3, 6].
-  - DT integrates mold design, manufacturing, and production stages, reducing delays and optimizing quality [6.1, 6.2, 6.3].
-  - IoT and CPS are critical for implementing DT in smart manufacturing [11, 12].
-Contribution:
-  - Proposes a DT framework for holistic management of injection molding (design-to-production) [6].
-  - Identifies key technologies (IoT, sensors, Human Robotic Collaboration (HRC)) for DT implementation in mold making [6.2].
-  - Highlights practical applications (predictive maintenance, real-time optimization) in manufacturing [5.4, 5.5].
-Gap:
-  - "Practical Gap: Lack of real-time data integration in traditional injection molding [7]."
-  - "Methodological Gap: Absence of standardized models for DT in mold manufacturing [6.2]."
-  - "Empirical Gap: Limited case studies on DT in small-scale injection molding [29, 30]."
-Limitation:
-  - No Manual data acquisition and sensor implementation [7].
-  - Limited real-world validation of proposed HRC systems in mold making [6.2].
-  - Dependence on third-party platforms (e.g., GE, Siemens) for DT analytics [4, 5].
-  - No stochastic simulation nor prediction done
-Status: Read
-Rating: 3
+  - Verified
+  - Computer-Vision
+  - Crack-Detection
+  - Low-Quality-Venue
 ---
-
 ### **Obsidian YAML Draft**
 1. **tags**: digital_twin_injection_molding  
 2. **Research Method**:  

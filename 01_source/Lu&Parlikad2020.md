@@ -1,43 +1,20 @@
 ---
-CiteKey: "Lu2020"
-Year: 2020
+ref: ""
+citekey: "Lu&Parlikad2020"
+title: "Developing a Digital Twin at building and city levels: Case study of West Cambridge campus"
+authors: "Qiuchen Lu, Ajith Kumar Parlikad, Philip Woodall, Gishan Don Ranasinghe, Xiang Xie, Zhenglin Liang, Eirini Konstantinou, James Heaton, Jennifer Schooling"
+year: 2020
+journal: "Journal of Management in Engineering"
+doi: "10.1061/(ASCE)ME.1943-5479.0000763"
+zotero_key: "7ANHKRIU"
+zotero_status: verified
+last_verified: "2026-06-01"
 tags:
-  - literature_review
-  - "DigitalTwin"
-  - "BIM"
-  - "AssetManagement"
-Method:
-  - "Case study"
-  - "IoT-enabled wireless sensor network (WSN)"
-  - "QR code-based asset management network"
-  - "BIM-IoT-data mining integration"
-  - "Process mining (CUSUM for anomaly detection)"
-  - "4D visualization"
-Argument:
-- "Digital Twin (DT) is a dynamic digital replica of physical assets, processes, and systems"
-- "Current DT activities are at an early stage for buildings/infrastructure"
-- "Systematic architecture needed for effective O&M phase management"
-- "Multi-tier DT architecture enables hierarchical scaling (building to city levels)"
-- "Semantic interoperability is critical for Construction Digital Twin (CDT)"
-Contribution:
-  - "Theoretical: 5-layer DT system architecture (data acquisition to service layers)"
-  - "Technical: Developed ARIMAX model for predictive maintenance (RMSE 2.635)"
-  - "Practical: Validated in 3-story building case with 26,970 event logs"
-Gap:
-  - "Evidence Gap: Lack of empirical DT implementations with bidirectional data flows"
-  - "Integration Gap: Disconnection between design/construction/operation phases"
-  - "Knowledge Gap: Absence of standardized BIM-IoT semantic integration"
-Limitation:
-    - "Single-case validation (West Cambridge campus)"
-    - "No explicit DfQ/DfS integration despite process optimization focus"
-    - "Worker skill levels not modeled in predictive maintenance"
-    - "Limited discussion on cybersecurity for large-scale infrastructure"
-Critique_Tags:
-  - "(+)Full-Life-Cycle"
-  - "(!)Quality-Neglected"
-Rating: 6
+  - Verified
+  - Digital-Twin
+  - Smart-Campus
+  - Multi-Scale
 ---
-
 ### **Obsidian YAML Draft**
 
 ---

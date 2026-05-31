@@ -1,37 +1,20 @@
 ---
-CiteKey: "Min2019"
-Year: 2019
+ref: ""
+citekey: "MinQi2019"
+title: "Machine learning based digital twin framework for production optimization in petrochemical industry"
+authors: "Qingfei Min, Yangguang Lu, Zhiyong Liu, Chao Su, Bo Wang"
+year: 2019
+journal: "International Journal of Information Management"
+doi: "10.1016/j.ijinfomgt.2019.05.020"
+zotero_key: "WSF2RF5M"
+zotero_status: verified
+last_verified: "2026-06-01"
 tags:
-  - literature_review
-  - "Digital_Twin"
+  - Verified
+  - Digital-Twin
+  - Machine-Learning
   - Petrochemical
-  - machine_learning
-Method:
-  - "Systematic Literature Review"
-  - "Machine Learning Algorithm Development (Random Forest, AdaBoost, XGBoost, LightGBM)"
-  - "Case Study Analysis (Catalytic cracking unit in MAYA petrochemical factory)"
-  - "Quantitative Experimental Testing (Fitting Error, MAR, RMSE, VIR, PCC metrics)"
-Argument:
-  - "Digital twins with IoT and machine learning enable agile production control optimization in petrochemical industry"
-  - "Traditional production control methods rely on expert knowledge and static models"
-  - "High-dimensional time-series data in petrochemical production require specialized processing"
-  - "Digital twin practice loop enables continuous model refinement"
-Contribution:
-  - "Proposes a 5-step digital twin framework for petrochemical production control"
-  - "Develops solutions for petrochemical-specific data challenges (time lag, frequency mismatch)"
-  - "Provides comparative evaluation of machine learning algorithms (LightGBM outperformed others)"
-  - "Demonstrates 0.32-0.52% light oil yield improvement in real-world case"
-Gap:
-  - "Practical Gap - Addresses lack of real-time virtual-physical interaction methods [3.1]"
-  - "Empirical Gap - Solves time-series data alignment challenges in continuous process industries [3.3.1]"
-  - "Methodological Gap - Integrates machine learning with petrochemical IoT systems [4.2]"
-Limitation:
-  - "Focuses only on yield optimization without considering energy/economic trade-offs [6.1]"
-  - "Requires periodic manual model retraining rather than fully adaptive system [6.2]"
-  - "Single-industry focus (petrochemical) limits generalizability [6.3]"
-
 ---
-
 ### **Obsidian YAML Draft**  
 ---  
 1. **tags**: "Digital_Twin_in_Petrochemical"  
