@@ -10,6 +10,7 @@ zotero_status: verified
 created: "2026-05-25"
 tags:
   - Verified
+  - source: scholar
 ---
 
 # Uhlemann2017 — The Digital Twin: Realizing the Cyber-Physical Production System for Industry 4.0

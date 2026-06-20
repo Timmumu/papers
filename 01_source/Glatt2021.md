@@ -9,7 +9,7 @@ doi: "10.1016/j.jmsy.2020.04.015"
 zotero_key: "HK9GVDQT"
 zotero_status: verified
 last_verified: "2026-05-25"
-tags: ["Foundation", "Manufacturing"]
+tags: ["Foundation", "Manufacturing", "source: scholar"]
 ---
 
 # Glatt2021 — Modeling and Implementation of a Digital Twin of Material Flows Based on Physics Simulation

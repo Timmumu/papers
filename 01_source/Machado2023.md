@@ -14,6 +14,7 @@ tags:
   - Construction-4.0
   - Maturity-Model
   - Survey
+  - source: lens
 ---
 ### **Obsidian YAML Draft**
 ---  

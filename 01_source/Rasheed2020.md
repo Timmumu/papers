@@ -14,6 +14,7 @@ tags:
   - Digital-Twin
   - Modeling
   - Foundation
+  - source: scholar
 ---
 ### **Obsidian YAML Draft**
 

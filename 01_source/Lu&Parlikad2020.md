@@ -14,13 +14,13 @@ tags:
   - Digital-Twin
   - Smart-Campus
   - Multi-Scale
----
-### **Obsidian YAML Draft**
+  - source: lens
+---### **Obsidian YAML Draft**
 
 ---
 
 CiteKey: "Lu2020"
-tags: [literature_review, "DigitalTwin", "Construction"]
+tags: [literature_review, "DigitalTwin", "Construction", "source: lens"]
 Critique_Labels: 
    - "(+)Full-Life-Cycle"
    - "(!)Quality-Neglected"

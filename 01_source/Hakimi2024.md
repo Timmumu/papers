@@ -14,6 +14,7 @@ tags:
   - Digital-Twin
   - Facility-Management
   - Bibliometric-Review
+  - source: scholar
 ---
 
 # Hakimi2024 — Digital Twin-Enabled Smart Facility Management: A Bibliometric Review

@@ -15,6 +15,7 @@ tags:
   - Predictive-Maintenance
   - HVAC
   - Filename-Legacy
+  - source: scholar
 ---
 
 # Hosamo2022b — Digital Twin Predictive Maintenance Framework for AHUs

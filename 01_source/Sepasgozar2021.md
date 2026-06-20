@@ -10,6 +10,7 @@ zotero_status: verified
 created: "2026-05-25"
 tags:
   - Verified
+  - source: scholar
 ---
 
 # Sepasgozar2021 — Differentiating Digital Twin from Digital Shadow

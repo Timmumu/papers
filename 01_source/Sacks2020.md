@@ -10,6 +10,7 @@ zotero_status: verified
 created: "2026-05-25"
 tags:
   - Verified
+  - source: scholar
 ---
 
 # Sacks2020 — Construction with Digital Twin Information Systems

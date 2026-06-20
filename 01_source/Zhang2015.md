@@ -10,6 +10,7 @@ zotero_status: verified
 created: "2026-05-25"
 tags:
   - Verified
+  - source: scholar
 ---
 
 # Zhang2015 — Ontology-Based Semantic Modeling of Construction Safety Knowledge for JHA

@@ -14,6 +14,7 @@ tags:
   - Robotics
   - BIM
   - As-Built
+  - source: scholar
 ---
 
 # Spinner2024 — Online As-Built BIM Update for Robotic Monitoring in Construction Sites

@@ -18,6 +18,7 @@ tags:
   - Workforce-Monitoring
   - Deep-Learning
   - Verified
+  - source: scholar
 ---
 
 # Kulinan2024
@@ -42,14 +43,14 @@ tags:
 - ① Combining **CV-based worker localization** with **BIM-anchored hazard zones** enables spatially-aware risk reasoning unavailable to either modality alone.
 - ② Pose-estimation and action-recognition models can flag unsafe behaviours (improper PPE, dangerous postures, proximity to moving equipment) but require curated construction-domain datasets.
 - ③ End-to-end calibration between as-built BIM and on-site cameras is the dominant integration bottleneck; most reviewed systems assume static rigid registration.
-- ④ Few works expose model confidence to downstream safety logic — a UQ gap relevant to [LR_cc.md Sec 4.3](../MD/LR_cc.md).
+- ④ Few works expose model confidence to downstream safety logic — a UQ gap relevant to [LR_cc.md Sec 4.3](LR_cc.md).
 
 ## Method
 - Narrative + structured literature review across 2018–2023.
 - Taxonomy along three axes: sensing modality, DL architecture, BIM coupling.
 
 ## Relevance to Cognitive DT (LR_cc.md Table 2 Perception cluster)
-- Directly supports the **Perception, registration & computer vision (n=12)** cluster in [Table 2](../MD/LR_cc.md).
+- Directly supports the **Perception, registration & computer vision (n=12)** cluster in [Table 2](LR_cc.md).
 - Confirms the LR_cc.md observation that DT systems remain unidirectional and deterministic (Sec 4.3).
 
 ## Limitations Noted

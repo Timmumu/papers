@@ -10,6 +10,7 @@ zotero_status: verified
 created: "2026-05-25"
 tags:
   - Verified
+  - source: scholar
 ---
 
 # Stargel2012 — The Digital Twin Paradigm for Future NASA and U.S. Air Force Vehicles

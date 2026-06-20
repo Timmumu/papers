@@ -10,6 +10,7 @@ zotero_status: verified
 created: "2026-05-25"
 tags:
   - Verified
+  - source: scholar
 ---
 
 > 鈩?NOTE: citekey "Degani2024" —Zotero record is **Spinner & Degani (2024), "Online as-built BIM update for robotic monitoring"**, DOI 10.1007/s10846-024-01077-5. No PDF attached.

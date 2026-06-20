@@ -14,13 +14,13 @@ tags:
   - Digital-Twin
   - Anomaly-Detection
   - OandM
----
-### **Obsidian YAML Draft**
+  - source: scholar
+---### **Obsidian YAML Draft**
 
 ---
 
 CiteKey: "Lu2020"
-tags: [literature_review, "DigitalTwin"]
+tags: [literature_review, "DigitalTwin", "source: scholar"]
 Critique_Labels: 
    - "(+)Full-Life-Cycle"
    - "(!)Quality-Neglected"

@@ -15,8 +15,8 @@ tags:
   - Foundation
   - Preprint
   - Front-Running-Simulation
+  - source: scholar
 ---
-
 # Grieves2026 — Front Running Simulation: A DT Framework for Real-Time Replication, Prediction, and Goal Navigation
 
 | Field | Value |
@@ -66,7 +66,7 @@ Lifecycle stage: cross-lifecycle (operations/production analogue). In LR_cc.md F
 ## Extended Notes (legacy commentary, preserved verbatim)
 
 CiteKey: "Grieves2026"
-tags: [literature_review, "Predictive-Manufacturing"]
+tags: [literature_review, "Predictive-Manufacturing", "source: scholar"]
 Critique_Labels: 
    - "(+)Full-Life-Cycle"
    - "(+)Design-for-Quality"

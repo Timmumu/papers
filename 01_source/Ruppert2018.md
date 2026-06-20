@@ -15,6 +15,7 @@ tags:
   - RTLS
   - Sensor-Fusion
   - Filename-Legacy
+  - source: scholar
 ---
 
 # Ruppert2020 — Integration of Real-Time Locating Systems into Digital Twins

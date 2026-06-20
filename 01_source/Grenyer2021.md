@@ -17,6 +17,7 @@ tags:
   - Engineering-Systems
   - Systematic-Review
   - Verified
+  - source: scholar
 ---
 
 # Grenyer2021
@@ -48,8 +49,8 @@ tags:
 - Three-axis classification (representation / propagation / aggregation).
 
 ## Relevance to Cognitive DT (LR_cc.md Sec 4.3 + 6.2)
-- Cited in [LR_cc.md Sec 4.3](../MD/LR_cc.md) as the second of two studies that explicitly model uncertainty in a DT-relevant pipeline (paired with [97] [[Abdar2021]]).
-- Cited again in [Sec 6.2](../MD/LR_cc.md) as evidence that mature UQ methodologies exist in adjacent engineering disciplines and can be adapted to construction DT.
+- Cited in [LR_cc.md Sec 4.3](LR_cc.md) as the second of two studies that explicitly model uncertainty in a DT-relevant pipeline (paired with [97] [[Abdar2021]]).
+- Cited again in [Sec 6.2](LR_cc.md) as evidence that mature UQ methodologies exist in adjacent engineering disciplines and can be adapted to construction DT.
 
 ## Limitations Noted
 - AECO / construction-specific case studies are absent.

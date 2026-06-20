@@ -14,6 +14,7 @@ tags:
   - Digital-Twin
   - Aerospace
   - Foundation
+  - source: scholar
 ---
 ### **1. Tags**  
 `aerospace-digital-twin`  

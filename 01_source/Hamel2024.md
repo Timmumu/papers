@@ -8,7 +8,7 @@ journal: "arXiv preprint arXiv:2411.01299"
 zotero_key: "4B9RB46D"
 zotero_status: verified
 last_verified: "2026-05-25"
-tags: ["Manufacturing", "Verified"]
+tags: ["Manufacturing", "Verified", "source: scholar"]
 ---
 
 # Hamel2024 —PMI-DT: Digital Twins and Machine Learning for Predictive Modeling and Inspection in Manufacturing

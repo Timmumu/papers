@@ -14,9 +14,9 @@ tags:
   - Digital-Twin
   - Blockchain
   - Construction-4.0
----
-CiteKey: "Teisserenc2021"
-tags: [literature_review, "blockchain", "digital_twins", "construction_industry"]
+  - source: lens
+---CiteKey: "Teisserenc2021"
+tags: [literature_review, "blockchain", "digital_twins", "construction_industry", "source: lens"]
 Critique_Labels: 
    - "(+)Full-Life-Cycle"
    - "(!)Implementation-Gap"

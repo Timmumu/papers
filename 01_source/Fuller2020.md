@@ -14,6 +14,7 @@ tags:
   - Digital-Twin
   - Foundation
   - Survey
+  - source: scholar
 ---
 ### **Obsidian YAML Draft**
 

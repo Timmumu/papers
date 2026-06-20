@@ -15,6 +15,7 @@ tags:
   - Vision-Language
   - Cross-Domain
   - CLIP
+  - source: lens
 ---
 
 > 📝 Renamed from `OpenAI2021` on 2026-06-01 and imported into Zotero (collection: NLP, key `WMDJY52E`). A pre-existing conference-paper stub (`G6GCKPSX`) also exists in the library and may be merged manually.

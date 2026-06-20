@@ -15,6 +15,7 @@ tags:
   - Foundation
   - Manufacturing
   - Review
+  - source: scholar
 ---
 ### **Obsidian YAML Draft**
 

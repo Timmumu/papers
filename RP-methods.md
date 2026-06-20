@@ -157,6 +157,101 @@ Stop the loop when the **maximum** absolute change across any design parameter i
 - **Pareto position** = on a 2-D plot of (defect-density vs. cost) or (carbon vs. cost), the **Pareto frontier** is the set of designs that cannot be improved on one axis without harming the other. Being *closer* to the frontier = a better trade-off.
 - **Wall-clock** = real elapsed time (literally what a clock on the wall would show), not CPU time. Used so the comparison is fair to the user.
 
+Read [](file:///h%3A/phd/6.pjt/LR1/papers/RP.md#1-1), lines 1 to 120
+
+Here is a concrete, ground-level explanation of what O3 actually does, parameter by parameter.
+
+---
+
+## O3 in plain terms: what moves, and what it is heading towards
+
+### The starting point: a parametric BIM model
+
+The loop does not operate on a fixed BIM model. It operates on a **parametric design** — meaning certain design decisions are represented as adjustable numbers rather than locked values. Examples drawn from your case studies:
+
+| Parameter | What it controls | Why it affects DfX |
+|---|---|---|
+| `slab_edge_setback` (mm) | How close the slab edge is to the perimeter | Edge distance controls guardrail anchor options |
+| `floor_opening_area` (m²) | Size of penetrations for MEP / stairs | Larger openings → more fall risk, higher temp-work cost |
+| `facade_fixing_height` (m) | Height at which cladding brackets are fixed | Determines whether the fixing can be reached from a mobile scaffold or needs bespoke access |
+| `column_grid_x / y` (m) | Structural grid spacing | Drives formwork complexity and temporary propping demand |
+| `material_spec_index` | Index into a discrete list of wall/floor assemblies | Each assembly has a known embodied-carbon value from EPD and a different NCR history |
+| `MEP_corridor_width` (mm) | Clear width for maintenance access | Below a threshold → routine maintenance becomes a confined-space entry — incident risk jumps |
+| `floor_count` | Number of storeys (if site constraints allow) | Higher = more working-at-height exposure per m² |
+
+These are your **state vector** — the full list of values the loop is allowed to adjust.
+
+---
+
+### What the loop does on each iteration
+
+**Step 1 — Propose a candidate design.**  
+The orchestrator holds the current parameter vector and proposes a small **perturbation**: nudge `slab_edge_setback` +50 mm, or swap `material_spec_index` from assembly-3 to assembly-7, or widen `MEP_corridor_width` by 80 mm. The perturbation is gradient-free (random or Bayesian-guided — it does not require a derivative) because you are treating the GNN predictor as a black box.
+
+**Step 2 — Query O2 for predictions.**  
+The perturbed design is serialised back into an IFC-compatible representation and sent to the O2 endpoint. O2 returns, for every affected BIM element:
+- **Defect head**: probability of a construction defect (e.g., delamination, cracking, non-compliance with tolerance)
+- **Safety head**: probability that the element or activity around it generates a recordable incident
+- **Sustainability head**: predicted embodied carbon (kgCO₂e) for that element choice
+
+These three are returned as **conformal intervals**, not point estimates — so the loop knows how uncertain each prediction is.
+
+**Step 3 — Compute L(state).**  
+$$
+L(\text{state}) = \sum_{\text{elements}} w_\text{safety} \cdot \hat{p}_\text{incident} + w_\text{defect} \cdot \hat{p}_\text{defect} + w_\text{carbon} \cdot \hat{C}_\text{embodied}
+$$
+This is a weighted sum of all three heads across the whole model — your single scalar "how bad is this design" number. The weights encode the relative priority of safety vs. quality vs. carbon. Convergence requires this number to **decrease monotonically** — each accepted perturbation must reduce L.
+
+**Step 4 — Accept or reject.**  
+If the perturbed design gives $L(t+1) \leq L(t)$ — and the conformal interval of the improvement does not straddle zero (i.e., O2 is confident the change is real, not noise) — accept the perturbation and update the parameter vector.
+
+**Step 5 — Check termination.**  
+Compute Chebyshev distance between the last two accepted parameter vectors:
+$$
+d_\infty = \max_i |p_i(t) - p_i(t-1)|
+$$
+If this is below threshold $\varepsilon$ for three consecutive iterations, **stop** — the design has settled. Nothing is moving meaningfully any more.
+
+---
+
+### What convergence means in construction terms
+
+When the loop terminates, you have a design where:
+
+1. **Predicted safety incident rate** (incidents per 100,000 man-hours) has been driven as low as the predictor believes possible given the spatial and structural constraints — ideally to or below the regulatory baseline your RP targets.
+2. **Predicted defect density** (NCR-equivalent events per 100 elements) is minimised.
+3. **Embodied carbon** per element is at or near the Pareto frontier — you cannot reduce it further without either increasing defect risk or increasing cost.
+4. **No design parameter is still wobbling** — you are not in a state where changing the column grid would still yield meaningful improvement. The design is stable.
+
+The **Pareto position** is the evaluation metric: plot the converged design on a 2-D chart of (safety incident rate × cost, or defect density × carbon). A design closer to the Pareto frontier means no other reachable design is strictly better on all objectives simultaneously.
+
+---
+
+### What the loop cannot change — the constraints
+
+The perturbation is not unconstrained. Hard constraints are enforced throughout:
+
+- **Regulatory minima**: slab edge setback cannot go below the statutory guardrail distance
+- **Programme constraints**: structural grid cannot change after the piling contract is awarded (for case-study 2 onwards)
+- **Budget envelope**: material assembly swaps must stay within ±X% of the original cost plan
+- **Structural validity**: geometry changes must pass a simplified structural check before being sent to O2 (or O2's confidence interval will widen to the point of rejection anyway)
+
+---
+
+### The concrete improvement O3 claims over current practice
+
+Today, a DfS review is a one-shot human judgment at a gate meeting. O3 replaces this with:
+
+| Current practice | O3 |
+|---|---|
+| One-off review at design freeze | Thousands of iterations before freeze |
+| Expert intuition ("this edge detail looks risky") | Quantified prediction intervals on every element |
+| No feedback on whether a proposed fix actually helps | Explicit L-decrease accepted/rejected per change |
+| No cross-phase scope (design team does not see construction incident rates) | All three heads (defect/safety/carbon) are evaluated simultaneously |
+| No record of what was tried and discarded | BigQuery iteration store logs every candidate and why it was rejected |
+
+The logged rejection history is also what feeds O4 — every discarded perturbation is a training example for the next version of O2.
+
 ---
 
 ## 5. O4 — Coupling (the "system gets smarter from its own use")

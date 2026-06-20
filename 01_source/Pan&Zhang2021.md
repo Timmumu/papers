@@ -14,13 +14,13 @@ tags:
   - Digital-Twin
   - BIM
   - Project-Management
----
-### **Obsidian YAML Draft**  
+  - source: scholar
+---### **Obsidian YAML Draft**  
 
 ---
 
 CiteKey: "Pan2021"  
-tags: [literature_review, "DigitalTwin", "Construction"]  
+tags: [literature_review, "DigitalTwin", "Construction", "source: scholar"]  
 Critique_Labels:   
    - "(+)Full-Life-Cycle"  
    - "(!)Quality-Neglected"  

@@ -9,7 +9,7 @@ doi: "10.1016/j.aei.2018.04.011"
 zotero_key: "H98THTQ4"
 zotero_status: verified
 last_verified: "2026-05-25"
-tags: ["Semantic", "BIM-to-DT", "Verified"]
+tags: ["Semantic", "BIM-to-DT", "Verified", "source: scholar"]
 ---
 
 # Theiler2018 — IFC Monitor: An IFC Schema Extension for SHM Systems

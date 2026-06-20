@@ -9,7 +9,7 @@ doi: "10.1016/j.autcon.2021.103838"
 zotero_key: "LD8ZIQKW"
 zotero_status: verified
 last_verified: "2026-05-25"
-tags: ["BIM-to-DT", "Lifecycle", "Foundation", "Review"]
+tags: ["BIM-to-DT", "Lifecycle", "Foundation", "Review", "source: scholar"]
 ---
 
 # Jiang2021 — Digital twin and its implementations in the civil engineering sector

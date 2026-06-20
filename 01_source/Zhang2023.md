@@ -1,5 +1,5 @@
 ---
-ref: "[83]"
+ref: "[78]"
 citekey: "Zhang2023"
 title: "Application and enabling digital twin technologies in the operation and maintenance stage of the AEC industry: A literature review"
 authors: "A. Zhang, J. Yang, F. Wang"
@@ -15,13 +15,14 @@ tags:
   - AEC
   - Operation-Maintenance
   - Literature-Review
+  - source: scholar
 ---
 
 # Zhang2023 — Enabling DT Technologies in the O&M Stage of the AEC Industry
 
 | Field | Value |
 |-------|-------|
-| **Ref** | [83] |
+| **Ref** | [78] |
 | **Authors** | A. Zhang, J. Yang, F. Wang |
 | **Year / Venue** | 2023 / Journal of Building Engineering 80, 107859 |
 | **DOI** | [10.1016/j.jobe.2023.107859](https://doi.org/10.1016/j.jobe.2023.107859) |

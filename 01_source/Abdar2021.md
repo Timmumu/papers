@@ -18,6 +18,7 @@ tags:
   - Ensembles
   - Review
   - Verified
+  - source: scholar
 ---
 
 # Abdar2021
@@ -49,8 +50,8 @@ tags:
 - Taxonomic organization by UQ technique and by application domain.
 
 ## Relevance to Cognitive DT (LR_cc.md Sec 4.3 + 6.2)
-- Cited in [LR_cc.md Sec 4.3](../MD/LR_cc.md) as one of the only two studies (with [98] [[Grenyer2021]]) that explicitly model uncertainty in a DT pipeline — directly evidencing the 2.9% UQ-adoption gap claim.
-- Cited again in [Sec 6.2](../MD/LR_cc.md) recommending Bayesian DL / evidential nets / conformal prediction as mature methods to be **adapted to construction contexts**.
+- Cited in [LR_cc.md Sec 4.3](LR_cc.md) as one of the only two studies (with [98] [[Grenyer2021]]) that explicitly model uncertainty in a DT pipeline — directly evidencing the 2.9% UQ-adoption gap claim.
+- Cited again in [Sec 6.2](LR_cc.md) recommending Bayesian DL / evidential nets / conformal prediction as mature methods to be **adapted to construction contexts**.
 
 ## Limitations Noted
 - AECO / construction applications are absent from the surveyed domains — confirming the LR_cc.md gap.

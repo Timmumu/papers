@@ -10,6 +10,7 @@ zotero_status: verified
 created: "2026-05-25"
 tags:
   - Verified
+  - source: scholar
 ---
 
 # Sepasgozar2020 — Digital Twin and Web-Based Virtual Gaming for Online Construction Education

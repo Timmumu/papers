@@ -14,12 +14,12 @@ tags:
   - Digital-Twin
   - Safety
   - Prefabrication
----
-### **Obsidian YAML Draft**  
+  - source: scholar
+---### **Obsidian YAML Draft**  
 
 ---
 CiteKey: "Liu2021"  
-tags: [literature_review, "DigitalTwin", "ConstructionSafety"]  
+tags: [literature_review, "DigitalTwin", "ConstructionSafety", "source: scholar"]  
 Critique_Labels:   
    - "(+)Design-for-Safety"  
    - "(!)Lifecycle-Fragmented"  

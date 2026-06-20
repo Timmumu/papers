@@ -10,6 +10,7 @@ zotero_status: verified
 created: "2026-05-25"
 tags:
   - Verified
+  - source: scholar
 ---
 
 # Harty2013 — Implementing 'Site BIM': a case study of ICT innovation on a large hospital project

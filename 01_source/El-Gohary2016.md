@@ -1,5 +1,5 @@
 ﻿---
-ref: "[63]"
+ref: "[52]"
 citekey: "El-Gohary2016"
 title: "Semantic NLP-based information extraction from construction regulatory documents for automated compliance checking"
 authors: "J. Zhang and N. M. El-Gohary"
@@ -11,13 +11,14 @@ zotero_status: verified
 created: "2026-05-25"
 tags:
   - Verified
+  - source: scholar
 ---
 
 # El-Gohary2016 — Semantic NLP for Automated Compliance Checking
 
 | Field | Value |
 |-------|-------|
-| **Ref** | [63] |
+| **Ref** | [52] |
 | **Authors** | J. Zhang, N. M. El-Gohary |
 | **Year / Venue** | 2016 / J. Computing in Civil Engineering 30(2):04015014 |
 | **DOI** | [10.1061/(ASCE)CP.1943-5487.0000346](https://doi.org/10.1061/(ASCE)CP.1943-5487.0000346) |

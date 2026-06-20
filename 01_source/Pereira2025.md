@@ -20,6 +20,7 @@ tags:
   - Computer-Vision
   - PRISMA
   - Verified
+  - source: scholar
 ---
 
 # Pereira2025
@@ -52,7 +53,7 @@ tags:
 - Inclusion limited to peer-reviewed studies investigating BIM-integrated or BIM-adjacent real-time fall monitoring.
 
 ## Relevance to Cognitive DT (LR_cc.md Sec 3.2)
-- Provides empirical support for the **Perception, registration & computer vision** thematic cluster (n=12) in [Table 2](../MD/LR_cc.md).
+- Provides empirical support for the **Perception, registration & computer vision** thematic cluster (n=12) in [Table 2](LR_cc.md).
 - Documents the Level-1/Level-2 maturity gap: most reviewed systems *detect & visualize* falls but do not autonomously revise safety rules → reinforces LR_cc.md's argument that current DT-for-Safety stays at ML2.
 
 ## Limitations Noted

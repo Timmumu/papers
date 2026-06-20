@@ -14,6 +14,7 @@ tags:
   - Computer-Vision
   - Crack-Detection
   - Low-Quality-Venue
+  - source: lens
 ---
 ### **Obsidian YAML Draft**
 1. **tags**: digital_twin_injection_molding  

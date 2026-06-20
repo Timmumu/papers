@@ -15,6 +15,7 @@ tags:
   - Healthcare
   - Smart-Environment
   - Review
+  - source: lens
 ---
 ### **Obsidian YAML Draft**  
 ---  

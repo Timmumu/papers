@@ -18,6 +18,7 @@ tags:
   - Lifecycle
   - Governance
   - Industry-Survey
+  - source: scholar
 ---
 
 # Bolpagni2025
@@ -45,8 +46,8 @@ tags:
 - ④ Industry insights converge on the lifecycle-continuity gap that the LR_cc.md framework's persistent priors mechanism addresses.
 
 ## Relevance to Cognitive DT (LR_cc.md Table 2 + Sec 5.4)
-- Cited in [Table 2 Lifecycle cluster (n=6)](../MD/LR_cc.md) alongside [18] [[Broo2022]], [32] [[Sacks2020]], [43] [[Harty2013]], [44] [[Matthews2021]], [78] [[Zhang2023]] — i.e., **lifecycle continuity & governance**.
-- Cited again in [Sec 5.4](../MD/LR_cc.md) to support the *persistent priors* mechanism that carries construction-phase models into O&M.
+- Cited in [Table 2 Lifecycle cluster (n=6)](LR_cc.md) alongside [18] [[Broo2022]], [32] [[Sacks2020]], [43] [[Harty2013]], [44] [[Matthews2021]], [78] [[Zhang2023]] — i.e., **lifecycle continuity & governance**.
+- Cited again in [Sec 5.4](LR_cc.md) to support the *persistent priors* mechanism that carries construction-phase models into O&M.
 
 ## Limitations Noted
 - Qualitative; sample limited to a small group of UK / EU practitioners.

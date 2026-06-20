@@ -16,6 +16,7 @@ tags:
   - RTLS
   - IoT
   - Design-for-Safety
+  - source: scholar
 ---
 
 # Ruppert2020

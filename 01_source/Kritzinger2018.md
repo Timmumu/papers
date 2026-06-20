@@ -14,13 +14,13 @@ tags:
   - Digital-Twin
   - Foundation
   - Classification
----
-### **Obsidian YAML Draft**
+  - source: scholar
+---### **Obsidian YAML Draft**
 
 ---
 
 CiteKey: "Kritzinger2018"
-tags: [literature_review, "DigitalTwin"]
+tags: [literature_review, "DigitalTwin", "source: scholar"]
 Critique_Labels: 
    - "(+)Seminal-Framework"
    - "(!)Lifecycle-Fragmented"

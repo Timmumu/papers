@@ -10,6 +10,7 @@ zotero_status: verified
 created: "2026-05-25"
 tags:
   - Verified
+  - source: scholar
 ---
 
 # Martinez-Aires2018 — Building Information Modeling and Safety Management: A Systematic Review
