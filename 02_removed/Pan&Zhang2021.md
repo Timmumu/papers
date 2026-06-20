@@ -7,6 +7,7 @@ year: 2021
 journal: "Automation in Construction"
 doi: "10.1016/j.autcon.2021.103564"
 zotero_key: "YGJSXUXV"
+removal_reason: Duplicate of [19] Zhang2021 (same Zotero key)
 zotero_status: verified
 last_verified: "2026-06-01"
 tags:

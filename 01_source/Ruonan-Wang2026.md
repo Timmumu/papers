@@ -7,7 +7,7 @@ year: 2026
 journal: "Journal of Building Engineering"
 doi: "10.1016/j.jobe.2026.115416"
 zotero_key: "J4DTPCK9"
-zotero_status: title-only
+zotero_status: abstract-grounded
 last_verified: "2026-06-15"
 tags: ["Digital-Twin", "ML", "Maintenance", "Predictive", "Unsorted", "source: lens", "identification: databases"]
 ---
@@ -24,7 +24,7 @@ tags: ["Digital-Twin", "ML", "Maintenance", "Predictive", "Unsorted", "source: l
 
 ## Abstract ^sec-abstract
 
-*Abstract not available from database export — to be completed at full-text retrieval.*
+> To address the inefficiency and sustainability limitations of conventional building operation models, this study proposes an intelligent predictive maintenance framework for HVAC systems in commercial complexes, integrating digital twin technology and machine learning. The system is built on a four-layer architecture comprising physical entities, a virtual model, data connectivity, and service applications. A hybrid modeling approach establishes a high-fidelity digital twin, while an ensemble learning strategy combining CNN, LSTM, and SVM is employed for fault diagnosis. Maintenance decisions are optimized through deep reinforcement learning with explicitly calibrated reward functions. Comprehensive data preprocessing and a dual-validated labeling protocol ensure training quality across six fault categories. Empirical validation demonstrates a fault detection accuracy of 96.3 %, a 32.7 % reduction in maintenance costs, a 45.3 % extension in mean time between failures, and a decrease in annual energy intensity from 152.3 to 138.7 kWh/m2. The edge-cloud architecture maintains an 87 ms latency, supporting real-time responsiveness. Economic analysis indicates a 2.3-year payback period, while the achieved energy savings and CO2 reduction align with ASHRAE, ISO 52120, and GHG Protocol standards. Although validated in a single-building subtropical context, this research provides a transferable, data-driven framework to enhance operational efficiency, cost-effectiveness, and environmental performance in intelligent buildings, contributing directly to carbon-neutrality objectives in the built environment.
 
 ## Introduction & Background ^sec-intro
 
@@ -32,11 +32,12 @@ tags: ["Digital-Twin", "ML", "Maintenance", "Predictive", "Unsorted", "source: l
 
 ## Method ^sec-method
 
-*Pending full text.* Title indicates a data-driven predictive-maintenance framework combining a digital twin with machine-learning models applied to HVAC equipment.
+**Key techniques:** demonstrates, validation, reinforcement learning, validated, digital twin, proposes Title indicates a data-driven predictive-maintenance framework combining a digital twin with machine-learning models applied to HVAC equipment.
 
 ## Key Findings ^sec-results
 
-*Pending full text — not asserted to avoid fabrication.*
+1. 32.7 % reduction
+2. 45.3 % extension in mean time between failures, and a decrease
 
 ## Discussion & Implications ^sec-discussion
 
@@ -45,5 +46,5 @@ On-topic for this review (**DT + ML + predictive maintenance + buildings/HVAC**)
 ## Notes ^sec-notes
 
 - **Screening:** Retained — DT + ML + predictive maintenance + buildings (strong fit).
-- **Status:** `title-only` — abstract not in Lens export; Elsevier full text paywalled (no OA found). **Action: obtain full text** (Zotero key J4DTPCK9; library has no PDF).
+- **Status:** `abstract-grounded` — abstract retrieved from EndNote. (key J4DTPCK9).
 - **Caution:** Do not cite specific findings until full text is reviewed.

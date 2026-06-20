@@ -40,6 +40,20 @@ DTSRM provides real-time integrated monitoring of construction equipment and mat
 
 ## Discussion & Implications ^sec-discussion
 
+A DT-based site resource monitoring system integrating ontology, IoT, and ML. Directly relevant to O2's construction-phase prediction and the semantic-interoperability layer.
+
+## RP Alignment (Self-Improving CDT for DfX) ^sec-rp-alignment
+
+Faris-Elghaish2025's DTSRM system is a concrete instantiation of several RP architectural patterns at the construction phase.
+
+**O1 relevance:** The use of ontology for resource monitoring data integration prefigures O1's ontology-aligned DfX attribute schema. DTSRM's ontology acts as the semantic interoperability layer — the same role that the Esmaeili/Hallowell schema plays in O1.
+
+**O2 relevance:** The ML algorithms for resource prediction are an analogue of O2's forward predictor, but at the resource level rather than the element level. O2 extends this from resource optimization to defect/safety/sustainability prediction over IFC elements.
+
+**O3 relevance:** The real-time IoT data collection and DT integration demonstrate the bidirectional data flow that O3's convergence loop requires during construction-phase operation.
+
+**Strategic positioning:** Cite as evidence that DT+ontology+IoT+ML integration is technically mature at the construction phase; position O2/O3 as extending this pattern to cross-phase, element-level DfX prediction with formal convergence.
+
 **Highly relevant** — a DT + IoT + ML + ontology system for construction resource monitoring. Directly informs the DT-implementation and resource-optimisation strands.
 
 ## Notes ^sec-notes

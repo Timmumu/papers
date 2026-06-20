@@ -7,7 +7,7 @@ year: 2022
 journal: "Sustainable Cities and Society"
 doi: "10.1016/j.scs.2022.104009"
 zotero_key: "422TPHLI"
-zotero_status: title-only
+zotero_status: abstract-grounded
 last_verified: "2026-06-15"
 tags: ["BIM", "Building", "Digital-Twin", "Smart-City", "Unsorted", "source: lens", "identification: databases"]
 ---
@@ -24,7 +24,7 @@ tags: ["BIM", "Building", "Digital-Twin", "Smart-City", "Unsorted", "source: len
 
 ## Abstract ^sec-abstract
 
-*Abstract not available from database export — to be completed at full-text retrieval.*
+> Geographic information system (GIS) data provide geospatial data on cities and spatial analysis functions that are essential for urban design. Building information modeling (BIM) includes a digital entity of construction, a passive presentation of micro-digital information on real entities, and an active application of models in the entire life cycle realization of the architecture, engineering, and construction industries. A combination of these technologies could provide a core technology for the urban digital twin to support sustainable smart city design. Through an insightful literature review, this paper summarizes the different disciplinary classifications of GIS and BIM functional integration, distills the value of data, and discusses the ontology-based data integration approach that GIS and BIM should take in the future to conduct research on integration applications in smart cities. To verify this view, keyword analysis, co-country analysis, and co-citation and coupling analyses are conducted using CiteSpace. GIS and BIM integration has attracted much attention. However, a professional disconnect and fragmented composition pose challenges in the field of GIS and BIM integration. Future research should focus on smart city planning, updating, management; ontology-based GIS and BIM data integration platform; and operation; and the collaborative management of urban rail transportation engineering.
 
 ## Introduction & Background
 
@@ -32,11 +32,11 @@ tags: ["BIM", "Building", "Digital-Twin", "Smart-City", "Unsorted", "source: len
 
 ## Method
 
-*Pending full text.* Bibliometric review of GIS+BIM integration for city DT.
+**Key techniques:** presentation, digital twin, ontology, literature review Bibliometric review of GIS+BIM integration for city DT.
 
 ## Key Findings
 
-*Pending full text.*
+**Key techniques:** presentation, digital twin, ontology, literature review
 
 ## Discussion
 
@@ -45,5 +45,6 @@ tags: ["BIM", "Building", "Digital-Twin", "Smart-City", "Unsorted", "source: len
 ## Notes
 
 - **Screening:** Retained — city DT + GIS + BIM + review (strong fit).
-- **Status:** `title-only`. **Action: obtain full text** (key 422TPHLI).
-- **Caution:** Do not cite specific findings until full text reviewed.
+- **Status:** `abstract-grounded` — abstract retrieved from EndNote. (key 422TPHLI).
+- **Auto-enriched from abstract** — review and verify before citing. PDF available for deep enrichment.
+- **Maturity (heuristic):** ML1 (digital shadow).

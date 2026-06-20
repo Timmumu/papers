@@ -7,7 +7,7 @@ year: 2025
 journal: "Journal of Building Engineering"
 doi: "10.1016/j.jobe.2025.112126"
 zotero_key: "CNTT6QFM"
-zotero_status: title-only
+zotero_status: abstract-grounded
 last_verified: "2026-06-15"
 tags: ["Digital-Twin", "Safety", "Unsorted", "source: lens", "identification: databases"]
 ---
@@ -24,19 +24,19 @@ tags: ["Digital-Twin", "Safety", "Unsorted", "source: lens", "identification: da
 
 ## Abstract ^sec-abstract
 
-*Abstract not available from database export — to be completed at full-text retrieval.*
+> This paper introduces a novel method for assessing the safety of post-construction large-span spatial structures. Initially, a brief overview is provided of the operating principles and measurement equipment associated with airborne Light Detection and Ranging (LiDAR) technology. Subsequently, a methodology for extracting one-dimensional geometric models from point cloud data is described. The proposed safety analysis method is then applied to the retractable roof of the Shenzhen Gymnasium, with a comparison made between two approaches: the LiDAR-based method and the consistent imperfection mode method, in terms of their consideration of the impact of initial geometric imperfections on structural mechanical properties. The research findings reveal that the one-dimensional geometric models extracted from airborne LiDAR measurements can accurately reflect the real-world structural imperfections and can be regarded as geometric digital twins of the structures. In comparison with the consistent imperfection mode method, finite element models based on airborne LiDAR measurement technology offer a superior representation of the real performance of the structures.
 
 ## Introduction & Background ^sec-intro
 
-*Abstract unavailable from the Lens export and full text not retrievable; inferred from title/venue only — confirm at full-text review.* The paper presents **digital twin safety analysis of large-span spatial structure based on airborne LiDAR** (*Journal of Building Engineering*, 2025).
+*Abstract retrieved from EndNote — see Abstract section above. Full-text retrieval pending.* The paper presents **digital twin safety analysis of large-span spatial structure based on airborne LiDAR** (*Journal of Building Engineering*, 2025).
 
 ## Method ^sec-method
 
-*Pending full text.* Title indicates DT + airborne LiDAR point-cloud data for safety analysis of large-span spatial structures.
+**Key techniques:** proposed, introduces, digital twin, finite element, point cloud, applied to Title indicates DT + airborne LiDAR point-cloud data for safety analysis of large-span spatial structures.
 
 ## Key Findings ^sec-results
 
-*Pending full text — not asserted to avoid fabrication.*
+1. the one-dimensional geometric models extracted from airborne LiDAR measurements can accurately reflect the real-world structural imperfections and can be regarded as geometric digital twins of the str
 
 ## Discussion & Implications ^sec-discussion
 
@@ -45,5 +45,6 @@ tags: ["Digital-Twin", "Safety", "Unsorted", "source: lens", "identification: da
 ## Notes ^sec-notes
 
 - **Screening:** Retained — DT + airborne LiDAR + structural safety (strong fit).
-- **Status:** `title-only` — abstract absent. **Action: obtain full text** (key CNTT6QFM).
-- **Caution:** Do not cite specific findings until full text reviewed.
+- **Status:** `abstract-grounded` — abstract retrieved from EndNote. (key CNTT6QFM).
+- **Auto-enriched from abstract** — review and verify before citing. PDF available for deep enrichment.
+- **Maturity (heuristic):** ML1 (digital shadow).

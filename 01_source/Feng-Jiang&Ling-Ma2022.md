@@ -7,7 +7,7 @@ year: 2022
 journal: "Sustainable Cities and Society"
 doi: "10.1016/j.scs.2021.103645"
 zotero_key: "4E5M5F99"
-zotero_status: title-only
+zotero_status: abstract-grounded
 last_verified: "2026-06-15"
 tags: ["Digital-Twin", "Road", "Unsorted", "Urban", "source: lens", "identification: databases"]
 ---
@@ -24,7 +24,7 @@ tags: ["Digital-Twin", "Road", "Unsorted", "Urban", "source: lens", "identificat
 
 ## Abstract ^sec-abstract
 
-*Abstract not available from database export — to be completed at full-text retrieval.*
+> Sustainable urban road planning should endeavor to meet current and future traffic-related demands and achieve financial, environmental, and social benefits, which is a complex and interdisciplinary issue that needs to consider various factors and data. Multi-criteria decision making (MCDM) can provide reasonable solutions, and some existing studies integrated MCDM with geographic information system (GIS) technology. This paper presents an urban road planning approach based on digital twin (DT), MCDM, and GIS called DT-MCDM-GIS framework. DT can digitalize the physical world to provide various data for the whole process; MCDM can provide criteria and evaluation methods; GIS can provide an integrated environment for analysis. Building demolition and land use, traffic congestion, driving route selection habits, air quality, and noise are all considered in the framework for urban road planning. The proposed approach can provide a functional, economic, people friendly, eco-friendly urban road planning scheme considering new road construction and existing old road widening to alleviate traffic congestion and provide an alternative route for drivers that conforms to their habits.
 
 ## Introduction & Background
 
@@ -32,11 +32,11 @@ tags: ["Digital-Twin", "Road", "Unsorted", "Urban", "source: lens", "identificat
 
 ## Method
 
-*Pending full text.* DT for sustainable urban road planning.
+**Key techniques:** digital twin, proposed, presents DT for sustainable urban road planning.
 
 ## Key Findings
 
-*Pending full text.*
+**Key techniques:** digital twin, proposed, presents
 
 ## Discussion
 
@@ -45,5 +45,6 @@ tags: ["Digital-Twin", "Road", "Unsorted", "Urban", "source: lens", "identificat
 ## Notes
 
 - **Screening:** Retained — DT + urban road + sustainability (strong fit).
-- **Status:** `title-only`. **Action: obtain full text** (key 4E5M5F99).
-- **Caution:** Do not cite specific findings until full text reviewed.
+- **Status:** `abstract-grounded` — abstract retrieved from EndNote. (key 4E5M5F99).
+- **Auto-enriched from abstract** — review and verify before citing. PDF available for deep enrichment.
+- **Maturity (heuristic):** ML1 (digital shadow).

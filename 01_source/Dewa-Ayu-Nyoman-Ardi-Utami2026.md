@@ -7,7 +7,7 @@ year: 2026
 journal: "International Review of Civil Engineering (IRECE)"
 doi: "10.15866/irece.v17i1.27291"
 zotero_key: "VY46I8YR"
-zotero_status: title-only
+zotero_status: abstract-grounded
 last_verified: "2026-06-15"
 tags: ["Architecture", "Digital-Twin", "Maintenance", "Predictive", "Risk", "Road", "Unsorted", "Urban", "source: lens", "identification: databases"]
 ---
@@ -24,7 +24,7 @@ tags: ["Architecture", "Digital-Twin", "Maintenance", "Predictive", "Risk", "Roa
 
 ## Abstract ^sec-abstract
 
-*Abstract not available from database export — to be completed at full-text retrieval.*
+> Urban waterlogging accelerates pavement deterioration and disrupts mobility, particularly in rapidly urbanizing regions exposed climate-induced rainfall extremes and inadequate drainage capacity. Digital twins, Artificial Intelligence (AI), and real-time monitoring offer new opportunities for predictive road maintenance. However, existing research remains fragmented and lacks integrated decision-support perspectives. This study presents a scientometric review of 277 publications (2014-2025) from the Web of Science Core Collection to map global research trends in flood-related road damage and predictive maintenance technologies. CiteSpace has been applied to analyze co-citation networks, keyword co-occurrence, thematic cluster, and citation bursts. Results identify nine major research fronts including real-time drainage control, machine-learning-based pavement deterioration prediction, BIM-GIS integration, and digital-twin-enabled asset management. “Digital twin” exhibits the strongest citation burst since 2022, signalling a shift toward AI-driven, and real-time maintenance intelligence. In order to address persistent fragmentation, this paper proposes an AI-enabled digital twin decision-support architecture integrating hydrological simulation, pavement diagnosis, and maintenance prioritization. The study contributes a technology taxonomy and implementation roadmap to support climate-adaptive road infrastructure management, particularly in developing regions.
 
 ## Introduction & Background ^sec-intro
 
@@ -32,11 +32,11 @@ tags: ["Architecture", "Digital-Twin", "Maintenance", "Predictive", "Risk", "Roa
 
 ## Method ^sec-method
 
-*Pending full text.* Title indicates a scientometric/bibliometric review plus a proposed AI-DT decision-support architecture for road maintenance under flooding/waterlogging.
+**Key techniques:** proposes, scientometric, digital twin, applied to Title indicates a scientometric/bibliometric review plus a proposed AI-DT decision-support architecture for road maintenance under flooding/waterlogging.
 
 ## Key Findings ^sec-results
 
-*Pending full text — not asserted to avoid fabrication.*
+*Quantitative findings not extractable from abstract — full-text review required.*
 
 ## Discussion & Implications ^sec-discussion
 
@@ -45,5 +45,6 @@ On-topic (**AI + DT + predictive road maintenance + resilience**), within infras
 ## Notes ^sec-notes
 
 - **Screening:** Retained — AI-DT + road maintenance + waterlogging resilience (good fit).
-- **Status:** `title-only` — abstract absent. **Action: obtain full text & assess venue quality** (key VY46I8YR).
-- **Caution:** Do not cite specific findings until full text reviewed.
+- **Status:** `abstract-grounded` — abstract retrieved from EndNote. (key VY46I8YR).
+- **Auto-enriched from abstract** — review and verify before citing. PDF available for deep enrichment.
+- **Maturity (heuristic):** ML1 (digital shadow).

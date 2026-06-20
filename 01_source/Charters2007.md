@@ -6,6 +6,7 @@ authors: "B. Kitchenham and S. Charters"
 year: 2007
 doi: ""
 zotero_status: unverifiable
+identification: other methods
 unverified_reason: "no_DOI_or_book_standard"
 unverified_note: "No DOI available — likely a book, standard, technical report, or older publication not indexed in academic databases."
 created: "2026-05-25"

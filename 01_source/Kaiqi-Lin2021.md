@@ -7,7 +7,7 @@ year: 2021
 journal: "Automation in Construction"
 doi: "10.1016/j.autcon.2020.103547"
 zotero_key: "QQLDL97Y"
-zotero_status: title-only
+zotero_status: abstract-grounded
 last_verified: "2026-06-15"
 tags: ["Bridge", "Digital-Twin", "Unsorted", "source: lens", "identification: databases"]
 ---
@@ -24,7 +24,7 @@ tags: ["Bridge", "Digital-Twin", "Unsorted", "source: lens", "identification: da
 
 ## Abstract ^sec-abstract
 
-*Abstract not available from database export — to be completed at full-text retrieval.*
+> Fragility analysis is widely used in seismic performance assessment of bridges but uncertainties in seismic demand and bridge modelling affect the accuracy of assessment results. This study proposes a digital twin-based collapse fragility assessment method for long-span cable-stayed bridges under strong earthquakes. A scaled long-span cable-stayed bridge and its shake table tests are taken as an example. Three finite element (FE) models of the bridge, including a design document-based FE model, a linearly updated FE model, and a nonlinearly updated FE model, are established to demonstrate the necessity of the digital twin-based assessment. Incremental dynamic analyses (IDA) are conducted to calculate the collapse fragility curves of the FE models. The assessment results are compared with the test results in terms of collapse mechanisms, collapse ground motion intensities, and collapse probabilities. It is found that the proposed method is feasible and accurate for seismic collapse assessment of long-span cable-stayed bridges.
 
 ## Introduction & Background
 
@@ -32,11 +32,11 @@ tags: ["Bridge", "Digital-Twin", "Unsorted", "source: lens", "identification: da
 
 ## Method
 
-*Pending full text.* DT for seismic collapse fragility of long-span cable-stayed bridge.
+**Key techniques:** demonstrate, proposed, digital twin, finite element, proposes DT for seismic collapse fragility of long-span cable-stayed bridge.
 
 ## Key Findings
 
-*Pending full text.*
+**Key techniques:** demonstrate, proposed, digital twin, finite element, proposes
 
 ## Discussion
 
@@ -45,5 +45,6 @@ tags: ["Bridge", "Digital-Twin", "Unsorted", "source: lens", "identification: da
 ## Notes
 
 - **Screening:** Retained — DT + seismic + bridge + collapse (strong fit).
-- **Status:** `title-only`. **Action: obtain full text** (key QQLDL97Y).
-- **Caution:** Do not cite specific findings until full text reviewed.
+- **Status:** `abstract-grounded` — abstract retrieved from EndNote. (key QQLDL97Y).
+- **Auto-enriched from abstract** — review and verify before citing. PDF available for deep enrichment.
+- **Maturity (heuristic):** ML1 (digital shadow).

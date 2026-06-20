@@ -42,6 +42,16 @@ LLMs can enhance LCA, building energy simulations, real-time data integration, r
 
 **Highly relevant** — explicitly links LLMs to digital twins for building O&M and to human-centric, ethical AI, central to the cognitive-DT + NLP thesis. A key forward-looking citation.
 
+## RP Alignment (Self-Improving CDT for DfX) ^sec-rp-alignment
+
+Nan-Ma2026 is the most comprehensive LLM-for-buildings survey available, providing the landscape context for O1's LLM-based extraction pipeline. Its ten-question framework covers exactly the dimensions O1 must address: tooling, datasets, cross-lifecycle applicability, ethics, and scalability.
+
+**O1 relevance:** The paper's surveyed LLM applications (LCA, energy simulation, compliance, post-occupancy evaluation) demonstrate LLMs can operate across the building lifecycle. O1 applies this capability specifically to unstructured AECO project records for DfX attribute extraction — a use case not yet surveyed. The gap identified ("underexplored areas") includes exactly the construction-phase, multimodal extraction that O1 targets.
+
+**Ethics alignment:** The paper's attention to bias, data privacy, and environmental impact directly supports the RP's responsible-AI positioning. O1's source-span citation requirement is an explicit bias-mitigation mechanism.
+
+**Strategic positioning:** Cite as the authoritative LLM-in-buildings survey; position O1 as filling the identified gap in construction-phase, multimodal, attribution-grounded LLM application.
+
 ## Notes ^sec-notes
 
 - **Screening:** Retained — LLM + buildings + DT for O&M (strong fit).

@@ -42,6 +42,14 @@ Ontologies facilitate standardised data flows and multi-agent coordination, but 
 
 **Highly relevant** to the **semantic-DT / ontology** strand — a comprehensive comparison of Brick/SAREF/SSN/OEO directly informs the semantic-interoperability discussion. A key ontology-landscape citation.
 
+## RP Alignment (Self-Improving CDT for DfX) ^sec-rp-alignment
+
+This paper provides the ontology-landscape evidence for O1's semantic grounding. The systematic comparison of Brick, SAREF, SSN, and Open Energy Ontology informs which ontology standard O1 should align its DfX attribute schema with. For the AECO domain, IFC (ISO 16739) is the natural choice, but the paper's finding that no single ontology covers all cross-domain needs supports O1's approach of bridging IFC topology with the Esmaeili/Hallowell attribute schema.
+
+**Key insight for RP:** Ontologies enable "standardised data flows and multi-agent coordination" but suffer from domain-coverage gaps. O1 addresses this by using LLMs to bridge ontology gaps — the LLM maps heterogeneous text to a target schema without requiring perfect ontology coverage upfront.
+
+**Strategic positioning:** Cite for the ontology-comparison landscape and the semantic-interoperability gap that O1's LLM-based bridging addresses.
+
 ## Notes ^sec-notes
 
 - **Screening:** Retained — ontology + building energy + DT review (strong semantic-DT fit).

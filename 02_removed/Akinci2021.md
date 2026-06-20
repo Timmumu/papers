@@ -6,6 +6,7 @@ authors: "A. S. Singh and B. Akinci"
 year: 2021
 doi: ""
 zotero_key: "X8SNRHBX"
+removal_reason: Duplicate content with other included CV-safety papers (ref [68])
 zotero_status: verified
 created: "2026-05-25"
 tags:

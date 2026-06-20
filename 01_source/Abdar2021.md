@@ -58,6 +58,43 @@ tags:
 - AECO / construction applications are absent from the surveyed domains — confirming the LR_cc.md gap.
 - Most surveyed methods evaluated on standard ML benchmarks (ImageNet, CIFAR), not multimodal site data.
 
+## RP Alignment (Self-Improving CDT for DfX) ^sec-rp-alignment
+
+Abdar2021 is the foundational UQ reference justifying the RP's methodological choice of **conformal prediction** as the calibration layer for O2's forward predictor.
+
+### O2 — Why Conformal Prediction?
+
+The review identifies five UQ families for deep learning. The RP's choice of conformal prediction (MAPIE library) over alternatives is justified by the specific requirements of a construction DT forward predictor:
+
+| UQ Family | Strength | Why NOT chosen for O2 |
+|---|---|---|
+| Bayesian NN (BNN) | Full posterior over parameters | Computational cost prohibitive for GNN over large IFC graphs; MCMC does not scale to industrial BIM |
+| MC-Dropout | Lightweight, drop-in | Calibration quality depends on dropout rate hyperparameter; no formal coverage guarantee |
+| Deep Ensembles | SOTA calibration on benchmarks | Requires training 5–10 independent GNNs — infeasible on single-project data volumes |
+| Evidential DL | Single-pass uncertainty | Immature; few open-source implementations; not tested on graph data |
+| **Conformal Prediction** | Distribution-free, coverage guarantee, model-agnostic | ✅ Chosen: wraps any trained predictor with valid marginal coverage; computationally negligible |
+
+The critical property for O2 is **coverage guarantee**: the conformal wrapper guarantees $P(y \in \hat{C}_\alpha(x)) \geq 1 - \alpha$ regardless of the underlying GNN's distribution. This is essential because:
+1. O3's convergence argument requires bounded forward-operator error.
+2. The falsifiability statement for O2 requires verifiable calibration (ECE deviation < 10 pp).
+3. Construction-safety decisions carry asymmetric costs (false negatives cost more than false positives) — conformal prediction can be adapted to class-conditional coverage.
+
+### Aleatoric vs. Epistemic Uncertainty — Direct RP Application
+
+Abdar2021's taxonomy maps directly to the uncertainty sources identified in Ahmad-Chihadeh2026 (CRC/TRR 339 Digital Twin Road):
+- **Aleatoric uncertainty** (irreducible data noise) → sensor noise, environmental variability, human reporting inconsistency in incident narratives
+- **Epistemic uncertainty** (model ignorance) → limited training projects, unseen element configurations, novel construction methods
+
+The RP's O2 must distinguish these: aleatoric uncertainty sets the *floor* for achievable prediction accuracy; epistemic uncertainty should *decrease* as O4 retrains on O3 iteration logs. This is a testable prediction of the self-improvement claim.
+
+### The Calibration Gap in Construction DT
+
+Abdar2021's finding that "high accuracy does NOT imply trustworthy probabilities" is directly relevant. If O2's GNN achieves 85% defect prediction accuracy with an ECE of 0.15, the raw probabilities are unreliable for O3's perturbation decisions. Conformal prediction fixes this by outputting *prediction sets* with guaranteed coverage, allowing O3 to make decisions with known uncertainty bounds.
+
+### Strategic Positioning
+
+**Cite as:** The authoritative UQ survey establishing that (a) UQ is essential for safety-critical DL, (b) multiple mature methods exist, and (c) none have been applied to AECO/construction. **Position O2 as:** "First application of conformal prediction to element-level DfX forecasting in a construction DT — motivated by Abdar2021's finding that calibration, not just accuracy, determines real-world trustworthiness."
+
 ## Traceability
 
 | LR_cc.md | Claim | Evidence Block |

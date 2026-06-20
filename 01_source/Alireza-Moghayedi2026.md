@@ -42,6 +42,18 @@ The DDIF enhances material traceability, lifecycle transparency, and stakeholder
 
 **Strongly relevant** — integrates DPP/DMB/CE with DT as an enabling technology, intersecting the DT + circular-economy + sustainability strands. A strong, practitioner-validated framework citation.
 
+## RP Alignment (Self-Improving CDT for DfX) ^sec-rp-alignment
+
+This paper operationalizes the Digital Product Passport (DPP) concept that Nima-Moghimi2026 identified as a roadmap priority for Cognitive DTs. The DDIF framework's eight lifecycle stages (aligned to EN 15978) provide a ready-made phase structure for O3's cross-phase convergence loop.
+
+**O2 sustainability head:** The DDIF's ESG-aligned compliance and real-time monitoring directly prefigure O2's sustainability prediction head. Where DDIF uses DPPs for material traceability and carbon tracking, O2's sustainability head predicts per-element embodied carbon from EPD/ICE labels — the DPP provides the standardized data infrastructure that O2's predictions would consume and enrich.
+
+**O3 cross-phase scope:** The eight-stage lifecycle framework (aligned to EN 15978) maps directly to O3's design→construction→operation convergence scope. The DDIF demonstrates that lifecycle-structured DT frameworks are technically feasible and practitioner-validated.
+
+**O4 modular scalability:** DDIF's modular architecture supports the claim that the RP's CDT can scale across regulatory contexts and asset types — important for Stage 2 cross-jurisdiction validation.
+
+**Strategic positioning:** Cite as the leading DPP-DT integration framework; position O2/O3 as adding predictive analytics and closed-loop convergence to the DDIF's static lifecycle data-flow architecture.
+
 ## Notes ^sec-notes
 
 - **Screening:** Retained — DPP/DMB + circular economy + DT enabler (strong fit).

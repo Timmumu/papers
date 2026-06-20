@@ -7,6 +7,7 @@ year: 2026
 journal: "Preprints.org (preprint, 2026-04-20)"
 doi: "10.20944/preprints202604.1291.v1"
 zotero_key: "83PUTURG"
+removal_reason: Duplicate of [56] Vickers2017 (same Zotero key)
 zotero_status: verified
 last_verified: "2026-06-01"
 tags:

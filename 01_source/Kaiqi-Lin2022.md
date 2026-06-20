@@ -7,7 +7,7 @@ year: 2022
 journal: "Bulletin of Earthquake Engineering"
 doi: "10.1007/s10518-022-01567-w"
 zotero_key: "ESFWAA7G"
-zotero_status: title-only
+zotero_status: abstract-grounded
 last_verified: "2026-06-15"
 tags: ["Bridge", "Digital-Twin", "Unsorted", "source: lens", "identification: databases"]
 ---
@@ -24,7 +24,7 @@ tags: ["Bridge", "Digital-Twin", "Unsorted", "source: lens", "identification: da
 
 ## Abstract ^sec-abstract
 
-*Abstract not available from database export — to be completed at full-text retrieval.*
+> Long-span cable-stayed bridges often have a design service life of more than a hundred years, during which they may experience multiple earthquake events and accumulate seismic damage if they are located in seismic-prone regions. Earthquake occurrence is discretely and randomly distributed over the life cycle of a long-span cable-stayed bridge and often causes sudden drops in the structural performance instead of yearly fixed seismic performance degradation. This study thus proposes a digital twin-based life-cycle seismic performance assessment method for long-span cable-stayed bridges. The major components of this method include: (1) a seismic hazard analysis-based generation method of earthquake occurrence sequence; (2) a digital twin-based structural response prediction method considering lifetime earthquake occurrence and sequence; and (3) a service life quantification method. The proposed method is applied to a scaled long-span cable-stayed bridge with a series of shake table tests. The results show that the digital twin can closely reproduce the life-cycle seismic response of the bridge under sequential earthquakes. The proposed assessment method provides a more intuitive presentation of the life-cycle seismic damage accumulation process and a more accurate estimation of the service life of a long-span cable-stayed bridge.
 
 ## Introduction & Background
 
@@ -32,11 +32,11 @@ tags: ["Bridge", "Digital-Twin", "Unsorted", "source: lens", "identification: da
 
 ## Method
 
-*Pending full text.* DT for lifecycle seismic assessment of long-span cable-stayed bridge.
+**Key techniques:** proposes, digital twin, proposed, applied to DT for lifecycle seismic assessment of long-span cable-stayed bridge.
 
 ## Key Findings
 
-*Pending full text.*
+**Key techniques:** proposes, digital twin, proposed, applied to
 
 ## Discussion
 
@@ -45,5 +45,6 @@ tags: ["Bridge", "Digital-Twin", "Unsorted", "source: lens", "identification: da
 ## Notes
 
 - **Screening:** Retained — DT + seismic + bridge + lifecycle (strong fit).
-- **Status:** `title-only`. **Action: obtain full text** (key ESFWAA7G).
-- **Caution:** Do not cite specific findings until full text reviewed.
+- **Status:** `abstract-grounded` — abstract retrieved from EndNote. (key ESFWAA7G).
+- **Auto-enriched from abstract** — review and verify before citing. PDF available for deep enrichment.
+- **Maturity (heuristic):** ML1 (digital shadow).

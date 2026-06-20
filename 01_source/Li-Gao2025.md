@@ -42,6 +42,16 @@ The model achieved **98.2% prediction accuracy** overall, **99.1% for cable stre
 
 **Strongly relevant** — DT + inverse NN + PSO for large-scale construction safety prediction, intersecting the DT-safety and ML-prediction strands. A concrete high-accuracy validated model.
 
+## RP Alignment (Self-Improving CDT for DfX) ^sec-rp-alignment
+
+**O2 relevance:** Li-Gao2025 demonstrates that neural-network-based safety prediction over DT-integrated structural data can achieve high accuracy (98.2% overall, 99.1% for cable stress). This provides a performance benchmark for O2's GNN forward predictor, though O2's conformal prediction adds coverage guarantees absent from Li-Gao2025's point-prediction approach.
+
+**Key limitation for RP:** The PSO-optimized inverse NN produces point estimates without uncertainty quantification — precisely the gap O2's conformal prediction fills. The 98.2% accuracy claim, while impressive, does not indicate calibration quality (ECE) or prediction-set coverage, which are the metrics O2 is evaluated on.
+
+**O3 relevance:** The "critical component identification" capability directly supports O3's element-level design perturbation — knowing which components are safety-critical tells O3 where to focus design modifications.
+
+**Strategic positioning:** Cite as the accuracy benchmark for neural-network DT safety prediction; position O2 as adding calibrated uncertainty and multi-head prediction (defect/safety/sustainability) to this proven approach.
+
 ## Notes ^sec-notes
 
 - **Screening:** Retained — DT + inverse NN + PSO + structural safety management (strong fit).

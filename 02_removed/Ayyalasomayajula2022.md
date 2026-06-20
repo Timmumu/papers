@@ -5,6 +5,7 @@ title: "Digital twins in construction: Current trends and future directions,"
 authors: "G. S. Ayyalasomayajula, B. J. Song, and A. M. M. El-Diraby"
 year: 2022
 doi: ""
+removal_reason: Could not verify DOI; insufficient bibliographic certainty (ref [35])
 zotero_status: unverifiable
 unverified_reason: "no_DOI_or_book_standard"
 unverified_note: "No DOI available — likely a book, standard, technical report, or older publication not indexed in academic databases."

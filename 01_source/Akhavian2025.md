@@ -60,6 +60,35 @@ BIM2RDT integrates semantic-gravity ICP with an agentic AI orchestrator and safe
 - **Why cited in LR_cc.md:** Akhavian2025 is the principal exemplar in the manuscript's argument that 2024-2025 marks the shift from BIM-as-database to *agentic, perception-grounded* DTs. It substantiates the claim that semantic priors + autonomous safety enforcement are the defining 2025-era capabilities, and exemplifies how a preprint can already document an end-to-end agentic safety stack.
 - **Caveat:** arXiv preprint — flag as not yet peer reviewed when used in the manuscript.
 
+## RP Alignment (Self-Improving CDT for DfX) ^sec-rp-alignment
+
+BIM2RDT is the closest existing AECO system to the RP's cognitive DT vision. It provides existence-proof of agentic, perception-grounded DT in construction — establishing the baseline that the RP's CDT extends from *reactive safety enforcement* to *predictive DfX optimization with formal convergence*.
+
+### Conceptual lineage and divergence
+
+| Dimension | BIM2RDT (Akhavian2025) | RP CDT (This Thesis) | Relationship |
+|---|---|---|---|
+| **Perception** | SG-ICP: semantic + gravity priors for scan-to-BIM alignment | O1: LLM extraction from text/photos/specs → IFC-linked attributes | RP replaces geometric-only perception with multimodal semantic extraction |
+| **Reasoning** | LLM orchestrator: tool-use for safety alerts | O2: GNN forward predictor with conformal calibration | RP replaces reactive alerting with calibrated forward prediction |
+| **Action** | Safety enforcement (HAV limit → alert) — open-loop intervention | O3: Lyapunov-style design perturbation → convergence — closed-loop optimization | RP closes the loop that BIM2RDT leaves open |
+| **Learning** | Static: no model improvement from operational data | O4: O3 iteration logs retrain O1/O2 → co-improvement | RP adds the self-improvement dimension absent from BIM2RDT |
+| **Phase scope** | Construction only (as-built verification) | Design → construction → operation (cross-phase convergence) | RP extends across the full lifecycle |
+| **Formal guarantees** | None | Conformal coverage (O2), monotone-decrease convergence (O3) | RP provides mathematical grounding |
+
+### What BIM2RDT contributes to each RP objective
+
+**O1 (NLP extraction):** BIM2RDT's semantic-gravity ICP demonstrates the value of *semantic priors* in construction perception — but the semantics come from BIM class labels, not from unstructured text. The RP's O1 extends this principle: where BIM2RDT uses semantic class labels to improve geometric alignment, O1 uses LLM extraction to enrich IFC elements with risk attributes from unstructured project records (the "why" behind the "what"). BIM2RDT shows that semantics improve perception; O1 shows that unstructured text IS a source of semantics.
+
+**O2 (Forward predictor):** BIM2RDT's agentic orchestrator demonstrates that LLMs can reason over construction-state data and trigger actions. But BIM2RDT's actions are *reactive* (alert when HAV limit exceeded) — it doesn't predict *future* states. O2's GNN predictor would consume the same BIM geometry that SG-ICP aligns against, augmented with O1-extracted risk attributes, to forecast where defects/incidents will occur before construction begins. BIM2RDT answers "what is wrong now"; O2 answers "what will go wrong later."
+
+**O3 (Convergence loop):** BIM2RDT's safety-first inner loop (non-overridable alerts) is architecturally analogous to O3's convergence termination condition: both define hard boundaries that the system must respect. But BIM2RDT's boundary is a safety threshold; O3's boundary is a formal convergence criterion (Chebyshev distance < ε for 3 consecutive iterations). The RP generalizes BIM2RDT's safety-first principle into a convergence-first principle.
+
+**O4 (Coupling):** BIM2RDT has no self-improvement mechanism — the SG-ICP model and LLM orchestrator remain static regardless of operational experience. This is the gap that O4 fills directly.
+
+### Strategic positioning
+
+**Cite BIM2RDT as:** The SOTA agentic construction DT — establishing that (a) semantic perception + LLM reasoning + safety enforcement is technically feasible in 2025, and (b) the AECO field has crossed the threshold from passive digital shadows to active cognitive twins. **Position the RP as:** "BIM2RDT + forward prediction + formal convergence + self-improvement" — i.e., the RP takes BIM2RDT's agentic paradigm and adds the mathematical and learning-theoretic machinery needed for a self-improving, cross-phase, formally-grounded CDT.
+
 ## Traceability
 
 | Claim in LR_cc.md | Evidence anchor |

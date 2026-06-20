@@ -42,6 +42,16 @@ The implementation resulted in a **15% reduction in energy consumption** and a *
 
 **Strongly relevant** — a real-school DT-IoT HVAC predictive-maintenance case study with quantified energy/reliability outcomes. A concrete building-DT O&M exemplar with Autodesk Tandem.
 
+## RP Alignment (Self-Improving CDT for DfX) ^sec-rp-alignment
+
+**O2 evidence:** The quantified outcomes — 15% energy reduction, 20% reliability improvement — provide a performance benchmark for O2's forward predictor. This is the level of operational impact the RP's CDT should demonstrate in case-study validation.
+
+**O3 operational loop:** The DT→predictive maintenance→proactive rectification workflow is a static version of O3's dynamic convergence loop. O3 extends this from reactive maintenance scheduling to proactive design modification — intervening at design time rather than operation time.
+
+**Autodesk Tandem reference:** The use of a commercial DT platform (Autodesk Tandem) for the implementation provides evidence that the RP's prototype could leverage existing DT infrastructure rather than building from scratch — reducing O3 implementation risk.
+
+**Strategic positioning:** Cite as a quantified predictive-maintenance DT case study; position O3 as extending predictive maintenance logic upstream to design-stage intervention.
+
 ## Notes ^sec-notes
 
 - **Screening:** Retained — DT + IoT + HVAC + predictive maintenance + school case (strong fit).

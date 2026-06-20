@@ -7,7 +7,7 @@ year: 2025
 journal: "Structure and Infrastructure Engineering"
 doi: "10.1080/15732479.2025.2456979"
 zotero_key: "MLB6GHW7"
-zotero_status: title-only
+zotero_status: abstract-grounded
 last_verified: "2026-06-15"
 tags: ["BIM", "Bridge", "Unsorted", "source: lens", "identification: databases"]
 ---
@@ -24,7 +24,7 @@ tags: ["BIM", "Bridge", "Unsorted", "source: lens", "identification: databases"]
 
 ## Abstract ^sec-abstract
 
-*Abstract not available from database export — to be completed at full-text retrieval.*
+> Ensuring the safety and functionality of civil infrastructure, especially bridges, is critical for sustainable transportation networks. To streamline maintenance operations, on-site inspections are periodically conducted. The routine inspections of bridges frequently depend on manual processes, which diminish efficiency and data accessibility, leading to errors that jeopardise accurate decision-making. This paper advocates for the digitalisation to address these issues, developing a low-cost Geographical Information System (GIS)-based app for streamlined bridge inspections. The digital protocol automatically transfers georeferenced on-site inspection information into the bridge’s Building Information Model (BIM) using a parametric programming tool. This integration aims to improve decision-making in maintenance operations. The developed approach is validated through a real bridge inspection of a concrete bridge in Spain.
 
 ## Introduction & Background ^sec-intro
 
@@ -32,11 +32,11 @@ tags: ["BIM", "Bridge", "Unsorted", "source: lens", "identification: databases"]
 
 ## Method ^sec-method
 
-*Pending full text.* Title indicates an open-source GIS application linking field bridge-inspection data to automated BIM model integration.
+**Key techniques:** validated, developed, developing Title indicates an open-source GIS application linking field bridge-inspection data to automated BIM model integration.
 
 ## Key Findings ^sec-results
 
-*Pending full text — not asserted to avoid fabrication.*
+*Quantitative findings not extractable from abstract — full-text review required.*
 
 ## Discussion & Implications ^sec-discussion
 
@@ -45,5 +45,6 @@ On-topic (**bridge inspection + GIS + BIM integration**), a DT data-pipeline ena
 ## Notes ^sec-notes
 
 - **Screening:** Retained — bridge inspection digitalisation + BIM integration (good fit).
-- **Status:** `title-only` — abstract absent. **Action: obtain full text** (key MLB6GHW7).
-- **Caution:** Do not cite specific findings until full text reviewed.
+- **Status:** `abstract-grounded` — abstract retrieved from EndNote. (key MLB6GHW7).
+- **Auto-enriched from abstract** — review and verify before citing. PDF available for deep enrichment.
+- **Maturity (heuristic):** ML1 (digital shadow).

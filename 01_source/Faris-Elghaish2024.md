@@ -42,6 +42,16 @@ Asymmetric attention: IoT 43%, DT 47% of research, but direct AI for net-zero so
 
 **Highly relevant** — a predictive DT (AI+IoT+DT) review identifying research asymmetry and carbon-prediction needs. Directly informs the cognitive-DT and sustainability strands.
 
+## RP Alignment (Self-Improving CDT for DfX) ^sec-rp-alignment
+
+This is the most directly relevant review for O2's sustainability prediction head. The finding that AI-for-net-zero constitutes only 10% of predictive DT research is a quantified gap statement that the RP's O2 sustainability head directly addresses.
+
+**O2 sustainability head — direct evidence:** The review's core argument — that DT+IoT+AI integration is necessary for carbon emission prediction but under-researched (10%) — validates O2's three-headed architecture. The RP's sustainability head, consuming IFC-embedded carbon labels + contractor ESG narratives as supervision, is precisely the kind of "advanced and precise AI model" for carbon prediction that the review calls for.
+
+**O1 relevance:** The review's call for "large-scale IoT networks to collect carbon data from buildings and construction sites" aligns with O1's multimodal extraction — where IoT sensor data is one modality feeding the GNN predictor.
+
+**Strategic positioning:** Cite as the quantitative gap analysis showing predictive-DT carbon research at only 10% of the DT literature. Position O2's sustainability head as directly addressing this asymmetry — providing the first element-level embodied-carbon prediction head integrated within a multi-task DfX predictor.
+
 ## Notes ^sec-notes
 
 - **Screening:** Retained — predictive DT + AI + IoT + carbon + bibliometric (strong fit).

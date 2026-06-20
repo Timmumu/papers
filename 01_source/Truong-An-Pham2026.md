@@ -7,7 +7,7 @@ year: 2026
 journal: "International Journal of Construction Management"
 doi: "10.1080/15623599.2026.2651946"
 zotero_key: "35NYTZKR"
-zotero_status: title-only
+zotero_status: abstract-grounded
 last_verified: "2026-06-15"
 tags: ["Architecture", "BIM", "Building", "Construction", "Digital-Twin", "Unsorted", "source: lens", "identification: databases"]
 ---
@@ -24,7 +24,7 @@ tags: ["Architecture", "BIM", "Building", "Construction", "Digital-Twin", "Unsor
 
 ## Abstract ^sec-abstract
 
-*Abstract not available from database export — to be completed at full-text retrieval.*
+> Pollution created by building renovation activities poses a hazard to human health and the proximate environment. Integrating building information modelling (BIM) with digital twin (DT) technology offers a promising means for real-time monitoring and enabling collaboration among project participants. However, it is challenging to transform the BIM models of a renovated facility into a DT platform for monitoring and reporting construction pollution on-site. This paper proposes a BIM-enhanced DT architecture for managing construction pollution in building renovation projects. The platform entails five key components: physical entity (PE), virtual model (VM), DT data (DD), services (Ss), and connections (CNs). To resolve ambiguities in information requirements, a novel Level of Information Need (LOIN) framework for BIM-enhanced DT was established. The interplay among LOIN, Level of Development (LOD), and DT functionalities defines the minimum information needed in the information containers and the metadata structure required for pollution hotspots, compliance assessment, and automated analytics. To illustrate its efficacy and practicality, the DT architecture was applied to an auditorium renovation project, where static BIM data were integrated with dynamic pollution parameters captured by IoT sensors and managed in a Common Data Environment (CDE). The results showed its capability to systematically and efficiently acquire, integrate, treat, and analyze important data.
 
 ## Introduction & Background ^sec-intro
 
@@ -32,11 +32,11 @@ tags: ["Architecture", "BIM", "Building", "Construction", "Digital-Twin", "Unsor
 
 ## Method ^sec-method
 
-*Pending full text.* Title indicates an architecture coupling BIM with a digital twin for monitoring/managing construction pollution during renovation.
+**Key techniques:** proposes, digital twin, applied to Title indicates an architecture coupling BIM with a digital twin for monitoring/managing construction pollution during renovation.
 
 ## Key Findings ^sec-results
 
-*Pending full text — not asserted to avoid fabrication.*
+*Quantitative findings not extractable from abstract — full-text review required.*
 
 ## Discussion & Implications ^sec-discussion
 
@@ -45,5 +45,6 @@ On-topic (**BIM + DT + construction environmental management**, renovation conte
 ## Notes ^sec-notes
 
 - **Screening:** Retained — BIM + DT + construction pollution/renovation (good fit).
-- **Status:** `title-only` — abstract absent; no OA found. **Action: obtain full text** (key 35NYTZKR).
-- **Caution:** Do not cite specific findings until full text reviewed.
+- **Status:** `abstract-grounded` — abstract retrieved from EndNote. (key 35NYTZKR).
+- **Auto-enriched from abstract** — review and verify before citing. PDF available for deep enrichment.
+- **Maturity (heuristic):** ML1 (digital shadow).

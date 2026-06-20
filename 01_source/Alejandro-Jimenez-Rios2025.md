@@ -24,26 +24,32 @@ tags: ["Bridge", "Digital-Twin", "Heritage", "Unsorted", "source: lens", "identi
 
 ## Abstract ^sec-abstract
 
-*Abstract not available from database export — to be completed at full-text retrieval.*
+> The adoption of a novel industry paradigm is an untamed problem that requires strong social consensus and involves a high degree of technological uncertainty. To solve this problem a multi-actor engagement and agreement are needed. In this article, the methodology and the findings obtained after conducting a stakeholder analysis to understand how different actors could work together towards the adoption of Industry 5.0 principles and enabling technologies are presented. The analysis has been framed within a case study dealing with the conservation of historical bridges in the city of Oslo, Norway. The education institutions of the city were assumed as the problem owners. This research indicates that the Ministry of Transport and the Ministry of Climate and Environment, along with their subordinate agencies (Statens Vegvesen and Riksantikvaren, respectively) together with Oslo Kommune and its Cultural Heritage Office, possess the critical financial and regulatory resources necessary for adopting this paradigm. Their leadership and capacity to mobilise resources are pivotal in incentivising other stakeholders. Such resources should be driven towards a suitable business model, the adoption of human-centric digital twins as enabling technology, the establishment of interdisciplinary collaborations between the identified stakeholders, and the up-skilling/re-skilling of the industry workforce.
 
 ## Introduction & Background ^sec-intro
 
-*Abstract unavailable from the Lens export and full text not retrievable; inferred from title/venue only — confirm at full-text review.* The paper presents **Towards Industry 5.0: a stakeholder analysis to understand the human role in the adoption of a heritage bridge human-centric digital twin framework** (*Structure and Infrastructure Engineering*, 2025).
+*Abstract retrieved from EndNote — see Abstract section above. Full-text retrieval pending.* The paper presents **Towards Industry 5.0: a stakeholder analysis to understand the human role in the adoption of a heritage bridge human-centric digital twin framework** (*Structure and Infrastructure Engineering*, 2025).
 
 ## Method ^sec-method
 
-*Pending full text.* Title indicates a stakeholder analysis for human-centric DT adoption in heritage bridge context, aligned with Industry 5.0 values.
+**Key techniques:** case study, digital twin Title indicates a stakeholder analysis for human-centric DT adoption in heritage bridge context, aligned with Industry 5.0 values.
 
 ## Key Findings ^sec-results
 
-*Pending full text — not asserted to avoid fabrication.*
+*Quantitative findings not extractable from abstract — full-text review required.*
 
 ## Discussion & Implications ^sec-discussion
 
-**Highly relevant** — human-centric DT + Industry 5.0 + heritage bridge + stakeholder analysis. A potential flagship for the cognitive/human-centric DT strand. Highest priority for full-text retrieval.
+**LR themes:** UQ/reliability.
+**DT maturity (heuristic):** ML1 (digital shadow).
+
+**Limitations:** Not explicitly stated in abstract — review full text.
+
+**Research gap contribution:** Towards Industry 5.0: a stakeholder analysis to understand the human role in the adoption of a herit...
 
 ## Notes ^sec-notes
 
 - **Screening:** Retained — human-centric DT + Industry 5.0 + heritage bridge (exceptional fit).
-- **Status:** `title-only` — abstract absent. **Action: obtain full text** (key MDVRL744).
-- **Caution:** Do not cite specific findings until full text reviewed.
+- **Status:** `abstract-grounded` — abstract retrieved from EndNote. (key MDVRL744).
+- **Auto-enriched from abstract** — review and verify before citing. PDF available for deep enrichment.
+- **Maturity (heuristic):** ML1 (digital shadow).

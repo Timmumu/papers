@@ -5,6 +5,7 @@ title: "The information modeling and management challenge in digital twin-enable
 authors: "M. Bolpagni, M. Ciribini, and A. C. Fioravanti"
 year: 2022
 doi: ""
+removal_reason: Replaced by verified [96] Bolpagni et al. 2025 (ref [60])
 zotero_status: unverifiable
 unverified_reason: "no_DOI_or_book_standard"
 unverified_note: "No DOI available — likely a book, standard, technical report, or older publication not indexed in academic databases."

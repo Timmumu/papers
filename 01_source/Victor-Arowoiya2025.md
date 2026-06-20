@@ -7,7 +7,7 @@ year: 2025
 journal: "International Journal of Construction Management"
 doi: "10.1080/15623599.2025.2544913"
 zotero_key: "PTJZHT69"
-zotero_status: title-only
+zotero_status: abstract-grounded
 last_verified: "2026-06-15"
 tags: ["Construction", "Digital-Twin", "Unsorted", "source: lens", "identification: databases"]
 ---
@@ -24,7 +24,7 @@ tags: ["Construction", "Digital-Twin", "Unsorted", "source: lens", "identificati
 
 ## Abstract ^sec-abstract
 
-*Abstract not available from database export — to be completed at full-text retrieval.*
+> Digital twin technology is a revolution that has created substantial benefits across different industries. However, its adoption level is limited, especially in the developing construction sectors. The study elicited information from construction professionals using a random sampling approach. A survey design was adopted to comprehend the level of benefits, with a 50.9% response rate. Descriptive and inferential statistics were used to analyze the data collected, i.e. MIS and factor analysis. The study revealed a reduction in inaccurate prediction under shear loading, realistic data for accurate prediction, and real-time detection for repairs and replacement were the top benefits of the Digital Twin (DT). The least rated benefits were data for building maintenance, faster production times, and improved productivity and collaboration. Factor analysis was used to group the variables into five components: project monitoring and sustainability, enhanced project implementation and maintenance, improved production, data monitoring, and construction and operational efficiency. Enhancing construction management was the only factor that had significant differences in the opinions of professionals, while others had similar opinions among professionals. The paper contributes to comprehending the level of benefits and adoption of DT in organizations. This also served as a reference point for extensive research in other developing climes and gave insight into the perceived benefits of professionals. However, the study has some shortfalls, including in-depth interviews using case studies of some construction organizations.
 
 ## Introduction & Background ^sec-intro
 
@@ -32,11 +32,11 @@ tags: ["Construction", "Digital-Twin", "Unsorted", "source: lens", "identificati
 
 ## Method ^sec-method
 
-*Pending full text.* Title/venue suggest a survey or qualitative study of DT adoption benefits in a specific national (Nigerian) construction context.
+**Key techniques:** interview, digital twin, survey, case studies Title/venue suggest a survey or qualitative study of DT adoption benefits in a specific national (Nigerian) construction context.
 
 ## Key Findings ^sec-results
 
-*Pending full text — not asserted to avoid fabrication.*
+*Quantitative findings not extractable from abstract — full-text review required.*
 
 ## Discussion & Implications ^sec-discussion
 
@@ -45,5 +45,6 @@ On-topic (**DT adoption + construction industry**, developing-economy context), 
 ## Notes ^sec-notes
 
 - **Screening:** Retained — DT adoption benefits + construction (good fit, regional context).
-- **Status:** `title-only` — abstract absent. **Action: obtain full text** (key PTJZHT69).
-- **Caution:** Do not cite specific findings until full text reviewed.
+- **Status:** `abstract-grounded` — abstract retrieved from EndNote. (key PTJZHT69).
+- **Auto-enriched from abstract** — review and verify before citing. PDF available for deep enrichment.
+- **Maturity (heuristic):** ML1 (digital shadow).

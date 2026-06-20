@@ -42,6 +42,16 @@ NLP-based approach accurately extracts FM-related knowledge, providing a basis f
 
 **Highly relevant** — NLP + DT + FM + knowledge extraction. Directly informs the semantic-DT and cognitive-DT strands.
 
+## RP Alignment (Self-Improving CDT for DfX) ^sec-rp-alignment
+
+This paper provides evidence for O1's downstream knowledge-graph component. The five-category FM entity classification and NLP extraction pipeline directly prefigure O1's GraphRAG over Neo4j: both convert unstructured text into structured, queryable knowledge graphs linked to building elements.
+
+**O1 relevance:** Linxuan-Wang2024 shows NLP can extract FM entities from text with sufficient accuracy to populate a knowledge graph. O1 extends this from FM-domain text to heterogeneous construction-project records (emails, RFIs, incident reports) and links extracted entities to IFC elements rather than abstract FM categories. The knowledge graph construction is the shared architectural pattern.
+
+**O3 relevance:** The paper's motivation — bridging the gap between DT academics and FM practitioners through structured knowledge — mirrors O3's role in making O2 predictions actionable for design decision-makers. Both systems convert machine reasoning into human-consumable structured knowledge.
+
+**Strategic positioning:** Cite as evidence that NLP→KG pipelines are proven in DT-FM contexts. Position O1's GraphRAG as "Linxuan-Wang2024's NLP→KG paradigm, extended to multimodal construction records with IFC-element grounding."
+
 ## Notes ^sec-notes
 
 - **Screening:** Retained — NLP + DT + FM + knowledge extraction (strong fit).

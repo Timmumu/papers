@@ -40,6 +40,14 @@ Large-scale DT developments remain largely **domain-specific**, with projects ye
 
 ## Discussion & Implications ^sec-discussion
 
+Goes beyond net-zero to socio-ecological sustainability through DTs. Relevant to the RP's sustainability head and ESG dimension.
+
+## RP Alignment (Self-Improving CDT for DfX) ^sec-rp-alignment
+
+**O2 sustainability head — beyond carbon:** This paper's argument that DTs should address socio-ecological sustainability (not just carbon) supports the RP's multi-head design. O2's sustainability head predicts not only embodied carbon but also ESG-governance risk from contractor narratives — operationalizing the broader sustainability scope this paper advocates.
+
+**Strategic positioning:** Cite as the normative argument for why sustainability in DT must go beyond carbon; position O2's ESG-narrative extraction + per-element carbon prediction as an operationalization of this broader vision.
+
 **Highly relevant** — a systems-thinking critique of large-scale urban DTs, directly challenging techno-rationalism and advocating socio-ecological framing. A key citation for the cognitive-DT and urban-DT sustainability strands.
 
 ## Notes ^sec-notes

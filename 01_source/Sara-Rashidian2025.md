@@ -40,6 +40,16 @@ A conceptual framework is contributed, mapping the alignment of CE principles wi
 
 ## Discussion & Implications ^sec-discussion
 
+A Construction 4.0–Circular Economy alignment framework covering seven construction phases. Directly informs the RP's sustainability head and cross-phase scope.
+
+## RP Alignment (Self-Improving CDT for DfX) ^sec-rp-alignment
+
+**O2 sustainability head:** The finding that BIM+IoT "play pivotal roles in lifecycle planning" while "AI and digital twins support predictive maintenance, material recovery, and closed-loop optimisation" directly validates O2's three-headed architecture (defect/safety/sustainability). The sustainability head's embodied-carbon prediction aligns with the paper's CE principles.
+
+**O3 cross-phase scope:** The seven-phase framework (Planning through End-of-Life) provides the lifecycle structure that O3 converges across — but Sara-Rashidian2025 identifies only static alignments between technologies and phases, not the dynamic convergence loop O3 contributes.
+
+**Strategic positioning:** Cite for the Construction 4.0–CE alignment framework; position O2/O3 as adding predictive, closed-loop optimization to the static technology-phase mapping.
+
 **Highly relevant** — a comprehensive Construction 4.0 + CE SLR with DT positioned in a lifecycle framework. A strong methodological and landscape citation for the DT-sustainability strand.
 
 ## Notes ^sec-notes

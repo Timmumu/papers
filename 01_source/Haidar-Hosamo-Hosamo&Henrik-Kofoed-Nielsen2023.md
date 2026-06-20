@@ -40,6 +40,16 @@ The ontology-graph framework generalises the DT approach for multiple buildings.
 
 ## Discussion & Implications ^sec-discussion
 
+A Bayesian Network + ontology-graph + BIM + IoT Digital Twin for occupant comfort and HVAC fault prediction. Directly relevant to O2's Bayesian component and semantic-interoperability layer.
+
+## RP Alignment (Self-Improving CDT for DfX) ^sec-rp-alignment
+
+**O2 — Bayesian Networks in construction DT:** This paper demonstrates that Bayesian Networks can be operationally deployed within a construction DT for probabilistic reasoning (occupant comfort + HVAC fault detection). This is direct evidence for the RP's inclusion of BN in Table 2 (candidate algorithms). O2's conformal prediction could be compared against BN as an alternative UQ approach.
+
+**O1 — Ontology-graph integration:** The ontology-graph approach to integrating BIM, CMMS, BMS, and FM data prefigures O1's GraphRAG design. The paper shows that ontology graphs are the proven method for cross-system data integration in building DTs — O1 extends this from building systems to unstructured project records.
+
+**Strategic positioning:** Cite as evidence that (a) Bayesian Networks are deployable in building DTs, and (b) ontology graphs are the standard integration pattern.
+
 **Highly relevant** — a BN-DT occupant comfort framework with ontology integration. Directly informs the DT-FM and semantic-DT strands.
 
 ## Notes ^sec-notes

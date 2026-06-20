@@ -7,7 +7,7 @@ year: 2026
 journal: "Structures"
 doi: "10.1016/j.istruc.2026.111723"
 zotero_key: "ITVK3BS9"
-zotero_status: title-only
+zotero_status: abstract-grounded
 last_verified: "2026-06-15"
 tags: ["Bridge", "Digital-Twin", "Unsorted", "source: lens", "identification: databases"]
 ---
@@ -24,7 +24,7 @@ tags: ["Bridge", "Digital-Twin", "Unsorted", "source: lens", "identification: da
 
 ## Abstract ^sec-abstract
 
-*Abstract not available from database export — to be completed at full-text retrieval.*
+> Accurate parameter identification is essential for ensuring the structural safety and operational performance of long-span bridges. This paper presents a digital twin-based multi-objective optimization framework for identifying structural parameters of a cable-stayed bridge by matching its frequencies, mode shapes, and deflections. The framework integrates three techniques: (1) adaptive reference point relocation to maintain solution diversity across irregular Pareto fronts; (2) sensitivity-informed variation operators that concentrate exploration on parameters with significant influence; and (3) hybrid local search incorporating quasi-Newton refinement for accelerated convergence. The framework was evaluated through implementation on a case study of a 580-meterlong cable-stayed bridge. Experimental results demonstrate up to a 52% reduction in parameter identification error and 25-35% reductions in total runtime compared with the Non-dominated Sorting Genetic Algorithm II (NSGA-II) and standard NSGA-III. Robustness analysis confirms the framework's reliability with errors consistently below 3%. This research contributes to advancing bridge condition assessment capabilities, thereby enhancing structural monitoring and optimizing maintenance strategies for critical infrastructure.
 
 ## Introduction & Background ^sec-intro
 
@@ -32,11 +32,13 @@ tags: ["Bridge", "Digital-Twin", "Unsorted", "source: lens", "identification: da
 
 ## Method ^sec-method
 
-*Pending full text.* Title indicates a DT-based multi-objective optimisation/inversion for structural parameter identification of a cable-stayed bridge.
+**Key techniques:** demonstrate, presents, case study, digital twin, experimental Title indicates a DT-based multi-objective optimisation/inversion for structural parameter identification of a cable-stayed bridge.
 
 ## Key Findings ^sec-results
 
-*Pending full text — not asserted to avoid fabrication.*
+1. 52% reduction
+2. 35% reduction
+3. compared with
 
 ## Discussion & Implications ^sec-discussion
 
@@ -45,5 +47,6 @@ On-topic (**DT + bridge SHM + parameter identification/optimisation**), within i
 ## Notes ^sec-notes
 
 - **Screening:** Retained — DT + bridge SHM + multi-objective parameter ID (good fit).
-- **Status:** `title-only` — abstract absent; no OA. **Action: obtain full text** (key ITVK3BS9).
-- **Caution:** Do not cite specific findings until full text reviewed.
+- **Status:** `abstract-grounded` — abstract retrieved from EndNote. (key ITVK3BS9).
+- **Auto-enriched from abstract** — review and verify before citing. PDF available for deep enrichment.
+- **Maturity (heuristic):** ML1 (digital shadow).

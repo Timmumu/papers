@@ -62,6 +62,43 @@ This paper is a strong **cognitive-DT exemplar** for the SLR: it explicitly atta
 
 **Caveats (to verify against full body PDF):** validation is single-project; generalisation across site types, the cost of component-level instrumentation, and the robustness of the Transformer under data scarcity are not yet established from the abstract alone. Quantitative effect sizes (warning lead-time, violation-rate reduction, latency) are stated qualitatively here and should be extracted from the PDF tables when accessible. ^p3
 
+## RP Alignment (Self-Improving CDT for DfX) ^sec-rp-alignment
+
+This paper is the closest existing system to the RP's O3 (convergence loop), and the most complete demonstration of a *closed-loop construction DT* in the current literature.
+
+### O3 — Convergence Loop (closest existing analogue)
+
+Fengyi-Guo2026's four-layer architecture (alignment → Transformer reasoning → constraint-aware policy → AR execution-with-acknowledgment) is structurally isomorphic to the RP's O3 loop (O2 forward prediction → perturbation update → convergence check → iteration). The mapping:
+
+| Fengyi-Guo2026 Layer | RP O3 Analogue | Key Difference |
+|---|---|---|
+| Multimodal alignment ("Component-ID + Timestamp") | IFC element graph construction | RP aligns at design time; Fengyi-Guo aligns at runtime |
+| Transformer risk prediction (short-horizon) | O2 GNN forward predictor | RP predicts across phases (design→construction); Fengyi-Guo predicts within construction |
+| Constraint-aware policy module (safety/resource/precedence) | O3 perturbation update rule with Lyapunov decrease | RP formalizes the update rule with convergence proof; Fengyi-Guo uses encoded heuristics |
+| AR execution with crew acknowledgment | O3 convergence termination + O4 retraining signal | RP's "acknowledgment" is the next iteration's training data; Fengyi-Guo's is human confirmation |
+
+**Critical RP contribution over Fengyi-Guo2026:** The SCP system closes a *perception-to-execution* loop within the construction phase. The RP closes a *design-to-construction-to-operation* loop across phases. And where Fengyi-Guo2026's constraint module uses hand-coded safety/resource/precedence rules, the RP's O3 derives constraints from O2's conformally-calibrated predictions — making the constraints data-driven and self-improving rather than static.
+
+### What Fengyi-Guo2026 proves for the RP
+
+1. **Feasibility of closed-loop DT in real construction.** The SCP deployment on a high-rise project with measurable improvements (earlier warnings, fewer violations, faster decisions) provides existence-proof that closed-loop DT is not just a theoretical construct — it can be built and validated on a real site.
+
+2. **The "monitoring ceiling" is real and surmountable.** The authors' explicit diagnosis — that most DTs stall at monitoring/visualization — validates the RP's premise that the field needs to move beyond digital shadows. Their solution (DT + foundation model + constraint encoding + execution feedback) is one path; the RP's CDT is another, more ambitious path (forward prediction + cross-phase convergence + self-improvement).
+
+3. **Component-level alignment is the interoperability linchpin.** The "Component-ID + Timestamp" scheme for fusing video/sensor/BIM/text aligns with the RP's IFC-element-centric design: both systems ground all reasoning on individual physical components, which is the prerequisite for element-level prediction and convergence.
+
+### What the RP contributes beyond Fengyi-Guo2026
+
+- **Cross-phase scope:** from construction-only to design→construction→operation.
+- **Formal convergence:** Lyapunov argument vs. ad-hoc constraint encoding.
+- **Conformal calibration:** coverage-guaranteed predictions vs. point estimates.
+- **Self-improvement (O4):** the SCP system's Transformer is static; the RP's O1/O2 improve with each O3 iteration.
+- **Design-stage intervention:** Fengyi-Guo2026 optimizes task sequences during construction; the RP's CDT would have identified the risks at design stage and modified the design itself — a more fundamental intervention.
+
+### Strategic positioning
+
+Cite as primary evidence that closed-loop DT (perception→reasoning→action→feedback) is technically feasible on real construction sites in 2026. Position the RP's CDT as "Fengyi-Guo2026 + cross-phase scope + formal convergence + self-improvement + design-stage intervention."
+
 ## Notes ^sec-notes
 
 - Preliminary note generated from Lens.org export (PRISMA 2nd-round screening).

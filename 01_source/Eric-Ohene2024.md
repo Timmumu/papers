@@ -40,6 +40,18 @@ BDA supports AEC decision-making, safety/risk assessment, SHM, damage detection,
 
 ## Discussion & Implications ^sec-discussion
 
+A state-of-the-art review of Big Data Analytics in AEC. Directly informs the RP's data-strategy context (Table 1).
+
+## RP Alignment (Self-Improving CDT for DfX) ^sec-rp-alignment
+
+**Data-strategy context:** The review identifies "data mining, cloud computing, predictive analytics, machine learning and AI methods such as deep learning, natural language processing and computer vision" as the key BDA methods in AEC — all present in the RP's method stack (O1: NLP/CV, O2: GNN/DL, O3: cloud).
+
+**Gap validation:** The finding that "further studies are needed to examine the synergies between BDA and AI, BDA and Digital twin" validates the RP's premise that DT + AI integration is an open research frontier.
+
+**O4 relevance:** The RP's self-improvement loop (O3 iteration logs → retrain O1/O2) is a specific instantiation of the BDA-DT synergy the paper calls for.
+
+**Strategic positioning:** Cite as evidence that the AECO BDA landscape is mature in individual technologies but immature in DT-integrated, closed-loop analytics — the gap O4 fills.
+
 **Relevant** — a BDA-in-AEC review where BDA-DT synergy is a key future research need. Useful for the data-analytics-DT convergence narrative.
 
 ## Notes ^sec-notes

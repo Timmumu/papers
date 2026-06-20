@@ -6,6 +6,7 @@ authors: "A. Spinner and A. Degani"
 year: 2024
 doi: "10.1007/s10846-024-02087-2"
 zotero_key: "ULJGBQZ6"
+removal_reason: Duplicate of [11] Spinner2024 (same Zotero key)
 zotero_status: verified
 created: "2026-05-25"
 tags:

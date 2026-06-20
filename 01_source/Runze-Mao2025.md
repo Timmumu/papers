@@ -42,6 +42,14 @@ Automotive DTs enhance vehicle efficiency/safety (autonomous, EVs); aviation DTs
 
 **Domain-adjacent / cross-reference** — a cross-industry DT survey (automotive/aviation/maritime) outside AECO, but its five-dimensional framework and model/data/hybrid taxonomy are methodologically useful background for DT classification.
 
+## RP Alignment (Self-Improving CDT for DfX) ^sec-rp-alignment
+
+Methodological reference for the RP's DT architecture (Section 3.3). The five-dimensional DT framework provides a recognized classification scheme against which the RP's CDT can be positioned. The model-driven / data-driven / hybrid taxonomy directly maps to the RP's hybrid approach: O1 is data-driven (LLM extraction), O2 is hybrid (GNN over IFC topology + learned attributes), and O3 is model-driven (Lyapunov update rule).
+
+**Knowledge-transfer methodology:** The paper's systematic approach to transferring DT knowledge across industries (automotive→maritime) provides a methodological template for the RP's Stage 2 cross-jurisdiction transfer testing (RIDDOR/OSHA corpora for O1 extraction generalizability).
+
+**Strategic positioning:** Cite for 5D DT framework and cross-industry knowledge-transfer methodology. Not a primary AECO reference.
+
 ## Notes ^sec-notes
 
 - **Screening:** Retained — DT survey + 5D framework + modelling taxonomy; **non-AECO domains**.

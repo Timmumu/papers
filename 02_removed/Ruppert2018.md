@@ -7,6 +7,7 @@ year: 2020
 journal: "Journal of Industrial Information Integration 20, 100174"
 doi: "10.1016/j.jii.2020.100174"
 zotero_key: "IJUPSPJB"
+removal_reason: Duplicate of [82] Ruppert2020 (same Zotero key)
 zotero_status: verified
 last_verified: "2026-06-01"
 tags:

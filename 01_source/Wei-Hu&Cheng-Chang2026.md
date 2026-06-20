@@ -7,7 +7,7 @@ year: 2026
 journal: "Journal of Building Engineering"
 doi: "10.1016/j.jobe.2025.114755"
 zotero_key: "ZSDLWA6Q"
-zotero_status: title-only
+zotero_status: abstract-grounded
 last_verified: "2026-06-15"
 tags: ["Digital-Twin", "Quality", "Unsorted", "source: lens", "identification: databases"]
 ---
@@ -24,7 +24,7 @@ tags: ["Digital-Twin", "Quality", "Unsorted", "source: lens", "identification: d
 
 ## Abstract ^sec-abstract
 
-*Abstract not available from database export — to be completed at full-text retrieval.*
+> Accurate failure prediction is critical to achieving Predictive Maintenance (PdM) for Indoor Air Quality (IAQ), which is highly related to resident well-being and operational effectiveness. However, most existing studies emphasise anomaly detection rather than prediction. To develop a precise and robust method for pre-emptive IAQ warning, this article integrated Convolutional Neural Network (CNN), Bidirectional Long Short-Term Memory (BiLSTM), and Muti-Head Attention (MHA) mechanism into a novel C-B-M model, synergistically incorporating feature extraction, temporal dependency analysis, and contextual weighting mechanisms. Additionally, a real-world dataset collected from various buildings in Singapore is employed in a detailed comparative experiment with other benchmark models for different prediction periods, dataset selection, and failure severity levels to illustrate the effectiveness and robustness of the proposed method. Finally, a Digital Twin (DT)-oriented failure prediction framework for the indoor climate is introduced and validated through the prototype system demonstrating the 3D building model and IAQ alert information.
 
 ## Introduction & Background ^sec-intro
 
@@ -32,11 +32,11 @@ tags: ["Digital-Twin", "Quality", "Unsorted", "source: lens", "identification: d
 
 ## Method ^sec-method
 
-*Pending full text.* Title indicates a DT coupled with a deep-learning model (CNN-BiLSTM + multi-head attention) for IAQ failure prediction.
+**Key techniques:** introduced, neural network, proposed, validated, digital twin, demonstrating Title indicates a DT coupled with a deep-learning model (CNN-BiLSTM + multi-head attention) for IAQ failure prediction.
 
 ## Key Findings ^sec-results
 
-*Pending full text — not asserted to avoid fabrication.*
+*Quantitative findings not extractable from abstract — full-text review required.*
 
 ## Discussion & Implications ^sec-discussion
 
@@ -45,5 +45,6 @@ On-topic (**DT + deep learning + IAQ predictive maintenance**), aligning with th
 ## Notes ^sec-notes
 
 - **Screening:** Retained — DT + DL + IAQ failure prediction (good fit).
-- **Status:** `title-only` — abstract absent; no OA. **Action: obtain full text** (key ZSDLWA6Q).
-- **Caution:** Do not cite specific findings until full text reviewed.
+- **Status:** `abstract-grounded` — abstract retrieved from EndNote. (key ZSDLWA6Q).
+- **Auto-enriched from abstract** — review and verify before citing. PDF available for deep enrichment.
+- **Maturity (heuristic):** ML2 (cyber-physical interface).

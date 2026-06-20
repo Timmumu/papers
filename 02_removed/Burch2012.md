@@ -5,6 +5,7 @@ title: "Risk and uncertainty in construction safety models,"
 authors: "M. Spearpoint and R. M. B. Burch"
 year: 2012
 doi: ""
+removal_reason: Too early; safety model without DT context (ref [46])
 zotero_status: unverifiable
 unverified_reason: "no_DOI_or_book_standard"
 unverified_note: "No DOI available — likely a book, standard, technical report, or older publication not indexed in academic databases."

@@ -7,7 +7,7 @@ year: 2024
 journal: "International Journal of Construction Management"
 doi: "10.1080/15623599.2024.2411885"
 zotero_key: "RHHWHFDI"
-zotero_status: title-only
+zotero_status: abstract-grounded
 last_verified: "2026-06-15"
 tags: ["Construction", "Digital-Twin", "Unsorted", "source: lens", "identification: databases"]
 ---
@@ -24,26 +24,32 @@ tags: ["Construction", "Digital-Twin", "Unsorted", "source: lens", "identificati
 
 ## Abstract ^sec-abstract
 
-*Abstract not available from database export — to be completed at full-text retrieval.*
+> Technological innovations play a crucial role in project delivery across all sectors of the economy. This research seeks to assess the awareness of digital twin technology (DTT) among construction industry professionals to promote the sustainable completion of construction projects. A quantitative approach was adopted by using a survey questionnaire with convenience sampling. Questionnaires were self-administered to gather information about the industry professionals' awareness and utilization of DTT in construction projects. Mean Item Score (MIS), Standard Deviation (SD), Spearman, and Kruskal-Wallis tests were used to analyze the collected data. Professionals within the construction industry have demonstrated a high level of familiarity with various technological advancements with computer systems, Wi-Fi, 2D Graphics, Vertex Digital twin platform, and GPS identified as the most commonly utilized tools in the field. Spearman correlation analysis revealed a significant relationship between DTT awareness and usage levels. The study provided valuable information on the present awareness and DTT utilization within the construction sector. It proposed methods through which professionals can familiarize themselves with empowering tools to enhance productivity and performance within the industry.
 
 ## Introduction & Background ^sec-intro
 
-*Abstract unavailable from the Lens export and full text not retrievable; inferred from title/venue only — confirm at full-text review.* The paper presents **digital twin technology (DTT) in a developing construction industry: evaluation of the awareness and usage among professionals in Nigeria** (*International Journal of Construction Management*, 2024).
+*Abstract retrieved from EndNote — see Abstract section above. Full-text retrieval pending.* The paper presents **digital twin technology (DTT) in a developing construction industry: evaluation of the awareness and usage among professionals in Nigeria** (*International Journal of Construction Management*, 2024).
 
 ## Method ^sec-method
 
-*Pending full text.* Title indicates an awareness/usage survey of DTT among Nigerian construction professionals.
+**Key techniques:** questionnaire, proposed, digital twin, survey, demonstrated Title indicates an awareness/usage survey of DTT among Nigerian construction professionals.
 
 ## Key Findings ^sec-results
 
-*Pending full text — not asserted to avoid fabrication.*
+1. Professionals within the construction industry have demonstrated a high level of familiarity with various technological advancements with computer systems, Wi-Fi, 2D Graphics, Vertex Digital twin platform, and GPS identified as the most commonly utilized tools in the field
 
 ## Discussion & Implications ^sec-discussion
 
-**Highly relevant** — a developing-country DT-awareness survey. Complements #236 (Nigeria DT barriers) with an awareness/usage perspective. Priority for full-text retrieval.
+**LR themes:** construction-phase.
+**DT maturity (heuristic):** ML1 (digital shadow).
+
+**Limitations:** Not explicitly stated in abstract — review full text.
+
+**Research gap contribution:** Digital twin technology (DTT) in a developing construction industry: evaluation of the awareness and...
 
 ## Notes ^sec-notes
 
 - **Screening:** Retained — DTT + awareness + Nigeria + developing industry (strong fit).
-- **Status:** `title-only` — abstract absent. **Action: obtain full text** (key RHHWHFDI).
-- **Caution:** Do not cite specific findings until full text reviewed.
+- **Status:** `abstract-grounded` — abstract retrieved from EndNote. (key RHHWHFDI).
+- **Auto-enriched from abstract** — review and verify before citing. PDF available for deep enrichment.
+- **Maturity (heuristic):** ML1 (digital shadow).

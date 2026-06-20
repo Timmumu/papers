@@ -7,7 +7,7 @@ year: 2023
 journal: "Journal of Building Engineering"
 doi: "10.1016/j.jobe.2023.107598"
 zotero_key: "K4MMWQIM"
-zotero_status: title-only
+zotero_status: abstract-grounded
 last_verified: "2026-06-15"
 tags: ["Building", "Carbon", "Construction", "Digital-Twin", "Unsorted", "source: lens", "identification: databases"]
 ---
@@ -24,7 +24,7 @@ tags: ["Building", "Carbon", "Construction", "Digital-Twin", "Unsorted", "source
 
 ## Abstract ^sec-abstract
 
-*Abstract not available from database export — to be completed at full-text retrieval.*
+> Digital twin (DT) provides effective pathways to solve issues in the construction industry, particularly smart construction and carbon emissions in prefabrication. Past DT research explored facility management and fault detection, highlighting a knowledge gap on the use of DT for smart construction and emissions monitoring in prefabrication supply chain (PSC). Therefore, the aim of this study is to present a holistic view of DT applications in PSC by exploring real-time smart construction and carbon emissions monitoring. A mixed -method review was adopted in two-steps involving scientometric and qualitative analysis in this study. Findings from the scientometric analysis revealed high interest in research themes such as emissions and energy control, artificial intelligence -based decision-making and blockchain integration in DT for prefabrication. Further-more, the findings from the qualitative analysis demonstrated how smart technologies such as radio frequency identification (RFID), global positioning systems (GPS), laser scanners and sensors have been employed at the production, transportation, and on-site assembly stages of PSC for buildings. For real-time carbon emissions monitoring in DT, this study revealed various smart technologies and their corresponding information requirements for materials/components, machinery, and processes at each stage of the PSC. Five future research directions were provided on effective ways to advance DT in PSC for intelligent building processes and monitor emissions. Therefore, this study not only shows smart technologies suitable for DT in PSC, but also contributes to knowledge on using DT to monitor real-time carbon emissions in PSC for buildings. This study would aid researchers and practitioners with systemic approaches to employ when applying DT in PSC.
 
 ## Introduction & Background ^sec-intro
 
@@ -32,18 +32,25 @@ tags: ["Building", "Carbon", "Construction", "Digital-Twin", "Unsorted", "source
 
 ## Method ^sec-method
 
-*Pending full text.* DT-enabled prefab supply chain for smart construction and carbon evaluation.
+**Key techniques:** blockchain, laser scanners, scientometric, digital twin, demonstrated DT-enabled prefab supply chain for smart construction and carbon evaluation.
 
 ## Key Findings ^sec-results
 
-*Pending full text.*
+**Key techniques:** blockchain, laser scanners, scientometric, digital twin, demonstrated
 
 ## Discussion & Implications ^sec-discussion
 
-**Highly relevant** — DT + prefabrication + supply chain + carbon in JBE. Priority for full-text retrieval.
+**LR themes:** sustainability, lifecycle, construction-phase.
+**DT maturity (heuristic):** ML1 (digital shadow).
+
+**Limitations identified in abstract:**
+- also contributes to knowledge on using DT to monitor real-time carbon emissions in PSC for buildings
+
+**Research gap contribution:** Digital twin-enabled prefabrication supply chain for smart construction and carbon emissions evaluat...
 
 ## Notes ^sec-notes
 
 - **Screening:** Retained — DT + prefab + supply chain + carbon (strong fit).
-- **Status:** `title-only`. **Action: obtain full text** (key K4MMWQIM).
-- **Caution:** Do not cite specific findings until full text reviewed.
+- **Status:** `abstract-grounded` — abstract retrieved from EndNote. (key K4MMWQIM).
+- **Auto-enriched from abstract** — review and verify before citing. PDF available for deep enrichment.
+- **Maturity (heuristic):** ML1 (digital shadow).

@@ -7,6 +7,7 @@ year: 2012
 journal: "AIAA Conference (53rd Structures, Structural Dynamics, and Materials)"
 doi: "10.2514/6.2012-1818"
 zotero_key: "8B7R5BZU"
+removal_reason: Duplicate of [55] Stargel2012 (same Zotero key)
 zotero_status: verified
 last_verified: "2026-06-01"
 tags:

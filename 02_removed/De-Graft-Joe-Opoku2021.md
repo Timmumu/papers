@@ -8,6 +8,7 @@ journal: "Journal of Building Engineering"
 doi: "10.1016/j.jobe.2021.102726"
 zotero_key: ""
 zotero_status: unsorted
+removal_reason: Duplicate of Opoku2021.md (same DOI 10.1016/j.jobe.2021.102726)
 last_verified: "2026-06-14"
 tags: ["Construction", "Digital-Twin", "Unsorted", "source: lens", "identification: databases"]
 ---

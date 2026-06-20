@@ -7,7 +7,7 @@ year: 2025
 journal: "Journal of Building Engineering"
 doi: "10.1016/j.jobe.2025.113117"
 zotero_key: "9UGJK475"
-zotero_status: title-only
+zotero_status: abstract-grounded
 last_verified: "2026-06-15"
 tags: ["Building", "Digital-Twin", "Unsorted", "source: lens", "identification: databases"]
 ---
@@ -24,7 +24,7 @@ tags: ["Building", "Digital-Twin", "Unsorted", "source: lens", "identification: 
 
 ## Abstract ^sec-abstract
 
-*Abstract not available from database export — to be completed at full-text retrieval.*
+> Digital twins, having gained prominence in industrial sectors, are emerging in construction for enhancing intelligent management through real-time monitoring, performance simulation, and data integration. Despite their potential, systematic analysis of frameworks and enabling technologies remains lacking. This review systematically investigates over 150 studies to: (1) analyze the general framework and its extensions for building digital twins, and (2) evaluate enabling technologies and tools based on the modeling procedure. We propose a general structure for building digital twins and analyze frameworks centered on four data types derived from different sources. Our analysis indicates that different types of frameworks exhibit distinct characteristics and inherent limitations, yet a standardized framework for integrating heterogeneous data is still lacking. Through systematic analysis of enabling technologies across four key aspects of the modeling procedure, we investigate building digital twin cases regarding their modeling procedures, technologies employed, and common issues. We identify four key challenges: (1) limited prediction data integration and data analysis, restricting frameworks to monitoring rather than decision-supporting; (2) multi-source data heterogeneity and poor tool interoperability; (3) complex and non-standardized data integration procedures; and (4) low automation in model development. Future research should focus on: (1) standardizing data formats and interoperability tools, (2) developing unified platforms for multi-source data integration, and (3) integrating predictive analytics to enhance decision-making. This study establishes connections between frameworks and enabling technologies, identifies existing problems, and provides actionable recommendations to accelerate the adoption of building digital twins.
 
 ## Introduction & Background ^sec-intro
 
@@ -32,11 +32,11 @@ tags: ["Building", "Digital-Twin", "Unsorted", "source: lens", "identification: 
 
 ## Method ^sec-method
 
-*Pending full text.* Title indicates a review synthesising a framework and enabling technologies for building DTs.
+**Key techniques:** digital twin, propose, developing Title indicates a review synthesising a framework and enabling technologies for building DTs.
 
 ## Key Findings ^sec-results
 
-*Pending full text — not asserted to avoid fabrication.*
+*Quantitative findings not extractable from abstract — full-text review required.*
 
 ## Discussion & Implications ^sec-discussion
 
@@ -45,5 +45,6 @@ tags: ["Building", "Digital-Twin", "Unsorted", "source: lens", "identification: 
 ## Notes ^sec-notes
 
 - **Screening:** Retained — building DT + framework + enabling technologies review (strong fit).
-- **Status:** `title-only` — abstract absent; no OA. **Action: obtain full text (priority)** (key 9UGJK475).
-- **Caution:** Do not cite specific findings until full text reviewed.
+- **Status:** `abstract-grounded` — abstract retrieved from EndNote. (key 9UGJK475).
+- **Auto-enriched from abstract** — review and verify before citing. PDF available for deep enrichment.
+- **Maturity (heuristic):** ML1 (digital shadow).

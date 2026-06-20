@@ -42,6 +42,27 @@ Scientometric results reveal a bifurcated landscape separating volumetric 'Modul
 
 **Highly relevant** — directly invokes *Cognitive Digital Twins* (this thesis's core construct) and a roadmap from monitoring DTs to cognitive/autonomous DTs in OSC, naming neuro-symbolic AI and DPPs. A key framing and gap-analysis citation.
 
+## RP Alignment (Self-Improving CDT for DfX) ^sec-rp-alignment
+
+Nima-Moghimi2026 is the **strongest existing framing paper** that validates the RP's central construct — *Cognitive Digital Twin* — as the recognised next stage in DT evolution for construction. Its Strategic Research Roadmap provides the gap-analysis scaffolding that the RP's four objectives directly address.
+
+### The Cognitive DT Roadmap → RP Objectives
+
+The paper charts a trajectory: **Static Monitoring DT → Cognitive DT → Autonomous Ecosystem**. The RP's objectives map onto specific roadmap gaps:
+
+| Nima-Moghimi2026 Roadmap Element | Gap Identified | RP Objective That Fills It |
+|---|---|---|
+| Neuro-symbolic AI | Current DT reasoning is either purely data-driven (black-box) or purely rule-based (brittle) | **O1:** LLM extraction + ontology-aligned schema combines neural (LLM) with symbolic (IFC ontology) |
+| Operator 5.0 frameworks | Human-in-the-loop is acknowledged but not architected | **O3:** Convergence loop with AR feedback; **Stage 2 (e):** HRO-theory behavioural priors for worker reliability |
+| Digital Product Passports (DPPs) | Sustainability is "implicit rather than explicit" | **O2 sustainability head:** Per-element embodied-carbon labels from EPD/ICE + contractor ESG narratives |
+| Black-box AI opacity | Construction stakeholders cannot trust or verify DT predictions | **O2 conformal prediction:** Coverage-guaranteed intervals make trust quantifiable; **O1 source-span citation:** extraction provenance is auditable |
+| Data sovereignty & fragmented standards | Cross-project, cross-firm DT deployment blocked | **O1 GraphRAG:** Federated knowledge graph can respect data boundaries; IFC-based element schema is an open standard |
+| From static monitoring to true Cognitive DTs | Most DT systems "stall at monitoring" | **O2+O3+O4:** Forward prediction + convergence loop + self-improvement IS the cognitive DT |
+
+### Strategic Positioning for RP
+
+**Cite Nima-Moghimi2026 as:** The authoritative roadmap confirming that (a) Cognitive DT is the recognised aspirational target for construction DT research, (b) the current gap is the absence of neuro-symbolic reasoning, forward prediction, and closed-loop execution, and (c) sustainability must be elevated from implicit to explicit. **Position the RP as:** "The first end-to-end instantiation of Nima-Moghimi2026's Cognitive DT roadmap — combining neuro-symbolic extraction (O1), calibrated forward prediction (O2), formal convergence (O3), and self-improvement (O4) in a single integrated prototype."
+
 ## Notes ^sec-notes
 
 - **Screening:** Retained — DT + OSC + **Cognitive DT roadmap** (very strong fit; cite prominently).

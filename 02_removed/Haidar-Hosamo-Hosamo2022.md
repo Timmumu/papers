@@ -8,6 +8,7 @@ journal: "Advances in Civil Engineering"
 doi: "10.1155/2022/2185170"
 zotero_key: ""
 zotero_status: unsorted
+removal_reason: Duplicate of Hosamo2022.md (same DOI 10.1155/2022/2185170)
 last_verified: "2026-06-14"
 tags: ["BIM", "Building", "Construction", "Digital-Twin", "Facility-Management", "Lifecycle", "Predictive", "Semantic", "Sensor", "Unsorted", "source: lens", "identification: databases"]
 ---

@@ -7,7 +7,7 @@ year: 2025
 journal: "Structures"
 doi: "10.1016/j.istruc.2025.109965"
 zotero_key: "WGJZRM39"
-zotero_status: title-only
+zotero_status: abstract-grounded
 last_verified: "2026-06-15"
 tags: ["Digital-Twin", "Monitoring", "Real-Time", "Structural", "Unsorted", "source: lens", "identification: databases"]
 ---
@@ -24,19 +24,19 @@ tags: ["Digital-Twin", "Monitoring", "Real-Time", "Structural", "Unsorted", "sou
 
 ## Abstract ^sec-abstract
 
-*Abstract not available from database export — to be completed at full-text retrieval.*
+> The proposed G-Twin model enables real-time and high-fidelity prediction of stress fields for offshore wind turbines. In this study, the performance of G-Twin model is further evaluated from three aspects (sensor placement strategy, sensor quantity, and neural network depth). A Spar-type offshore wind turbine is selected to assess the applicability of the G-Twin model. Three representative sampling methods (Farthest Point Sampling, K-Means, and Voxel-based placement) are examined. Five levels of sensor density ranging from 0.5 % to 10 % are evaluated. Network depths from 4 to 36 layers are tested to investigate the effects of message-passing distance. The results show that the model is insensitive to sensor placement and it retains high prediction accuracy with as few as 0.5 % of sensor density. A significant increase in maximum error is observed at a depth of 4, which is attributed to the insufficient receptive field coverage. In addition, an empirical guideline is proposed, in which the GNN depth is suggested to exceed twice of the average minimum inter-sensor distance. The study demonstrates the robustness and adaptability of the G-Twin model for practical deployment in offshore structural monitoring scenarios.
 
 ## Introduction & Background ^sec-intro
 
-*Abstract unavailable from the Lens export and full text not retrievable; inferred from title/venue only — confirm at full-text review.* The paper presents **G-Twin – Graph neural network-based digital twin for real-time and high-fidelity structural health monitoring for offshore wind turbines: Part Ⅱ. Performance assessment** (*Structures*, 2025).
+*Abstract retrieved from EndNote — see Abstract section above. Full-text retrieval pending.* The paper presents **G-Twin – Graph neural network-based digital twin for real-time and high-fidelity structural health monitoring for offshore wind turbines: Part Ⅱ. Performance assessment** (*Structures*, 2025).
 
 ## Method ^sec-method
 
-*Pending full text.* Title indicates a GNN-based DT for SHM of offshore wind turbines, Part II focusing on performance assessment.
+**Key techniques:** neural network, demonstrates, proposed, presentative Title indicates a GNN-based DT for SHM of offshore wind turbines, Part II focusing on performance assessment.
 
 ## Key Findings ^sec-results
 
-*Pending full text — not asserted to avoid fabrication.*
+1. the model is insensitive to sensor placement and it retains high prediction accuracy with as few as 0
 
 ## Discussion & Implications ^sec-discussion
 
@@ -45,5 +45,6 @@ tags: ["Digital-Twin", "Monitoring", "Real-Time", "Structural", "Unsorted", "sou
 ## Notes ^sec-notes
 
 - **Screening:** Retained — GNN-DT + SHM + offshore wind; domain-adjacent.
-- **Status:** `title-only` — abstract absent. **Action: obtain full text** (key WGJZRM39).
-- **Caution:** Do not cite specific findings until full text reviewed.
+- **Status:** `abstract-grounded` — abstract retrieved from EndNote. (key WGJZRM39).
+- **Auto-enriched from abstract** — review and verify before citing. PDF available for deep enrichment.
+- **Maturity (heuristic):** ML1 (digital shadow).

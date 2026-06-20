@@ -8,6 +8,7 @@ journal: "Journal of Building Engineering"
 doi: "10.1016/j.jobe.2021.102730"
 zotero_key: ""
 zotero_status: unsorted
+removal_reason: Duplicate of Ozturk2021.md (same DOI 10.1016/j.jobe.2021.102730)
 last_verified: "2026-06-14"
 tags: ["Digital-Twin", "Unsorted", "source: lens", "identification: databases"]
 ---

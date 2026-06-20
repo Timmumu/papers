@@ -71,6 +71,31 @@ A semantic-NLP IE pipeline that fuses PSG phrasal tags, an ontology, and SSSIE p
 - **Cognitive capability:** symbolic reasoning + domain-ontology grounding — the *knowledge representation* leg of a cognitive DT.
 - **Why cited in LR_cc.md:** El-Gohary2016 anchors the SLR's argument that the cognitive layer of a DT must be able to **consume regulatory text and emit machine-checkable rules**, not just sensor data. It is the canonical reference for the NLP-grounded DfS / ACC pipeline that feeds the DT's reasoning module.
 
+## RP Alignment (Self-Improving CDT for DfX) ^sec-rp-alignment
+
+El-Gohary2016 is the **direct methodological ancestor of O1**. The RP's O1 replaces the 2016 hand-engineered IE pipeline with LLM-based extraction — but inherits the core architectural insight: *semantic features + domain ontology > syntactic-only extraction*.
+
+### O1 Lineage
+
+| Dimension | El-Gohary2016 (2016) | RP O1 (2026) | Evolution |
+|---|---|---|---|
+| **Method** | Hand-crafted IE rules (PSG + SSSIE) | LLM with structured-output prompting + GraphRAG | Manual patterns → neural semantic reasoning |
+| **Ontology** | Construction-domain ontology for disambiguation | Esmaeili/Hallowell + Tixier DfS attribute schema | Single-domain → multi-attribute (safety/quality/sustainability) |
+| **Input** | Regulatory prose (IBC chapters) | Emails, RFIs, specs, incident reports, site photos, ESG narratives | Single-genre → heterogeneous multimodal |
+| **Scale bottleneck** | ~50 pattern templates per code chapter | Zero-shot via LLM; few-shot for domain adaptation | Does not scale across jurisdictions → scales via pretraining |
+| **Validation** | F1 0.96 on IBC | Precision/recall + Cohen's κ on held-out documents | Near-human → expert-parity with audit trail |
+| **Output** | ACC tuples → Horn-clause rules | IFC-element-linked JSON with source-span citation | Machine-checkable rules → human-auditable structured attributes |
+
+The F1 0.96 on building-code extraction is the benchmark O1 must match or exceed — but on *unstructured heterogeneous project records*, a much harder task than regulatory prose (which is deliberately precise and formulaic). O1's falsifiability threshold (precision/recall > 0.70, κ > 0.6) reflects this increased difficulty.
+
+### O3 Relevance
+
+El-Gohary2016's ACC pipeline produces *deterministic compliance rules* from regulations. The RP's O3 inverts this: instead of checking design against fixed rules, O3 *modifies the design* to satisfy O2's predicted risk constraints. Both systems convert unstructured text into actionable design constraints — but O3 closes the loop that El-Gohary2016 opens.
+
+### Strategic Positioning
+
+**Cite as:** The canonical demonstration that semantic features + domain ontology are necessary for NLP extraction from AECO text (the "semantic lift" over syntactic-only is ~13 F1 points). **Position O1 as:** "El-Gohary2016's semantic-NLP paradigm, upgraded from hand-crafted IE rules to LLM-based extraction, and extended from single-source regulatory prose to heterogeneous multimodal project records."
+
 ## Traceability
 
 | Claim in LR_cc.md | Evidence anchor |

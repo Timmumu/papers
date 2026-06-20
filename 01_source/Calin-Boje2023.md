@@ -40,6 +40,16 @@ Usually neglected social impacts can be considered under LCSA. BIM and DT data p
 
 ## Discussion & Implications ^sec-discussion
 
+**Strongly relevant** — BIM+DT for LCSA with a real office building case study. One of the few papers demonstrating DT-enabled lifecycle sustainability assessment with empirical grounding.
+
+## RP Alignment (Self-Improving CDT for DfX) ^sec-rp-alignment
+
+Calin-Boje2023 provides the methodological template for O2's sustainability prediction head. The paper demonstrates that BIM+DT data integration can operationalize LCSA — including social impacts often neglected in carbon-only assessments. O2 extends this by making LCSA predictive (forecasting per-element embodied carbon at design time) rather than retrospective (assessing a completed building).
+
+**O2 sustainability head:** The finding that "BIM and DT data provides better" LCSA data integration directly supports O2's architecture — where IFC geometric data (from BIM) and extracted attributes (from DT-linked project records) feed the GNN predictor. Calin-Boje2023's LCSA framework is the static counterpart; O2 adds forward prediction and conformal uncertainty bounds.
+
+**Strategic positioning:** Cite as the benchmark for DT-enabled LCSA; position O2 as adding predictive capability and uncertainty quantification to this proven integration paradigm.
+
 **Highly relevant** — a BIM-DT LCSA framework with real building case. Directly informs the DT-sustainability and LCA strands.
 
 ## Notes ^sec-notes

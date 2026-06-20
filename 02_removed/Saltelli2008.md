@@ -7,6 +7,7 @@ year: 2008
 journal: "John Wiley & Sons, Chichester (ISBN 978-0-470-05997-5)"
 doi: ""
 zotero_key: ""
+removal_reason: Textbook on sensitivity analysis; not primary research (ref [47])
 zotero_status: metadata_only
 last_verified: "2026-06-01"
 tags:

@@ -7,7 +7,7 @@ year: 2025
 journal: "Sustainable Cities and Society"
 doi: "10.1016/j.scs.2025.106724"
 zotero_key: "SSC26KVU"
-zotero_status: title-only
+zotero_status: abstract-grounded
 last_verified: "2026-06-15"
 tags: ["Digital-Twin", "Unsorted", "Urban", "source: lens", "identification: databases"]
 ---
@@ -24,7 +24,7 @@ tags: ["Digital-Twin", "Unsorted", "Urban", "source: lens", "identification: dat
 
 ## Abstract ^sec-abstract
 
-*Abstract not available from database export — to be completed at full-text retrieval.*
+> Urban water scarcity is a critical issue in many regions where reducing building water consumption becomes necessary. Rainwater harvesting (RWH) and greywater recycling (GWR) are supplementary water supply systems that reduce urban water consumption in buildings and can improve urban sustainability. Water consumption patterns and fees, precipitation trends, and investment and operating costs affect the feasibility of adopting these systems. These factors, however, are subject to uncertainty and dynamically change over time. Conventional analytical methods are incapable of capturing their impacts. In this research, a novel digital twin framework, based on discrete event simulation and building information modeling, is proposed to account for the dynamic and uncertain nature of the contributing factors. This framework provides a high-precision assessment for adopting RWH, GWR, and hybrid RWH and GWR (HRG) systems. The framework's capabilities are tested in a typical residential building in northern Tehran, Iran, where the HRG system demonstrates the highest water saving with a 40.8 % reduction. Nevertheless, none of the assessed systems become feasible due to low urban water fees. The proposed framework reveals high capability in capturing the complexities of the buildings' water supply systems over the life cycle and setting sustainable urban water policies.
 
 ## Introduction & Background ^sec-intro
 
@@ -32,11 +32,11 @@ tags: ["Digital-Twin", "Unsorted", "Urban", "source: lens", "identification: dat
 
 ## Method ^sec-method
 
-*Pending full text.* Title indicates a DT framework assessing the feasibility of supplementary (e.g., rainwater/greywater) water-supply systems in buildings for urban sustainability.
+**Key techniques:** demonstrates, digital twin, proposed Title indicates a DT framework assessing the feasibility of supplementary (e.g., rainwater/greywater) water-supply systems in buildings for urban sustainability.
 
 ## Key Findings ^sec-results
 
-*Pending full text — not asserted to avoid fabrication.*
+1. 40.8 % reduction
 
 ## Discussion & Implications ^sec-discussion
 
@@ -45,5 +45,6 @@ On-topic (**DT + buildings + water/sustainability**), within AECO sustainability
 ## Notes ^sec-notes
 
 - **Screening:** Retained — DT + building water systems + sustainability (good fit).
-- **Status:** `title-only` — abstract absent; no OA. **Action: obtain full text** (key SSC26KVU).
-- **Caution:** Do not cite specific findings until full text reviewed.
+- **Status:** `abstract-grounded` — abstract retrieved from EndNote. (key SSC26KVU).
+- **Auto-enriched from abstract** — review and verify before citing. PDF available for deep enrichment.
+- **Maturity (heuristic):** ML1 (digital shadow).

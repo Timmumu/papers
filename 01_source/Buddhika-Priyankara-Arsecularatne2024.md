@@ -40,6 +40,14 @@ Increasing DT interest led by Europe, Asia, North America, and Oceania. Strong f
 
 ## Discussion & Implications ^sec-discussion
 
+A review of DT for reducing energy consumption and carbon emissions in the built environment. Provides the landscape context for O2's sustainability head.
+
+## RP Alignment (Self-Improving CDT for DfX) ^sec-rp-alignment
+
+**O2 sustainability head — landscape validation:** This review establishes that DT-enabled energy/carbon reduction is an active research area, but most work focuses on operational energy rather than embodied carbon at design stage. O2's sustainability head fills this gap by predicting per-element embodied carbon from EPD/ICE labels at design time — before construction begins.
+
+**Strategic positioning:** Cite to establish the DT-energy/carbon research landscape; position O2 as shifting the focus from operational-energy monitoring to design-stage embodied-carbon prediction.
+
 **Highly relevant** — a DT-sustainability scientometric review with DT-BIM integration focus. Good landscape citation for the DT-energy/sustainability strand.
 
 ## Notes ^sec-notes

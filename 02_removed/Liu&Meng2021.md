@@ -7,6 +7,7 @@ year: 2021
 journal: "Sensors"
 doi: "10.3390/s21113583"
 zotero_key: "CDL7QW8N"
+removal_reason: Duplicate of [76] Liu2021 (same Zotero key)
 zotero_status: verified
 last_verified: "2026-06-01"
 tags:

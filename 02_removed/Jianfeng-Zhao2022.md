@@ -8,6 +8,7 @@ journal: "Journal of Building Engineering"
 doi: "10.1016/j.jobe.2022.104028"
 zotero_key: ""
 zotero_status: unsorted
+removal_reason: Duplicate of Zhao2022.md (same DOI 10.1016/j.jobe.2022.104028)
 last_verified: "2026-06-14"
 tags: ["Building", "Digital-Twin", "Maintenance", "Unsorted", "source: lens", "identification: databases"]
 ---

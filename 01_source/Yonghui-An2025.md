@@ -7,7 +7,7 @@ year: 2025
 journal: "Automation in Construction"
 doi: "10.1016/j.autcon.2025.105972"
 zotero_key: "VJAS7MLD"
-zotero_status: title-only
+zotero_status: abstract-grounded
 last_verified: "2026-06-15"
 tags: ["Digital-Twin", "Inspection", "Structural", "Unsorted", "source: lens", "identification: databases"]
 ---
@@ -24,19 +24,19 @@ tags: ["Digital-Twin", "Inspection", "Structural", "Unsorted", "source: lens", "
 
 ## Abstract ^sec-abstract
 
-*Abstract not available from database export — to be completed at full-text retrieval.*
+> The application of Unmanned Aerial Vehicle (UAV) automatic flight is increasingly popular for structural surface inspection. To address the low level of automation and insufficient adaption of the flight path in response to environmental obstacles, a method of automatic planning UAV inspection mission based on the Geometric Digital Twin (GDT) model and Voxelized Obstacle Information (VOI) is proposed. First, a method for shifting the Field of View (FOV) centroids in parallel is proposed to efficiently generate inspection waypoints. Second, a waypoints adjustment method based on environmental VOI of 3D point clouds is proposed to address the safety issues. Third, a method combining Genetic Algorithm (GA) with A* based on VOI is proposed for optimizing UAV flight path to avoid real-world obstacles. The feasibility of the proposed methods was verified in both an office building and a steel truss bridge. Compared to existing methods, the efficiency is significantly improved.
 
 ## Introduction & Background ^sec-intro
 
-*Abstract unavailable from the Lens export and full text not retrievable; inferred from title/venue only — confirm at full-text review.* The paper presents **efficient low-collision UAV-based automated structural surface inspection using geometric digital twin and voxelized obstacle information** (*Automation in Construction*, 2025).
+*Abstract retrieved from EndNote — see Abstract section above. Full-text retrieval pending.* The paper presents **efficient low-collision UAV-based automated structural surface inspection using geometric digital twin and voxelized obstacle information** (*Automation in Construction*, 2025).
 
 ## Method ^sec-method
 
-*Pending full text.* Title indicates a geometric DT combined with voxelized obstacle data for UAV path planning in automated structural inspection.
+**Key techniques:** digital twin, proposed, point cloud Title indicates a geometric DT combined with voxelized obstacle data for UAV path planning in automated structural inspection.
 
 ## Key Findings ^sec-results
 
-*Pending full text — not asserted to avoid fabrication.*
+*Quantitative findings not extractable from abstract — full-text review required.*
 
 ## Discussion & Implications ^sec-discussion
 
@@ -45,5 +45,6 @@ tags: ["Digital-Twin", "Inspection", "Structural", "Unsorted", "source: lens", "
 ## Notes ^sec-notes
 
 - **Screening:** Retained — geometric DT + UAV + structural inspection (strong fit).
-- **Status:** `title-only` — abstract absent. **Action: obtain full text** (key VJAS7MLD).
-- **Caution:** Do not cite specific findings until full text reviewed.
+- **Status:** `abstract-grounded` — abstract retrieved from EndNote. (key VJAS7MLD).
+- **Auto-enriched from abstract** — review and verify before citing. PDF available for deep enrichment.
+- **Maturity (heuristic):** ML1 (digital shadow).

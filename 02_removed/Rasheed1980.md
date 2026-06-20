@@ -7,6 +7,7 @@ year: 2020
 journal: "IEEE Access 8, 21980–22012"
 doi: "10.1109/ACCESS.2020.2970143"
 zotero_key: "MKZ3HU7D"
+removal_reason: Duplicate of [54] Rasheed2020 (same Zotero key)
 zotero_status: duplicate
 last_verified: "2026-06-01"
 tags:

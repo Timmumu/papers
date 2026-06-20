@@ -7,7 +7,7 @@ year: 2025
 journal: "Structures"
 doi: "10.1016/j.istruc.2025.108299"
 zotero_key: "TIC6DTLD"
-zotero_status: title-only
+zotero_status: abstract-grounded
 last_verified: "2026-06-15"
 tags: ["Bridge", "Digital-Twin", "Unsorted", "source: lens", "identification: databases"]
 ---
@@ -24,7 +24,7 @@ tags: ["Bridge", "Digital-Twin", "Unsorted", "source: lens", "identification: da
 
 ## Abstract ^sec-abstract
 
-*Abstract not available from database export — to be completed at full-text retrieval.*
+> For bridge structures, the mechanical systems in real physical space are high-dimensional, complex, and nonlinear, and the loads that bridges experience are random and time-varying. This makes it very difficult to conduct statistical analysis of the mechanical effects of bridge structures in real physical space. In view of this, this article redefines the P-function and L-function used to describe traffic flow loads through theoretical derivation of statistical steady-state mechanical effects analysis of bridges: The P-function represents the average weight of all vehicles passing through any position on the bridge deck; The L function represents the probability of a vehicle passing through any position on the bridge deck. Furthermore, a digital twin model for traffic flow loads was proposed, which is suitable for mechanical effect analysis under steady-state conditions of bridge structure big data statistics, in order to quantify the big data characteristics of traffic flow loads in physical space bridges. Starting from the traditional traffic flow survey, a measured traditional traffic flow load model was established. Using numerical simulation methods, the conversion relationship and parameter influence relationship between it and the proposed traffic flow load digital twin model were studied, solving the indirect detection problem of the entire bridge deck traffic flow digital twin model. In response to practical engineering problems, the digital twin model of traffic flow load was applied to the statistical steady-state strain effect calculation of actual bridge structures, and the calculation results confirmed the accuracy and effectiveness of the model.
 
 ## Introduction & Background ^sec-intro
 
@@ -32,11 +32,11 @@ tags: ["Bridge", "Digital-Twin", "Unsorted", "source: lens", "identification: da
 
 ## Method ^sec-method
 
-*Pending full text.* Title indicates a DT modelling traffic-flow loads across a full bridge deck to analyse mechanical effects statistically.
+**Key techniques:** digital twin, survey, proposed, applied to Title indicates a DT modelling traffic-flow loads across a full bridge deck to analyse mechanical effects statistically.
 
 ## Key Findings ^sec-results
 
-*Pending full text — not asserted to avoid fabrication.*
+*Quantitative findings not extractable from abstract — full-text review required.*
 
 ## Discussion & Implications ^sec-discussion
 
@@ -45,5 +45,6 @@ On-topic (**DT + bridge loading + structural analysis**), infrastructure SHM. Pr
 ## Notes ^sec-notes
 
 - **Screening:** Retained — DT + bridge traffic load + mechanical analysis (good fit).
-- **Status:** `title-only` — abstract absent; no OA. **Action: obtain full text** (key TIC6DTLD).
-- **Caution:** Do not cite specific findings until full text reviewed.
+- **Status:** `abstract-grounded` — abstract retrieved from EndNote. (key TIC6DTLD).
+- **Auto-enriched from abstract** — review and verify before citing. PDF available for deep enrichment.
+- **Maturity (heuristic):** ML1 (digital shadow).
