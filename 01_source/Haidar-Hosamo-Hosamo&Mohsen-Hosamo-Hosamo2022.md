@@ -7,9 +7,9 @@ year: 2022
 journal: "Advances in Civil Engineering"
 doi: "10.1155/2022/2194949"
 zotero_key: "NH7GTWBW"
-zotero_status: abstract-grounded
+zotero_status: verified
 last_verified: "2026-06-15"
-tags: ["Building", "Civil-Engineering", "Construction", "Digital-Twin", "Infrastructure", "IoT", "ML", "Risk", "Safety", "Unsorted", "source: lens"]
+tags: ["Building", "Civil-Engineering", "Construction", "Digital-Twin", "Infrastructure", "IoT", "ML", "Risk", "Safety", "Unsorted", "source: lens", "identification: databases"]
 ---
 # Haidar-Hosamo-Hosamo2022 — Digital Twin Technology for Bridge Maintenance using 3D Laser Scanning: A Review
 

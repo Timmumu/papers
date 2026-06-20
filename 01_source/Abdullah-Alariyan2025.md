@@ -9,7 +9,7 @@ doi: "10.32604/sdhm.2025.069821"
 zotero_key: "PBXAFYEU"
 zotero_status: abstract-grounded
 last_verified: "2026-06-15"
-tags: ["AI", "Building", "Built-Environment", "Construction", "Deep-Learning", "Digital-Twin", "ML", "Predictive", "Unsorted", "source: lens"]
+tags: ["AI", "Building", "Built-Environment", "Construction", "Deep-Learning", "Digital-Twin", "ML", "Predictive", "Unsorted", "source: lens", "identification: databases"]
 ---
 # Abdullah-Alariyan2025 — Benefits of Artificial Intelligence for Achieving Durable and Sustainable Building Design
 

@@ -9,7 +9,7 @@ doi: "10.1016/j.enbuild.2026.117147"
 zotero_key: "LGKAWR8D"
 zotero_status: title-only
 last_verified: "2026-06-15"
-tags: ["Digital-Twin", "Energy", "Quality", "Unsorted", "source: lens"]
+tags: ["Digital-Twin", "Energy", "Quality", "Unsorted", "source: lens", "identification: databases"]
 ---
 # Olympia-Ageli2026 — Balancing indoor environmental quality and energy efficiency in buildings using digital twins technology: scientometric review and multi-layer conceptual framework
 

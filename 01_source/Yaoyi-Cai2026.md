@@ -9,7 +9,7 @@ doi: "10.65102/is2026405"
 zotero_key: "XGYSQPAG"
 zotero_status: abstract-grounded
 last_verified: "2026-06-15"
-tags: ["BIM", "Building", "Digital-Twin", "Heritage", "Knowledge-Graph", "Simulation", "Unsorted", "source: lens"]
+tags: ["BIM", "Building", "Digital-Twin", "Heritage", "Knowledge-Graph", "Simulation", "Unsorted", "source: lens", "identification: databases"]
 ---
 # Yaoyi-Cai2026 — Research on the Digital Narrative Expression Mechanism of Rural Intangible Cultural Heritage in the Context of Mediatization
 

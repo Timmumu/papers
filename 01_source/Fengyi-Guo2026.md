@@ -7,9 +7,9 @@ year: 2026
 journal: "Journal of Civil Engineering and Management"
 doi: "10.3846/jcem.2026.26154"
 zotero_key: "HNW78REE"
-zotero_status: fulltext-oa
+zotero_status: verified
 last_verified: "2026-06-15"
-tags: ["BIM", "Construction", "Digital-Twin", "Monitoring", "Risk", "Safety", "Sensor", "Unsorted", "source: lens"]
+tags: ["BIM", "Construction", "Digital-Twin", "Monitoring", "Risk", "Safety", "Sensor", "Unsorted", "source: lens", "identification: databases"]
 ---
 # Fengyi-Guo2026 — An intelligent construction system based on digital twin and foundation model optimization
 

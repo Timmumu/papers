@@ -11,6 +11,7 @@ created: "2026-05-25"
 tags:
   - Verified
   - source: scholar
+  - identification: other methods
 ---
 
 # Sacks2020 — Construction with Digital Twin Information Systems

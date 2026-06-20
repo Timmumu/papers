@@ -9,7 +9,7 @@ doi: "10.1108/sasbe-03-2023-0046"
 zotero_key: "J5KBTUPL"
 zotero_status: abstract-grounded
 last_verified: "2026-06-15"
-tags: ["AI", "Digital-Twin", "Infrastructure", "IoT", "Lifecycle", "Monitoring", "Unsorted", "source: lens"]
+tags: ["AI", "Digital-Twin", "Infrastructure", "IoT", "Lifecycle", "Monitoring", "Unsorted", "source: lens", "identification: databases"]
 ---
 # Kavita-Sohal2023 — The uptake of digital twins in delivering infrastructure sector projects
 

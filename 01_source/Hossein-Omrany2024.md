@@ -9,7 +9,7 @@ doi: "10.1108/sasbe-05-2024-0189"
 zotero_key: "6FKYAAVP"
 zotero_status: abstract-grounded
 last_verified: "2026-06-15"
-tags: ["Digital-Twin", "Unsorted", "Urban", "source: lens"]
+tags: ["Digital-Twin", "Unsorted", "Urban", "source: lens", "identification: databases"]
 ---
 # Hossein-Omrany2024 — Application of digital twin technology for Urban Heat Island mitigation: review and conceptual framework
 

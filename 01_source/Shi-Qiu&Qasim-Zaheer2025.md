@@ -7,9 +7,9 @@ year: 2025
 journal: "Journal of Civil Engineering and Management"
 doi: "10.3846/jcem.2025.23718"
 zotero_key: "C8LFJNVC"
-zotero_status: abstract-grounded
+zotero_status: verified
 last_verified: "2026-06-15"
-tags: ["AI", "BIM", "Building", "Digital-Twin", "Infrastructure", "IoT", "Unsorted", "source: lens"]
+tags: ["AI", "BIM", "Building", "Digital-Twin", "Infrastructure", "IoT", "Unsorted", "source: lens", "identification: databases"]
 ---
 # Shi-Qiu2025 — Exploring the impact of digital twin technology in infrastructure management: a comprehensive review
 

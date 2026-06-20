@@ -9,7 +9,7 @@ doi: "10.1109/tits.2021.3130025"
 zotero_key: "9QSIEIBW"
 zotero_status: abstract-grounded
 last_verified: "2026-06-15"
-tags: ["Bridge", "Digital-Twin", "Infrastructure", "Monitoring", "Safety", "Structural", "Unsorted", "source: lens"]
+tags: ["Bridge", "Digital-Twin", "Infrastructure", "Monitoring", "Safety", "Structural", "Unsorted", "source: lens", "identification: databases"]
 ---
 # Danhui-Dan2022 — Digital Twin System of Bridges Group Based on Machine Vision Fusion Monitoring of Bridge Traffic Load
 

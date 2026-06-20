@@ -9,7 +9,7 @@ doi: "10.1002/suco.202400887"
 zotero_key: "IQ8GTSWL"
 zotero_status: abstract-grounded
 last_verified: "2026-06-15"
-tags: ["BIM", "Building", "Civil-Engineering", "Construction", "Digital-Twin", "Infrastructure", "ML", "Predictive", "Safety", "Unsorted", "source: lens"]
+tags: ["BIM", "Building", "Civil-Engineering", "Construction", "Digital-Twin", "Infrastructure", "ML", "Predictive", "Safety", "Unsorted", "source: lens", "identification: databases"]
 ---
 # Sylvia-Keler2025 — Special theme: Advanced through‐life management of existing concrete structures
 

@@ -9,7 +9,7 @@ doi: "10.1016/j.scs.2022.104009"
 zotero_key: "422TPHLI"
 zotero_status: title-only
 last_verified: "2026-06-15"
-tags: ["BIM", "Building", "Digital-Twin", "Smart-City", "Unsorted", "source: lens"]
+tags: ["BIM", "Building", "Digital-Twin", "Smart-City", "Unsorted", "source: lens", "identification: databases"]
 ---
 # Haishan-Xia2022 — Study on city digital twin technologies for sustainable smart city design: A review and bibliometric analysis of geographic information system and building information modeling integration
 

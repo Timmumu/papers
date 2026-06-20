@@ -16,6 +16,7 @@ tags:
   - NLP
   - Decision-Support
   - source: lens
+  - identification: other methods
 ---
 
 # AlOmari2026 — An Integrated Analytics Method for Structured Accident Analysis and Safety Decision Support in Construction

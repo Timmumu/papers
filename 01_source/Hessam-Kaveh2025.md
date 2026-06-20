@@ -7,9 +7,9 @@ year: 2025
 journal: "Journal of Civil Engineering and Management"
 doi: "10.3846/jcem.2025.24921"
 zotero_key: "AM9KT67F"
-zotero_status: abstract-grounded
+zotero_status: verified
 last_verified: "2026-06-15"
-tags: ["Asset-Management", "Civil-Engineering", "Digital-Twin", "Infrastructure", "ML", "Monitoring", "Predictive", "Safety", "Unsorted", "source: lens"]
+tags: ["Asset-Management", "Civil-Engineering", "Digital-Twin", "Infrastructure", "ML", "Monitoring", "Predictive", "Safety", "Unsorted", "source: lens", "identification: databases"]
 ---
 # Hessam-Kaveh2025 — Advancing civil infrastructure with digital twins: a review of applications and challenges
 

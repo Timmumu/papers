@@ -14,6 +14,7 @@ tags:
   - Governance
   - Needs-Zotero-Verification
   - source: scholar
+  - identification: other methods
 ---
 
 # Kahneman2021 — Noise: A Flaw in Human Judgment

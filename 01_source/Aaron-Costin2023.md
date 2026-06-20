@@ -9,7 +9,7 @@ doi: "10.1177/03611981231208908"
 zotero_key: "CHSCQWWH"
 zotero_status: abstract-grounded
 last_verified: "2026-06-15"
-tags: ["BIM", "Bridge", "Building", "Digital-Twin", "Infrastructure", "Monitoring", "Predictive", "Quality", "Structural", "Unsorted", "source: lens"]
+tags: ["BIM", "Bridge", "Building", "Digital-Twin", "Infrastructure", "Monitoring", "Predictive", "Quality", "Structural", "Unsorted", "source: lens", "identification: databases"]
 ---
 # Aaron-Costin2023 — Digital Twin Framework for Bridge Structural Health Monitoring Utilizing Existing Technologies: New Paradigm for Enhanced Management, Operation, and Maintenance
 

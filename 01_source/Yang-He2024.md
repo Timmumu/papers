@@ -9,7 +9,7 @@ doi: "10.1016/j.tust.2024.106110"
 zotero_key: "EVLJ5LED"
 zotero_status: abstract-grounded
 last_verified: "2026-06-15"
-tags: ["Construction", "Digital-Twin", "ML", "Monitoring", "Risk", "Safety", "Tunnel", "Unsorted", "source: lens"]
+tags: ["Construction", "Digital-Twin", "ML", "Monitoring", "Risk", "Safety", "Tunnel", "Unsorted", "source: lens", "identification: databases"]
 ---
 # Yang-He2024 — Reliable simulation analysis for high-temperature inrush water hazard based on the digital twin model of tunnel geological environment
 

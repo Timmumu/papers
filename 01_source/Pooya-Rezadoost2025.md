@@ -9,7 +9,7 @@ doi: "10.1016/j.oceaneng.2025.122283"
 zotero_key: "UJILXG78"
 zotero_status: abstract-grounded
 last_verified: "2026-06-15"
-tags: ["Digital-Twin", "Monitoring", "Predictive", "Quality", "Structural", "Unsorted", "source: lens"]
+tags: ["Digital-Twin", "Monitoring", "Predictive", "Quality", "Structural", "Unsorted", "source: lens", "identification: databases"]
 ---
 # Pooya-Rezadoost2025 — A hybrid data-driven algorithm for digital twin of tubular joints in offshore jacket-type structures
 

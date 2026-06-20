@@ -7,9 +7,9 @@ year: 2026
 journal: "Archives of Civil Engineering"
 doi: "10.24425/ace.2026.157471"
 zotero_key: "7VWWFV8M"
-zotero_status: abstract-grounded
+zotero_status: verified
 last_verified: "2026-06-15"
-tags: ["Digital-Twin", "Predictive", "Quality", "Unsorted", "Urban", "source: lens"]
+tags: ["Digital-Twin", "Predictive", "Quality", "Unsorted", "Urban", "source: lens", "identification: databases"]
 ---
 # Xintong-Li2026 — Digital twin technology supporting urban public space renewal
 

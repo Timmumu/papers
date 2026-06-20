@@ -9,7 +9,7 @@ doi: "10.18400/tekderg.748397"
 zotero_key: "DB542BX7"
 zotero_status: abstract-grounded
 last_verified: "2026-06-15"
-tags: ["BIM", "Building", "Construction", "Maintenance", "Unsorted", "source: lens"]
+tags: ["BIM", "Building", "Construction", "Maintenance", "Unsorted", "source: lens", "identification: databases"]
 ---
 # Esa-HALMETOJA2022 — Utilising Building Information Models in Facility Maintenance and Operations
 

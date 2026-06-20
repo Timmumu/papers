@@ -7,9 +7,9 @@ year: 2026
 journal: "Ingegneria Sismica"
 doi: "10.65102/is2026308"
 zotero_key: "IPS4WER5"
-zotero_status: abstract-grounded
+zotero_status: verified
 last_verified: "2026-06-15"
-tags: ["Construction", "Digital-Twin", "Heritage", "Point-Cloud", "Quality", "Semantic", "Smart-City", "Unsorted", "source: lens"]
+tags: ["Construction", "Digital-Twin", "Heritage", "Point-Cloud", "Quality", "Semantic", "Smart-City", "Unsorted", "source: lens", "identification: databases"]
 ---
 # Xuebo-Li2026 — Research on Digital Twin Construction and Immersive Teaching Application of Luoyang Cultural and Tourism Heritage
 

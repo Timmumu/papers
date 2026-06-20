@@ -9,7 +9,7 @@ doi: "10.1108/ci-07-2022-0183"
 zotero_key: "YJT5DJA6"
 zotero_status: abstract-grounded
 last_verified: "2026-06-15"
-tags: ["BIM", "Building", "Construction", "Digital-Twin", "Infrastructure", "Maintenance", "Unsorted", "source: lens"]
+tags: ["BIM", "Building", "Construction", "Digital-Twin", "Infrastructure", "Maintenance", "Unsorted", "source: lens", "identification: databases"]
 ---
 # Afiqah-R-Radzi2023 — Relationship between digital twin and building information modeling: a systematic review and future directions
 

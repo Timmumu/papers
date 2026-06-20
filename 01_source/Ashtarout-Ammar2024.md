@@ -9,7 +9,7 @@ doi: "10.1177/03611981241231804"
 zotero_key: "V24IVAFT"
 zotero_status: abstract-grounded
 last_verified: "2026-06-15"
-tags: ["Architecture", "Asset-Management", "Digital-Twin", "Lifecycle", "Maintenance", "Predictive", "Road", "Safety", "Unsorted", "source: lens"]
+tags: ["Architecture", "Asset-Management", "Digital-Twin", "Lifecycle", "Maintenance", "Predictive", "Road", "Safety", "Unsorted", "source: lens", "identification: databases"]
 ---
 # Ashtarout-Ammar2024 — Practical Application of Digital Twins for Transportation Asset Data Management: Case Example of a Safety Hardware Asset
 

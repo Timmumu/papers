@@ -7,9 +7,9 @@ year: 2024
 journal: "Structure and Infrastructure Engineering"
 doi: "10.1080/15732479.2024.2311898"
 zotero_key: "BGBRAGQ6"
-zotero_status: abstract-grounded
+zotero_status: verified
 last_verified: "2026-06-15"
-tags: ["AI", "Bridge", "Digital-Twin", "Infrastructure", "Monitoring", "Safety", "Unsorted", "source: lens"]
+tags: ["AI", "Bridge", "Digital-Twin", "Infrastructure", "Monitoring", "Safety", "Unsorted", "source: lens", "identification: databases"]
 ---
 # Konstantinos-Gkoumas2024 — New technologies for bridge inspection and monitoring: a perspective from European Union research and innovation projects
 

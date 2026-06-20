@@ -9,7 +9,7 @@ doi: "10.1016/j.enbuild.2019.07.015"
 zotero_key: "CJQWKNPG"
 zotero_status: abstract-grounded
 last_verified: "2026-06-15"
-tags: ["Building", "Construction", "Digital-Twin", "Energy", "Lifecycle", "Simulation", "Unsorted", "source: lens"]
+tags: ["Building", "Construction", "Digital-Twin", "Energy", "Lifecycle", "Simulation", "Unsorted", "source: lens", "identification: databases"]
 ---
 # G-P-Lydon2019 — Coupled simulation of thermally active building systems to support a digital twin
 

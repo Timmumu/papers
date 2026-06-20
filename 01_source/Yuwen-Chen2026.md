@@ -7,9 +7,9 @@ year: 2026
 journal: "Ingegneria Sismica"
 doi: "10.65102/is20261041"
 zotero_key: "7T7GBRM8"
-zotero_status: abstract-grounded
+zotero_status: verified
 last_verified: "2026-06-15"
-tags: ["Building", "Digital-Twin", "Road", "Simulation", "Unsorted", "source: lens"]
+tags: ["Building", "Digital-Twin", "Road", "Simulation", "Unsorted", "source: lens", "identification: databases"]
 ---
 # Yuwen-Chen2026 — An Evacuation Path Optimization Model Combining Digital Twins and Intelligent Improvement Algorithms for Complex Building Fire Environments
 

@@ -9,7 +9,7 @@ doi: "10.1016/j.autcon.2024.105924"
 zotero_key: "FGAMEIKE"
 zotero_status: abstract-grounded
 last_verified: "2026-06-15"
-tags: ["Construction", "Digital-Twin", "ML", "Unsorted", "source: lens"]
+tags: ["Construction", "Digital-Twin", "ML", "Unsorted", "source: lens", "identification: databases"]
 ---
 # Ranjith-K-Soman2025 — Digital twin construction with a focus on human twin interfaces
 

@@ -7,9 +7,9 @@ year: 2020
 journal: "INTERNATIONAL JOURNAL OF CIVIL ENGINEERING AND TECHNOLOGY (IJCIET)"
 doi: "10.34218/ijciet.11.4.2020.012"
 zotero_key: "UWMLGECH"
-zotero_status: abstract-grounded
+zotero_status: verified
 last_verified: "2026-06-15"
-tags: ["BIM", "Building", "Construction", "Unsorted", "source: lens"]
+tags: ["BIM", "Building", "Construction", "Unsorted", "source: lens", "identification: databases"]
 ---
 # Adrian-August-Wildenauer2020 — CRITICAL ASSESSMENT OF THE EXISTING DEFINITIONS OF BIM DIMENSIONS ON THE EXAMPLE OF SWITZERLAN
 

@@ -9,7 +9,7 @@ doi: "10.1016/j.compstruct.2019.111496"
 zotero_key: "MNRQS97U"
 zotero_status: abstract-grounded
 last_verified: "2026-06-15"
-tags: ["Construction", "Digital-Twin", "Unsorted", "source: lens"]
+tags: ["Construction", "Digital-Twin", "Unsorted", "source: lens", "identification: databases"]
 ---
 # Jean-Benezech2019 — Variational segmentation of textile composite preforms from X-ray computed tomography
 

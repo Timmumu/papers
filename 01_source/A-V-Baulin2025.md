@@ -9,7 +9,7 @@ doi: "10.24000/0409-2961-2025-10-72-79"
 zotero_key: "GFR2M2ZR"
 zotero_status: abstract-grounded
 last_verified: "2026-06-15"
-tags: ["BIM", "Building", "Construction", "Digital-Twin", "Infrastructure", "Lifecycle", "Risk", "Unsorted", "source: lens"]
+tags: ["BIM", "Building", "Construction", "Digital-Twin", "Infrastructure", "Lifecycle", "Risk", "Unsorted", "source: lens", "identification: databases"]
 ---
 # A-V-Baulin2025 — Improving Organizational and Engineering Reliability during Dismantling of Buildings
 

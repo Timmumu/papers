@@ -9,7 +9,7 @@ doi: "10.1108/sasbe-11-2025-0753"
 zotero_key: "X6AZ9677"
 zotero_status: abstract-grounded
 last_verified: "2026-06-15"
-tags: ["BIM", "Building", "Digital-Twin", "Lifecycle", "Real-Time", "Unsorted", "source: lens"]
+tags: ["BIM", "Building", "Digital-Twin", "Lifecycle", "Real-Time", "Unsorted", "source: lens", "identification: databases"]
 ---
 # Apeesada-Sompolgrunk2026 — The evolution of digital twins within the big BIM data landscape
 

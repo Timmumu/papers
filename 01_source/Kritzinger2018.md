@@ -20,7 +20,7 @@ tags:
 ---
 
 CiteKey: "Kritzinger2018"
-tags: [literature_review, "DigitalTwin", "source: scholar"]
+tags: [literature_review, "DigitalTwin", "source: scholar", "identification: other methods"]
 Critique_Labels: 
    - "(+)Seminal-Framework"
    - "(!)Lifecycle-Fragmented"

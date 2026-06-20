@@ -9,7 +9,7 @@ doi: "10.1016/j.enbuild.2026.117384"
 zotero_key: "MX8XMSQ6"
 zotero_status: abstract-grounded
 last_verified: "2026-06-15"
-tags: ["Construction", "Deep-Learning", "Digital-Twin", "Energy", "Semantic", "Simulation", "Unsorted", "source: lens"]
+tags: ["Construction", "Deep-Learning", "Digital-Twin", "Energy", "Semantic", "Simulation", "Unsorted", "source: lens", "identification: databases"]
 ---
 # Siyuan-Meng2026 — Automated window detection for digital twin buildings: A generalized 'sandwich' model and practical guidelines
 

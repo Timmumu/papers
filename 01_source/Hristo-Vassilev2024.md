@@ -9,7 +9,7 @@ doi: "10.1016/j.autcon.2024.105419"
 zotero_key: "IRMQ64IM"
 zotero_status: abstract-grounded
 last_verified: "2026-06-15"
-tags: ["Asset-Management", "Construction", "Digital-Twin", "Infrastructure", "Predictive", "Quality", "Semantic", "Unsorted", "source: lens"]
+tags: ["Asset-Management", "Construction", "Digital-Twin", "Infrastructure", "Predictive", "Quality", "Semantic", "Unsorted", "source: lens", "identification: databases"]
 ---
 # Hristo-Vassilev2024 — Uncertainty-aware point cloud segmentation for infrastructure projects using Bayesian deep learning
 

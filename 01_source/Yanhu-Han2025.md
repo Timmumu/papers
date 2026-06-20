@@ -9,7 +9,7 @@ doi: "10.1016/j.ssci.2025.107006"
 zotero_key: "4MPYXPVA"
 zotero_status: title-only
 last_verified: "2026-06-15"
-tags: ["Construction", "Digital-Twin", "Safety", "Unsorted", "source: lens"]
+tags: ["Construction", "Digital-Twin", "Safety", "Unsorted", "source: lens", "identification: databases"]
 ---
 # Yanhu-Han2025 — Digital twin in construction safety management: Recent advances, challenges, and future directions from 4M1E perspective
 

@@ -15,6 +15,7 @@ tags:
   - Crack-Detection
   - Low-Quality-Venue
   - source: lens
+  - identification: other methods
 ---
 ### **Obsidian YAML Draft**
 1. **tags**: digital_twin_injection_molding  

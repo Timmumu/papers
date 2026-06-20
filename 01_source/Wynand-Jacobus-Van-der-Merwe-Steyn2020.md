@@ -7,9 +7,9 @@ year: 2020
 journal: "International Journal of Pavement Research and Technology"
 doi: "10.1007/s42947-020-6012-7"
 zotero_key: "BWGXEZZS"
-zotero_status: abstract-grounded
+zotero_status: verified
 last_verified: "2026-06-15"
-tags: ["Digital-Twin", "Infrastructure", "Lifecycle", "Road", "Safety", "Sensor", "Unsorted", "source: lens"]
+tags: ["Digital-Twin", "Infrastructure", "Lifecycle", "Road", "Safety", "Sensor", "Unsorted", "source: lens", "identification: databases"]
 ---
 # Wynand-Jacobus-Van-der-Merwe-Steyn2020 — Selected implications of a hyper-connected world on pavement engineering
 

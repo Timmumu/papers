@@ -11,6 +11,7 @@ created: "2026-05-25"
 tags:
   - Verified
   - source: scholar
+  - identification: other methods
 ---
 
 # Sepasgozar2020 — Digital Twin and Web-Based Virtual Gaming for Online Construction Education

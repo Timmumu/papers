@@ -7,9 +7,9 @@ year: 2026
 journal: "Structural Control and Health Monitoring"
 doi: "10.1155/stc/8782403"
 zotero_key: "UT44PP5T"
-zotero_status: abstract-grounded
+zotero_status: verified
 last_verified: "2026-06-15"
-tags: ["Construction", "Digital-Twin", "Monitoring", "Safety", "Unsorted", "source: lens"]
+tags: ["Construction", "Digital-Twin", "Monitoring", "Safety", "Unsorted", "source: lens", "identification: databases"]
 ---
 # Fangshi-Shi2026 — The Research on the Construction Method of a Slope Digital Twin Model Driven by Surrogate Models
 

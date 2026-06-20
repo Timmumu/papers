@@ -9,7 +9,7 @@ doi: "10.1016/j.enbuild.2025.116605"
 zotero_key: "TNFEZLL2"
 zotero_status: abstract-grounded
 last_verified: "2026-06-15"
-tags: ["BIM", "Building", "Carbon", "Construction", "Digital-Twin", "Energy", "IoT", "Unsorted", "source: lens"]
+tags: ["BIM", "Building", "Carbon", "Construction", "Digital-Twin", "Energy", "IoT", "Unsorted", "source: lens", "identification: databases"]
 ---
 # Linna-Geng2026 — How do digital technologies reduce carbon emissions in the construction industry? a systematic review
 

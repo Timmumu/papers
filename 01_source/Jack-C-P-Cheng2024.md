@@ -9,7 +9,7 @@ doi: "10.1016/j.jobe.2023.108283"
 zotero_key: "XY8PX3X4"
 zotero_status: title-only
 last_verified: "2026-06-15"
-tags: ["Building", "Digital-Twin", "Heritage", "Unsorted", "source: lens"]
+tags: ["Building", "Digital-Twin", "Heritage", "Unsorted", "source: lens", "identification: databases"]
 ---
 # Jack-C-P-Cheng2024 — Thermal performance improvement for residential heritage building preservation based on digital twins
 

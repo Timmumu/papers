@@ -9,7 +9,7 @@ doi: "10.1108/sasbe-01-2025-0044"
 zotero_key: "E6PVVYV9"
 zotero_status: abstract-grounded
 last_verified: "2026-06-15"
-tags: ["AI", "Blockchain", "Construction", "Digital-Twin", "IoT", "Quality", "Unsorted", "source: lens"]
+tags: ["AI", "Blockchain", "Construction", "Digital-Twin", "IoT", "Quality", "Unsorted", "source: lens", "identification: databases"]
 ---
 # Vikas-Swarnakar2025 — Unlocking circular economy potential in construction and demolition: an empirical analysis of success factors, failure drivers, benefits, and emerging technologies
 

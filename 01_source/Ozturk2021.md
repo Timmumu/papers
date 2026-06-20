@@ -11,6 +11,7 @@ created: "2026-05-25"
 tags:
   - Verified
   - source: scholar
+  - identification: databases
 ---
 
 # Ozturk2021 — Digital Twin Research in the AECO-FM Industry

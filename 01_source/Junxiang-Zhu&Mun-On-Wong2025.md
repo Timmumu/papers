@@ -9,7 +9,7 @@ doi: "10.1016/j.autcon.2025.106019"
 zotero_key: "E9UPI6EW"
 zotero_status: abstract-grounded
 last_verified: "2026-06-15"
-tags: ["Building", "Digital-Twin", "Facility-Management", "Semantic", "Unsorted", "source: lens"]
+tags: ["Building", "Digital-Twin", "Facility-Management", "Semantic", "Unsorted", "source: lens", "identification: databases"]
 ---
 # Junxiang-Zhu2025 — Semantics-based connectivity graph for indoor pathfinding powered by IFC-Graph
 

@@ -9,7 +9,7 @@ doi: "10.1108/bepam-03-2025-0090"
 zotero_key: "ZST8NH8L"
 zotero_status: abstract-grounded
 last_verified: "2026-06-15"
-tags: ["Building", "Carbon", "Construction", "Digital-Twin", "Energy", "Simulation", "Unsorted", "source: lens"]
+tags: ["Building", "Carbon", "Construction", "Digital-Twin", "Energy", "Simulation", "Unsorted", "source: lens", "identification: databases"]
 ---
 # Lichini-Nikesha-Kumari-Weerasinghe2025 — Digital twin for sustainable decision-making in building net zero carbon retrofitting: a systematic review
 

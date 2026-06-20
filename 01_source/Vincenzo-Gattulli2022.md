@@ -7,9 +7,9 @@ year: 2022
 journal: "Bulletin of Earthquake Engineering"
 doi: "10.1007/s10518-022-01329-8"
 zotero_key: "RWGL6LFJ"
-zotero_status: abstract-grounded
+zotero_status: verified
 last_verified: "2026-06-15"
-tags: ["Architecture", "Digital-Twin", "Monitoring", "Quality", "Sensor", "Smart-City", "Structural", "Unsorted", "source: lens"]
+tags: ["Architecture", "Digital-Twin", "Monitoring", "Quality", "Sensor", "Smart-City", "Structural", "Unsorted", "source: lens", "identification: databases"]
 ---
 # Vincenzo-Gattulli2022 — Design and evaluation of 5G-based architecture supporting data-driven digital twins updating and matching in seismic monitoring
 

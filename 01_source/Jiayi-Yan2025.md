@@ -9,7 +9,7 @@ doi: "10.1016/j.autcon.2025.106131"
 zotero_key: "3XXCV2GZ"
 zotero_status: abstract-grounded
 last_verified: "2026-06-15"
-tags: ["Building", "Digital-Twin", "Infrastructure", "Smart-City", "Unsorted", "source: lens"]
+tags: ["Building", "Digital-Twin", "Infrastructure", "Smart-City", "Unsorted", "source: lens", "identification: databases"]
 ---
 # Jiayi-Yan2025 — Common data environment for digital twins from building to city levels
 

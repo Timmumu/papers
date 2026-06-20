@@ -9,7 +9,7 @@ doi: "10.1061/jitse4.iseng-2605"
 zotero_key: "9E4YXHC9"
 zotero_status: abstract-grounded
 last_verified: "2026-06-15"
-tags: ["BIM", "Building", "Construction", "Digital-Twin", "Infrastructure", "IoT", "Real-Time", "Safety", "Unsorted", "source: lens"]
+tags: ["BIM", "Building", "Construction", "Digital-Twin", "Infrastructure", "IoT", "Real-Time", "Safety", "Unsorted", "source: lens", "identification: databases"]
 ---
 # Fareed-Salih2025 — Exploring the Adoption of Construction Technologies in Infrastructure Projects: Bridging Perceptions of Experts with Real Project Data
 

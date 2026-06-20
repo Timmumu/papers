@@ -9,7 +9,7 @@ doi: "10.1061/jaeied.aeeng-1979"
 zotero_key: "5GH8PW95"
 zotero_status: abstract-grounded
 last_verified: "2026-06-15"
-tags: ["AI", "BIM", "Building", "Construction", "Digital-Twin", "ML", "Monitoring", "Safety", "Unsorted", "source: lens"]
+tags: ["AI", "BIM", "Building", "Construction", "Digital-Twin", "ML", "Monitoring", "Safety", "Unsorted", "source: lens", "identification: databases"]
 ---
 # Fareed-Salih2025 — Investigating the Correlation and Synergy of Artificial Intelligence Techniques, Construction Technologies, and Their Key Benefits
 

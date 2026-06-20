@@ -9,7 +9,7 @@ doi: "10.1155/2022/2185170"
 zotero_key: ""
 zotero_status: unsorted
 last_verified: "2026-06-14"
-tags: ["BIM", "Building", "Construction", "Digital-Twin", "Facility-Management", "Lifecycle", "Predictive", "Semantic", "Sensor", "Unsorted", "source: lens"]
+tags: ["BIM", "Building", "Construction", "Digital-Twin", "Facility-Management", "Lifecycle", "Predictive", "Semantic", "Sensor", "Unsorted", "source: lens", "identification: databases"]
 ---
 # Haidar-Hosamo-Hosamo2022 — A Review of the Digital Twin Technology in the AEC‐FM Industry
 

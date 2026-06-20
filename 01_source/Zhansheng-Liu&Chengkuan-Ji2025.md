@@ -9,7 +9,7 @@ doi: "10.1016/j.jcsr.2024.109126"
 zotero_key: "86DIMMR5"
 zotero_status: abstract-grounded
 last_verified: "2026-06-15"
-tags: ["Building", "Construction", "Digital-Twin", "ML", "Risk", "Safety", "Structural", "Unsorted", "source: lens"]
+tags: ["Building", "Construction", "Digital-Twin", "ML", "Risk", "Safety", "Structural", "Unsorted", "source: lens", "identification: databases"]
 ---
 # Zhansheng-Liu2025 — Structural safety risk prediction method for terminal building steel roof construction considering spatial and temporal variations
 

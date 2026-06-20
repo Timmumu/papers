@@ -9,7 +9,7 @@ doi: "10.1108/ecam-11-2024-1519"
 zotero_key: "DVI8PCN5"
 zotero_status: abstract-grounded
 last_verified: "2026-06-15"
-tags: ["Building", "Construction", "Digital-Twin", "Monitoring", "Risk", "Safety", "Unsorted", "source: lens"]
+tags: ["Building", "Construction", "Digital-Twin", "Monitoring", "Risk", "Safety", "Unsorted", "source: lens", "identification: databases"]
 ---
 # Kexin-Liu2025 — A scoping review of fire safety on building construction sites: current measures, practices and future research directions
 

@@ -7,9 +7,9 @@ year: 2026
 journal: "Ingegneria Sismica"
 doi: "10.65102/is2026927"
 zotero_key: "GCMCPUEM"
-zotero_status: abstract-grounded
+zotero_status: verified
 last_verified: "2026-06-15"
-tags: ["Asset-Management", "Digital-Twin", "Monitoring", "Quality", "Risk", "Unsorted", "source: lens"]
+tags: ["Asset-Management", "Digital-Twin", "Monitoring", "Quality", "Risk", "Unsorted", "source: lens", "identification: databases"]
 ---
 # Shengnan-Zhang2026 — Digital Twin Technology-Enabled Water Resources Asset Accounting Supervision and Water Conservancy Economy Synergistic Optimization Model
 

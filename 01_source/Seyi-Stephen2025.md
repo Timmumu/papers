@@ -7,9 +7,9 @@ year: 2025
 journal: "Intelligent Buildings International"
 doi: "10.1080/17508975.2025.2538692"
 zotero_key: "T6HP5VTH"
-zotero_status: title-only
+zotero_status: verified
 last_verified: "2026-06-15"
-tags: ["Construction", "Digital-Twin", "Unsorted", "source: lens"]
+tags: ["Construction", "Digital-Twin", "Unsorted", "source: lens", "identification: databases"]
 ---
 # Seyi-Stephen2025 — Enhancing sustainability through the integration of digital twins in stealth construction: <i>a bibliometric review</i>
 

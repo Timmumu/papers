@@ -9,7 +9,7 @@ doi: "10.1016/j.spc.2025.10.004"
 zotero_key: "AAP5RYKU"
 zotero_status: abstract-grounded
 last_verified: "2026-06-15"
-tags: ["AI", "BIM", "Building", "Construction", "Digital-Twin", "Infrastructure", "IoT", "Lifecycle", "Predictive", "Unsorted", "source: lens"]
+tags: ["AI", "BIM", "Building", "Construction", "Digital-Twin", "Infrastructure", "IoT", "Lifecycle", "Predictive", "Unsorted", "source: lens", "identification: databases"]
 ---
 # Sara-Rashidian2025 — Enabling circularity in construction: A technology-phase alignment of construction 4.0 and circular economy principles
 

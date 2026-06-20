@@ -9,7 +9,7 @@ doi: "10.1061/jccee5.cpeng-4842"
 zotero_key: "K388NE9M"
 zotero_status: abstract-grounded
 last_verified: "2026-06-15"
-tags: ["Digital-Twin", "Maintenance", "Monitoring", "Quality", "Safety", "Unsorted", "source: lens"]
+tags: ["Digital-Twin", "Maintenance", "Monitoring", "Quality", "Safety", "Unsorted", "source: lens", "identification: databases"]
 ---
 # Obinna-C-Madubuike2023 — Digital Twin–Based Health Care Facilities Management
 

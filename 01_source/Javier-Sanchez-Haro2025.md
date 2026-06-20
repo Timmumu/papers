@@ -9,7 +9,7 @@ doi: "10.1016/j.istruc.2024.107916"
 zotero_key: "6VGUD2NX"
 zotero_status: abstract-grounded
 last_verified: "2026-06-15"
-tags: ["Bridge", "Digital-Twin", "Geotechnical", "Maintenance", "Monitoring", "Predictive", "Risk", "Structural", "Unsorted", "source: lens"]
+tags: ["Bridge", "Digital-Twin", "Geotechnical", "Maintenance", "Monitoring", "Predictive", "Risk", "Structural", "Unsorted", "source: lens", "identification: databases"]
 ---
 # Javier-Sanchez-Haro2025 — Digital twin for predictive maintenance on the Espartxo Bridge. Application to early detection of under-foundation scour
 

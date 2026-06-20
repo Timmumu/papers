@@ -9,7 +9,7 @@ doi: "10.1016/j.ress.2025.111633"
 zotero_key: "S78F4AQL"
 zotero_status: abstract-grounded
 last_verified: "2026-06-15"
-tags: ["Digital-Twin", "Tunnel", "Unsorted", "source: lens"]
+tags: ["Digital-Twin", "Tunnel", "Unsorted", "source: lens", "identification: databases"]
 ---
 # Zhiyao-Tian2026 — A Bayesian pressure‑inversion–driven method for establishing mechanically grounded digital twins of in‑service tunnel linings
 

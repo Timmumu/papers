@@ -11,6 +11,7 @@ created: "2026-05-25"
 tags:
   - Verified
   - source: scholar
+  - identification: other methods
 ---
 
 # Singh2021 — Digital Twin: Origin to Future

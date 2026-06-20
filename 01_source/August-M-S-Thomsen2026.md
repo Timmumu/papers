@@ -7,9 +7,9 @@ year: 2026
 journal: "Journal of Building Engineering"
 doi: "10.1016/j.jobe.2026.115627"
 zotero_key: "PL984CZI"
-zotero_status: abstract-grounded
+zotero_status: verified
 last_verified: "2026-06-15"
-tags: ["Building", "Digital-Twin", "Energy", "Ontology", "Semantic", "Unsorted", "source: lens"]
+tags: ["Building", "Digital-Twin", "Energy", "Ontology", "Semantic", "Unsorted", "source: lens", "identification: databases"]
 ---
 # August-M-S-Thomsen2026 — Ontology-driven digital twins for optimized recommissioning of hospital building operations
 

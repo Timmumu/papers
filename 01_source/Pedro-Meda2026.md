@@ -9,7 +9,7 @@ doi: "10.1108/sasbe-09-2025-0585"
 zotero_key: "FYDFNI56"
 zotero_status: abstract-grounded
 last_verified: "2026-06-15"
-tags: ["Building", "Built-Environment", "Construction", "Digital-Twin", "Energy", "Unsorted", "source: lens"]
+tags: ["Building", "Built-Environment", "Construction", "Digital-Twin", "Energy", "Unsorted", "source: lens", "identification: databases"]
 ---
 # Pedro-Meda2026 — European sustainable built environment vision framework: critical review and expansion
 

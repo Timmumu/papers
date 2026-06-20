@@ -9,7 +9,7 @@ doi: "10.1080/15732479.2025.2456979"
 zotero_key: "MLB6GHW7"
 zotero_status: title-only
 last_verified: "2026-06-15"
-tags: ["BIM", "Bridge", "Unsorted", "source: lens"]
+tags: ["BIM", "Bridge", "Unsorted", "source: lens", "identification: databases"]
 ---
 # Fidel-Lozano-Galant2025 — An open-source GIS app for digitalising bridge inspections and automating BIM model integration
 

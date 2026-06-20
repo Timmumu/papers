@@ -9,7 +9,7 @@ doi: "10.1016/j.engstruct.2023.116213"
 zotero_key: "327K59P5"
 zotero_status: abstract-grounded
 last_verified: "2026-06-15"
-tags: ["BIM", "Building", "Construction", "Digital-Twin", "Ontology", "Quality", "Semantic", "Structural", "Unsorted", "source: lens"]
+tags: ["BIM", "Building", "Construction", "Digital-Twin", "Ontology", "Quality", "Semantic", "Structural", "Unsorted", "source: lens", "identification: databases"]
 ---
 # Jianyong-Shi2023 — Research on a methodology for intelligent seismic performance evaluation and optimization design of buildings based on IFC and ontology
 

@@ -9,7 +9,7 @@ doi: "10.1080/15732479.2024.2422495"
 zotero_key: "BFX7K33W"
 zotero_status: abstract-grounded
 last_verified: "2026-06-15"
-tags: ["Bridge", "Digital-Twin", "Railway", "Safety", "Unsorted", "source: lens"]
+tags: ["Bridge", "Digital-Twin", "Railway", "Safety", "Unsorted", "source: lens", "identification: databases"]
 ---
 # Juan-Carlos-Sanchez-Quesada2024 — Train-track-bridge interaction effects on highly skewed girder bridges of short-to-medium spans for increasing operating speeds
 

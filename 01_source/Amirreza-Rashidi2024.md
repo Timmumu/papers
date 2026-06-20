@@ -9,7 +9,7 @@ doi: "10.1108/ecam-02-2024-0239"
 zotero_key: "ZIUX9DUJ"
 zotero_status: abstract-grounded
 last_verified: "2026-06-15"
-tags: ["BIM", "Building", "Built-Environment", "Construction", "Digital-Twin", "Energy", "Facility-Management", "Unsorted", "source: lens"]
+tags: ["BIM", "Building", "Built-Environment", "Construction", "Digital-Twin", "Energy", "Facility-Management", "Unsorted", "source: lens", "identification: databases"]
 ---
 # Amirreza-Rashidi2024 — A systematic taxonomic review of the application of BIM and digital twins technologies in the construction industry
 

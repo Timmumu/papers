@@ -9,7 +9,7 @@ doi: "10.1061/jcemd4.coeng-17248"
 zotero_key: "ITZHNZ4U"
 zotero_status: abstract-grounded
 last_verified: "2026-06-15"
-tags: ["Construction", "Digital-Twin", "Lifecycle", "Maintenance", "Predictive", "Simulation", "Unsorted", "source: lens"]
+tags: ["Construction", "Digital-Twin", "Lifecycle", "Maintenance", "Predictive", "Simulation", "Unsorted", "source: lens", "identification: databases"]
 ---
 # Bilal-Manzoor2025 — Critical Success Factors for Implementing Digital Twin Technology in Construction Projects: A Systematic and Bibliometric Approach
 

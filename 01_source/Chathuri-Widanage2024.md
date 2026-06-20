@@ -9,7 +9,7 @@ doi: "10.1016/j.autcon.2024.105705"
 zotero_key: "SGKH4GMQ"
 zotero_status: abstract-grounded
 last_verified: "2026-06-15"
-tags: ["BIM", "Building", "Carbon", "Construction", "Infrastructure", "Unsorted", "source: lens"]
+tags: ["BIM", "Building", "Carbon", "Construction", "Infrastructure", "Unsorted", "source: lens", "identification: databases"]
 ---
 # Chathuri-Widanage2024 — Integrating Design for Manufacture and Assembly (DfMA) with BIM for infrastructure
 

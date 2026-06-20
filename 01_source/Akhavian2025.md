@@ -8,7 +8,7 @@ journal: "arXiv preprint arXiv:2509.20705"
 zotero_key: "7REV8TWX"
 zotero_status: verified
 last_verified: "2026-05-25"
-tags: ["BIM-to-DT", "DfS", "Perception", "Verified", "source: scholar"]
+tags: ["BIM-to-DT", "DfS", "Perception", "Verified", "source: scholar", "identification: other methods"]
 ---
 
 # Akhavian2025 — BIM2RDT (Robot-Ready Site Digital Twin, arXiv preprint)

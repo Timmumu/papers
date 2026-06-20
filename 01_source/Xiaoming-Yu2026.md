@@ -7,9 +7,9 @@ year: 2026
 journal: "Energy Engineering"
 doi: "10.32604/ee.2026.073475"
 zotero_key: "RP6YVITN"
-zotero_status: abstract-grounded
+zotero_status: verified
 last_verified: "2026-06-15"
-tags: ["Bridge", "Digital-Twin", "Monitoring", "Real-Time", "Unsorted", "source: lens"]
+tags: ["Bridge", "Digital-Twin", "Monitoring", "Real-Time", "Unsorted", "source: lens", "identification: databases"]
 ---
 # Xiaoming-Yu2026 — A Digital Twin-Based Method for Degradation Parameter Identification of Electrolytic Capacitors in Full-Bridge Submodules of Unified Power Flow Controllers
 

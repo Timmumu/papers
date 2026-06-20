@@ -7,9 +7,9 @@ year: 2025
 journal: "Smart and Sustainable Built Environment"
 doi: "10.1108/sasbe-06-2025-0328"
 zotero_key: "WHKUGBU6"
-zotero_status: abstract-grounded
+zotero_status: verified
 last_verified: "2026-06-15"
-tags: ["BIM", "Building", "Construction", "Digital-Twin", "ML", "Structural", "Unsorted", "source: lens"]
+tags: ["BIM", "Building", "Construction", "Digital-Twin", "ML", "Structural", "Unsorted", "source: lens", "identification: databases"]
 ---
 # Sakibu-Seidu2025 — Leveraging digital technologies and machine learning for climate resilient buildings: modelling the role of dynamic drivers in mitigating critical barriers
 

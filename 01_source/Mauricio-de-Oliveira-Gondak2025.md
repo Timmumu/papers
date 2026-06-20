@@ -9,7 +9,7 @@ doi: "10.1108/ci-01-2025-0021"
 zotero_key: "GR9HDM7P"
 zotero_status: abstract-grounded
 last_verified: "2026-06-15"
-tags: ["BIM", "Blockchain", "Building", "Carbon", "Construction", "Digital-Twin", "Lifecycle", "Unsorted", "source: lens"]
+tags: ["BIM", "Blockchain", "Building", "Carbon", "Construction", "Digital-Twin", "Lifecycle", "Unsorted", "source: lens", "identification: databases"]
 ---
 # Mauricio-de-Oliveira-Gondak2025 — Guide to digital technologies for circularity in the project lifecycle: perspective of the EN 15643-3:2012 standard
 

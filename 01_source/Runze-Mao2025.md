@@ -9,7 +9,7 @@ doi: "10.1109/tits.2025.3535593"
 zotero_key: "B7NQRD5P"
 zotero_status: abstract-grounded
 last_verified: "2026-06-15"
-tags: ["Bridge", "Digital-Twin", "Monitoring", "Predictive", "Safety", "Unsorted", "source: lens"]
+tags: ["Bridge", "Digital-Twin", "Monitoring", "Predictive", "Safety", "Unsorted", "source: lens", "identification: databases"]
 ---
 # Runze-Mao2025 — A Systematic Survey of Digital Twin Applications: Transferring Knowledge From Automotive and Aviation to Maritime Industry
 

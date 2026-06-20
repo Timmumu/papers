@@ -9,7 +9,7 @@ doi: "10.1016/j.jobe.2021.102730"
 zotero_key: ""
 zotero_status: unsorted
 last_verified: "2026-06-14"
-tags: ["Digital-Twin", "Unsorted", "source: lens"]
+tags: ["Digital-Twin", "Unsorted", "source: lens", "identification: databases"]
 ---
 # Gozde-Basak-Ozturk2021 — Digital Twin Research in the AECO-FM Industry
 

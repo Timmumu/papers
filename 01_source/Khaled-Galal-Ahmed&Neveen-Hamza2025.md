@@ -9,7 +9,7 @@ doi: "10.1108/sasbe-11-2024-0494"
 zotero_key: "PK59YMI8"
 zotero_status: abstract-grounded
 last_verified: "2026-06-15"
-tags: ["BIM", "Building", "Digital-Twin", "Energy", "Simulation", "Unsorted", "source: lens"]
+tags: ["BIM", "Building", "Digital-Twin", "Energy", "Simulation", "Unsorted", "source: lens", "identification: databases"]
 ---
 # Khaled-Galal-Ahmed2025 — Retrofit with residents: proposed locally responsive participatory method for technical thermal retrofitting of public housing in the United Arab Emirates
 

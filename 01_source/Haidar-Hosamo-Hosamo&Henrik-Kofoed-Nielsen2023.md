@@ -9,7 +9,7 @@ doi: "10.1016/j.enbuild.2022.112732"
 zotero_key: "2E4UQ7PZ"
 zotero_status: abstract-grounded
 last_verified: "2026-06-15"
-tags: ["BIM", "Building", "Digital-Twin", "Energy", "Facility-Management", "Ontology", "Predictive", "Sensor", "Unsorted", "source: lens"]
+tags: ["BIM", "Building", "Digital-Twin", "Energy", "Facility-Management", "Ontology", "Predictive", "Sensor", "Unsorted", "source: lens", "identification: databases"]
 ---
 # Haidar-Hosamo-Hosamo2023 — Digital Twin framework for automated fault source detection and prediction for comfort performance evaluation of existing non-residential Norwegian buildings
 

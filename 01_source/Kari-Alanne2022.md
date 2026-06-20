@@ -9,7 +9,7 @@ doi: "10.1016/j.scs.2021.103445"
 zotero_key: "W93ZJWHS"
 zotero_status: abstract-grounded
 last_verified: "2026-06-15"
-tags: ["AI", "Building", "Digital-Twin", "Energy", "ML", "Unsorted", "source: lens"]
+tags: ["AI", "Building", "Digital-Twin", "Energy", "ML", "Unsorted", "source: lens", "identification: databases"]
 ---
 # Kari-Alanne2022 — An overview of machine learning applications for smart buildings
 

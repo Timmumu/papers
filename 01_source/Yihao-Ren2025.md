@@ -9,7 +9,7 @@ doi: "10.1177/03611981241311575"
 zotero_key: "453QLA6G"
 zotero_status: abstract-grounded
 last_verified: "2026-06-15"
-tags: ["AI", "Digital-Twin", "Infrastructure", "Quality", "Unsorted", "source: lens"]
+tags: ["AI", "Digital-Twin", "Infrastructure", "Quality", "Unsorted", "source: lens", "identification: databases"]
 ---
 # Yihao-Ren2025 — Hybrid Local-Feature-Based Approach for Automated Rail Extraction from Lidar Data
 

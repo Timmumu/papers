@@ -9,7 +9,7 @@ doi: "10.1109/tits.2025.3575006"
 zotero_key: "XZTTEJPS"
 zotero_status: abstract-grounded
 last_verified: "2026-06-15"
-tags: ["Digital-Twin", "Infrastructure", "Lifecycle", "Monitoring", "Predictive", "Safety", "Unsorted", "source: lens"]
+tags: ["Digital-Twin", "Infrastructure", "Lifecycle", "Monitoring", "Predictive", "Safety", "Unsorted", "source: lens", "identification: databases"]
 ---
 # Silvia-Galvan-Nunez2025 — Digital Twin Vision for Freight Railroads: A Case Study in North America
 

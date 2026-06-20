@@ -9,7 +9,7 @@ doi: "10.1080/15583058.2023.2258084"
 zotero_key: "WUMWISHG"
 zotero_status: abstract-grounded
 last_verified: "2026-06-15"
-tags: ["Architecture", "BIM", "Building", "Construction", "Digital-Twin", "Unsorted", "source: lens"]
+tags: ["Architecture", "BIM", "Building", "Construction", "Digital-Twin", "Unsorted", "source: lens", "identification: databases"]
 ---
 # Annalaura-Vuoto2023 — Shaping Digital Twin Concept for Built Cultural Heritage Conservation: A Systematic Literature Review
 

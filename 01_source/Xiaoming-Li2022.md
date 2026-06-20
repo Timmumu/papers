@@ -9,7 +9,7 @@ doi: "10.1016/j.scs.2022.104241"
 zotero_key: "VC3ENQ7F"
 zotero_status: title-only
 last_verified: "2026-06-15"
-tags: ["Construction", "Digital-Twin", "Energy", "Unsorted", "source: lens"]
+tags: ["Construction", "Digital-Twin", "Energy", "Unsorted", "source: lens", "identification: databases"]
 ---
 # Xiaoming-Li2022 — Application of effective water-energy management based on digital twins technology in sustainable cities construction
 

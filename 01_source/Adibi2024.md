@@ -16,6 +16,7 @@ tags:
   - Smart-Environment
   - Review
   - source: lens
+  - identification: other methods
 ---
 ### **Obsidian YAML Draft**  
 ---  

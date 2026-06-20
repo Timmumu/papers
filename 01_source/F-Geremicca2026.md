@@ -9,7 +9,7 @@ doi: "10.1016/j.enbuild.2026.117332"
 zotero_key: "53WLEE5A"
 zotero_status: abstract-grounded
 last_verified: "2026-06-15"
-tags: ["Architecture", "BIM", "Building", "Built-Environment", "Digital-Twin", "Energy", "Semantic", "Unsorted", "source: lens"]
+tags: ["Architecture", "BIM", "Building", "Built-Environment", "Digital-Twin", "Energy", "Semantic", "Unsorted", "source: lens", "identification: databases"]
 ---
 # F-Geremicca2026 — Digital twins for sustainable buildings: From framework to strategy guidelines and application
 

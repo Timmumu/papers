@@ -9,7 +9,7 @@ doi: "10.1016/j.autcon.2025.105972"
 zotero_key: "VJAS7MLD"
 zotero_status: title-only
 last_verified: "2026-06-15"
-tags: ["Digital-Twin", "Inspection", "Structural", "Unsorted", "source: lens"]
+tags: ["Digital-Twin", "Inspection", "Structural", "Unsorted", "source: lens", "identification: databases"]
 ---
 # Yonghui-An2025 — Efficient low-collision UAV-based automated structural surface inspection using geometric digital twin and voxelized obstacle information
 

@@ -9,7 +9,7 @@ doi: "10.1016/j.jobe.2024.111541"
 zotero_key: "CDGQD4FP"
 zotero_status: title-only
 last_verified: "2026-06-15"
-tags: ["BIM", "Building", "Digital-Twin", "Lifecycle", "Maintenance", "Unsorted", "source: lens"]
+tags: ["BIM", "Building", "Digital-Twin", "Lifecycle", "Maintenance", "Unsorted", "source: lens", "identification: databases"]
 ---
 # Aya-Elshabshiri2025 — Integration of Building Information Modeling and Digital Twins in the Operation and Maintenance of a building lifecycle: A bibliometric analysis review
 

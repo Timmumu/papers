@@ -7,9 +7,9 @@ year: 2023
 journal: "Facilities"
 doi: "10.1108/f-03-2023-0029"
 zotero_key: "8UT3SSSX"
-zotero_status: abstract-grounded
+zotero_status: verified
 last_verified: "2026-06-15"
-tags: ["BIM", "Building", "Digital-Twin", "Lifecycle", "Maintenance", "Unsorted", "source: lens"]
+tags: ["BIM", "Building", "Digital-Twin", "Lifecycle", "Maintenance", "Unsorted", "source: lens", "identification: databases"]
 ---
 # Beatriz-Campos-Fialho2023 — Statistical critical reactive maintenance characterisation for digital twin implementation in universities
 

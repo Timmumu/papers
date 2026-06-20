@@ -9,7 +9,7 @@ doi: "10.1051/ijmqe/2025014"
 zotero_key: "SH738FEA"
 zotero_status: abstract-grounded
 last_verified: "2026-06-15"
-tags: ["BIM", "Construction", "Digital-Twin", "Monitoring", "Risk", "Safety", "Tunnel", "Unsorted", "source: lens"]
+tags: ["BIM", "Construction", "Digital-Twin", "Monitoring", "Risk", "Safety", "Tunnel", "Unsorted", "source: lens", "identification: databases"]
 ---
 # Canxin-Huang2026 — Research on an intelligent monitoring system for the entire tunnel construction process based on IoT and digital twin
 

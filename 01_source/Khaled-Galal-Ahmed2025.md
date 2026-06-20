@@ -9,7 +9,7 @@ doi: "10.1061/jaeied.aeeng-1791"
 zotero_key: "HNA9LQZ7"
 zotero_status: abstract-grounded
 last_verified: "2026-06-15"
-tags: ["BIM", "Building", "Digital-Twin", "Energy", "Infrastructure", "Simulation", "Unsorted", "source: lens"]
+tags: ["BIM", "Building", "Digital-Twin", "Energy", "Infrastructure", "Simulation", "Unsorted", "source: lens", "identification: databases"]
 ---
 # Khaled-Galal-Ahmed2025 — Trihybrid Method for Energy Efficiency Retrofitting of Public Housing in a Hot Arid Climate: A Case Study in the UAE
 

@@ -9,7 +9,7 @@ doi: "10.1108/f-11-2017-0112"
 zotero_key: "IZUV9VGD"
 zotero_status: abstract-grounded
 last_verified: "2026-06-15"
-tags: ["BIM", "Building", "Construction", "Energy", "Facility-Management", "Maintenance", "Quality", "Unsorted", "source: lens"]
+tags: ["BIM", "Building", "Construction", "Energy", "Facility-Management", "Maintenance", "Quality", "Unsorted", "source: lens", "identification: databases"]
 ---
 # Esa-Halmetoja2019 — The conditions data model supporting building information models in facility management
 

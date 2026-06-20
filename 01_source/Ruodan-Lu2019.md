@@ -9,7 +9,7 @@ doi: "10.1016/j.autcon.2019.102837"
 zotero_key: "76LLSD64"
 zotero_status: abstract-grounded
 last_verified: "2026-06-15"
-tags: ["Bridge", "Digital-Twin", "Point-Cloud", "Quality", "Unsorted", "source: lens"]
+tags: ["Bridge", "Digital-Twin", "Point-Cloud", "Quality", "Unsorted", "source: lens", "identification: databases"]
 ---
 # Ruodan-Lu2019 — Digital twinning of existing reinforced concrete bridges from labelled point clusters
 

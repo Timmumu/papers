@@ -7,9 +7,9 @@ year: 2025
 journal: "Building and Environment"
 doi: "10.1016/j.buildenv.2024.112433"
 zotero_key: "UV7SUJXF"
-zotero_status: abstract-grounded
+zotero_status: verified
 last_verified: "2026-06-15"
-tags: ["Building", "Digital-Twin", "Knowledge-Graph", "Quality", "Semantic", "Sensor", "Unsorted", "source: lens"]
+tags: ["Building", "Digital-Twin", "Knowledge-Graph", "Quality", "Semantic", "Sensor", "Unsorted", "source: lens", "identification: databases"]
 ---
 # Alex-Donkers2025 — Personal indoor comfort models through knowledge discovery in cross-domain semantic digital twins
 

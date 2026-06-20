@@ -9,7 +9,7 @@ doi: "10.1016/j.jobe.2025.113391"
 zotero_key: "MR3JI45K"
 zotero_status: title-only
 last_verified: "2026-06-15"
-tags: ["BIM", "Building", "Digital-Twin", "Unsorted", "source: lens"]
+tags: ["BIM", "Building", "Digital-Twin", "Unsorted", "source: lens", "identification: databases"]
 ---
 # Nehal-Elshaboury2025 — Integrated BIM-GIS framework for holistic building stock assessment using 5D geo-modeling and digital twin concepts
 

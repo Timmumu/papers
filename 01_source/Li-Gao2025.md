@@ -7,9 +7,9 @@ year: 2025
 journal: "Archives of Civil Engineering"
 doi: "10.24425/ace.2025.156179"
 zotero_key: "8SQRYRC7"
-zotero_status: abstract-grounded
+zotero_status: verified
 last_verified: "2026-06-15"
-tags: ["Building", "Construction", "Digital-Twin", "Quality", "Safety", "Structural", "Unsorted", "source: lens"]
+tags: ["Building", "Construction", "Digital-Twin", "Quality", "Safety", "Structural", "Unsorted", "source: lens", "identification: databases"]
 ---
 # Li-Gao2025 — Digital twin-based vibration displacement sensing and recognition technology for large engineering structures
 

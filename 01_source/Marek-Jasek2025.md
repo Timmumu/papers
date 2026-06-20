@@ -9,7 +9,7 @@ doi: "10.1016/j.istruc.2025.109180"
 zotero_key: "XFSADITI"
 zotero_status: abstract-grounded
 last_verified: "2026-06-15"
-tags: ["BIM", "Building", "Carbon", "Construction", "Digital-Twin", "Quality", "Structural", "Unsorted", "source: lens"]
+tags: ["BIM", "Building", "Carbon", "Construction", "Digital-Twin", "Quality", "Structural", "Unsorted", "source: lens", "identification: databases"]
 ---
 # Marek-Jasek2025 — The digital twin on a residential housing in the Czech Republic on the BIM platform and its importance for the circular economy
 

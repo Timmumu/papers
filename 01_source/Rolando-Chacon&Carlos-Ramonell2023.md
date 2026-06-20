@@ -7,9 +7,9 @@ year: 2023
 journal: "Structure and Infrastructure Engineering"
 doi: "10.1080/15732479.2023.2264840"
 zotero_key: "P3IB6ZYS"
-zotero_status: abstract-grounded
+zotero_status: verified
 last_verified: "2026-06-15"
-tags: ["Bridge", "Construction", "Digital-Twin", "Maintenance", "Railway", "Simulation", "Unsorted", "source: lens"]
+tags: ["Bridge", "Construction", "Digital-Twin", "Maintenance", "Railway", "Simulation", "Unsorted", "source: lens", "identification: databases"]
 ---
 # Rolando-Chacon2023 — Digital twinning during load tests of railway bridges - case study: the high-speed railway network, Extremadura, Spain
 

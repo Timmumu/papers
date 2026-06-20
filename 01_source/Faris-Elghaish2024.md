@@ -7,9 +7,9 @@ year: 2024
 journal: "Smart and Sustainable Built Environment"
 doi: "10.1108/sasbe-03-2024-0096"
 zotero_key: "7WADNETG"
-zotero_status: abstract-grounded
+zotero_status: verified
 last_verified: "2026-06-15"
-tags: ["AI", "Built-Environment", "Construction", "Digital-Twin", "IoT", "Predictive", "Quality", "Unsorted", "source: lens"]
+tags: ["AI", "Built-Environment", "Construction", "Digital-Twin", "IoT", "Predictive", "Quality", "Unsorted", "source: lens", "identification: databases"]
 ---
 # Faris-Elghaish2024 — Predictive digital twin technologies for achieving net zero carbon emissions: a critical review and future research agenda
 

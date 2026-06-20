@@ -9,7 +9,7 @@ doi: "10.1108/ecam-08-2025-1303"
 zotero_key: "HNWHHZ39"
 zotero_status: abstract-grounded
 last_verified: "2026-06-15"
-tags: ["BIM", "Blockchain", "Building", "Construction", "Digital-Twin", "IoT", "Real-Time", "Unsorted", "source: lens"]
+tags: ["BIM", "Blockchain", "Building", "Construction", "Digital-Twin", "IoT", "Real-Time", "Unsorted", "source: lens", "identification: databases"]
 ---
 # Hayford-Pittri2026 — Blockchain-enabled construction supply chain management: a scientometric and content analysis of applications, barriers and future prospects
 

@@ -9,7 +9,7 @@ doi: "10.1108/sasbe-08-2025-0502"
 zotero_key: "M26AE7XT"
 zotero_status: abstract-grounded
 last_verified: "2026-06-15"
-tags: ["AI", "BIM", "Building", "Construction", "Digital-Twin", "Energy", "Lifecycle", "Monitoring", "Unsorted", "source: lens"]
+tags: ["AI", "BIM", "Building", "Construction", "Digital-Twin", "Energy", "Lifecycle", "Monitoring", "Unsorted", "source: lens", "identification: databases"]
 ---
 # Carlos-Alejandro-Diaz-Schery2026 — An integrative framework for BIM, digital twin and generative AI convergence in construction: a multi-dimensional analysis of synergies and enabling factors
 

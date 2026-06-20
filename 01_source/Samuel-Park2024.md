@@ -9,7 +9,7 @@ doi: "10.1016/j.scs.2024.105496"
 zotero_key: "L2BVXH4V"
 zotero_status: title-only
 last_verified: "2026-06-15"
-tags: ["Digital-Twin", "Unsorted", "Urban", "source: lens"]
+tags: ["Digital-Twin", "Unsorted", "Urban", "source: lens", "identification: databases"]
 ---
 # Samuel-Park2024 — Participatory Framework for Urban Pluvial Flood Modeling in the Digital Twin Era
 

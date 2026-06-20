@@ -11,6 +11,7 @@ created: "2026-05-25"
 tags:
   - Verified
   - source: scholar
+  - identification: other methods
 ---
 
 # Shahzad2022 — Digital Twins in Built Environments: Characteristics, Applications, Challenges

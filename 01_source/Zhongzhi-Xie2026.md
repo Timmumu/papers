@@ -9,7 +9,7 @@ doi: "10.65102/is2026291"
 zotero_key: "RLYUVRRI"
 zotero_status: abstract-grounded
 last_verified: "2026-06-15"
-tags: ["Architecture", "Construction", "Digital-Twin", "Energy", "Real-Time", "Unsorted", "source: lens"]
+tags: ["Architecture", "Construction", "Digital-Twin", "Energy", "Real-Time", "Unsorted", "source: lens", "identification: databases"]
 ---
 # Zhongzhi-Xie2026 — The construction and implementation path of digital factory under the framework of high efficiency industrial automation system integration
 

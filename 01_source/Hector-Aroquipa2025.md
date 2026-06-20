@@ -9,7 +9,7 @@ doi: "10.1016/j.istruc.2025.110115"
 zotero_key: "Y3KBLB9J"
 zotero_status: abstract-grounded
 last_verified: "2026-06-15"
-tags: ["Building", "Digital-Twin", "Heritage", "Monitoring", "Sensor", "Structural", "Unsorted", "source: lens"]
+tags: ["Building", "Digital-Twin", "Heritage", "Monitoring", "Sensor", "Structural", "Unsorted", "source: lens", "identification: databases"]
 ---
 # Hector-Aroquipa2025 — Methodological framework for integrating structural health monitoring and digital-twin models for seismic assessment of heritage buildings: Case study of Basilica Maria Auxiliadora, Lima, Peru
 

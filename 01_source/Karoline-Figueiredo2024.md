@@ -9,7 +9,7 @@ doi: "10.1016/j.jobe.2024.111018"
 zotero_key: "LZEJ4ZSB"
 zotero_status: title-only
 last_verified: "2026-06-15"
-tags: ["Blockchain", "Building", "Digital-Twin", "Unsorted", "source: lens"]
+tags: ["Blockchain", "Building", "Digital-Twin", "Unsorted", "source: lens", "identification: databases"]
 ---
 # Karoline-Figueiredo2024 — Integrating Digital Twin and Blockchain for dynamic building Life Cycle Sustainability Assessment
 

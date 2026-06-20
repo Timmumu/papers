@@ -11,6 +11,7 @@ created: "2026-05-25"
 tags:
   - Verified
   - source: scholar
+  - identification: databases
 ---
 
 # Opoku2021 — Digital Twin Application in the Construction Industry: A Literature Review

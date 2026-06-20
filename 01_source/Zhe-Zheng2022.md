@@ -7,9 +7,9 @@ year: 2022
 journal: "Advances in Civil Engineering"
 doi: "10.1155/2022/9568967"
 zotero_key: "WI99625X"
-zotero_status: abstract-grounded
+zotero_status: verified
 last_verified: "2026-06-15"
-tags: ["Building", "Digital-Twin", "Simulation", "Structural", "Unsorted", "source: lens"]
+tags: ["Building", "Digital-Twin", "Simulation", "Structural", "Unsorted", "source: lens", "identification: databases"]
 ---
 # Zhe-Zheng2022 — Digital Twin‐Based Investigation of a Building Collapse Accident
 

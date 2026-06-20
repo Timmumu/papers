@@ -9,7 +9,7 @@ doi: "10.1002/best.70155"
 zotero_key: "JTD8KQHF"
 zotero_status: abstract-grounded
 last_verified: "2026-06-15"
-tags: ["Building", "Construction", "Digital-Twin", "Structural", "Unsorted", "source: lens"]
+tags: ["Building", "Construction", "Digital-Twin", "Structural", "Unsorted", "source: lens", "identification: databases"]
 ---
 # Patrick-Forman2026 — Adaptive, Modularized Constructions Made in a Flux
 

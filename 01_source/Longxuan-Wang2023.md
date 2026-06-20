@@ -9,7 +9,7 @@ doi: "10.1016/j.engstruct.2022.115172"
 zotero_key: "LJ732ERR"
 zotero_status: title-only
 last_verified: "2026-06-15"
-tags: ["Deep-Learning", "Digital-Twin", "Unsorted", "source: lens"]
+tags: ["Deep-Learning", "Digital-Twin", "Unsorted", "source: lens", "identification: databases"]
 ---
 # Longxuan-Wang2023 — Combined digital twin and hierarchical deep learning approach for intelligent damage identification in cable dome structure
 

@@ -9,7 +9,7 @@ doi: "10.1680/jmapl.20.00052"
 zotero_key: "B3EIZQ92"
 zotero_status: abstract-grounded
 last_verified: "2026-06-15"
-tags: ["Construction", "Digital-Twin", "Unsorted", "source: lens"]
+tags: ["Construction", "Digital-Twin", "Unsorted", "source: lens", "identification: databases"]
 ---
 # null-AkinyemiAbiodun2022 — Briefing: Process digital twin: lessons learned from a construction case study
 

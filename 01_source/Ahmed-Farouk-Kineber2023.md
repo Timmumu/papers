@@ -7,9 +7,9 @@ year: 2023
 journal: "Sustainable Cities and Society"
 doi: "10.1016/j.scs.2023.104930"
 zotero_key: "DNCET4GQ"
-zotero_status: abstract-grounded
+zotero_status: verified
 last_verified: "2026-06-15"
-tags: ["Building", "Construction", "Digital-Twin", "Lifecycle", "Unsorted", "source: lens"]
+tags: ["Building", "Construction", "Digital-Twin", "Lifecycle", "Unsorted", "source: lens", "identification: databases"]
 ---
 # Ahmed-Farouk-Kineber2023 — Modelling the relationship between digital twins implementation barriers and sustainability pillars: Insights from building and construction sector
 

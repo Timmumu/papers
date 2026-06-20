@@ -9,7 +9,7 @@ doi: "10.1108/sasbe-04-2025-0181"
 zotero_key: "CWL4I4JV"
 zotero_status: abstract-grounded
 last_verified: "2026-06-15"
-tags: ["Architecture", "BIM", "Building", "Built-Environment", "Digital-Twin", "Energy", "Risk", "Unsorted", "source: lens"]
+tags: ["Architecture", "BIM", "Building", "Built-Environment", "Digital-Twin", "Energy", "Risk", "Unsorted", "source: lens", "identification: databases"]
 ---
 # Nour-Samaro2025 — Developing a system reference architecture for assessing risks of heatwaves in residential buildings using a cloud-BIM environment: a design science research approach
 

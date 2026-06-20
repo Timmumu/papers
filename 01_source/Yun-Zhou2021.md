@@ -7,9 +7,9 @@ year: 2021
 journal: "Advances in Civil Engineering"
 doi: "10.1155/2021/2801557"
 zotero_key: "9AWFV8WX"
-zotero_status: abstract-grounded
+zotero_status: verified
 last_verified: "2026-06-15"
-tags: ["BIM", "Building", "Construction", "Digital-Twin", "Energy", "Risk", "Safety", "Structural", "Unsorted", "source: lens"]
+tags: ["BIM", "Building", "Construction", "Digital-Twin", "Energy", "Risk", "Safety", "Structural", "Unsorted", "source: lens", "identification: databases"]
 ---
 # Yun-Zhou2021 — The Modelling of Digital Twins Technology in the Construction Process of Prefabricated Buildings
 

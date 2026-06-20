@@ -9,7 +9,7 @@ doi: "10.1016/j.jobe.2022.104028"
 zotero_key: ""
 zotero_status: unsorted
 last_verified: "2026-06-14"
-tags: ["Building", "Digital-Twin", "Maintenance", "Unsorted", "source: lens"]
+tags: ["Building", "Digital-Twin", "Maintenance", "Unsorted", "source: lens", "identification: databases"]
 ---
 # Jianfeng-Zhao2022 — Developing a conceptual framework for the application of digital twin technologies to revamp building operation and maintenance processes
 

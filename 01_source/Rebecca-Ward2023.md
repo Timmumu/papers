@@ -7,9 +7,9 @@ year: 2023
 journal: "Journal of Building Performance Simulation"
 doi: "10.1080/19401493.2023.2187463"
 zotero_key: "9EL7VW7K"
-zotero_status: abstract-grounded
+zotero_status: verified
 last_verified: "2026-06-15"
-tags: ["Digital-Twin", "Infrastructure", "Predictive", "Quality", "Simulation", "Unsorted", "source: lens"]
+tags: ["Digital-Twin", "Infrastructure", "Predictive", "Quality", "Simulation", "Unsorted", "source: lens", "identification: databases"]
 ---
 # Rebecca-Ward2023 — The challenges of using live-streamed data in a predictive digital twin
 

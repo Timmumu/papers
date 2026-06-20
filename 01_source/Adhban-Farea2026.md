@@ -9,7 +9,7 @@ doi: "10.1108/sasbe-07-2025-0367"
 zotero_key: "XG2CZGCL"
 zotero_status: abstract-grounded
 last_verified: "2026-06-15"
-tags: ["Asset-Management", "BIM", "Building", "Construction", "Digital-Twin", "Infrastructure", "IoT", "Lifecycle", "Quality", "Unsorted", "source: lens"]
+tags: ["Asset-Management", "BIM", "Building", "Construction", "Digital-Twin", "Infrastructure", "IoT", "Lifecycle", "Quality", "Unsorted", "source: lens", "identification: databases"]
 ---
 # Adhban-Farea2026 — Digital transformation of the AEC industry: a review of BIM implementation toolkits from leading countries
 

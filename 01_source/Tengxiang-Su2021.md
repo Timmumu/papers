@@ -9,7 +9,7 @@ doi: "10.1016/j.jobe.2021.102636"
 zotero_key: "MNGH7DLJ"
 zotero_status: abstract-grounded
 last_verified: "2026-06-15"
-tags: ["BIM", "Construction", "ML", "Predictive", "Unsorted", "source: lens"]
+tags: ["BIM", "Construction", "ML", "Predictive", "Unsorted", "source: lens", "identification: databases"]
 ---
 # Tengxiang-Su2021 — A BIM and machine learning integration framework for automated property valuation
 

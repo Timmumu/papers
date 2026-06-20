@@ -9,7 +9,7 @@ doi: "10.1016/j.istruc.2025.111006"
 zotero_key: "6Z8GPFFQ"
 zotero_status: title-only
 last_verified: "2026-06-15"
-tags: ["Bridge", "Digital-Twin", "Unsorted", "source: lens"]
+tags: ["Bridge", "Digital-Twin", "Unsorted", "source: lens", "identification: databases"]
 ---
 # Tianqi-Zhao2026 — Digital twins for static and dynamic responses of a continuous rigid frame bridge based on multi-task learning and optimization algorithm
 

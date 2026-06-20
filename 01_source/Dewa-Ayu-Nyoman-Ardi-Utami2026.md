@@ -9,7 +9,7 @@ doi: "10.15866/irece.v17i1.27291"
 zotero_key: "VY46I8YR"
 zotero_status: title-only
 last_verified: "2026-06-15"
-tags: ["Architecture", "Digital-Twin", "Maintenance", "Predictive", "Risk", "Road", "Unsorted", "Urban", "source: lens"]
+tags: ["Architecture", "Digital-Twin", "Maintenance", "Predictive", "Risk", "Road", "Unsorted", "Urban", "source: lens", "identification: databases"]
 ---
 # Dewa-Ayu-Nyoman-Ardi-Utami2026 — Toward an AI-Enabled Digital Twin Decision-Support Architecture for Predictive Urban Road Maintenance Under Waterlogging Risk: Scientometric Review (2014-2025)
 

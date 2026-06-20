@@ -7,9 +7,9 @@ year: 2023
 journal: "Automation in Construction"
 doi: "10.1016/j.autcon.2023.104835"
 zotero_key: "Z2XGMT6C"
-zotero_status: abstract-grounded
+zotero_status: verified
 last_verified: "2026-06-15"
-tags: ["Bridge", "Digital-Twin", "Maintenance", "Safety", "Unsorted", "source: lens"]
+tags: ["Bridge", "Digital-Twin", "Maintenance", "Safety", "Unsorted", "source: lens", "identification: databases"]
 ---
 # Yan-Gao2023 — AIoT-informed digital twin communication for bridge maintenance
 

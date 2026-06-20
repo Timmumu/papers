@@ -9,7 +9,7 @@ doi: "10.1108/ecam-10-2025-1668"
 zotero_key: "62EPY8TW"
 zotero_status: abstract-grounded
 last_verified: "2026-06-15"
-tags: ["AI", "BIM", "Building", "Construction", "Digital-Twin", "Lifecycle", "Safety", "Semantic", "Unsorted", "source: lens"]
+tags: ["AI", "BIM", "Building", "Construction", "Digital-Twin", "Lifecycle", "Safety", "Semantic", "Unsorted", "source: lens", "identification: databases"]
 ---
 # Yu-Gao2026 — Large language models in smart construction: a systematic review of implementation strategies, applications and future directions
 

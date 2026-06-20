@@ -9,7 +9,7 @@ doi: "10.4271/2024-24-0029"
 zotero_key: "CWRXNDFI"
 zotero_status: abstract-grounded
 last_verified: "2026-06-15"
-tags: ["Digital-Twin", "Energy", "Infrastructure", "Predictive", "Simulation", "Unsorted", "source: lens"]
+tags: ["Digital-Twin", "Energy", "Infrastructure", "Predictive", "Simulation", "Unsorted", "source: lens", "identification: databases"]
 ---
 # Mirko-Baratta2024 — Development of a NG Engine Predictive Simulation Model and Investigation of Engine Performances under Hydrogen-Blended Operation
 

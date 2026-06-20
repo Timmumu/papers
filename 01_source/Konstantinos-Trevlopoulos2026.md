@@ -9,7 +9,7 @@ doi: "10.1016/j.strusafe.2026.102713"
 zotero_key: "9HAFKTNB"
 zotero_status: abstract-grounded
 last_verified: "2026-06-15"
-tags: ["Building", "Digital-Twin", "Predictive", "Risk", "Safety", "Structural", "Unsorted", "source: lens"]
+tags: ["Building", "Digital-Twin", "Predictive", "Risk", "Safety", "Structural", "Unsorted", "source: lens", "identification: databases"]
 ---
 # Konstantinos-Trevlopoulos2026 — Interpretable damage state-dependent fragility models for multi-hazard interactions based on Bayesian modeling and causal inference
 

@@ -9,7 +9,7 @@ doi: "10.1108/ecam-04-2025-0553"
 zotero_key: "7CKWEAWV"
 zotero_status: abstract-grounded
 last_verified: "2026-06-15"
-tags: ["BIM", "Building", "Construction", "Digital-Twin", "Infrastructure", "IoT", "Risk", "Safety", "Semantic", "Unsorted", "source: lens"]
+tags: ["BIM", "Building", "Construction", "Digital-Twin", "Infrastructure", "IoT", "Risk", "Safety", "Semantic", "Unsorted", "source: lens", "identification: databases"]
 ---
 # Zhansheng-Liu2025 — Research progress and trends of intelligent technology construction in large infrastructures: a CiteSpace-based visualization and analysis
 

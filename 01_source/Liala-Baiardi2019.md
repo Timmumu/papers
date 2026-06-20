@@ -9,7 +9,7 @@ doi: "10.13128/techne-7538"
 zotero_key: "2JKKLKQ7"
 zotero_status: abstract-grounded
 last_verified: "2026-06-15"
-tags: ["BIM", "Building", "Construction", "Facility-Management", "Unsorted", "source: lens"]
+tags: ["BIM", "Building", "Construction", "Facility-Management", "Unsorted", "source: lens", "identification: databases"]
 ---
 # Liala-Baiardi2019 — Digital control room for the project and management of complex buildings
 

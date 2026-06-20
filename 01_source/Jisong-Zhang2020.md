@@ -7,9 +7,9 @@ year: 2020
 journal: "Advances in Civil Engineering"
 doi: "10.1155/2020/8842113"
 zotero_key: "E23T3S8L"
-zotero_status: abstract-grounded
+zotero_status: verified
 last_verified: "2026-06-15"
-tags: ["BIM", "Building", "Digital-Twin", "Infrastructure", "Structural", "Unsorted", "source: lens"]
+tags: ["BIM", "Building", "Digital-Twin", "Infrastructure", "Structural", "Unsorted", "source: lens", "identification: databases"]
 ---
 # Jisong-Zhang2020 — Special issue "digital twin technology in the AEC industry"
 

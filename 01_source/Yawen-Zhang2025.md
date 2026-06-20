@@ -9,7 +9,7 @@ doi: "10.4271/2025-01-7175"
 zotero_key: "GV2PJHXZ"
 zotero_status: abstract-grounded
 last_verified: "2026-06-15"
-tags: ["Construction", "Digital-Twin", "Highway", "Infrastructure", "Maintenance", "Predictive", "Real-Time", "Safety", "Unsorted", "source: lens"]
+tags: ["Construction", "Digital-Twin", "Highway", "Infrastructure", "Maintenance", "Predictive", "Real-Time", "Safety", "Unsorted", "source: lens", "identification: databases"]
 ---
 # Yawen-Zhang2025 — Research on Digital Twin Model Construction Method for Smart Highway
 

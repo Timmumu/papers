@@ -9,7 +9,7 @@ doi: "10.1093/ijlct/ctaf044"
 zotero_key: "HMV8FD38"
 zotero_status: abstract-grounded
 last_verified: "2026-06-15"
-tags: ["Carbon", "Digital-Twin", "Energy", "Infrastructure", "Smart-City", "Unsorted", "Urban", "source: lens"]
+tags: ["Carbon", "Digital-Twin", "Energy", "Infrastructure", "Smart-City", "Unsorted", "Urban", "source: lens", "identification: databases"]
 ---
 # Ibrahim-Bahreldin2025 — Leveraging advanced digital technologies for smart city development in Saudi Arabia: opportunities, challenges, and strategic pathways
 

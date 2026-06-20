@@ -7,9 +7,9 @@ year: 2020
 journal: "Advances in Civil Engineering"
 doi: "10.1155/2020/8888876"
 zotero_key: "PVJWRTJK"
-zotero_status: abstract-grounded
+zotero_status: verified
 last_verified: "2026-06-15"
-tags: ["Digital-Twin", "Monitoring", "Risk", "Safety", "Structural", "Unsorted", "source: lens"]
+tags: ["Digital-Twin", "Monitoring", "Risk", "Safety", "Structural", "Unsorted", "source: lens", "identification: databases"]
 ---
 # Zhansheng-Liu2020 — Digital Twin-based Safety Evaluation of Prestressed Steel Structure
 

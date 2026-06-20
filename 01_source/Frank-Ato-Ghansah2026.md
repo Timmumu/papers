@@ -9,7 +9,7 @@ doi: "10.1108/sasbe-12-2025-0848"
 zotero_key: "5566JR2Y"
 zotero_status: abstract-grounded
 last_verified: "2026-06-15"
-tags: ["Building", "Built-Environment", "Digital-Twin", "Facility-Management", "Structural", "Unsorted", "source: lens"]
+tags: ["Building", "Built-Environment", "Digital-Twin", "Facility-Management", "Structural", "Unsorted", "source: lens", "identification: databases"]
 ---
 # Frank-Ato-Ghansah2026 — An enabling framework towards digital twins implementation model for sustainable smart facility management
 

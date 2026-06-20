@@ -7,9 +7,9 @@ year: 2021
 journal: "Biochemical Engineering Journal"
 doi: "10.1016/j.bej.2021.108054"
 zotero_key: "R982Y6UG"
-zotero_status: unsorted
+zotero_status: abstract-grounded
 last_verified: "2026-06-14"
-tags: ["Construction", "Digital-Twin", "ML", "Unsorted", "source: lens"]
+tags: ["Construction", "Digital-Twin", "ML", "Unsorted", "source: lens", "identification: databases"]
 ---
 # Max-Mowbray2021 — Machine learning for biochemical engineering: A review
 

@@ -7,9 +7,9 @@ year: 2025
 journal: "International Journal of Information Security"
 doi: "10.1007/s10207-025-01158-1"
 zotero_key: "U5KV744C"
-zotero_status: abstract-grounded
+zotero_status: verified
 last_verified: "2026-06-15"
-tags: ["CPS", "Digital-Twin", "Infrastructure", "IoT", "ML", "Monitoring", "Predictive", "Unsorted", "source: lens"]
+tags: ["CPS", "Digital-Twin", "Infrastructure", "IoT", "ML", "Monitoring", "Predictive", "Unsorted", "source: lens", "identification: databases"]
 ---
 # Doney-Abraham2025 — Towards enhanced cybersecurity in industrial control systems: a systematic review of context-based modeling, digital twins, and machine learning approaches
 

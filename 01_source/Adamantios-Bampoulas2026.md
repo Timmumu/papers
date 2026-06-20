@@ -9,7 +9,7 @@ doi: "10.1016/j.enbuild.2025.116817"
 zotero_key: "BJY6ZZEC"
 zotero_status: abstract-grounded
 last_verified: "2026-06-15"
-tags: ["Building", "Digital-Twin", "Ontology", "Predictive", "Semantic", "Sensor", "Unsorted", "source: lens"]
+tags: ["Building", "Digital-Twin", "Ontology", "Predictive", "Semantic", "Sensor", "Unsorted", "source: lens", "identification: databases"]
 ---
 # Adamantios-Bampoulas2026 — Ontology-driven energy management in smart buildings: A comprehensive review of methodologies, tools, and challenges
 

@@ -9,7 +9,7 @@ doi: "10.1016/j.autcon.2020.103547"
 zotero_key: "QQLDL97Y"
 zotero_status: title-only
 last_verified: "2026-06-15"
-tags: ["Bridge", "Digital-Twin", "Unsorted", "source: lens"]
+tags: ["Bridge", "Digital-Twin", "Unsorted", "source: lens", "identification: databases"]
 ---
 # Kaiqi-Lin2021 — Digital twin-based collapse fragility assessment of a long-span cable-stayed bridge under strong earthquakes
 

@@ -7,9 +7,9 @@ year: 2025
 journal: "Construction Management and Economics"
 doi: "10.1080/01446193.2025.2451631"
 zotero_key: "KD9LNZIB"
-zotero_status: abstract-grounded
+zotero_status: verified
 last_verified: "2026-06-15"
-tags: ["Architecture", "Built-Environment", "Construction", "Digital-Twin", "Lifecycle", "Maintenance", "Safety", "Unsorted", "source: lens"]
+tags: ["Architecture", "Built-Environment", "Construction", "Digital-Twin", "Lifecycle", "Maintenance", "Safety", "Unsorted", "source: lens", "identification: databases"]
 ---
 # Perdana-Miraj2025 — Organising digital twin in the built environment: a systematic review and research directions on the missing links of use and user perspectives of digital twin in Architecture, Engineering and Construction (AEC) sector
 

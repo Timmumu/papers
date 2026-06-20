@@ -9,7 +9,7 @@ doi: "10.1108/ecam-06-2025-1025"
 zotero_key: "3EW7ZAD2"
 zotero_status: abstract-grounded
 last_verified: "2026-06-15"
-tags: ["Blockchain", "Building", "Construction", "Digital-Twin", "Infrastructure", "Real-Time", "Simulation", "Unsorted", "Urban", "source: lens"]
+tags: ["Blockchain", "Building", "Construction", "Digital-Twin", "Infrastructure", "Real-Time", "Simulation", "Unsorted", "Urban", "source: lens", "identification: databases"]
 ---
 # Ali-Shehadeh2025 — Optimizing construction supply chain efficiency: a blockchain and digital twins approach to automating cost management and contract administration
 

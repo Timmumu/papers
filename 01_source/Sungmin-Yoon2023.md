@@ -9,7 +9,7 @@ doi: "10.1016/j.jobe.2023.107021"
 zotero_key: "F5DBNXII"
 zotero_status: abstract-grounded
 last_verified: "2026-06-15"
-tags: ["Building", "Digital-Twin", "Unsorted", "source: lens"]
+tags: ["Building", "Digital-Twin", "Unsorted", "source: lens", "identification: databases"]
 ---
 # Sungmin-Yoon2023 — Building digital twinning: Data, information, and models
 

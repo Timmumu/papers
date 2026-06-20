@@ -9,7 +9,7 @@ doi: "10.1016/j.autcon.2022.104406"
 zotero_key: "9ZREBFMU"
 zotero_status: abstract-grounded
 last_verified: "2026-06-15"
-tags: ["BIM", "Digital-Twin", "Highway", "Road", "Safety", "Unsorted", "source: lens"]
+tags: ["BIM", "Digital-Twin", "Highway", "Road", "Safety", "Unsorted", "source: lens", "identification: databases"]
 ---
 # Feng-Jiang2022 — Underpass clearance checking in highway widening projects using digital twins
 

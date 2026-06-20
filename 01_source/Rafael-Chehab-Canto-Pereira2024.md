@@ -9,7 +9,7 @@ doi: "10.1080/17452007.2024.2386128"
 zotero_key: "SK5VP4H2"
 zotero_status: abstract-grounded
 last_verified: "2026-06-15"
-tags: ["BIM", "Construction", "Dam", "Digital-Twin", "Maintenance", "Quality", "Safety", "Unsorted", "source: lens"]
+tags: ["BIM", "Construction", "Dam", "Digital-Twin", "Maintenance", "Quality", "Safety", "Unsorted", "source: lens", "identification: databases"]
 ---
 # Rafael-Chehab-Canto-Pereira2024 — BIM-enabled strategies for dams and hydroelectric structures: a comprehensive analysis of applications from design to operation
 

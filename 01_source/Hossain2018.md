@@ -11,6 +11,7 @@ created: "2026-05-25"
 tags:
   - Verified
   - source: scholar
+  - identification: other methods
 ---
 
 # Hossain2018 — Design-for-Safety knowledge library for BIM-integrated safety risk reviews

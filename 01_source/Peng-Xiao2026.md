@@ -7,9 +7,9 @@ year: 2026
 journal: "Ingegneria Sismica"
 doi: "10.65102/is2026854"
 zotero_key: "DB6AV7U6"
-zotero_status: abstract-grounded
+zotero_status: verified
 last_verified: "2026-06-15"
-tags: ["Architecture", "CPS", "Digital-Twin", "Energy", "Simulation", "Unsorted", "source: lens"]
+tags: ["Architecture", "CPS", "Digital-Twin", "Energy", "Simulation", "Unsorted", "source: lens", "identification: databases"]
 ---
 # Peng-Xiao2026 — A Data-Driven Digital Twin-Based Framework for Attack Chain Modeling and Defense in Networked Microgrids
 

@@ -9,7 +9,7 @@ doi: "10.1108/ecam-08-2024-1024"
 zotero_key: "FBUPLRG3"
 zotero_status: abstract-grounded
 last_verified: "2026-06-15"
-tags: ["Building", "Construction", "Digital-Twin", "Energy", "Predictive", "Quality", "Unsorted", "source: lens"]
+tags: ["Building", "Construction", "Digital-Twin", "Energy", "Predictive", "Quality", "Unsorted", "source: lens", "identification: databases"]
 ---
 # Jingqi-Zhang2024 — Digital twin for sustainable development in building automation
 

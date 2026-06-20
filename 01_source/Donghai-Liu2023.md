@@ -9,7 +9,7 @@ doi: "10.1061/jccee5.cpeng-5354"
 zotero_key: "KI3R4K3K"
 zotero_status: abstract-grounded
 last_verified: "2026-06-15"
-tags: ["BIM", "Building", "Construction", "Digital-Twin", "Real-Time", "Risk", "Road", "Safety", "Simulation", "Unsorted", "Urban", "source: lens"]
+tags: ["BIM", "Building", "Construction", "Digital-Twin", "Real-Time", "Risk", "Road", "Safety", "Simulation", "Unsorted", "Urban", "source: lens", "identification: databases"]
 ---
 # Donghai-Liu2023 — Multisensory and BIM-Integrated Digital Twin to Improve Urban Excavation Safety
 

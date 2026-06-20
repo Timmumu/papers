@@ -9,7 +9,7 @@ doi: "10.1080/15623599.2025.2544913"
 zotero_key: "PTJZHT69"
 zotero_status: title-only
 last_verified: "2026-06-15"
-tags: ["Construction", "Digital-Twin", "Unsorted", "source: lens"]
+tags: ["Construction", "Digital-Twin", "Unsorted", "source: lens", "identification: databases"]
 ---
 # Victor-Arowoiya2025 — Benefits of adopting digital twin technology (DTT) in the Nigerian construction industry
 

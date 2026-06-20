@@ -7,9 +7,9 @@ year: 2023
 journal: "Structural Control and Health Monitoring"
 doi: "10.1155/2023/3733799"
 zotero_key: "YQ47YXFC"
-zotero_status: abstract-grounded
+zotero_status: verified
 last_verified: "2026-06-15"
-tags: ["Bridge", "Digital-Twin", "Infrastructure", "Point-Cloud", "Quality", "Railway", "Semantic", "Unsorted", "source: lens"]
+tags: ["Bridge", "Digital-Twin", "Infrastructure", "Point-Cloud", "Quality", "Railway", "Semantic", "Unsorted", "source: lens", "identification: databases"]
 ---
 # Shi-Qiu2023 — Fine-Grained Point Cloud Semantic Segmentation of Complex Railway Bridge Scenes from UAVs Using Improved DGCNN
 

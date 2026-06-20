@@ -9,7 +9,7 @@ doi: "10.1061/(asce)cp.1943-5487.0001044"
 zotero_key: "LRQ4MPUT"
 zotero_status: abstract-grounded
 last_verified: "2026-06-15"
-tags: ["Building", "Built-Environment", "Construction", "Deep-Learning", "Digital-Twin", "Risk", "Safety", "Unsorted", "source: lens"]
+tags: ["Building", "Built-Environment", "Construction", "Deep-Learning", "Digital-Twin", "Risk", "Safety", "Unsorted", "source: lens", "identification: databases"]
 ---
 # Mirsalar-Kamari2022 — Analyzing Safety Risk Imposed by Jobsite Debris to Nearby Built Environments Using Geometric Digital Twins and Vision-Based Deep Learning
 

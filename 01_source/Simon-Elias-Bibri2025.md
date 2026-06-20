@@ -9,7 +9,7 @@ doi: "10.1016/j.enbuild.2025.115484"
 zotero_key: "QD2LYWF4"
 zotero_status: abstract-grounded
 last_verified: "2026-06-15"
-tags: ["AI", "CPS", "Digital-Twin", "IoT", "Monitoring", "Predictive", "Unsorted", "Urban", "source: lens"]
+tags: ["AI", "CPS", "Digital-Twin", "IoT", "Monitoring", "Predictive", "Unsorted", "Urban", "source: lens", "identification: databases"]
 ---
 # Simon-Elias-Bibri2025 — Synergistic integration of digital twins and zero energy buildings for climate change mitigation in sustainable smart cities: A systematic review and novel framework
 

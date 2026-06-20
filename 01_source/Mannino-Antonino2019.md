@@ -9,7 +9,7 @@ doi: "10.2495/safe-v9-n4-371-380"
 zotero_key: "LKINB8B7"
 zotero_status: abstract-grounded
 last_verified: "2026-06-15"
-tags: ["AI", "BIM", "Building", "Construction", "Digital-Twin", "Lifecycle", "Maintenance", "Monitoring", "Unsorted", "source: lens"]
+tags: ["AI", "BIM", "Building", "Construction", "Digital-Twin", "Lifecycle", "Maintenance", "Monitoring", "Unsorted", "source: lens", "identification: databases"]
 ---
 # Mannino-Antonino2019 — Office building occupancy monitoring through image recognition sensors
 

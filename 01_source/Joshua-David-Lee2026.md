@@ -9,7 +9,7 @@ doi: "10.1108/ohi-02-2026-406"
 zotero_key: "2DK3YFYK"
 zotero_status: abstract-grounded
 last_verified: "2026-06-15"
-tags: ["AI", "Building", "Built-Environment", "Construction", "Digital-Twin", "Unsorted", "source: lens"]
+tags: ["AI", "Building", "Built-Environment", "Construction", "Digital-Twin", "Unsorted", "source: lens", "identification: databases"]
 ---
 # Joshua-David-Lee2026 — Prologue: Beyond single use: looking back and looking forward at the open building movement
 

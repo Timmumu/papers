@@ -9,7 +9,7 @@ doi: "10.1108/ci-12-2025-0538"
 zotero_key: "HJ87TI4P"
 zotero_status: abstract-grounded
 last_verified: "2026-06-15"
-tags: ["Architecture", "BIM", "Built-Environment", "Construction", "Digital-Twin", "IoT", "Lifecycle", "Monitoring", "Predictive", "Structural", "Unsorted", "source: lens"]
+tags: ["Architecture", "BIM", "Built-Environment", "Construction", "Digital-Twin", "IoT", "Lifecycle", "Monitoring", "Predictive", "Structural", "Unsorted", "source: lens", "identification: databases"]
 ---
 # Alireza-Moghayedi2026 — Unlocking sustainability futures: a framework for digital product passports and material banks in a circular built environment
 

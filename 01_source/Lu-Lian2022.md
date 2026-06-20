@@ -7,9 +7,9 @@ year: 2022
 journal: "Advances in Civil Engineering"
 doi: "10.1155/2022/9311246"
 zotero_key: "62J2VNRT"
-zotero_status: abstract-grounded
+zotero_status: verified
 last_verified: "2026-06-15"
-tags: ["Digital-Twin", "Monitoring", "Sensor", "Unsorted", "source: lens"]
+tags: ["Digital-Twin", "Monitoring", "Sensor", "Unsorted", "source: lens", "identification: databases"]
 ---
 # Lu-Lian2022 — Digital Visual Sensing Design Teaching Using Digital Twins
 

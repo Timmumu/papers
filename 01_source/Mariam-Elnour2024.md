@@ -9,7 +9,7 @@ doi: "10.1177/01436244241239290"
 zotero_key: "5CR2QTJ6"
 zotero_status: abstract-grounded
 last_verified: "2026-06-15"
-tags: ["Building", "Digital-Twin", "Energy", "Facility-Management", "Infrastructure", "ML", "Simulation", "Unsorted", "source: lens"]
+tags: ["Building", "Digital-Twin", "Energy", "Facility-Management", "Infrastructure", "ML", "Simulation", "Unsorted", "source: lens", "identification: databases"]
 ---
 # Mariam-Elnour2024 — Empowering smart cities with digital twins of buildings: Applications and implementation considerations of data-driven energy modelling in building management
 

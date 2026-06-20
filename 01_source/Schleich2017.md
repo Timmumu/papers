@@ -11,6 +11,7 @@ created: "2026-05-25"
 tags:
   - Verified
   - source: scholar
+  - identification: other methods
 ---
 
 # Schleich2017 — Shaping the Digital Twin for Design and Production Engineering

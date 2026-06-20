@@ -9,7 +9,7 @@ doi: "10.1016/j.scs.2025.106724"
 zotero_key: "SSC26KVU"
 zotero_status: title-only
 last_verified: "2026-06-15"
-tags: ["Digital-Twin", "Unsorted", "Urban", "source: lens"]
+tags: ["Digital-Twin", "Unsorted", "Urban", "source: lens", "identification: databases"]
 ---
 # Parsa-Namaki2025 — A novel digital twin framework for improving urban sustainability–feasibility assessment of supplementary water supply systems in buildings
 

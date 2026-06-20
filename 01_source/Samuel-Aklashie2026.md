@@ -9,7 +9,7 @@ doi: "10.1108/bepam-07-2025-0188"
 zotero_key: "WQ4RM3RC"
 zotero_status: abstract-grounded
 last_verified: "2026-06-15"
-tags: ["Construction", "Digital-Twin", "Lifecycle", "Monitoring", "Quality", "Real-Time", "Unsorted", "source: lens"]
+tags: ["Construction", "Digital-Twin", "Lifecycle", "Monitoring", "Quality", "Real-Time", "Unsorted", "source: lens", "identification: databases"]
 ---
 # Samuel-Aklashie2026 — Blockchain-digital twin integration in construction material passports: preparing for digital product passport implementation
 

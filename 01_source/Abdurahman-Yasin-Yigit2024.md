@@ -9,7 +9,7 @@ doi: "10.1016/j.jobe.2024.109952"
 zotero_key: "V976A2EF"
 zotero_status: title-only
 last_verified: "2026-06-15"
-tags: ["Digital-Twin", "Heritage", "Inspection", "Structural", "Unsorted", "source: lens"]
+tags: ["Digital-Twin", "Heritage", "Inspection", "Structural", "Unsorted", "source: lens", "identification: databases"]
 ---
 # Abdurahman-Yasin-Yigit2024 — Automatic crack detection and structural inspection of cultural heritage buildings using UAV photogrammetry and digital twin technology
 

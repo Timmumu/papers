@@ -9,7 +9,7 @@ doi: "10.1108/sasbe-01-2021-0016"
 zotero_key: "KURDXPIK"
 zotero_status: abstract-grounded
 last_verified: "2026-06-15"
-tags: ["BIM", "Construction", "Digital-Twin", "Monitoring", "Real-Time", "Semantic", "Structural", "Unsorted", "source: lens"]
+tags: ["BIM", "Construction", "Digital-Twin", "Monitoring", "Real-Time", "Semantic", "Structural", "Unsorted", "source: lens", "identification: databases"]
 ---
 # Sepehr-Alizadehsalehi2021 — Digital twin-based progress monitoring management model through reality capture to extended reality technologies (DRX)
 

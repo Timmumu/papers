@@ -9,7 +9,7 @@ doi: "10.1108/ci-05-2025-0221"
 zotero_key: "V9RBRBZ4"
 zotero_status: abstract-grounded
 last_verified: "2026-06-15"
-tags: ["Construction", "Digital-Twin", "Quality", "Real-Time", "Unsorted", "source: lens"]
+tags: ["Construction", "Digital-Twin", "Quality", "Real-Time", "Unsorted", "source: lens", "identification: databases"]
 ---
 # Linhong-Wang2026 — Digital twin-enabled real-time heavy equipment scheduling with rolling-horizon optimization
 

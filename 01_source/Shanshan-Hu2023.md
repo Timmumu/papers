@@ -9,7 +9,7 @@ doi: "10.1016/j.oceaneng.2022.113610"
 zotero_key: "THJ4Z83T"
 zotero_status: abstract-grounded
 last_verified: "2026-06-15"
-tags: ["Building", "Construction", "Digital-Twin", "Safety", "Sensor", "Simulation", "Unsorted", "source: lens"]
+tags: ["Building", "Construction", "Digital-Twin", "Safety", "Sensor", "Simulation", "Unsorted", "source: lens", "identification: databases"]
 ---
 # Shanshan-Hu2023 — Construction of a digital twin system for the blended-wing-body underwater glider
 

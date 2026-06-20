@@ -9,7 +9,7 @@ doi: "10.1016/j.ress.2025.112126"
 zotero_key: "7V85CDY6"
 zotero_status: abstract-grounded
 last_verified: "2026-06-15"
-tags: ["AI", "Bridge", "CPS", "Digital-Twin", "Risk", "Safety", "Unsorted", "source: lens"]
+tags: ["AI", "Bridge", "CPS", "Digital-Twin", "Risk", "Safety", "Unsorted", "source: lens", "identification: databases"]
 ---
 # Luca-Pinciroli2026 — Risk assessment for modern industry
 

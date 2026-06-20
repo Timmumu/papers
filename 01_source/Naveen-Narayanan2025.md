@@ -9,7 +9,7 @@ doi: "10.1142/s0219455426300065"
 zotero_key: "RM3P5BMJ"
 zotero_status: abstract-grounded
 last_verified: "2026-06-15"
-tags: ["Deep-Learning", "Digital-Twin", "Infrastructure", "ML", "Predictive", "Railway", "Safety", "Structural", "Unsorted", "source: lens"]
+tags: ["Deep-Learning", "Digital-Twin", "Infrastructure", "ML", "Predictive", "Railway", "Safety", "Structural", "Unsorted", "source: lens", "identification: databases"]
 ---
 # Naveen-Narayanan2025 — Advancements in Vibration-Based Damage Detection for Railway Tracks: A Review on Techniques and Emerging Trends in Predictive Maintenance
 

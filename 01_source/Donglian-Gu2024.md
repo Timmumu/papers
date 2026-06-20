@@ -9,7 +9,7 @@ doi: "10.1016/j.eng.2024.10.002"
 zotero_key: "47IG8PJU"
 zotero_status: abstract-grounded
 last_verified: "2026-06-15"
-tags: ["Building", "Monitoring", "Risk", "Smart-City", "Structural", "Unsorted", "source: lens"]
+tags: ["Building", "Monitoring", "Risk", "Smart-City", "Structural", "Unsorted", "source: lens", "identification: databases"]
 ---
 # Donglian-Gu2024 — Vision-Based Digital Shadowing to Reveal Hidden Structural Dynamics of a Real Supertall Building
 

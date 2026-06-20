@@ -9,7 +9,7 @@ doi: "10.1080/17499518.2023.2201266"
 zotero_key: "ERFW4EGK"
 zotero_status: abstract-grounded
 last_verified: "2026-06-15"
-tags: ["Digital-Twin", "Unsorted", "Urban", "source: lens"]
+tags: ["Digital-Twin", "Unsorted", "Urban", "source: lens", "identification: databases"]
 ---
 # Liang-Gao2023 — Flood hazards in urban environment
 

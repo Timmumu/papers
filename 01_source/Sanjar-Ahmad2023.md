@@ -7,9 +7,9 @@ year: 2023
 journal: "Vehicle System Dynamics"
 doi: "10.1080/00423114.2023.2237620"
 zotero_key: "JZ9XG3CQ"
-zotero_status: abstract-grounded
+zotero_status: verified
 last_verified: "2026-06-15"
-tags: ["Digital-Twin", "Maintenance", "Predictive", "Railway", "Sensor", "Simulation", "Unsorted", "source: lens"]
+tags: ["Digital-Twin", "Maintenance", "Predictive", "Railway", "Sensor", "Simulation", "Unsorted", "source: lens", "identification: databases"]
 ---
 # Sanjar-Ahmad2023 — Development of a Digital Twin for prediction of rail surface damage in heavy haul railway operations
 

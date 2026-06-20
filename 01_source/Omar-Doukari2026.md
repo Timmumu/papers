@@ -9,7 +9,7 @@ doi: "10.1016/j.enbuild.2026.116979"
 zotero_key: "VFRKG77L"
 zotero_status: abstract-grounded
 last_verified: "2026-06-15"
-tags: ["Building", "Built-Environment", "Construction", "Digital-Twin", "Monitoring", "Predictive", "Quality", "Safety", "Unsorted", "source: lens"]
+tags: ["Building", "Built-Environment", "Construction", "Digital-Twin", "Monitoring", "Predictive", "Quality", "Safety", "Unsorted", "source: lens", "identification: databases"]
 ---
 # Omar-Doukari2026 — Stakeholder-informed renovation digital twin for multi-domain monitoring: Pilot implementation and acceptance evaluation
 

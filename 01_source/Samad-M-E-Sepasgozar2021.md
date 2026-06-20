@@ -9,7 +9,7 @@ doi: "10.1108/ecam-10-2020-0880"
 zotero_key: "B7F5UYJR"
 zotero_status: abstract-grounded
 last_verified: "2026-06-15"
-tags: ["Architecture", "Construction", "Digital-Twin", "Predictive", "Risk", "Safety", "Unsorted", "source: lens"]
+tags: ["Architecture", "Construction", "Digital-Twin", "Predictive", "Risk", "Safety", "Unsorted", "source: lens", "identification: databases"]
 ---
 # Samad-M-E-Sepasgozar2021 — Metrics development and modelling the mixed reality and digital twin adoption in the context of Industry 4.0
 

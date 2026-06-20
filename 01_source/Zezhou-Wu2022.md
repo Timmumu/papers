@@ -9,7 +9,7 @@ doi: "10.3846/jcem.2022.16928"
 zotero_key: "Q24DWZKA"
 zotero_status: abstract-grounded
 last_verified: "2026-06-15"
-tags: ["BIM", "Building", "Unsorted", "source: lens"]
+tags: ["BIM", "Building", "Unsorted", "source: lens", "identification: databases"]
 ---
 # Zezhou-Wu2022 — STATUS QUO AND FUTURE TRENDS OF BIM-BASED COORDINATION RESEARCH: A CRITICAL REVIEW
 

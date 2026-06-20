@@ -9,7 +9,7 @@ doi: "10.1108/sasbe-03-2021-0035"
 zotero_key: "ACZQMMUG"
 zotero_status: abstract-grounded
 last_verified: "2026-06-15"
-tags: ["Construction", "Digital-Twin", "Real-Time", "Unsorted", "source: lens"]
+tags: ["Construction", "Digital-Twin", "Real-Time", "Unsorted", "source: lens", "identification: databases"]
 ---
 # Omobolanle-Ruth-Ogunseiju2021 — Digital twin-driven framework for improving self-management of ergonomic risks
 

@@ -9,7 +9,7 @@ doi: "10.1108/sasbe-03-2024-0082"
 zotero_key: "UQIYWVJ2"
 zotero_status: abstract-grounded
 last_verified: "2026-06-15"
-tags: ["BIM", "Building", "Construction", "Digital-Twin", "Lifecycle", "Unsorted", "source: lens"]
+tags: ["BIM", "Building", "Construction", "Digital-Twin", "Lifecycle", "Unsorted", "source: lens", "identification: databases"]
 ---
 # Berkay-Akturk2024 — Digital twins for enhanced construction project management
 

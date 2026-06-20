@@ -9,7 +9,7 @@ doi: "10.1061/jitse4.iseng-2431"
 zotero_key: "2BYBE3Z9"
 zotero_status: abstract-grounded
 last_verified: "2026-06-15"
-tags: ["Civil-Engineering", "Digital-Twin", "Infrastructure", "Monitoring", "Unsorted", "source: lens"]
+tags: ["Civil-Engineering", "Digital-Twin", "Infrastructure", "Monitoring", "Unsorted", "source: lens", "identification: databases"]
 ---
 # Eyal-Levenberg2024 — A Digital Twin Concept for Civil Infrastructure
 

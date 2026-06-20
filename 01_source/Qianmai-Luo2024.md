@@ -9,7 +9,7 @@ doi: "10.1108/ecam-11-2023-1095"
 zotero_key: "3646US9N"
 zotero_status: abstract-grounded
 last_verified: "2026-06-15"
-tags: ["Construction", "Digital-Twin", "Monitoring", "Risk", "Safety", "Unsorted", "source: lens"]
+tags: ["Construction", "Digital-Twin", "Monitoring", "Risk", "Safety", "Unsorted", "source: lens", "identification: databases"]
 ---
 # Qianmai-Luo2024 — Applications of digital twin technology in construction safety risk management: a literature review
 

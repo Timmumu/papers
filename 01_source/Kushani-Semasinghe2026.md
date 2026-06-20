@@ -9,7 +9,7 @@ doi: "10.1108/sasbe-02-2026-0113"
 zotero_key: "LBBSXG2A"
 zotero_status: abstract-grounded
 last_verified: "2026-06-15"
-tags: ["AI", "BIM", "Building", "Digital-Twin", "ML", "Monitoring", "Quality", "Unsorted", "source: lens"]
+tags: ["AI", "BIM", "Building", "Digital-Twin", "ML", "Monitoring", "Quality", "Unsorted", "source: lens", "identification: databases"]
 ---
 # Kushani-Semasinghe2026 — Artificial intelligence–based strategies for indoor environmental quality optimisation
 

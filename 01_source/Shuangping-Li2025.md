@@ -9,7 +9,7 @@ doi: "10.1155/adce/9983255"
 zotero_key: "ZVUCU665"
 zotero_status: abstract-grounded
 last_verified: "2026-06-15"
-tags: ["AI", "BIM", "Building", "Dam", "Digital-Twin", "Infrastructure", "ML", "Monitoring", "Safety", "Structural", "Unsorted", "source: lens"]
+tags: ["AI", "BIM", "Building", "Dam", "Digital-Twin", "Infrastructure", "ML", "Monitoring", "Safety", "Structural", "Unsorted", "source: lens", "identification: databases"]
 ---
 # Shuangping-Li2025 — Online Intelligent Monitoring System and Key Technologies for Dam Operation Safety
 

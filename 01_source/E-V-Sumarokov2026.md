@@ -9,7 +9,7 @@ doi: "10.37538/0005-9889-2026-1(632)-42-49"
 zotero_key: "HQM9RIP6"
 zotero_status: abstract-grounded
 last_verified: "2026-06-15"
-tags: ["BIM", "Building", "Digital-Twin", "Inspection", "Monitoring", "Point-Cloud", "Quality", "Unsorted", "source: lens"]
+tags: ["BIM", "Building", "Digital-Twin", "Inspection", "Monitoring", "Point-Cloud", "Quality", "Unsorted", "source: lens", "identification: databases"]
 ---
 # E-V-Sumarokov2026 — Automation of geometric parameters control for reinforced concrete structures in building information modeling environment
 

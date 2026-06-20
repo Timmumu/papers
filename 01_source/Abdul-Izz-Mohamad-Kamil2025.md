@@ -9,7 +9,7 @@ doi: "10.1680/jmuen.25.00092"
 zotero_key: "UGRYB7JK"
 zotero_status: abstract-grounded
 last_verified: "2026-06-15"
-tags: ["Bridge", "Digital-Twin", "Infrastructure", "Maintenance", "Monitoring", "Predictive", "Real-Time", "Unsorted", "Urban", "source: lens"]
+tags: ["Bridge", "Digital-Twin", "Infrastructure", "Maintenance", "Monitoring", "Predictive", "Real-Time", "Unsorted", "Urban", "source: lens", "identification: databases"]
 ---
 # Abdul-Izz-Mohamad-Kamil2025 — Digital twin framework for addressing water management challenges in Malaysia
 

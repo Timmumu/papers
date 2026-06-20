@@ -9,7 +9,7 @@ doi: "10.1016/j.oceaneng.2023.115009"
 zotero_key: "2PL2FGA9"
 zotero_status: abstract-grounded
 last_verified: "2026-06-15"
-tags: ["Construction", "Digital-Twin", "Monitoring", "Safety", "Sensor", "Structural", "Unsorted", "source: lens"]
+tags: ["Construction", "Digital-Twin", "Monitoring", "Safety", "Sensor", "Structural", "Unsorted", "source: lens", "identification: databases"]
 ---
 # Yi-Liu2023 — A digital twin-based framework for simulation and monitoring analysis of floating wind turbine structures
 

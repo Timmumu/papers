@@ -9,7 +9,7 @@ doi: "10.1109/tits.2025.3617507"
 zotero_key: "RHL8MDAU"
 zotero_status: abstract-grounded
 last_verified: "2026-06-15"
-tags: ["Digital-Twin", "Infrastructure", "Quality", "Unsorted", "source: lens"]
+tags: ["Digital-Twin", "Infrastructure", "Quality", "Unsorted", "source: lens", "identification: databases"]
 ---
 # Yuning-Cui2025 — Frequency-Prompted Image Restoration to Enhance Perception in Intelligent Transportation Systems
 

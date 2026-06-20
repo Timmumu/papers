@@ -7,9 +7,9 @@ year: 2026
 journal: "Structural Control and Health Monitoring"
 doi: "10.1155/stc/2777297"
 zotero_key: "7GYU8BC7"
-zotero_status: abstract-grounded
+zotero_status: verified
 last_verified: "2026-06-15"
-tags: ["Digital-Twin", "Infrastructure", "Monitoring", "Predictive", "Structural", "Unsorted", "source: lens"]
+tags: ["Digital-Twin", "Infrastructure", "Monitoring", "Predictive", "Structural", "Unsorted", "source: lens", "identification: databases"]
 ---
 # Solomon-Alemneh-Adimass2026 — Review of Digital Twin in Structural Dynamics to Improve Condition Monitoring
 

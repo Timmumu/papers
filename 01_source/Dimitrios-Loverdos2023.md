@@ -9,7 +9,7 @@ doi: "10.1016/j.engstruct.2022.115256"
 zotero_key: "W3BSHBAV"
 zotero_status: abstract-grounded
 last_verified: "2026-06-15"
-tags: ["Construction", "Digital-Twin", "Inspection", "ML", "Structural", "Unsorted", "source: lens"]
+tags: ["Construction", "Digital-Twin", "Inspection", "ML", "Structural", "Unsorted", "source: lens", "identification: databases"]
 ---
 # Dimitrios-Loverdos2023 — Geometrical digital twins of masonry structures for documentation and structural assessment using machine learning
 

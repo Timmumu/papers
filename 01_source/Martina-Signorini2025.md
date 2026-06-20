@@ -9,7 +9,7 @@ doi: "10.1108/f-02-2025-0029"
 zotero_key: "F5C4S7RP"
 zotero_status: abstract-grounded
 last_verified: "2026-06-15"
-tags: ["AI", "Construction", "Digital-Twin", "Energy", "Facility-Management", "Lifecycle", "Predictive", "Unsorted", "source: lens"]
+tags: ["AI", "Construction", "Digital-Twin", "Energy", "Facility-Management", "Lifecycle", "Predictive", "Unsorted", "source: lens", "identification: databases"]
 ---
 # Martina-Signorini2025 — Shaping the future of facility management. Market and literature insights on digital twin adoption
 

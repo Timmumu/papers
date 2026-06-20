@@ -9,7 +9,7 @@ doi: "10.1016/j.ress.2025.111938"
 zotero_key: "6PRWDF3D"
 zotero_status: abstract-grounded
 last_verified: "2026-06-15"
-tags: ["Bridge", "Deep-Learning", "Digital-Twin", "Monitoring", "Sensor", "Structural", "Unsorted", "source: lens"]
+tags: ["Bridge", "Deep-Learning", "Digital-Twin", "Monitoring", "Sensor", "Structural", "Unsorted", "source: lens", "identification: databases"]
 ---
 # Hao-yang-Zhao2026 — Reverse Variational Autoencoder: A probabilistic inference framework for structural health monitoring and inverse analysis in engineering
 

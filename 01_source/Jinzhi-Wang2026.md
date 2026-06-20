@@ -7,9 +7,9 @@ year: 2026
 journal: "Ingegneria Sismica"
 doi: "10.65102/is2026625"
 zotero_key: "DGQ22SIW"
-zotero_status: abstract-grounded
+zotero_status: verified
 last_verified: "2026-06-15"
-tags: ["Construction", "Deep-Learning", "Digital-Twin", "Energy", "Infrastructure", "Maintenance", "Pipeline", "Predictive", "Unsorted", "source: lens"]
+tags: ["Construction", "Deep-Learning", "Digital-Twin", "Energy", "Infrastructure", "Maintenance", "Pipeline", "Predictive", "Unsorted", "source: lens", "identification: databases"]
 ---
 # Jinzhi-Wang2026 — Research on the construction method of intelligent operation and maintenance system for electric power pipeline equipment by fusion of digital twin and AI
 

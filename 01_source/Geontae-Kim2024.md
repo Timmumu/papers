@@ -9,7 +9,7 @@ doi: "10.1016/j.autcon.2024.105878"
 zotero_key: "NKAPFLQ4"
 zotero_status: abstract-grounded
 last_verified: "2026-06-15"
-tags: ["Asset-Management", "Bridge", "Deep-Learning", "Digital-Twin", "Infrastructure", "Monitoring", "Quality", "Structural", "Unsorted", "source: lens"]
+tags: ["Asset-Management", "Bridge", "Deep-Learning", "Digital-Twin", "Infrastructure", "Monitoring", "Quality", "Structural", "Unsorted", "source: lens", "identification: databases"]
 ---
 # Geontae-Kim2024 — 3D Pixelwise damage mapping using a deep attention based modified Nerfacto
 

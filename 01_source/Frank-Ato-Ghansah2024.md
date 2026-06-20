@@ -9,7 +9,7 @@ doi: "10.1108/sasbe-10-2023-0298"
 zotero_key: "J8L73M3W"
 zotero_status: abstract-grounded
 last_verified: "2026-06-15"
-tags: ["Building", "Digital-Twin", "Energy", "Facility-Management", "Maintenance", "Monitoring", "Unsorted", "source: lens"]
+tags: ["Building", "Digital-Twin", "Energy", "Facility-Management", "Maintenance", "Monitoring", "Unsorted", "source: lens", "identification: databases"]
 ---
 # Frank-Ato-Ghansah2024 — Digital twins for smart building at the facility management stage: a systematic review of enablers, applications and challenges
 

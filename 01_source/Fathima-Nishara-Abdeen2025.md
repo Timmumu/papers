@@ -9,7 +9,7 @@ doi: "10.1108/sasbe-02-2025-0067"
 zotero_key: "VYR74FWK"
 zotero_status: abstract-grounded
 last_verified: "2026-06-15"
-tags: ["Digital-Twin", "Infrastructure", "Unsorted", "Urban", "source: lens"]
+tags: ["Digital-Twin", "Infrastructure", "Unsorted", "Urban", "source: lens", "identification: databases"]
 ---
 # Fathima-Nishara-Abdeen2025 — A user-driven design approach towards developing a citizen-centric digital twin for maintaining urban infrastructure
 

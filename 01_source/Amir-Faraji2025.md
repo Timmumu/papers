@@ -9,7 +9,7 @@ doi: "10.1108/sasbe-04-2025-0169"
 zotero_key: "77HTGURN"
 zotero_status: abstract-grounded
 last_verified: "2026-06-15"
-tags: ["AI", "BIM", "Building", "Civil-Engineering", "Construction", "Digital-Twin", "Energy", "Real-Time", "Unsorted", "source: lens"]
+tags: ["AI", "BIM", "Building", "Civil-Engineering", "Construction", "Digital-Twin", "Energy", "Real-Time", "Unsorted", "source: lens", "identification: databases"]
 ---
 # Amir-Faraji2025 — Exploring the metaverse: integrating emerging technologies for Industry 5.0 advancement
 

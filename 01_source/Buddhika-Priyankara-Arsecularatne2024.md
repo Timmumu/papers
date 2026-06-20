@@ -9,7 +9,7 @@ doi: "10.1016/j.jobe.2024.111150"
 zotero_key: "RIQFMLIK"
 zotero_status: abstract-grounded
 last_verified: "2026-06-15"
-tags: ["BIM", "Building", "Built-Environment", "Carbon", "Construction", "Digital-Twin", "Energy", "Lifecycle", "Monitoring", "Unsorted", "source: lens"]
+tags: ["BIM", "Building", "Built-Environment", "Carbon", "Construction", "Digital-Twin", "Energy", "Lifecycle", "Monitoring", "Unsorted", "source: lens", "identification: databases"]
 ---
 # Buddhika-Priyankara-Arsecularatne2024 — Review of reducing energy consumption and carbon emissions through digital twin in built environment
 

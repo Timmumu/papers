@@ -9,7 +9,7 @@ doi: "10.1016/j.autcon.2025.106603"
 zotero_key: "ZD8U8DJ3"
 zotero_status: abstract-grounded
 last_verified: "2026-06-15"
-tags: ["Digital-Twin", "Highway", "Infrastructure", "Maintenance", "Quality", "Road", "Unsorted", "source: lens"]
+tags: ["Digital-Twin", "Highway", "Infrastructure", "Maintenance", "Quality", "Road", "Unsorted", "source: lens", "identification: databases"]
 ---
 # Linjun-Lu2026 — Regional graph-based pavement condition data quality assessment in support of trustworthy highway infrastructure digital twins
 

@@ -9,7 +9,7 @@ doi: "10.1016/j.apenergy.2024.124689"
 zotero_key: "BXLS4QET"
 zotero_status: abstract-grounded
 last_verified: "2026-06-15"
-tags: ["AI", "Carbon", "Digital-Twin", "Energy", "Unsorted", "source: lens"]
+tags: ["AI", "Carbon", "Digital-Twin", "Energy", "Unsorted", "source: lens", "identification: databases"]
 ---
 # Young-Je-Park2025 — Deciphering the microstructural complexities of compacted carbon fiber paper through AI-enabled digital twin technology
 

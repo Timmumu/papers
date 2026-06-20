@@ -9,7 +9,7 @@ doi: "10.1016/j.jobe.2025.114755"
 zotero_key: "ZSDLWA6Q"
 zotero_status: title-only
 last_verified: "2026-06-15"
-tags: ["Digital-Twin", "Quality", "Unsorted", "source: lens"]
+tags: ["Digital-Twin", "Quality", "Unsorted", "source: lens", "identification: databases"]
 ---
 # Wei-Hu2026 — Digital Twin-enabled failure prediction for indoor air quality: A CNN-BiLSTM model with multi-head attention mechanism
 

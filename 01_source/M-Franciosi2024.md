@@ -9,7 +9,7 @@ doi: "10.1016/j.autcon.2024.105834"
 zotero_key: "8U862S4V"
 zotero_status: abstract-grounded
 last_verified: "2026-06-15"
-tags: ["Bridge", "Construction", "Digital-Twin", "Maintenance", "Safety", "Structural", "Unsorted", "source: lens"]
+tags: ["Bridge", "Construction", "Digital-Twin", "Maintenance", "Safety", "Structural", "Unsorted", "source: lens", "identification: databases"]
 ---
 # M-Franciosi2024 — Digital twins in bridge engineering for streamlined maintenance and enhanced sustainability
 

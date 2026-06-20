@@ -9,7 +9,7 @@ doi: "10.1080/13467581.2025.2560455"
 zotero_key: "WX8IWGYJ"
 zotero_status: abstract-grounded
 last_verified: "2026-06-15"
-tags: ["AI", "Digital-Twin", "Infrastructure", "Smart-City", "Unsorted", "Urban", "source: lens"]
+tags: ["AI", "Digital-Twin", "Infrastructure", "Smart-City", "Unsorted", "Urban", "source: lens", "identification: databases"]
 ---
 # Yaqi-Zhang2025 — Architectural identity in smart city development: a multi-criteria study on regional culture in northeastern China
 

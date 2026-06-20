@@ -7,9 +7,9 @@ year: 2026
 journal: "Ingegneria Sismica"
 doi: "10.65102/is2026962"
 zotero_key: "MYFVDNTV"
-zotero_status: abstract-grounded
+zotero_status: verified
 last_verified: "2026-06-15"
-tags: ["Digital-Twin", "Heritage", "Point-Cloud", "Semantic", "Unsorted", "source: lens"]
+tags: ["Digital-Twin", "Heritage", "Point-Cloud", "Semantic", "Unsorted", "source: lens", "identification: databases"]
 ---
 # Wenjian-Yan2026 — The Application of Digital Twin Technology in the Revitalization of Jilin Traditional Craft Cultural Heritage and Aesthetic Education Practice in Colleges and Universities
 

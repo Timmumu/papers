@@ -9,7 +9,7 @@ doi: "10.1108/ecam-01-2025-0131"
 zotero_key: "B6VK9YPI"
 zotero_status: abstract-grounded
 last_verified: "2026-06-15"
-tags: ["BIM", "Building", "Construction", "Digital-Twin", "Quality", "Risk", "Unsorted", "source: lens"]
+tags: ["BIM", "Building", "Construction", "Digital-Twin", "Quality", "Risk", "Unsorted", "source: lens", "identification: databases"]
 ---
 # Vu-Hong-Son-Pham2025 — Optimizing construction site layouts with dynamic multi-objective methods and time-based facility placement
 

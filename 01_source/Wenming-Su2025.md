@@ -9,7 +9,7 @@ doi: "10.1680/jensu.24.00136"
 zotero_key: "FATKDFH9"
 zotero_status: abstract-grounded
 last_verified: "2026-06-15"
-tags: ["Bridge", "Construction", "Digital-Twin", "Monitoring", "Real-Time", "Safety", "Structural", "Unsorted", "source: lens"]
+tags: ["Bridge", "Construction", "Digital-Twin", "Monitoring", "Real-Time", "Safety", "Structural", "Unsorted", "source: lens", "identification: databases"]
 ---
 # Wenming-Su2025 — Development of a digital twin-driven bridge construction safety monitoring system
 

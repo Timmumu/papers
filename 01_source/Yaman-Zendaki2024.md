@@ -9,7 +9,7 @@ doi: "10.1002/geot.202400011"
 zotero_key: "M3C4PPZP"
 zotero_status: abstract-grounded
 last_verified: "2026-06-15"
-tags: ["Construction", "Digital-Twin", "Quality", "Simulation", "Tunnel", "Unsorted", "source: lens"]
+tags: ["Construction", "Digital-Twin", "Quality", "Simulation", "Tunnel", "Unsorted", "source: lens", "identification: databases"]
 ---
 # Yaman-Zendaki2024 — Coupling process controlling data and numerical simulation in mechanised tunnelling
 

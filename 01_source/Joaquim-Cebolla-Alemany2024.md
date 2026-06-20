@@ -9,7 +9,7 @@ doi: "10.1016/j.buildenv.2024.112091"
 zotero_key: "YN4LEZAM"
 zotero_status: abstract-grounded
 last_verified: "2026-06-15"
-tags: ["Building", "Digital-Twin", "Predictive", "Quality", "Real-Time", "Unsorted", "source: lens"]
+tags: ["Building", "Digital-Twin", "Predictive", "Quality", "Real-Time", "Unsorted", "source: lens", "identification: databases"]
 ---
 # Joaquim-Cebolla-Alemany2024 — Optimizing indoor air models through k-means clustering of nanoparticle size distribution data
 

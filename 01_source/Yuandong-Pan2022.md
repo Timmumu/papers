@@ -9,7 +9,7 @@ doi: "10.1016/j.autcon.2022.104375"
 zotero_key: "P4H4EBXB"
 zotero_status: abstract-grounded
 last_verified: "2026-06-15"
-tags: ["Digital-Twin", "Monitoring", "Pipeline", "Point-Cloud", "Safety", "Semantic", "Structural", "Unsorted", "source: lens"]
+tags: ["Digital-Twin", "Monitoring", "Pipeline", "Point-Cloud", "Safety", "Semantic", "Structural", "Unsorted", "source: lens", "identification: databases"]
 ---
 # Yuandong-Pan2022 — Enriching geometric digital twins of buildings with small objects by fusing laser scanning and AI-based image recognition
 

@@ -9,7 +9,7 @@ doi: "10.1016/j.autcon.2022.104421"
 zotero_key: "4PFFHRSS"
 zotero_status: abstract-grounded
 last_verified: "2026-06-15"
-tags: ["Built-Environment", "Civil-Engineering", "Construction", "Digital-Twin", "Infrastructure", "Unsorted", "source: lens"]
+tags: ["Built-Environment", "Civil-Engineering", "Construction", "Digital-Twin", "Infrastructure", "Unsorted", "source: lens", "identification: databases"]
 ---
 # M-Pregnolato2022 — Towards Civil Engineering 4.0: Concept, workflow and application of Digital Twins for existing infrastructure
 

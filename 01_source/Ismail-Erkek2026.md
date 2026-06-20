@@ -7,9 +7,9 @@ year: 2026
 journal: "International Journal of Information Security"
 doi: "10.1007/s10207-026-01274-6"
 zotero_key: "HHX4S7FQ"
-zotero_status: abstract-grounded
+zotero_status: verified
 last_verified: "2026-06-15"
-tags: ["CPS", "Deep-Learning", "Digital-Twin", "Infrastructure", "Monitoring", "Sensor", "Unsorted", "source: lens"]
+tags: ["CPS", "Deep-Learning", "Digital-Twin", "Infrastructure", "Monitoring", "Sensor", "Unsorted", "source: lens", "identification: databases"]
 ---
 # Ismail-Erkek2026 — Explainable digital twin–driven ensemble anomaly detection framework for cyber-physical infrastructure security
 

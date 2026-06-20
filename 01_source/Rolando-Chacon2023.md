@@ -7,9 +7,9 @@ year: 2023
 journal: "Structure and Infrastructure Engineering"
 doi: "10.1080/15732479.2023.2225486"
 zotero_key: "W7WI8FSS"
-zotero_status: abstract-grounded
+zotero_status: verified
 last_verified: "2026-06-15"
-tags: ["Digital-Twin", "Monitoring", "Pipeline", "Structural", "Unsorted", "source: lens"]
+tags: ["Digital-Twin", "Monitoring", "Pipeline", "Structural", "Unsorted", "source: lens", "identification: databases"]
 ---
 # Rolando-Chacon2023 — Requirements and challenges for infusion of SHM systems within Digital Twin platforms
 

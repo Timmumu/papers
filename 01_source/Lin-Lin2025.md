@@ -9,7 +9,7 @@ doi: "10.1016/j.istruc.2025.109965"
 zotero_key: "WGJZRM39"
 zotero_status: title-only
 last_verified: "2026-06-15"
-tags: ["Digital-Twin", "Monitoring", "Real-Time", "Structural", "Unsorted", "source: lens"]
+tags: ["Digital-Twin", "Monitoring", "Real-Time", "Structural", "Unsorted", "source: lens", "identification: databases"]
 ---
 # Lin-Lin2025 — G-Twin – Graph neural network-based digital twin for real-time and high-fidelity structural health monitoring for offshore wind turbines: Part Ⅱ. Performance assessment
 

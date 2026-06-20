@@ -7,9 +7,9 @@ year: 2024
 journal: "Structural Durability & Health Monitoring"
 doi: "10.32604/sdhm.2024.050338"
 zotero_key: "FFYJXEXV"
-zotero_status: abstract-grounded
+zotero_status: verified
 last_verified: "2026-06-15"
-tags: ["Civil-Engineering", "Digital-Twin", "Lifecycle", "Unsorted", "source: lens"]
+tags: ["Civil-Engineering", "Digital-Twin", "Lifecycle", "Unsorted", "source: lens", "identification: databases"]
 ---
 # Jiamin-Huang2024 — Exploring the Applications of Digital Twin Technology in Enhancing Sustainability in Civil Engineering: A Review
 

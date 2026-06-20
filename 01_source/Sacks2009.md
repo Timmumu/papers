@@ -11,6 +11,7 @@ created: "2026-05-25"
 tags:
   - Verified
   - source: scholar
+  - identification: other methods
 ---
 
 # Sacks2009 — Spatial and Temporal Exposure to Safety Hazards in Construction

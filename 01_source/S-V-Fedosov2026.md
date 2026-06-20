@@ -9,7 +9,7 @@ doi: "10.31659/0585-430x-2026-844-3-60-69"
 zotero_key: "JMH2DVDC"
 zotero_status: abstract-grounded
 last_verified: "2026-06-15"
-tags: ["Digital-Twin", "Quality", "Risk", "Structural", "Unsorted", "source: lens"]
+tags: ["Digital-Twin", "Quality", "Risk", "Structural", "Unsorted", "source: lens", "identification: databases"]
 ---
 # S-V-Fedosov2026 — Methods of heat and mass transfer theory for modeling raw arbolite blocks drying processes
 

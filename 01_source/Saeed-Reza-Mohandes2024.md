@@ -9,7 +9,7 @@ doi: "10.1108/sasbe-11-2023-0344"
 zotero_key: "3YMFX45Y"
 zotero_status: abstract-grounded
 last_verified: "2026-06-15"
-tags: ["Architecture", "Building", "Construction", "Digital-Twin", "Quality", "Real-Time", "Unsorted", "source: lens"]
+tags: ["Architecture", "Building", "Construction", "Digital-Twin", "Quality", "Real-Time", "Unsorted", "source: lens", "identification: databases"]
 ---
 # Saeed-Reza-Mohandes2024 — Determining the stationary digital twins implementation barriers for sustainable construction projects
 

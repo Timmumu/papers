@@ -9,7 +9,7 @@ doi: "10.1016/j.jobe.2025.112941"
 zotero_key: "2RMMUZXD"
 zotero_status: abstract-grounded
 last_verified: "2026-06-15"
-tags: ["Digital-Twin", "Maintenance", "Monitoring", "Predictive", "Real-Time", "Structural", "Unsorted", "source: lens"]
+tags: ["Digital-Twin", "Maintenance", "Monitoring", "Predictive", "Real-Time", "Structural", "Unsorted", "source: lens", "identification: databases"]
 ---
 # Erica-Lenticchia2025 — Sensitivity driven model updating: a multi-step procedure for structural assessment
 

@@ -9,7 +9,7 @@ doi: "10.1016/j.autcon.2025.106415"
 zotero_key: "TA4L998Z"
 zotero_status: title-only
 last_verified: "2026-06-15"
-tags: ["Bridge", "Construction", "Digital-Twin", "Monitoring", "Point-Cloud", "Unsorted", "source: lens"]
+tags: ["Bridge", "Construction", "Digital-Twin", "Monitoring", "Point-Cloud", "Unsorted", "source: lens", "identification: databases"]
 ---
 # Hao-Zhang2025 — Two-stage point cloud registration using multi-scale edge convolution for digital twin-based bridge construction progress monitoring
 

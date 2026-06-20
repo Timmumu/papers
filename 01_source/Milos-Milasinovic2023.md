@@ -9,7 +9,7 @@ doi: "10.1007/s11269-022-03420-w"
 zotero_key: "8NTQBDS5"
 zotero_status: abstract-grounded
 last_verified: "2026-06-15"
-tags: ["Dam", "Digital-Twin", "Energy", "Infrastructure", "Maintenance", "Risk", "Unsorted", "source: lens"]
+tags: ["Dam", "Digital-Twin", "Energy", "Infrastructure", "Maintenance", "Risk", "Unsorted", "source: lens", "identification: databases"]
 ---
 # Milos-Milasinovic2023 — Failure Conditions Assessment of Complex Water Systems Using Fuzzy Logic.
 

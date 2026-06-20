@@ -9,7 +9,7 @@ doi: "10.1002/suco.202400890"
 zotero_key: "9AD2CEV7"
 zotero_status: abstract-grounded
 last_verified: "2026-06-15"
-tags: ["BIM", "Building", "Construction", "Digital-Twin", "Monitoring", "Quality", "Safety", "Structural", "Unsorted", "source: lens"]
+tags: ["BIM", "Building", "Construction", "Digital-Twin", "Monitoring", "Quality", "Safety", "Structural", "Unsorted", "source: lens", "identification: databases"]
 ---
 # Marcin-Gorski2025 — Robotic devices for Structural Health Monitoring
 

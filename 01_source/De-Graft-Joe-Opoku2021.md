@@ -9,7 +9,7 @@ doi: "10.1016/j.jobe.2021.102726"
 zotero_key: ""
 zotero_status: unsorted
 last_verified: "2026-06-14"
-tags: ["Construction", "Digital-Twin", "Unsorted", "source: lens"]
+tags: ["Construction", "Digital-Twin", "Unsorted", "source: lens", "identification: databases"]
 ---
 # De-Graft-Joe-Opoku2021 — Digital twin application in the construction industry: A literature review
 

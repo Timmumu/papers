@@ -7,9 +7,9 @@ year: 2024
 journal: "Nuclear Engineering and Design"
 doi: "10.1016/j.nucengdes.2024.113013"
 zotero_key: "XGVG95QH"
-zotero_status: abstract-grounded
+zotero_status: verified
 last_verified: "2026-06-15"
-tags: ["Construction", "Digital-Twin", "Unsorted", "source: lens"]
+tags: ["Construction", "Digital-Twin", "Unsorted", "source: lens", "identification: databases"]
 ---
 # Manuel-Bandala2024 — Digital twin challenges and opportunities for nuclear fuel manufacturing applications
 

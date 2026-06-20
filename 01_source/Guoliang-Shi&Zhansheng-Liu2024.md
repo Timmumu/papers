@@ -9,7 +9,7 @@ doi: "10.1016/j.jobe.2024.111311"
 zotero_key: "CK6YP84B"
 zotero_status: title-only
 last_verified: "2026-06-15"
-tags: ["Construction", "Digital-Twin", "Unsorted", "source: lens"]
+tags: ["Construction", "Digital-Twin", "Unsorted", "source: lens", "identification: databases"]
 ---
 # Guoliang-Shi2024 — Construction error control method of large-span spatial structures based on digital twin
 

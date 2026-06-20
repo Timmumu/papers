@@ -9,7 +9,7 @@ doi: "10.1002/suco.70066"
 zotero_key: "SLNN8EAQ"
 zotero_status: abstract-grounded
 last_verified: "2026-06-15"
-tags: ["Digital-Twin", "Inspection", "Maintenance", "Structural", "Unsorted", "source: lens"]
+tags: ["Digital-Twin", "Inspection", "Maintenance", "Structural", "Unsorted", "source: lens", "identification: databases"]
 ---
 # Kai-Zhang2025 — Research on structural health assessment methods for long‐distance underground culverts under multi‐source data collaboration
 

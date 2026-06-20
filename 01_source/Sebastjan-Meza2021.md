@@ -7,9 +7,9 @@ year: 2021
 journal: "Journal of Advanced Transportation"
 doi: "10.1155/2021/8833058"
 zotero_key: "Q9E2BMW8"
-zotero_status: abstract-grounded
+zotero_status: verified
 last_verified: "2026-06-15"
-tags: ["BIM", "Building", "Civil-Engineering", "Construction", "Digital-Twin", "Monitoring", "Road", "Unsorted", "source: lens"]
+tags: ["BIM", "Building", "Civil-Engineering", "Construction", "Digital-Twin", "Monitoring", "Road", "Unsorted", "source: lens", "identification: databases"]
 ---
 # Sebastjan-Meza2021 — Digital Twins and Road Construction Using Secondary Raw Materials
 

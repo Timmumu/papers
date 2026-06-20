@@ -9,7 +9,7 @@ doi: "10.1016/j.engstruct.2026.122503"
 zotero_key: "TKDRSKP9"
 zotero_status: abstract-grounded
 last_verified: "2026-06-15"
-tags: ["BIM", "Bridge", "Digital-Twin", "Infrastructure", "Inspection", "Quality", "Semantic", "Unsorted", "source: lens"]
+tags: ["BIM", "Bridge", "Digital-Twin", "Infrastructure", "Inspection", "Quality", "Semantic", "Unsorted", "source: lens", "identification: databases"]
 ---
 # Rolando-Chacon2026 — Semantic digital twins for masonry bridges: Structuring geometrical, material and assessment field data
 

@@ -11,6 +11,7 @@ created: "2026-05-25"
 tags:
   - Verified
   - source: scholar
+  - identification: other methods
 ---
 
 # Zhang2024 — Global BIM–Point Cloud Registration and Association for Construction Progress Monitoring

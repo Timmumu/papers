@@ -9,7 +9,7 @@ doi: "10.1016/j.autcon.2024.105725"
 zotero_key: "63B59L9G"
 zotero_status: abstract-grounded
 last_verified: "2026-06-15"
-tags: ["Building", "Deep-Learning", "Digital-Twin", "Monitoring", "Pipeline", "Safety", "Semantic", "Unsorted", "source: lens"]
+tags: ["Building", "Deep-Learning", "Digital-Twin", "Monitoring", "Pipeline", "Safety", "Semantic", "Unsorted", "source: lens", "identification: databases"]
 ---
 # Jiajun-Li2024 — Automated generation and semantic segmentation of roof orthophoto for digital twin -based monitoring of slated roofs
 

@@ -9,7 +9,7 @@ doi: "10.1108/f-10-2024-0144"
 zotero_key: "A8KRK7VV"
 zotero_status: abstract-grounded
 last_verified: "2026-06-15"
-tags: ["Building", "Digital-Twin", "Facility-Management", "Unsorted", "source: lens"]
+tags: ["Building", "Digital-Twin", "Facility-Management", "Unsorted", "source: lens", "identification: databases"]
 ---
 # Alessia-Bellini2025 — Enabling circular economy in facility management through digital twins: a case study from Norway
 

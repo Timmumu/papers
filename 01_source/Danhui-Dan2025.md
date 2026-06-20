@@ -9,7 +9,7 @@ doi: "10.1016/j.istruc.2025.108299"
 zotero_key: "TIC6DTLD"
 zotero_status: title-only
 last_verified: "2026-06-15"
-tags: ["Bridge", "Digital-Twin", "Unsorted", "source: lens"]
+tags: ["Bridge", "Digital-Twin", "Unsorted", "source: lens", "identification: databases"]
 ---
 # Danhui-Dan2025 — A digital twin model of traffic flow load for full bridge deck geared to analysis of bridge mechanical effects under statistical steady state
 

@@ -9,7 +9,7 @@ doi: "10.24000/0409-2961-2022-3-33-40"
 zotero_key: "U96DE4FT"
 zotero_status: abstract-grounded
 last_verified: "2026-06-15"
-tags: ["Construction", "Digital-Twin", "Monitoring", "Risk", "Safety", "Unsorted", "source: lens"]
+tags: ["Construction", "Digital-Twin", "Monitoring", "Risk", "Safety", "Unsorted", "source: lens", "identification: databases"]
 ---
 # A-E-Kirilov2022 — On the Issue of the Structure of Digital Twins of Hazardous Production Facilities
 

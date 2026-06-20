@@ -7,9 +7,9 @@ year: 2022
 journal: "American Journal of Engineering and Applied Sciences"
 doi: "10.3844/ajeassp.2022.230.238"
 zotero_key: "2EPPUGV5"
-zotero_status: abstract-grounded
+zotero_status: verified
 last_verified: "2026-06-15"
-tags: ["Architecture", "Digital-Twin", "Quality", "Unsorted", "source: lens"]
+tags: ["Architecture", "Digital-Twin", "Quality", "Unsorted", "source: lens", "identification: databases"]
 ---
 # Antreas-Kantaros2022 — Setting up a Digital Twin Assisted Greenhouse Architecture
 

@@ -9,7 +9,7 @@ doi: "10.1080/15732479.2026.2656943"
 zotero_key: "AY9UE4PY"
 zotero_status: title-only
 last_verified: "2026-06-15"
-tags: ["Digital-Twin", "Unsorted", "source: lens"]
+tags: ["Digital-Twin", "Unsorted", "source: lens", "identification: databases"]
 ---
 # Kai-Wen-Zhang2026 — Digital twin-driven multi-metrics condition assessment of eccentrically loaded reinforced concrete columns
 

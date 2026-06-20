@@ -9,7 +9,7 @@ doi: "10.1177/01436244231163084"
 zotero_key: "F64L6WLU"
 zotero_status: abstract-grounded
 last_verified: "2026-06-15"
-tags: ["Building", "Digital-Twin", "Energy", "Quality", "Unsorted", "source: lens"]
+tags: ["Building", "Digital-Twin", "Energy", "Quality", "Unsorted", "source: lens", "identification: databases"]
 ---
 # J-Dong2023 — A review of approaches and applications in building stock energy and indoor environment modelling
 

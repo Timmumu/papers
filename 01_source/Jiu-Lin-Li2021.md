@@ -9,7 +9,7 @@ doi: "10.1155/2021/6644937"
 zotero_key: "X2VGIYHC"
 zotero_status: abstract-grounded
 last_verified: "2026-06-15"
-tags: ["BIM", "Building", "Construction", "Deep-Learning", "Maintenance", "Monitoring", "Unsorted", "source: lens"]
+tags: ["BIM", "Building", "Construction", "Deep-Learning", "Maintenance", "Monitoring", "Unsorted", "source: lens", "identification: databases"]
 ---
 # Jiu-Lin-Li2021 — Intelligent Construction, Operation, and Maintenance of a Large Wastewater-Treatment Plant Based on BIM
 

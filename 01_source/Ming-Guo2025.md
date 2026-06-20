@@ -9,7 +9,7 @@ doi: "10.1016/j.jobe.2025.113792"
 zotero_key: "A9KX5D9N"
 zotero_status: title-only
 last_verified: "2026-06-15"
-tags: ["Digital-Twin", "Heritage", "Unsorted", "source: lens"]
+tags: ["Digital-Twin", "Heritage", "Unsorted", "source: lens", "identification: databases"]
 ---
 # Ming-Guo2025 — Digital twin models for architectural heritage conservation
 

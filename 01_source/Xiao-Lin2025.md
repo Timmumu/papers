@@ -9,7 +9,7 @@ doi: "10.1016/j.autcon.2025.106147"
 zotero_key: "J57WPA9F"
 zotero_status: title-only
 last_verified: "2026-06-15"
-tags: ["Construction", "Digital-Twin", "Monitoring", "Safety", "Unsorted", "source: lens"]
+tags: ["Construction", "Digital-Twin", "Monitoring", "Safety", "Unsorted", "source: lens", "identification: databases"]
 ---
 # Xiao-Lin2025 — Digital twin-enabled safety monitoring system for seamless worker-robot collaboration in construction
 

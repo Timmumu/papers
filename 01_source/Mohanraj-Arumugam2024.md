@@ -9,7 +9,7 @@ doi: "10.34218/ijciet_15_05_003"
 zotero_key: "IDBD7TFA"
 zotero_status: abstract-grounded
 last_verified: "2026-06-15"
-tags: ["Architecture", "BIM", "Building", "Construction", "Digital-Twin", "Energy", "Infrastructure", "ML", "Maintenance", "Predictive", "Unsorted", "source: lens"]
+tags: ["Architecture", "BIM", "Building", "Construction", "Digital-Twin", "Energy", "Infrastructure", "ML", "Maintenance", "Predictive", "Unsorted", "source: lens", "identification: databases"]
 ---
 # Mohanraj-Arumugam2024 — BIM AND AI INTEGRATION FOR SMART AND SUSTAINABLE INFRASTRUCTURE: A COMPREHENSIVE REVIEW OF TRENDS, TECHNOLOGIES, AND FUTURE DIRECTIONS
 

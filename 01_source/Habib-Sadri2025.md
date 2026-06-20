@@ -9,7 +9,7 @@ doi: "10.1016/j.jobe.2025.112439"
 zotero_key: "WUC348UV"
 zotero_status: abstract-grounded
 last_verified: "2026-06-15"
-tags: ["AI", "Bridge", "Building", "Digital-Twin", "Predictive", "Real-Time", "Unsorted", "source: lens"]
+tags: ["AI", "Bridge", "Building", "Digital-Twin", "Predictive", "Real-Time", "Unsorted", "source: lens", "identification: databases"]
 ---
 # Habib-Sadri2025 — AI-driven integration of digital twins and blockchain for smart building management systems: A multi-stage empirical study
 

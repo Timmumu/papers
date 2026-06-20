@@ -9,7 +9,7 @@ doi: "10.1111/mice.70150"
 zotero_key: "T9XWG6H8"
 zotero_status: abstract-grounded
 last_verified: "2026-06-15"
-tags: ["Building", "Construction", "Digital-Twin", "Monitoring", "Point-Cloud", "Semantic", "Unsorted", "source: lens"]
+tags: ["Building", "Construction", "Digital-Twin", "Monitoring", "Point-Cloud", "Semantic", "Unsorted", "source: lens", "identification: databases"]
 ---
 # Yang-Su2025 — Zero‐shot point cloud segmentation for hydro power plant components
 

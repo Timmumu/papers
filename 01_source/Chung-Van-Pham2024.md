@@ -9,7 +9,7 @@ doi: "10.1007/s12205-024-0247-9"
 zotero_key: "7JW2VVRL"
 zotero_status: abstract-grounded
 last_verified: "2026-06-15"
-tags: ["BIM", "Building", "Digital-Twin", "Point-Cloud", "Safety", "Unsorted", "source: lens"]
+tags: ["BIM", "Building", "Digital-Twin", "Point-Cloud", "Safety", "Unsorted", "source: lens", "identification: databases"]
 ---
 # Chung-Van-Pham2024 — BIM and TLS Point Cloud Integration for Information Management of Underground Coal Mines: A Case Study in Nui Beo Underground Coal Mining in Vietnam
 

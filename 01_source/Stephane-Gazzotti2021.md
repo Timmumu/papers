@@ -7,9 +7,9 @@ year: 2021
 journal: "Fusion Engineering and Design"
 doi: "10.1016/j.fusengdes.2021.112780"
 zotero_key: "KFJA5WXD"
-zotero_status: abstract-grounded
+zotero_status: verified
 last_verified: "2026-06-15"
-tags: ["Digital-Twin", "Infrastructure", "Maintenance", "Safety", "Unsorted", "source: lens"]
+tags: ["Digital-Twin", "Infrastructure", "Maintenance", "Safety", "Unsorted", "source: lens", "identification: databases"]
 ---
 # Stephane-Gazzotti2021 — Virtual and Augmented Reality Use Cases for Fusion Design Engineering
 

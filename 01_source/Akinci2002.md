@@ -11,6 +11,7 @@ created: "2026-05-25"
 tags:
   - Verified
   - source: scholar
+  - identification: other methods
 ---
 
 # Akinci2002 —Automated Generation of Work Spaces Required by Construction Activities

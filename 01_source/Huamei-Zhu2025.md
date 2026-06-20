@@ -9,7 +9,7 @@ doi: "10.1016/j.tust.2025.106508"
 zotero_key: "QBI42PUZ"
 zotero_status: abstract-grounded
 last_verified: "2026-06-15"
-tags: ["AI", "BIM", "Digital-Twin", "Infrastructure", "ML", "Maintenance", "Predictive", "Structural", "Unsorted", "Urban", "source: lens"]
+tags: ["AI", "BIM", "Digital-Twin", "Infrastructure", "ML", "Maintenance", "Predictive", "Structural", "Unsorted", "Urban", "source: lens", "identification: databases"]
 ---
 # Huamei-Zhu2025 — Transforming the maintenance of underground infrastructure through Digital Twins: State of the art and outlook
 

@@ -9,7 +9,7 @@ doi: "10.1016/j.ymssp.2023.110164"
 zotero_key: "R8634BL6"
 zotero_status: abstract-grounded
 last_verified: "2026-06-15"
-tags: ["Digital-Twin", "Simulation", "Structural", "Unsorted", "source: lens"]
+tags: ["Digital-Twin", "Simulation", "Structural", "Unsorted", "source: lens", "identification: databases"]
 ---
 # Xuan-Zhou2023 — A fuzzy-set-based joint distribution adaptation method for regression and its application to online damage quantification for structural digital twin
 

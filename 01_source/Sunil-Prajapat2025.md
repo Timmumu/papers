@@ -9,7 +9,7 @@ doi: "10.1109/tits.2025.3546432"
 zotero_key: "N8FFURIM"
 zotero_status: abstract-grounded
 last_verified: "2026-06-15"
-tags: ["CPS", "Digital-Twin", "Energy", "Infrastructure", "Quality", "Road", "Safety", "Unsorted", "source: lens"]
+tags: ["CPS", "Digital-Twin", "Energy", "Infrastructure", "Quality", "Road", "Safety", "Unsorted", "source: lens", "identification: databases"]
 ---
 # Sunil-Prajapat2025 — Quantum Secure Energy-Efficient Authentication Protocol for Digital Twins-Enabled Transportation Cyber-Physical Systems
 

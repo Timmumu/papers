@@ -7,9 +7,9 @@ year: 2021
 journal: "Advances in Civil Engineering"
 doi: "10.1155/2021/6640198"
 zotero_key: "BJV3GR75"
-zotero_status: unsorted
+zotero_status: verified
 last_verified: "2026-06-14"
-tags: ["Digital-Twin", "Monitoring", "Risk", "Safety", "Structural", "Unsorted", "source: lens"]
+tags: ["Digital-Twin", "Monitoring", "Risk", "Safety", "Structural", "Unsorted", "source: lens", "identification: databases"]
 ---
 # Zhansheng-Liu2021 — Intelligent Prediction Method for Operation and Maintenance Safety of Prestressed Steel Structure Based on Digital Twin Technology
 

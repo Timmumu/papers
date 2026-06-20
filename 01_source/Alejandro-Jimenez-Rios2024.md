@@ -9,7 +9,7 @@ doi: "10.1016/j.jobe.2024.110542"
 zotero_key: "RA6C6T6M"
 zotero_status: abstract-grounded
 last_verified: "2026-06-15"
-tags: ["AI", "Architecture", "Construction", "Digital-Twin", "Heritage", "Unsorted", "source: lens"]
+tags: ["AI", "Architecture", "Construction", "Digital-Twin", "Heritage", "Unsorted", "source: lens", "identification: databases"]
 ---
 # Alejandro-Jimenez-Rios2024 — Industry 5.0, towards an enhanced built cultural heritage conservation practice
 

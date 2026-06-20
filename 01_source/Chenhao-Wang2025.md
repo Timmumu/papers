@@ -9,7 +9,7 @@ doi: "10.1109/tifs.2024.3523765"
 zotero_key: "4Y83XTAC"
 zotero_status: abstract-grounded
 last_verified: "2026-06-15"
-tags: ["Construction", "Digital-Twin", "Real-Time", "Unsorted", "source: lens"]
+tags: ["Construction", "Digital-Twin", "Real-Time", "Unsorted", "source: lens", "identification: databases"]
 ---
 # Chenhao-Wang2025 — Security-Enhanced Data Transmission With Fine-Grained and Flexible Revocation for DTWNs
 

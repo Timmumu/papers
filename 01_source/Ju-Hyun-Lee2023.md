@@ -9,7 +9,7 @@ doi: "10.1061/jaeied.aeeng-1505"
 zotero_key: "PL2CGXV9"
 zotero_status: abstract-grounded
 last_verified: "2026-06-15"
-tags: ["BIM", "Building", "Unsorted", "source: lens"]
+tags: ["BIM", "Building", "Unsorted", "source: lens", "identification: databases"]
 ---
 # Ju-Hyun-Lee2023 — BIM-Enabled Design Collaboration Processes in Remote Architectural Practice and Education in Australia
 

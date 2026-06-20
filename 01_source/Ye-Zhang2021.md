@@ -7,9 +7,9 @@ year: 2021
 journal: "Advances in Civil Engineering"
 doi: "10.1155/2021/8898997"
 zotero_key: "ADRU9AUQ"
-zotero_status: abstract-grounded
+zotero_status: verified
 last_verified: "2026-06-15"
-tags: ["Architecture", "Building", "CPS", "Construction", "Digital-Twin", "Real-Time", "Unsorted", "source: lens"]
+tags: ["Architecture", "Building", "CPS", "Construction", "Digital-Twin", "Real-Time", "Unsorted", "source: lens", "identification: databases"]
 ---
 # Ye-Zhang2021 — Digital Twin in Computational Design and Robotic Construction of Wooden Architecture
 

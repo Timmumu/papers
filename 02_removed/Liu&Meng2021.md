@@ -19,7 +19,7 @@ tags:
 
 ---
 CiteKey: "Liu2021"  
-tags: [literature_review, "DigitalTwin", "ConstructionSafety", "source: scholar"]  
+tags: [literature_review, "DigitalTwin", "ConstructionSafety", "source: scholar", "identification: other methods"]  
 Critique_Labels:   
    - "(+)Design-for-Safety"  
    - "(!)Lifecycle-Fragmented"  

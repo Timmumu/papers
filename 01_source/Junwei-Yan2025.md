@@ -9,7 +9,7 @@ doi: "10.1016/j.autcon.2025.106383"
 zotero_key: "ZMUZFZBG"
 zotero_status: title-only
 last_verified: "2026-06-15"
-tags: ["Bridge", "Digital-Twin", "Inspection", "Quality", "Unsorted", "source: lens"]
+tags: ["Bridge", "Digital-Twin", "Inspection", "Quality", "Unsorted", "source: lens", "identification: databases"]
 ---
 # Junwei-Yan2025 — Digital twin-based bridge geometric quality inspection using knowledge mapping and data-driven method
 

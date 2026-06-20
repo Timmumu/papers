@@ -7,9 +7,9 @@ year: 2026
 journal: "Structure and Infrastructure Engineering"
 doi: "10.1080/15732479.2026.2645822"
 zotero_key: "9FQ7L8LZ"
-zotero_status: title-only
+zotero_status: verified
 last_verified: "2026-06-15"
-tags: ["Digital-Twin", "Road", "Unsorted", "source: lens"]
+tags: ["Digital-Twin", "Road", "Unsorted", "source: lens", "identification: databases"]
 ---
 # Ahmad-Chihadeh2026 — Identification and evaluation of uncertainty sources of materials and sensors for the digital twin road initiative
 

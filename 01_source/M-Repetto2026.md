@@ -9,7 +9,7 @@ doi: "10.1016/j.jisa.2025.104299"
 zotero_key: "5WDI3BIK"
 zotero_status: abstract-grounded
 last_verified: "2026-06-15"
-tags: ["Architecture", "Digital-Twin", "Unsorted", "source: lens"]
+tags: ["Architecture", "Digital-Twin", "Unsorted", "source: lens", "identification: databases"]
 ---
 # M-Repetto2026 — Cybersecurity Digital Twins: Concept, blueprint, and challenges for multi-ownership digital service chains
 

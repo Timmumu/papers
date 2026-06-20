@@ -9,7 +9,7 @@ doi: "10.1016/j.autcon.2025.106706"
 zotero_key: "RV9PQEMC"
 zotero_status: abstract-grounded
 last_verified: "2026-06-15"
-tags: ["Architecture", "Construction", "Digital-Twin", "Monitoring", "Predictive", "Quality", "Real-Time", "Unsorted", "source: lens"]
+tags: ["Architecture", "Construction", "Digital-Twin", "Monitoring", "Predictive", "Quality", "Real-Time", "Unsorted", "source: lens", "identification: databases"]
 ---
 # Lior-Skoury2026 — Data-informed Digital Twin for large-scale 3D printing in construction
 

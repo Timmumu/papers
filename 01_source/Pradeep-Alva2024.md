@@ -9,7 +9,7 @@ doi: "10.1016/j.enbuild.2024.114681"
 zotero_key: "GBGSTB56"
 zotero_status: abstract-grounded
 last_verified: "2026-06-15"
-tags: ["Building", "Built-Environment", "Carbon", "Digital-Twin", "Infrastructure", "Inspection", "Maintenance", "Unsorted", "source: lens"]
+tags: ["Building", "Built-Environment", "Carbon", "Digital-Twin", "Infrastructure", "Inspection", "Maintenance", "Unsorted", "source: lens", "identification: databases"]
 ---
 # Pradeep-Alva2024 — Mitigating operational greenhouse gas emissions in ageing residential buildings using an Urban Digital Twin dashboard
 

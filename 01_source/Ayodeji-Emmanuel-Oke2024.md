@@ -9,7 +9,7 @@ doi: "10.1080/15623599.2024.2411885"
 zotero_key: "RHHWHFDI"
 zotero_status: title-only
 last_verified: "2026-06-15"
-tags: ["Construction", "Digital-Twin", "Unsorted", "source: lens"]
+tags: ["Construction", "Digital-Twin", "Unsorted", "source: lens", "identification: databases"]
 ---
 # Ayodeji-Emmanuel-Oke2024 — Digital twin technology (DTT) in a developing construction industry: evaluation of the awareness and usage among professionals in Nigeria
 

@@ -9,7 +9,7 @@ doi: "10.1108/ecam-03-2025-0527"
 zotero_key: "HCDFG9S7"
 zotero_status: abstract-grounded
 last_verified: "2026-06-15"
-tags: ["BIM", "Building", "Construction", "Digital-Twin", "IoT", "Monitoring", "Real-Time", "Sensor", "Unsorted", "source: lens"]
+tags: ["BIM", "Building", "Construction", "Digital-Twin", "IoT", "Monitoring", "Real-Time", "Sensor", "Unsorted", "source: lens", "identification: databases"]
 ---
 # Truong-An-Pham2025 — Common data environment of a BIM-based digital twin for real-time construction pollution management
 

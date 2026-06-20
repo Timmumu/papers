@@ -9,7 +9,7 @@ doi: "10.1088/1361-665x/ada596"
 zotero_key: "XLM5T7EY"
 zotero_status: abstract-grounded
 last_verified: "2026-06-15"
-tags: ["Construction", "Digital-Twin", "Infrastructure", "Maintenance", "Monitoring", "Quality", "Simulation", "Structural", "Unsorted", "source: lens"]
+tags: ["Construction", "Digital-Twin", "Infrastructure", "Maintenance", "Monitoring", "Quality", "Simulation", "Structural", "Unsorted", "source: lens", "identification: databases"]
 ---
 # Tao-Han2025 — Proactive perceptive road: a digital twin-driven intelligent road infrastructure towards proactive road state perception and deduction
 

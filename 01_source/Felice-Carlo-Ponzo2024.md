@@ -7,9 +7,9 @@ year: 2024
 journal: "Journal of Civil Structural Health Monitoring"
 doi: "10.1007/s13349-023-00751-z"
 zotero_key: "QNXEX9SE"
-zotero_status: abstract-grounded
+zotero_status: verified
 last_verified: "2026-06-15"
-tags: ["Bridge", "Digital-Twin", "Maintenance", "Monitoring", "Safety", "Structural", "Unsorted", "source: lens"]
+tags: ["Bridge", "Digital-Twin", "Maintenance", "Monitoring", "Safety", "Structural", "Unsorted", "source: lens", "identification: databases"]
 ---
 # Felice-Carlo-Ponzo2024 — DInSAR–SBAS satellite monitoring of infrastructures: how temperature affects the "Ponte della Musica" case study
 

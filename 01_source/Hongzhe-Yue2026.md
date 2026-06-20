@@ -9,7 +9,7 @@ doi: "10.1061/jcemd4.coeng-17126"
 zotero_key: "VJNKYRYT"
 zotero_status: abstract-grounded
 last_verified: "2026-06-15"
-tags: ["Construction", "Digital-Twin", "Inspection", "Lifecycle", "Predictive", "Quality", "Unsorted", "source: lens"]
+tags: ["Construction", "Digital-Twin", "Inspection", "Lifecycle", "Predictive", "Quality", "Unsorted", "source: lens", "identification: databases"]
 ---
 # Hongzhe-Yue2026 — Advancements in Digital Twin Applications for Intelligent Construction Quality Management
 

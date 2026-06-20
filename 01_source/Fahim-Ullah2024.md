@@ -9,7 +9,7 @@ doi: "10.1108/sasbe-11-2023-0349"
 zotero_key: "QP9UKB6Q"
 zotero_status: abstract-grounded
 last_verified: "2026-06-15"
-tags: ["BIM", "Building", "Built-Environment", "Construction", "Digital-Twin", "IoT", "Monitoring", "Safety", "Unsorted", "source: lens"]
+tags: ["BIM", "Building", "Built-Environment", "Construction", "Digital-Twin", "IoT", "Monitoring", "Safety", "Unsorted", "source: lens", "identification: databases"]
 ---
 # Fahim-Ullah2024 — A scoping review of green Internet of Things in construction and smart cities: current applications, adoption strategies and future directions
 

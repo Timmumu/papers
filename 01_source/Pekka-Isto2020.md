@@ -7,9 +7,9 @@ year: 2020
 journal: "Open Engineering"
 doi: "10.1515/eng-2020-0039"
 zotero_key: "M4WPLWVT"
-zotero_status: abstract-grounded
+zotero_status: verified
 last_verified: "2026-06-15"
-tags: ["Architecture", "Digital-Twin", "Infrastructure", "Real-Time", "Unsorted", "source: lens"]
+tags: ["Architecture", "Digital-Twin", "Infrastructure", "Real-Time", "Unsorted", "source: lens", "identification: databases"]
 ---
 # Pekka-Isto2020 — 5G Based Machine Remote Operation Development Utilizing Digital Twin
 

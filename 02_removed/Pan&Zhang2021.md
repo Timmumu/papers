@@ -20,7 +20,7 @@ tags:
 ---
 
 CiteKey: "Pan2021"  
-tags: [literature_review, "DigitalTwin", "Construction", "source: scholar"]  
+tags: [literature_review, "DigitalTwin", "Construction", "source: scholar", "identification: other methods"]  
 Critique_Labels:   
    - "(+)Full-Life-Cycle"  
    - "(!)Quality-Neglected"  

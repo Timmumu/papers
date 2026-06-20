@@ -7,9 +7,9 @@ year: 2022
 journal: "Advances in Building Energy Research"
 doi: "10.1080/17512549.2022.2136240"
 zotero_key: "JWEEALHL"
-zotero_status: abstract-grounded
+zotero_status: verified
 last_verified: "2026-06-15"
-tags: ["BIM", "Building", "Digital-Twin", "Energy", "Sensor", "Unsorted", "source: lens"]
+tags: ["BIM", "Building", "Digital-Twin", "Energy", "Sensor", "Unsorted", "source: lens", "identification: databases"]
 ---
 # Haidar-Hosamo2022 — Digital Twin of HVAC system (HVACDT) for multiobjective optimization of energy consumption and thermal comfort based on BIM framework with ANN-MOGA
 

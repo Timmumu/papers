@@ -9,7 +9,7 @@ doi: "10.1016/j.oceaneng.2026.124378"
 zotero_key: "M3UYXNNU"
 zotero_status: title-only
 last_verified: "2026-06-15"
-tags: ["Construction", "Digital-Twin", "Safety", "Unsorted", "source: lens"]
+tags: ["Construction", "Digital-Twin", "Safety", "Unsorted", "source: lens", "identification: databases"]
 ---
 # Dongsheng-Xu2026 — Digital twin system for deepwater well construction: Enhancing operational efficiency and safety
 

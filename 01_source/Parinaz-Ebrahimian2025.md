@@ -9,7 +9,7 @@ doi: "10.1016/j.istruc.2025.109835"
 zotero_key: "3GB249Z6"
 zotero_status: title-only
 last_verified: "2026-06-15"
-tags: ["Architecture", "Digital-Twin", "Unsorted", "source: lens"]
+tags: ["Architecture", "Digital-Twin", "Unsorted", "source: lens", "identification: databases"]
 ---
 # Parinaz-Ebrahimian2025 — Automated model updating of digital twins using double-deep Q network with dueling architecture for damage detection
 

@@ -9,7 +9,7 @@ doi: "10.1016/j.istruc.2025.110711"
 zotero_key: "P6FVI8H3"
 zotero_status: title-only
 last_verified: "2026-06-15"
-tags: ["Bridge", "Digital-Twin", "Unsorted", "source: lens"]
+tags: ["Bridge", "Digital-Twin", "Unsorted", "source: lens", "identification: databases"]
 ---
 # Hongshuo-Sun2025 — Bridge performance prediction based on nonlinear stochastic processes and digital twins
 

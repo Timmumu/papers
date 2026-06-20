@@ -16,6 +16,7 @@ tags:
   - Synchronization
   - Scheduling
   - source: scholar
+  - identification: other methods
 ---
 
 # Jiang2022 — DT-Enabled Real-Time Synchronization for Precast On-Site Assembly

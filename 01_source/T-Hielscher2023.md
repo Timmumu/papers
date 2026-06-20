@@ -9,7 +9,7 @@ doi: "10.1016/j.istruc.2023.105248"
 zotero_key: "B224CZ86"
 zotero_status: abstract-grounded
 last_verified: "2026-06-15"
-tags: ["Asset-Management", "Digital-Twin", "Infrastructure", "Monitoring", "Predictive", "Sensor", "Structural", "Unsorted", "source: lens"]
+tags: ["Asset-Management", "Digital-Twin", "Infrastructure", "Monitoring", "Predictive", "Sensor", "Structural", "Unsorted", "source: lens", "identification: databases"]
 ---
 # T-Hielscher2023 — A neural network based digital twin model for the structural health monitoring of reinforced concrete bridges
 

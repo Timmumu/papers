@@ -9,7 +9,7 @@ doi: "10.1016/j.fusengdes.2021.112517"
 zotero_key: "FGSPN6ZQ"
 zotero_status: abstract-grounded
 last_verified: "2026-06-15"
-tags: ["Architecture", "Digital-Twin", "Inspection", "Maintenance", "Safety", "Unsorted", "source: lens"]
+tags: ["Architecture", "Digital-Twin", "Inspection", "Maintenance", "Safety", "Unsorted", "source: lens", "identification: databases"]
 ---
 # Samuel-Jimenez2021 — Automated maintenance feasibility testing on the EU DEMO Automated Inspection and Maintenance Test Unit (AIM-TU)
 

@@ -20,7 +20,7 @@ tags:
 ---
 
 CiteKey: "Lu2020"
-tags: [literature_review, "DigitalTwin", "Construction", "source: lens"]
+tags: [literature_review, "DigitalTwin", "Construction", "source: lens", "identification: other methods"]
 Critique_Labels: 
    - "(+)Full-Life-Cycle"
    - "(!)Quality-Neglected"

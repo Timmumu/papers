@@ -9,7 +9,7 @@ doi: "10.4271/2025-28-0322"
 zotero_key: "JD79H25I"
 zotero_status: abstract-grounded
 last_verified: "2026-06-15"
-tags: ["Construction", "Digital-Twin", "Highway", "Maintenance", "Predictive", "Safety", "Unsorted", "source: lens"]
+tags: ["Construction", "Digital-Twin", "Highway", "Maintenance", "Predictive", "Safety", "Unsorted", "source: lens", "identification: databases"]
 ---
 # Masthanvali-Mogal2025 — Environmental Factors and Off-Highway Vehicle Safety Abstract
 

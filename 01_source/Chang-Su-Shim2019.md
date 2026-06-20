@@ -9,7 +9,7 @@ doi: "10.1080/15732479.2019.1620789"
 zotero_key: "ETKQP34Z"
 zotero_status: abstract-grounded
 last_verified: "2026-06-15"
-tags: ["Bridge", "Digital-Twin", "Maintenance", "Structural", "Unsorted", "source: lens"]
+tags: ["Bridge", "Digital-Twin", "Maintenance", "Structural", "Unsorted", "source: lens", "identification: databases"]
 ---
 # Chang-Su-Shim2019 — Development of a bridge maintenance system for prestressed concrete bridges using 3D digital twin model
 

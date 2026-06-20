@@ -9,7 +9,7 @@ doi: "10.1016/j.jobe.2026.115416"
 zotero_key: "J4DTPCK9"
 zotero_status: title-only
 last_verified: "2026-06-15"
-tags: ["Digital-Twin", "ML", "Maintenance", "Predictive", "Unsorted", "source: lens"]
+tags: ["Digital-Twin", "ML", "Maintenance", "Predictive", "Unsorted", "source: lens", "identification: databases"]
 ---
 # Ruonan-Wang2026 — A data-driven predictive maintenance framework for smart buildings: Integrating digital twin and machine learning in HVAC systems
 

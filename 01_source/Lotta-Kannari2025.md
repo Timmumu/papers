@@ -9,7 +9,7 @@ doi: "10.1016/j.jobe.2025.112283"
 zotero_key: "DJ7JAPL6"
 zotero_status: abstract-grounded
 last_verified: "2026-06-15"
-tags: ["AI", "Building", "Digital-Twin", "Energy", "ML", "Safety", "Unsorted", "source: lens"]
+tags: ["AI", "Building", "Digital-Twin", "Energy", "ML", "Safety", "Unsorted", "source: lens", "identification: databases"]
 ---
 # Lotta-Kannari2025 — Reinforcement learning for control and optimization of real buildings: Identifying and addressing implementation hurdles
 

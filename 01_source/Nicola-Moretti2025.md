@@ -9,7 +9,7 @@ doi: "10.1016/j.autcon.2025.106276"
 zotero_key: "SXDLSN8P"
 zotero_status: abstract-grounded
 last_verified: "2026-06-15"
-tags: ["Architecture", "BIM", "Building", "Digital-Twin", "Simulation", "Unsorted", "source: lens"]
+tags: ["Architecture", "BIM", "Building", "Digital-Twin", "Simulation", "Unsorted", "source: lens", "identification: databases"]
 ---
 # Nicola-Moretti2025 — Data integration for space-aware Digital Twins of hospital operations
 

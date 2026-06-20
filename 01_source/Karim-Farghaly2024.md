@@ -9,7 +9,7 @@ doi: "10.1016/j.autcon.2023.105224"
 zotero_key: "XB6SPBW2"
 zotero_status: abstract-grounded
 last_verified: "2026-06-15"
-tags: ["Construction", "Digital-Twin", "Ontology", "Unsorted", "source: lens"]
+tags: ["Construction", "Digital-Twin", "Ontology", "Unsorted", "source: lens", "identification: databases"]
 ---
 # Karim-Farghaly2024 — cSite ontology for production control of construction sites
 

@@ -9,7 +9,7 @@ doi: "10.1016/j.autcon.2024.105266"
 zotero_key: "8ZQL5BC3"
 zotero_status: abstract-grounded
 last_verified: "2026-06-15"
-tags: ["Architecture", "BIM", "Blockchain", "Building", "Infrastructure", "IoT", "Quality", "Real-Time", "Unsorted", "source: lens"]
+tags: ["Architecture", "BIM", "Blockchain", "Building", "Infrastructure", "IoT", "Quality", "Real-Time", "Unsorted", "source: lens", "identification: databases"]
 ---
 # Roberto-Brandin2024 — IoT-BIM and blockchain integration for enhanced data traceability in offsite manufacturing
 

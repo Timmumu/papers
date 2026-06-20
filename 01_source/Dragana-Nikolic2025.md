@@ -9,7 +9,7 @@ doi: "10.1108/sasbe-01-2025-0024"
 zotero_key: "ZFA45DL9"
 zotero_status: abstract-grounded
 last_verified: "2026-06-15"
-tags: ["Building", "Built-Environment", "Digital-Twin", "Energy", "Smart-City", "Unsorted", "Urban", "source: lens"]
+tags: ["Building", "Built-Environment", "Digital-Twin", "Energy", "Smart-City", "Unsorted", "Urban", "source: lens", "identification: databases"]
 ---
 # Dragana-Nikolic2025 — Going beyond net zero: digital twins for achieving socio-ecological sustainability in the built environment
 

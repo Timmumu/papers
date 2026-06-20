@@ -9,7 +9,7 @@ doi: "10.1016/j.autcon.2025.106354"
 zotero_key: "NJGLSGIT"
 zotero_status: abstract-grounded
 last_verified: "2026-06-15"
-tags: ["BIM", "Building", "Digital-Twin", "Highway", "Infrastructure", "Monitoring", "Quality", "Simulation", "Unsorted", "source: lens"]
+tags: ["BIM", "Building", "Digital-Twin", "Highway", "Infrastructure", "Monitoring", "Quality", "Simulation", "Unsorted", "source: lens", "identification: databases"]
 ---
 # Jiaheng-Li2025 — Rapid integration strategy for oblique photogrammetry terrain and highway BIM models in large-scale scenarios
 

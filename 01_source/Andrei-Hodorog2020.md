@@ -7,9 +7,9 @@ year: 2020
 journal: "Clean Technologies and Environmental Policy"
 doi: "10.1007/s10098-020-02000-z"
 zotero_key: "9L7AQ4N2"
-zotero_status: abstract-grounded
+zotero_status: verified
 last_verified: "2026-06-15"
-tags: ["BIM", "Building", "Built-Environment", "Construction", "Energy", "Semantic", "Unsorted", "source: lens"]
+tags: ["BIM", "Building", "Built-Environment", "Construction", "Energy", "Semantic", "Unsorted", "source: lens", "identification: databases"]
 ---
 # Andrei-Hodorog2020 — Building information modelling knowledge harvesting for energy efficiency in the Construction industry
 

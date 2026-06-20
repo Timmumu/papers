@@ -66,7 +66,7 @@ Lifecycle stage: cross-lifecycle (operations/production analogue). In LR_cc.md F
 ## Extended Notes (legacy commentary, preserved verbatim)
 
 CiteKey: "Grieves2026"
-tags: [literature_review, "Predictive-Manufacturing", "source: scholar"]
+tags: [literature_review, "Predictive-Manufacturing", "source: scholar", "identification: other methods"]
 Critique_Labels: 
    - "(+)Full-Life-Cycle"
    - "(+)Design-for-Quality"

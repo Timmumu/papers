@@ -7,9 +7,9 @@ year: 2022
 journal: "Advances in Civil Engineering"
 doi: "10.1155/2022/8273451"
 zotero_key: "CMQBYYV4"
-zotero_status: abstract-grounded
+zotero_status: verified
 last_verified: "2026-06-15"
-tags: ["AI", "BIM", "Building", "Built-Environment", "Construction", "Digital-Twin", "Infrastructure", "IoT", "Monitoring", "Unsorted", "source: lens"]
+tags: ["AI", "BIM", "Building", "Built-Environment", "Construction", "Digital-Twin", "Infrastructure", "IoT", "Monitoring", "Unsorted", "source: lens", "identification: databases"]
 ---
 # Heng-Sun2022 — Research on Intelligent Dispatching System Management Platform for Construction Projects Based on Digital Twin and BIM Technology
 

@@ -9,7 +9,7 @@ doi: "10.1016/j.jobe.2021.103274"
 zotero_key: "KM2YKYXN"
 zotero_status: abstract-grounded
 last_verified: "2026-06-15"
-tags: ["BIM", "Building", "Construction", "Digital-Twin", "Point-Cloud", "Quality", "Structural", "Unsorted", "source: lens"]
+tags: ["BIM", "Building", "Construction", "Digital-Twin", "Point-Cloud", "Quality", "Structural", "Unsorted", "source: lens", "identification: databases"]
 ---
 # Juan-Moyano2022 — Analysis and management of structural deformations through parametric models and HBIM workflow in architectural heritage
 

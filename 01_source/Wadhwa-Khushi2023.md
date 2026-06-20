@@ -9,7 +9,7 @@ doi: "10.23940/ijpe.23.09.p2.568578"
 zotero_key: "CC4EBG6T"
 zotero_status: abstract-grounded
 last_verified: "2026-06-15"
-tags: ["Construction", "Digital-Twin", "Quality", "Unsorted", "source: lens"]
+tags: ["Construction", "Digital-Twin", "Quality", "Unsorted", "source: lens", "identification: databases"]
 ---
 # Wadhwa-Khushi2023 — Digital Twin in the Motorized (Automotive / Vehicle) Industry
 

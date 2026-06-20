@@ -9,7 +9,7 @@ doi: "10.1016/j.jobe.2024.111515"
 zotero_key: "H6B8AZTV"
 zotero_status: abstract-grounded
 last_verified: "2026-06-15"
-tags: ["Asset-Management", "Building", "Construction", "Digital-Twin", "Monitoring", "Predictive", "Quality", "Safety", "Unsorted", "source: lens"]
+tags: ["Asset-Management", "Building", "Construction", "Digital-Twin", "Monitoring", "Predictive", "Quality", "Safety", "Unsorted", "source: lens", "identification: databases"]
 ---
 # Alsaffar-Alhadi2025 — Enhancing asset management: Integrating digital twins for continuous permitting and compliance - A systematic literature review
 

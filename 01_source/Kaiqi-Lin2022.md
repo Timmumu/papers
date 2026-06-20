@@ -9,7 +9,7 @@ doi: "10.1007/s10518-022-01567-w"
 zotero_key: "ESFWAA7G"
 zotero_status: title-only
 last_verified: "2026-06-15"
-tags: ["Bridge", "Digital-Twin", "Unsorted", "source: lens"]
+tags: ["Bridge", "Digital-Twin", "Unsorted", "source: lens", "identification: databases"]
 ---
 # Kaiqi-Lin2022 — Digital twin-based life-cycle seismic performance assessment of a long-span cable-stayed bridge
 

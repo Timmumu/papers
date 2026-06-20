@@ -16,7 +16,7 @@ tags:
   - Construction-4.0
   - source: lens
 ---CiteKey: "Teisserenc2021"
-tags: [literature_review, "blockchain", "digital_twins", "construction_industry", "source: lens"]
+tags: [literature_review, "blockchain", "digital_twins", "construction_industry", "source: lens", "identification: other methods"]
 Critique_Labels: 
    - "(+)Full-Life-Cycle"
    - "(!)Implementation-Gap"

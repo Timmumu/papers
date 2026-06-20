@@ -9,7 +9,7 @@ doi: "10.1016/j.jobe.2025.113594"
 zotero_key: "F62KAYCM"
 zotero_status: abstract-grounded
 last_verified: "2026-06-15"
-tags: ["Building", "Digital-Twin", "Energy", "Ontology", "Predictive", "Quality", "Unsorted", "source: lens"]
+tags: ["Building", "Digital-Twin", "Energy", "Ontology", "Predictive", "Quality", "Unsorted", "source: lens", "identification: databases"]
 ---
 # August-M-S-Thomsen2025 — Ontology-based Digital Twins for informed decision-making: Scenario testing and optimization in hospital building operations
 

@@ -9,7 +9,7 @@ doi: "10.1016/j.scs.2021.103645"
 zotero_key: "4E5M5F99"
 zotero_status: title-only
 last_verified: "2026-06-15"
-tags: ["Digital-Twin", "Road", "Unsorted", "Urban", "source: lens"]
+tags: ["Digital-Twin", "Road", "Unsorted", "Urban", "source: lens", "identification: databases"]
 ---
 # Feng-Jiang2022 — Digital twin enabled sustainable urban road planning
 

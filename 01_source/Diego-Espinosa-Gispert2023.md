@@ -9,7 +9,7 @@ doi: "10.1108/sasbe-07-2023-0170"
 zotero_key: "AQGLTX69"
 zotero_status: abstract-grounded
 last_verified: "2026-06-15"
-tags: ["Building", "Digital-Twin", "Energy", "Facility-Management", "Maintenance", "Ontology", "Predictive", "Unsorted", "source: lens"]
+tags: ["Building", "Digital-Twin", "Energy", "Facility-Management", "Maintenance", "Ontology", "Predictive", "Unsorted", "source: lens", "identification: databases"]
 ---
 # Diego-Espinosa-Gispert2023 — Development of an ontology-based asset information model for predictive maintenance in building facilities
 

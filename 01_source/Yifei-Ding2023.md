@@ -9,7 +9,7 @@ doi: "10.1016/j.jobe.2023.107416"
 zotero_key: "FD9JA2LI"
 zotero_status: title-only
 last_verified: "2026-06-15"
-tags: ["Building", "Digital-Twin", "Monitoring", "Unsorted", "source: lens"]
+tags: ["Building", "Digital-Twin", "Monitoring", "Unsorted", "source: lens", "identification: databases"]
 ---
 # Yifei-Ding2023 — Intelligent emergency digital twin system for monitoring building fire evacuation
 

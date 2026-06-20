@@ -9,7 +9,7 @@ doi: "10.1016/j.trgeo.2025.101677"
 zotero_key: "EVMGXTKY"
 zotero_status: abstract-grounded
 last_verified: "2026-06-15"
-tags: ["BIM", "Building", "Construction", "Digital-Twin", "Infrastructure", "Inspection", "IoT", "Lifecycle", "Maintenance", "Railway", "Unsorted", "source: lens"]
+tags: ["BIM", "Building", "Construction", "Digital-Twin", "Infrastructure", "Inspection", "IoT", "Lifecycle", "Maintenance", "Railway", "Unsorted", "source: lens", "identification: databases"]
 ---
 # Juan-Tan2026 — Circular economy applications in railway infrastructure: A comprehensive evidence-based review
 

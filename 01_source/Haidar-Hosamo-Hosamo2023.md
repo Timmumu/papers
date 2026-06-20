@@ -9,7 +9,7 @@ doi: "10.1016/j.enbuild.2023.112992"
 zotero_key: "CFSUJAEW"
 zotero_status: abstract-grounded
 last_verified: "2026-06-15"
-tags: ["BIM", "Building", "Digital-Twin", "ML", "Ontology", "Predictive", "Quality", "Unsorted", "source: lens"]
+tags: ["BIM", "Building", "Digital-Twin", "ML", "Ontology", "Predictive", "Quality", "Unsorted", "source: lens", "identification: databases"]
 ---
 # Haidar-Hosamo-Hosamo2023 — Improving building occupant comfort through a digital twin approach: A Bayesian network model and predictive maintenance method
 

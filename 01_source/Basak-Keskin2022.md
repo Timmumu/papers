@@ -9,7 +9,7 @@ doi: "10.1061/(asce)co.1943-7862.0002271"
 zotero_key: "E936LLFJ"
 zotero_status: abstract-grounded
 last_verified: "2026-06-15"
-tags: ["Architecture", "Asset-Management", "BIM", "Building", "Digital-Twin", "Infrastructure", "Unsorted", "source: lens"]
+tags: ["Architecture", "Asset-Management", "BIM", "Building", "Digital-Twin", "Infrastructure", "Unsorted", "source: lens", "identification: databases"]
 ---
 # Basak-Keskin2022 — Architecting a BIM-Based Digital Twin Platform for Airport Asset Management: A Model-Based System Engineering with SysML Approach
 

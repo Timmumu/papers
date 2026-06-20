@@ -7,9 +7,9 @@ year: 2024
 journal: "Risk analysis : an official publication of the Society for Risk Analysis"
 doi: "10.1111/risa.15749"
 zotero_key: "KBS6YF4M"
-zotero_status: abstract-grounded
+zotero_status: verified
 last_verified: "2026-06-15"
-tags: ["Building", "Digital-Twin", "Risk", "Unsorted", "source: lens"]
+tags: ["Building", "Digital-Twin", "Risk", "Unsorted", "source: lens", "identification: databases"]
 ---
 # Seth-Guikema2024 — Digital twins as a security risk?
 

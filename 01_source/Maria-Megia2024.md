@@ -7,9 +7,9 @@ year: 2024
 journal: "Structural Control and Health Monitoring"
 doi: "10.1155/stc/9997872"
 zotero_key: "BXDDTD8J"
-zotero_status: abstract-grounded
+zotero_status: verified
 last_verified: "2026-06-15"
-tags: ["Architecture", "Construction", "Digital-Twin", "Monitoring", "Quality", "Unsorted", "source: lens"]
+tags: ["Architecture", "Construction", "Digital-Twin", "Monitoring", "Quality", "Unsorted", "source: lens", "identification: databases"]
 ---
 # Maria-Megia2024 — Generative Adversarial Networks for Improved Model Training in the Context of the Digital Twin
 

@@ -9,7 +9,7 @@ doi: "10.1108/ecam-03-2024-0304"
 zotero_key: "YDCE26GZ"
 zotero_status: abstract-grounded
 last_verified: "2026-06-15"
-tags: ["AI", "Architecture", "Asset-Management", "Blockchain", "Construction", "Digital-Twin", "Maintenance", "Smart-City", "Unsorted", "source: lens"]
+tags: ["AI", "Architecture", "Asset-Management", "Blockchain", "Construction", "Digital-Twin", "Maintenance", "Smart-City", "Unsorted", "source: lens", "identification: databases"]
 ---
 # Meiqi-Lu2024 — A scientometric analysis and critical review of digital twin applications in project operation and maintenance
 

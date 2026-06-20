@@ -9,7 +9,7 @@ doi: "10.1080/17499518.2022.2087884"
 zotero_key: "LGFQ3PR8"
 zotero_status: abstract-grounded
 last_verified: "2026-06-15"
-tags: ["Digital-Twin", "Geotechnical", "ML", "Unsorted", "source: lens"]
+tags: ["Digital-Twin", "Geotechnical", "ML", "Unsorted", "source: lens", "identification: databases"]
 ---
 # Kok-Kwang-Phoon2022 — Future of machine learning in geotechnics
 

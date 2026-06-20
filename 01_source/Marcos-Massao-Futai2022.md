@@ -9,7 +9,7 @@ doi: "10.1080/15732479.2022.2063908"
 zotero_key: "8Z6ZF6KG"
 zotero_status: abstract-grounded
 last_verified: "2026-06-15"
-tags: ["Bridge", "Digital-Twin", "Infrastructure", "Maintenance", "Monitoring", "Predictive", "Railway", "Safety", "Structural", "Unsorted", "source: lens"]
+tags: ["Bridge", "Digital-Twin", "Infrastructure", "Maintenance", "Monitoring", "Predictive", "Railway", "Safety", "Structural", "Unsorted", "source: lens", "identification: databases"]
 ---
 # Marcos-Massao-Futai2022 — Challenges in the application of digital transformation to inspection and maintenance of bridges
 

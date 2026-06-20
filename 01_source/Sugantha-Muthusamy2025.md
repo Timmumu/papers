@@ -9,7 +9,7 @@ doi: "10.4271/2025-28-0325"
 zotero_key: "GNA2ESQM"
 zotero_status: abstract-grounded
 last_verified: "2026-06-15"
-tags: ["Architecture", "Construction", "Digital-Twin", "Highway", "Road", "Safety", "Sensor", "Simulation", "Unsorted", "source: lens"]
+tags: ["Architecture", "Construction", "Digital-Twin", "Highway", "Road", "Safety", "Sensor", "Simulation", "Unsorted", "source: lens", "identification: databases"]
 ---
 # Sugantha-Muthusamy2025 — Hybrid Safety Framework for Autonomous Off-Highway Vehicles
 

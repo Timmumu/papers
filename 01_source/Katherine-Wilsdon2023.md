@@ -9,7 +9,7 @@ doi: "10.1016/j.pnucene.2023.104813"
 zotero_key: "PFLGCDJ9"
 zotero_status: abstract-grounded
 last_verified: "2026-06-15"
-tags: ["Construction", "Digital-Twin", "Energy", "Monitoring", "Predictive", "Risk", "Unsorted", "source: lens"]
+tags: ["Construction", "Digital-Twin", "Energy", "Monitoring", "Predictive", "Risk", "Unsorted", "source: lens", "identification: databases"]
 ---
 # Katherine-Wilsdon2023 — Autonomous control of heat pipes through digital twins: Application to fission batteries
 

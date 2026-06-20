@@ -11,6 +11,7 @@ created: "2026-05-25"
 tags:
   - Verified
   - source: scholar
+  - identification: other methods
 ---
 
 # Martinez-Aires2018 — Building Information Modeling and Safety Management: A Systematic Review

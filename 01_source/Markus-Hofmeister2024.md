@@ -9,7 +9,7 @@ doi: "10.1016/j.scs.2023.105113"
 zotero_key: "7ZKCICE7"
 zotero_status: abstract-grounded
 last_verified: "2026-06-15"
-tags: ["Bridge", "Building", "Digital-Twin", "Infrastructure", "Knowledge-Graph", "Real-Time", "Risk", "Unsorted", "source: lens"]
+tags: ["Bridge", "Building", "Digital-Twin", "Infrastructure", "Knowledge-Graph", "Real-Time", "Risk", "Unsorted", "source: lens", "identification: databases"]
 ---
 # Markus-Hofmeister2024 — Cross-domain flood risk assessment for smart cities using dynamic knowledge graphs
 

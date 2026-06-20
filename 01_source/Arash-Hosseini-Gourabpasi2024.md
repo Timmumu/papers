@@ -9,7 +9,7 @@ doi: "10.1016/j.jobe.2024.109022"
 zotero_key: "VBC25A7T"
 zotero_status: abstract-grounded
 last_verified: "2026-06-15"
-tags: ["BIM", "Building", "Digital-Twin", "Sensor", "Unsorted", "source: lens"]
+tags: ["BIM", "Building", "Digital-Twin", "Sensor", "Unsorted", "source: lens", "identification: databases"]
 ---
 # Arash-Hosseini-Gourabpasi2024 — BIM-based automated fault detection and diagnostics of HVAC systems in commercial buildings
 

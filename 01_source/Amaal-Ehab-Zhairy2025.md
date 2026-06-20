@@ -9,7 +9,7 @@ doi: "10.1080/17452007.2025.2543813"
 zotero_key: "II6UC6LR"
 zotero_status: title-only
 last_verified: "2026-06-15"
-tags: ["BIM", "Digital-Twin", "Facility-Management", "IoT", "Monitoring", "Quality", "Unsorted", "source: lens"]
+tags: ["BIM", "Digital-Twin", "Facility-Management", "IoT", "Monitoring", "Quality", "Unsorted", "source: lens", "identification: databases"]
 ---
 # Amaal-Ehab-Zhairy2025 — Transforming facility management with BIM, IoT, and Digital Twin: a data-driven approach to air quality monitoring
 

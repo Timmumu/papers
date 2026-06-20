@@ -9,7 +9,7 @@ doi: "10.1016/j.jlp.2024.105327"
 zotero_key: "DTKXRQS3"
 zotero_status: abstract-grounded
 last_verified: "2026-06-15"
-tags: ["Construction", "Deep-Learning", "Digital-Twin", "ML", "Monitoring", "Pipeline", "Quality", "Unsorted", "source: lens"]
+tags: ["Construction", "Deep-Learning", "Digital-Twin", "ML", "Monitoring", "Pipeline", "Quality", "Unsorted", "source: lens", "identification: databases"]
 ---
 # Mohammad-Azizur-Rahman2024 — Single and multiphase flow leak detection in onshore/offshore pipelines and subsurface sequestration sites: An overview
 

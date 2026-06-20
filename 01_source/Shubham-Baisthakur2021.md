@@ -9,7 +9,7 @@ doi: "10.1007/s13349-021-00495-8"
 zotero_key: "BTD9ADR2"
 zotero_status: abstract-grounded
 last_verified: "2026-06-15"
-tags: ["Bridge", "Digital-Twin", "Risk", "Sensor", "Simulation", "Unsorted", "source: lens"]
+tags: ["Bridge", "Digital-Twin", "Risk", "Sensor", "Simulation", "Unsorted", "source: lens", "identification: databases"]
 ---
 # Shubham-Baisthakur2021 — Experimental verification for load rating of steel truss bridge using an improved Hamiltonian Monte Carlo-based Bayesian model updating
 

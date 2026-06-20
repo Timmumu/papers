@@ -9,7 +9,7 @@ doi: "10.1108/ecam-06-2025-1033"
 zotero_key: "FENEAHJJ"
 zotero_status: abstract-grounded
 last_verified: "2026-06-15"
-tags: ["BIM", "Building", "Construction", "Digital-Twin", "Infrastructure", "IoT", "Lifecycle", "Predictive", "Structural", "Unsorted", "source: lens"]
+tags: ["BIM", "Building", "Construction", "Digital-Twin", "Infrastructure", "IoT", "Lifecycle", "Predictive", "Structural", "Unsorted", "source: lens", "identification: databases"]
 ---
 # Anant-Deogaonkar2026 — Enhancing construction management and procurement efficiency through a phased digital twin framework for smart infrastructure projects
 

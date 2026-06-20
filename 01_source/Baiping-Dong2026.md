@@ -9,7 +9,7 @@ doi: "10.1016/j.jobe.2026.115259"
 zotero_key: "QSFT36XV"
 zotero_status: title-only
 last_verified: "2026-06-15"
-tags: ["CPS", "Digital-Twin", "Structural", "Unsorted", "source: lens"]
+tags: ["CPS", "Digital-Twin", "Structural", "Unsorted", "source: lens", "identification: databases"]
 ---
 # Baiping-Dong2026 — Integration of cyber-physical systems and digital twins in structural engineering: Applications, challenges and future advancements
 

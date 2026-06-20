@@ -11,6 +11,7 @@ created: "2026-05-25"
 tags:
   - Verified
   - source: scholar
+  - identification: other methods
 ---
 
 # Tixier2016 —Automated Content Analysis for Construction Safety (NLP on Injury Reports)

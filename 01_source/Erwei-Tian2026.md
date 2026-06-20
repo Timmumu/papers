@@ -9,7 +9,7 @@ doi: "10.65102/is20261017"
 zotero_key: "QTQJQ6IW"
 zotero_status: abstract-grounded
 last_verified: "2026-06-15"
-tags: ["Digital-Twin", "Energy", "Maintenance", "Risk", "Unsorted", "source: lens"]
+tags: ["Digital-Twin", "Energy", "Maintenance", "Risk", "Unsorted", "source: lens", "identification: databases"]
 ---
 # Erwei-Tian2026 — Quantum Encryption Techniques for Securing Low-Voltage Communication Systems in Next-Generation Data Transmission Networks
 

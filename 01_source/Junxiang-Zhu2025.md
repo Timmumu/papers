@@ -9,7 +9,7 @@ doi: "10.1016/j.autcon.2025.106034"
 zotero_key: "8IQWAXNK"
 zotero_status: abstract-grounded
 last_verified: "2026-06-15"
-tags: ["Building", "Digital-Twin", "Unsorted", "source: lens"]
+tags: ["Building", "Digital-Twin", "Unsorted", "source: lens", "identification: databases"]
 ---
 # Junxiang-Zhu2025 — Releasing the power of graph for building information discovery
 

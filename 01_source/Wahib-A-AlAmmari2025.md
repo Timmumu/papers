@@ -9,7 +9,7 @@ doi: "10.1002/ghg.2379"
 zotero_key: "SUN3MQZG"
 zotero_status: abstract-grounded
 last_verified: "2026-06-15"
-tags: ["Digital-Twin", "Energy", "ML", "Monitoring", "Pipeline", "Safety", "Unsorted", "source: lens"]
+tags: ["Digital-Twin", "Energy", "ML", "Monitoring", "Pipeline", "Safety", "Unsorted", "source: lens", "identification: databases"]
 ---
 # Wahib-A-AlAmmari2025 — Development of Digital/Visual Twin for Real‐Time Leak Detection in Gas Pipelines Under Multiphase Flow Conditions
 

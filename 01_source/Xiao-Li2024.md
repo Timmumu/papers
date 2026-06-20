@@ -9,7 +9,7 @@ doi: "10.1016/j.istruc.2024.107739"
 zotero_key: "D6PWWWF2"
 zotero_status: title-only
 last_verified: "2026-06-15"
-tags: ["Digital-Twin", "Monitoring", "Real-Time", "Structural", "Unsorted", "source: lens"]
+tags: ["Digital-Twin", "Monitoring", "Real-Time", "Structural", "Unsorted", "source: lens", "identification: databases"]
 ---
 # Xiao-Li2024 — Structural health monitoring system based on digital twins and real-time data-driven methods
 

@@ -9,7 +9,7 @@ doi: "10.1016/j.scs.2025.106661"
 zotero_key: "JMATYUUA"
 zotero_status: abstract-grounded
 last_verified: "2026-06-15"
-tags: ["Digital-Twin", "Quality", "Unsorted", "Urban", "source: lens"]
+tags: ["Digital-Twin", "Quality", "Unsorted", "Urban", "source: lens", "identification: databases"]
 ---
 # Mark-Allan2025 — Utilising urban digital twins for sustainable urban regeneration: Melbourne's Greenline planning and assessment framework
 

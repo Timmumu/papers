@@ -7,9 +7,9 @@ year: 2026
 journal: "Ingegneria Sismica"
 doi: "10.65102/is2026380"
 zotero_key: "ACC7CXX4"
-zotero_status: abstract-grounded
+zotero_status: verified
 last_verified: "2026-06-15"
-tags: ["AI", "Construction", "Digital-Twin", "Simulation", "Unsorted", "source: lens"]
+tags: ["AI", "Construction", "Digital-Twin", "Simulation", "Unsorted", "source: lens", "identification: databases"]
 ---
 # Lingling-Ren2026 — Digital Twin System Construction and Simulation Optimization for Collaborative Effectiveness of Industry-Education Integration
 

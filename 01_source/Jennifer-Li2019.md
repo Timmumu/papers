@@ -9,7 +9,7 @@ doi: "10.1016/j.autcon.2019.02.005"
 zotero_key: "3YVJLUC7"
 zotero_status: abstract-grounded
 last_verified: "2026-06-15"
-tags: ["BIM", "Blockchain", "Built-Environment", "Construction", "Energy", "Unsorted", "source: lens"]
+tags: ["BIM", "Blockchain", "Built-Environment", "Construction", "Energy", "Unsorted", "source: lens", "identification: databases"]
 ---
 # Jennifer-Li2019 — Blockchain in the built environment and construction industry: A systematic review, conceptual models and practical use cases
 

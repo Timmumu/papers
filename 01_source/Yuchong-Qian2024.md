@@ -9,7 +9,7 @@ doi: "10.1016/j.buildenv.2024.111349"
 zotero_key: "TKXPD8B7"
 zotero_status: title-only
 last_verified: "2026-06-15"
-tags: ["Digital-Twin", "Quality", "Unsorted", "source: lens"]
+tags: ["Digital-Twin", "Quality", "Unsorted", "source: lens", "identification: databases"]
 ---
 # Yuchong-Qian2024 — How to measure and control indoor air quality based on intelligent digital twin platforms: A case study in China
 

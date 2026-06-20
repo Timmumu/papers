@@ -9,7 +9,7 @@ doi: "10.1515/eng-2020-0054"
 zotero_key: "ZK65BMDF"
 zotero_status: abstract-grounded
 last_verified: "2026-06-15"
-tags: ["BIM", "Building", "Digital-Twin", "Facility-Management", "Lifecycle", "Monitoring", "Semantic", "Unsorted", "source: lens"]
+tags: ["BIM", "Building", "Digital-Twin", "Facility-Management", "Lifecycle", "Monitoring", "Semantic", "Unsorted", "source: lens", "identification: databases"]
 ---
 # Dat-Huynh2020 — Engaging Building Automation Data Visualisation Using Building Information Modelling and Progressive Web Application
 

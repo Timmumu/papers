@@ -9,7 +9,7 @@ doi: "10.1016/j.autcon.2020.103179"
 zotero_key: "6RG2MC52"
 zotero_status: abstract-grounded
 last_verified: "2026-06-15"
-tags: ["Architecture", "BIM", "Building", "CPS", "Construction", "Digital-Twin", "Lifecycle", "Monitoring", "Semantic", "Sensor", "Unsorted", "source: lens"]
+tags: ["Architecture", "BIM", "Building", "CPS", "Construction", "Digital-Twin", "Lifecycle", "Monitoring", "Semantic", "Sensor", "Unsorted", "source: lens", "identification: databases"]
 ---
 # Calin-Boje2020 — Towards a semantic Construction Digital Twin: directions for future research
 

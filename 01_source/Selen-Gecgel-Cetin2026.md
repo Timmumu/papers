@@ -9,7 +9,7 @@ doi: "10.1109/taes.2025.3633210"
 zotero_key: "PSNST2NJ"
 zotero_status: abstract-grounded
 last_verified: "2026-06-15"
-tags: ["Architecture", "Digital-Twin", "Infrastructure", "Real-Time", "Risk", "Unsorted", "source: lens"]
+tags: ["Architecture", "Digital-Twin", "Infrastructure", "Real-Time", "Risk", "Unsorted", "source: lens", "identification: databases"]
 ---
 # Selen-Gecgel-Cetin2026 — Advancing Lunar Communication Through Interdomain Space Networks and Dynamic Orchestration
 

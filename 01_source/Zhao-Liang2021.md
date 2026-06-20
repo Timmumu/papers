@@ -7,9 +7,9 @@ year: 2021
 journal: "Advances in Civil Engineering"
 doi: "10.1155/2021/6638897"
 zotero_key: "IUCH2B6D"
-zotero_status: abstract-grounded
+zotero_status: verified
 last_verified: "2026-06-15"
-tags: ["BIM", "Building", "Carbon", "Construction", "Digital-Twin", "Energy", "Unsorted", "source: lens"]
+tags: ["BIM", "Building", "Carbon", "Construction", "Digital-Twin", "Energy", "Unsorted", "source: lens", "identification: databases"]
 ---
 # Zhao-Liang2021 — Digital-Twin-Based Evaluation of Nearly Zero-Energy Building for Existing Buildings Based on Scan-to-BIM
 

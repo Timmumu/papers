@@ -11,6 +11,7 @@ created: "2026-05-25"
 tags:
   - Verified
   - source: scholar
+  - identification: other methods
 ---
 
 > 鈿?AUTHOR/CITEKEY MISMATCH: citekey "Zhang2041" appears to be a typo. Zotero record is **Tao & Zhang (2017), "Digital Twin Shop-Floor: A New Shop-Floor Paradigm Towards Smart Manufacturing"**, IEEE Access 5, 20418—0427 (DOI 10.1109/ACCESS.2017.2756069). Likely intended "Tao2017" or "TaoZhang2017".

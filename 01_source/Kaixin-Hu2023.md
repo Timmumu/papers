@@ -7,9 +7,9 @@ year: 2023
 journal: "Advances in Civil Engineering"
 doi: "10.1155/2023/6192001"
 zotero_key: "8PLQA95G"
-zotero_status: abstract-grounded
+zotero_status: verified
 last_verified: "2026-06-15"
-tags: ["Bridge", "Digital-Twin", "Maintenance", "Point-Cloud", "Quality", "Unsorted", "source: lens"]
+tags: ["Bridge", "Digital-Twin", "Maintenance", "Point-Cloud", "Quality", "Unsorted", "source: lens", "identification: databases"]
 ---
 # Kaixin-Hu2023 — Semi-automated Generation of Geometric Digital Twin for Bridge Based on Terrestrial Laser Scanning Data
 

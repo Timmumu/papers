@@ -11,6 +11,7 @@ created: "2026-05-25"
 tags:
   - Verified
   - source: scholar
+  - identification: other methods
 ---
 
 # Zhang2013 — BIM and Safety: Automatic Safety Checking of Construction Models and Schedules

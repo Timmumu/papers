@@ -9,7 +9,7 @@ doi: "10.1016/j.jobe.2022.105151"
 zotero_key: "GKMR8ZKD"
 zotero_status: abstract-grounded
 last_verified: "2026-06-15"
-tags: ["Carbon", "Digital-Twin", "Energy", "Quality", "Sensor", "Unsorted", "source: lens"]
+tags: ["Carbon", "Digital-Twin", "Energy", "Quality", "Sensor", "Unsorted", "source: lens", "identification: databases"]
 ---
 # Pedro-F-Pereira2022 — Low-cost Arduino-based temperature, relative humidity and CO2 sensors - An assessment of their suitability for indoor built environments
 

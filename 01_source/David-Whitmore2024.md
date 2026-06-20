@@ -9,7 +9,7 @@ doi: "10.1680/jmapl.23.00003"
 zotero_key: "JCY8I94H"
 zotero_status: abstract-grounded
 last_verified: "2026-06-15"
-tags: ["Civil-Engineering", "Digital-Twin", "Infrastructure", "Maintenance", "Unsorted", "source: lens"]
+tags: ["Civil-Engineering", "Digital-Twin", "Infrastructure", "Maintenance", "Unsorted", "source: lens", "identification: databases"]
 ---
 # David-Whitmore2024 — Digital twins in the asset life cycle: are we there yet?
 

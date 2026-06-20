@@ -9,7 +9,7 @@ doi: "10.1016/j.enbuild.2023.113322"
 zotero_key: "88SYYGJZ"
 zotero_status: abstract-grounded
 last_verified: "2026-06-15"
-tags: ["Building", "Digital-Twin", "Energy", "Quality", "Real-Time", "Unsorted", "source: lens"]
+tags: ["Building", "Digital-Twin", "Energy", "Quality", "Real-Time", "Unsorted", "source: lens", "identification: databases"]
 ---
 # Gabriela-Bastos-Porsani2023 — Empirical evaluation of EnergyPlus infiltration model for a case study in a high-rise residential building
 

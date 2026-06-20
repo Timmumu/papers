@@ -9,7 +9,7 @@ doi: "10.1016/j.jobe.2024.109358"
 zotero_key: "5MVQ3YX6"
 zotero_status: title-only
 last_verified: "2026-06-15"
-tags: ["Building", "Digital-Twin", "Heritage", "Unsorted", "source: lens"]
+tags: ["Building", "Digital-Twin", "Heritage", "Unsorted", "source: lens", "identification: databases"]
 ---
 # Jiaying-Zhang2024 — Heritage building facades preservation: Automatic fresh air curtain wall generation for air pollutant dilution based on digital twins
 

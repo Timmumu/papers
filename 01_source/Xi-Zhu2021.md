@@ -9,7 +9,7 @@ doi: "10.1080/15732479.2021.1991387"
 zotero_key: "KPX4YIZG"
 zotero_status: title-only
 last_verified: "2026-06-15"
-tags: ["Dam", "Digital-Twin", "Safety", "Unsorted", "source: lens"]
+tags: ["Dam", "Digital-Twin", "Safety", "Unsorted", "source: lens", "identification: databases"]
 ---
 # Xi-Zhu2021 — Enhancing dam safety evaluation using dam digital twins
 

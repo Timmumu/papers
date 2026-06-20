@@ -9,7 +9,7 @@ doi: "10.1016/j.autcon.2023.104931"
 zotero_key: "A2JIG6I7"
 zotero_status: abstract-grounded
 last_verified: "2026-06-15"
-tags: ["BIM", "CPS", "Construction", "Digital-Twin", "Monitoring", "Real-Time", "Unsorted", "source: lens"]
+tags: ["BIM", "CPS", "Construction", "Digital-Twin", "Monitoring", "Real-Time", "Unsorted", "source: lens", "identification: databases"]
 ---
 # Valerian-Vanessa-Tuhaise2023 — Technologies for digital twin applications in construction
 

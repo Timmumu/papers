@@ -9,7 +9,7 @@ doi: "10.36253/techne-17419"
 zotero_key: "Q5SVBVM6"
 zotero_status: abstract-grounded
 last_verified: "2026-06-15"
-tags: ["Built-Environment", "Construction", "Digital-Twin", "Unsorted", "source: lens"]
+tags: ["Built-Environment", "Construction", "Digital-Twin", "Unsorted", "source: lens", "identification: databases"]
 ---
 # Maria-Azzalin2025 — Research and Academic Entrepreneurship: Technological Transfer in the Contexts of Digital Transition and Decarbonisation of the Built Environment
 

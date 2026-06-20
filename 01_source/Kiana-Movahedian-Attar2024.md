@@ -9,7 +9,7 @@ doi: "10.1007/s40996-024-01495-6"
 zotero_key: "RCZV5RIX"
 zotero_status: title-only
 last_verified: "2026-06-15"
-tags: ["Construction", "Digital-Twin", "Safety", "Unsorted", "source: lens"]
+tags: ["Construction", "Digital-Twin", "Safety", "Unsorted", "source: lens", "identification: databases"]
 ---
 # Kiana-Movahedian-Attar2024 — Digital Twins for Improving the Construction Safety: Literature Content Analysis and Gap Spotting for Future Directions
 

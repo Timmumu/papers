@@ -7,9 +7,9 @@ year: 2021
 journal: "Automation in Construction"
 doi: "10.1016/j.autcon.2021.103689"
 zotero_key: "LWFJZR8Z"
-zotero_status: unsorted
+zotero_status: abstract-grounded
 last_verified: "2026-06-14"
-tags: ["BIM", "Building", "Construction", "Facility-Management", "Semantic", "Structural", "Unsorted", "source: lens"]
+tags: ["BIM", "Building", "Construction", "Facility-Management", "Semantic", "Structural", "Unsorted", "source: lens", "identification: databases"]
 ---
 # Galina-Paskaleva2021 — Leveraging integration facades for model-based tool interoperability
 

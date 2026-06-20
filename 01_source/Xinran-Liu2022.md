@@ -7,9 +7,9 @@ year: 2022
 journal: "Advances in Civil Engineering"
 doi: "10.1155/2022/3683216"
 zotero_key: "9ABPAPGS"
-zotero_status: abstract-grounded
+zotero_status: verified
 last_verified: "2026-06-15"
-tags: ["Architecture", "Digital-Twin", "Monitoring", "Sensor", "Simulation", "Unsorted", "source: lens"]
+tags: ["Architecture", "Digital-Twin", "Monitoring", "Sensor", "Simulation", "Unsorted", "source: lens", "identification: databases"]
 ---
 # Xinran-Liu2022 — Digital Twins by Physical Education Teaching Practice in Visual Sensing Training System
 

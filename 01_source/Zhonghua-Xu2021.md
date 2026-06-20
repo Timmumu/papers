@@ -9,7 +9,7 @@ doi: "10.1155/2021/3918524"
 zotero_key: "KBBEP9ST"
 zotero_status: abstract-grounded
 last_verified: "2026-06-15"
-tags: ["Civil-Engineering", "Construction", "Digital-Twin", "Quality", "Unsorted", "source: lens"]
+tags: ["Civil-Engineering", "Construction", "Digital-Twin", "Quality", "Unsorted", "source: lens", "identification: databases"]
 ---
 # Zhonghua-Xu2021 — Construction and Application of Recognition Model for Black-Odorous Water Bodies Based on Artificial Neural Network
 

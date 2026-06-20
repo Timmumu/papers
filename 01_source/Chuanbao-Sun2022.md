@@ -7,9 +7,9 @@ year: 2022
 journal: "Advances in Civil Engineering"
 doi: "10.1155/2022/6399515"
 zotero_key: "QGMI7BCA"
-zotero_status: abstract-grounded
+zotero_status: verified
 last_verified: "2026-06-15"
-tags: ["Digital-Twin", "Safety", "Sensor", "Unsorted", "source: lens"]
+tags: ["Digital-Twin", "Safety", "Sensor", "Unsorted", "source: lens", "identification: databases"]
 ---
 # Chuanbao-Sun2022 — Use of Digital Twins‐Based Intelligent Navigation Visual Sensing Technology in Environmental Art Design of Scenic Spots
 

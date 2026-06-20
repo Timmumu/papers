@@ -9,7 +9,7 @@ doi: "10.1016/j.autcon.2023.105076"
 zotero_key: "YRWEPR6G"
 zotero_status: title-only
 last_verified: "2026-06-15"
-tags: ["BIM", "Unsorted", "source: lens"]
+tags: ["BIM", "Unsorted", "source: lens", "identification: databases"]
 ---
 # Shengjun-Tang2023 — Skeleton-guided generation of synthetic noisy point clouds from as-built BIM to improve indoor scene understanding
 

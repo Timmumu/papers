@@ -9,7 +9,7 @@ doi: "10.1080/17508975.2024.2370372"
 zotero_key: "SNT6NQNK"
 zotero_status: abstract-grounded
 last_verified: "2026-06-15"
-tags: ["Building", "Construction", "Digital-Twin", "Facility-Management", "Knowledge-Graph", "Unsorted", "source: lens"]
+tags: ["Building", "Construction", "Digital-Twin", "Facility-Management", "Knowledge-Graph", "Unsorted", "source: lens", "identification: databases"]
 ---
 # Linxuan-Wang2024 — Towards digital-twin-enabled facility management: the natural language processing model for managing facilities in buildings
 

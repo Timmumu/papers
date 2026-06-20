@@ -7,9 +7,9 @@ year: 2025
 journal: "Structure and Infrastructure Engineering"
 doi: "10.1080/15732479.2025.2490126"
 zotero_key: "MDVRL744"
-zotero_status: title-only
+zotero_status: verified
 last_verified: "2026-06-15"
-tags: ["Bridge", "Digital-Twin", "Heritage", "Unsorted", "source: lens"]
+tags: ["Bridge", "Digital-Twin", "Heritage", "Unsorted", "source: lens", "identification: databases"]
 ---
 # Alejandro-Jimenez-Rios2025 — Towards Industry 5.0: a stakeholder analysis to understand the human role in the adoption of a heritage bridge human-centric digital twin framework
 

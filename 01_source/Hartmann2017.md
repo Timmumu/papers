@@ -11,6 +11,7 @@ created: "2026-05-25"
 tags:
   - Verified
   - source: scholar
+  - identification: databases
 ---
 
 # Hartmann2017 — How digitizing building information transforms the built environment (editorial)

@@ -9,7 +9,7 @@ doi: "10.1155/2020/8812928"
 zotero_key: "LMWSUM7Y"
 zotero_status: abstract-grounded
 last_verified: "2026-06-15"
-tags: ["Construction", "Deep-Learning", "Digital-Twin", "Unsorted", "source: lens"]
+tags: ["Construction", "Deep-Learning", "Digital-Twin", "Unsorted", "source: lens", "identification: databases"]
 ---
 # Jinyue-Zhang2020 — A Deep Learning-Based Approach to Enable Action Recognition for Construction Equipment
 

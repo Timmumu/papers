@@ -9,7 +9,7 @@ doi: "10.1016/j.scs.2023.104958"
 zotero_key: "GM2I4AQX"
 zotero_status: abstract-grounded
 last_verified: "2026-06-15"
-tags: ["Digital-Twin", "Real-Time", "Risk", "Unsorted", "Urban", "source: lens"]
+tags: ["Digital-Twin", "Real-Time", "Risk", "Unsorted", "Urban", "source: lens", "identification: databases"]
 ---
 # Vahid-Bakhtiari2023 — A critical review for the application of cutting-edge digital visualisation technologies for effective urban flood risk management
 

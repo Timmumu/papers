@@ -9,7 +9,7 @@ doi: "10.1016/j.autcon.2026.106820"
 zotero_key: "3PF4T3LM"
 zotero_status: abstract-grounded
 last_verified: "2026-06-15"
-tags: ["Bridge", "Construction", "Digital-Twin", "Monitoring", "Unsorted", "source: lens"]
+tags: ["Bridge", "Construction", "Digital-Twin", "Monitoring", "Unsorted", "source: lens", "identification: databases"]
 ---
 # Nima-Moghimi2026 — Digital twins in offsite construction: Current implementations, challenges, and future pathways
 

@@ -9,7 +9,7 @@ doi: "10.1109/tits.2023.3281352"
 zotero_key: "QZG8MSP5"
 zotero_status: abstract-grounded
 last_verified: "2026-06-15"
-tags: ["Construction", "Deep-Learning", "Digital-Twin", "Point-Cloud", "Railway", "Semantic", "Unsorted", "source: lens"]
+tags: ["Construction", "Deep-Learning", "Digital-Twin", "Point-Cloud", "Railway", "Semantic", "Unsorted", "source: lens", "identification: databases"]
 ---
 # Zhipeng-Wang2023 — Self-Attentive Local Aggregation Learning With Prototype Guided Regularization for Point Cloud Semantic Segmentation of High-Speed Railways
 

@@ -7,9 +7,9 @@ year: 2025
 journal: "Journal of Asian Architecture and Building Engineering"
 doi: "10.1080/13467581.2025.2517242"
 zotero_key: "XM6DM3CA"
-zotero_status: abstract-grounded
+zotero_status: verified
 last_verified: "2026-06-15"
-tags: ["Construction", "Digital-Twin", "Unsorted", "source: lens"]
+tags: ["Construction", "Digital-Twin", "Unsorted", "source: lens", "identification: databases"]
 ---
 # Ahmad-Baghdadi2025 — A comprehensive review of digital twin implementation in construction: current trends and future directions
 

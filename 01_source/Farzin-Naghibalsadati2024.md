@@ -9,7 +9,7 @@ doi: "10.1016/j.jenvman.2024.122293"
 zotero_key: "DPMXIEST"
 zotero_status: abstract-grounded
 last_verified: "2026-06-15"
-tags: ["BIM", "Building", "Construction", "Digital-Twin", "Unsorted", "source: lens"]
+tags: ["BIM", "Building", "Construction", "Digital-Twin", "Unsorted", "source: lens", "identification: databases"]
 ---
 # Farzin-Naghibalsadati2024 — Temporal evolution and thematic shifts in sustainable construction and demolition waste management through building information modeling technologies: A text-mining analysis.
 

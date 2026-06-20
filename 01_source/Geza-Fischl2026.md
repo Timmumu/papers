@@ -9,7 +9,7 @@ doi: "10.1108/sasbe-11-2025-0729"
 zotero_key: "5IS47HXS"
 zotero_status: abstract-grounded
 last_verified: "2026-06-15"
-tags: ["AI", "Architecture", "BIM", "Bridge", "Building", "Digital-Twin", "Monitoring", "Quality", "Sensor", "Unsorted", "source: lens"]
+tags: ["AI", "Architecture", "BIM", "Bridge", "Building", "Digital-Twin", "Monitoring", "Quality", "Sensor", "Unsorted", "source: lens", "identification: databases"]
 ---
 # Geza-Fischl2026 — Facilitating Level 3 framework for developing a Collaborative Digital Platform
 

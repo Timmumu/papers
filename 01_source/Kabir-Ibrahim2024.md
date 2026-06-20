@@ -9,7 +9,7 @@ doi: "10.1108/ecam-04-2024-0520"
 zotero_key: "5SR4Y4DJ"
 zotero_status: abstract-grounded
 last_verified: "2026-06-15"
-tags: ["Architecture", "Built-Environment", "Construction", "Digital-Twin", "Quality", "Structural", "Unsorted", "source: lens"]
+tags: ["Architecture", "Built-Environment", "Construction", "Digital-Twin", "Quality", "Structural", "Unsorted", "source: lens", "identification: databases"]
 ---
 # Kabir-Ibrahim2024 — Construction 4.0: enhancing sustainable construction practices by evaluating digital twin barriers in the Nigerian AEC industry
 

@@ -11,6 +11,7 @@ created: "2026-05-25"
 tags:
   - Verified
   - source: scholar
+  - identification: other methods
 ---
 
 # Zhang2021 — A BIM–Data Mining Integrated Digital Twin Framework for Advanced Project Management

@@ -7,9 +7,9 @@ year: 2023
 journal: "TECHNE - Journal of Technology for Architecture and Environment"
 doi: "10.36253/techne-13568"
 zotero_key: "D3JR7FME"
-zotero_status: abstract-grounded
+zotero_status: verified
 last_verified: "2026-06-15"
-tags: ["Digital-Twin", "Predictive", "Unsorted", "Urban", "source: lens"]
+tags: ["Digital-Twin", "Predictive", "Unsorted", "Urban", "source: lens", "identification: databases"]
 ---
 # Alessandra-Barresi2023 — Urban Digital Twin and urban planning for sustainable cities
 

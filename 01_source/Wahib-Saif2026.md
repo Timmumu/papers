@@ -9,7 +9,7 @@ doi: "10.1016/j.autcon.2026.106773"
 zotero_key: "VKB7SFJD"
 zotero_status: abstract-grounded
 last_verified: "2026-06-15"
-tags: ["Construction", "Digital-Twin", "Lifecycle", "Unsorted", "source: lens"]
+tags: ["Construction", "Digital-Twin", "Lifecycle", "Unsorted", "source: lens", "identification: databases"]
 ---
 # Wahib-Saif2026 — Stakeholder-centric whole-lifecycle framework for guiding the development and implementation of construction digital twins
 

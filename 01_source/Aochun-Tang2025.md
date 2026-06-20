@@ -9,7 +9,7 @@ doi: "10.1080/15732479.2025.2587043"
 zotero_key: "CLRBFNNA"
 zotero_status: title-only
 last_verified: "2026-06-15"
-tags: ["Bridge", "Digital-Twin", "Simulation", "Structural", "Unsorted", "source: lens"]
+tags: ["Bridge", "Digital-Twin", "Simulation", "Structural", "Unsorted", "source: lens", "identification: databases"]
 ---
 # Aochun-Tang2025 — A digital twin-based system for timely simulation of bridge structural performance with finite element model updating
 

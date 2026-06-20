@@ -9,7 +9,7 @@ doi: "10.1016/j.autcon.2026.106778"
 zotero_key: "69KEXEK7"
 zotero_status: abstract-grounded
 last_verified: "2026-06-15"
-tags: ["AI", "BIM", "Building", "Built-Environment", "Construction", "Digital-Twin", "IoT", "Monitoring", "Predictive", "Unsorted", "source: lens"]
+tags: ["AI", "BIM", "Building", "Built-Environment", "Construction", "Digital-Twin", "IoT", "Monitoring", "Predictive", "Unsorted", "source: lens", "identification: databases"]
 ---
 # Soheila-Kookalani2026 — Mapping digital twin applications in infrastructure and the built environment across research types, methods, sectors, phases, and scales
 

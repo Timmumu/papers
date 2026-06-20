@@ -9,7 +9,7 @@ doi: "10.1016/j.oceaneng.2026.125101"
 zotero_key: "5JMWQFV7"
 zotero_status: abstract-grounded
 last_verified: "2026-06-15"
-tags: ["Digital-Twin", "Predictive", "Risk", "Safety", "Structural", "Unsorted", "source: lens"]
+tags: ["Digital-Twin", "Predictive", "Risk", "Safety", "Structural", "Unsorted", "source: lens", "identification: databases"]
 ---
 # Zhen-Zhong-Hu2026 — Digital disaster prevention for ocean engineering: Current progress and future directions
 

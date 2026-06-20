@@ -9,7 +9,7 @@ doi: "10.1088/1361-665x/ae73c7"
 zotero_key: "2464BFNF"
 zotero_status: abstract-grounded
 last_verified: "2026-06-15"
-tags: ["AI", "Bridge", "Digital-Twin", "Energy", "Infrastructure", "Monitoring", "Structural", "Tunnel", "Unsorted", "source: lens"]
+tags: ["AI", "Bridge", "Digital-Twin", "Energy", "Infrastructure", "Monitoring", "Structural", "Tunnel", "Unsorted", "source: lens", "identification: databases"]
 ---
 # Ali-Matin-Nazar2026 — Triboelectric nanogenerators for intelligent and sustainable civil infrastructure
 

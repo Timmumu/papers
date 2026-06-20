@@ -9,7 +9,7 @@ doi: "10.1016/j.jobe.2023.106704"
 zotero_key: "SNJYV7B2"
 zotero_status: abstract-grounded
 last_verified: "2026-06-15"
-tags: ["Building", "Construction", "Digital-Twin", "Monitoring", "Quality", "Structural", "Unsorted", "source: lens"]
+tags: ["Building", "Construction", "Digital-Twin", "Monitoring", "Quality", "Structural", "Unsorted", "source: lens", "identification: databases"]
 ---
 # Iryna-Osadcha2023 — Geometric parameter updating in digital twin of built assets: A systematic literature review
 

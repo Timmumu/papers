@@ -9,7 +9,7 @@ doi: "10.1016/j.jobe.2025.114214"
 zotero_key: "YCYV29G5"
 zotero_status: abstract-grounded
 last_verified: "2026-06-15"
-tags: ["Architecture", "Building", "Construction", "Digital-Twin", "Real-Time", "Unsorted", "source: lens"]
+tags: ["Architecture", "Building", "Construction", "Digital-Twin", "Real-Time", "Unsorted", "source: lens", "identification: databases"]
 ---
 # Jifar-M-Hunde2025 — Data-driven and physics-based modeling approaches and their integration in building digital twins: A systematic review
 

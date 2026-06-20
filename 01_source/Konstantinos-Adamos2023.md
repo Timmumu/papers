@@ -7,9 +7,9 @@ year: 2023
 journal: "International Journal of Information Security"
 doi: "10.1007/s10207-023-00731-w"
 zotero_key: "9AY2A3AL"
-zotero_status: abstract-grounded
+zotero_status: verified
 last_verified: "2026-06-15"
-tags: ["Architecture", "CPS", "Digital-Twin", "Infrastructure", "Risk", "Unsorted", "source: lens"]
+tags: ["Architecture", "CPS", "Digital-Twin", "Infrastructure", "Risk", "Unsorted", "source: lens", "identification: databases"]
 ---
 # Konstantinos-Adamos2023 — Enhancing attack resilience of cyber-physical systems through state dependency graph models
 

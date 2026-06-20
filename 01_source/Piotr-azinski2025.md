@@ -9,7 +9,7 @@ doi: "10.24425/ace.2025.156162"
 zotero_key: "IRKUBURF"
 zotero_status: abstract-grounded
 last_verified: "2026-06-15"
-tags: ["Bridge", "Digital-Twin", "Facility-Management", "Infrastructure", "Risk", "Safety", "Unsorted", "source: lens"]
+tags: ["Bridge", "Digital-Twin", "Facility-Management", "Infrastructure", "Risk", "Safety", "Unsorted", "source: lens", "identification: databases"]
 ---
 # Piotr-azinski2025 — Reconstruction of the road bridge on Monte Cassino Avenue in Koszalin
 

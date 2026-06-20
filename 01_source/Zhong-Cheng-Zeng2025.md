@@ -9,7 +9,7 @@ doi: "10.1177/13694332251340721"
 zotero_key: "2BVWZLUT"
 zotero_status: abstract-grounded
 last_verified: "2026-06-15"
-tags: ["Digital-Twin", "Point-Cloud", "Quality", "Structural", "Unsorted", "source: lens"]
+tags: ["Digital-Twin", "Point-Cloud", "Quality", "Structural", "Unsorted", "source: lens", "identification: databases"]
 ---
 # Zhong-Cheng-Zeng2025 — Digital twin-empowered performance evaluation of cracked reinforced concrete beams
 

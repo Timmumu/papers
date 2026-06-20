@@ -9,7 +9,7 @@ doi: "10.1061/jcemd4.coeng-17208"
 zotero_key: "NUVL3IK5"
 zotero_status: abstract-grounded
 last_verified: "2026-06-15"
-tags: ["AI", "Blockchain", "Building", "Construction", "Digital-Twin", "Monitoring", "Quality", "Unsorted", "source: lens"]
+tags: ["AI", "Blockchain", "Building", "Construction", "Digital-Twin", "Monitoring", "Quality", "Unsorted", "source: lens", "identification: databases"]
 ---
 # Seongha-Hwang2026 — Blockchain-Integrated Relational Project Governance
 

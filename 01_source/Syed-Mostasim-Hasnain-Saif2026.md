@@ -9,7 +9,7 @@ doi: "10.1016/j.jobe.2026.115650"
 zotero_key: "G9IAZGT2"
 zotero_status: title-only
 last_verified: "2026-06-15"
-tags: ["Building", "Digital-Twin", "Unsorted", "source: lens"]
+tags: ["Building", "Digital-Twin", "Unsorted", "source: lens", "identification: databases"]
 ---
 # Syed-Mostasim-Hasnain-Saif2026 — Metadata schema for virtual sensors in digital twin-enabled building systems using Brick schema
 

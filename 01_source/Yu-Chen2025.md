@@ -9,7 +9,7 @@ doi: "10.1016/j.engstruct.2025.120837"
 zotero_key: "6PN66QDF"
 zotero_status: abstract-grounded
 last_verified: "2026-06-15"
-tags: ["Bridge", "Deep-Learning", "Infrastructure", "Point-Cloud", "Safety", "Semantic", "Structural", "Unsorted", "source: lens"]
+tags: ["Bridge", "Deep-Learning", "Infrastructure", "Point-Cloud", "Safety", "Semantic", "Structural", "Unsorted", "source: lens", "identification: databases"]
 ---
 # Yu-Chen2025 — Automated dimension estimation of bridge components using semantic segmentation and geometric fitting of point cloud data
 

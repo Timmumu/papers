@@ -9,7 +9,7 @@ doi: "10.1061/jaeied.aeeng-1855"
 zotero_key: "FMBEDTTY"
 zotero_status: abstract-grounded
 last_verified: "2026-06-15"
-tags: ["BIM", "Building", "Construction", "Digital-Twin", "Energy", "IoT", "Monitoring", "Predictive", "Unsorted", "source: lens"]
+tags: ["BIM", "Building", "Construction", "Digital-Twin", "Energy", "IoT", "Monitoring", "Predictive", "Unsorted", "source: lens", "identification: databases"]
 ---
 # Antonio-Salzano2025 — HVAC System Performance in Educational Facilities: A Case Study on the Integration of Digital Twin Technology and IoT Sensors for Predictive Maintenance
 

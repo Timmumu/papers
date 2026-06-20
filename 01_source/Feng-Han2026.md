@@ -7,9 +7,9 @@ year: 2026
 journal: "Advances in Civil Engineering"
 doi: "10.1155/adce/8916300"
 zotero_key: "7YQSUSI4"
-zotero_status: abstract-grounded
+zotero_status: verified
 last_verified: "2026-06-15"
-tags: ["AI", "BIM", "Building", "Construction", "Digital-Twin", "IoT", "Pipeline", "Safety", "Unsorted", "Urban", "source: lens"]
+tags: ["AI", "BIM", "Building", "Construction", "Digital-Twin", "IoT", "Pipeline", "Safety", "Unsorted", "Urban", "source: lens", "identification: databases"]
 ---
 # Feng-Han2026 — Construction Path of Shanghai Oriental Hub Municipal Pipeline Full Cycle Digital Twin Platform
 

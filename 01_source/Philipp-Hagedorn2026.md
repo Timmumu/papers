@@ -9,7 +9,7 @@ doi: "10.1002/best.70129"
 zotero_key: "9U9THI7U"
 zotero_status: abstract-grounded
 last_verified: "2026-06-15"
-tags: ["Building", "Construction", "Digital-Twin", "Simulation", "Unsorted", "source: lens"]
+tags: ["Building", "Construction", "Digital-Twin", "Simulation", "Unsorted", "source: lens", "identification: databases"]
 ---
 # Philipp-Hagedorn2026 — Linking Design, Deconstruction and Characterization: A Digital Ecosystem for Sustainable Reuse of Cast‐in‐Place Concrete Elements
 

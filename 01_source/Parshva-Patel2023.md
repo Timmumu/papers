@@ -9,7 +9,7 @@ doi: "10.1177/03611981231182961"
 zotero_key: "K5G7YVSE"
 zotero_status: abstract-grounded
 last_verified: "2026-06-15"
-tags: ["Civil-Engineering", "Construction", "Digital-Twin", "Highway", "Infrastructure", "Quality", "Safety", "Unsorted", "source: lens"]
+tags: ["Civil-Engineering", "Construction", "Digital-Twin", "Highway", "Infrastructure", "Quality", "Safety", "Unsorted", "source: lens", "identification: databases"]
 ---
 # Parshva-Patel2023 — Current Benefits of ASCE 75 and its Potential to Affect Digital As-Built Initiatives at State Departments of Transportation
 

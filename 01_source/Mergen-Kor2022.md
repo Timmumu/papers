@@ -9,7 +9,7 @@ doi: "10.1108/sasbe-08-2021-0148"
 zotero_key: "FKLPV2RE"
 zotero_status: abstract-grounded
 last_verified: "2026-06-15"
-tags: ["Building", "Construction", "Deep-Learning", "Digital-Twin", "Lifecycle", "Unsorted", "source: lens"]
+tags: ["Building", "Construction", "Deep-Learning", "Digital-Twin", "Lifecycle", "Unsorted", "source: lens", "identification: databases"]
 ---
 # Mergen-Kor2022 — An investigation for integration of deep learning and digital twins towards Construction 4.0
 

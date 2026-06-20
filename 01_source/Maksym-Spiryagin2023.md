@@ -7,9 +7,9 @@ year: 2023
 journal: "Vehicle System Dynamics"
 doi: "10.1080/00423114.2023.2188228"
 zotero_key: "S8DTESXA"
-zotero_status: abstract-grounded
+zotero_status: verified
 last_verified: "2026-06-15"
-tags: ["Construction", "Digital-Twin", "Road", "Unsorted", "source: lens"]
+tags: ["Construction", "Digital-Twin", "Road", "Unsorted", "source: lens", "identification: databases"]
 ---
 # Maksym-Spiryagin2023 — Vehicle system dynamics in digital twin studies in rail and road domains
 

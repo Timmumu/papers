@@ -9,7 +9,7 @@ doi: "10.5937/jaes0-50149"
 zotero_key: "KC7GNG8G"
 zotero_status: abstract-grounded
 last_verified: "2026-06-15"
-tags: ["Construction", "Digital-Twin", "Structural", "Unsorted", "source: lens"]
+tags: ["Construction", "Digital-Twin", "Structural", "Unsorted", "source: lens", "identification: databases"]
 ---
 # Alexander-Pavlov2024 — Study of technology for the reliability and survivability modelling of onboard control system of small spacecraft operating in complex modes
 

@@ -9,7 +9,7 @@ doi: "10.1177/13694332241255734"
 zotero_key: "DHQZ9E9N"
 zotero_status: abstract-grounded
 last_verified: "2026-06-15"
-tags: ["AI", "Deep-Learning", "Digital-Twin", "Infrastructure", "ML", "Safety", "Structural", "Unsorted", "source: lens"]
+tags: ["AI", "Deep-Learning", "Digital-Twin", "Infrastructure", "ML", "Safety", "Structural", "Unsorted", "source: lens", "identification: databases"]
 ---
 # Tahreer-M-Fayyad2024 — A scientometric analysis of drone-based structural health monitoring and new technologies
 

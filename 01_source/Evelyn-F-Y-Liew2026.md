@@ -9,7 +9,7 @@ doi: "10.1016/j.enbuild.2025.116547"
 zotero_key: "VXD65ZL5"
 zotero_status: abstract-grounded
 last_verified: "2026-06-15"
-tags: ["BIM", "Building", "Built-Environment", "Carbon", "Construction", "Digital-Twin", "Energy", "Infrastructure", "Lifecycle", "Unsorted", "source: lens"]
+tags: ["BIM", "Building", "Built-Environment", "Carbon", "Construction", "Digital-Twin", "Energy", "Infrastructure", "Lifecycle", "Unsorted", "source: lens", "identification: databases"]
 ---
 # Evelyn-F-Y-Liew2026 — Mapping the future of sustainable construction: Review on digitalisation and life cycle assessment trends in Asia-pacific
 

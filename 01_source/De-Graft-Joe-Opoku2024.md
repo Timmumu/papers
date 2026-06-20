@@ -7,9 +7,9 @@ year: 2024
 journal: "Automation in Construction"
 doi: "10.1016/j.autcon.2023.105188"
 zotero_key: "UAZ7JLZ9"
-zotero_status: abstract-grounded
+zotero_status: verified
 last_verified: "2026-06-15"
-tags: ["BIM", "Building", "Construction", "Digital-Twin", "Monitoring", "Quality", "Real-Time", "Unsorted", "source: lens"]
+tags: ["BIM", "Building", "Construction", "Digital-Twin", "Monitoring", "Quality", "Real-Time", "Unsorted", "source: lens", "identification: databases"]
 ---
 # De-Graft-Joe-Opoku2024 — Digital twin for indoor condition monitoring in living labs: University library case study
 

@@ -9,7 +9,7 @@ doi: "10.1002/aic.17616"
 zotero_key: "67SFNYY6"
 zotero_status: abstract-grounded
 last_verified: "2026-06-15"
-tags: ["Building", "Carbon", "Construction", "Digital-Twin", "Quality", "Unsorted", "source: lens"]
+tags: ["Building", "Carbon", "Construction", "Digital-Twin", "Quality", "Unsorted", "source: lens", "identification: databases"]
 ---
 # Zhimian-Hao2022 — Efficient surrogates construction of chemical processes: Case studies on pressure swing adsorption and <scp>gas‐to‐liquids</scp>
 

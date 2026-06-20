@@ -9,7 +9,7 @@ doi: "10.1016/j.istruc.2025.108367"
 zotero_key: "GXALRAT6"
 zotero_status: abstract-grounded
 last_verified: "2026-06-15"
-tags: ["Digital-Twin", "ML", "Real-Time", "Structural", "Unsorted", "source: lens"]
+tags: ["Digital-Twin", "ML", "Real-Time", "Structural", "Unsorted", "source: lens", "identification: databases"]
 ---
 # Jurad-Sukhnandan2025 — A machine learning approach used to predict the peak displacement, base shear and fundamental frequency of multi-storey steel structures under seismic excitation
 

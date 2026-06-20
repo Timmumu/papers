@@ -9,7 +9,7 @@ doi: "10.1108/ci-09-2022-0232"
 zotero_key: "F6ETXLA4"
 zotero_status: abstract-grounded
 last_verified: "2026-06-15"
-tags: ["BIM", "Digital-Twin", "Facility-Management", "Pipeline", "Semantic", "Unsorted", "source: lens"]
+tags: ["BIM", "Digital-Twin", "Facility-Management", "Pipeline", "Semantic", "Unsorted", "source: lens", "identification: databases"]
 ---
 # Luca-Rampini2023 — Synthetic images generation for semantic understanding in facility management
 

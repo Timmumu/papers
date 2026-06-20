@@ -12,6 +12,7 @@ created: "2026-05-25"
 tags:
   - Verified
   - source: scholar
+  - identification: other methods
 ---
 
 # El-Gohary2016 — Semantic NLP for Automated Compliance Checking

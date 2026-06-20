@@ -9,7 +9,7 @@ doi: "10.1061/jcemd4.coeng-15583"
 zotero_key: "XSJ5VR8F"
 zotero_status: abstract-grounded
 last_verified: "2026-06-15"
-tags: ["Construction", "Digital-Twin", "Monitoring", "Real-Time", "Safety", "Simulation", "Unsorted", "source: lens"]
+tags: ["Construction", "Digital-Twin", "Monitoring", "Real-Time", "Safety", "Simulation", "Unsorted", "source: lens", "identification: databases"]
 ---
 # Haofeng-Yan2025 — Real-Time Digital Twin–Driven 3D Near-Miss Detection System at Construction Sites
 

@@ -9,7 +9,7 @@ doi: "10.1061/jaeied.aeeng-2006"
 zotero_key: "NT8SCTPN"
 zotero_status: abstract-grounded
 last_verified: "2026-06-15"
-tags: ["BIM", "Building", "Construction", "Digital-Twin", "Quality", "Unsorted", "source: lens"]
+tags: ["BIM", "Building", "Construction", "Digital-Twin", "Quality", "Unsorted", "source: lens", "identification: databases"]
 ---
 # Mahdi-Rezaali2025 — Feasibility of Modern Project Management Implementation in the Construction Industry with a Digital Twin Approach
 

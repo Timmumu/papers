@@ -7,9 +7,9 @@ year: 2021
 journal: "Advances in Civil Engineering"
 doi: "10.1155/2021/5743387"
 zotero_key: "Y2KWIZW4"
-zotero_status: abstract-grounded
+zotero_status: verified
 last_verified: "2026-06-15"
-tags: ["Digital-Twin", "Sensor", "Simulation", "Unsorted", "Urban", "source: lens"]
+tags: ["Digital-Twin", "Sensor", "Simulation", "Unsorted", "Urban", "source: lens", "identification: databases"]
 ---
 # Jianjun-Miao2021 — Application of Visual Sensing Image Processing Technology under Digital Twins to the Intelligent Logistics System
 

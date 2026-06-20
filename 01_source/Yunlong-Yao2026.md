@@ -9,7 +9,7 @@ doi: "10.1108/ecam-03-2025-0348"
 zotero_key: "8V5MNVZT"
 zotero_status: abstract-grounded
 last_verified: "2026-06-15"
-tags: ["BIM", "Bridge", "Building", "Construction", "Digital-Twin", "IoT", "Lifecycle", "Real-Time", "Simulation", "Unsorted", "source: lens"]
+tags: ["BIM", "Bridge", "Building", "Construction", "Digital-Twin", "IoT", "Lifecycle", "Real-Time", "Simulation", "Unsorted", "source: lens", "identification: databases"]
 ---
 # Yunlong-Yao2026 — A scientometric review of building information modeling in project and construction management: trends, networks and emerging research frontiers (2010–2024)
 

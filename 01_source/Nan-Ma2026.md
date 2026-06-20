@@ -9,7 +9,7 @@ doi: "10.1016/j.buildenv.2026.114260"
 zotero_key: "S5X3D92F"
 zotero_status: abstract-grounded
 last_verified: "2026-06-15"
-tags: ["Building", "Built-Environment", "Construction", "Digital-Twin", "Energy", "Maintenance", "Real-Time", "Unsorted", "source: lens"]
+tags: ["Building", "Built-Environment", "Construction", "Digital-Twin", "Energy", "Maintenance", "Real-Time", "Unsorted", "source: lens", "identification: databases"]
 ---
 # Nan-Ma2026 — Ten questions concerning Large Language Models (LLMs) for building applications
 

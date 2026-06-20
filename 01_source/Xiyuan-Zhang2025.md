@@ -9,7 +9,7 @@ doi: "10.1016/j.jobe.2025.113117"
 zotero_key: "9UGJK475"
 zotero_status: title-only
 last_verified: "2026-06-15"
-tags: ["Building", "Digital-Twin", "Unsorted", "source: lens"]
+tags: ["Building", "Digital-Twin", "Unsorted", "source: lens", "identification: databases"]
 ---
 # Xiyuan-Zhang2025 — A review of building digital twins: Framework and enabling technologies
 

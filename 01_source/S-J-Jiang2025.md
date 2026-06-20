@@ -9,7 +9,7 @@ doi: "10.1016/j.jweia.2025.106095"
 zotero_key: "HAPFB79E"
 zotero_status: title-only
 last_verified: "2026-06-15"
-tags: ["Bridge", "Digital-Twin", "Unsorted", "source: lens"]
+tags: ["Bridge", "Digital-Twin", "Unsorted", "source: lens", "identification: databases"]
 ---
 # S-J-Jiang2025 — Digital twin-based identification of aerodynamic admittance functions of a long-span bridge
 

@@ -9,7 +9,7 @@ doi: "10.4271/2025-99-0349"
 zotero_key: "CVHJ3XKD"
 zotero_status: abstract-grounded
 last_verified: "2026-06-15"
-tags: ["Digital-Twin", "Maintenance", "Structural", "Tunnel", "Unsorted", "source: lens"]
+tags: ["Digital-Twin", "Maintenance", "Structural", "Tunnel", "Unsorted", "source: lens", "identification: databases"]
 ---
 # Jianjie-Wu2025 — Efficient Tunnel Modeling in Unity3D with Data-Driven CSG Approach
 

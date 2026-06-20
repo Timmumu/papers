@@ -9,7 +9,7 @@ doi: "10.1016/j.jobe.2023.107232"
 zotero_key: "7B9E9VCP"
 zotero_status: abstract-grounded
 last_verified: "2026-06-15"
-tags: ["BIM", "Building", "Construction", "Digital-Twin", "Lifecycle", "Unsorted", "source: lens"]
+tags: ["BIM", "Building", "Construction", "Digital-Twin", "Lifecycle", "Unsorted", "source: lens", "identification: databases"]
 ---
 # Calin-Boje2023 — A framework using BIM and digital twins in facilitating LCSA for buildings
 

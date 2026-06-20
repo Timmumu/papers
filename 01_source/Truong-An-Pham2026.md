@@ -9,7 +9,7 @@ doi: "10.1080/15623599.2026.2651946"
 zotero_key: "35NYTZKR"
 zotero_status: title-only
 last_verified: "2026-06-15"
-tags: ["Architecture", "BIM", "Building", "Construction", "Digital-Twin", "Unsorted", "source: lens"]
+tags: ["Architecture", "BIM", "Building", "Construction", "Digital-Twin", "Unsorted", "source: lens", "identification: databases"]
 ---
 # Truong-An-Pham2026 — Designing a BIM-enhanced digital twin architecture for construction pollution management in building renovation projects
 

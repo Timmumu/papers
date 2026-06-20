@@ -9,7 +9,7 @@ doi: "10.32604/ee.2026.081099"
 zotero_key: "22Y4G8JK"
 zotero_status: title-only
 last_verified: "2026-06-15"
-tags: ["Digital-Twin", "Infrastructure", "Predictive", "Risk", "Safety", "Unsorted", "source: lens"]
+tags: ["Digital-Twin", "Infrastructure", "Predictive", "Risk", "Safety", "Unsorted", "source: lens", "identification: databases"]
 ---
 # Gabor-Hasulyo2026 — Dynamic Digital Twin Network for Real-Time Safety Monitoring and Predictive Risk Assessment of Hydrogen Refueling Infrastructure
 

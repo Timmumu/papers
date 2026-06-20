@@ -9,7 +9,7 @@ doi: "10.1108/ecam-04-2025-0604"
 zotero_key: "2GF8PV3B"
 zotero_status: abstract-grounded
 last_verified: "2026-06-15"
-tags: ["BIM", "Building", "Construction", "Digital-Twin", "ML", "Ontology", "Predictive", "Safety", "Unsorted", "source: lens"]
+tags: ["BIM", "Building", "Construction", "Digital-Twin", "ML", "Ontology", "Predictive", "Safety", "Unsorted", "source: lens", "identification: databases"]
 ---
 # Faris-Elghaish2025 — Predictive digital monitoring of construction resources: an integrated digital twin solution
 

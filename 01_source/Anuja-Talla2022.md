@@ -7,9 +7,9 @@ year: 2022
 journal: "Smart and Sustainable Built Environment"
 doi: "10.1108/sasbe-03-2022-0050"
 zotero_key: "4VZU4ET4"
-zotero_status: abstract-grounded
+zotero_status: verified
 last_verified: "2026-06-15"
-tags: ["AI", "BIM", "Blockchain", "Building", "Construction", "Digital-Twin", "Unsorted", "source: lens"]
+tags: ["AI", "BIM", "Blockchain", "Building", "Construction", "Digital-Twin", "Unsorted", "source: lens", "identification: databases"]
 ---
 # Anuja-Talla2022 — Industry 4.0 and the circular economy: using design-stage digital technology to reduce construction waste
 

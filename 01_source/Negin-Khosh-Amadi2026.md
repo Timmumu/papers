@@ -9,7 +9,7 @@ doi: "10.1016/j.jobe.2025.115027"
 zotero_key: "GXK2JGXL"
 zotero_status: title-only
 last_verified: "2026-06-15"
-tags: ["Digital-Twin", "Quality", "Unsorted", "source: lens"]
+tags: ["Digital-Twin", "Quality", "Unsorted", "source: lens", "identification: databases"]
 ---
 # Negin-Khosh-Amadi2026 — Development of a spatially contextualised and AI-enabled digital twin for asthma-specific indoor air quality management
 

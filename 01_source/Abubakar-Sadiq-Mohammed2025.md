@@ -9,7 +9,7 @@ doi: "10.1108/f-03-2025-0045"
 zotero_key: "Y598SFSV"
 zotero_status: abstract-grounded
 last_verified: "2026-06-15"
-tags: ["AI", "BIM", "Building", "Digital-Twin", "Facility-Management", "Infrastructure", "Unsorted", "source: lens"]
+tags: ["AI", "BIM", "Building", "Digital-Twin", "Facility-Management", "Infrastructure", "Unsorted", "source: lens", "identification: databases"]
 ---
 # Abubakar-Sadiq-Mohammed2025 — Bibliometric analysis of innovative technology use in sustainable facilities management for smart city development
 

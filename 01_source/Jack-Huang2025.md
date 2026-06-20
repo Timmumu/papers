@@ -7,9 +7,9 @@ year: 2025
 journal: "Journal of Civil Structural Health Monitoring"
 doi: "10.1007/s13349-025-00927-9"
 zotero_key: "X5MXICDX"
-zotero_status: abstract-grounded
+zotero_status: verified
 last_verified: "2026-06-15"
-tags: ["Asset-Management", "Digital-Twin", "Infrastructure", "IoT", "Monitoring", "Risk", "Sensor", "Structural", "Unsorted", "source: lens"]
+tags: ["Asset-Management", "Digital-Twin", "Infrastructure", "IoT", "Monitoring", "Risk", "Sensor", "Structural", "Unsorted", "source: lens", "identification: databases"]
 ---
 # Jack-Huang2025 — Framework for a practical and cost-effective IoT-enhanced structural health monitoring and damage diagnostics system with digital twinning
 

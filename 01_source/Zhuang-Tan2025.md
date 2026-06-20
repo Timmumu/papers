@@ -9,7 +9,7 @@ doi: "10.1016/j.istruc.2025.110609"
 zotero_key: "CDXJ6P3I"
 zotero_status: title-only
 last_verified: "2026-06-15"
-tags: ["CPS", "Digital-Twin", "Monitoring", "Predictive", "Railway", "Unsorted", "source: lens"]
+tags: ["CPS", "Digital-Twin", "Monitoring", "Predictive", "Railway", "Unsorted", "source: lens", "identification: databases"]
 ---
 # Zhuang-Tan2025 — Digital twin-based cyber-physical system for intelligent monitoring and predictive operation of long-span high-speed railway arch bridges
 

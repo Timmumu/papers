@@ -9,7 +9,7 @@ doi: "10.1016/j.jobe.2025.114668"
 zotero_key: "RVRRKY4C"
 zotero_status: title-only
 last_verified: "2026-06-15"
-tags: ["Construction", "Digital-Twin", "Real-Time", "Unsorted", "Urban", "source: lens"]
+tags: ["Construction", "Digital-Twin", "Real-Time", "Unsorted", "Urban", "source: lens", "identification: databases"]
 ---
 # Behailu-Temesgen-Habe2025 — Explainable digital twins for circular construction: A systematic review of real-time decision-making and urban retrofitting frameworks
 

@@ -9,7 +9,7 @@ doi: "10.37544/0005-6650-2024-09-36"
 zotero_key: "CS8TAVCA"
 zotero_status: abstract-grounded
 last_verified: "2026-06-15"
-tags: ["AI", "Building", "Civil-Engineering", "Digital-Twin", "Infrastructure", "Maintenance", "Safety", "Structural", "Unsorted", "source: lens"]
+tags: ["AI", "Building", "Civil-Engineering", "Digital-Twin", "Infrastructure", "Maintenance", "Safety", "Structural", "Unsorted", "source: lens", "identification: databases"]
 ---
 # Xiao-Tang2024 — Artificial Intelligence-Powered Digital Twins for Sustainable and Resilient Engineering Structures/KI gestützte digitale Zwillinge für nachhaltige und widerstandsfähige technische Bauwerke
 

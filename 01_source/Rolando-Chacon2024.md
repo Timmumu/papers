@@ -9,7 +9,7 @@ doi: "10.1016/j.jobe.2024.108522"
 zotero_key: "SST937PL"
 zotero_status: abstract-grounded
 last_verified: "2026-06-15"
-tags: ["Building", "Construction", "Digital-Twin", "Knowledge-Graph", "Monitoring", "Safety", "Unsorted", "source: lens"]
+tags: ["Building", "Construction", "Digital-Twin", "Knowledge-Graph", "Monitoring", "Safety", "Unsorted", "source: lens", "identification: databases"]
 ---
 # Rolando-Chacon2024 — Digital twinning of building construction processes. Case study: A reinforced concrete cast-in structure
 

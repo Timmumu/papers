@@ -9,7 +9,7 @@ doi: "10.1002/best.70142"
 zotero_key: "JL8F4AQ3"
 zotero_status: abstract-grounded
 last_verified: "2026-06-15"
-tags: ["Bridge", "Digital-Twin", "Monitoring", "Quality", "Structural", "Unsorted", "source: lens"]
+tags: ["Bridge", "Digital-Twin", "Monitoring", "Quality", "Structural", "Unsorted", "source: lens", "identification: databases"]
 ---
 # Simon-Kosse2026 — Digital Twin‐Based Quality Control: Ensuring Precision in Precast Concrete Elements
 

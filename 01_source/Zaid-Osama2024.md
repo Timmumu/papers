@@ -9,7 +9,7 @@ doi: "10.1016/j.jobe.2024.111081"
 zotero_key: "DUTW7LR6"
 zotero_status: abstract-grounded
 last_verified: "2026-06-15"
-tags: ["Building", "Built-Environment", "Construction", "Digital-Twin", "Infrastructure", "Real-Time", "Unsorted", "source: lens"]
+tags: ["Building", "Built-Environment", "Construction", "Digital-Twin", "Infrastructure", "Real-Time", "Unsorted", "source: lens", "identification: databases"]
 ---
 # Zaid-Osama2024 — The digital twin framework: A roadmap to the development of user- centred digital twin in the built environment
 

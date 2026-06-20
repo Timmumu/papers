@@ -9,7 +9,7 @@ doi: "10.2298/ntrp2203181x"
 zotero_key: "BKNFYCKF"
 zotero_status: abstract-grounded
 last_verified: "2026-06-15"
-tags: ["Construction", "Digital-Twin", "Safety", "Unsorted", "source: lens"]
+tags: ["Construction", "Digital-Twin", "Safety", "Unsorted", "source: lens", "identification: databases"]
 ---
 # Hong-Xu2022 — A digital twin framework for construction and operation of the radioactive waste repository
 

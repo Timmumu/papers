@@ -7,9 +7,9 @@ year: 2023
 journal: "Structures"
 doi: "10.1016/j.istruc.2023.105574"
 zotero_key: "26SQDNPT"
-zotero_status: unsorted
+zotero_status: abstract-grounded
 last_verified: "2026-06-14"
-tags: ["Construction", "Digital-Twin", "Monitoring", "Structural", "Unsorted", "source: lens"]
+tags: ["Construction", "Digital-Twin", "Monitoring", "Structural", "Unsorted", "source: lens", "identification: databases"]
 ---
 # Masoud-Mohammadi2023 — Modern damage measurement of structural elements: Experiment, terrestrial laser scanning, and numerical studies
 

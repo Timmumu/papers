@@ -7,9 +7,9 @@ year: 2021
 journal: "Construction Innovation"
 doi: "10.1108/ci-11-2020-0186"
 zotero_key: "FIS6DYWJ"
-zotero_status: abstract-grounded
+zotero_status: verified
 last_verified: "2026-06-15"
-tags: ["BIM", "Building", "Construction", "Risk", "Safety", "Unsorted", "source: lens"]
+tags: ["BIM", "Building", "Construction", "Risk", "Safety", "Unsorted", "source: lens", "identification: databases"]
 ---
 # Akponanabofa-Henry-Oti2021 — A BIM-driven framework for integrating rules and regulations in the decommissioning of nuclear power plants
 

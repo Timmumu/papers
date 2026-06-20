@@ -9,7 +9,7 @@ doi: "10.1002/qre.70251"
 zotero_key: "NPQ8AXNH"
 zotero_status: abstract-grounded
 last_verified: "2026-06-15"
-tags: ["AI", "Construction", "Deep-Learning", "Digital-Twin", "Infrastructure", "Quality", "Safety", "Unsorted", "source: lens"]
+tags: ["AI", "Construction", "Deep-Learning", "Digital-Twin", "Infrastructure", "Quality", "Safety", "Unsorted", "source: lens", "identification: databases"]
 ---
 # Alhossein-Alharbi2026 — Unmanned Aerial Systems for Corrosion Detection: Multi‐Sensor Technologies, Challenges, and Opportunities for Next‐Generation Inspection
 

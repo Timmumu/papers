@@ -9,7 +9,7 @@ doi: "10.1016/j.jobe.2025.112126"
 zotero_key: "CNTT6QFM"
 zotero_status: title-only
 last_verified: "2026-06-15"
-tags: ["Digital-Twin", "Safety", "Unsorted", "source: lens"]
+tags: ["Digital-Twin", "Safety", "Unsorted", "source: lens", "identification: databases"]
 ---
 # Kaichao-Wang2025 — Digital twin safety analysis of large-span spatial structure based on airborne LiDAR
 

@@ -7,9 +7,9 @@ year: 2025
 journal: "Journal of Building Engineering"
 doi: "10.1016/j.jobe.2025.114421"
 zotero_key: "VFI3YTUY"
-zotero_status: abstract-grounded
+zotero_status: verified
 last_verified: "2026-06-15"
-tags: ["BIM", "Building", "Digital-Twin", "Energy", "Quality", "Sensor", "Simulation", "Unsorted", "source: lens"]
+tags: ["BIM", "Building", "Digital-Twin", "Energy", "Quality", "Sensor", "Simulation", "Unsorted", "source: lens", "identification: databases"]
 ---
 # Meisam-Jaberi2025 — An evaluation of digital capabilities to enable a sustainable built asset industry: Developing a Consolidated Sustainability Matrix to inform digital use cases and practices
 

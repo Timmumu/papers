@@ -7,9 +7,9 @@ year: 2025
 journal: "The Science of the total environment"
 doi: "10.1016/j.scitotenv.2025.179930"
 zotero_key: "NIZHE8EH"
-zotero_status: abstract-grounded
+zotero_status: verified
 last_verified: "2026-06-15"
-tags: ["Building", "Built-Environment", "Construction", "Digital-Twin", "Infrastructure", "ML", "Predictive", "Safety", "Semantic", "Unsorted", "source: lens"]
+tags: ["Building", "Built-Environment", "Construction", "Digital-Twin", "Infrastructure", "ML", "Predictive", "Safety", "Semantic", "Unsorted", "source: lens", "identification: databases"]
 ---
 # Ioan-Petri2025 — Digital twins for dynamic life cycle assessment in the built environment.
 

@@ -9,7 +9,7 @@ doi: "10.1177/13694332251365970"
 zotero_key: "EDBV5ZDE"
 zotero_status: abstract-grounded
 last_verified: "2026-06-15"
-tags: ["Bridge", "Construction", "Digital-Twin", "Infrastructure", "Maintenance", "Monitoring", "Safety", "Structural", "Unsorted", "source: lens"]
+tags: ["Bridge", "Construction", "Digital-Twin", "Infrastructure", "Maintenance", "Monitoring", "Safety", "Structural", "Unsorted", "source: lens", "identification: databases"]
 ---
 # Jinsong-Zhu2025 — A knowledge foundation and prospect review on thermal response of bridges
 

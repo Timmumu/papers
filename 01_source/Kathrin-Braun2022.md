@@ -7,9 +7,9 @@ year: 2022
 journal: "Architectural Research Quarterly"
 doi: "10.1017/s135913552200046x"
 zotero_key: "ENSGE43J"
-zotero_status: abstract-grounded
+zotero_status: verified
 last_verified: "2026-06-15"
-tags: ["BIM", "Building", "Construction", "Unsorted", "source: lens"]
+tags: ["BIM", "Building", "Construction", "Unsorted", "source: lens", "identification: databases"]
 ---
 # Kathrin-Braun2022 — Constructing platform capitalism: inspecting the political techno-economy of Building Information Modelling
 

@@ -9,7 +9,7 @@ doi: "10.1680/jstbu.25.00086"
 zotero_key: "5URH8Q52"
 zotero_status: abstract-grounded
 last_verified: "2026-06-15"
-tags: ["AI", "Building", "Construction", "Digital-Twin", "Predictive", "Real-Time", "Safety", "Unsorted", "source: lens"]
+tags: ["AI", "Building", "Construction", "Digital-Twin", "Predictive", "Real-Time", "Safety", "Unsorted", "source: lens", "identification: databases"]
 ---
 # Yafeng-Wen2025 — Research on the intelligent construction of prefabricated building based on digital twin
 

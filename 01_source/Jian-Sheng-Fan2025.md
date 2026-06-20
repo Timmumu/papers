@@ -9,7 +9,7 @@ doi: "10.1016/j.autcon.2025.106109"
 zotero_key: "DJAKYPW6"
 zotero_status: title-only
 last_verified: "2026-06-15"
-tags: ["Construction", "Digital-Twin", "Structural", "Unsorted", "source: lens"]
+tags: ["Construction", "Digital-Twin", "Structural", "Unsorted", "source: lens", "identification: databases"]
 ---
 # Jian-Sheng-Fan2025 — Mechanics-based digital twin model for structural construction using 3D scanning and FE model updating
 

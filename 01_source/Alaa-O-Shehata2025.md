@@ -9,7 +9,7 @@ doi: "10.1016/j.enbuild.2025.115880"
 zotero_key: "4FPWRGX2"
 zotero_status: abstract-grounded
 last_verified: "2026-06-15"
-tags: ["Architecture", "Building", "Construction", "Digital-Twin", "Inspection", "Unsorted", "source: lens"]
+tags: ["Architecture", "Building", "Construction", "Digital-Twin", "Inspection", "Unsorted", "source: lens", "identification: databases"]
 ---
 # Alaa-O-Shehata2025 — Enhanced digital twins (EDTs) approach based on advanced inspection and technology adoption to achieve sustainable construction processes
 

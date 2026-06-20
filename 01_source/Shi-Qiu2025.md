@@ -9,7 +9,7 @@ doi: "10.1061/jccee5.cpeng-6137"
 zotero_key: "9W6ZVZSQ"
 zotero_status: abstract-grounded
 last_verified: "2026-06-15"
-tags: ["Digital-Twin", "Infrastructure", "Maintenance", "Monitoring", "Point-Cloud", "Safety", "Unsorted", "source: lens"]
+tags: ["Digital-Twin", "Infrastructure", "Maintenance", "Monitoring", "Point-Cloud", "Safety", "Unsorted", "source: lens", "identification: databases"]
 ---
 # Shi-Qiu2025 — LiDAR-Simulated Multimodal and Self-Supervised Contrastive Digital Twin Approach for Probabilistic Point Cloud Generation of Rail Fasteners
 

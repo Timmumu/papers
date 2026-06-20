@@ -9,7 +9,7 @@ doi: "10.3846/jcem.2026.25811"
 zotero_key: "TKZAE9XE"
 zotero_status: abstract-grounded
 last_verified: "2026-06-15"
-tags: ["AI", "Digital-Twin", "Infrastructure", "IoT", "Predictive", "Railway", "Safety", "Unsorted", "source: lens"]
+tags: ["AI", "Digital-Twin", "Infrastructure", "IoT", "Predictive", "Railway", "Safety", "Unsorted", "source: lens", "identification: databases"]
 ---
 # Qasim-Zaheer2026 — Transforming railway transportation: the role of emerging technologies in efficiency, safety, and sustainability
 

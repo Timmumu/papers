@@ -9,7 +9,7 @@ doi: "10.1016/j.autcon.2025.106208"
 zotero_key: "MR7KZQ29"
 zotero_status: abstract-grounded
 last_verified: "2026-06-15"
-tags: ["Bridge", "Deep-Learning", "Digital-Twin", "Infrastructure", "Monitoring", "Quality", "Sensor", "Structural", "Unsorted", "source: lens"]
+tags: ["Bridge", "Deep-Learning", "Digital-Twin", "Infrastructure", "Monitoring", "Quality", "Sensor", "Structural", "Unsorted", "source: lens", "identification: databases"]
 ---
 # Vahid-Mousavi2025 — Transformer-based time-series GAN for data augmentation in bridge digital twins
 

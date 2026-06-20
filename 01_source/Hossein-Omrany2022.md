@@ -9,7 +9,7 @@ doi: "10.1108/sasbe-06-2022-0116"
 zotero_key: "9BMDI3GG"
 zotero_status: abstract-grounded
 last_verified: "2026-06-15"
-tags: ["BIM", "Building", "Digital-Twin", "Energy", "Facility-Management", "Infrastructure", "Quality", "Unsorted", "Urban", "source: lens"]
+tags: ["BIM", "Building", "Digital-Twin", "Energy", "Facility-Management", "Infrastructure", "Quality", "Unsorted", "Urban", "source: lens", "identification: databases"]
 ---
 # Hossein-Omrany2022 — The uptake of City Information Modelling (CIM): a comprehensive review of current implementations, challenges and future outlook
 

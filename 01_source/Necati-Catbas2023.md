@@ -9,7 +9,7 @@ doi: "10.1680/jbren.21.00093"
 zotero_key: "Y2RYK9D5"
 zotero_status: abstract-grounded
 last_verified: "2026-06-15"
-tags: ["Bridge", "Civil-Engineering", "Deep-Learning", "Digital-Twin", "ML", "Monitoring", "Safety", "Structural", "Unsorted", "source: lens"]
+tags: ["Bridge", "Civil-Engineering", "Deep-Learning", "Digital-Twin", "ML", "Monitoring", "Safety", "Structural", "Unsorted", "source: lens", "identification: databases"]
 ---
 # Necati-Catbas2023 — A review of latest trends in bridge health monitoring
 

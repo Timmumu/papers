@@ -9,7 +9,7 @@ doi: "10.1016/j.autcon.2021.103961"
 zotero_key: "H3NC5M52"
 zotero_status: title-only
 last_verified: "2026-06-15"
-tags: ["Construction", "Digital-Twin", "Sensor", "Unsorted", "source: lens"]
+tags: ["Construction", "Digital-Twin", "Sensor", "Unsorted", "source: lens", "identification: databases"]
 ---
 # Mingchao-Li2021 — Digital twin-driven virtual sensor approach for safe construction operations of trailing suction hopper dredger
 

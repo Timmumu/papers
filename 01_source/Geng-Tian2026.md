@@ -9,7 +9,7 @@ doi: "10.1016/j.buildenv.2025.114046"
 zotero_key: "43VJRDEL"
 zotero_status: abstract-grounded
 last_verified: "2026-06-15"
-tags: ["Building", "Deep-Learning", "Digital-Twin", "Safety", "Simulation", "Unsorted", "Urban", "source: lens"]
+tags: ["Building", "Deep-Learning", "Digital-Twin", "Safety", "Simulation", "Unsorted", "Urban", "source: lens", "identification: databases"]
 ---
 # Geng-Tian2026 — AI-enhanced large-eddy simulation for urban wind flows: accelerating spin-up with Fourier neural operator initialization
 

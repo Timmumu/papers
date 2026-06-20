@@ -9,7 +9,7 @@ doi: "10.1108/sasbe-08-2024-0312"
 zotero_key: "3ZCWGF7T"
 zotero_status: abstract-grounded
 last_verified: "2026-06-15"
-tags: ["BIM", "Building", "Construction", "Digital-Twin", "Lifecycle", "Quality", "Safety", "Semantic", "Unsorted", "source: lens"]
+tags: ["BIM", "Building", "Construction", "Digital-Twin", "Lifecycle", "Quality", "Safety", "Semantic", "Unsorted", "source: lens", "identification: databases"]
 ---
 # Fatma-Handan-Sarigul2025 — Integrated BIM, GIS and interoperable digital technologies in lifecycle management of building construction projects: systematic literature review
 

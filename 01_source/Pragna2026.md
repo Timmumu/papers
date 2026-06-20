@@ -15,6 +15,7 @@ tags:
   - Accident-Risk
   - Cross-Domain
   - source: lens
+  - identification: other methods
 ---
 
 # Pragna2026 — An Integrated Machine Learning Approach for Accident Risk Classification with Traffic and Signal Data

@@ -7,9 +7,9 @@ year: 2025
 journal: "Revista ingeniería de construcción"
 doi: "10.7764/ric.00168.21"
 zotero_key: "M5A7TNFC"
-zotero_status: abstract-grounded
+zotero_status: verified
 last_verified: "2026-06-15"
-tags: ["Construction", "Digital-Twin", "Infrastructure", "Monitoring", "Quality", "Unsorted", "source: lens"]
+tags: ["Construction", "Digital-Twin", "Infrastructure", "Monitoring", "Quality", "Unsorted", "source: lens", "identification: databases"]
 ---
 # Carolina-Silva-Araujo2025 — Proposal of a conceptual model of digital twins for construction sites
 

@@ -11,6 +11,7 @@ created: "2026-05-25"
 tags:
   - Verified
   - source: scholar
+  - identification: other methods
 ---
 
 # Holmstrom2010 — Rapid manufacturing in the spare parts supply chain: alternative approaches to capacity deployment

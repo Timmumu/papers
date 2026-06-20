@@ -9,7 +9,7 @@ doi: "10.1061/jitse4.iseng-2757"
 zotero_key: "HZ5CK5GM"
 zotero_status: abstract-grounded
 last_verified: "2026-06-15"
-tags: ["Bridge", "Digital-Twin", "Highway", "Infrastructure", "Maintenance", "Monitoring", "Safety", "Unsorted", "source: lens"]
+tags: ["Bridge", "Digital-Twin", "Highway", "Infrastructure", "Maintenance", "Monitoring", "Safety", "Unsorted", "source: lens", "identification: databases"]
 ---
 # Saviz-Moghtadernejad2026 — Digitalizing Bridge Management: Current Trends, Challenges, and a Practical Implementation Framework
 

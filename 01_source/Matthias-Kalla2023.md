@@ -9,7 +9,7 @@ doi: "10.1080/09613218.2023.2219792"
 zotero_key: "Y8L4TID6"
 zotero_status: abstract-grounded
 last_verified: "2026-06-15"
-tags: ["Digital-Twin", "Railway", "Safety", "Semantic", "Unsorted", "Urban", "source: lens"]
+tags: ["Digital-Twin", "Railway", "Safety", "Semantic", "Unsorted", "Urban", "source: lens", "identification: databases"]
 ---
 # Matthias-Kalla2023 — Station biophilia – assessing the perception of greenery on railway platforms using a digital twin
 

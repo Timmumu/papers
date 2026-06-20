@@ -9,7 +9,7 @@ doi: "10.1016/j.enbuild.2025.115988"
 zotero_key: "GCZ4DEZS"
 zotero_status: abstract-grounded
 last_verified: "2026-06-15"
-tags: ["Building", "Digital-Twin", "Energy", "Unsorted", "Urban", "source: lens"]
+tags: ["Building", "Digital-Twin", "Energy", "Unsorted", "Urban", "source: lens", "identification: databases"]
 ---
 # Aravind-Poshnath2025 — Adaptive spatial planning for equitable renewable energy allocation in multi-owned buildings: A policy-integrated digital twin approach
 

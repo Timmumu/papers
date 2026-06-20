@@ -9,7 +9,7 @@ doi: "10.1061/jitse4.iseng-2745"
 zotero_key: "JPHF3PY9"
 zotero_status: abstract-grounded
 last_verified: "2026-06-15"
-tags: ["Asset-Management", "Digital-Twin", "Infrastructure", "Maintenance", "Monitoring", "Safety", "Unsorted", "source: lens"]
+tags: ["Asset-Management", "Digital-Twin", "Infrastructure", "Maintenance", "Monitoring", "Safety", "Unsorted", "source: lens", "identification: databases"]
 ---
 # Lucas-Bellini-Machado2025 — Advancements of Digital Twin Technology for Bridges and Tunnels: A Systematic Literature Review
 

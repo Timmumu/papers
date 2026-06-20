@@ -7,9 +7,9 @@ year: 2020
 journal: "Advances in Civil Engineering"
 doi: "10.1155/2020/8824135"
 zotero_key: "WU2JWWKC"
-zotero_status: abstract-grounded
+zotero_status: verified
 last_verified: "2026-06-15"
-tags: ["BIM", "Building", "Digital-Twin", "Highway", "ML", "Maintenance", "Tunnel", "Unsorted", "source: lens"]
+tags: ["BIM", "Building", "Digital-Twin", "Highway", "ML", "Maintenance", "Tunnel", "Unsorted", "source: lens", "identification: databases"]
 ---
 # Gang-Yu2020 — Prediction of Highway Tunnel Pavement Performance Based on Digital Twin and Multiple Time Series Stacking
 

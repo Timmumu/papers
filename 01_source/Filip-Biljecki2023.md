@@ -9,7 +9,7 @@ doi: "10.1016/j.buildenv.2023.110295"
 zotero_key: "IVA4YRH8"
 zotero_status: abstract-grounded
 last_verified: "2026-06-15"
-tags: ["Building", "Built-Environment", "Digital-Twin", "Energy", "Quality", "Unsorted", "Urban", "source: lens"]
+tags: ["Building", "Built-Environment", "Digital-Twin", "Energy", "Quality", "Unsorted", "Urban", "source: lens", "identification: databases"]
 ---
 # Filip-Biljecki2023 — Quality of crowdsourced geospatial building information: A global assessment of OpenStreetMap attributes
 

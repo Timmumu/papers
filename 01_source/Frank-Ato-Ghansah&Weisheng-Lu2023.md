@@ -9,7 +9,7 @@ doi: "10.1108/ci-07-2022-0164"
 zotero_key: "GGDYKR33"
 zotero_status: abstract-grounded
 last_verified: "2026-06-15"
-tags: ["Building", "Built-Environment", "CPS", "Construction", "Digital-Twin", "Lifecycle", "Maintenance", "Unsorted", "source: lens"]
+tags: ["Building", "Built-Environment", "CPS", "Construction", "Digital-Twin", "Lifecycle", "Maintenance", "Unsorted", "source: lens", "identification: databases"]
 ---
 # Frank-Ato-Ghansah2023 — Cyber-physical systems and digital twins for "cognitive building" in the construction industry
 

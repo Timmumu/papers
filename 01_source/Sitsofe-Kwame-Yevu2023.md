@@ -9,7 +9,7 @@ doi: "10.1016/j.jobe.2023.107598"
 zotero_key: "K4MMWQIM"
 zotero_status: title-only
 last_verified: "2026-06-15"
-tags: ["Building", "Carbon", "Construction", "Digital-Twin", "Unsorted", "source: lens"]
+tags: ["Building", "Carbon", "Construction", "Digital-Twin", "Unsorted", "source: lens", "identification: databases"]
 ---
 # Sitsofe-Kwame-Yevu2023 — Digital twin-enabled prefabrication supply chain for smart construction and carbon emissions evaluation in building projects
 

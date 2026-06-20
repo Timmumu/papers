@@ -9,7 +9,7 @@ doi: "10.1109/tits.2025.3571174"
 zotero_key: "LWK8YXUM"
 zotero_status: abstract-grounded
 last_verified: "2026-06-15"
-tags: ["BIM", "Building", "Digital-Twin", "Infrastructure", "Point-Cloud", "Quality", "Road", "Structural", "Unsorted", "source: lens"]
+tags: ["BIM", "Building", "Digital-Twin", "Infrastructure", "Point-Cloud", "Quality", "Road", "Structural", "Unsorted", "source: lens", "identification: databases"]
 ---
 # Tianxiang-Bu2025 — Automatic Modeling Framework of Existing Road Based on Point Cloud Mapping via Low-Cost UAV-LiDAR System
 

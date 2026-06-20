@@ -9,7 +9,7 @@ doi: "10.1016/j.buildenv.2025.113997"
 zotero_key: "KCQYUWPC"
 zotero_status: abstract-grounded
 last_verified: "2026-06-15"
-tags: ["Asset-Management", "Building", "Digital-Twin", "Energy", "Maintenance", "Monitoring", "Predictive", "Unsorted", "source: lens"]
+tags: ["Asset-Management", "Building", "Digital-Twin", "Energy", "Maintenance", "Monitoring", "Predictive", "Unsorted", "source: lens", "identification: databases"]
 ---
 # Wei-Hu2026 — Integrating digital twin technologies for maintenance 4.0 in the building industry: A review and conceptual framework
 

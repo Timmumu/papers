@@ -7,9 +7,9 @@ year: 2024
 journal: "Structural Control and Health Monitoring"
 doi: "10.1155/2024/8846470"
 zotero_key: "UTKQSJHY"
-zotero_status: abstract-grounded
+zotero_status: verified
 last_verified: "2026-06-15"
-tags: ["Deep-Learning", "Digital-Twin", "Inspection", "Maintenance", "Structural", "Unsorted", "source: lens"]
+tags: ["Deep-Learning", "Digital-Twin", "Inspection", "Maintenance", "Structural", "Unsorted", "source: lens", "identification: databases"]
 ---
 # Wenbo-Hu2024 — Hybrid Pixel‐Level Crack Segmentation for Ballastless Track Slab Using Digital Twin Model and Weakly Supervised Style Transfer
 

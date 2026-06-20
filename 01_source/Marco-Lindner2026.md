@@ -9,7 +9,7 @@ doi: "10.1002/best.70132"
 zotero_key: "BW6CX8KM"
 zotero_status: abstract-grounded
 last_verified: "2026-06-15"
-tags: ["Construction", "Digital-Twin", "Quality", "Unsorted", "source: lens"]
+tags: ["Construction", "Digital-Twin", "Quality", "Unsorted", "source: lens", "identification: databases"]
 ---
 # Marco-Lindner2026 — Continuous Production of Thin‐Walled, Fiber‐Reinforced Precision Concrete Elements for Free‐Form Modular Construction ‐ KoBeMo
 

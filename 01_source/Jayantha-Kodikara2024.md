@@ -9,7 +9,7 @@ doi: "10.1016/j.trgeo.2024.101274"
 zotero_key: "HCWYBZMX"
 zotero_status: abstract-grounded
 last_verified: "2026-06-15"
-tags: ["Asset-Management", "BIM", "Building", "Construction", "Digital-Twin", "Infrastructure", "Lifecycle", "Maintenance", "Predictive", "Real-Time", "Unsorted", "source: lens"]
+tags: ["Asset-Management", "BIM", "Building", "Construction", "Digital-Twin", "Infrastructure", "Lifecycle", "Maintenance", "Predictive", "Real-Time", "Unsorted", "source: lens", "identification: databases"]
 ---
 # Jayantha-Kodikara2024 — Reimagining unbound road pavement technology: Integrating testing, design, construction and performance in the post-digital era
 

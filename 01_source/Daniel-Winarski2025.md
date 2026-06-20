@@ -9,7 +9,7 @@ doi: "10.59400/sv3662"
 zotero_key: "TWI6SGCM"
 zotero_status: abstract-grounded
 last_verified: "2026-06-15"
-tags: ["AI", "Construction", "Digital-Twin", "Monitoring", "Predictive", "Structural", "Unsorted", "source: lens"]
+tags: ["AI", "Construction", "Digital-Twin", "Monitoring", "Predictive", "Structural", "Unsorted", "source: lens", "identification: databases"]
 ---
 # Daniel-Winarski2025 — Creating a vibrational digital-twin of a Bell UH-1H helicopter tail-rotor blade for use in simulating centrifugal stiffening
 

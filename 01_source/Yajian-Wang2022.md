@@ -9,7 +9,7 @@ doi: "10.2166/wst.2022.120"
 zotero_key: "ZPALKBEZ"
 zotero_status: abstract-grounded
 last_verified: "2026-06-15"
-tags: ["Digital-Twin", "Inspection", "Monitoring", "Pipeline", "Structural", "Unsorted", "Urban", "source: lens"]
+tags: ["Digital-Twin", "Inspection", "Monitoring", "Pipeline", "Structural", "Unsorted", "Urban", "source: lens", "identification: databases"]
 ---
 # Yajian-Wang2022 — The monitoring approaches and non-destructive testing technologies for sewer pipelines.
 

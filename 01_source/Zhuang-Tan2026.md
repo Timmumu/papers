@@ -9,7 +9,7 @@ doi: "10.1016/j.istruc.2026.111723"
 zotero_key: "ITVK3BS9"
 zotero_status: title-only
 last_verified: "2026-06-15"
-tags: ["Bridge", "Digital-Twin", "Unsorted", "source: lens"]
+tags: ["Bridge", "Digital-Twin", "Unsorted", "source: lens", "identification: databases"]
 ---
 # Zhuang-Tan2026 — Digital twin-based multi-objective parameter identification for a cable-stayed bridge
 

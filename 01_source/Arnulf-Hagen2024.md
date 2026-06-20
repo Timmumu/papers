@@ -7,9 +7,9 @@ year: 2024
 journal: "Structure and Infrastructure Engineering"
 doi: "10.1080/15732479.2024.2311911"
 zotero_key: "BSRPC4VR"
-zotero_status: abstract-grounded
+zotero_status: verified
 last_verified: "2026-06-15"
-tags: ["Asset-Management", "Bridge", "Digital-Twin", "Infrastructure", "ML", "Maintenance", "Monitoring", "Risk", "Structural", "Unsorted", "source: lens"]
+tags: ["Asset-Management", "Bridge", "Digital-Twin", "Infrastructure", "ML", "Maintenance", "Monitoring", "Risk", "Structural", "Unsorted", "source: lens", "identification: databases"]
 ---
 # Arnulf-Hagen2024 — Asset management, condition monitoring and Digital Twins: damage detection and virtual inspection on a reinforced concrete bridge
 

@@ -7,9 +7,9 @@ year: 2020
 journal: "Advances in Civil Engineering"
 doi: "10.1155/2020/8865107"
 zotero_key: "49IHE87F"
-zotero_status: abstract-grounded
+zotero_status: verified
 last_verified: "2026-06-15"
-tags: ["BIM", "Building", "Digital-Twin", "Smart-City", "Unsorted", "source: lens"]
+tags: ["BIM", "Building", "Digital-Twin", "Smart-City", "Unsorted", "source: lens", "identification: databases"]
 ---
 # Zeyu-Pan2020 — A Novel HDF-Based Data Compression and Integration Approach to Support BIM-GIS Practical Applications
 

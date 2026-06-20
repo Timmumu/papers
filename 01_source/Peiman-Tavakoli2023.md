@@ -9,7 +9,7 @@ doi: "10.1108/sasbe-07-2023-0169"
 zotero_key: "BV5Y9TQ3"
 zotero_status: abstract-grounded
 last_verified: "2026-06-15"
-tags: ["Asset-Management", "Blockchain", "Building", "Built-Environment", "Digital-Twin", "Maintenance", "Predictive", "Real-Time", "Unsorted", "source: lens"]
+tags: ["Asset-Management", "Blockchain", "Building", "Built-Environment", "Digital-Twin", "Maintenance", "Predictive", "Real-Time", "Unsorted", "source: lens", "identification: databases"]
 ---
 # Peiman-Tavakoli2023 — Blockchain-based digital twin data provenance for predictive asset management in building facilities
 

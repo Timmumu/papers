@@ -9,7 +9,7 @@ doi: "10.1108/ecam-01-2024-0144"
 zotero_key: "MRZA2F8F"
 zotero_status: abstract-grounded
 last_verified: "2026-06-15"
-tags: ["BIM", "Building", "Construction", "Digital-Twin", "Predictive", "Risk", "Safety", "Structural", "Unsorted", "source: lens"]
+tags: ["BIM", "Building", "Construction", "Digital-Twin", "Predictive", "Risk", "Safety", "Structural", "Unsorted", "source: lens", "identification: databases"]
 ---
 # Eric-Ohene2024 — Big data analytics in the AEC industry: scientometric review and synthesis of research activities
 

@@ -9,7 +9,7 @@ doi: "10.1177/03611981261441281"
 zotero_key: "HEVK3EDL"
 zotero_status: abstract-grounded
 last_verified: "2026-06-15"
-tags: ["Bridge", "Digital-Twin", "Infrastructure", "Predictive", "Safety", "Sensor", "Simulation", "Unsorted", "source: lens"]
+tags: ["Bridge", "Digital-Twin", "Infrastructure", "Predictive", "Safety", "Sensor", "Simulation", "Unsorted", "source: lens", "identification: databases"]
 ---
 # Minhaj-Uddin-Ahmad2026 — Lessons Learned from the Real-World Deployment of Multisensor Fusion for Proactive Work Zone Safety Application
 

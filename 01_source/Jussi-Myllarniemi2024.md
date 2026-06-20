@@ -9,7 +9,7 @@ doi: "10.1504/ijplm.2024.10068371"
 zotero_key: "YECLF5CG"
 zotero_status: abstract-grounded
 last_verified: "2026-06-15"
-tags: ["BIM", "Building", "Construction", "Digital-Twin", "Infrastructure", "Lifecycle", "Unsorted", "source: lens"]
+tags: ["BIM", "Building", "Construction", "Digital-Twin", "Infrastructure", "Lifecycle", "Unsorted", "source: lens", "identification: databases"]
 ---
 # Jussi-Myllarniemi2024 — Lifecycle information management for asset owner
 

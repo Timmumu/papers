@@ -9,7 +9,7 @@ doi: "10.1016/j.istruc.2024.107425"
 zotero_key: "68TTGWV7"
 zotero_status: title-only
 last_verified: "2026-06-15"
-tags: ["Digital-Twin", "Unsorted", "source: lens"]
+tags: ["Digital-Twin", "Unsorted", "source: lens", "identification: databases"]
 ---
 # Guoliang-Shi2024 — Optimization method of cable structure demolition driven by digital twin evolution model
 

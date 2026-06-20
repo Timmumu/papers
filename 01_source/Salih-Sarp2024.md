@@ -7,9 +7,9 @@ year: 2024
 journal: "European Transport Research Review"
 doi: "10.1186/s12544-024-00679-5"
 zotero_key: "WANUG77J"
-zotero_status: abstract-grounded
+zotero_status: verified
 last_verified: "2026-06-15"
-tags: ["AI", "Architecture", "Digital-Twin", "Infrastructure", "IoT", "Maintenance", "Railway", "Safety", "Unsorted", "source: lens"]
+tags: ["AI", "Architecture", "Digital-Twin", "Infrastructure", "IoT", "Maintenance", "Railway", "Safety", "Unsorted", "source: lens", "identification: databases"]
 ---
 # Salih-Sarp2024 — Digitalization of railway transportation through AI-powered services: digital twin trains
 

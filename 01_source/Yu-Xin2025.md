@@ -7,9 +7,9 @@ year: 2025
 journal: "Structural Control and Health Monitoring"
 doi: "10.1155/stc/1167999"
 zotero_key: "H44DBEK3"
-zotero_status: abstract-grounded
+zotero_status: verified
 last_verified: "2026-06-15"
-tags: ["Construction", "Digital-Twin", "Simulation", "Structural", "Unsorted", "source: lens"]
+tags: ["Construction", "Digital-Twin", "Simulation", "Structural", "Unsorted", "source: lens", "identification: databases"]
 ---
 # Yu-Xin2025 — Hybrid‐Driven Digital Twin Framework for Time‐Variant Reliability Assessment of Civil Structures
 

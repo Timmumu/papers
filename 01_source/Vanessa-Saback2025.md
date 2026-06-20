@@ -7,9 +7,9 @@ year: 2025
 journal: "Structure and Infrastructure Engineering"
 doi: "10.1080/15732479.2025.2483913"
 zotero_key: "A22TIBPU"
-zotero_status: abstract-grounded
+zotero_status: verified
 last_verified: "2026-06-15"
-tags: ["Asset-Management", "Construction", "Digital-Twin", "Monitoring", "Predictive", "Railway", "Structural", "Unsorted", "source: lens"]
+tags: ["Asset-Management", "Construction", "Digital-Twin", "Monitoring", "Predictive", "Railway", "Structural", "Unsorted", "source: lens", "identification: databases"]
 ---
 # Vanessa-Saback2025 — Digital twins for asset management: case study of snow galleries in Northern Sweden
 

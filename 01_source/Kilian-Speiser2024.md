@@ -9,7 +9,7 @@ doi: "10.1680/jmapl.23.00104"
 zotero_key: "ZJXKZ4M5"
 zotero_status: abstract-grounded
 last_verified: "2026-06-15"
-tags: ["BIM", "Building", "Construction", "Digital-Twin", "Safety", "Unsorted", "source: lens"]
+tags: ["BIM", "Building", "Construction", "Digital-Twin", "Safety", "Unsorted", "source: lens", "identification: databases"]
 ---
 # Kilian-Speiser2024 — Automatic creation of personalised virtual construction safety training in digital twins
 

@@ -9,7 +9,7 @@ doi: "10.1061/jcemd4.coeng-13659"
 zotero_key: "H4LZ47X5"
 zotero_status: abstract-grounded
 last_verified: "2026-06-15"
-tags: ["Architecture", "Construction", "Digital-Twin", "Quality", "Safety", "Unsorted", "source: lens"]
+tags: ["Architecture", "Construction", "Digital-Twin", "Quality", "Safety", "Unsorted", "source: lens", "identification: databases"]
 ---
 # Victor-Adetunji-Arowoiya2024 — Driving Factors for the Adoption of Digital Twin Technology Implementation for Construction Project Performance in Nigeria
 

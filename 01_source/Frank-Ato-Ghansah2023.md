@@ -9,7 +9,7 @@ doi: "10.1108/sasbe-09-2022-0192"
 zotero_key: "Q5BP48DI"
 zotero_status: abstract-grounded
 last_verified: "2026-06-15"
-tags: ["Building", "Construction", "Digital-Twin", "Real-Time", "Unsorted", "source: lens"]
+tags: ["Building", "Construction", "Digital-Twin", "Real-Time", "Unsorted", "source: lens", "identification: databases"]
 ---
 # Frank-Ato-Ghansah2023 — Major opportunities of digital twins for smart buildings: a scientometric and content analysis
 

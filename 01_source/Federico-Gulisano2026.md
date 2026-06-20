@@ -9,7 +9,7 @@ doi: "10.1016/j.conbuildmat.2026.145903"
 zotero_key: "L3C2SYZV"
 zotero_status: abstract-grounded
 last_verified: "2026-06-15"
-tags: ["Carbon", "Digital-Twin", "Infrastructure", "Monitoring", "Real-Time", "Road", "Safety", "Unsorted", "source: lens"]
+tags: ["Carbon", "Digital-Twin", "Infrastructure", "Monitoring", "Real-Time", "Road", "Safety", "Unsorted", "source: lens", "identification: databases"]
 ---
 # Federico-Gulisano2026 — Piezoresistive mechanism of asphalt mixtures with carbon fibers
 

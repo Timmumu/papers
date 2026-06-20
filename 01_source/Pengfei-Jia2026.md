@@ -7,9 +7,9 @@ year: 2026
 journal: "Ingegneria Sismica"
 doi: "10.65102/is20261034"
 zotero_key: "CCNYAESK"
-zotero_status: abstract-grounded
+zotero_status: verified
 last_verified: "2026-06-15"
-tags: ["Construction", "Digital-Twin", "Simulation", "Unsorted", "source: lens"]
+tags: ["Construction", "Digital-Twin", "Simulation", "Unsorted", "source: lens", "identification: databases"]
 ---
 # Pengfei-Jia2026 — Data-physics fusion-based dual-drive dynamic simulation of power system digital twins
 

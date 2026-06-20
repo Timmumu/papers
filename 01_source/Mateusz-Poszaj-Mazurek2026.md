@@ -9,7 +9,7 @@ doi: "10.1016/j.jobe.2026.115397"
 zotero_key: "2DB37KT5"
 zotero_status: abstract-grounded
 last_verified: "2026-06-15"
-tags: ["AI", "BIM", "Building", "Construction", "Digital-Twin", "Semantic", "Unsorted", "source: lens"]
+tags: ["AI", "BIM", "Building", "Construction", "Digital-Twin", "Semantic", "Unsorted", "source: lens", "identification: databases"]
 ---
 # Mateusz-Poszaj-Mazurek2026 — A workflow for LLM-assisted IFC data enrichment to support circular reuse of large-panel building systems in Poland
 

@@ -9,7 +9,7 @@ doi: "10.1016/j.jobe.2023.107520"
 zotero_key: "4XWTBWHY"
 zotero_status: abstract-grounded
 last_verified: "2026-06-15"
-tags: ["Building", "Construction", "Deep-Learning", "Digital-Twin", "Energy", "Maintenance", "Point-Cloud", "Unsorted", "Urban", "source: lens"]
+tags: ["Building", "Construction", "Deep-Learning", "Digital-Twin", "Energy", "Maintenance", "Point-Cloud", "Unsorted", "Urban", "source: lens", "identification: databases"]
 ---
 # Michael-Bekele-Maru2023 — Improved building facade segmentation through digital twin-enabled RandLA-Net with empirical intensity correction model
 

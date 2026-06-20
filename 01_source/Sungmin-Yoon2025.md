@@ -9,7 +9,7 @@ doi: "10.1016/j.jobe.2025.112802"
 zotero_key: "PY2YRU83"
 zotero_status: title-only
 last_verified: "2026-06-15"
-tags: ["Building", "Digital-Twin", "Maintenance", "Ontology", "Unsorted", "source: lens"]
+tags: ["Building", "Digital-Twin", "Maintenance", "Ontology", "Unsorted", "source: lens", "identification: databases"]
 ---
 # Sungmin-Yoon2025 — Ontology-enabled AI agent-driven intelligent digital twins for building operations and maintenance
 

@@ -9,7 +9,7 @@ doi: "10.1080/13467581.2024.2343800"
 zotero_key: "M9AU2ZLG"
 zotero_status: abstract-grounded
 last_verified: "2026-06-15"
-tags: ["AI", "Architecture", "Construction", "Digital-Twin", "Risk", "Safety", "Unsorted", "source: lens"]
+tags: ["AI", "Architecture", "Construction", "Digital-Twin", "Risk", "Safety", "Unsorted", "source: lens", "identification: databases"]
 ---
 # Huimin-Li2024 — Applications of artificial intelligence in the AEC industry: a review and future outlook
 

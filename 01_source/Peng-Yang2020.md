@@ -7,9 +7,9 @@ year: 2020
 journal: "Advances in Civil Engineering"
 doi: "10.1155/2020/8846667"
 zotero_key: "6VGXIJ7F"
-zotero_status: abstract-grounded
+zotero_status: verified
 last_verified: "2026-06-15"
-tags: ["BIM", "Building", "Construction", "Digital-Twin", "Energy", "Lifecycle", "Maintenance", "Quality", "Unsorted", "source: lens"]
+tags: ["BIM", "Building", "Construction", "Digital-Twin", "Energy", "Lifecycle", "Maintenance", "Quality", "Unsorted", "source: lens", "identification: databases"]
 ---
 # Peng-Yang2020 — Digital Twin Hospital Buildings: An Exemplary Case Study through Continuous Lifecycle Integration
 
