@@ -13,3 +13,12 @@ A fire protection system takes on a critical significance to building operation.
 | Yes | Yes | Yes | Yes | Yes | **Include** |
 
 **Note:** DT+semantic web intelligent control of building fire protection
+
+## Step-3 Deep-Read Coding (Prompt B)
+
+| P | Q | R | U Tier | V | W | X | Z | AA | AB | AC | AD | AE | AF |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| Yes | Yes | Yes | Tier 3 - Digital Twin (bidirectional, two-way) | 0 | 0 | 1 | Design for Safety (DfS) | None | Ontology / semantic | Multi (two or more data types) | Simulation | 4 | Design for Safety |
+
+**Key evidence (AG):** Intelligent control of building fire protection (BFP) system using DT + semantic web technologies (SJTU): BFP ontology fuses static BIM geometric info + dynamic IoT sensing data into DT data model; rule model activates process model (workflow engine) for intelligent control mechanisms; DT data model synced with physical space; fire accident simulation case study demonstrates rapid response and evacuation facilitation; semantic web enables information acquisition/extraction/verification/update. Bidirectional — rule model triggers process model → physical actuation → Tier 3; no ML learning loop (rule-based control).
+(full-text source: Endnote)

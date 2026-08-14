@@ -13,3 +13,12 @@ Road maintenance remains one of the most resource-intensive and hazardous operat
 | Yes | Yes | Yes | Yes | Yes | **Include** |
 
 **Note:** UAV+AMR DT for road maintenance; worker safety & inspection
+
+## Step-3 Deep-Read Coding (Prompt B)
+
+| P | Q | R | U Tier | V | W | X | Z | AA | AB | AC | AD | AE | AF |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| Yes | Yes | Yes | Tier 2 - Digital Shadow (one-way physical to virtual) | 0 | 0 | 1 | Design for Safety (DfS) | None | Perception / Computer Vision | Multi (two or more data types) | Single case study | 4 | Design for Safety |
+
+**Key evidence (AG):** Digital twin-driven system for road maintenance (TECNALIA): UAV + AMR integration for automated inspection and measurement of road assets; data fusion and real-time synchronisation between field agents and centralised DT; retro-reflectivity monitoring of signage, obstacle/vegetation detection; supports data-driven maintenance planning; case study on Italian highway network. One-way monitoring→DT→maintenance planning; no actuation and no learning loop.
+(full-text source: Endnote)

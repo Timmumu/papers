@@ -13,3 +13,12 @@ Geological uncertainty ahead of the tunnel face presents significant challenges 
 | Yes | Yes | Yes | Yes | Yes | **Include** |
 
 **Note:** DT of geological conditions in rock tunnel construction; risk management
+
+## Step-3 Deep-Read Coding (Prompt B)
+
+| P | Q | R | U Tier | V | W | X | Z | AA | AB | AC | AD | AE | AF |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| Yes | Yes | Yes | Tier 3 - Digital Twin (bidirectional, two-way) | 0 | 1 | 0 | Design for Safety (DfS) | None | Other / Mixed | Multi (two or more data types) | Single case study | 4 | Predictive analytics / decision support |
+
+**Key evidence (AG):** Digital twin for advanced geological conditions in rock tunnel construction (Tongji U): multi-source geological data (water content, lithology, integrity) → multi-dimensional virtual models (geometric, attribute, behavior); fuzzy cloud probability model quantifies uncertainty for intelligent rock classification (92.95% accuracy); iS3 platform implements closed-loop data-model-decision; validated on five rock tunnel projects. Closed-loop data→model→decision→feedback → Tier 3; no learning loop (fuzzy cloud is probabilistic, not learning).
+(full-text source: Endnote)

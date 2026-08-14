@@ -13,3 +13,12 @@ Traditional electrical resistivity tomography (ERT) inversion for dam leakage de
 | Yes | Yes | Yes | Yes | Yes | **Include** |
 
 **Note:** FNO dam leakage detection for operational DTs; safety monitoring
+
+## Step-3 Deep-Read Coding (Prompt B)
+
+| P | Q | R | U Tier | V | W | X | Z | AA | AB | AC | AD | AE | AF |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| Yes | Yes | Yes | Tier 2 - Digital Shadow (one-way physical to virtual) | 0 | 0 | 1 | Design for Safety (DfS) | Implemented | Other / Mixed | Single (one data type) | Simulation | 4 | Predictive analytics / decision support |
+
+**Key evidence (AG):** Topology-guided Fourier Neural Operator (TG-FNO) with decoupled geometric parameterization for dam leakage detection (Chongqing Jiaotong U/HKUST): FNO replaces numerical solver for forward potential-field simulation (345x speedup, mean rel error 3.18%); decoupled geometric parameterization separates deterministic defect from stochastic background; Navigator network extracts coarse topological priors to initialize parallel multi-hypothesis workflow; 99.7% avg inversion success rate, 89.3% high-fidelity reconstruction, 72x overall acceleration vs FEM; robust to 20% noise and 50% data loss, detects unseen low-contrast early leakages, OOD generalization without retraining. One-way ERT->inversion->leakage localization for safety monitoring; implemented operator-learning surrogate (offline-trained), no actuation.
+(full-text source: Endnote)

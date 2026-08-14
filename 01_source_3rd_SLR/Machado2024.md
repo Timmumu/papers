@@ -13,3 +13,12 @@ Civil infrastructures inevitably undergo a degradation process due to extended p
 | Yes | Yes | Yes | Yes | Yes | **Include** |
 
 **Note:** Inspection DT for tunnel degradation; serviceability & intervention prediction
+
+## Step-3 Deep-Read Coding (Prompt B)
+
+| P | Q | R | U Tier | V | W | X | Z | AA | AB | AC | AD | AE | AF |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| Yes | Yes | Yes | Tier 2 - Digital Shadow (one-way physical to virtual) | 0 | 0 | 1 | Design for Safety (DfS) | None | Statistical / change-point | Multi (two or more data types) | Single case study | 4 | Lifecycle / governance |
+
+**Key evidence (AG):** Tunnel performance prediction through degradation inspection and digital twin construction (USP): methodology correlates performance loss (tunnel serviceability index TSI) to defects via 2D grid of classified unit cells converted to virtual representation; inspection DT prototype maps zones with greatest degradation; limit analysis with inverse exponential equations estimates intervention times; railway tunnel for ore transport in northern Brazil; target intervention time 16 years. One-way inspection→TSI mapping→intervention prediction; no actuation and no learning loop (stochastic models are statistical, not learning).
+(full-text source: Endnote)

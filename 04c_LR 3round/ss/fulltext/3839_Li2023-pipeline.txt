@@ -1,0 +1,2990 @@
+Tunnelling and Underground Space Technology 142 (2023) 105430
+Available online 12 October 2023
+0886-7798/© 2023 Elsevier Ltd. All rights reserved.
+3D laser point cloud-based geometric digital twin for condition assessment 
+of large diameter pipelines 
+Minghao Li
+a
+, Xin Feng
+a , *
+, Qunfang Hu
+b 
+a
+Faculty of Infrastructure Engineering, Dalian University of Technology, Dalian, China 
+b
+Shanghai Institute of Disaster Prevention and Relief, Tongji University, Shanghai, China   
+ARTICLE INFO  
+Keywords: 
+Geometric digital twin 
+Urban pipe network 
+Quantitative condition assessment 
+3D Point cloud data 
+Geometric feature extraction 
+ABSTRACT  
+The increasing aging of underground pipe networks and the lack of effective inspection technologies present 
+considerable challenges for whole life-cycle management of these infrastructures. Modern laser scanning tech -
+nology offers a cost-effective and safe means to obtain dense and accurate 3D topographic data of the inner 
+surface of pipelines. However, laser scanning point clouds contain substantial noise and outliers, and efficiently 
+extracting valuable information for structural and functional mapping remains in its infancy. This paper presents 
+an innovative method for fast processing point clouds data of large-diameter pipelines, enabling the accurate 
+extraction of geometric features and efficient establishment of geometric digital twin using density-based clus -
+tering, fitting and region growing algorithm. Experimental tests were conducted to evaluate the accuracy, effi -
+ciency, and feasibility of the proposed method. The results demonstrate that the proposed approach not only 
+robustly achieves high accuracy but also maintains high computational efficiency. Additionally, the geometric 
+digital twin shows promise as tools for quantitatively assessing structural deformation and blockage defects.   
+1. Introduction 
+Large diameter pipelines, serving as critical urban infrastructure, are 
+extensively employed in urban sewage and water pipeline systems amid 
+rapid urbanization. For example, concrete pipes (CP) and reinforced 
+concrete pipes (RCP) with diameters larger than 650 mm are commonly 
+used in sewer systems ( Sever et al., 2017; United States Environmental 
+Protection Agency, 2023 ), while pre-stressed concrete cylinder pipes 
+(PCCP) and ductile iron pipes with diameters larger than 750 mm are 
+gaining popularity in water supply systems ( Polvi et al., 2018 ). As urban 
+pipelines continue to expand gradually, automating their condition 
+assessment has become increasingly difficult due to structure deterio -
+ration under hidden underground and intricate service environments ( Li 
+et al., 2022a; Li and Feng, 2022; Huang et al., 2023 ). 
+Cross-sectional deformation, or ovality, serves as a critical perfor -
+mance indicator for pipelines ( Loganathan et al., 2022; Sun et al., 2022 ), 
+as required by Chinese code ( CJJ 181 – 2012, 2012 ) and American 
+standard ( ASTM F-1216 – 22, 2022; DNS-OS-F101, 2012 ). For instance, 
+cracks may happen when deformation reach approximately 2 – 3 % of the 
+concrete pipe diameter ( Bai and Bai, 2005; García and Moore, 2016; 
+Munro et al., 2009; Xu et al., 1998 ). If radial deformation exceeds this 
+threshold, the pipeline may be unable to withstand vertical loads due to 
+reduced stiffness from pipe wall fracture, leading to larger cracking, 
+spalling, and eventually pipeline fracture failure (
+´
+Ekes, 2018; Haktanir 
+et al., 2007 ), as illustrated in Fig. 1 ( Tang, 2023 ). In addition, presence 
+of ovality in a pipeline can significantly shorten its lifespan and impair 
+its overall performance ( Hawari et al., 2018 ). Modern inspection tech -
+nologies for pipeline internal surface can be classified into three cate -
+gories: image-based visual inspections, acoustic methods, and laser- 
+based scanning techniques. Image-based visual inspection technologies 
+(such as CCTV) ( Elmasry et al., 2019; Haurum and Moeslund, 2020 ), 
+bolstered by deep learning advancements, are quickly becoming a 
+research hotspot for pipeline condition assessment ( Tan et al., 2021 ). 
+Several studies leverage CNNs, RegNetY networks, and transformer- 
+optimized networks for automatic defect identification in sewer pipe -
+lines ( Hassan et al., 2019; Li et al., 2019; Li et al., 2022b; Ma et al., 2021, 
+2023a ). However, these methods mainly focus on classification tasks, 
+not quantitative assessments. Various computer vision techniques, 
+including edge detection ( Kirstein et al., 2012 ), morphological detection 
+( McKim and Sinha, 1999 ), and contour segmentation, have been 
+employed to quantify pipeline cracks ( Sinha, 2001; Fang et al., 2022 ), 
+deformation ( Xu et al., 1998; Kannala et al., 2008 ) and settled deposits 
+* Corresponding author. 
+E-mail address: fengxin@dlut.edu.cn (X. Feng).  
+Contents lists available at ScienceDirect 
+Tunnelling and Underground Space Technology  
+incorporating Trenchless Technology Research 
+journal homepag e: www.else vier.com/loc ate/tust 
+https://doi.org/10.1016/j.tust.2023.105430 
+Received 22 May 2023; Received in revised form 12 September 2023; Accepted 28 September 2023   
+Tunnelling and Underground Space Technology incorporating Trenchless Technology Research 142 (2023) 105430
+2
+( Hawari et al., 2018 ). However, the limitations of 2D images only render 
+them inappropriate for pipeline deformation assessment due to factors 
+such as limited camera view and lens distortions ( Moon et al., 2019 ), 
+difficulty in aligning pipeline profile perpendicular to the pipe ’ s axis, 
+and poor interior illumination ( Duran et al., 2003, 2007; Clemens et al., 
+2015; Lepot et al., 2017; Stani ´c et al., 2017 ). Additionally, acoustic 
+methods are mainly employed when the pipeline is above 2/3 of the 
+water level, they lack of the accuracy of laser scanning ( Plihal et al., 
+2016 ). For example, geometric deformation measurement of concrete 
+pipelines demands high accuracy and clarity, with a 1-meter diameter 
+pipeline requiring millimeter-level precision. 
+The recent advancements in laser scanning provides a suitable 
+approach for capturing the global geometry of pipelines ( Zhou et al., 
+2022 ), with the aid of tripods ( Olsen et al., 2010 ), unmanned aerial 
+vehicle (UAV) ( Chen et al., 2020 ), unmanned surface vessel (USV) ( He 
+et al., 2022 ), and robots ( Wang and Yin, 2022 ). For example, Kawashima 
+et al. (2014) adopted normal-based region growing and RANSAC-based 
+cylinder surface fitting to automatically recognize piping systems. Qiu 
+et al. (2014) utilized Gaussian sphere and RANSAC to extract pipe-runs 
+from large-scale point clouds. Czerniawski et al. (2016) located and 
+extracted pipe spools in cluttered point clouds, primarily using local 
+data level curvature estimation, density-based spatial clustering of ap -
+plications with noise (DBSCAN), and bag-of-features (BoF) matching. 
+Patil et al. (2017) presented an area-based adaptive Hough transform for 
+detecting cylinders. However, most existing automated algorithms, 
+which utilize circles or ellipses to fit pipe cross-sections, focus on 
+extracting and reconstructing pipeline systems rather than measuring 
+geometric deformation. Laser scanning data generate massive point 
+clouds, containing considerable noise and outliers ( Yadav et al., 2021 ). 
+In general, noise results from the measurement error of laser scanner, 
+obeying Gaussian distribution and not exceeding 5 mm in range, while 
+outliers arise from lighting or the reflective nature of surface in the scene 
+( Zaman et al., 2017 ) and are sparsely distributed spatially. Owing to 
+these point cloud characteristics, numerous density-based point cloud 
+denoising methods, such as kernel density estimation (KDE) ( Laefer and 
+Truong-Hong, 2017; Truong-Hong and Lindenbergh, 2022a, 2022b; Yan 
+and Hajjar, 2021 ), DBSCAN ( Liu et al., 2022 ), voxel grid-based sampling 
+( Pang et al., 2022 ), and statistical-based outlier removal (SOR), have 
+been developed in recent years ( Hou et al., 2017 ). Unfortunately, fast 
+and accurately measuring the geometry of pipelines ’ complex curved 
+surfaces remains challenging currently ( Liu and Kleiner, 2013 ), as 
+existing methods perform better for planar building surfaces (i.e., hor -
+izontal and vertical planes). Consequently, the use of laser scanning 
+point clouds for accurate deformation measurement in the geometric 
+digital twin of pipelines necessitates addressing the following critical 
+issues: (1) How can noise and outliers be effectively filtered out of 
+pipeline surface point clouds? (2) How can the feasibility of the pro -
+posed algorithm, especially concerning accuracy and time consumption 
+evaluation, be effectively verified? 
+To address the aforementioned challenges, this paper proposes a 
+novel method for the fast and accurate extraction of pipeline surfaces 
+and geometric digital twin modeling using density-based fitting, clus -
+tering and region growing. The proposed algorithm comprises three 
+components: (1) point cloud preprocessing, (2) geometric feature 
+extraction utilizing least-median-of-squares (LMedS) fitting and 
+DBSCAN clustering, and (3) 3D geometric digital twin modeling through 
+slice region growing. A series of laboratory experiments are designed to 
+assess the accuracy and computational time of the proposed method, 
+thereby verifying its feasibility for quantitatively assessing structural 
+deformation as well as blockage defects in the pipelines. 
+The remainder of this paper is structured as follows. Section 2 details 
+the methodology and overall framework. In Section 3 , the proposed 
+approach is validated, and its performance is compared with existing 
+methods. Lastly, Section 4 presents the conclusions. 
+2. Methodology 
+The underground pipeline system has been deemed one of the most 
+deteriorated infrastructures, with a “ D + ” rating evaluated by ASCE 
+( 2021 Infrastructure Report Card, 2021 ), due to harsh service environ -
+ments and hidden degradations such as deformation, concrete spalling, 
+scaling, and blockages ( Kirkham et al., 2000 ). Laser scanning, an effi -
+cient technique for accurately capturing object geometries, enables the 
+acquisition of 3D spatial data mapping the actual deformation and de -
+fects of underground pipelines in hidden and dark environments that are 
+inaccessible to humans. Nevertheless, the point cloud data typically 
+contains substantial noise and outliers, making it unsuitable for direct 
+use in computing deformation and defect volumes. The overarching goal 
+Fig. 1. Deformation damage of an urban rain and sewer reinforced concrete pipe (Tang, 2023).  
+M. Li et al.                                                                                                                                                                                                                                       
+Tunnelling and Underground Space Technology incorporating Trenchless Technology Research 142 (2023) 105430
+3
+of this paper is to develop a novel methodology, transforming raw point 
+cloud data into a geometric digital twin that can fast and accurately 
+assess pipeline deformation and defects. As illustrated in Fig. 2 , the 
+proposed methodology consists of three steps: (1) To circumvent the 
+exhausted computations associated with 3D data processing, cluttered 
+3D points are initially corrected and segmented into 2D slice-regions 
+along the z -axis; (2) Employing the knowledge of scanner measure -
+ment errors and pipeline surface characteristics, LMedS and DBSCAN- 
+based fitting and clustering algorithms are proposed to extract geo -
+metric features of the slices; and (3) Through quantitative comparison of 
+the similarities between adjacent slice regions, density-based region 
+growing (DRG) is proposed to significantly reduce inefficient compu -
+tations and extract 3D geometric features. The proposed method per -
+tains to extracting the geometric features and establishing the geometric 
+digital twin to quantitatively assess the deformation and defects for 
+large diameter pipelines. 
+2.1. 3D point-to-2D region 
+Since laser scanning point clouds are typically massive, it can be 
+time-consuming to analyze each point in a 3D manner. In this study, 
+because 2D processing is simpler and more efficient than 3D processing, 
+the 3D point cloud is segmented into several 2D slice-regions for data 
+processing (i.e., 3D point-to-2D region), which are perpendicular to the 
+pipe axis direction. However, since a pipeline can have an arbitrary 
+orientation in geo-space, it is necessary to align the pipeline axis parallel 
+to the coordinate axis z. Consequently, the 3D point-to-2D region 
+methodology consists of two sub-steps: pipeline axis alignment and slice 
+region subdivision. 
+2.1.1. Pipeline axis alignment 
+The objective of this section is to align pipe axis perpendicular to the 
+xoy plane, ensuring that the slices can be more representative of the pipe 
+cross-section. In order to reduce the computational complexity and time, 
+voxel-based down-sampling is employed to simplify the raw point 
+cloud ( P
+raw
+=
+{
+p
+i
+=
+ 
+x
+i
+, y
+i
+, z
+i
+)
+∈ R
+3
+, i = [ 1 , N
+raw
+]
+}
+) into a smaller number 
+of data points ( P
+ds
+=
+{
+p
+ds , i
+=
+(
+x
+ds , i
+, y
+ds , i
+, z
+ds , i
+)
+∈ R
+3
+, i = [ 1 , N
+ds
+]
+}
+). Sub -
+sequently, normal vectors of the point cloud P
+ds 
+are estimated 
+and projected onto a unit sphere (Gaussian sphere) surface 
+( Czerniawski et al., 2016; Kawashima et al., 2014; Patil et al., 2017; Qiu 
+et al., 2014 ), with the normal vectors unitized as P
+n
+=
+{
+p
+n , i
+=
+(
+x
+n , i
+, y
+n , i
+, z
+n , i
+)
+∈ R
+3
+, i = [ 1 , N
+ds
+]
+}
+. A plane is fitted using the 
+RANSAC method, which has the normal vector v
+n
+= ( α , β , γ ) in the same 
+direction as the pipeline axis. Consequently, the Euler angles in the 
+rotation matrix R along the x , y and z axes are arctan ( β / γ ) ,   arctan ( α / γ )
+and 0, respectively. After rotating the raw point cloud P
+raw 
+by the 
+rotation matrix, the axis of the rotated point cloud ( P
+z
+=
+{
+p
+z , i
+= R ⋅
+ 
+x
+i
+, y
+i
+, z
+i
+)
+T
+∈ R
+3
+, i = [ 1 , N
+raw
+]
+}
+) is considered to be parallel to 
+the z -axis. This alignment supports cropping of the pipe point cloud into 
+regularly sliced regions using the axes of the global coordinate system in 
+following steps, thus reducing the computational complexity. The 
+workflow of pipeline axis alignment is illustrated in Fig. 3 . 
+2.1.2. Slice region subdivision 
+The cross-sections of a pipeline along the longitudinal direction are 
+predominantly circular. To leverage these geometric properties and 
+decrease the complexity of the entire point cloud, slicing is employed to 
+extract geometric features faster in a 2D manner and to recursively 
+construct the 3D geometric digital twin of a pipeline based on the sim -
+ilarity between slices. The initial 3D boundaries 
+ 
+x
+b min
+, x
+b max
+, y
+b min
+,
+y
+b max
+, z
+b min
+, z
+b max
+)
+of the corrected point cloud ( P
+z
+=
+{
+p
+z , i
+= R ⋅
+ 
+x
+i
+, y
+i
+, z
+i
+)
+T
+∈ R
+3
+, i = [ 1 , N
+raw
+]
+}
+) are first estimated. Define Δ t 
+as the division step size, which depends on a specific required level of 
+detail for the structure (e.g., the size of defects such as spalling and 
+blockage). Subdivide the point cloud P
+z 
+into 2D regions 
+( S
+i
+=
+{
+s
+i j
+=
+(
+x
+i j
+, y
+i j
+)
+∈ R
+2
+, j = [ 1 , N
+r
+]
+}
+, i = [ 1 , N
+slice
+] where z
+b min
++
+( i   1 ) Δ t ≤ z ≤ z
+b min
++ i Δ t ) along the z -axis using a bounding box, with 
+N
+r 
+representing the number of the points within the S
+i
+. Additionally, to 
+extract slices with complete geometric information, following the 
+approach introduced by Truong-Hong and Lindenbergh (2022a, 2022b) , 
+if the slice contains fewer points than a predefined threshold 
+( N
+r
+< n
+r min
+), each slice is designated as “ empty ” ; otherwise, it is classi -
+fied as “ full ” . Only full slices are considered in subsequent data pro -
+cessing steps. Through slicing, the complex 3D point cloud is 
+transformed into simpler 2D planar data points S
+i
+, including its z -axis 
+coordinate information z
+c , i
+= z
+b min
++ ( i   0 . 5 ) Δ t . Note that the number 
+of slices is N
+slice
+= ceil (( z
+b max
+  z
+b min
+) / Δ t ) , where ceil ( * ) indicates 
+rounding up to an integer. The workflow of slice region subdivision is 
+depicted in Fig. 4 . 
+2.2. Geometric feature extraction 
+Given that the 3D point cloud of the pipeline has been decomposed 
+into 2D slices in the xoy plane, the geometry represented by the set of 2D 
+points closely resembles a circle or an ellipse. Most existing methods 
+directly simplified it to circle ( Liu et al., 2022 ) or ellipse ( Kannala et al., 
+2008; Xu et al., 1998 ). However, research has shown that the pipeline 
+deformation under pipe-soil interaction takes on irregular shapes 
+( Haktanir et al., 2007 ), as shown in Fig. 1 . Cracks may happen when the 
+Fig. 2. Workflow for deformation measurement and geometric digital twin modeling of large diameter pipelines.  
+M. Li et al.                                                                                                                                                                                                                                       
+Tunnelling and Underground Space Technology incorporating Trenchless Technology Research 142 (2023) 105430
+4
+ovality of the pipeline reaches 2 %, that is to say, for a concrete pipe with 
+a diameter of 800 mm, its threshold of radial deformation will be 2 cm, 
+so the accuracy requirement should be millimeter level. The accurate 
+representation of the cross-section using a circle or ellipse is not feasible 
+due to the non-uniform radial deformation commonly occurred in actual 
+pipelines. Moreover, the precise expression and measurement of surface 
+defects, such as blockage, spalling, or rupture, in pipeline geometry, 
+pose a challenge. To address this issue, recent studies have demonstrated 
+the utilization of density-based data processing methods, including 
+DBSCAN ( Czerniawski et al., 2016 ), which have become increasingly 
+popular due to their efficient noise removal performance. Fig. 5 illus -
+trates the point cloud data of a slice. The point cloud can be segmented 
+into three categories: (1) internal and external outliers, typically located 
+away from the main point cloud, resulting from illumination and 
+anomalous reflections in the scene; (2) the profile line of the pipe, sit -
+uated at the highest density of the main point cloud, caused by the 
+reflection of the inner pipe surface; (3) noise, primarily located within 
+the main point cloud, obtained by the measurement errors of the 
+acquisition equipment and sensors. In light of the above distribution 
+characteristics of a point cloud slice, this paper proposes a cell-based 
+method to extract geometric features of pipe cross-sections using 
+DBSCAN. The detailed steps are outlined below. 
+Fig. 3. Workflow of axis alignment.  
+Fig. 4. Workflow of slice region subdivision.  
+M. Li et al.                                                                                                                                                                                                                                       
+Tunnelling and Underground Space Technology incorporating Trenchless Technology Research 142 (2023) 105430
+5
+2.2.1. Extracting and calibrating slice center based on LMedS 
+The geometric center of a slice typically deviates from the center of 
+the coordinate system due to the scanners ’ arbitrary position during 
+measurement. This discrepancy in radius (i.e., the distance from a cell to 
+the coordinate center) can lead to significant differences in the number 
+of points within each cell, consequently increasing the deviation of 
+feature estimation. Therefore, the LMedS method is proposed to extract 
+and calibrate the slice center ( Fig. 6 ). To minimize computation time, 
+voxel-based down-sampling of the data ( S
+ds , i
+=
+{
+s
+ds , i j
+=
+(
+x
+ds , i j
+, y
+ds , i j
+)
+∈ R
+2
+, j = [ 1 , N
+rds
+]
+}
+) in the i -th slice ( S
+i
+=
+{
+s
+i j 
+=
+(
+x
+i j
+, y
+i j
+)
+∈ R
+2
+, j = [ 1 , N
+r
+]
+}
+) is initially performed. To find the slice 
+center, an elliptic function with five parameters is defined by Eq. (1) : 
+Q ( x , y ) = Ax
+2
++ Bxy + C y
+2
++ Dx + Ey + F = 0 ,
+with 4 A ⋅ C   B
+2
+> 0
+(1) 
+By randomly selecting 5 points from the downsampled points S
+ds , i
+, 
+Eq. (1) is iteratively computed N
+m 
+times to produce N
+m 
+ellipse models. 
+The estimates that yield the smallest median value of squared residuals 
+value, computed for the N
+m 
+ellipse models, are given in Eqs (2) and (3) . 
+r
+2
+LMedS , i
+= min
+k
+med
+j
+r
+2
+i j k
+,
+i = [ 1 , N
+slice
+] ; j = [ 1 , N
+rds
+] and k = [ 1 , N
+m
+]
+(3) 
+where r
+i j k 
+denotes the residual between the k- th ellipse model and 
+the j -th point ( x
+ds , i j
+, y
+ds , i j
+) of the point set S
+ds , i 
+in the i -th slice; a
+i k 
+rep -
+resents the semi-major axis of the k- th ellipse model in the i -th slice; 
+( x
+f 1 , i k
+, y
+f 1 , i k
+) and ( x
+f 2 , i k
+, y
+f 2 , i k
+) are the two focal points of the k- th el -
+lipse in the i -th slice; and r
+LMedS , i 
+denotes the least value for the median of 
+squared residuals r
+i j k 
+in the i -th slice. 
+Subsequently, according to the review by Meer et al. (1991) , in the 
+presence of Gaussian noise, Eq. (4) and (5) are adopted to adaptively and 
+robustly classify the inliers and outliers of the point set S
+ds , i
+. As shown in 
+Fig. 6 , once the inliers and outliers are determined, the optimal ellipse 
+and its central coordinate ( x
+c , i
+, y
+c , i
+) are computed using the least square 
+method (Eq. (6) ). Finally, the data points in the i -th slice are translated to 
+S
+cal , i
+=
+{
+s
+cal , i j
+=
+(
+x
+i j
+  x
+c , i
+, y
+i j
+  y
+c , i
+)
+∈ R
+2
+, j = [ 1 , N
+r
+]
+}
+. 
+̂σ
+i
+= 1 . 4826
+(
+1 +
+5
+N
+rds
+  5
+)
+med
+j
+̅̅̅̅̅̅̅̅̅̅̅̅̅̅ ̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅ ̅
+(
+⃒
+⃒
+r
+i j
+⃒
+⃒
+ 
+̅̅̅̅̅̅̅̅̅̅̅̅ ̅
+r
+2
+LMedS , i
+√ )
+2
+√
+(4)  
+Fig. 5. Classification and distribution of laser scanning point cloud for a pipeline.  
+r
+i j k
+= 2 a
+i k
+ 
+(
+̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅ ̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅ ̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅ ̅
+ 
+x
+ds , i j
+  x
+f 1 , i k
+)
+2
++
+ 
+y
+ds , i j
+  y
+f 1 , i k
+)
+2
+√
++
+̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅ ̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅ ̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅ ̅
+ 
+x
+ds . i j
+  x
+f 2 , i k
+)
+2
++
+ 
+y
+ds , i j
+  y
+f 2 , i k
+)
+2
+√
+)
+(2)   
+M. Li et al.                                                                                                                                                                                                                                       
+Tunnelling and Underground Space Technology incorporating Trenchless Technology Research 142 (2023) 105430
+6
+w
+i j
+=
+{
+1 , if
+⃒
+⃒
+r
+i j
+⃒
+⃒
+≤ 2 . 5 ̂σ
+0 , if
+⃒
+⃒
+r
+i j
+⃒
+⃒
+〉
+2 . 5 ̂σ
+(5)  
+ 
+x
+c , i
+, y
+c , i
+)
+→ min
+∑
+N
+rds
+j = 1
+w
+i j
+r
+2
+i j
+, if
+∑
+N
+rds
+j = 1
+w
+i j
+N
+rds
+> P
+thres
+(6) 
+where w
+i j 
+represents the weight, and if the j -th point of the i -th slice 
+is an inlier ( w
+i j
+= 1), it will belong to the optimal ellipse model; 
+otherwise, the outliers ( w
+i j
+= 0) are not considered further. P
+thres 
+de -
+notes the probability threshold of inliers. If the inlier probability is 
+below the threshold P
+thres
+, the LMedS procedure needs to be re-executed 
+until the threshold is satisfied. Note that the proportion of inliers in 
+dataset should not be less than P
+thres
+, otherwise the algorithm may not 
+converge. 
+2.2.2. Clustering and fitting based on DBSCAN and parameter estimation 
+As previously mentioned, to accurately extract the irregular 
+deformation of the pipeline and remove the outliers and noise 
+from the point cloud, the slice must be subdivided into cells. 
+Initially, the calibrated 2D points of the i -th slice ( S
+cal , i
+=
+{
+s
+cal , i j
+=
+(
+x
+i j
+  x
+c , i
+, y
+i j
+  y
+c , i
+)
+∈ R
+2
+, j = [ 1 , N
+r
+]
+}
+) are converted to 
+polar coordinate ( θ , ρ ) using Eq. (7) , as this represents more suitable 
+than Cartesian coordinate ( x , y ) for dividing cells on a curved surface 
+( Ebrahimi and Jalali, 2022 ). 
+⎧
+⎪
+⎪
+⎪
+⎨
+⎪
+⎪
+⎪
+⎩
+θ
+i j
+= arctan
+(
+y
+i j
+  y
+c , i
+x
+i j
+  x
+c , i
+)
+⋅180
+/
+π
+ρ
+i j
+=
+̅̅̅̅̅̅̅̅̅̅̅̅̅̅ ̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅ ̅̅̅̅̅̅̅̅̅̅̅ ̅
+ 
+x
+i j
+  x
+c , i
+)
+2
++
+ 
+y
+i j
+  y
+c , i
+)
+2
+√
+, j = [ 1 , N
+r
+] (7) 
+where θ
+i j 
+denotes the angle value of the j -th point in the i -th slice; ρ
+i j 
+represents the distance (radius) from the j -th point of the i -th slice to the 
+coordinate origin (or geometric center). 
+Next, cells are divided based on the angle values and their ranges, 
+which depend on the measurement standard deviation of the scanner 
+and the design value of the pipe diameter, as expressed in Eq. (8) . This 
+actually provides a minimum range criterion for cell division, as it is 
+meaningless to have a length less than the measurement accuracy of the 
+scanner. 
+C
+i k
+=
+{
+c
+i j
+=
+ 
+θ
+i j
+, ρ
+i j
+)
+∈ S
+cal , i
+, j = [ 1 , N
+r
+]
+}
+,
+i = [ 1 , N
+slice
+] and k = [ 1 , 360 / Δ θ ]
+where ( k   1 ) Δ θ ≤ θ
+i j
+< k Δ θ , Δ θ ≥ 360 e /
+ 
+d π
+)
+(8) 
+where C
+i k 
+represents the k- th cell of the i -th slice; Δ θ denotes the cell 
+division interval, which defines the resolution of surface geometry fea -
+tures; e is the measurement standard deviation of the scanner; and d 
+refers to the design diameter of the pipeline. 
+Given that the outliers are generally sparsely distributed spatially, 
+whereas most noise is Gaussian distributed along the pipe profile 
+( Fig. 5 ), the DBSCAN algorithm is employed to remove outliers and 
+partial noise, while a Gaussian fit is utilized to eliminate the remaining 
+primary noise. DBSCAN is an unsupervised machine learning clustering 
+algorithm that defines, by the parameters ( ∊ , MinPts ) , that the neigh -
+borhood of each point of a cluster must contain at least the minimum 
+number of points, also referred to as clustering by density. Here, ∊ de -
+fines the neighborhood distance threshold (radius) around a data point, 
+and MinPts describes the minimum number of neighbors (data points) 
+within ∊ radius. The parameters ( ∊ , MinPts ) significantly impact clus -
+tering results. As shown in Fig. 7 , a common approach involves using the 
+sorted k-distance plot to compute the optimal ∊ (i.e., the threshold be -
+tween noise and other clusters) ( Liu et al., 2022; Sander et al., 1998 ), 
+and the MinPts should be higher than the number of data point 
+Fig. 6. Extracting and calibrating slice center based on LMedS.  
+M. Li et al.                                                                                                                                                                                                                                       
+Tunnelling and Underground Space Technology incorporating Trenchless Technology Research 142 (2023) 105430
+7
+dimensions. Notably, this step aims to segment the main point clouds 
+(pipe profile) instead of accurately clustering each outlier. Therefore, 
+DBSCAN can accomplish coarse extraction of the pipe profile. 
+After the coarse extraction of the main cluster ( C
+main , i k
+=
+{
+c
+main , i l
+=
+( θ
+i l
+, ρ
+i l
+) , l = [ 1 , N
+c main
+]
+}
+⊆ C
+i k
+, i = [ 1 , N
+slice
+] and k = [ 1 , 360 / Δ θ ] , 
+where C
+main , i k 
+is the main cluster of the k- th cell of the i -th slice and its 
+number of points is N
+c main
+, as shown in Fig. 6 ), the remaining noise, 
+which is assumed to follow a Gaussian distribution due to scanner 
+measurement standard deviation, is finely filtered by fitting 
+N ( mean { ρ
+i l
+} , std { ρ
+i l
+} ) to obtain a geometric feature f
+i k
+= (( k   1 /
+2 ) Δ θ , mean { ρ
+i l
+} ) of the k- th cell ( Fig. 8 ). Finally, all geometric features 
+F
+i
+=
+{
+f
+i k
+, k = [ 1 , 360 / Δ θ ]
+}
+, i = [ 1 , N
+slice
+] of the i -th slice can be 
+computed based on DBSCAN clustering and Gaussian distribution 
+fitting, as demonstrated in Fig. 8 . 
+The workflow for extracting the geometric features of the i -th slice is 
+presented in Algorithm 1. The proposed method provides a fast solution 
+for the accurate measurement and computation of irregular pipeline 
+deformation. Meanwhile, it is worth noting that compared with the KDE 
+method, which needs consideration of the contribution of each point in 
+the cell to the density distribution, the proposed method first roughly 
+screens out the main cluster (i.e., the pipe profile point cloud containing 
+noise) using DBSCAN, and then extracts features finely using a Gaussian 
+fit that saves a significant amount of computational time.  
+Algorithm 1: Extracting geometric features of i -th slice 
+Input: data points S
+cal , i
+=
+{
+s
+cal , i j
+=
+(
+x
+i j
+  x
+c , i
+, y
+i j
+  y
+c , i
+)
+∈ R
+2
+, j = [ 1 , N
+r
+]
+}
+of the i -th 
+slice 
+Output: F
+i
+= { f
+i k
+, k = [ 1 , 360 / Δ θ ]}
+Begin 
+1. ( x
+i j
+  x
+c , i
+, y
+i j
+  y
+c , i
+) → ( θ
+i j
+, ρ
+i j
+)
+2. k = 1 and Δ θ ≥ 360 e / ( d π ) ; 
+3. while k ≤ 360 / Δ θ : 
+Dividing cell c
+i j
+=
+ 
+θ
+i j
+, ρ
+i j
+)
+∈ S
+cal , i 
+according to angle, where 
+( k   1 ) Δ θ ≤ θ
+i j
+< k Δ θ ; 
+∊ is the “ valley ” of the sorted k-distance plot, then DBSCAN(eps = ∊ , minPts = 4); 
+C
+main , i k
+=
+{
+c
+main , i l
+= ( θ
+i l
+, ρ
+i l
+) , l = [ 1 , N
+c main
+]
+}
+; 
+μ = mean { ρ
+i l
+} and σ = std { ρ
+i l
+} ; 
+f
+i k
+= (( k   0 . 5 ) Δ θ , μ ) ; 
+k ++ ; 
+4. return F
+i
+= { f
+i k
+, k = [ 1 , 360 / Δ θ ]}
+2.3. Geometric digital twin modeling 
+Geometric digital twin, as a component of the digital twin models, 
+should accurately map the actual deformation of the pipeline ( Li et al., 
+2022a ). However, most existing 3D pipeline modeling methods ( Kan -
+nala et al., 2008; Kawashima et al., 2014; Patil et al., 2017 ) depend on 
+Fig. 7. Coarse extraction of pipe profile. (a) the sorted k-distance plot of the cell; (b) the results of point cloud clustering using DBSCAN.  
+Fig. 8. Extraction of geometric features: (a) a geometric f
+i k 
+of the k- th cell; (b) all geometric features F
+i 
+of the i -th slice.  
+M. Li et al.                                                                                                                                                                                                                                       
+Tunnelling and Underground Space Technology incorporating Trenchless Technology Research 142 (2023) 105430
+8
+design drawings or elliptical section fitting, which hardly capture 
+pipeline deformation or defects effectively. Additionally, the tens of 
+millions of scanned point clouds make surface reconstruction both 
+challenging and time-consuming. Recently, some voxel-based surface 
+reconstruction methods ( Pang et al., 2022; Su et al., 2016 ) have been 
+proposed, but the reconstructed polygonal mesh models may lead to 
+inaccurate measurements of deformation and defects due to insufficient 
+noise filtering. This section proposes a density-based region growing 
+algorithm to improve the computational efficiency of geometric digital 
+twin modeling, based on the accurately extracted geometry features in 
+Section 2.2 . Subsequently, an automated workflow is presented for 
+geometric digital twin-informed quantitative condition assessment of 
+pipelines. 
+2.3.1. Density-based region growing (DRG) 
+According to Section 2.2 , the proposed Algorithm 1 can accurately 
+and robustly extract the geometric features that represent pipeline 
+deformation. However, the surface of neighboring regions is continuous 
+and homogeneous. To further reduce computation time and increase 
+efficiency ( Poux et al., 2022 ), a DRG method is proposed to merge two 
+highly similar adjacent regions. All slices S
+i
+=
+{
+s
+i j
+=
+(
+x
+i j
+, y
+i j
+)
+∈ R
+2
+,
+j = [ 1 , N
+r
+]
+}
+, i = [ 1 , N
+slice
+] initially perform the slice center calibration 
+step in Section 2.2.1 . Subsequently, the point cloud of the i -th slices is 
+projected onto the x -axis and y -axis, and the point density distribution 
+along the x -axis D
+x , i 
+and along the y -axis D
+y , i 
+are computed by Eqs. (9) 
+and (10) , respectively. 
+D
+x , i
+=
+{
+d
+x , i n
+, wherex
+min
++ ( n   1 ) Δ x ≤ x ≤ x
+min
++ n Δ x , n = [ 1 , ( x
+max
+  x
+min
+) / Δ x ]
+}
+, i
+= [ 1 , N
+slice
+]
+(9)  
+D
+y , i
+=
+{
+d
+y , i n
+, wherey
+min
++ ( n   1 ) Δ y ≤ y ≤ y
+min
++ n Δ y , n = [ 1 , ( y
+max
+  y
+min
+) / Δ y ]
+}
+, i
+= [ 1 , N
+slice
+]
+(10) 
+( Δ x ≥ e and Δ y ≥ e ). 
+where d
+x , i n 
+or d
+y , i n 
+is the discrete probability density of the points in 
+the interval [ x
+min
++ ( n   1 ) Δ x , x
+min
++ n Δ x ] or [ y
+min
++ ( n   1 ) Δ y , y
+min
++
+n Δ y ]; x
+min 
+or y
+min 
+and x
+max 
+or y
+max 
+are predefined minimum and 
+maximum bounds of x or y -axis, respectively; Δ x and Δ y are the size of 
+the grouped intervals along the x and y -axis, which should be larger than 
+the scanner measurement standard deviation e . 
+To measure the similarity between the probability distribution of the 
+i -th slice and the j -th slice, the Bhattacharyya coefficient ( Bhattacharyya, 
+1943 ) is adopted, as shown in Eqs. (11) and (12) : 
+ψ
+ 
+D
+x , i
+, D
+x , j
+)
+=
+∑
+( x max   x
+min ) / Δ x
+n = 1
+̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅ ̅̅ ̅
+d
+x , i n
+⋅ d
+x , j n
+√
+(11)  
+ψ
+ 
+D
+y , i
+, D
+y , j
+)
+=
+∑
+( y max   y
+min ) / Δ y
+n = 1
+̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅ ̅
+d
+y , i n
+⋅ d
+y , j n
+√
+(12) 
+where ψ
+ 
+D
+x , i
+, D
+x , j
+)
+and ψ
+ 
+D
+y , i
+, D
+y , j
+)
+denote the similarities between 
+the i -th slice and j -th slice along the x - and y -axis, respectively. 
+Assuming that the adjacent region merging starts from slice S
+i 
+and 
+checking whether the adjacent region S
+j 
+can be merged. If the density 
+distribution of S
+i 
+and S
+j 
+exhibit high similarity along the x - and y -axis 
+( Fig. 9 a), they are considered to share the same geometric features, i.e., 
+F
+i
+= F
+j
+. If overall deformation or local defect are present in S
+i 
+and S
+j
+, 
+there will be differences in the density distribution ( Fig. 9 b); hence, 
+F
+i
+∕= F
+j
+, and their geometric features are computed independently. In 
+this implementation, sliced regions S
+i 
+and S
+j 
+are merged if their simi -
+larities are larger than a predefined similarity threshold ( ψ
+thres
+= 0 . 995) 
+according to Eqs. (11) and (12) . This value was selected empirically in 
+this study, comparing also Fig. 9 a and b. Notably, this value can be 
+adjusted based on requirements of modeling accuracy and data quality. 
+Fig. 9. Density-based region growing (DRG) method using similarity.  
+M. Li et al.                                                                                                                                                                                                                                       
+Tunnelling and Underground Space Technology incorporating Trenchless Technology Research 142 (2023) 105430
+9
+2.3.2. Geometric digital twin of pipelines 
+The workflow for extracting geometric features of the digital twin is 
+shown in Algorithm 2 and Fig. 10 a. In contrast to existing pipeline point 
+cloud processing approaches, the proposed algorithm remains infor -
+mation on deformations and defects through the distributed features. 
+The 3D pipe surface is finely and accurately described by features 
+carefully filtered for outliers and noise based on point cloud density, 
+achieving an accurate mapping of deformations and defects. In the use of 
+the modeling approach in reference ( Li et al., 2023 ), the mesh of the 
+geometric digital twin can be modelled ( Fig. 10 b) through the vertices 
+and triangles represented by Eqs. (13) and (14) . 
+Vertex
+[
+i ⋅
+(
+360
+Δ θ
+)
++ j
+]
+=
+ 
+f
+i j
+[ ρ ] ⋅cos
+ 
+f
+i j
+[ θ ]
+)
++ x
+c , i
+, f
+i j
+[ ρ ] ⋅sin
+ 
+f
+i j
+[ θ ]
+)
++ y
+c , i
+, z
+c , i
+)
+( i = [ 1 , N
+slice
+] and j = [ 1 , 360 / Δ θ ] )
+(13)  
+Traingles ( v
+1
+, v
+2
+, v
+3
+) =
+⎧
+⎪
+⎪
+⎪
+⎪
+⎪
+⎪
+⎪
+⎪
+⎪
+⎪
+⎪
+⎪
+⎪
+⎪
+⎪
+⎪
+⎪
+⎪
+⎪
+⎪
+⎪
+⎪
+⎪
+⎪
+⎪
+⎪
+⎪
+⎪
+⎪
+⎪
+⎪
+⎪
+⎪
+⎪
+⎪
+⎪
+⎪
+⎪
+⎪
+⎪
+⎪
+⎪
+⎨
+⎪
+⎪
+⎪
+⎪
+⎪
+⎪
+⎪
+⎪
+⎪
+⎪
+⎪
+⎪
+⎪
+⎪
+⎪
+⎪
+⎪
+⎪
+⎪
+⎪
+⎪
+⎪
+⎪
+⎪
+⎪
+⎪
+⎪
+⎪
+⎪
+⎪
+⎪
+⎪
+⎪
+⎪
+⎪
+⎪
+⎪
+⎪
+⎪
+⎪
+⎪
+⎪
+⎩
+(
+i ⋅
+360
+Δ θ
++ j , i ⋅
+360
+Δ θ
++ j + 1 , i ⋅
+360
+Δ θ
++ j +
+360
+Δ θ
+)
+,
+where i = [ 1 , N
+slice
+  1 ] , j =
+[
+1 ,
+360
+Δ θ
+  1
+]
+;
+(
+i ⋅
+360
+Δ θ
++ j + 1 , i ⋅
+360
+Δ θ
++ j +
+360
+Δ θ
++ 1 , i ⋅
+360
+Δ θ
++ j +
+360
+Δ θ
+)
+,
+where i = [ 1 , N
+slice
+  1 ] , j =
+[
+1 ,
+360
+Δ θ
+  1
+]
+;
+(
+i ⋅
+360
+Δ θ
++ j , i ⋅
+360
+Δ θ
++ j  
+360
+Δ θ
++ 1 , i ⋅
+360
+Δ θ
++ j +
+360
+Δ θ
+  1
+)
+,
+where i = [ 1 , N
+slice
+  1 ] , j =
+360
+Δ θ
+;
+(
+i ⋅
+360
+Δ θ
++ j  
+360
+Δ θ
++ 1 , i ⋅
+360
+Δ θ
++ j + 1 , i ⋅
+360
+Δ θ
++ j +
+360
+Δ θ
+  1
+)
+,
+where i = [ 1 , N
+slice
+  1 ] , j =
+360
+Δ θ
+(14) 
+where Vertex [•] represents the spatial coordinates ( x , y , z ) of the mesh 
+vertices; f
+i j
+[ ρ ] and f
+i j
+[ θ ] denote the radius and angle of the j -th feature of 
+the i -th slice, respectively; Traingles ( v
+1
+, v
+2
+, v
+3
+) signifies the triangles of the 
+mesh modeling, and v
+1
+, v
+2
+, v
+3 
+are the serial numbers of the three vertices 
+used to create the triangles. As a result, the geometric digital twin is 
+constructed using geometric features extracted from point cloud data. 
+Upon conducting periodic or planned inspections, the geometric digital 
+twin is dynamically updated to facilitate condition assessment during 
+the lifecycle service.  
+Algorithm 2: Extracting features for geometric digital twin of a pipeline 
+Input: All slices S
+cal , i
+= { s
+cal , i j
+= ( x
+i j
+  x
+c , i
+, y
+i j
+  y
+c , i
+) ∈ R
+2
+, j = [ 1 , N
+r
+]} , i = [ 1 , N
+slice
+]
+Output: Features of the geometric digital twin 
+Begin 
+1. Compute F
+1 
+according to Algorithm 1; 
+2. D
+x , base
+= D
+x , 1
+, D
+y , base
+= D
+y , 1
+, F
+base
+= F
+1
+; 
+3. i = 2, set x
+min
+, x
+max
+, y
+min 
+and y
+max
+, and ψ
+thres
+= 0 . 995; 
+4. while i ≤ N
+slice
+: 
+Compute D
+x , i 
+and D
+y , i
+; 
+Compute ψ
+ 
+D
+x , i
+, D
+x , base
+)
+and ψ
+ 
+D
+y , i
+, D
+y , base
+)
+; 
+if ψ
+ 
+D
+x , i
+, D
+x , base
+)〈
+ψ
+thres 
+or ψ
+ 
+D
+y , i
+, D
+y , base
+)〈
+ψ
+thres
+: 
+Compute F
+i 
+according to Algorithm 1, D
+x , base
+= D
+x , i
+, D
+y , base
+= D
+y , i
+, and F
+base
+=
+F
+i
+; 
+else: F
+i
+= F
+base
+; 
+i ++ ; 
+5. return 
+{(
+x
+c , 1
+, y
+c , 1
+, z
+c , 1
+)
+, F
+1
+}
+,
+{(
+x
+c , 2
+, y
+c , 2
+, z
+c , 2
+)
+, F
+2
+}
+, ⋯ ,
+{(
+x
+c , N
+slice
+, y
+c , N
+slice
+, z
+c , N
+slice
+)
+,
+F
+N
+slice
+}
+2.3.3. Geometric digital twin-informed condition assessment 
+Cross-sectional deformation and blockage are crucial indictors in 
+structural deterioration and functional degradation of the pipeline, 
+respectively. The current Chinese code ( CJJ 181 – 2012, 2012 ), and 
+American standard (ASTM F-1216 – 22, 2022), and several studies ( Bai 
+and Bai, 2005; Hawari et al., 2018; Xu et al., 1998 ) have adopted the 
+ovality indicator to measure pipeline deformation, but the ellipse fitting 
+is not consistent with the actual situation (as shown in Fig. 1 ) and is also 
+not accurate enough based on 2D images. Leveraging geometric digital 
+twin, this paper presents a method for quantitative assessment of pipe -
+line deformation and blockage, including ovality indicator ( OI ) of cross- 
+section and effective flow volume reduction rate ( VI ), as demonstrated 
+in Eqs. (15) and (16) : 
+OI =
+D
+max , i
+  D
+min , i
+D
+base , i
+⋅100% (15)  
+VI =
+V
+base
+  V
+curr
+V
+base
+⋅100% (16) 
+where D
+base , i 
+denotes the design inside diameter of the pipeline; D
+max , i 
+is the maximum diameter from the i -th slice of the current model, while 
+D
+min , i 
+is that of the smallest; V
+base 
+is the effective flow volume of the 
+design inside diameter, while V
+curr 
+is that of the current model. The mesh 
+volume of the current model can be calculated using the VTK package 
+(version: 9.2.6) in Python. 
+Leveraging the geometric digital twin, diameter D
+i k 
+within a slice 
+(
+{(
+x
+c , i
+, y
+c , i
+, z
+c , i
+)
+, F
+i
+}
+; F
+i
+= { f
+i k
+, k = [ 1 , 360 / Δ θ ]} ) can be calculated by 
+summing the radius of the feature f
+i k 
+with angle ( k   1 / 2 ) Δ θ and the 
+radius of feature with angle ( k   1 / 2 ) Δ θ + 180. To enable quantitative 
+identification and accurate classification of ovality and blockage in 
+pipelines, this paper presents Eq. (17) based on OI , VI and the gradients 
+Fig. 10. 3D geometric digital twin using DRG.  
+M. Li et al.                                                                                                                                                                                                                                       
+Tunnelling and Underground Space Technology incorporating Trenchless Technology Research 142 (2023) 105430
+10
+of diameter variations within a slice S
+i
+. 
+⎧
+⎪
+⎪
+⎪
+⎪
+⎨
+⎪
+⎪
+⎪
+⎪
+⎩
+S
+i
+→ Ovality Defect if
+⃒
+⃒
+⃒
+⃒
+D
+i k + 1
+  D
+i k
+Δ θ ⋅ D
+i k
+⋅100%
+⃒
+⃒
+⃒
+⃒
+≤ G
+thres
+and OI > OI
+thres
+S
+i
+→ Blockage Defect if
+⃒
+⃒
+⃒
+⃒
+D
+i k + 1
+  D
+i k
+Δ θ ⋅ D
+i k
+⋅100%
+⃒
+⃒
+⃒
+⃒
+〉
+G
+thres
+and VI > VI
+thres
+(17) 
+where OI
+thres 
+and VI
+thres 
+are the thresholds for overall deformation and 
+blockage respectively, which can be set to 2 % and 15 % correspondingly 
+based on the standard ( DNS-OS-F101, 2012; Munro et al., 2009; Ray -
+hana et al., 2021 ) and specification ( CJJ 181 – 2012, 2012 ). Once the 
+threshold is reached, maintenance actions should be taken. D
+i k + 1 
+and 
+D
+i k 
+are the ( k + 1)-th and k -th diameter of the i -th slice, respectively. 
+G
+thres 
+is the threshold of the diameter variation per unit angle and can be 
+set equal to OI
+thres
+; it will increase significantly when there is blockage, 
+whereas it changes slowly when there is only overall deformation. 
+3. Experimental verification 
+This section aims to validate the feasibility, accuracy and computa -
+tional efficiency of the proposed methodology in pipeline deformation 
+measurement and geometric digital twin modeling. The accuracy and 
+computational efficiency of the deformation or profile measurement is 
+fundamental to the geometric digital twin of the pipeline. The defor -
+mation experiment and accuracy estimation method are first designed, 
+followed by a comparison with three widely-used point cloud processing 
+algorithms to demonstrate the superiority of our method. Finally, the 
+results of geometric digital twin-informed quantitative condition 
+assessment are analyzed. 
+3.1. Implementation details 
+Laboratory experiments were conducted for a total of thirteen cases, 
+as shown in Table 1 . The first twelve groups were deformation tests, 
+which were carried out by spring compression to simulate the process of 
+vertical loads on underground pipelines ( Fig. 11 c), followed by blockage 
+test, which used irregular pieces of paper to simulate the appearance of 
+gravel obstacles at the bottom of sewage pipes. The experiment was 
+designed to verify the accuracy of deformation measurement rather than 
+the mechanical properties of a pipeline. A plexiglass pipe segment with 
+better deformation capability and ease of operation was employed in the 
+experiments. To enhance the reflective ability of the plexiglass pipe 
+surface and to better simulate the negative effects of rough concrete pipe 
+surface, a layer of rough and opaque wallpaper was pasted on the inner 
+surface of the pipe. The accuracy of the proposed method can be 
+analyzed by comparing the targets of the total station measurement with 
+the marks in the point clouds, as total station measurements are more 
+precise than the raw point clouds. FARO Focus-3D and Leica total station 
+were utilized, with technical parameters listed in Table 2 . As shown in 
+Fig. 11 a and b, twelve total station target points were uniformly ar -
+ranged on the inner surface of the pipe, with corresponding positions 
+marked on the pipe surface for angles (e.g., θ
+0
+c , ij 
+and θ
+1
+c , ij
+) and radii (e.g., 
+L
+0
+c , i
+, L
+1
+c , i
+, L
+0
+c , j 
+and L
+1
+c , j
+) in the point clouds. However, the accuracy should 
+not be estimated by directly comparing the distances L
+0
+TS , ij 
+and L
+0
+PC , ij
+, 
+because the distances between the target points and those between the 
+marker points may not be equal. In this study, the indicators, as shown in 
+Fig. 11 c, were defined by Eqs. (18), (19) and (20) to assess the accuracy 
+of point cloud data processing. 
+L
+0
+TS , ij
+=
+̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅ ̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅ ̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅ ̅̅̅̅̅̅ ̅
+(
+L
+0
+o , i
+)
+2
++
+(
+L
+0
+o , j
+)
+2
+  2
+(
+L
+0
+o , i
+)(
+L
+0
+o , j
+)
+cos
+(
+θ
+0
+o , ij
+)
+√
+L
+1
+TS , ij
+=
+̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅ ̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅ ̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅ ̅̅̅̅̅̅ ̅
+(
+L
+1
+o , i
+)
+2
++
+(
+L
+1
+o , j
+)
+2
+  2
+(
+L
+1
+o , i
+)(
+L
+1
+o , j
+)
+cos
+(
+θ
+1
+o , ij
+)
+√
+Δ L
+TS , ij
+=
+⃒
+⃒
+⃒ L
+1
+TS , ij
+  L
+0
+TS , ij
+⃒
+⃒
+⃒
+(18)  
+L
+0
+PC , ij
+=
+̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅ ̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅ ̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅ ̅̅̅̅̅̅̅̅̅ ̅
+(
+L
+0
+c , i
+)
+2
++
+(
+L
+0
+c , j
+)
+2
+  2
+(
+L
+0
+c , i
+)(
+L
+0
+c , j
+)
+cos
+(
+θ
+0
+c , ij
+)
+√
+L
+1
+PC , ij
+=
+̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅ ̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅ ̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅ ̅̅̅̅̅̅̅̅̅ ̅
+(
+L
+1
+c , i
+)
+2
++
+(
+L
+1
+c , j
+)
+2
+  2
+(
+L
+1
+c , i
+)(
+L
+1
+c , j
+)
+cos
+(
+θ
+1
+c , ij
+)
+√
+Δ L
+PC , ij
+=
+⃒
+⃒
+⃒ L
+1
+PC , ij
+  L
+0
+PC , i j
+⃒
+⃒
+⃒
+(19)  
+error
+ij
+=
+⃒
+⃒
+Δ L
+PC , ij
+  Δ L
+TS , ij
+⃒
+⃒
+(20) 
+where error
+ij 
+denotes the error between the i -th marker and j -th 
+marker in processing result of point cloud data; Δ L
+PC , ij 
+and Δ L
+TS , ij 
+are the 
+deformation values obtained from the point cloud and total station, 
+respectively; L
+0
+PC , ij
+, L
+1
+PC , ij 
+and L
+0
+TS , ij
+, L
+1
+TS , ij 
+are the distances between the i -th 
+and j -th markers of the point cloud and total station before and after 
+deformation; O represents the position of the total station, while C refers 
+to the center of the point cloud slice; i 0 ( j 0) and i 1 ( j 1) denote the po -
+sition of the i -th ( j -th) marker point before and after deformation. 
+For algorithm parameter selection, the proposed methodology is 
+robust, with critical input parameters only including Δ t , Δ θ , Δ x and Δ y . 
+Δ t , the division step of the slice, takes into account the data distribution 
+quality of the slice and the longitudinal resolution of the geometric 
+digital twin. With pipeline defects (e.g., spalling and blockages) within a 
+centimeter range not commonly considered, Δ t = 10 mm is selected to 
+ensure sufficient data in a slice for statistical distribution. Δ θ , the divi -
+sion step of the cell, is determined based on circumferential resolution 
+and cell data distribution quality. Δ θ = 360 ⋅ 3 / ( 786 ⋅ π ) ≈ 0 . 5
+◦
+is chosen. 
+To accurately determine the similarity between slices for successful 
+defect capture during region growing, both Δ x and Δ y are set equal to 
+the scanner measurement standard deviation of 2 mm. All input pa -
+rameters used in the proposed algorithm are listed in Table 3 . 
+Table 1 
+Summary of deformations and sampling resolutions.  
+Case 
+number 
+deformation * Sampling 
+resolution
+** 
+Scanning 
+time 
+Points
+*** 
+Case 1 Baseline (0 
+m) 
+1.534 mm 01 h:56 m:00 
+s 
+7,623,529 
+1 – 1 0.019 m 1.534 mm 01 h:56 m:00 
+s 
+7,356,234 
+1 – 2 0.038 m 1.534 mm 01 h:56 m:00 
+s 
+7,205,377 
+1 – 3 0.057 m 1.534 mm 01 h:56 m:00 
+s 
+7,666,036 
+Case 2 Baseline (0 
+m) 
+6.136 mm 00 h:30 m:34 
+s 
+1,021,139 
+2 – 1 0.019 m 6.136 mm 00 h:30 m:34 
+s 
+801,972 
+2 – 2 0.038 m 6.136 mm 00 h:30 m:34 
+s 
+828,698 
+2 – 3 0.057 m 6.136 mm 00 h:30 m:34 
+s 
+7,22,145 
+Case 3 Baseline (0 
+m) 
+12.272 mm 00 h:09 m:06 
+s 
+210,203 
+3 – 1 0.017 m 12.272 mm 00 h:09 m:06 
+s 
+220,350 
+3 – 2 0.036 m 12.272 mm 00 h:09 m:06 
+s 
+232,660 
+3 – 3 0.055 m 12.272 mm 00 h:09 m:06 
+s 
+175,210 
+Blockage 0 m 12.272 mm 00 h:09 m:06 
+s 
+129,053  
+*
+Note: the value of deformation is the maximum displacement change in six 
+groups of target points (1 – 7, 2 – 8, 3 – 9, 4 – 10, 5 – 11 and 6 – 12). 
+**
+Note: the value of sampling resolution is the distance between two data 
+points of the collected point cloud at 10 m. 
+***
+Note: Points is the count of points contained in each slice of the point cloud. 
+M. Li et al.                                                                                                                                                                                                                                       
+Tunnelling and Underground Space Technology incorporating Trenchless Technology Research 142 (2023) 105430
+11
+3.2. Results 
+According to the input parameters in Table 3 and the experiments 
+designed in Section 3.1 , three widely-used point cloud processing 
+methods, i.e., kernel density estimation (KDE), statistical-based outlier 
+removal (SOR) and voxel grid-based sampling (Voxel), are compared 
+Fig. 11. Principle scheme of the deformation experiment.  
+Table 2 
+Technical parameters of the total station and laser scanner used in this study.  
+Equipment Type Data format Angular 
+accuracy 
+Distance accuracy 
+FARO 
+Focus
+s 
+70 
+Laser 
+scanner 
+Point cloud 
+with a large 
+amount of 
+noise and 
+outliers 
+19 ′ ’ Standard deviation of 
+the 3D measurement at 
+10 m is 2 mm, and at 25 
+m is 3.5 mm 
+Leica 
+FlexLine 
+TS07 
+Total 
+station 
+An exact 
+number 
+0.5 ′ ’ 1 mm + 1.5 ppm, where 
+1.5 ppm is the 
+uncertainty that needs 
+to be increased by 1.5 
+mm per kilometer  
+Table 3 
+Input parameters used by the proposed algorithm.  
+Name Notation Values Factors of selection 
+Division step of 
+the slice 
+Δ t 10 
+mm 
+Resolution of the geometric digital twin 
+along the longitudinal direction; 
+Quality of the slice ’ s data distribution. 
+Division step of 
+the cell 
+Δ θ 0.5
+◦
+Resolution of the geometric digital twin 
+along the circumferential direction; 
+Quality of the cell ’ s data distribution. 
+Grouped interval 
+size 
+Δ x ( Δ y ) 2 mm Scanner measurement standard 
+deviation. 
+Predefined slice 
+size threshold 
+n
+r min 
+0.9 N
+r 
+Number of points in a full slice ( N
+r
+) of 
+the actual point cloud. 
+Probability 
+threshold of 
+inliers 
+P
+thres 
+70 % The ratio of inliers should be at least 50 
+%; Small value may increase iterations 
+and computational time; large value 
+may cause datasets containing more 
+outliers to not converge in the 
+algorithm; 70 % was set as an empirical 
+reference value. 
+Predefined 
+similarity 
+threshold 
+ψ
+thres 
+0.995 Obtained from actual similarity 
+comparisons and experience.  
+M. Li et al.                                                                                                                                                                                                                                       
+Tunnelling and Underground Space Technology incorporating Trenchless Technology Research 142 (2023) 105430
+12
+with our proposed methodology in terms of accuracy and computation 
+time to demonstrate its superiority. Additionally, this section explores 
+the feasibility of the geometric digital twin-informed quantitative 
+assessment of pipeline deformation and blockage defect. 
+3.2.1. Accuracy evaluation 
+To analyze the performance of the four methods across various 
+pipeline deformations and point cloud sampling resolutions, the laser 
+scanner was employed to measure three different deformations at each 
+of the three different sampling resolutions (as shown in Table 1 ). Next, 
+errors were calculated using the four methods for six groups of target 
+points (including 1 – 7, 2 – 8, 3 – 9, 4 – 10, 5 – 11 and 6 – 12), resulting in 3 ×
+3 × 4 × 6 = 216 error samples. Fig. 12 depicts the calculation results of 
+all errors for the four methods. It is evident that the KDE method and the 
+proposed method outperformed others, with their mean errors both 
+below the 1 mm accuracy threshold, thus satisfying the requirements of 
+deformation measurement. The SOR method demonstrated an accuracy 
+of 1.1 mm, which followed the KDE and proposed methods. The Voxel 
+method exhibited the worst performance, with an error of up to 1.52 cm. 
+However, the maximum error of the SOR method approached 6 mm, 
+significantly higher than that of the KDE and the proposed method, 
+indicating that the proposed method is more robust than the SOR 
+method. Moreover, the calculation results of geometric features shown 
+in Fig. 13 further demonstrate the superior performance of KDE and the 
+proposed method. Notably, regarding sampling resolution, the error of 
+the proposed method, the KDE method and the SOR method all expe -
+rienced a minor increase with lower sampling resolution. Conversely, 
+the Voxel method displayed a different trend due to its poor outlier 
+removal performance, as a point cloud with higher sampling resolution 
+might contain more outliers. Although the KDE method demonstrated a 
+more stable performance in comparison with the proposed method, this 
+obtains at the expense of computational time. The computational effi -
+ciency of the four methods will be discussed below, which can reflect the 
+potential of the proposed method to be applied to large-scale under -
+ground pipe networks. 
+3.2.2. Computational time 
+The aforementioned results demonstrate that both the KDE method 
+and our proposed method can extract the geometric features of the 
+pipeline surface point cloud with high accuracy, exhibiting a mean error 
+of less than 1 mm. However, laser scanning point cloud data typically 
+consists of millions of points, resulting in processing efficiency or 
+computational time being one of the most crucial issues in assessing the 
+practical application value of methods. Fig. 14 depicts the computa -
+tional time required for extracting the geometric features of a slice for 
+each of the four methods with different data volumes. From the 
+perspective of processing efficiency, the performance of our method is 
+comparable to that of the SOR method, with processing times of 171.73 s 
+and 105.31 s at the 1.02 million points level, respectively. However, the 
+KDE method becomes increasingly time-consuming as the volume of 
+Fig. 12. The results of the errors using the KDE, SOR, Voxel, and the proposed method.  
+M. Li et al.                                                                                                                                                                                                                                       
+Tunnelling and Underground Space Technology incorporating Trenchless Technology Research 142 (2023) 105430
+13
+data increase, reaching a processing speed of 2491.56 s at 1.02 million 
+points. The KDE method relies on computing the contribution (weights) 
+of each data point to the probability density ( Picos et al., 2020; Silver -
+man, 1986 ), and the performance of KDE methods is heavily influenced 
+by the bandwidth selection ( Armesto et al., 2010 ), leading to a challenge 
+for processing large datasets. Although some techniques (such as k-fold 
+cross validation) were developed to automatically determine bandwidth 
+( Shimazaki and Shinomoto, 2010 ), they require a significant amount of 
+run time, especially within dense laser scanning point clouds ( Laefer and 
+Truong-Hong, 2017 ). Compared with KDE method, the proposed 
+method has the advantage of much smaller computing load. The method 
+first removed outliers by clustering the data via DBSCAN which has a 
+much smaller computational time than KDE. Then, in contrast to KDE 
+that needs to compute the contribution of all point data (including 
+outliers and noise), our method used a simple Gaussian fit to compute 
+the contribution of the remaining measurement noise to the probability 
+density, which is a process that has a small computational complexity 
+and almost negligible computational time. The results in Fig. 14 showed 
+that the proposed method achieves the same high accuracy as the KDE 
+method but has a running time of only 7 % of that of the KDE method, 
+indicating that the proposed method significantly outperforms the KDE 
+method. 
+Finally, three representative examples using the proposed method 
+are listed in Table 4 to illustrate the total computational time required 
+for the complete processing workflow, from the raw point cloud to the 
+geometric digital twin. It is evident that the majority of the computa -
+tional time is spent on the DBSCAN-based clustering and fitting step. The 
+running time of Point Cloud 2 is greater than that of Point Cloud 1 due to 
+the higher volume of data that needs to be analyzed at each cell in a slice 
+with high sampling resolution. Moreover, Point Cloud 3, which contains 
+pipe defects, results in more slices that do not meet the similarity 
+threshold, leading to a longer executing time compared to Point Cloud 1 
+(233.65 s for Point Cloud 3 vs. 52.71 s for Point Cloud 1). Consequently, 
+it can be argued that the processing time primarily depends on not only 
+the sampling resolution but also the presence of pipeline defects. In 
+summary, the proposed method can process large datasets accurately 
+and efficiently, with total processing times of approximately 52.71 s for 
+2.98 million points in Point Cloud 1, 115.53 s for 11.94 million points in 
+Point Cloud 2, and 233.65 s for 3.74 million points in Point Cloud 3. 
+Note that the performance reported herein was based on the imple -
+mentation of all methods in Python 3.10 and was performed on a normal 
+personal computer with the following system configuration: a 12th Gen 
+Intel(R) Core(TM) i7-12700F CPU @ 2.1 GHz with 64 GB RAM, a 
+GeForce RTX 3080 GPU. 
+It should be pointed out that the experimental tests were only 
+Fig. 13. Example of Case 1 – 1: (a) raw data; (b) performance comparison in computing feature points between the proposed method, KDE, SOR and Voxel.  
+Fig. 14. A comparison of the computational time between the four methods.  
+M. Li et al.                                                                                                                                                                                                                                       
+Tunnelling and Underground Space Technology incorporating Trenchless Technology Research 142 (2023) 105430
+14
+conducted on a limited length of pipe segment model, and the KDE 
+method required a long computational time. The low computational 
+efficiency of the KDE method would significantly hinder its application 
+in practical large-scale pipe networks. In summary, the proposed 
+method not only robustly achieves high accuracy but also maintains 
+high computational efficiency, making it promising for pipeline engi -
+neering applications. 
+3.2.3. Deformation and blockage assessment 
+Underground pipelines, due to their buried nature and the harsh 
+environment, presents challenges for inspectors to efficiently locate and 
+quantify deformation and blockages. This makes it difficult to assess the 
+level of aging and defects of pipelines in a timely manner. Geometric 
+digital twin can facilitate comprehensive perception of pipe aging evo -
+lution and defect development in harsh subsurface environments 
+through periodic monitoring of underground assets using laser scanner 
+Table 4 
+Total computational time of the complete processing workflow.  
+Point 
+Cloud 
+Sampling 
+resolution * 
+Description of the raw 
+point cloud 
+Step Total 
+time 
+1. 3D point-To-2D region 2. Geometric feature extraction 3. Geometric digital twin 
+modeling 
+1 12. 272 mm Points: 
+2,987,356 
+Pipeline axis 
+alignment 
+time: 
+0.26 
+s 
+LMedS-based slice center 
+extraction 
+time: 
+4.55 s 
+Geometric features 
+using DRG 
+time: 
+17.31 
+s 
+52.71 s 
+Defects: 
+No 
+Slice region 
+subdivision 
+time: 
+0.83 
+s 
+DBSCAN-based 
+clustering and fitting 
+slice
+**
+: 
+3 
+Mesh modeling time: 
+3.15 s 
+time: 
+26.61 s 
+2 6.136 
+mm 
+Points: 
+11,941,406 
+Pipeline axis 
+alignment 
+time: 
+0.35 
+s 
+LMedS-based slice center 
+extraction 
+time: 
+6.72 s 
+Geometric features 
+using DRG 
+time: 
+35.69 
+s 
+115.53 s 
+Defects: 
+No 
+Slice region 
+subdivision 
+time: 
+2.97 
+s 
+DBSCAN-based 
+clustering and fitting 
+slice
+**
+: 
+2 
+Mesh modeling time: 
+3.16 s 
+time: 
+66.64 s 
+3 12.272 mm Points: 
+3,742,547 
+Pipeline axis 
+alignment 
+time: 
+0.38 
+s 
+LMedS-based slice center 
+extraction 
+time: 
+5.4 s 
+Geometric features 
+using DRG 
+time: 
+18.04 
+s 
+233.65 s 
+Defects: 
+Yes 
+Slice region 
+subdivision 
+time: 
+0.83 
+s 
+DBSCAN-based 
+clustering and fitting 
+slice
+**
+: 
+14 
+Mesh modeling time: 
+3.44 s 
+time: 
+205.56 
+s  
+*
+Note: the value of sampling resolution is the distance between two data points of the collected point cloud at 10 m. 
+**
+Note: the number of slices whose similarity does not reach the threshold. 
+Fig. 15. Workflow for quantitative assessment of pipe ovality defects.  
+M. Li et al.                                                                                                                                                                                                                                       
+Tunnelling and Underground Space Technology incorporating Trenchless Technology Research 142 (2023) 105430
+15
+robotic systems ( FARO, 2023 ). This section investigates the feasibility of 
+geometric digital twin-informed quantitative assessment for deforma -
+tion and blockages in pipelines. 
+Cases 2, 2 – 1, 2 – 2, and 2 – 3 in Section 3.2.1 were utilized as examples 
+of various pipe deformations ( Fig. 15 a) to illustrate that the proposed 
+method can accurately quantify pipe deformation through the geometric 
+digital twin, providing a basis for structural safety assessment. Fig. 15 b 
+depicts the workflow of the proposed method to assess ovality defects in 
+each cross-section of the pipe along the longitudinal direction. First, the 
+trend of diameter variations of each cross-section should be analyzed 
+according to Eq. (17) to avoid the interference from blockages. For 
+instance, the cross-section at 25 mm was investigated to analyze its 
+overall deformation. According to the deformation experiment scheme 
+presented in Fig. 11 c, the pipe was compressed in the angular directions 
+of 0
+◦
+-180
+◦
+to simulate the vertical loads on the buried pipelines. The 
+maximum and minimum diameters observed in the four tests were as 
+follows: the maximum diameter of the baseline model on a 25 mm cross- 
+section was 788.5 mm at an angle of 67.25
+◦
+, and the minimum diameter 
+was 784.7 mm at 153.25
+◦
+; Case 2 – 1 had a maximum diameter of 804.8 
+mm at 93.25
+◦
+and a minimum diameter of 768.2 mm at 8.25
+◦
+; the 
+maximum diameter of Case 2 – 2 was 820.9 mm at 89.25
+◦
+and the min -
+imum diameter was 749.6 mm at 5.25
+◦
+; for Case 2 – 3, the maximum 
+diameter was 834.5 mm at 88.25
+◦
+and the minimum diameter was 
+730.4 mm at 3.25
+◦
+. 
+The variations of diameter in the experiments were observed to 
+exhibit a smooth wave-shaped curve before the structural failure of the 
+pipeline, indicating that the pipe diameter did not change at a significant 
+rate within a unit angle. The gradients of diameter variations demon -
+strated in the right diagram of Fig. 15 b were found to be far below the 2 
+% threshold, further supporting the accuracy of the proposed method. 
+The pipe OI results for the four tests are shown in Fig. 16 . Taking the 25 
+mm cross-section as an example, the OI of the baseline model was 0.49 
+%, but the OI of Case 2 – 1, Case 2 – 2 and Case 2 – 3 all exceeded the 2 % 
+threshold specified by the standard ( DNS-OS-F101, 2012; Munro et al., 
+2009; Rayhana et al., 2021 ), with values of 4.65 %, 9.07 % and 13.24 %, 
+respectively. Actually, in Case 2 – 1, the maximum variation of diameter 
+was only 18.8 mm, emphasizing the importance of achieving millimeter- 
+level accuracy for deformation measurement, which cannot be achieved 
+by existing CCTV methods that rely on 2D image-based ellipse fitting. 
+While ovality can map the structural degradation of both water and 
+sewer pipelines, the effective flow volume is another critical indicator 
+reflecting the decline in pipe network function, particularly in sewer and 
+rain pipelines. Blockages in sewer networks are the main cause of the 
+reduction in effective flow volume, but quantifying this reduction is a 
+challenge for municipalities and water authorities ( Okwori et al., 2021 ). 
+In this study, the feasibility of geometric digital twin-informed quanti -
+tative assessment for blockages using VI was demonstrated through a 
+model test, as shown in Fig. 17 a. Fig. 17 b depicts the workflow of the 
+proposed method for accurately locating and quantifying blockage using 
+four representative cross-section examples located at different longitu -
+dinal positions of the pipe (i.e.,   95 mm, 5 mm, 15 mm and 105 mm), 
+respectively. As can be intuitively seen from the left and middle diagram 
+of Fig. 17 b, blockages were present in the pipe between approximately 
+125
+◦
+and 170
+◦
+of the circumferential direction, causing a sudden 
+decrease in pipe diameter from 786 mm to between 700 mm and 740 
+mm. According to Eq. (17) , the gradients of diameter variation were 
+computed for each cross-section. As shown in the right diagram of 
+Fig. 17 b, all cross-sections exhibited gradients beyond the G
+thres 
+threshold, indicating that they should be included in the volume 
+computation of the defect areas for VI . After calculation, the length of 
+the blockage along the longitudinal direction of the pipe was determined 
+as 290 mm, covering cross-sections from   145 mm to 145 mm. 
+The VI result of the pipeline was shown in Fig. 18 . According to the 
+design diameter in Fig. 11 , the effective flow volume V
+base 
+was calculated 
+as 140.71 L. The scenario with blockages in the pipe resulted in a 
+decrease of volume to 129.30 L, representing an effective flow volume 
+reduction rate of approximately 8.11 % calculated according to Eq. (16) . 
+According to Chinese code ( CJJ 181 – 2012, 2012 ), the threshold value of 
+VI is 15 %, therefore the pipe function was evaluated as still having 
+adequate flow capacity. It is worth noting that the proposed method 
+enables whole-process automated computation based on Python 3.10 
+programming. It achieves quantitative assessment with high accuracy 
+and computational efficiency for deformation and blockage, which 
+reprehensively map the structural and functional performance of pipe -
+lines, respectively, but have been challenging for existing methods. By 
+leveraging the proposed method, pipeline operators and asset managers 
+can more effectively monitor the condition of underground pipelines, 
+and subsequently develop proactive maintenance plans. Ultimately, this 
+approach can potentially reduce costs associated with pipeline failures 
+and unplanned repairs, while also minimizing the environmental impact 
+caused by pipeline leaks or road collapses. It should be noted that due to 
+the limitation of laser scanning for underwater measurements, block -
+ages below the flow line cannot be measured. In the future, 3D sonar 
+data could be fused to overcome this limitation. 
+4. Conclusions 
+The maintenance of underground water and sewer pipelines can be 
+challenging due to their narrow internal environments and the presence 
+of corrosive and toxic gases ( Khan et al., 2021; Wang et al., 2021 ). To 
+overcome these difficulties, this study proposes a novel method for fast 
+and accurately processing point cloud data acquired by laser scanning 
+technology to build a geometric digital twin of underground pipelines. 
+The proposed method filters out noise and outliers based on the char -
+acteristics of laser scanning point cloud density distribution and finely 
+describes the 3D surface of a pipeline to achieve an accurately mapping 
+of pipeline conditions. A geometric digital twin-informed approach was 
+presented to quantitatively assess the deformation and blockage in 
+pipelines. 
+The accuracy and computational efficiency of the proposed method 
+were demonstrated through experimental tests. Results indicated that 
+the proposed method exhibited a mean error of less than 1 mm in 
+deformation measurement, which satisfies the accuracy requirements 
+for large diameter pipelines when compared to the measurements ob -
+tained the high-accuracy total station. Furthermore, the proposed 
+method demonstrated superior accuracy and robustness when compared 
+with the popular point cloud processing algorithms, namely SOR and 
+Voxel methods. The computational time of the proposed method was 
+Fig. 16. The calculation results of OI .  
+M. Li et al.                                                                                                                                                                                                                                       
+Tunnelling and Underground Space Technology incorporating Trenchless Technology Research 142 (2023) 105430
+16
+only 7 % of that of the KDE method, indicating high computational ef -
+ficiency of our method. Moreover, model tests demonstrated the pro -
+posed method enables quantitative assessment of pipeline deformation 
+and blockage using geometric digital twin, which reveals promising 
+applications in better informed O & M during life-cycle service. However, 
+the method has some limitations at current stage, such as being unable 
+to inspect the underwater part of the pipeline and not being suitable for 
+bends with curved axes. 
+Further research directions include exploring the geometric digital 
+twin and artificial intelligence (AI) for quantitative assessment of other 
+defects, such as concrete spalling, corrosion, and open-joints. Addi -
+tionally, an in-pipe inspection robot should be designed to carry the 
+laser scanner for practical applications in engineering. Recently, ro -
+botics (RedZone Robotics, 2023 ) and portable 3D measurement systems 
+( Ma et al., 2023b ) are rapidly developing. In the future, we could further 
+leverage these recent studies to validate the effectiveness of our method 
+in dense point clouds acquired by these advanced devices and systems. 
+Overall, the proposed method provides a promising tool in the assess -
+ment of underground pipe networks and can potentially reduce costs 
+associated with pipeline failures and unplanned repairs, while also 
+minimizing environmental impacts. 
+CRediT authorship contribution statement 
+Minghao Li: Methodology, Formal analysis, Software, Writing – 
+original draft. Xin Feng: Supervision, Funding acquisition, Conceptu -
+alization, Investigation, Writing – review & editing. Qunfang Hu: 
+Investigation, Data curation. 
+Declaration of Competing Interest 
+The authors declare that they have no known competing financial 
+interests or personal relationships that could have appeared to influence 
+the work reported in this paper. 
+Data availability 
+Data will be made available on request. 
+Acknowledgments 
+This work was supported by the National Key R & D Program of 
+China (Grant No. 2022YFC3801000) and the National Natural Science 
+Fig. 17. Workflow for quantitative assessment of pipe blockages.  
+Fig. 18. Calculation results of VI .  
+M. Li et al.                                                                                                                                                                                                                                       
+Tunnelling and Underground Space Technology incorporating Trenchless Technology Research 142 (2023) 105430
+17
+Foundation of China (Grant No. 52079024). 
+References 
+Armesto, J., Roca-Pardi ˜nas, J., Lorenzo, H., Arias, P., 2010. Modelling masonry arches 
+shape using terrestrial laser scanning data and nonparametric methods. Eng. Struct. 
+32 (2), 607 – 615. https://doi.org/10.1016/j.engstruct.2009.11.007 . 
+ASCE, 2021 Infrastructure Report Card: Wastewater. Available at, https:// 
+infrastructurereportcard.org/cat-item/wastewater-infrastructure. (Accessed date: 
+Mar. 30, 2023). 
+ASTM F-1216-22, 2022. Standard practice for rehabilitation of existing pipelines and 
+conduits by the inversion and curing of a resin-impregnated tube. United States. 
+Accessed August 18, 2022 from https://compass.astm.org/document. 
+Bai, Y., Bai, Q., 2005. Subsea pipelines and risers. Elsevier, ISBN: 978-0-08-044566-3, 
+pp.67-68. https://doi.org/10.1016/B978-0-08-044566-3.X5000-3. 
+Bhattacharyya, A., 1943. On a measure of divergence between two statistical populations 
+defined by their probability distribution. Bull. Calcutta Math. Soc. 35, 99 – 110 . 
+Chen, J., Zhang, Z.C., Zhang, K., Wang, S.B., Han, Y., 2020. UAV-borne LiDAR crop point 
+cloud enhancement using grasshopper optimization and point cloud up-sampling 
+network. Remote Sens. (Basel) 12 (19), 3208. https://doi.org/10.3390/rs12193208 . 
+CJJ 181-2012, 2012. Technical specification for inspection and evaluation of urban 
+sewer. China, ISBN: 1511223512. Accessed October 23, 2012 from http://www. 
+mohurd.gov.cn/info/public. 
+Clemens, F., Stani ´c, N., Van der Schoot, W., Langeveld, J., Lepot, M., 2015. Uncertainties 
+associated with laser profiling of concrete sewer pipes for the quantification of the 
+interior geometry. Struct. Infrastruct. Eng. 11 (9), 1218 – 1239. https://doi.org/ 
+10.1080/15732479.2014.945466 . 
+Czerniawski, T., Nahangi, M., Haas, C., Walbridge, S., 2016. Pipe spool recognition in 
+cluttered point clouds using a curvature-based shape descriptor. Autom. Constr. 71, 
+346 – 358. https://doi.org/10.1016/j.autcon.2016.08.011 . 
+DNS-OS-F101, 2012. Submarine Pipeline Systems. Veritas, D. N., pp.211. https:// 
+documents.pub/document/dnv-os-f101-55844e081da50.html. 
+Duran, O., Althoefer, K., Seneviratne, L.D., 2003. Pipe inspection using a laser-based 
+transducer and automated analysis techniques. IEEE/ASME Trans. Mechatron. 8 (3), 
+401 – 409. https://doi.org/10.1109/TMECH.2003.816809 . 
+Duran, O., Althoefer, K., Seneviratne, L.D., 2007. Automated pipe defect detection and 
+categorization using camera/laser-based profiler and artificial neural network. IEEE 
+Trans. Autom. Sci. Eng. 4 (1), 118 – 126. https://doi.org/10.1109/ 
+TASE.2006.873225 . 
+Ebrahimi, M., Jalali, H.H., 2022. Automated condition assessment of sanitary sewer 
+pipes using LiDAR inspection data. Pipelines 2022: Construction and Rehabilitation, 
+Jul. 31, 2022-Aug. 3, 2022, Indianapolis, Indiana, pp.136-144. https://doi.org/ 
+10.1061/9780784484289.016. 
+´
+Ekes, C., 2018. New developments in multi-sensor condition assessment technologies for 
+large diameter pipe infrastructure. Pipelines 2018: Utility Engineering, Surveying, 
+and Multidisciplinary Topics, Jul. 15, 2018-Jul. 18, 2018, Toronto, Ontario, Canada, 
+pp.142-148. https://ascelibrary.org/doi/abs/10.1061/9780784481660.016. 
+Elmasry, M., Zayed, T., Hawari, A., 2019. Multi-objective optimization model for 
+inspection scheduling of sewer pipelines. J. Constr. Eng. Manag. 145 (2), 4018129. 
+https://doi.org/10.1061/(ASCE)CO.1943-7862.0001599 . 
+Fang, X., Li, Q., Zhu, J.S., Chen, Z.P., Zhang, D.J., Wu, K.C., Ding, K., Li, Q.Q., 2022. 
+Sewer defect instance segmentation, localization, and 3D reconstruction for sewer 
+floating capsule robots. Autom. Constr. 142, 104494 https://doi.org/10.1016/j. 
+autcon.2022.104494 . 
+FARO, Faro Trek 3D Laser Scanning Integration: Enables autonomous scanning with the 
+Boston Dynamics Spot ® Mobile Robot. Available at, https://www.faro.com/en/ 
+Products/Hardware/Trek-3D-Laser-Scanning-Integration. (Accessed date: Mar. 29, 
+2023). 
+García, D.B., Moore, I.D., 2016. Evaluation and Application of the Flexural Rigidity of a 
+Reinforced Concrete Pipe. J. Pipeline Syst. Eng. Pract. 7 (1), 4015015. https://doi. 
+org/10.1061/(ASCE)PS.1949-1204.0000216 . 
+Haktanir, T., Ari, K., Altun, F., Karahan, O., 2007. A comparative experimental 
+investigation of concrete, reinforced-concrete and steel-fibre concrete pipes under 
+three-edge-bearing test. Constr. Build. Mater. 21 (8), 1702 – 1708. https://doi.org/ 
+10.1016/j.conbuildmat.2006.05.031 . 
+Hassan, S.I., Dang, L.M., Mehmood, I., Im, S., Choi, C., Kang, J., Park, Y., Moon, H., 2019. 
+Underground sewer pipe condition assessment based on convolutional neural 
+networks. Autom. Constr. 106, 102849 https://doi.org/10.1016/j. 
+autcon.2019.102849 . 
+Haurum, J.B., Moeslund, T.B., 2020. A survey on image-based automation of CCTV and 
+SSET sewer inspections. Autom. Constr. 111, 103061 https://doi.org/10.1016/j. 
+autcon.2019.103061 . 
+Hawari, A., Alamin, M., Alkadour, F., Elmasry, M., Zayed, T., 2018. Automated defect 
+detection tool for closed circuit television (cctv) inspected sewer pipelines. Autom. 
+Constr. 89, 99 – 109. https://doi.org/10.1016/j.autcon.2018.01.004 . 
+He, Z.L., Jiang, S., Zhang, J., Wu, G., 2022. Automatic damage detection using anchor- 
+free method and unmanned surface vessel. Autom. Constr. 133, 104017 https://doi. 
+org/10.1016/j.autcon.2021.104017 . 
+Hou, T.C., Liu, J.W., Liu, Y.W., 2017. Algorithmic clustering of LiDAR point cloud data 
+for textural damage identifications of structural elements. Measurement 108, 77 – 90. 
+https://doi.org/10.1016/j.measurement.2017.05.032 . 
+Huang, B., Kang, F., Li, J.J., Wang, F., 2023. Displacement prediction model for high arch 
+dams using long short-term memory-based encoder-decoder with dual-stage 
+attention considering measured dam temperature. Eng. Struct. 280, 115686 https:// 
+doi.org/10.1016/j.engstruct.2023.115686 . 
+Kannala, J., Brandt, S.S., Heikkil ¨a, J., 2008. Measuring and modelling sewer pipes from 
+video. Mach. Vis. Appl. 19 (2), 73 – 83. https://doi.org/10.1007/s00138-007-0083-1 . 
+Kawashima, K., Kanai, S., Date, H., 2014. As-built modeling of piping system from 
+terrestrial laser-scanned point clouds using normal-based region growing. J. Comput. 
+Des. Eng. 1 (1), 13 – 26. https://doi.org/10.7315/JCDE.2014.002 . 
+Khan, F., Yarveisy, R., Abbassi, R., 2021. Risk-based pipeline integrity management: A 
+road map for the resilient pipelines. J. Pipeline Sci. Eng. 1, 74 – 87. https://doi.org/ 
+10.1016/j.jpse.2021.02.001 . 
+Kirkham, R., Kearney, P.D., Rogers, K.J., Mashford, J., 2000. PIRAT — A system for 
+quantitative sewer pipe assessment. The International Journal of Robotics Research 
+19 (11), 1033 – 1053. https://doi.org/10.1177/02783640022067959 . 
+Kirstein, S., Müller, K., Walecki-Mingers, M., Deserno, T.M., 2012. Robust adaptive flow 
+line detection in sewer pipes. Autom. Constr. 21, 24 – 31. https://doi.org/10.1016/j. 
+autcon.2011.05.009 . 
+Laefer, D.F., Truong-Hong, L., 2017. Toward automatic generation of 3D steel structures 
+for building information modelling. Autom. Constr. 74, 66 – 77. https://doi.org/ 
+10.1016/j.autcon.2016.11.011 . 
+Lepot, M., Stani ´c, N., Clemens, F.H.L.R., 2017. A technology for sewer pipe inspection 
+(Part 2): Experimental assessment of a new laser profiler for sewer defect detection 
+and quantification. Autom. Constr. 73, 1 – 11. https://doi.org/10.1016/j. 
+autcon.2016.10.010 . 
+Li, D.S., Cong, A.R., Guo, S., 2019. Sewer damage detection from imbalanced CCTV 
+inspection data using deep convolutional neural networks with hierarchical 
+classification. Autom. Constr. 101, 199 – 208. https://doi.org/10.1016/j. 
+autcon.2019.01.017 . 
+Li, M.H., Feng, X., 2022. Multisensor data fusion-based structural health monitoring for 
+buried metallic pipelines under complicated stress states. Journal of Civil. Struct. 
+Health Monit. 1 – 13. https://doi.org/10.1007/s13349-022-00609-w . 
+Li, M.H., Feng, X., Han, Y., 2022a. Brillouin fiber optic sensors and mobile augmented 
+reality-based digital twins for quantitative safety assessment of underground 
+pipelines. Autom. Constr. 144, 104617 https://doi.org/10.1016/j. 
+autcon.2022.104617 . 
+Li, M.H., Feng, X., Han, Y., Liu, X.D., 2023. Mobile augmented reality-based visualization 
+framework for lifecycle O & M support of urban underground pipe networks. Tunn. 
+Undergr. Space Technol. 136, 105069 https://doi.org/10.1016/j.tust.2023.105069 . 
+Li, M.Z., Li, M.C., Ren, Q.B., Liu, H., Liu, C.Z., 2022b. Intelligent identification and 
+classification of sewer pipeline network defects based on improved RegNetY 
+network. J. Civ. Struct. Heal. Monit. https://doi.org/10.1007/s13349-022-00660-7 . 
+Liu, Z., Kleiner, Y., 2013. State of the art review of inspection technologies for condition 
+assessment of water pipes. Measurement 46 (1), 1 – 15. https://doi.org/10.1016/j. 
+measurement.2012.05.032 . 
+Liu, W.L., Shao, Y.X., Chen, K., Li, C., Luo, H.B., 2022. Whale optimization algorithm- 
+based point cloud data processing method for sewer pipeline inspection. Autom. 
+Constr. 141, 104423 https://doi.org/10.1016/j.autcon.2022.104423 . 
+Loganathan, K., Najafi, M., Kaushal, V., Covilakam, M., 2022. Development of a decision 
+support tool for inspection and monitoring of large-diameter steel and prestressed 
+concrete cylinder water pipes. J. Pipeline Syst. Eng. Pract. 13 (1), 4021067. https:// 
+doi.org/10.1061/(ASCE)PS.1949-1204.0000603 . 
+Ma, D., Liu, J.H., Fang, H.Y., Wang, N.N., Zhang, C., Li, Z.N., Dong, J.X., 2021. A Multi- 
+defect detection system for sewer pipelines based on StyleGAN-SDM and fusion CNN. 
+Constr. Build. Mater. 312, 125385 https://doi.org/10.1016/j. 
+conbuildmat.2021.125385 . 
+Ma, D., Fang, H.Y., Wang, N.N., Lu, H.F., Matthews, J., Zhang, C., 2023a. Transformer- 
+optimized generation, detection, and tracking network for images with drainage 
+pipeline defects. Comput. Aided Civ. Inf. Eng. https://doi.org/10.1111/mice.12970 . 
+Ma, D., Fang, H.Y., Wang, N.N., Pang, G.Z., Li, B., Dong, J.X., Jiang, X., 2023b. A low- 
+cost 3D reconstruction and measurement system based on structure-from-motion 
+(SFM) and multi-view stereo (MVS) for sewer pipelines. Tunn. Undergr. Space 
+Technol. 141, 105345 https://doi.org/10.1016/j.tust.2023.105345 . 
+McKim, R.A., Sinha, S.K., 1999. Condition assessment of underground sewer pipes using 
+a modified digital image processing paradigm. Tunn. Undergr. Space Technol. 14, 
+29 – 37 https://doi.org/https://doi.org/10.1016/S0886-7798(00)00021-3 .  
+Meer, P., Mintz, D., Rosenfeld, A., Kim, D.Y., 1991. Robust regression methods for 
+computer vision: a review. Int. J. Comput. Vis. 6 (1), 59 – 70. https://doi.org/ 
+10.1007/BF00127126 . 
+Moon, D., Chung, S., Kwon, S., Seo, J., Shin, J., 2019. Comparison and utilization of point 
+cloud generated from photogrammetry and laser scanning: 3D world model for smart 
+heavy equipment planning. Autom. Constr. 98, 322 – 331. https://doi.org/10.1016/j. 
+autcon.2018.07.020 . 
+Munro, S.M., Moore, I.D., Brachman, R.W.I., 2009. Laboratory Testing to Examine 
+Deformations and Moments in Fiber-Reinforced Cement Pipe. J. Geotech. 
+Geoenviron. Eng. 135 (11), 1722 – 1731. https://doi.org/10.1061/(ASCE)GT.1943- 
+5606.0000142 . 
+Okwori, E., Viklander, M., Hedstr ¨om, A., 2021. Spatial heterogeneity assessment of 
+factors affecting sewer pipe blockages and predictions. Water Res. 194, 116934 
+https://doi.org/10.1016/j.watres.2021.116934 . 
+Olsen, M.J., Kuester, F., Chang, B.J., Hutchinson, T.C., 2010. Terrestrial Laser Scanning- 
+Based Structural Damage Assessment. J. Comput. Civ. Eng. 24 (3), 264 – 272. https:// 
+doi.org/10.1061/(ASCE)CP.1943-5487.0000028 . 
+Pang, G.Z., Wang, N.N., Fang, H.Y., Liu, H., Huang, F., 2022. Study of damage 
+quantification of concrete drainage pipes based on point cloud segmentation and 
+reconstruction. Buildings 12 (2), 213. https://doi.org/10.3390/buildings12020213 . 
+Patil, A.K., Holi, P., Lee, S.K., Chai, Y.H., 2017. An adaptive approach for the 
+reconstruction and modeling of as-built 3D pipelines from point clouds. Autom. 
+Constr. 75, 65 – 78. https://doi.org/10.1016/j.autcon.2016.12.002 . 
+M. Li et al.                                                                                                                                                                                                                                       
+Tunnelling and Underground Space Technology incorporating Trenchless Technology Research 142 (2023) 105430
+18
+Picos, J., Bastos, G., Míguez, D., Alonso, L., Armesto, J., 2020. Individual tree detection 
+in a eucalyptus plantation using unmanned aerial vehicle (UAV)-LiDAR. Remote 
+Sens. (Basel) 12 (5), 885. https://doi.org/10.3390/rs12050885 . 
+Plihal, H., Kretschmer, F., Bin Ali, M.T., See, C.H., Romanova, A., Horoshenkov, K.V., 
+Ertl, T., 2016. A novel method for rapid inspection of sewer networks: combining 
+acoustic and optical means. Urban Water J. 13 (1), 3 – 14. https://doi.org/10.1080/ 
+1573062X.2015.1076857 . 
+Polvi, H.W., Dave, P., Stephen, C., Dickson, S., 2018. New transmission watermain 
+specifications — city of Toronto. Pipelines 2018: Utility Engineering, Surveying, and 
+Multidisciplinary Topics, Jul. 15, 2018-Jul. 18, 2018, Toronto, Ontario, Canada, 
+pp.100-110. https://doi.org/10.1061/9780784481646.011. 
+Poux, F., Mattes, C., Selman, Z., Kobbelt, L., 2022. Automatic region-growing system for 
+the segmentation of large point clouds. Autom. Constr. 138, 104250 https://doi.org/ 
+10.1016/j.autcon.2022.104250 . 
+Qiu, R.Q., Zhou, Q.Y., Neumann, U., 2014. Pipe-run extraction and reconstruction from 
+point clouds, in: D. Fleet, T. Pajdla, B. Schiele, T. Tuytelaars (Eds.). Computer Vision 
+– ECCV 2014. Lecture Notes in Computer Science, vol 8691, Springer, Cham, pp.17- 
+30. https://doi.org/10.1007/978-3-319-10578-9_2. 
+Rayhana, R., Jiao, Y.T., Zaji, A., Liu, Z., 2021. Automated vision systems for condition 
+assessment of sewer and water pipelines. IEEE Trans. Autom. Sci. Eng. 18 (4), 
+1861 – 1878. https://doi.org/10.1109/TASE.2020.3022402 . 
+RedZone Robotics, 2023. Designed for large diameter interceptors and tunnels, 
+Responder goes where no other inspection equipment can. Available at, https:// 
+redzone.com/our-technology/responder-large-diameter-msi/. (Accessed date: Sep. 
+11, 2023). 
+Sander, J., Ester, M., Kriegel, H., Xu, X., 1998. Density-based clustering in spatial 
+databases: the algorithm GDBSCAN and its applications. Data Min. Knowl. Disc. 2 
+(2), 169 – 194. https://doi.org/10.1023/A:1009745219419 . 
+Sever, V.F., Cawley, J., Neukam, Z., Schroeder, J., Lehmann, M., 2017. Large diameter 
+sewer assessment: when to take it to the next level. Pipelines 2017: Condition 
+Assessment, Surveying, and Geomatics, Aug. 6, 2017-Aug. 9, 2017, Phoenix, 
+Arizona, United States, pp.405-418. https://doi.org/10.1061/9780784480885.038. 
+Shimazaki, H., Shinomoto, S., 2010. Kernel bandwidth optimization in spike rate 
+estimation. J. Comput. Neurosci. 29 (1 – 2), 171 – 182. https://doi.org/10.1007/ 
+s10827-009-0180-4 . 
+Silverman, B., 1986. Density estimation for statistics and data analysis. Chapman and 
+Hall, London https://ned.ipac.caltech.edu/level5/March02/Silverman/paper.pdf .  
+Sinha, S.K., 2001. Automated condition assessment of buried sewer pipeline using 
+computer vision techniques. Pipelines 2001: Advances in Pipelines Engineering and 
+Construction, Jul. 15, 2001-Jul. 18, 2001, San Diego, California, United States, pp. 1- 
+12. https://doi.org/10.1061/40574(2001)18. 
+Stani ´c, N., Lepot, M., Catieau, M., Langeveld, J., Clemens, F.H.L.R., 2017. A technology 
+for sewer pipe inspection (part 1): Design, calibration, corrections and potential 
+application of a laser profiler. Autom. Constr. 75, 91 – 107. https://doi.org/10.1016/ 
+j.autcon.2016.12.005 . 
+Su, Y.T., Bethel, J., Hu, S.W., 2016. Octree-based segmentation for terrestrial LiDAR 
+point cloud data in industrial applications. ISPRS J. Photogramm. Remote Sens. 113, 
+59 – 74. https://doi.org/10.1016/j.isprsjprs.2016.01.001 . 
+Sun, W.X., Wang, J., Jin, F.X., Li, Y.Y., Yang, Y.K., 2022. An adaptive cross-section 
+extraction algorithm for deformation analysis. Tunn. Undergr. Space Technol. 121, 
+104332 https://doi.org/10.1016/j.tust.2021.104332 . 
+Tan, Y., Cai, R., Li, J.R., Chen, P.L., Wang, M.Z., 2021. Automatic detection of sewer 
+defects based on improved you only look once algorithm. Autom. Constr. 131, 
+103912 https://doi.org/10.1016/j.autcon.2021.103912 . 
+Tang, J.G., 2023. Report: key points for high quality drainage construction, operation 
+and maintenance. The 13th International Conference on Pipelines and Trenchless 
+Technology, Feb. 22, 2023-Feb. 25, 2023, ICPTT, Zhengzhou, China. http://www. 
+ctrd.com.cn/cn/view/248.html. 
+Truong-Hong, L., Lindenbergh, R., 2022a. Automatically extracting surfaces of 
+reinforced concrete bridges from terrestrial laser scanning point clouds. Autom. 
+Constr. 135, 104127 https://doi.org/10.1016/j.autcon.2021.104127 . 
+Truong-Hong, L., Lindenbergh, R., 2022b. Extracting structural components of concrete 
+buildings from laser scanning point clouds from construction sites. Adv. Eng. Inf. 51, 
+101490 https://doi.org/10.1016/j.aei.2021.101490 . 
+United States Environmental Protection Agency, 2023. Condition assessment of 
+underground pipes. Available at, https://www3.epa.gov/region1/sso/pdfs/ 
+condition-assessment-underground-pipes.pdf. (Accessed date: Apr. 6, 2023). 
+Wang, Y.C., Xu, L.Y., Sun, J.L., Cheng, Y.F., 2021. Mechano-electrochemical interaction 
+for pipeline corrosion: A review. J. Pipeline Sci. Eng. 1, 1 – 16. https://doi.org/ 
+10.1016/j.jpse.2021.01.002 . 
+Wang, M.Z., Yin, X.F., 2022. Construction and maintenance of urban underground 
+infrastructure with digital technologies. Autom. Constr. 141, 104464 https://doi. 
+org/10.1016/j.autcon.2022.104464 . 
+Xu, K., Luxmoore, A.R., Davies, T., 1998. Sewer pipe deformation assessment by image 
+analysis of video surveys. Pattern Recogn. 31, 169 – 180. https://doi.org/10.1016/ 
+s0031-3203(97)00037-x . 
+Yadav, M., Khan, P., Singh, A.K., Lohani, B., 2021. An automatic hybrid method for 
+ground filtering in mobile laser scanning data of various types of roadway 
+environments. Autom. Constr. 126, 103681 https://doi.org/10.1016/j. 
+autcon.2021.103681 . 
+Yan, Y., Hajjar, J.F., 2021. Automated extraction of structural elements in steel girder 
+bridges from laser point clouds. Autom. Constr. 125, 103582 https://doi.org/ 
+10.1016/j.autcon.2021.103582 . 
+Zaman, F., Wong, Y.P., Ng, B.Y., 2017. Density-based denoising of point cloud. In: H. 
+Ibrahim, S. Iqbal, S.S. Teoh, M.T. Mustaffa (Eds.). 9th International Conference on 
+Robotic, Vision, Signal Processing and Power Applications. Lecture Notes in 
+Electrical Engineering, vol 398. Springer, Singapore, pp. 287-295. https://doi.org/ 
+10.1007/978-981-10-1721-6_31. 
+Zhou, Y.X., Ji, A.K., Zhang, L.M., 2022. Sewer defect detection from 3D point clouds 
+using a transformer-based deep learning model. Autom. Constr. 136, 104163 
+https://doi.org/10.1016/j.autcon.2022.104163 . 
+M. Li et al.                                                                                                                                                                                                                                       

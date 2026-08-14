@@ -13,3 +13,12 @@ Although digital twins have been established in manufacturing for a long time, t
 | Yes | Yes | Yes | Yes | Yes | **Include** |
 
 **Note:** Highway project DT demonstrators incl. health & safety twin
+
+## Step-3 Deep-Read Coding (Prompt B)
+
+| P | Q | R | U Tier | V | W | X | Z | AA | AB | AC | AD | AE | AF |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| Yes | Yes | Yes | Tier 3 - Digital Twin (bidirectional, two-way) | 0 | 1 | 0 | Design for Safety (DfS) | None | Digital Twin platform (no machine learning) | Multi (two or more data types) | Cross-project (multiple real projects) | 3 | BIM-to-Digital-Twin architecture |
+
+**Key evidence (AG):** Construction digital twin demonstrators (health & safety + progress monitoring) using Unreal Gaming Engine + CesiumJS mapping on a highway project (Skanska/UCL): location data integrates diverse sources; no-code approach for DT development; two case studies demonstrate 4D data presentation; explicitly described as human-in-the-loop DT (two-way communication with manual decision making) — virtual model changes reflect real-world changes, and humans act back on the physical site via decisions. Predictive capabilities discussed but not implemented; no learning loop.
+(full-text source: Endnote)

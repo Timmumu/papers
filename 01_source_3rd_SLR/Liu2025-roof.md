@@ -13,3 +13,12 @@ In the field of aviation, terminal building renovation and expansion projects fr
 | Yes | Yes | Yes | Yes | Yes | **Include** |
 
 **Note:** DT safety risk prediction for terminal steel roof construction; 98% stress accuracy
+
+## Step-3 Deep-Read Coding (Prompt B)
+
+| P | Q | R | U Tier | V | W | X | Z | AA | AB | AC | AD | AE | AF |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| Yes | Yes | Yes | Tier 2 - Digital Shadow (one-way physical to virtual) | 0 | 1 | 0 | Design for Safety (DfS) | None | Other / Mixed | Multi (two or more data types) | Single case study | 4 | Predictive analytics / decision support |
+
+**Key evidence (AG):** Structural safety risk prediction for terminal building steel roof construction (Beijing U Tech): DT model + FE analysis → sensor installation (hydraulic jacks, temperature, stress); XGBoost prediction model for stress changes of key rods (98% accuracy); compared GA-BPNN, RF, XGBoost; validated on airport renovation project. One-way monitoring→prediction→risk management; no actuation and no learning loop (XGBoost is offline-trained).
+(full-text source: Endnote)

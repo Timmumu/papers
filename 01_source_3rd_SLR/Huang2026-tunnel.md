@@ -13,3 +13,12 @@ There are high-risk problems, such as peripheral rock instability and palm face 
 | Yes | Yes | Yes | Yes | Yes | **Include** |
 
 **Note:** IoT+DT whole-process tunnel construction monitoring; collapse capture
+
+## Step-3 Deep-Read Coding (Prompt B)
+
+| P | Q | R | U Tier | V | W | X | Z | AA | AB | AC | AD | AE | AF |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| Yes | Yes | Yes | Tier 2 - Digital Shadow (one-way physical to virtual) | 0 | 1 | 0 | Design for Safety (DfS) | None | Digital Twin platform (no machine learning) | Multi (two or more data types) | Single case study | 4 | Design for Safety |
+
+**Key evidence (AG):** IoT+Digital Twin intelligent monitoring system for tunnel construction (Zhejiang Songyang): multi-source sensor network (environment, equipment, surrounding rock) + BIM dynamic modeling + risk intelligent analysis using improved D-S evidence theory (multi-source risk assessment with effectiveness factor and conflict weakening strategy); 100% monitoring coverage and 100% warning accuracy; captures palm face collapse and enclosing rock deformation time-sequence. One-way monitoring→risk assessment→early warning; no actuation and no learning loop (D-S evidence theory is rule-based fusion, not learning).
+(full-text source: Endnote)

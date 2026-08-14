@@ -1,0 +1,2210 @@
+Knowledge-data driven digital twin platform: intelligent prediction and 
+control of tunnel face stability during large-diameter slurry 
+shield construction
+Xianguo Wu
+a , 1
+, Yu Lei
+a , 1
+, Feiming Su
+a
+, Tiejun Li
+a
+, Yang Liu
+b , c , *
+a
+School of Civil and Hydraulic Engineering, Huazhong University of Science and Technology, Wuhan, Hubei, 430074, China
+b
+Zhongnan Hosp of Wuhan University, Wuhan, 430071, China
+c
+Economics and Management School of Wuhan University, Wuhan, 430072, China
+ARTICLE INFO
+Keywords:
+Large-diameter slurry shield
+Tunnel face stability
+Knowledge-data driven prediction and control
+Deep learning
+Digital twin
+ABSTRACT
+Large diameter shield construction (LDSS) safety is particularly important. To ensure safe excavation in LDSS 
+projects, this paper proposed a digital twin (DT) platform integrated with knowledge-data driven method to 
+achieve prediction and control of tunnel face stability (TFS) during LDSS construction. The DT platform enables 
+acquisition of physical data and expert knowledge, facilitating bidirectional synchronization between physical 
+entities and virtual counterparts. DT platform utilizes Bayesian Optimization (BO), Graph Convolutional 
+Network (GCN), Bidirectional Long Short-Term Memory (BiLSTM) networks, and SHapley Additive exPlanations 
+(SHAP), driven by physical data, together with expert knowledge, to achieve knowledge-data driven prediction 
+and control of Tunnel Face Stability (TFS) during LDSS construction. A case study of Wuhan Metro Line 12 
+construction demonstrates the platform's effectiveness, with key findings revealing: (1) The DT platform achieves 
+accurate TFS prediction across six Geological types, showing average R
+2 
+values of 0.935 and root mean square 
+error (RMSE) of 0.239. (2) Key construction parameters are identified through the knowledge-data driven 
+method, including air chamber pressure, grouting pressure, advance rate, cutterhead rotation speed, and cut -
+terhead torque. (3) The DT platform enables control of the TFS during LDSS construction by maintaining the 
+slurry pressure (SP) within an optimal range. The DT platform developed in this study fills TFS research gaps in 
+LDSS construction and provides valuable references for similar complex projects.
+1. Introduction
+With the rapid advancement of tunneling engineering technology, 
+large-diameter slurry shield (LDSS) technology has emerged and gained 
+widespread adoption ( Chen et al., 2024 , 2025 ; Wu et al., 2023 ). it has 
+been applied in significant projects such as the Slender West Lake Tunnel 
+in Yangzhou ( Chenn kui, 2014 ) and the Sanyang Road Tunnel in Wuhan 
+( Wang, 2015 ). However, the diversity of the geological environments 
+and the uncertainty of the construction scenarios have significantly 
+increased the safety risks associated with LDSS operations ( Wu et al., 
+2024 ), particularly the precise prediction and control of tunnel face 
+stability (TFS) ( Xu et al., 2021 ). As the diameter of the shield increases, 
+the geological structures encountered by the tunnel become more 
+complex ( Li et al., 2017 ; Yu et al., 2023 ), and the frequency of 
+encountering multilayered strata and composite strata with varying 
+mechanical properties ( Chen et al., 2025 ), such as intermixed soft and 
+hard clay and sand, significantly increases ( Cong et al., 2023 ). These 
+challenges not only markedly increase the complexity of the excavation 
+environment but also greatly increase the difficulty and intricacy of 
+maintaining TFS. Therefore, the TFS is crucial for ensuring the safe 
+construction of an LDSS.
+Traditional research on TFS issues has been mostly centered around 
+theoretical analysis, numerical simulation, and experimental studies. 
+The recent progress in shield machine (SM) monitoring technology, 
+coupled with the deep integration of data-driven methods, is now 
+driving the field of shield tunnel construction towards a more advanced 
+This article is part of a special issue entitled: PIML in Engineering Applications published in Engineering Applications of Artificial Intelligence.
+* Corresponding author. Zhongnan Hosp of Wuhan University, Wuhan, 430071, China.
+E-mail address: dabailiu@whu.edu.cn (Y. Liu). 
+1
+Contributed to this work equally.
+Contents lists available at ScienceDirect
+Engineering Applications of Artificial Intelligence
+journal homepag e: www.else vier.com/loc ate/engap pai
+https://doi.org/10.1016/j.engappai.2026.114029
+Received 1 May 2025; Received in revised form 25 December 2025; Accepted 30 January 2026  
+Engineering Applications of Artiϧcial Intelligence 168 (2026) 114029 
+Available online 5 February 2026 
+0952-1976/© 2026 Elsevier Ltd. All rights are reserved, including those for text and data mining, AI training, and similar technologies. 
+and intelligent stage of development ( Hu et al., 2022 ; Li et al., 2023b ; 
+Wang and Tian, 2024 ; Yuan et al., 2025 ).The various common research 
+methods are summarized in Table 1 .
+This analysis highlights significant advancements over previous 
+studies in the field but also notes certain limitations: 
+(1) Theoretical analysis simplifies complex situations for easier un -
+derstanding and computation, but this may reduce prediction 
+accuracy by omitting some influencing factors.
+(2) Numerical simulations need fine meshing and many iterations to 
+meet high accuracy demands, which increases computational 
+costs and makes large-scale simulations time-consuming, 
+affecting their application efficiency in construction.
+(3) Experimental studies in complex environments require substan -
+tial investment in equipment and manpower, and they interrupt 
+the construction process, leading to higher costs and safety risks.
+(4) Traditional data-driven methods can build predictive models 
+using field data but lack interpretability and struggle with highly 
+complex parameter interactions and dynamic changes.
+As a branch of data-driven methods, deep learning has been exten -
+sively utilized by many scholars owing to its powerful data processing 
+and analysis capabilities, as well as its capacity to reveal and capture 
+complex nonlinear relationships within data ( Liu et al., 2021 ; Phoon and 
+Zhang, 2023 ; Zhang et al., 2020 ).。However, existing research indicates 
+that the construction parameters in SM construction exhibit spatiotem -
+poral relationships; these relationships are difficult for conventional 
+data-driven methods to capture and analyze, and their predictive per -
+formances are reduced ( Fu et al., 2023 ; Zhang et al., 2024b ). Moreover, 
+some existing studies mainly focus on the accurate prediction of TFS 
+under traditional SM conditions; however, there is limited research on 
+establishing suitable data-driven methods for precise prediction and 
+control of TFS under LDSS conditions.
+Among the various data-driven methods, LSTM is commonly used for 
+long time series data but can only predict future moments based on past 
+information ( Li et al., 2019 ). This is insufficient for LDSS construction 
+parameters, which may also depend on future moments ( Chen et al., 
+2022 ; Siami-Namini et al., 2019 ). To address this, BiLSTM, combining 
+forward and backward LSTMs, is introduced to process LDSS tunnel 
+construction data ( Graves and Schmidhuber, 2005 ). Additionally, TFS in 
+LDSS construction is influenced by both past construction parameters 
+and spatial relationships among parameters ( Fu et al., 2024 ). For 
+example, different parameters are emphasized in soft soil and hard rock 
+( Chen et al., 2022 ; Zhao et al., 2019 ). To capture these spatial re -
+lationships, GCNs are introduced, representing data as graph structures 
+and using the Laplacian matrix for convolution operations.
+During the development of data-driven method ( Wu et al., 2026 ), 
+hyperparameter optimization is a critical preliminary step aimed at 
+identifying the hyperparameter configurations that achieve optimal 
+model performance during both the training and testing phases ( Xu 
+et al., 2025 ). While traditional optimization methods, such as manual 
+operation (MO), grid search (GS), and random search (RS), provide re -
+searchers flexibility in model tuning, they suffer from inefficiency, 
+subjective bias, wasted computational resources, and inadequate opti -
+mization ( Victoria and Maragatham, 2021 ). In contrast, Bayesian opti -
+mization (BO) introduces a probabilistic acquisition function to 
+efficiently explore the parameter space which significantly increases the 
+likelihood of discovering the global optimum ( Chen et al., 2025 ). 
+Therefore, to improve the prediction and control performance of 
+data-driven methods, a hybrid BO-GCN-BiLSTM method is proposed.
+Additionally, to address the research gap in key construction pa -
+rameters for TFS during LDSS construction, this paper employs the 
+SHapley Additive exPlanations (SHAP) to identify and analyze these key 
+parameters. By utilizing this method, it is possible to accurately deter -
+mine the construction parameters that significantly impact TFS ( Xu 
+et al., 2026 ), thereby enabling precise control of TFS in LDSS 
+construction.
+Data-driven methods can improve prediction and control perfor -
+mance but may lack reliability for practical engineering due to the 
+absence of practical experience and expert knowledge ( Zhang et al., 
+2024a ). Therefore, a knowledge-data driven method integrating expert 
+knowledge is more suitable for guiding TFS during LDSS construction. 
+This approach can select input parameters and identify key influencing 
+factors based on expert knowledge and literature ( Su et al., 2025 ). 
+However, most existing research focuses on developing prediction and 
+control algorithms, with limited efforts on creating a unified platform 
+for integrating knowledge-driven and data-driven methods with phys -
+ical systems to enhance LDSS control and monitoring capabilities.
+Digital twin (DT) technology integrates construction site data with 
+virtual dynamic models to create a digital simulation platform, showing 
+superior capabilities in tunnel operation and management ( Boje et al., 
+2020 ; Yu et al., 2021 , 2023 ). Recent studies have applied the concept of 
+DT to general shield tunnel excavation, enabling efficient remote 
+interaction between physical and virtual entities by transforming 
+physical equipment into digital models ( Pan and Zhang, 2021 ; Zhang 
+et al., 2024b ). However, research on using DT platforms for data 
+collection and TFS prediction and control in LDSS construction is 
+limited. This paper proposes a DT platform that integrates data-driven 
+methods (BO-GCN-BiLSTM and SHAP) with expert knowledge to form 
+a knowledge-data driven method, enabling data acquisition and sup -
+porting TFS prediction and control in LDSS construction.
+In summary, the following issues motivate this paper: (1) how to 
+analyze the spatiotemporal relationships among the various construc -
+tion parameters affecting the TFS during LDSS construction; (2) what 
+construction parameters are the key factors affecting the TFS during 
+LDSS construction; and (3) how to implement prediction and control of 
+TFS in LDSS construction. To address these issues, a knowledge-data 
+driven method is developed for predicting and controlling TFS in LDSS 
+Table 1 
+Summary and comparison of several studies on TFS issues.
+Method Reference Advantages Assumption
+Theoretical 
+analysis
+Man et al. (
+Man et al., 
+2022 )
+Provides an in-depth 
+understanding of the 
+fundamental 
+principles and 
+concepts governing 
+tunnel face stability
+The material 
+properties and 
+boundary conditions 
+are assumed to be 
+known and constant.
+Shi et al. (
+Shi et al., 
+2025a )
+Man et al. (
+Man et al., 
+2024 )
+Numerical 
+simulation
+Li et al. ( Li 
+et al., 
+2023a )
+Able to simulate 
+intricate physical 
+phenomena and 
+engineering 
+challenges, 
+encompassing 
+multiscale and 
+nonlinear aspects.
+The meshing and 
+physical parameter 
+settings in the 
+computational model 
+are assumed to be 
+reasonable.
+Yang et al. (
+Yang et al., 
+2024 )
+Tu et al. ( Tu 
+et al., 2024 )
+Experimental 
+studies
+Lü et al. ( Lü 
+et al., 2018 )
+Provides direct 
+evidence for validating 
+the theoretical analysis 
+and numerical 
+simulation results.
+Assuming the control 
+variables in the 
+experiment can 
+effectively simulate 
+the conditions in 
+actual engineering.
+Cui et al. (
+Cui et al., 
+2025 )
+Liu et al. (
+Liu et al., 
+2024 )
+Data-driven 
+method
+Liu et al. (
+Liu et al., 
+2021 )
+Capable of processing 
+and analyzing large 
+datasets and reducing 
+research costs and 
+risks.
+Assuming there is a 
+sufficient amount of 
+high-quality data to 
+train and validate the 
+model.
+Zhao et al.(
+Zhao et al., 
+2023 )
+Wang et al. 
+( Wang 
+et al., 
+2021a )
+X. Wu et al.                                                                                                                                                                                                                                      Engineering Applications of Artiϧcial Intelligence 168 (2026) 114029 
+2 
+construction. A DT model for LDSS construction is also proposed to 
+enable TFS prediction and control. The primary innovations can be 
+summarized as follows: 
+(1) A novel BO-GCN-BiLSTM method is pioneered and developed to 
+capture the spatiotemporal relationship of the construction pa -
+rameters affecting TFS during LDSS construction. By harnessing 
+the strengths of BO, GCN, and BiLSTM, this method provides an 
+advanced framework for prediction and control of the TFS of 
+LDSS.
+(2) Utilizing the SHAP and expert knowledge, the key construction 
+parameters influencing TFS during LDSS construction can be 
+identified. Its application, by elucidating these key construction 
+parameters, provides a foundation for achieving effective control 
+of TFS during LDSS construction and enhances the interpret -
+ability of BO-GCN-BiLSTM model.
+(3) A DT platform is proposed for achieving data acquisition, pre -
+diction, and control of TFS in LDSS construction. The DT platform 
+employs a knowledge-data driven approach by integrating expert 
+knowledge with BO-GCN-BiLSTM and SHAP, providing guidance 
+for more accurate and reasonable prediction and control of TFS.
+The remainder of this paper is organized as follows. Section 2 details 
+the proposed methodology. Section 3 showcases the proposed DT plat -
+form's effectiveness through a real engineering project. Section 4 pro -
+vides an in-depth discussion of the paper. Section 5 summarizes the 
+conclusions of this paper and outlines future research directions.
+2. Methodology
+To enable prediction and control of the TFS during LDSS construc -
+tion, a DT platform has been developed. This platform includes a virtual 
+twin layer with a virtual LDSS model, a data-driven module, and a re -
+ality service layer. Specifically, the data-driven module integrates BO, 
+GCN, and BiLSTM to capture the spatiotemporal relationships of shield 
+construction parameters. Additionally, the reality service layer facili -
+tates prediction, SHAP for key construction parameters, and control of 
+TFS during LDSS construction using the knowledge-data driven method. 
+Fig. 1 illustrates the framework of the DT platform.
+2.1. Virtual twin layer
+The establishment of the virtual twin layer is a core component of the 
+DT platform. It achieves digital mapping and real-time interaction with 
+the LDSS physical entity through high-fidelity modeling of the LDSS 
+virtual model and multidimensional construction data fusion. This layer 
+includes a data acquisition module and a virtual model.
+During the LDSS tunnel construction process, the digital twin (DT) 
+platform utilizes two types of data sources: physical data and expert 
+knowledge ( Li et al., 2025 ). The former consists of real-time and his -
+torical data collected from the construction site and the shield machine, 
+including ring numbers, cutter head speed, cutter head torque, and 
+tunneling speed; the latter primarily relies on experts who, based on 
+their expert knowledge and relevant literature ( Chen et al., 2024 ), guide 
+the selection of key parameters, thereby enabling 
+knowledge-data-driven methods for TFS prediction and control during 
+LDSS construction. These two data categories jointly support moni -
+toring, prediction, and control functionalities.
+However, they can only provide a static description of the con -
+struction conditions and are unable to reflect the dynamic evolution of 
+the LDSS – tunnel interaction in real time. To address this limitation, the 
+platform establishes a virtual model based on the physical entities, fully 
+digitizing the LDSS and tunnel system, and continuously updates it with 
+real-time data. Interaction between the physical and virtual systems can 
+be enabled through signal transmission via the Internet of Things (IoT) 
+and 5th generation of cellular networks (5G) networks ( Zhang et al., 
+2024b ). Field data from the physical LDSS are uploaded via signals to 
+the project manager's online DT platform. The platform then performs 
+key parameter prediction and control based on the virtual LDSS model, 
+and the resulting instructions are transmitted back through signals to the 
+physical LDSS on-site, guiding the operator's actions ( He et al., 2024 ). 
+This bidirectional data flow establishes a closed-loop interaction be -
+tween the physical entity and its virtual counterpart, as illustrated in 
+Fig. 2 .
+2.2. Data-driven module
+2.2.1. Physical data preprocession
+With physical data collected from LDSS, the DT platform pre -
+processes this data and can integrate data-driven module to provide, 
+Fig. 1. Framework of TFS prediction based on DT platform.
+X. Wu et al.                                                                                                                                                                                                                                      Engineering Applications of Artiϧcial Intelligence 168 (2026) 114029 
+3 
+reliable prediction and control of TFS in LDSS construction. Generally, 
+data preprocessing includes deleting zero data and performing data 
+normalization. A row of LDSS construction parameter data is defined as 
+X
+i
+= { x
+1
+, x
+2
+, x
+3
+, … , x
+n
+} , where x
+1
+, x
+2
+, x
+3
+, … , x
+n 
+represent different pa -
+rameters. The processes of removing null data and zero data and per -
+forming data normalization are represented by Eqs. (1) – (3) ( Chen et al., 
+2023 ; Feng et al., 2021 ; Wang et al., 2023 ): 
+F = f ( x
+1
+) f ( x
+2
+) f ( x
+3
+) ⋯ f ( x
+n
+) (1) 
+f ( x
+i
+) =
+{
+1 , x
+i
+∕= 0
+0 , x
+i
+= 0
+i = 1 , 2 , 3 , … n (2) 
+x
+i
+=
+x
+i
+  min
+1 ≤ i ≤ n
+{ x
+i
+}
+max
+1 ≤ i ≤ n
+{ x
+i
+}   min
+1 ≤ i ≤ n
+{ x
+i
+}
+(3) 
+where f ( x
+i
+) is a judgment function concerning x
+i
+, F is the product 
+function of f ( x
+i
+) values, x
+i 
+is normalized by x
+i
+, max
+1 ≤ i ≤ n
+{ x
+i
+} and min
+1 ≤ i ≤ n
+{ x
+i
+}
+represent the maximum and minimum values of x
+i
+.
+To better capture the spatiotemporal relationships among the con -
+struction parameters, after performing the aforementioned processing, 
+the data are restructured into a matrix that describes the time steps. In 
+this matrix, the row 
+{
+x
+1 , t   n
+, x
+2 , t   n
+, … , x
+n   1 , t   n
+, x
+n , t   n
+}
+indicates the nu -
+merical value of each parameter at time step t   n , and the column 
+{
+x
+1 , t   n
+, x
+1 , t   n + 1
+, … , x
+1 , t   1
+, x
+1 , t
+}
+T 
+indicates the value of parameter x
+1 
+across all time steps. Fig. 3 shows a schematic diagram of the matrix 
+after data restructuring.
+2.2.2. LDSS construction parameter selection
+In the knowledge-data-driven method of the DT platform, the iden -
+tification of input and output parameters is crucial for achieving reliable 
+TFS prediction and control during LDSS construction. These parameters 
+are determined collaboratively by experts based on their knowledge, 
+LDSS operators, and project managers within the DT platform, with the 
+parameter selection interface shown Fig. 4 . Notably, an intrinsic rela -
+tionship exists between slurry pressure (SP) and TFS during LDSS 
+operation ( Hou et al., 2022 ). The slurry serves not only to transport 
+excavated soil but also acts as a pressure medium to balance the lateral 
+earth and water pressures on the excavation face ( Wu et al., 2024 ). 
+Additionally, it forms a protective filter cake that helps prevent face 
+instability and collapse. Therefore, SP is established as the key output 
+target in the TFS prediction model.
+LDSS construction parameters are transmitted to the virtual twin 
+layer via CSV data files from the LDSS monitoring system, containing 
+various construction parameters. In this paper, the representative con -
+struction parameters are selected based on previous research ( Cao et al., 
+2023 ; Wang et al., 2021b ; Zhonghai et al., 2019 ; Zhou et al., 2023 ) and 
+expert knowledge from virtual twin layer. Construction parameters 
+chosen as inputs for the data-driven method include the air cushion 
+chamber pressure (x
+1
+), inflow slurry density (x
+2
+), slurry flow (x
+3
+), 
+discharge slurry density (x
+4
+), discharge slurry flow (x
+5
+), in and out of the 
+slurry pressure difference (x
+6
+), slurry injection pressure (x
+7
+), grout 
+Fig. 2. Interaction between LDSS physical entities and virtual models.
+Fig. 3. Schematic diagram of data reconstruction.
+X. Wu et al.                                                                                                                                                                                                                                      Engineering Applications of Artiϧcial Intelligence 168 (2026) 114029 
+4 
+amount (x
+8
+), tunneling speed (x
+9
+), cutter head speed (x
+10
+), cutter head 
+torque (x
+11
+), cutter extrusion pressure (x
+12
+), advance pressure A-E 
+(x
+13
+-x
+17
+), and penetration (x
+18
+). Above all, LDSS construction parame -
+ters are listed in Table 2 .
+2.2.3. BO-GCN-BiLSTM construction
+2.2.3.1. Bayesian optimization algorithm. BO is a sequential strategy for 
+hyperparameter search that employs a probabilistic model to guide the 
+search process ( Cao et al., 2024 ), primarily consisting of two essential 
+elements: a probabilistic surrogate model and an acquisition function for 
+guiding parameter selection ( Lei et al., 2021 ). As discussed in the 
+introduction, traditional hyperparameter tuning methods often lack 
+flexibility and suffer from high computational costs ( Liu et al., 2024 ), 
+limitations that become more pronounced when applied to complex 
+data-driven methods. Furthermore, given the diverse geological 
+conditions encountered during LDSS construction, the hyperparameters 
+of data-driven models require frequent adaptation ( Liu et al., 2023 ). 
+Therefore, integrating Bayesian optimization is essential to enhance 
+both the predictive performance and computational efficiency of 
+data-driven approaches ( Xu et al., 2025 ). Gaussian process regression 
+(GPR) is the most widely adopted probabilistic model in BO due to its 
+high flexibility and strong generalization capability. The GPR model is 
+expressed in Eq. (4) ( Mahmoodzadeh et al., 2022 ; Yang et al., 2023 ): 
+f ( x ) ∼ GP ( m ( x ) , k ( x , x
+ʹ
+)) (4) 
+where m ( x ) denotes the mean value function and k ( x , x
+ʹ
+) represents the 
+covariance function. This formula allows predictions to be made 
+regarding new input points x and provides uncertainty estimates for the 
+predictions, given the training data ( Chen et al., 2023 ).
+2.2.3.2. GCN. During the LDSS construction, TFS is influenced by the 
+spatial relationships between construction parameters. To capture the 
+spatial relationships of construction parameters under varying geolog -
+ical conditions, this paper employs GCN to extract these relationships. In 
+a graph Γ = ( ς , Е ) , ς is the set of nodes, Е is the set of edges, and each 
+node i has features χ
+i
+, which are denoted by Х . Х is an N × F -dimensional 
+matrix, where N denotes the number of nodes and F denotes the number 
+of features or dimensions of each node. An adjacency matrix A also exists 
+for the graph Γ . The output dimension is D . The propagation processes 
+between the layers of the GCN are shown in Eqs. (5) – (7) ( Ghayekhloo 
+and Nickabadi, 2023 ): 
+̂
+A
+ʹ
+= D
+(
+ 
+1
+2
+)
+̂
+A D
+(
+ 
+1
+2
+)
+(5) 
+X
+ʹ
+= XW (6) 
+H = σ (
+̂
+A
+ʹ
+Х
+ʹ
+) (7) 
+where σ denotes the activation function, ReLU; D is degree matrix; 
+̂
+A is 
+Fig. 4. DT platform parameter selection interface demonstration.
+Table 2 
+Detailed information on the LDSS construction parameters.
+Type Construction parameter Type Construction parameter
+Input Air cushion chamber pressure (x
+1
+), 
+MPa
+Input Cutter head torque (x
+11
+), 
+kN ⋅ m
+Inflow slurry density (x
+2
+), kg/m
+3
+Cutter extrusion pressure 
+(x
+12
+), kN
+Slurry flow (x
+3
+), m
+3
+/h Advance pressure A 
+(x
+13
+), kN
+Discharge slurry density (x
+4
+), kg/ 
+m
+3
+Advance pressure B (x
+14
+), 
+kN
+Discharge slurry flow (x
+5
+), m
+3
+/h Advance pressure C (x
+15
+), 
+kN
+In and out of the slurry pressure 
+difference (x
+6
+), MPa
+Advance pressure D 
+(x
+16
+), kN
+Slurry injection pressure (x
+7
+), MPa Advance pressure E (x
+17
+), 
+kN
+Grout amount (x
+8
+), m
+3
+Penetration (x
+18
+), mm
+Tunneling speed (x
+9
+), mm/min Output Slurry pressure (y
+1
+), MPa
+Cutter head speed (x
+10
+), rpm
+X. Wu et al.                                                                                                                                                                                                                                      Engineering Applications of Artiϧcial Intelligence 168 (2026) 114029 
+5 
+adjacency matrix containing information about its own nodes; 
+̂
+A = A +
+I , with I as the identity matrix; 
+̂
+A
+ʹ 
+is obtained by normalizing 
+̂
+A ; Х
+ʹ 
+is the 
+matrix obtained after weight transformation of Х ; and H represents the 
+learned node embeddings.
+Based on the research of other scholars ( Fu et al., 2024 ; Pan et al., 
+2022 ), the structure of the GCN is shown in Fig. 5 .
+2.2.3.3. BiLSTM. The construction parameters of LDSS at the current 
+time are not only related to historical data but may also be associated 
+with future data. To address this characteristic, this paper employs a 
+Bidirectional Long Short-Term Memory (BiLSTM) network to capture 
+the temporal relationships among construction parameters. The BiLSTM 
+model extends the traditional LSTM architecture by processing se -
+quences in both forward and backward temporal directions, thereby 
+capturing comprehensive contextual dependencies ( Tornyeviadzi et al., 
+2023 ). This allows it to effectively encode the dependencies between 
+LDSS construction data and the target parameters. The outputs of the 
+BiLSTM model are shown in Eqs. (8) and (9) ( Lei et al., 2024 ): 
+{
+h
+t
+→
+= LSTM
+̅̅ ̅ →
+(
+h
+t   1
+̅ ̅ →
+, x
+i , t
+)
+, t ∈ [ 1 , T ]
+h
+t
+←
+= LSTM
+← ̅̅ ̅
+(
+h
+t   1
+← ̅ ̅
+, x
+i , t
+)
+, t ∈ [ 1 , T ]
+(8) 
+y
+t
+= τ h
+t
+→
++ ξ h
+t
+←
+(9) 
+where h
+t
+→
+and h
+t
+←
+are the target parameter outputs of the LSTM
+̅̅ ̅ →
+and the 
+LSTM
+← ̅̅ ̅
+at time t , respectively. h
+t   1
+̅ ̅ →
+and h
+t   1
+← ̅ ̅
+are the target parameter 
+outputs of the LSTM
+̅̅ ̅ →
+and the LSTM
+← ̅̅ ̅
+, respectively, at time t   1, and x
+i , t 
+is 
+the model input parameter x
+i 
+at time t . y
+t 
+is the target parameter pre -
+diction of BiLSTM. The values of the τ and ξ are obtained by training on 
+the LDSS construction data. T is the length of time series. The typical 
+structure of BiLSTM is shown in Fig. 6 .
+2.2.3.4. BO-GCN-BiLSTM. This paper propose a BO-GCN-BiLSTM 
+method that integrates BO, GCN, and BiLSTM networks, with the aim 
+to optimize the accuracy of TFS prediction; in particular, in parsing the 
+spatiotemporal relationship among the LDSS construction parameters, 
+our method demonstrates superior performance. In this study, a two- 
+layer GCN is configured with 64 and 32 neurons in the first and sec -
+ond convolutional layers, respectively, using the Tanh activation func -
+tion. A three-layer BiLSTM is employed with 128, 64, and 32 
+bidirectional neurons in each layer, respectively. The sequence length is 
+determined based on the length of the time series collected under 
+different geological conditions, and the Tanh activation function is also 
+applied. The initial learning rate for both models is set to 0.001, serving 
+as input for the BO process. Fig. 7 shows the construction logic of the BO- 
+GCN-BiLSTM method.
+The specific pseudocode of the BO-GCN-BiLSTM method is shown in 
+Algorithm 1. 
+Algorithm 1 . BO-GCN-BiLSTM pseudocode
+Input: Graph data G = ( V , E ) , Node features X , Time series data Y , Number of epochs 
+EPOCHS, Hyperparameter search space PARAM SPACE 
+Output: Predicted time series Z 
+1: procedure BO-GCN_BiLSTM_PREDICTION( G , X , Y , PARAM SPACE ) 
+2: BEST_PARAMS = None 
+( continued on next page )
+Fig. 5. Typical structure of GCN.
+Fig. 6. Typical structure of BiLSTM.
+X. Wu et al.                                                                                                                                                                                                                                      Engineering Applications of Artiϧcial Intelligence 168 (2026) 114029 
+6 
+( continued )
+3: BEST_LOSS = ∞ 
+4: while not convergence do 
+5: HP = BayesianOptimize(PARAM SPACE) 
+6: if train( G , X , Y , HP ) improves performance then 
+7: BEST PARAMS = HP 
+8: BEST LOSS = current loss 
+9: end if 
+10: end while 
+11: return BEST PARAMS, BEST LOSS 
+12: end procedure 
+13: procedure BayesianOptimize( PARAM SPACE ) 
+14: while not termination do 
+15: next HP = SelectNextHP(PARAM SPACE) 
+16: evaluatePerformance(next HP ) 
+17: update(PARAM SPACE; next HP ; performance) 
+18: end while 
+19: end procedure 
+20: procedure train( G , X , Y , HP ) 
+21: Initialize GCN-BiLSTM with HP 
+22: for each epoch do 
+23: Forward and Backward propagation on G , X , Y 
+24: Update model parameters 
+25: end for 26: return model_performance 
+27: end procedure
+2.3. Reality service layer
+The established data-driven module within the DT platform can be 
+further extended to provide reliable services for LDSS tunnel excavation 
+( Cao et al., 2025 ). The reality service layer is a crucial component of the 
+DT platform, with its core function being the integration of the virtual 
+simulation capabilities of the virtual twin layer with the actual opera -
+tional requirements of the LDSS physical entity. This enables monitoring 
+of LDSS construction and prediction and control of TFS.
+In the context of prediction and control of TFS during LDSS con -
+struction, the reality service layer integrates physical data and expert 
+knowledge to determine the input and output parameters for TFS pre -
+diction. It constructs a knowledge-data driven method based on BO, 
+GCN, and BiLSTM. This method leverages BO to optimize hyper -
+parameters, thereby enhancing prediction accuracy and generalization 
+capability. Simultaneously, it employs SHAP and expert knowledge to 
+select critical parameters, ensuring that the model accurately identifies 
+key construction parameters influencing TFS.
+This process, based on the knowledge-data driven method, not only 
+achieves prediction and control of TFS but also provides scientific 
+guidance for adjusting the construction parameters of LDSS through 
+feedback mechanisms. The training and evaluation of the BO-GCN- 
+BiLSTM model, as well as the control flow for TFS, are described below.
+2.3.1. BO-GCN-BiLSTM training and evaluation
+The preprocessed data are used to train the BO-GCN-BiLSTM 
+method. The 80% of the dataset allocated for BO-GCN-BiLSTM 
+training and 20% allocated for BO-GCN-BiLSTM testing. The training 
+process begins with X
+train
+; after a certain number of iterations, the Y
+train 
+is 
+obtained. Mean squared error (MSE) is the loss function ( Liu et al., 
+2024 ). After training, X
+test 
+is tested on the test set data. After a certain 
+number of iterations, the corresponding Y
+test 
+is obtained and compared 
+with the actual values ( Wu et al., 2023 ).
+To evaluate the prediction performance, the mean absolute error 
+(MAE) ( Liu and Chen, 2025 ), root mean squared error (RMSE) ( Luo 
+et al., 2025 ), mean absolute percentage error (MAPE) ( Liu et al., 2025 ), 
+and R
+2 
+are selected as the evaluation indices ( Liu et al., 2020 ). The 
+definitions of these four indices are provided in Eq. (10) to Eq. (13) ( Guo 
+et al., 2023 ; Pan et al., 2022 ): 
+MAE =
+1
+n
+∑
+n
+i = 1
+| f ( x
+i
+)   ob { y
+i
+}| (10) 
+RMSE =
+̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅ ̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅ ̅̅̅̅̅̅
+1
+n
+∑
+n
+i = 1
+[ f ( x
+i
+)   ob { y
+i
+}]
+2
+√
+(11) 
+MAPE =
+100%
+n
+∑
+n
+i = 1
+⃒
+⃒
+⃒
+⃒
+f ( x
+i
+)   ob { y
+i
+}
+f ( x
+i
+)
+⃒
+⃒
+⃒
+⃒
+(12) 
+R
+2
+= 1  
+∑
+n
+i = 1
+( ob { y
+i
+}   f ( x
+i
+))
+2
+∑
+n
+i = 1
+( ob { y
+i
+}   mean { y
+i
+})
+2
+(13) 
+where n is the data volume, ob
+{
+y
+i
+}
+is the observed value ( Liu et al., 
+2025 ), f ( x
+i
+) is the predicted value, and mean
+{
+y
+i
+}
+is the mean of the 
+observed values.
+2.3.2. Model interpretability based on SHAP
+SHAP, inspired by game theory, innovatively attributes a model's 
+prediction output to the individual contribution of each input feature 
+and quantifies the importance of each feature ( Ma et al., 2020 ). In the 
+context of LDSS excavation, this can guide operators in selecting key 
+construction parameters that influence target variables, while 
+enhancing the interpretability of data-driven methods and providing 
+more reliable model explanations. Specifically, SHAP defines the 
+"contribution" of each input feature to the prediction outcome as the 
+marginal payoff in a cooperative game, and fairly allocates the total 
+payoff using Shapley values. This additive explanatory model is 
+expressed as Eq. (14) ( Fu et al., 2025 ): 
+Fig. 7. Schematic diagram of BO-GCN-BiLSTM.
+X. Wu et al.                                                                                                                                                                                                                                      Engineering Applications of Artiϧcial Intelligence 168 (2026) 114029 
+7 
+g ( z
+ʹ
+) = ϕ
+0
++
+∑
+M
+i = 1
+ϕ
+i
+z
+ʹ
+i
+(14) 
+where g ( z
+ʹ
+) denotes the additive explanatory model; z
+ʹ
+i
+∈ ( 0 , 1 ) is the 
+binary simplified input vector, with each component z
+ʹ 
+indicating the 
+presence z
+ʹ
+i
+= 1 or absence z
+ʹ
+i
+= 0 of the feature i ; ϕ
+0 
+represents the 
+baseline value; ϕ
+i 
+is the Shapley value of the feature i , quantifying its 
+contribution to the prediction; M is the total number of input features.
+To ensure a unique solution for the equation, the additive explana -
+tory model must satisfy the following conditions: (1) Local Accuracy: the 
+model output must exactly match the original model's prediction for the 
+target input x and its simplified representation z
+ʹ
+; (2) Missingness: fea -
+tures that are masked z
+ʹ
+i
+= 0 should have no contribution to the output; 
+(3) Consistency: if a feature's marginal contribution to the model pre -
+diction increases after a change in the model, its Shapley value must also 
+increase. When these three conditions are satisfied, the solution to the 
+equation is uniquely given by Eq. (15) ( Li et al., 2024 ): 
+ϕ
+i
+( f , x ) =
+∑
+S ⊆{ 1 , 2 , … , M }\{ i }
+| S | ! ( M   | S |   1 ) !
+M !
+[ f ( x
+S ∪{ i }
+)   f ( x
+S
+)] (15) 
+where ϕ
+i
+( f , x ) represents the Shapley value of the feature i ; f represents 
+the data-driven method; x represents the complete input sample that 
+needs to be explained; S represents a feature subset that does not include 
+feature i , S ⊆ { 1 , 2 , … , m } ; | S | represents the number of elements in the 
+subset S ; x
+S ∪{ i }
+represents the value obtained by retaining only the subset 
+S and the value of feature i based on the original input x ; x
+S 
+represents 
+the original input x with only the values of subset S retained, excluding 
+feature i .
+2.3.3. TFS control strategy
+To accurately simulate the control process of TFS, this paper in -
+troduces a knowledge-data driven method based control strategy in the 
+DT platform, where the latest control iteration results replace historical 
+data, ensuring each iteration is based on the outcomes of the previous 
+regulation. The main steps are as follows: 
+a. Determine Control Objectives: By consulting relevant literature and 
+expert knowledge within the virtual twin layer, and integrating 
+practical construction requirements and standards, establish the 
+reasonable range for control objectives in actual construction.
+b. Identify Key Parameters: Experts utilize their own expert knowledge 
+within the virtual twin layer and SHAP, determine the key con -
+struction parameters and their adjustment ranges, which serve as 
+input parameters for TFS control.
+c. Control Iteration: Utilize physical data from the virtual twin layer 
+and the data-driven module to perform control iterations, with each 
+iteration result updating and replacing historical data.
+d. Stop Condition: When the control objectives fall within the pre -
+defined reasonable range, the iteration process stops.
+This knowledge-data driven method not only enhances the timeli -
+ness and adaptability of the prediction model but also provides a solid 
+foundation for continuous control of LDSS construction safety and 
+excavation efficiency. The specific control flow is illustrated in Fig. 8 .
+3. Case study
+3.1. Case background and DT platform interface
+This paper is based on a section of the longest metro loop in Asia - 
+Wuhan Metro Line 12 between Lingwucun Station and Guobo Center 
+South Station; in this section, the Yangtze River tunnel segment is 2610 
+m long and is excavated by two Φ 12.56-m LDSS machines. The tunnel is 
+designed with a single-bore double-track layout and features an outer 
+segment diameter of 12.1 m, an inner diameter of 11.1 m, a segment 
+thickness of 0.5 m, and a ring width of 2 m. During shield advancement, 
+all relevant construction parameters are recorded by the shield data 
+acquisition system. Fig. 9 (a and b,c,d) shows the Location Map of Wuhan 
+Metro Project, Construction site photos, Interior view of the tunnel, and 
+Data acquisition, respectively. Fig. 10 shows the geological conditions 
+for LDSS construction. And Fig. 11 shows the DT platform interface of 
+LDSS construction.
+3.2. Data collection
+To address the inadequacies of traditional methods in the TFS during 
+LDSS construction research and to achieve effective TFS prediction and 
+control, the proposed knowledge-data driven method requires pre -
+processing of the collected data before training. The preprocessing steps 
+include data cleaning, normalization, and reconstruction ( Chen et al., 
+2025 ). The purpose of this process is to remove invalid and outlier data 
+from the raw data. Normalization is applied to eliminate the impact of 
+outlier sample data on model training. Finally, the data are recon -
+structed to prepare them for model input. All data used in this paper 
+were obtained from the monitoring system, primarily comprising con -
+struction parameters related to rings 30 to 471. These data encompass 
+complex and diverse geological conditions, which can be broadly cate -
+gorized into six geological types. In this section, Geological type 1 to 
+Geological type 6 are selected for TFS prediction. The property param -
+eters of each Geological type as shown in Table 3 . The construction 
+parameters for each Geological type are described in Table 4 . The di -
+vision of datasets for each geological type is illustrated in Fig. 12 .
+3.3. Knowledge-data driven method based TFS prediction
+Based on the reality service layer of the DT platform, the LDSS 
+construction process utilizes the knowledge-data driven method, 
+including BO-GCN-BiLSTM method, physical data and expert knowl -
+edge. First, BO is used for hyperparameter tuning. Then, time steps for 
+the BO-GCN-BiLSTM method are set, with each time step being pre -
+dicted individually. The optimal time step is selected based on a com -
+bination of prediction accuracy and operational efficiency.
+3.3.1. Bayesian hyperparameter optimization
+BO-GCN-BiLSTM model have complex structures, and their 
+Fig. 8. DT platform controlling process of TFS.
+X. Wu et al.                                                                                                                                                                                                                                      Engineering Applications of Artiϧcial Intelligence 168 (2026) 114029 
+8 
+hyperparameters largely determine the capacities of the models and affect their training efficiency. The hyperparameters that must be 
+Fig. 9. Project information for the (a) Location Map of Wuhan Metro Project, (b) Construction site photos, (c) Interior view of the tunnel (d) Data acquisition.
+Fig. 10. Geological conditions of the LDSS construction tunnel.
+X. Wu et al.                                                                                                                                                                                                                                      Engineering Applications of Artiϧcial Intelligence 168 (2026) 114029 
+9 
+adjusted for the GCN-BiLSTM model proposed in this paper include the 
+learning rate and GCN-BiLSTM blocks. The MSE is used as the objective 
+function. The number of training iteration is set to 100. The hyper -
+parameter optimization process and the obtained results are shown in 
+Fig. 11. LDSS construction DT platform interface.
+Table 3 
+Properties parameters of the soils included in each Geological type.
+Geological type Angle of internal friction ϕ (
+◦
+) Cohesion c (kN/m
+2
+) Young's Modulus E (MPa)
+Max Min Mean Max Min Mean Max Min Mean
+1 34.5 10.0 23.8 17.0 0.0 9.0 23.8 4.6 14.1
+2 34.5 30.0 32.3 32.0 0.0 16.0 43.0 23.8 33.4
+3 40.0 6.0 27.9 10.0 0.0 2.5 131.0 101.0 65.1
+4 31.0 10.0 23.7 17.0 0.0 5.7 101.0 4.6 49.5
+5 40.0 30.0 33.7 32.0 0.0 10.7 133.0 43.0 92.3
+6 31.0 21.0 27.3 73.0 0.0 35.0 174.0 43.0 106.0
+Table 4 
+Construction parameter characteristics of Geological type 3.
+Parameter Unit Std Mean Min Max
+x
+1
+MPa 0.015 0.406 0.359 0.447
+x
+2
+kg ⋅ m
+  3
+0.08 1.24 1 1.39
+x
+3
+m
+3
+155.81 2310.22 1481.37 2980.09
+x
+4
+kg ⋅ m
+  3
+0.07 1.32 1.04 1.5
+x
+5
+m
+3
+170.75 2392.23 840.19 3500
+x
+6
+MPa 0.39 4.11 3.13 6.92
+x
+7
+MPa 5.56 30.62 5.07 59.23
+x
+8
+m
+3
+12866.06 28898.87 0.3 127900
+x
+9
+mm ⋅ min
+  1
+5.39 19.67 0.11 58.87
+x
+10
+rpm 0.33 1.4 0.59 2.1
+x
+11
+kN ⋅ m 965.46 4040.93 250.5 6377.14
+x
+12
+kN 10373.67 94813.72 37266.45 130737.6
+x
+13
+kN 1199.47 5907.15 4261.47 9553.19
+x
+14
+kN 1186.68 6822.59 2399.78 10626.73
+x
+15
+kN 5392.72 23019.6 11362.75 34814.54
+x
+16
+kN 1502.65 12597.97 8410.73 17203.16
+x
+17
+kN 1724.15 11743.03 2474 17448.79
+x
+18
+mm 10.41 33.2 0.17 96.99
+y
+1
+MPa 1.01 13.55 11.71 18.32
+X. Wu et al.                                                                                                                                                                                                                                      Engineering Applications of Artiϧcial Intelligence 168 (2026) 114029 
+10 
+Fig. 13 and Table 5 .
+3.3.2. Knowledge-data driven method based prediction results
+The number of historical time steps also has an important effect on 
+the prediction accuracy and prediction performance of the model, to 
+assess the validity and accuracy of the prediction results obtained by the 
+proposed model, predictions are made for data with numbers of his -
+torical time steps ranging from 1 to 10. For example, based on the use of 
+3 time steps to predict the SP, the data of the LDSS construction pa -
+rameters x
+1 
+to x
+18 
+from moment t-3 to t and the historical data of y
+1 
+from 
+t-3 to t-1 are used as inputs to predict the data of y
+1 
+at moment t. That is, 
+this paper employs a historical window size of 10, a prediction step of 1, 
+and a sliding window size of 1 for time series prediction. BO-GCN- 
+BiLSTM method is built on the basis of BO to obtain hyperparameter 
+combinations for the selected historical time steps. The R
+2
+, RMSE, MAE, 
+and MAPE are used to evaluate the performance of BO-GCN-BiLSTM. 
+Tables 6 – 11 show the results and training speed of the BO-GCN BiLSTM 
+method for historical time steps t-1 to t-10 in six geological types. Fig. 14
+shows the scatter plot of predicted optimal time steps for each Geolog -
+ical type (see Table 12 ). 
+(1) The proposed DT platform, based on the knowledge-data driven 
+method, demonstrates excellent predictive performance across 
+six geological types at various time steps. This study predicts SP 
+using time steps t-1 to t-10, and the evaluation metrics for the six 
+geological types are summarized in Tables 6 – 12 .For Geological 
+Type 1, the average R
+2
+, RMSE, MAE, and MAPE values across all 
+time steps are 0.949, 0.061, 0.024, 0.12%. For Geological Type 2, 
+Fig. 12. Schematic diagram of the geological type classification process.
+Fig. 13. Iterative process of hyperparametric optimization.
+Table 5 
+Hyperparametric optimization results.
+Geological type Learning rate Blocks
+Search range Optimal 
+results
+Search 
+range
+Optimal 
+results
+Geological type 
+1
+[0.001,0.012] 0.009 [1,3] 3
+Geological type 
+2
+[0.001,0.012] 0.007 [1,3] 3
+Geological type 
+3
+[0.001,0.012] 0.008 [1,3] 3
+Geological type 
+4
+[0.001,0.012] 0.008 [1,3] 3
+Geological type 
+5
+[0.001,0.012] 0.009 [1,3] 3
+Geological type 
+6
+[0.001,0.012] 0.007 [1,3] 3
+Table 6 
+Predicted results and training speed of Geological type 1.
+Time steps SP(y
+1
+)
+R
+2
+RMSE MAE MAPE Training speed
+t-1 0.945 0.058 0.030 0.126% 1.5 epoch/s
+t-2 0.950 0.058 0.029 0.115% 1.6 epoch/s
+t-3 0.957 0.048 0.012 0.110% 1.9 epoch/s
+t-4 0.944 0.064 0.023 0.129% 1.8 epoch/s
+t-5 0.942 0.064 0.026 0.130% 1.7 epoch/s
+t-6 0.958 0.062 0.022 0.126% 1.4 epoch/s
+t-7 0.950 0.063 0.023 0.129% 1.6 epoch/s
+t-8 0.941 0.064 0.029 0.129% 1.3 epoch/s
+t-9 0.956 0.063 0.022 0.096% 1.3 epoch/s
+t-10 0.946 0.063 0.024 0.122% 1.4 epoch/s
+Average 0.949 0.061 0.024 0.12% 1.6 epoch/s
+X. Wu et al.                                                                                                                                                                                                                                      Engineering Applications of Artiϧcial Intelligence 168 (2026) 114029 
+11 
+the average R
+2
+, RMSE, MAE, and MAPE values across all time 
+steps are 0.927, 0.053, 0.022, 1.88%. For Geological Type 3, the 
+average R
+2
+, RMSE, MAE, and MAPE values across all time steps 
+are 0.935, 0.239, 0.169, 1.19%. For Geological Type 4, the 
+average R
+2
+, RMSE, MAE, and MAPE values across all time steps 
+are 0.944, 0.186, 0.117, 0.79%. For Geological Type 5, the 
+average R
+2
+, RMSE, MAE, and MAPE values across all time steps 
+are 0.907, 0.241, 0.092, 0.61%. For Geological Type 6, the 
+average R
+2
+, RMSE, MAE, and MAPE values across all time steps 
+are 0.895, 0.238, 0.123, 0.88%. The results show that the model 
+achieves high R
+2 
+values and low RMSE, MAE, and MAPE across 
+all six geological types. 
+These findings indicate that the knowledge-data driven method 
+within the DT platform possesses strong generalization capability 
+and prediction accuracy, making it suitable for adapting to 
+complex and varied geological conditions. As shown in Fig. 15 , 
+the predicted and actual values are displayed on the DT platform, 
+which helps LDSS operators assess excavation performance and 
+supports decision-making for construction parameter adjustment. 
+Consequently, it provides reliable technical support for predict -
+ing face stability during LDSS construction processes.
+(2) Among the various time steps evaluated, the results for time step 
+t-3 are optimal for achieving high prediction accuracy and 
+training speed. As shown in Tables 6–11 , across different 
+geological types, t-3 achieves both high predictive accuracy and 
+high training speed. For instance, in Geological Type 1, at t-3, the 
+R
+2
+, RMSE, MAE, MAPE, and training speed are 0.957, 0.048, 
+0.012, 0.11%, and 1.9 epochs/s, respectively, with R
+2 
+and 
+training speed exceeding the average values of 0.949 and 1.6 
+epochs/s, and RMSE, MAE, and MAPE below the average values 
+of 0.061, 0.024, and 0.12%. Similarly, in Geological Type 5, at t- 
+3, the R
+2
+, RMSE, MAE, MAPE, and training speed are 0.918, 
+0.211, 0.089, 0.59%, and 1.8 epochs/s, respectively, with R
+2 
+and 
+training speed above the average values of 0.907 and 1.5 epochs/ 
+s, and RMSE, MAE, and MAPE below the average values of 0.241, 
+0.092, and 0.61%. 
+While increasing the time step can improve prediction 
+Table 7 
+Predicted results and training speed of Geological type 2.
+Time steps SP(y
+1
+)
+R
+2
+RMSE MAE MAPE Training speed
+t-1 0.920 0.064 0.034 1.96% 1.7 epoch/s
+t-2 0.923 0.055 0.022 1.93% 1.9 epoch/s
+t-3 0.931 0.052 0.021 1.81% 1.9 epoch/s
+t-4 0.924 0.053 0.022 1.87% 1.8 epoch/s
+t-5 0.923 0.054 0.022 1.96% 1.9 epoch/s
+t-6 0.925 0.052 0.025 1.89% 1.4 epoch/s
+t-7 0.928 0.050 0.020 1.80% 1.6 epoch/s
+t-8 0.924 0.051 0.020 1.85% 1.7 epoch/s
+t-9 0.921 0.052 0.021 1.93% 1.7 epoch/s
+t-10 0.947 0.050 0.020 1.85% 1.6 epoch/s
+Average 0.927 0.053 0.022 1.88% 1.7 epoch/s
+Table 8 
+Predicted results and training speed of Geological type 3.
+Time steps SP(y
+1
+)
+R
+2
+RMSE MAE MAPE Training speed
+t-1 0.923 0.259 0.180 1.27% 1.5 epoch/s
+t-2 0.927 0.257 0.176 1.25% 1.9 epoch/s
+t-3 0.942 0.248 0.169 1.24% 2.0 epoch/s
+t-4 0.924 0.254 0.172 1.26% 1.6 epoch/s
+t-5 0.934 0.242 0.163 1.13% 1.4 epoch/s
+t-6 0.924 0.246 0.172 1.22% 1.6 epoch/s
+t-7 0.935 0.222 0.170 1.13% 1.5 epoch/s
+t-8 0.946 0.221 0.170 1.11% 1.2 epoch/s
+t-9 0.947 0.219 0.152 1.10% 1.2 epoch/s
+t-10 0.945 0.224 0.171 1.20% 1.6 epoch/s
+Average 0.935 0.239 0.169 1.19% 1.5 epoch/s
+Table 9 
+Predicted results and training speed of Geological type 4.
+Time steps SP(y
+1
+)
+R
+2
+RMSE MAE MAPE Training speed
+t-1 0.942 0.194 0.125 0.82% 1.7 epoch/s
+t-2 0.946 0.190 0.111 0.80% 1.9 epoch/s
+t-3 0.953 0.187 0.108 0.75% 1.9 epoch/s
+t-4 0.942 0.187 0.127 0.84% 1.7 epoch/s
+t-5 0.954 0.177 0.106 0.71% 1.5 epoch/s
+t-6 0.930 0.187 0.122 0.82% 1.4 epoch/s
+t-7 0.952 0.185 0.111 0.77% 1.6 epoch/s
+t-8 0.941 0.188 0.114 0.82% 1.3 epoch/s
+t-9 0.937 0.189 0.129 0.86% 1.3 epoch/s
+t-10 0.947 0.176 0.119 0.74% 1.6 epoch/s
+Average 0.944 0.186 0.117 0.79% 1.6 epoch/s
+Table 10 
+Predicted results and training speed of Geological type 5.
+Time steps SP(y
+1
+)
+R
+2
+RMSE MAE MAPE Training speed
+t-1 0.905 0.258 0.112 0.61% 1.4 epoch/s
+t-2 0.913 0.257 0.093 0.59% 1.6 epoch/s
+t-3 0.918 0.211 0.089 0.59% 1.8 epoch/s
+t-4 0.890 0.254 0.093 0.61% 1.6 epoch/s
+t-5 0.909 0.233 0.088 0.55% 1.5 epoch/s
+t-6 0.903 0.257 0.088 0.70% 1.4 epoch/s
+t-7 0.917 0.239 0.088 0.65% 1.6 epoch/s
+t-8 0.900 0.254 0.095 0.66% 1.2 epoch/s
+t-9 0.904 0.223 0.090 0.60% 1.3 epoch/s
+t-10 0.913 0.220 0.089 0.58% 1.2 epoch/s
+Average 0.907 0.241 0.092 0.61% 1.5 epoch/s
+Table 11 
+Predicted results and training speed of Geological type 6.
+Time steps SP(y
+1
+)
+R
+2
+RMSE MAE MAPE Training speed
+t-1 0.882 0.246 0.131 0.99% 1.7 epoch/s
+t-2 0.883 0.230 0.121 0.85% 1.7 epoch/s
+t-3 0.908 0.225 0.116 0.78% 1.9 epoch/s
+t-4 0.887 0.240 0.120 0.81% 1.6 epoch/s
+t-5 0.912 0.239 0.119 0.81% 1.5 epoch/s
+t-6 0.878 0.243 0.126 0.94% 1.5 epoch/s
+t-7 0.904 0.240 0.125 0.89% 1.7 epoch/s
+t-8 0.890 0.243 0.127 0.90% 1.7 epoch/s
+t-9 0.907 0.235 0.121 0.89% 1.3 epoch/s
+t-10 0.900 0.239 0.123 0.96% 1.3 epoch/s
+Average 0.895 0.238 0.123 0.88% 1.6 epoch/s
+Table 12 
+Prediction indicators and training speed of various geological types at time step 
+t-3.
+Geological type SP(y
+1
+)
+R
+2
+RMSE MAE MAPE Training speed
+Geological type 1 0.957 0.048 0.012 0.11% 1.9 epoch/s
+Geological type 2 0.931 0.052 0.021 1.81% 1.9 epoch/s
+Geological type 3 0.942 0.248 0.169 1.24% 2.0 epoch/s
+Geological type 4 0.953 0.187 0.108 0.75% 1.9 epoch/s
+Geological type 5 0.918 0.211 0.089 0.59% 1.8 epoch/s
+Geological type 6 0.908 0.225 0.116 0.78% 1.9 epoch/s
+Average 0.935 0.162 0.086 0.88% 1.9 epoch/s
+X. Wu et al.                                                                                                                                                                                                                                      Engineering Applications of Artiϧcial Intelligence 168 (2026) 114029 
+12 
+accuracy, it often comes at the cost of reduced training speed. For 
+example, in Geological Type 2, at t-3, the R
+2 
+and training speed 
+are 0.957 and 1.9 epochs/s, whereas at t-10, they are 0.947 and 
+1.6 epochs/s. In Geological Type 26, at t-3, the R
+2 
+and training 
+speed are 0.908 and 1.9 epochs/s, while at t-5, they are 0.912 and 
+1.5 epochs/s. Specifically, at time step t-3, the average R
+2
+, RMSE, 
+MAE, and MAPE across six geological types reached 0.937, 0.129, 
+0.060, and 0.69%, respectively, with an average training speed of 
+1.9 epochs/s. Therefore, to achieve a balance of high prediction 
+accuracy and high training speed, t-3 is selected as the optimal 
+Fig. 14. The best prediction results of SP for different geological types.
+Fig. 15. Virtual demonstration of SP prediction for LDSS operation on the DT platform.
+X. Wu et al.                                                                                                                                                                                                                                      Engineering Applications of Artiϧcial Intelligence 168 (2026) 114029 
+13 
+time step for prediction. 
+Fig. 14 presents scatter plots of the prediction results for six 
+Geological types at time step t-3. The predicted points for both 
+the training and test sets are closely aligned with the fit line, 
+consistent with the model's evaluation results. Therefore, the 
+predictions obtained using time step t-3 can provide effective 
+reference data for on-site adjustments of construction 
+parameters.
+3.4. Model interpretability analysis
+As a powerful tool, SHAP has gained attention for its ability to pro -
+vide interpretability of model predictions. Through this method, the 
+reality service layer of the DT platform can not only identify the LDSS 
+construction parameters that most significantly impact TFS but also 
+understand how these parameters should be adjusted according to 
+different geological types. This provides deeper insights into ensuring 
+safety during LDSS construction. The SHAP results for each geological 
+type are shown in Figs. 16 – 18 .
+As shown in Figs. 16 – 18 , the ranking of construction parameters 
+significantly impacting TFS varies across different geological types. 
+Specifically, the advance pressures A-E (x
+13
+-x
+17
+) have a notably signif -
+icant impact on TFS in Geological Types 5 and 6. Particularly in 
+Geological Type 5, construction parameters x
+16 
+and x
+13 
+both rank within 
+the top five most influential construction parameters affecting TFS. 
+Conversely, in Geological Types 1 and 2, the influence of these con -
+struction parameters is relatively minor, with lower rankings. Moreover, 
+the in and out slurry pressure difference (x
+6
+) exhibits higher influence 
+rankings in Geological Types 1 and 3. However, in Geological Types 2, 4, 
+5, and 6, x
+6 
+is identified as the most significant construction parameters 
+impacting TFS. Meanwhile, some construction parameters maintain 
+consistent rankings across all six geological types; for instance, Air 
+cushion chamber pressure (x
+1
+) consistently ranks within the top three in 
+terms of its influence on TFS across all geological types, underscoring its 
+consistent importance.
+Although SHAP can identify important construction parameters 
+affecting TFS under different geological types, it is essential to distin -
+guish between active and passive parameters in LDSS construction. 
+Active parameters can be directly adjusted by operators, while passive 
+parameters, though identified as important, cannot be controlled. 
+Additionally, some active parameters may rank lower but still require 
+attention during operations. Therefore, based on SHAP and expert 
+knowledge, the final selection of the top five parameters influencing TFS 
+across various geological types are: x
+1
+, x
+7
+, x
+9
+, x
+10
+, and x
+11
+. The above 
+analysis results also can be verified in similar studies in the past ( Chen 
+et al., 2013 ; Shang et al., 2023 ; Weng et al., 2020 ).
+In this study, the interpretability of the BO-GCN-BiLSTM model is 
+enhanced through the adoption of SHAP, revealing the complexity and 
+geological dependency of how LDSS construction parameters influence 
+TFS. This provides guidance for identifying key construction parameters 
+affecting the entire well section. Furthermore, SHAP-based interpreta -
+tion of the data-driven method establishes a theoretical foundation for 
+adaptive control strategies in LDSS operations under varying geological 
+conditions. During construction, LDSS operators can leverage SHAP 
+analysis results from the DT platform combined with integrated expert 
+knowledge to adjust TFS control strategies specifically for different 
+geological types, thereby achieving an adaptive closed-loop TFS control 
+encompassing interpretation, decision-making, and execution.
+4. Discussion
+4.1. Model generalizability study
+Validating the effectiveness of the proposed method is an essential 
+task. The prediction results obtained for the 6 Geological types are 
+compared with those of the existing methods. The methods selected for 
+comparison from previous studies include BO-GCN-BiLSTM, BO-Trans -
+former, BO-GCN-LSTM, BO-BiLSTM, BO-LSTM, BO-GCN. During the 
+prediction process, the hyperparameter optimization method uses BO, 
+and the evaluation indices are R
+2 
+and RMSE. Among them, the property 
+parameters of each geological type are shown in Table 3 . The data 
+partitioning of each geological type is shown in Fig. 12 and the 
+Fig. 16. SHAP results for Geological type 1 and Geological type 2.
+X. Wu et al.                                                                                                                                                                                                                                      Engineering Applications of Artiϧcial Intelligence 168 (2026) 114029 
+14 
+prediction results and computational efficiency of each method are 
+provided in Table 13 , Table 14 and Fig. 19 .
+Upon comparison of the prediction outcomes across six geological 
+types, the BO-GCN-BiLSTM demonstrates superior predictive perfor -
+mance. As shown in Fig. 19 , for the six geological types, the proposed 
+method predicts the SP with an average R
+2 
+of 0.935 and an average 
+RMSE of 0.162. Compared with those of the other six methods, BO-GCN- 
+BiLSTM achieves the highest average R
+2 
+and lowest average RMSE. the 
+prediction performance of GCN-BiLSTM, is slightly lower than that of 
+BO-GCN-BiLSTM, achieving average R
+2 
+of 0.929 and average RMSE of 
+Fig. 17. SHAP results for Geological type 3 and Geological type 4.
+Fig. 18. SHAP results for Geological type 5 and Geological type 6.
+X. Wu et al.                                                                                                                                                                                                                                      Engineering Applications of Artiϧcial Intelligence 168 (2026) 114029 
+15 
+0.296; The prediction performance of BO-GCN is relatively low, with an 
+average R
+2 
+of 0.851 and average RMSE of 0.939.
+As shown in Table 14 , BO-GCN-BiLSTM does not achieve the highest 
+computational efficiency, with an average of 1.9 epoch/s. BO-BiLSTM, 
+BO-LSTM, and BO-GCN exhibit higher computational efficiencies of 
+2.1 epoch/s, 2.3 epoch/s, and 2.4 epoch/s, respectively, although the 
+differences are not substantial. However, these three models demon -
+strate inferior prediction accuracy compared to BO-GCN-BiLSTM. GCN- 
+BiLSTM and BO-GCN-LSTM show computational efficiencies compara -
+ble to BO-GCN-BiLSTM, yet they still underperform in terms of predic -
+tion accuracy. BO-Transformer exhibits the lowest computational 
+efficiency. In summary, considering both prediction accuracy and 
+computational efficiency, the proposed BO-GCN-BiLSTM demonstrates 
+the best performance for TFS prediction.
+The BO-GCN-BiLSTM outperforms other state-of-the-art methods in 
+SP prediction for LDSS tunneling due to its synergistic integration of 
+three key components: (1) GCN's capacity to explicitly model spatial 
+coupling relationships among critical parameters ( Dun et al., 2022 ), (2) 
+the BiLSTM's ability to comprehensively capture temporal dependencies 
+through forward and backward memory mechanisms ( Wei et al., 2025 ), 
+and (3) BO's probabilistic surrogate-based strategy for efficiently iden -
+tifying globally optimal hyperparameters with fewer iterations 
+( Chakrabarty et al., 2023 ). This integrated architecture achieves higher 
+prediction accuracy while maintaining stable generalization error across 
+six distinct geological data distributions — attributable to the topological 
+robustness of GCN and the bidirectional temporal modeling of 
+BiLSTM — thereby significantly reducing both retraining overhead and 
+inference time.
+Therefore, the proposed method not only provides robust support for 
+intelligent decision-making in LDSS tunneling but also offers a precise 
+and effective artificial intelligence – assisted approach for risk prediction 
+and management in future tunneling projects under complex geological 
+conditions. Its knowledge-data driven mechanism can significantly 
+enhance safety margins and adaptive control capabilities in 
+Table 13 
+Prediction indicators for evaluating various methods on different geological types.
+Geological types BO-GCN-BiLSTM GCN-BiLSTM BO-Transformer BO-GCN-LSTM BO-BiLSTM BO-LSTM BO-GCN
+R
+2
+RMSE R
+2
+RMSE R
+2
+RMSE R
+2
+RMSE R
+2
+RMSE R
+2
+RMSE R
+2
+RMSE
+1 0.957 0.048 0.931 0.282 0.920 0.298 0.900 0.383 0.912 0.563 0.874 0.902 0.867 0.841
+2 0.931 0.052 0.932 0.230 0.925 0.337 0.922 0.451 0.889 0.767 0.871 0.909 0.855 0.883
+3 0.942 0.248 0.939 0.301 0.923 0.351 0.914 0.537 0.894 0.877 0.865 1.107 0.844 1.031
+4 0.953 0.187 0.923 0.323 0.914 0.344 0.911 0.489 0.892 0.862 0.850 1.121 0.850 0.921
+5 0.918 0.211 0.921 0.344 0.931 0.323 0.880 0.554 0.897 0.699 0.875 0.932 0.861 0.901
+6 0.908 0.225 0.932 0.299 0.928 0.360 0.894 0.513 0.880 0.869 0.869 1.099 0.828 1.054
+Average 0.935 0.162 0.929 0.296 0.924 0.336 0.904 0.488 0.894 0.773 0.867 1.012 0.851 0.939
+Table 14 
+Comparison of computational efficiency of various methods under different geological types.
+Geological types BO-GCN-BiLSTM GCN-BiLSTM BO-Transformer BO-GCN-LSTM BO-BiLSTM BO-LSTM BO-GCN
+(epoch/s) (epoch/s) (epoch/s) (epoch/s) (epoch/s) (epoch/s) (epoch/s)
+1 1.9 1.7 1.6 2.0 1.9 2.3 2.5
+2 1.9 1.9 1.5 1.7 2.2 2.2 2.1
+3 2.0 1.7 1.7 1.9 2.0 2.6 2.1
+4 1.9 2.1 1.9 1.8 2.1 2.0 2.2
+5 1.8 1.7 1.5 1.9 2.4 2.1 2.6
+6 1.9 1.9 1.6 1.9 2.1 2.3 2.7
+Average 1.9 1.8 1.6 1.9 2.1 2.3 2.4
+Fig. 19. Average results of SP prediction by each method for the six geological types.
+X. Wu et al.                                                                                                                                                                                                                                      Engineering Applications of Artiϧcial Intelligence 168 (2026) 114029 
+16 
+underground operations. Moreover, the framework can be rapidly 
+transferred to other underground engineering scenarios — such as metro 
+systems, utility tunnels, and deep mining operations — delivering an 
+advanced solution for intelligent construction and safe operation of 
+critical infrastructure in geologically challenging environments.
+4.2. Knowledge-data driven method based TFS control
+The proposed DT platform, based on a knowledge-data driven 
+method, enables accurate prediction of TFS and, combined with SHAP, 
+makes adaptive TFS control feasible. Within the DT platform, the reality 
+service layer identifies the key construction parameters influencing TFS 
+through SHAP analysis, providing theoretical guidance for LDSS oper -
+ators. This assists LDSS operators in timely adjusting relatively optimal 
+control strategies during different construction phases and under vary -
+ing geological conditions, thereby achieving SHAP-enhanced, DT 
+platform-based adaptive TFS control.
+For SP, in LDSS, the shield tunneling process needs to control the 
+amount of slag in the cutting machine used to cut the original soil into 
+slurry soil and the amount of slurry in the slurry soil after mixing in the 
+slurry inlet pipe. The volume of mixed mud in the mud soil discharged 
+from the mud discharge pipe is equal to ensure that the mud in the mud 
+soil provides stable SP. The calculation formula for the adjusted SP is 
+shown in the empirical formula Eq. (16) ( Zhou zhong et al., 2022 ). 
+Therefore, to control the TFS during LDSS construction, the difference 
+between the current SP and the adjusted SP need to be as small as 
+possible; thus, the TFS of the LDSS is in a safe state. Existing research and 
+field application results have validated the effectiveness and applica -
+bility of this formula ( Ge, 2025 ; Ren et al., 2025 ; Shi et al., 2025b ; Xu 
+and Huang, 2024 ). 
+p
+k + 1
+= p
+k
++
+E ( p )
+4 ρ
+2
+V
+c
+ 
+π D
+2
+v
+a
+ρ
+ʹ
++ 4 q
+1
+ρ
+1
+  4 q
+2
+ρ
+2
+)
+Δ T (16) 
+where p
+k 
+and p
+k + 1 
+are the current SP and the adjusted SP, respectively; 
+E ( p ) is the bulk modulus of the mixed slurry in the mud – water soil; V
+c 
+is 
+the volume of the mud – water soil; D is the diameter of the cutter disc; v
+a 
+is the propulsion speed; ρ
+ʹ 
+is the in situ soil density; ρ
+1 
+and ρ
+2 
+are the 
+density of the mud at the feed pipe and the density of the mixed slurry at 
+the discharge pipe, respectively; q
+1 
+and q
+2 
+are the feed flow and the 
+slurry discharge flow rate; and Δ T is the period.
+Considering the differences between active and passive construction 
+parameters in LDSS construction, the DT platform employs a knowledge- 
+data driven method that combines expert knowledge with data-driven 
+method to distinguish these parameters. For TFS control, the following 
+construction parameters were selected: x
+1
+, x
+7
+, x
+9
+, x
+10
+, x
+11
+, x
+17
+, x
+14
+, x
+15
+, 
+x
+13 
+and x
+16
+. Using the empirical formula provided in Equation (15) , the 
+warning value range was calculated as [   0.6, 0.6] MPa. Based on 1000 
+data points from Geological Type 3, continuous adjustments of the 
+aforementioned construction parameters are made until SP falls within 
+the warning value range, after which the next round of control adjust -
+ments is initiated.
+The adjustment ranges for each construction parameter are shown in 
+Table 15 , and the TFS control interactive workflow is illustrated in 
+Fig. 20 . As illustrated in Fig. 20 , key construction parameters and their 
+control ranges are transmitted via data streams to the DT platform, 
+where the TFS control process is executed based on the virtual entity. 
+The resulting control outputs from the DT platform are fed back to the 
+LDSS operator, who adjusts the critical parameters accordingly. Thus, 
+the interaction between the DT platform and the LDSS operator facili -
+tates adaptive TFS control.
+5. Conclusions and future work
+This study establishes a DT platform that enables interaction be -
+tween the physical entity of LDSS and its virtual model, facilitating 
+prediction and control of TFS during LDSS construction. The platform's 
+Virtual Twin Layer constructs the virtual entity of LDSS, collecting 
+physical data from the LDSS monitoring system and integrating expert 
+knowledge. The Data-driven Module, which integrates BO, GCN, and 
+BiLSTM, provides technical support for achieving high-precision TFS 
+prediction and control. Through the establishment of the Reality Service 
+Layer, the platform implements TFS prediction and control based on a 
+knowledge-data driven method. The developed DT platform serves as an 
+intelligent tool to assist LDSS tunnel construction and enhance safety 
+across different geological types. The Wuhan Metro project is used as a 
+case study to validate the effectiveness of the established DT platform 
+and the knowledge-data driven method. The results indicate: 
+(1) The BO-GCN-BiLSTM method proposed in this paper can accu -
+rately predict TFS during LDSS construction. Specifically, the 
+average R
+2
+, RMSE, MAE, and MAPE across six geological types 
+reached 0.937, 0.129, 0.060, and 0.69%, respectively, with an 
+average training speed of 1.9 epochs/s. Furthermore, compared 
+with the other methods, such as GCN-BiLSTM, BO-Transformer, 
+BO-GCN-LSTM, BO-BiLSTM, BO-LSTM, BO-GCN, the BO-GCN- 
+BiLSTM model demonstrated superior performance in predict -
+ing TFS across six different geological types, with an average R
+2 
+of 0.935 and an RMSE of 0.162.
+(2) Expert utilize SHAP and their own expert knowledge, key influ -
+encing construction parameters were specified to improve the 
+interpretability of the knowledge-data driven method and rank 
+the significant impacts; here, air cushion chamber pressure (x
+1
+), 
+slurry injection pressure (x
+7
+), tunneling speed (x
+9
+), cutter head 
+speed (x
+10
+) and cutter head torque (x
+11
+) are the top five con -
+struction parameters. These parameters are the key construction 
+parameters for controlling the TFS diuring LDSS construction; 
+therefore, priority should be given to adjusting these construction 
+parameters in the control of the TFS diuring LDSS construction.
+(3) By integrating the knowledge-data driven method with DT, a DT 
+platform has been developed for data collection, TFS prediction 
+and control during LDSS construction. The system features an 
+intuitive interface for the intelligent propulsion system of the 
+LDSS, which visually displays data on the excavation status and 
+construction parameters of the LDSS. This enables the DT plat -
+form to adjust key construction parameters for effective control of 
+the TFS diuring LDSS construction.
+Although the BO-GCN-BiLSTM method implemented within the DT 
+platform demonstrates strong performance in capturing spatiotemporal 
+dependencies among construction parameters in LDSS, it exhibits 
+notable limitations in handling geological complexity and lacks physical 
+interpretability. During shield tunneling, the intricacy and dynamic 
+evolution of geological conditions constitute critical factors influencing 
+face stability. While BO-GCN-BiLSTM is capable of processing complex 
+spatiotemporal data, its adaptability may be insufficient when con -
+fronted with abrupt geological transitions or previously unseen 
+geological formations. This limitation stems from the model's reliance 
+on historical data for learning, which hinders its ability to generalize 
+Table 15 
+Adjustment range for each construction parameter.
+Construction parameter Value range
+Air cushion chamber pressure (MPa, x
+1
+) 0.3 – 0.5
+Slurry injection pressure (MPa, x
+7
+) 10~50
+Tunnelling speed (mm ⋅ min
+  1
+, x
+9
+) 20~60
+Cutter head speed (rpm, x
+10
+) 0.6 – 2
+Cutter head torque (kN ⋅ m, x
+11
+) 500~6000
+Advance pressure E (kN, x
+17
+) 4300~10000
+Advance pressure B (kN, x
+14
+) 3000~10000
+Advance pressure C (kN, x
+15
+) 15000~30000
+Advance pressure A (kN, x
+13
+) 5000~9000
+Advance pressure D (kN, x
+16
+) 10000~15000
+X. Wu et al.                                                                                                                                                                                                                                      Engineering Applications of Artiϧcial Intelligence 168 (2026) 114029 
+17 
+effectively to novel geological scenarios. Furthermore, although the DT 
+platform can enhance model interpretability and refine key parameter 
+selection through the integration of expert knowledge — thereby 
+improving reliability — this process remains inherently susceptible to 
+subjective judgment and heavily dependent on the practitioner's expe -
+rience. Future research should aim to embed geological priors and 
+governing physical equations directly into the network architecture, 
+enabling the model to rapidly self-correct using domain-specific 
+knowledge when encountering sudden geological changes. Such an 
+approach would not only strengthen the model's adaptability to highly 
+complex and variable ground conditions but also improve its inter -
+pretability from the perspective of underlying physical laws.
+CRediT authorship contribution statement
+Xianguo Wu: Writing – original draft, Funding acquisition. Yu Lei: 
+Formal analysis, Data curation. Feiming Su: Methodology, Investiga -
+tion. Tiejun Li: Supervision, Resources. Yang Liu: Writing – review & 
+editing, Software.
+Declaration of competing interest
+The authors declare that they have no known competing financial 
+interests or personal relationships that could have appeared to influence 
+the work reported in this paper.
+Acknowledgments
+This work was supported by the National Natural Science Foundation 
+of China [grant number 51778262] and Social Science Foundation of 
+Hubei Province [grant number 22ZD004].
+Data availability
+Data will be made available on request.
+References
+Boje, C., Guerriero, A., Kubicki, S., Rezgui, Y., 2020. Towards a semantic construction 
+digital twin: directions for future research. Autom. ConStruct. 114, 103179 .
+Cao, C., Chen, X., Shi, C., Fu, Y., Gong, C., Wang, Z., 2023. Clogging of slurry-shield 
+tunnel-boring machine drives in sedimentary soft rock: a case study. Front. Struct. 
+Civ. Eng. 17, 1502 – 1516 .
+Cao, Y., Li, S., Shen, G.Q., Chen, H., Liu, Y., 2025. Intelligent dynamic control of shield 
+parameters using a hybrid algorithm and digital twin platform. Autom. ConStruct. 
+169 .
+Cao, Y., Su, F., Antwi-Afari, M.F., Lei, J., Wu, X., Liu, Y., 2024. Enhancing mix proportion 
+design of low carbon concrete for shield segment using a combination of Bayesian 
+optimization-NGBoost and NSGA-III algorithm. J. Clean. Prod. 465, 142746 .
+Chakrabarty, A., Bortoff, S.A., Laughman, C.R., 2023. Simulation failure-robust bayesian 
+optimization for data-driven parameter estimation. IEEE Trans. Syst. Man Cybern.: 
+Systems 53, 2629 – 2640 .
+Chen, H., Shen, G.Q., Feng, Z., Liu, Y., 2025. Assessment of the vulnerability of urban 
+metro to rainstorms based on improved cloud model and evidential reasoning. Tunn. 
+Undergr. Space Technol. 157, 106353 .
+Chen, B., Wang, L., Feng, Z., Liu, Y., Wu, X., Qin, Y., Xia, L., 2023. Optimization of high- 
+performance concrete mix ratio design using machine learning. Eng. Appl. Artif. 
+Intell. 122, 106047 .
+Chen, C., Wu, B., Jia, P., Wang, Z., 2022. A novel hybrid deep neural network prediction 
+model for shield tunneling machine thrust. IEEE Access 10, 123858 – 123873 .
+Chen, H., Cheng, Y., Du, T., Wu, X., Cao, Y., Liu, Y., 2025. Enhancing the performance of 
+recycled aggregate green concrete via a Bayesian optimization light gradient 
+boosting machine and the nondominated sorting genetic algorithm-III. Constr. Build. 
+Mater. 458, 139527 .
+Chen, H., Cheng, S., Qin, Y., Xu, W., Liu, Y., 2024. Sustainability evaluation of urban 
+large-scale infrastructure construction based on dynamic fuzzy cognitive map. 
+J. Clean. Prod. 449, 141774 .
+Chen, H., Geoffrey Shen, Q., Skibniewski, M.J., Cao, Y., Liu, Y., 2025. Dynamic 
+prediction and optimization of tunneling parameters with high reliability based on a 
+hybrid intelligent algorithm. Inform. Fusion. 114, 102705 .
+Chen, H., Lei, Y., Xia, L., Deveci, M., Chen, Z.-S., Liu, Y., 2024. Dynamic evaluation of the 
+safety risk during shield construction near existing tunnels via a PairCopula bayesian 
+network. Appl. Soft Comput., 112583
+Chen, H., Liu, J., Shen, Q.G., Li, T., Liu, Y., 2025. Data-driven joint multiobjective 
+prediction and optimization for tunnel-induced adjacent bridge pier displacement: a 
+case study in China. Eng. Appl. Artif. Intell. 142, 109616 .
+Chen, H.Y., Li, X.Y., Feng, Z.B., Wang, L., Qin, Y.W., Skibniewski, M.J., Chen, Z.S., 
+Liu, Y., 2023. Shield attitude prediction based on Bayesian-LGBM machine learning. 
+Inform. Sciences. 632, 105 – 129 .
+Chen, R.-p., Li, J., Kong, L.-g., Tang, L.-j., 2013. Experimental study on face instability of 
+shield tunnel in sand. Tunn. Undergr. Space Technol. 33, 12 – 21 .
+Fig. 20. Interactive workflow demonstration of TFS control during LDSS operation.
+X. Wu et al.                                                                                                                                                                                                                                      Engineering Applications of Artiϧcial Intelligence 168 (2026) 114029 
+18 
+Chenn kui, F.h., 2014. Designoptionforthe extra large rail and road shield tunnel on 
+sanyangRoad in Wuhan. ModernTunnellingTechnology 51, 168–177 .
+Cong, R., Yang, R., Li, G., Huang, Z., Gong, Y., Jing, M., Lu, M., 2023. Geomechanical 
+properties of thinly interbedded rocks based on Micro- and macro-scale 
+measurements. Rock Mech. Rock Eng. 56, 5657–5675 .
+Cui, X., Li, P., Ge, Z., Li, S., Chen, Y., 2025. Experimental study on face stability of shield 
+tunnel in water-rich inclined composite strata considering different inclination 
+angles. Appl. Ocean Res. 154, 104323 .
+Dun, A., Yang, Y., Lei, F., 2022. Dynamic graph convolution neural network based on 
+spatial-temporal correlation for air quality prediction. Ecol. Inform. 70, 101736 .
+Feng, S., Chen, Z., Luo, H., Wang, S., Zhao, Y., Liu, L., Ling, D., Jing, L., 2021. Tunnel 
+boring machines (TBM) performance prediction: a case study using big data and 
+deep learning. Tunn. Undergr. Space Technol. 110, 103636 .
+Fu, X., Lee Kong Tiong, R., Zhang, L., 2025. EMNet: an ensemble deep learning approach 
+for geological condition detection in tunnel excavation. Expert Syst. Appl. 261, 
+125484 .
+Fu, X., Pan, Y., Zhang, L., 2024. A causal-temporal graphic convolutional network (CT- 
+GCN) approach for TBM load prediction in tunnel excavation. Expert Syst. Appl. 238, 
+121977 .
+Fu, X., Wu, M., Ponnarasu, S., Zhang, L., 2023. A hybrid deep learning approach for 
+dynamic attitude and position prediction in tunnel construction considering spatio- 
+temporal patterns. Expert Syst. Appl. 212, 118721 .
+Ge, J., 2025. Characterization of the flow field in the excavation chamber between 
+atmospheric and conventional cutterhead. Constr. Mech. 46, 22–26 .
+Ghayekhloo, M., Nickabadi, A., 2023. CLP-GCN: confidence and label propagation 
+applied to graph convolutional networks. Appl. Soft Comput. 132, 109850 .
+Graves, A., Schmidhuber, J., 2005. Framewise phoneme classification with bidirectional 
+LSTM and other neural network architectures. Neural Netw. 18, 602–610 .
+Guo, S., Wang, B., Zhang, P., Wang, S., Guo, Z., Hou, X., 2023. Influence analysis and 
+relationship evolution between construction parameters and ground settlements 
+induced by shield tunneling under soil-rock mixed-face conditions. Tunn. Undergr. 
+Space Technol. 134, 105020 .
+He, Y., Ding, Y., Zhu, Q., Wu, H., Guo, Y., Wang, Q., Zhou, R., 2024. Reliable simulation 
+analysis for high-temperature inrush water hazard based on the digital twin model of 
+tunnel geological environment. Tunn. Undergr. Space Technol. 154, 106110 .
+Hou, C., Pan, Q., Xu, T., Huang, F., Yang, X., 2022. Three-dimensional tunnel face 
+stability considering slurry pressure transfer mechanisms. Tunn. Undergr. Space 
+Technol. 125, 104524 .
+Hu, M., Wu, B., Zhou, W., Wu, H., Li, G., Lu, J., Yu, G., Qin, Y., 2022. Self-driving shield: 
+intelligent systems, methodologies, and practice. Autom. ConStruct. 139, 104326 .
+Lei, B., Kirk, T.Q., Bhattacharya, A., Pati, D., Qian, X., Arroyave, R., Mallick, B.K., 2021. 
+Bayesian optimization with adaptive surrogate models for automated experimental 
+design. npj Comput. Mater. 7, 194 .
+Lei, L., Shao, S., Liang, L., 2024. An evolutionary deep learning model based on EWKM, 
+random forest algorithm, SSA and BiLSTM for building energy consumption 
+prediction. Energy 288, 129795 .
+Li, Q., Ji, Y., Zhu, M., Zhu, X., Sun, L., 2024. Unsupervised feature selection using 
+chronological fitting with Shapley Additive explanation (SHAP) for industrial time- 
+series anomaly detection. Appl. Soft Comput. 155, 111426 .
+Li, T., Liu, J., Wu, X., Su, F., Liu, Y., 2025. Dynamic prediction and control of a tunnel 
+boring machine with a particle swarm optimization–random forest algorithm and an 
+integrated digital twin. Appl. Soft Comput. 178, 113294 .
+Li, S., Liu, B., Xu, X., Nie, L., Liu, Z., Song, J., Sun, H., Chen, L., Fan, K., 2017. An 
+overview of ahead geological prospecting in tunneling. Tunn. Undergr. Space 
+Technol. 63, 69–94 .
+Li, W., Zhang, C., Tu, S., Chen, W., Ma, M., 2023a. Face stability analysis of a shield 
+tunnel excavated along inclined strata. Undergr. Space 13, 183–204 .
+Li, X., Li, H., Du, S., Jing, L., Li, P., 2023b. Cross-project utilisation of tunnel boring 
+machine (TBM) construction data: a case study using big data from Yin-Song 
+diversion project in China. Georisk 17, 127–147 .
+Li, Y., Zhu, Z., Kong, D., Han, H., Zhao, Y., 2019. EA-LSTM: evolutionary attention-based 
+LSTM for time series prediction. Knowl. Base Syst. 181, 104785 .
+Liu, Y., Luo, W., Tang, X., Wang, X.-j., 2025. Integrating STIRPAT - Adaboost and data- 
+driven for influencing factors analysis and scenario prediction of carbon emission 
+during building materialization stage. Urban. Clim. 62, 102555 .
+Liu, Y., Luo, W., Tang, X., Wang, X.-j., 2025. Integrating STIRPAT - Adaboost and data- 
+driven for influencing factors analysis and scenario prediction of carbon emission 
+during building materialization stage. Urban. Clim. 62, 102555 .
+Liu, Y., Pedrycz, W., Deveci, M., Chen, Z.-S., 2024. BIM-based building performance 
+assessment of green buildings - A case study from China. Appl. Energ. 373, 123977 .
+Liu, Y., Wang, X.J., Chen, Z.S., Zhang, Y., Zhao, S., Devici, M., Jin, L., Skibniewski, M.J., 
+2024. Evaluating Digital Health Services Quality via Social. Eng. Manage. 71, 
+9981–9993 .
+Liu, M.-B., Xiao, J.-H., Liao, S.-M., Liu, Z.-Y., He, J.-Z., Men, Y.-Q., Sun, J.-C., 2024. 
+Model test on the effects of shield machine cutterhead vibration on tunnel face 
+stability in sandy ground. Undergr. Space .
+Liu, Y., Chen, H., 2025. Research on factors influencing total carbon emissions of 
+construction based on structural equation modeling: A case study from China. Build. 
+Environ. 275, 112396 .
+Liu, Y., Chen, H., Zhang, L., Wu, X., Wang, X.-j., 2020. Energy consumption prediction 
+and diagnosis of public buildings based on support vector machine learning: A case 
+study in China. J. Clean. Prod. 272, 122542 .
+Liu, Y., Li, T., Xu, W., Wang, Q., Huang, H., He, B.-J., 2023. Building information 
+modelling-enabled multi-objective optimization for energy consumption parametric 
+analysis in green buildings design using hybrid machine learning algorithms. Energ. 
+Buildings. 300, 113665 .
+Liu, M., Liao, S., Yang, Y., Men, Y., He, J., Huang, Y., 2021. Tunnel boring machine 
+vibration-based deep learning for the ground identification of working faces. J. Rock 
+Mech. Geotech. Eng. 13, 1340–1357 .
+Lü, X., Zhou, Y., Huang, M., Zeng, S., 2018. Experimental study of the face stability of 
+shield tunnel in sands under seepage condition. Tunn. Undergr. Space Technol. 74, 
+195–205 .
+Luo, W., Liu, W., Liu, W., Xia, L., Zheng, J., Liu, Y., 2025. Analysis of influencing factors 
+and carbon emission scenario prediction during building operation stage. Energy 
+316, 134401 .
+Ma, L., Xiao, Z., Li, K., Li, S., Li, J., Yi, X., 2020. Game theoretic interpretability for 
+learning based preoperative gliomas grading. Future Gener. Comput. Syst. 112, 
+1–10 .
+Mahmoodzadeh, A., Nejati, H.R., Mohammadi, M., Hashim Ibrahim, H., Khishe, M., 
+Rashidi, S., Hussein Mohammed, A., 2022. Developing six hybrid machine learning 
+models based on gaussian process regression and meta-heuristic optimization 
+algorithms for prediction of duration and cost of road tunnels construction. Tunn. 
+Undergr. Space Technol. 130, 104759 .
+Man, J., Zhang, T., Huang, H., Dias, D., 2024. Probabilistic analysis of tunnel face seismic 
+stability in layered rock masses using Polynomial Chaos Kriging metamodel. J. Rock 
+Mech. Geotech. Eng. 16, 2678–2693 .
+Man, J., Zhou, M., Zhang, D., Huang, H., Chen, J., 2022. Face stability analysis of circular 
+tunnels in layered rock masses using the upper bound theorem. J. Rock Mech. 
+Geotech. Eng. 14, 1836–1848 .
+Pan, Y., Fu, X., Zhang, L., 2022. Data-driven multi-output prediction for TBM 
+performance during tunnel excavation: an attention-based graph convolutional 
+network approach. Autom. ConStruct. 141, 104386 .
+Pan, Y., Zhang, L., 2021. A BIM-data mining integrated digital twin framework for 
+advanced project management. Autom. ConStruct. 124, 103564 .
+Phoon, K.-K., Zhang, W., 2023. Future of machine learning in geotechnics. Georisk 17, 
+7–22 .
+Ren, X., Zhang, F., Ding, W., Liu, Y., Xu, T., 2025. Prediction of ground settlement and 
+optimization of TunnelingParameters of slurry shield based on neural network. Sci. 
+Technol. Eng. 25, 2090–2099 .
+Shang, W., Song, Z., Chen, Z., Chen, T., Meng, J., Zheng, X., 2023. Experimental 
+investigation of face stability of a slurry Shield tunnel based on a newly developed 
+model Test system. Geotech. Geol. Eng. 41, 4137–4152 .
+Shi, J., Zhang, S., Zhang, B., Teng, S., Zhao, M., 2025a. Stability analysis of the tunnel 
+face adjacent to longitudinal stratigraphic interface using the upper bound theorem. 
+Alex. Eng. J. 111, 357–373 .
+Shi, Z., Zhang, T., Li, M., Tao, S., Bo, Y., Li, Y., 2025b. Model test of horizontal freezing 
+reinforcement in mud tankof slurry balanced shield. Rock Soil Mech. 46, 1534–1544 .
+Siami-Namini, S., Tavakoli, N., Namin, A.S., 2019. The performance of LSTM and 
+BiLSTM in forecasting time series. 2019 IEEE International Conference on Big Data 
+(Big Data), pp. 3285–3292 .
+Su, F., Wu, X., Li, T., Liu, Y., 2025. Development of data-driven predictive model and 
+enhanced multiobjective optimization to improve the excavation performance of 
+large-diameter slurry shields. Eng. Appl. Artif. Intell. 162, 112402 .
+Tornyeviadzi, H.M., Mohammed, H., Seidu, R., 2023. Robust night flow analysis in water 
+distribution networks: a BiLSTM deep autoencoder approach. Adv. Eng. Inform. 58, 
+102135 .
+Tu, S., Li, W., Zhang, C., Liu, T., Wang, L., Jin, Z., 2024. Model test and discrete element 
+method simulation of tunnel face stability in sand-gravel inclined layered stratum. 
+Comput. Geotech. 172, 106456 .
+Victoria, A.H., Maragatham, G., 2021. Automatic tuning of hyperparameters using 
+Bayesian optimization. Evolving Systems 12, 217–223 .
+Wang, c., 2015. Key technologies for construction of shield-bored slender west lake 
+tunnel in Yangzhou. Tunnel Construction 35, 828–833 .
+Wang, Q., Xie, X., Shahrour, I., Huang, Y., 2021a. Use of deep learning, denoising technic 
+and cross-correlation analysis for the prediction of the shield machine slurry 
+pressure in mixed ground conditions. Autom. ConStruct. 128, 103741 .
+Wang, Q., Xie, X., Yu, H., Mooney, M.A., 2021b. Predicting slurry pressure balance with a 
+long short-term memory recurrent neural network in difficult ground condition. 
+Comput. Intell. Neurosci. 2021, 6678355 .
+Wang, Y., Tian, H.-M., 2024. Digital geotechnics: from data-driven site characterisation 
+towards digital transformation and intelligence in geotechnical engineering. Georisk 
+18, 8–32 .
+Wang, Y., Zhao, J., Jiang, K., Zhou, Q., Kang, Z., Chen, C., Zhang, H., 2023. Prediction of 
+TBM operation parameters using machine learning models based on BPSO. Adv. Eng. 
+Inform. 56, 101955 .
+Wei, Q., Yang, J., Fu, F., Xue, L., 2025. Dynamic classification and attention mechanism- 
+based bidirectional long short-term memory network for daily runoff prediction in 
+Aksu River basin, Northwest China. J. Environ. Manag. 374, 124121 .
+Weng, X., Sun, Y., Yan, B., Niu, H., Lin, R., Zhou, S., 2020. Centrifuge testing and 
+numerical modeling of tunnel face stability considering longitudinal slope angle and 
+steady state seepage in soft clay. Tunn. Undergr. Space Technol. 101, 103406 .
+Wu, X., Feng, Z., Liu, Y., Qin, Y., Yang, T., Duan, J., 2023. Enhanced safety prediction of 
+vault settlement in urban tunnels using the pair-copula and Bayesian network. Appl. 
+Soft Comput. 132, 109711 .
+Wu, X., Feng, Z., Yang, S., Qin, Y., Chen, H., Liu, Y., 2024. Safety risk perception and 
+control of water inrush during tunnel excavation in karst areas: An improved 
+uncertain information fusion method. Autom. ConStruct. 163, 105421 .
+Wu, X., Li, W., Li, T., Feng, Z., Su, F., Liu, Y., 2026. A knowledge- and data-driven 
+framework for deformation prediction and control of shield tunneling below existing 
+tunnels. Adv. Eng. Inform. 69, 103932 .
+Wu, X., Li, X., Qin, Y., Xu, W., Liu, Y., 2023. Intelligent multiobjective optimization 
+design for NZEBs in China: Four climatic regions. Appl. Energ. 339, 120934 .
+X. Wu et al.                                                                                                                                                                                                                                      Engineering Applications of Artiϧcial Intelligence 168 (2026) 114029 
+19 
+Wu, X., Wang, J., Feng, Z., Chen, H., Li, T., Liu, Y., 2024. Multisource information fusion 
+for real-time prediction and multiobjective optimization of large-diameter slurry 
+shield attitude. Reliab. Eng. Syst. Safe. 250, 110305 .
+Xu, P., Huang, Z., 2024. Influencing factors and sensitivity analysis for shield 
+construction in water-rich sandy cobble stratum. J. Eng. Geol. 32, 1787–1797 .
+Xu, W., Li, X., Wu, X., Li, T., Chen, H., Liu, Y., 2025. Research on the application of a 
+hybrid intelligent algorithm in reducing the negative response of shield tunneling 
+construction. Eng. Fail. Anal. 169, 109044 .
+Xu, W., Su, F.M., Liu, J., Wu, X.G., Liu, Y., 2026. Intelligent control and optimization of 
+shield tunneling machines in tunnel construction: Insights from excavation 
+parameter data analysis and interpretable machine learning. Adv. Eng. Inform. 71 .
+Xu, Z.H., Wang, W.Y., Lin, P., Nie, L.C., Wu, J., Li, Z.M., 2021. Hard-rock TBM jamming 
+subject to adverse geological conditions: influencing factor, hazard mode and a case 
+study of Gaoligongshan Tunnel. Tunn. Undergr. Space Technol. 108, 103683 .
+Yang, H., Wang, M., Yu, L., Zhang, X., Wang, Z., Liu, D., 2024. MPM analysis for the 
+stability mode and failure characteristics of tunnel face considering unsupported 
+length. Comput. Geotech. 172, 106417 .
+Xu, W., Wu, X., Xiong, S., Li, T., Liu, Y., 2025. Optimizing the sustainable performance of 
+public buildings: A hybrid machine learning algorithm. Energy 320, 135283 .
+Yang, S., Chen, H., Feng, Z., Qin, Y., Zhang, J., Cao, Y., Liu, Y., 2023. Intelligent 
+multiobjective optimization for high-performance concrete mix proportion design: a 
+hybrid machine learning approach. Eng. Appl. Artif. Intell. 126, 106868 .
+Yu, G., Lin, D., Wang, Y., Hu, M., Sugumaran, V., Chen, J., 2023. Digital Twin-enabled 
+and Knowledge-driven decision support for tunnel electromechanical equipment 
+maintenance. Tunn. Undergr. Space Technol. 140, 105318 .
+Yu, G., Wang, Y., Mao, Z., Hu, M., Sugumaran, V., Wang, Y.K., 2021. A digital twin-based 
+decision analysis framework for operation and maintenance of tunnels. Tunn. 
+Undergr. Space Technol. 116, 104125 .
+Yuan, B., Choo, C.S., Yeo, L.Y., Wang, Y., Yang, Z., Guan, Q., Suryasentana, S., Choo, J., 
+Shen, H., Megia, M., Zhang, J., Liu, Z., Song, Y., Wang, H., Chen, X., 2025. Physics- 
+Informed Machine Learning in Geotechnical Engineering: a Direction Paper, vol. 20. 
+Geomechanics and Geoengineering, pp. 1128–1159 .
+Zhang, C.-h., Wang, Y., Wu, L.-j., Dong, Z.-k., Li, X., 2024a. Physics-informed and data- 
+driven machine learning of rock mass classification using prior geological knowledge 
+and TBM operational data. Tunn. Undergr. Space Technol. 152, 105923 .
+Zhang, L., Guo, J., Fu, X., Tiong, R.L.K., Zhang, P., 2024b. Digital twin enabled real-time 
+advanced control of TBM operation using deep learning methods. Autom. ConStruct. 
+158, 105240 .
+Zhang, P., Wu, H.-N., Chen, R.-P., Dai, T., Meng, F.-Y., Wang, H.-B., 2020. A critical 
+evaluation of machine learning and deep learning in shield-ground interaction 
+prediction. Tunn. Undergr. Space Technol. 106, 103593 .
+Zhao, C., Mahmoudi, E., Luo, M., Jiang, M., Lin, P., 2023. Unfavorable geology 
+recognition in front of shallow tunnel face using machine learning. Comput. 
+Geotech. 157, 105313 .
+Zhao, Y., Yang, H., Chen, Z., Chen, X., Huang, L., Liu, S., 2019. Effects of jointed rock 
+Mass and mixed ground conditions on the cutting efficiency and cutter wear of 
+tunnel boring machine. Rock Mech. Rock Eng. 52, 1303–1313 .
+Zhonghai, S., Hengyu, Z., Buhai, S., 2019. Faults prediction and diagnoses of shield 
+machine based on LSTM. 2019 Chinese Control and Decision Conference. CCDC), 
+pp. 5254–5259 .
+Zhou, C., Gao, Y., Chen, E.J., Ding, L., Qin, W., 2023. Deep learning technologies for 
+shield tunneling: challenges and opportunities. Autom. ConStruct. 154, 104982 .
+Zhou, zhong, Chen yun, zhuangzhuang, L., 2022. Study on slurry pressure control model 
+in slurry chamber of slurry shield. Rock Soil Mech. 43 (S1), 286–292 .
+X. Wu et al.                                                                                                                                                                                                                                      Engineering Applications of Artiϧcial Intelligence 168 (2026) 114029 
+20 

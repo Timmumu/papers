@@ -13,3 +13,7 @@ Purpose – The application of steel structures in infrastructure construction m
 | Yes | Yes | Yes | Yes | Yes | **Include** |
 
 **Note:** Dynamic DT health monitoring of steel structures; CNN-LSTM+Bayesian
+
+## Step-3 Deep-Read Coding (Prompt B)
+
+**Stage-2 exclusion:** P=No, Q=No, R=No. RETRACTED ARTICLE: This paper (A dynamic digital twin-based health monitoring method for steel structures integrating multi-source sensing and intelligent algorithms, Int J Structural Integrity 2025) has been RETRACTED by the publisher. Per SLR best practice, retracted papers must be excluded from the review. P=Q=R=No. The Endnote full text is flagged RETRACTED in its header. [Full-text source: Endnote]

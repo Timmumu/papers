@@ -13,3 +13,12 @@ This paper addresses the challenge of enriching geometric digital twins of build
 | Yes | Yes | Yes | Yes | Yes | **Include** |
 
 **Note:** Enriching geometric DTs with fire-safety objects; condition monitoring
+
+## Step-3 Deep-Read Coding (Prompt B)
+
+| P | Q | R | U Tier | V | W | X | Z | AA | AB | AC | AD | AE | AF |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| Yes | Yes | Yes | Tier 1 - Digital Model (static, no live data) | 0 | 0 | 1 | Design for Safety (DfS) | None | Perception / Computer Vision | Multi (two or more data types) | Single case study | 4 | Perception / Computer Vision |
+
+**Key evidence (AG):** Enriching geometric digital twins of buildings with small objects (TUM/Cambridge): fuses laser scanning + photogrammetry; AI-based image segmentation (deep learning) detects small objects (electrical, fire-safety, plumbing); AI-based text detection/recognition extracts object IDs; semantic info mapped to 3D point cloud → enriched DT with geometric + semantic + text info; comprehensive case study. Static DT for facility management — no live data link, no actuation, no learning loop.
+(full-text source: Endnote)

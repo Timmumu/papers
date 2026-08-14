@@ -13,3 +13,12 @@ Achieving the EU’s energy and decarbonisation goals requires more efficient ma
 | Yes | Yes | Yes | Yes | Yes | **Include** |
 
 **Note:** Renovation DT tracking quality & safety KPIs; pilot + TAM
+
+## Step-3 Deep-Read Coding (Prompt B)
+
+| P | Q | R | U Tier | V | W | X | Z | AA | AB | AC | AD | AE | AF |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| Yes | Yes | Yes | Tier 2 - Digital Shadow (one-way physical to virtual) | 0 | 1 | 0 | Both | None | Digital Twin platform (no machine learning) | Multi (two or more data types) | Single case study | 4 | Lifecycle / governance |
+
+**Key evidence (AG):** Renovation Digital Twin (RDT) platform (Northumbria U, RINNO Project): pilot implementation on French demonstration site; real-time data + dashboards monitoring 13 KPIs across 5 domains (cost, schedule, quality, safety, environment); TAM evaluation (102 professionals, Attitude Toward Use RII 0.894); 73% emissions reduction achieved but economic viability challenges. One-way monitoring→dashboard→decision support; no actuation and no learning loop.
+(full-text source: Endnote)

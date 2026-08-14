@@ -1,0 +1,1736 @@
+Contents lists available at ScienceDirect
+Automation in Construction
+journal homepage: www.elsevier.com/locate/autcon
+Advanced fire emergency management based on potential fire risk
+assessment with informative digital twins
+Young-Jin Kim a, Hanjin Kimb, Beomsu Hab, Won-Tae Kimb,∗
+a Department of Artificial Intelligence and Big Data, Sehan University, 33, Sehandae-gil, Sinpyeong-myeon, Dangjin-si, 31746, Chungcheongnam-do, Republic of
+Korea
+b Department of Future Convergence Engineering, Korea University of Technology and Education, 1600, Chungjeol-ro, Byeongcheon-myeon,
+Dongnam-gu, Cheonan-si, 31253, Chungcheongnam-do, Republic of Korea
+A R T I C L E I N F O
+Keywords:
+Digital twin
+Building information model
+Internet of things
+Modeling and simulation
+Dynamic time warping
+Fire emergency management systems
+A B S T R A C T
+Modern large complex buildings, with their vast expanses and multipurpose usability, present diverse fire-
+spread scenarios, necessitating precise awareness of fire situations. Despite numerous studies integrating
+building information models with IoT and AI technologies to provide contextual information, there may
+be limitations in recognizing potential risks under dynamic fire behaviors during urgent situations. This
+paper presents a fire emergency management system based on an informative digital twin (IDT) to provide
+instantaneous fire situational information. Utilizing IDT, the system gathers building-specific fire scenario
+knowledge for immediate fire recognition. Leveraging this knowledge, the IDT assesses building fire risks and
+shares safety information on egress routes and zones with fire-related applications. A simulation case study
+revealed a fire recognition processing time of 0.88 s, acceptable for fire emergencies. Additionally, the IDT’s
+risk assessment reduced the total evacuation time by 65 s and potential injuries by 406, demonstrating the
+system’s effectiveness in fire emergency management.
+1. Introduction
+As modern buildings become increasingly large and complex, the
+risk of fire hazards increases. Large complex buildings such as shop-
+ping malls, airports, and underground shopping areas, bustling with
+people, are prone to significant threats to both life and property during
+fires [1]. In particular, these buildings, with their intricate structures
+and varied uses across different sub-zones [ 2], present a dynamic
+fire spread and potentially complicate the control and management
+responses during such emergencies [ 3]. Survival rate in the event of
+a fire relies heavily on fast on-site decision-making. However, building
+characteristics can obscure the assessment of the situation during a fire,
+increasing the difficulty for evacuees in making appropriate decisions.
+This can lead to delayed evacuation and serious casualties. It is chal-
+lenging for building occupants to promptly evacuate based solely on
+simple fire alarms. Therefore, these buildings require an informative
+fire-response management system that can provide detailed information
+about the fire situation, including fire spread trends and potential risk
+levels. This enables the evacuees to make informed decisions quickly
+and formulate effective response strategies.
+How do the challenges faced by evacuees in large complex buildings
+differ from those in more straightforward structures, and why does
+∗ Corresponding author.
+E-mail address: wtkim@koreatech.ac.kr (W.-T. Kim).
+this complexity obstruct decision-making during a fire? The process
+of evacuating from a fire involves detection, recognition, response,
+and movement. In large complex buildings, the initial challenge for
+evacuees is often to observe and assess their environment rather than
+promptly detect and recognize a fire [ 4]. This tendency can be more
+pronounced in large complex buildings, where it is difficult to directly
+identify the source of the fire and where crowd psychology might
+lead to complacency [ 5]. Fortunately, the advancement of intelligent
+sensor technology has improved the detection accuracy [ 6–8], and fire
+monitoring systems based on building information modeling (BIM) can
+assist in identifying the source of a fire [ 9], thus minimizing delays in
+the early stages of fire detection and recognition.
+The problem of evacuation delays in complex buildings, owing to
+their unique features, continues to be a challenge in the response phase
+following recognition. Evacuees plan escape routes before evacuation
+and firefighters develop strategies before conducting rescue operations.
+In this context, information about the spread of fire and smoke is cru-
+cial; however, because of the complex structure and various subzones
+of buildings, it is challenging to predict fire-spread patterns. Current
+fire scenes visualized in three-dimensional maps can assist; however,
+effective response strategies must consider the future trajectory of fire
+https://doi.org/10.1016/j.autcon.2024.105722
+Received 12 October 2023; Received in revised form 3 August 2024; Accepted 17 August 2024
+Automation in Construction 167 (2024) 105722 
+Available online 28 August 2024 
+0926-5805/© 2024 Elsevier B.V. All rights are reserved, including those for text and data mining, AI training, and similar technologies. 
+Y.-J. Kim et al.
+spread, which relies on individual experiences. There is a potential
+deficiency in the prerequisite knowledge required to predict the dy-
+namic spread of fire in large complex buildings for both evacuees
+and firefighters [10]. This gap can lead to inefficient decisions and
+delayed responses, potentially causing a severe loss of life [11]. Fire
+simulations using computational fluid dynamics (CFD) can offer useful
+information [12] but are currently limited mainly to post-incident
+analysis and strategy development owing to constraints in execution
+speed [13].
+The structural complexity and large scale of buildings also present
+challenges in decision-making during movement phases. Large complex
+buildings typically have multiple exits and long and intricate escape
+routes [14]. The occupants of large complex buildings, the majority
+of which are often not residents, are unfamiliar with the building
+layout, making it very difficult to navigate routes [15]. In the event
+of a fire, evacuees must continually find and move along safe paths
+until evacuation is complete. They cannot cross excessively hot areas,
+which are filled with toxic gases and heavy smoke, impairing their
+visibility. In other words, evacuees must identify and avoid areas
+with a high potential fire risk while moving. Conversely, firefighters
+may need to prioritize these high-risk areas to increase their rescue
+efficiency. However, it is not easy for both groups to assess potential
+risks, as this requires tracking and predicting changes in fire-related risk
+factors over time, such as temperature variations and carbon monoxide
+concentrations.
+In summary, the characteristics of large complex buildings make
+them prone to inefficient decision-making and response strategies,
+potentially leading to a severe loss of life [16]. In such cases, training
+within a building using various fire scenarios can aid in better decision-
+making during fire emergencies. However, conducting realistic drills
+in complex buildings is often challenging because of the large number
+of temporary occupants and variety of factors to consider during a
+fire. As mentioned, real-time predictions of fire spread and information
+on potential hazards within a building can complement the knowl-
+edge gained from training and help derive optimal response strategies.
+However, this requires fire emergency management systems (FEMSs) to
+overcome challenges related to simulation speed and to be capable of
+rapidly tracking and predicting changes in fire risk factors.
+As one of the technologies poised to address the aforementioned
+issues, a digital twin has the potential to improve information man-
+agement and decision-making in various sectors, including manufac-
+turing [17], the automotive industry [18], and construction [19,20].
+It overcomes the challenges of managing dynamic, large-scale data in
+physical environments, which is a difficulty faced by BIM [21,22],
+and augments system performance by integrating sophisticated data
+analysis technologies, such as artificial intelligence (AI) [23] and sim-
+ulation [24]. A pivotal aspect of digital twins is their utilization of
+virtual models and environments, enabling experiments that surpass
+the conventional limitations of reality, such as time, space, safety, and
+cost [25]. The knowledge gained from these experiments can be used
+to predict future changes and develop optimal response strategies [26].
+Inspired by these capabilities, we devised a method to model and sim-
+ulate various fire scenarios within virtual environments, gather critical
+insights into potential fire situations, and utilize this information to
+enhance decision-making in actual fire emergencies.
+In this study, we proposed an informative digital twin (IDT)-based
+FEMS specifically designed for large complex buildings. The system
+employs fire-spread information and potential fire risk assessments to
+overcome delays in fire response due to decision-making difficulties in
+large complex structures.
+The main contributions of this study are as follows:
+(1) IDT-based Building Fire Emergency Management: We in-
+troduce an IDT-based FEMS architecture capable of providing
+fire-spread information and potential fire risk assessment in
+large complex buildings. This architecture leverages a cloud–
+edge computing framework for efficient handling of large-scale
+data. The IDT, built upon object-oriented design principles, func-
+tions at the edge and develops internal behavioral logic that
+is essential for delivering the necessary information throughout
+each phase of the fire response. It provides appropriate fire
+situation information to fire-response entities and is responsible
+for managing all data-processing activities.
+(2) Unique Fire Knowledge Base Construction and Utilization:
+We propose a mechanism using the IDT to create a building-
+specific fire knowledge base, along with methods for its effective
+utilization. Recognizing the computational challenges of CFD,
+our system pre-simulates potential fire scenarios using the high-
+resolution building model of the IDT. During fires, the system
+employs a similarity comparison algorithm to compare real-time
+sensor data with data extracted from the fire knowledge base,
+thereby facilitating the immediate analysis of fire and smoke
+propagation trends.
+(3) Zone-based Risk Assessment Algorithm: We propose a zone-
+based risk assessment algorithm based on the IDT designed to
+support safe fire-response plans in the event of a fire. This
+algorithm estimates the level of risk in different zones at specific
+times, considering the dynamic changes in a fire in buildings
+with complex structures and various utilized subzones. It uses
+factors such as temperature and smoke and carbon monoxide
+concentrations to assess risks. Evacuees can use this risk infor-
+mation to safely evacuate within the available safe escape time,
+thereby avoiding movement inefficiencies. Rescuers can use this
+information to determine priorities for rescue operations.
+2. Literature review
+2.1. Building fire management systems
+In the event of a fire, to ensure the safety of occupants, the to-
+tal evacuation time, known as the required safe egress time (RSET),
+must be shorter than the available safe egress time (ASET) [27]. This
+principle applies to both general buildings and large complex build-
+ings equally. The total evacuation time comprises the detection, pre-
+movement, and movement times. Caution is necessary at all stages
+because delays at any stage can lead to overall delays. Research has
+been conducted on building fire management systems capable of pro-
+viding appropriate fire situation information to assist individuals in
+making prompt decisions throughout each phase of the evacuation
+process.
+The fire alarm system within a building provides information about
+a fire at the detection stage, and with the advent of Internet of Things
+(IoT) technology, it has become an essential piece of equipment within
+buildings [28]. Fire alarms are critical because they serve as primary in-
+dicators of fire presence, marking the beginning of emergency response
+actions. However, the effectiveness of such alarms can be compromised
+by frequent false alarms, which lead to public skepticism and potential
+evacuation delays. To address this issue, researchers [7,8] have applied
+AI to analyze patterns in fire sensor data to identify uncertainties and
+reduce the likelihood of false alarms. Another approach has enhanced
+the reliability of alerts by using a combination of sophisticated sensors,
+including smoke detectors and cameras, and leveraging an ensemble of
+sensory data to improve the detection accuracy [6].
+Numerous studies have been conducted to provide information on
+fire situations, even during the post-detection stage. The authors of [29]
+aimed to support the development of evacuation strategies in the pre-
+movement stage using a BIM model to visualize fire situations collected
+from sensor data. In [30], the authors addressed the challenge of
+evacuees struggling to understand a fire environment by introducing an
+augmented reality (AR) device. This device facilitated awareness of the
+fire situation by displaying virtual arrows and providing voice guidance
+for evacuees along the shortest safe route to an exit. The research
+presented in [31] revealed that utilizing virtual reality (VR)/AR devices
+Automation in Construction 167 (2024) 105722 
+2 
+Y.-J. Kim et al.
+to convey information about fire scenarios can significantly improve
+the cognitive ability of individuals to navigate dangerous situations
+through training. Furthermore, Kong et al. [32] and Chou et al. [33]
+shifted the focus toward providing essential information for firefighters,
+such as the locations of evacuees and the status of the fire, viewing the
+scenario from the perspective of rescuers rather than evacuees.
+Although numerous studies have shown the potential of delivering
+essential fire situation information to stakeholders during fire inci-
+dents, addressing problems that may arise in large complex buildings
+remains a challenge. As discussed previously, the essence of ensuring
+safety during a fire lies in reducing the total evacuation time by
+minimizing delays at every stage [34]. It is not merely about the
+initial alarms activated by the building’s detection systems; there is
+a pressing need to enhance fire safety features and offer appropriate
+information about fire situations, including visual information on fire
+situations, escape routes, etc. Although various research efforts have
+demonstrated the feasibility of supplying such information at different
+stages, a lack of systematic integration among technologies may result
+in erroneous decisions propelled by potential inaccuracies and misinfor-
+mation [35]. The complex nature of large buildings requires managing
+a substantial volume of disaster-prevention data, which exacerbates
+these challenges. The capacity of technologies such as the narrowband
+IoT (NB-IoT) to support up to 200,000 devices is promising [36];
+however, effectively processing the vast amounts of data generated
+during a fire to derive relevant information at each stage presents a
+distinct challenge.
+The occurrence of complex fire patterns owing to intricate structures
+and various subzones complicates decision-making for evacuees and
+firefighters alike [15]. During a building fire, more than half the
+occupants reported feeling deprived of the necessary data for making
+informed decisions [37]. Similarly, over 83% of firefighters reported
+a lack of critical decision-making information. This information short-
+age regarding fire situations exacerbates decision-making challenges
+in complex fire patterns. Additionally, large buildings with complex
+layouts, typically featuring multiple evacuation routes, inherently ex-
+perience prolonged evacuation times [38]. Ensuring the safety of any
+chosen route throughout the evacuation process is difficult owing to
+the changing conditions [14]. Under these circumstances, it is advan-
+tageous to develop an evacuation strategy that includes the prediction
+of fire and smoke spread trends based on comprehensive fire simulation
+analyses.
+For instance, in [39], a fire spread model based on a fire dynamics
+simulator (FDS) was developed considering the complex nature of
+skyscrapers and the rapid spread of fires. This model used the analyzed
+data to address the challenges of fire prevention and determine evac-
+uation strategies for occupants. Similarly, in the context of wildfires,
+where the fire trajectory is influenced by diverse materials at the
+ignition source, fire simulation results play a pivotal role in shaping
+response strategies by predicting fire spread and behavior [40]. Analyz-
+ing changes in temperature, smoke, and carbon monoxide during fire
+situations through simulations, as shown in a series of studies, can help
+identify potential hazards and develop optimal strategies. However,
+CFD-based fire simulations can be time consuming, often requiring
+hours or even days [13], which limits their immediate use during a
+fire event. This limitation becomes more evident as the complexity of
+the model increases.
+2.2. Digital twins in disaster safety
+A digital twin is a virtual representation that mirrors a potential
+or actual physical entity spanning from the micro-atomic level to the
+macro-geometrical level [41]. By utilizing data analysis technologies,
+including AI, digital twins process large datasets to enhance the moni-
+toring, prediction, diagnosis, and optimization of physical systems [19].
+Although they may be confused with BIM models, digital twins are
+distinct in their focus on replicating an existing physical entity and their
+ability to represent the real-time condition of a physical system through
+connectivity [21]. This real-time data integration capability supports
+dynamic decision-making and optimization, distinguishing digital twins
+from BIM models. The functionalities of data management and decision
+support provided by digital twins present significant opportunities for
+improving the efficiency of construction and asset management [42].
+Furthermore, their recent deployment in disaster and safety manage-
+ment, leveraging these features, has attracted significant attention [20,
+43].
+As information structures, digital twins excel in the lifecycle man-
+agement of buildings and disaster management systems by collecting
+and analyzing real-time data. This is particularly apparent in disaster
+safety management, such as that of fire accident scenarios. For instance,
+Khajavi et al. [44] utilized digital twins to enhance safety protocols
+throughout a building’s lifecycle by focusing on fire detection and
+anomaly identification. Wang et al. [45] emphasized that the effective-
+ness of a digital twin lies in its capacity to faithfully represent data and
+their meanings, and to harness the entirety of these data for knowledge
+processing. A recent study [46] investigated the integration of digital
+twins and semantic web technologies for the intelligent management of
+building fire prevention systems, developing digital twins that combine
+static building geometric data with dynamic sensor data for proactive
+fire prevention management.
+By facilitating information processing, digital twins can be inte-
+grated with advanced analytical tools, such as AI and simulation, to
+provide stakeholders with the analyzed information they need. Zhang
+et al. [47] proposed an AI-based digital fire framework to develop a
+digital twin that can provide detailed information such as temperature
+profiles within buildings, fire locations, and fire sizes. This system,
+named AID-Fire, is expected to be utilized for fire-trend prediction
+and evacuation guidance based on AI technology, demonstrating the
+potential to provide analyzed information within buildings for fire
+response. Ding et al. [23] identified a lack of real-time dynamic evac-
+uation information, such as the location of occupants and the status
+of firefighters during the evacuation and rescue stages, as one of
+the main causes of casualties in building fires. Their study explored
+smart human monitoring technology based on digital twins using AI,
+which employed a Convolutional Neural Network(CNN) -based evacuee
+detector and multi-object tracking algorithm to assist firefighters in
+accurately locating evacuees.
+Simulation-based prediction and analysis are the core aspects of
+digital twin technology [48,49]. Leveraging this capability, research
+has been conducted to offer predictive insights into disaster safety
+domains, including smart cities and wildfires. Ford et al. [50] pro-
+posed a digital-twin-based smart disaster management system known
+as SCDT by integrating simulation technology across various smart city
+infrastructures. The authors highlighted that the SCDT could virtually
+navigate the disaster management cycle using simulations, enhance
+predictions of expected action outcomes, and facilitate feedback on the
+ramifications of the actions implemented. Yun et al. [25] developed
+a novel digital twin framework designed to enhance the precision of
+disaster monitoring and prediction and mitigate the impact of nat-
+ural disasters. In this framework, they introduced a hybrid disaster
+model that combined a physics-based model with a data-driven error
+correction model to improve disaster prediction accuracy.
+Although several studies have been conducted using digital twins,
+research on their use to solve fire-response scenarios is less common.
+Moreover, many of these studies do not provide a comprehensive
+view of the entire process but rather narrow the focus to specific
+response steps [7]. Such a fragmented approach can make it difficult
+to adequately provide the required information at different stages of a
+fire emergency. In addition, as has been repeatedly emphasized, FEMSs
+rely on intelligent tools for prediction and analysis, and to be effectively
+utilized in emergency fire scenarios, they must overcome limitations in
+processing speed.
+Automation in Construction 167 (2024) 105722 
+3 
+Y.-J. Kim et al.
+Fig. 1. Overall architecture of the IDT-based building fire emergency management system.
+2.3. Goals of the study
+This study aims to explore the design and implementation of an
+FEMS that leverages an IDT to provide appropriate fire situation in-
+formation during the fire-response stage. The main research questions
+(RQs) are as follows:
+RQ1 How can we develop an FEMS that provides fire situation in-
+formation to support rapid decision-making by fire stakehold-
+ers throughout the steps of a fire emergency in large complex
+buildings?
+RQ2 What are the possible approaches to obtaining immediate in-
+formation on fire and smoke spread trends during ongoing fire
+situations rather than post-event?
+RQ3 How can potential risk information from dynamic fire patterns
+be derived to support the establishment of safe evacuation and
+rescue strategies for large complex buildings?
+3. IDT-based building fire emergency management
+3.1. Overall architecture
+The objective of the IDT-based FEMS is to assist stakeholders in
+making timely and effective decisions during fire emergencies. Fig. 1
+shows the architecture of the system. This system employs a strategy
+of knowledge accumulation and discovery to overcome the limitations
+associated with the processing speed of CFD simulations. Prior to a fire
+incident, fire safety experts design and simulate various potential fire
+scenarios tailored to the building. In the event of an actual fire, the
+system leverages the IDT to search among these pre-simulated scenarios
+for those that closely align with the ongoing fire conditions. These
+selected scenarios are then used to track and predict dynamic changes
+in the fire situation, enabling stakeholders to rapidly make informed
+decisions.
+The IDT is a comprehensive digital representation of a physical
+building that plays a pivotal role in building fire emergency manage-
+ment. The IDT-based system is designed to utilize cloud–edge comput-
+ing, enabling the efficient processing of vast amounts of data generated
+by various fire safety equipment in buildings.
+(1) Cloud-computing layer. The cloud-computing layer offers com-
+puting resources for processing high-cost functional entities
+(FEs), handling vast fire knowledge bases, and executing build-
+ing fire emergency management applications. Equipped with
+high-performance computing and ample storage space, cloud-
+computing servers enable fire experts to design and simulate
+numerous potential building fire scenarios with high resolution.
+To accommodate numerous users, FEMS applications are hosted
+on the cloud for efficient access.
+(2) Edge-computing layer. The IDT operates within the edge-
+computing layer and processes raw sensor data to derive ap-
+propriate fire situation information for applications. By prepro-
+cessing the data streams generated by numerous sensors in a
+building at the edge, the IDT eliminates the need to send unnec-
+essary data to the cloud, thereby avoiding bandwidth waste that
+could occur as the number of buildings managed by the system
+increases [51,52]. The IDT follows predefined internal response
+logic steps to derive the fire situation information required by
+the applications. Because the IDT is responsible for executing the
+necessary processes at each stage of a fire emergency, tracking
+the progress and timing of the fire response is straightforward.
+(3) Device layer. The device layer comprises a multimodal sens-
+ing network powered by various IoT sensing devices spread
+throughout a building. These devices collect critical sensor data
+regarding the physical building environment, including temper-
+ature, smoke density, and carbon monoxide levels. These sensor
+data are relayed to the edge-computing layer and used to analyze
+the building fire situation.
+3.2. Informative digital twin
+The IDT was designed to adhere to object-oriented design prin-
+ciples. The principles of modularity and encapsulation enhance the
+flexibility and scalability of the FEMS. On this basis, four modules
+(i.e. attributes, behaviors, FEs, and interfaces) were established, as
+illustrated on the right side of Fig. 1 . The following sections provide
+a detailed description of each module.
+Automation in Construction 167 (2024) 105722 
+4 
+Y.-J. Kim et al.
+Fig. 2. Dynamic attributes of an informative digital twin.
+3.2.1. IDT attributes
+IDT attributes are a collection of information that represents the
+physical building status from a multidimensional perspective. These
+attributes are categorized as static or dynamic. Static attributes, which
+include the BIM model and sensor metadata (e.g. location and type),
+remain constant unless they are manually modified. These static at-
+tributes are used to design and simulate potential fire scenarios. In
+contrast, dynamic attributes adjust over time in response to changes
+in a building’s status and primarily emerge during a fire emergency.
+Dynamic attributes are categorized into the following three parts:
+• Present status. The present status represents the building’s cur-
+rent status, which includes the temperature, smoke, and carbon
+monoxide data observed by IoT sensor devices.
+• Potential status. The potential status denotes the possible status
+of the building from the present to the future. It includes vir-
+tual sensor data synchronized with real sensors and fire hazard
+factors representing the expansion and migration of fire products
+such as gas temperature, smoke visibility, and carbon monoxide
+concentration.
+• Projected status. The projected status represents the potential risk
+information derived from the potential status matched to a real
+fire scenario. For each egress route and zone, the projected status
+includes the available time, required time, and safety margin for
+safe evacuation and rescue.
+According to the operation of IDT behaviors during a fire emer-
+gency, the present, potential, and projected statuses are linked together,
+as shown in 2. Assuming that a fire ignited from location L7, the present
+status attribute holds the real sensor data from the time of fire detection
+to the current point in time 𝑡𝑐. The potential status attribute contains
+numerous potential statuses discovered from the fire knowledge base,
+each of which contains virtual sensor data from the time the virtual fire
+was ignited to the end of the virtual fire scenario. Because each virtual
+sensor has a position and type synchronized with a real sensor, it is
+possible to discover potential statuses that match reality by comparing
+the sensor data generated by each sensor. The potential status includes
+fire hazard factors that vary with fire dynamics and are distributed
+throughout the internal area of the building. Fire hazard factors are
+represented as spatiotemporal data, including gas temperature, CO
+concentration, and smoke visibility, and are utilized to assess the fire
+risk in each area. From the discovered potential status, the projected
+status represents the risk level at the current time and the remaining
+time to the next risk level. As the aligned potential status includes
+fire hazard factors in the future, the remaining time for the next risk
+level can be derived. For example, at the current time 𝑡𝑐, the egress
+routes from location L9 to all exits are tenable, and there is sufficient
+time to prepare for movement and escape. At a point in the future
+after time 𝑡𝑓 1, only one escape route is tenable; hence, it must be used
+to escape as quickly as possible within a limited time. Therefore, the
+preparation movement action must be performed within 𝑡𝑓 1. Similarly,
+after 𝑡𝑓 1+𝑡𝑓 2, no egress routes are available; therefore, the escape action
+must begin within 𝑡𝑓 2 at time 𝑡𝑐 + 𝑡𝑓 1.
+3.2.2. IDT behaviors and functional entities
+IDT behaviors comprise a set of processes designed to support
+fire emergency management by automatically responding to dynamic
+changes in the status of a physical building. These behaviors are orga-
+nized into a state machine with five states: idle, detection, recognition,
+response, and treatment. As the status of the physical building changes,
+the IDT seamlessly transitions its behavioral states and activates the FEs
+associated with the current state. FEs are computing components that
+are invoked according to behavioral logic and process data according
+to each function and purpose by interacting with the fire knowledge
+base and IDT attributes. These FEs are strategically deployed to ensure
+smooth operation of IDT behaviors. Considering the computing and
+storage space requirements of each FE, some FEs with high computa-
+tional costs are integrated into the cloud-computing layer, and other
+FEs that have low computational costs and are forced in real time are
+integrated into the IDT in the edge-computing layer.
+Fig. 3 shows the detailed operating mechanism of the IDT-based
+FEMS.
+(1) Idle: Accumulate fire knowledge to recognize actual fire situa-
+tions (implementation details are provided in Section 4.3.1 )
+- When generating knowledge (1-1), experts use static attributes
+(1-2) to model and simulate various fire scenarios and accumu-
+late them as knowledge (1-3).
+Automation in Construction 167 (2024) 105722 
+5 
+Y.-J. Kim et al.
+Fig. 3. Operating mechanism of the IDT-based building fire emergency management.
+(2) Detection: Detecting whether a fire has occurred
+- Collect real sensor data (2-1), detect a fire (2-2), and notify the
+next status when a fire is detected (2-3).
+(3) Recognition: Recognize the progress of a building fire (imple-
+mentation details are provided in Section 4.3.2 )
+- Discover knowledge from the fire knowledge base (3-2) based
+on real sensor data (3-1) and store potential fire situations (3-
+3). Derive the most similar scenario (3-6) through a similarity
+measure between real sensor data (3-4) and virtual sensor data
+(3-5).
+(4) Response: Risk level assessment of recognized situations (imple-
+mentation details are provided in Section 4.3.3 )
+- Receive the fire hazard factor for the fire scenario derived with
+the highest similarity (4-1), assess the fire risk and save (4-2),
+and notify the next status (4-3).
+(5) Treatment: Treatment for fire stakeholders (FEMS applications
+are described in Appendix A)
+- Notify applications that information is available (5-1), and
+applications access attributes to utilize fire situation information
+(5-2)
+3.2.3. IDT interfaces
+IDT interfaces are communication modules that facilitate commu-
+nication between an IDT and its external components. Depending on
+the connection target, IDT interfaces are categorized as digital twin to
+physical things (DT2PT), digital twin to functional entities (DT2FE),
+and digital twin to application (DT2APP) interfaces. The DT2PT inter-
+face supports connectivity between the IDT and the physical buildings.
+It receives measured data from numerous IoT sensors distributed in
+large complex buildings and stores the obtained sensor data in the IDT’s
+present status attribute. The DT2FE interface supports information
+exchange between the IDT and the high-cost FEs of the cloud-based
+building FEMS. Through the DT2FE interface, the IDT invokes the
+knowledge discovery FEs and receives relevant fire knowledge, and
+the fire scenario modeling and simulation (M&S) FE accesses the static
+attributes of the IDT. The DT2APP interface supports building fire
+emergency management applications in accessing the IDT attribute
+information. Through the DT2APP interface, various building fire emer-
+gency management applications can access the IDT attributes and
+receive appropriate information according to their purpose. A detailed
+implementation of the IDT interfaces is described in Sections 4.1 and
+4.2.
+4. System development
+4.1. Development Kubernetes/KubeEdge-based FEMS system
+To implement the edge-cloud system architecture presented in Sec-
+tion 3.1, we utilized Kubernetes [ 53] and KubeEdge [ 54] to construct
+a cloud–edge computing environment, as illustrated in Fig. 4 . In our
+environment, the cloud consisted of two servers, and the edge consisted
+of one x86 PC. The IDT process, along with the low-cost FEs, runs at the
+edge, whereas fire management applications and high-cost FEs operate
+in the cloud. Parallel processing can be optionally performed for faster
+speed enhancement in simulations and knowledge discovery when nec-
+essary. The Kubernetes controller can automatically place containers
+based on the resource demand and availability, thus making the parallel
+processing configuration easier. The knowledge DB is managed using a
+persistent volume subsystem, and the processes in the cluster can be
+accessed by the DB.
+Considering the real-time communication between the IDT and
+high-cost FEs, processes running inside containers are interconnected
+based on the Data Distribution Service (DDS) [55]. The deliverability of
+data can be efficiently managed by considering quality of service (QoS)
+factors, such as deadlines. IoT sensor data are collected through an
+edge broker server based on the Message Queuing Telemetry Transport
+(MQTT) protocol [ 56], and the processed IDT attributes are provided
+to the FEMS applications through a REST API server.
+4.2. Development of object-oriented informative digital twin
+A UML class diagram of the developed IDT is shown in Fig. 5 (a).
+Based on the object-oriented design principles and IDT design principles
+described in Section 3.2, the key components of the IDT are well estab-
+lished. These components include the IDT object itself, four attributes,
+Automation in Construction 167 (2024) 105722 
+6 
+Y.-J. Kim et al.
+Fig. 4. Implementation of FEMS system based on Kubernetes/KubeEdge.
+Fig. 5. Class diagram, attributes, and behaviors of the developed informative digital twin.
+Automation in Construction 167 (2024) 105722 
+7 
+Y.-J. Kim et al.
+Table 1
+Request examples of DT2APP interface based on REST API. The prefix * is http://<ipaddress>:<port>.
+HTTP request Description
+GET*/PresentAttribute/SensorData Obtain all real sensor data acquired by the IDT
+GET*/PotentialAttributes/FireHazardFactors?knowledgeID=1 Obtain all fire hazard factors of fire knowledge with ID = 1
+GET*/ProjectedAttributes?zoneID=1&exitID=12 Obtain all risk information corresponding to Zone 1 and Exit 12 in projected attributes
+four FEs corresponding to the behaviors, and three interfaces. Each
+component interacts with the IDT behavior according to its unique role.
+In the class diagram, the attribute components describe the data struc-
+ture managed by the IDT and the FE components process and return the
+received data according to their given roles. The IDT interfaces serve
+as communication interfaces with the IDT external components and are
+implemented through the Wrapper Class. The relationships between the
+components are indicated by solid arrows in Fig. 5(a).
+To store and manage the IDT attributes data, we used SQLite [57],
+which is a lightweight and server-less relational database engine that
+supports efficient data management in resource-constrained edge en-
+vironments. The data structure of the IDT attributes is constructed
+based on the definitions of dynamic (present, potential, and projected
+statuses) and static attributes. The present status continuously stores
+real-time data observed from various sensors distinguished by the sen-
+sor ID, along with timestamps (receivedAt). The potential status holds
+fire knowledge composed of virtual sensor data and fire hazard factors,
+each identified by a knowledge ID. Sensor data for virtual sensor data
+are designed to match the sensor data structure of the present status
+for seamless similarity measurements. Fire hazard factors, represented
+in two dimensions, consist of multiple two-dimensional simulation data
+entries stored over time for each (x, y) coordinate. The projected status
+includes zone risk information, which is distinguished from the zone
+ID. Each zone risk information contains multiple route risk information
+entries, which store available route egress time (ARET), required route
+egress time (RRET), and safety margin (SM) data for escape routes
+between specific exits (exit ID) and within the zone (zone ID), whereas
+the static attribute manages sensor meta information, which includes
+the location (x, y) and type of one or more sensors for designing poten-
+tial fire scenarios. It also manages information on one or more egress
+routes, representing the trajectories of escape routes and distances, as
+well as the file path corresponding to the BIM model. Fig. 5(b) shows
+the developed IDT attribute based on SQLite.
+The IDT behavior was modeled using the Business Process Model
+and Notation (BPMN) [58], which is an Object Management Group
+(OMG) standard for specifying processes in a workflow. The IDT be-
+havior contains four states, namely, detection, recognition, response,
+and treatment, and invokes each FE component according to its cur-
+rent state, as shown in Fig. 5(c). The detailed operation of the FE
+components is presented in Section 4.3.
+To implement the DT2PT, DT2FE, and DT2APP interfaces, we uti-
+lized the MQTT, DDS, and REST API, respectively. In DT2PT interface,
+each real sensor data is structured as {datetime, data} and col-
+lected through the MQTT topic of sensordata/<sensor_id>. In
+the DT2FE interface, the static attributes required to generate potential
+fire scenarios on the cloud side are transmitted through the DDS
+topic in the static_attribute/, and requests and responses for
+discovering similar fire knowledge are transmitted via the discov-
+ered_knowledge/ DDS topic. For the DT2APP interface, REST APIs
+are designed to access the IDT attributes, as shown in Table 1.
+4.3. Development of core FEs and fire knowledge base
+4.3.1. Building fire scenario modeling and simulation
+The goal of building fire scenario modeling and FE simulation is to
+construct an extensive fire knowledge base for fire recognition. This
+is achieved by simulating a range of potential fire scenarios within
+a building, considering its physical attributes and different fire con-
+ditions. By accumulating various potential fire scenarios in the fire
+knowledge base, IDT systems have more opportunities to identify po-
+tential fire scenarios that more closely reflect reality, thereby improving
+the fire recognition accuracy.
+To simulate building fire dynamics, we utilized an FDS, which
+was developed by the National Institute of Standards and Technology
+(NIST) and is primarily used in the fire safety domain. In the modeling
+phase, the BIM model and sensor information in the static attributes
+of the IDT are used to reflect the physical properties of the building.
+The development of Industry Foundation Classes (IFC), which is an
+open data model standard (ISO 16739), facilitates the interoperability
+between BIM and the FDS. Building fire scenario modeling is performed
+using the following steps:
+1. The BIM model is imported into BlenderFDS, a third-party FDS
+modeling tool for converting IFC to an FDS. As a result of
+the conversion, the building geometry is represented by OBST
+symbols in the FDS.
+2. The location and properties of the virtual sensor devices are
+defined based on actual sensor information. In the FDS model,
+virtual sensor devices are represented as DEVC symbols with
+locations specified by XYZ coordinates and properties specified
+by QUANTITY parameter.
+3. The thermal properties of the building material are defined
+based on the ASTM E84 Fire Standards [59]. The thermal proper-
+ties are represented as MATL symbols and applied to the surface
+(SURF) of the building geometry (OBST).
+4. The combustion conditions of a virtual building fire are defined
+by specifying the fire location and reaction. The location of the
+fire is specified by the VENT symbol, and the reaction of the fire
+is represented by the REAC symbol with the type of fuel.
+After the modeling process is completed, slice script blocks (SLCF)
+are added to the FDS model to analyze the two-dimensional spatial
+distribution of the gas temperature, carbon monoxide concentration,
+and smoke visibility.
+In the simulation phase, the FDS software is run using the FDS
+model developed above. According to script blocks DEVC and SLCF,
+the FDS software output virtual sensor data and fire hazard factors, re-
+spectively. The virtual sensor data are represented as one-dimensional
+time-series data corresponding to each IoT sensing device, which has
+measurements of temperature, smoke density, and carbon monoxide.
+Conversely, the fire hazard factors are expressed as two-dimensional
+spatiotemporal data, where each axis represents the x-coordinate, y-
+coordinate, and time. Fig. 6 shows an example of fire hazard factors
+(gas temperature, carbon monoxide concentration, and smoke visibil-
+ity) at time points (a) 60 s, and (b) 300 s. The fire hazard factors are
+then used to assess the fire risk level and transition time by determining
+the ARET and RRET.
+The fire knowledge base was constructed based on TimescaleDB, a
+time-series database, to efficiently store and manage the derived time-
+varying virtual sensor data and fire hazard factors. TimeScaleDB, which
+is specifically optimized for time-series data, offers efficient data inges-
+tion and querying performance, which are essential for dealing with
+large volumes of continuously evolving data. Its automatic data par-
+titioning and time-based query optimization significantly enhance the
+query performance and data management. Moreover, TimeScaleDB’s
+ability to scale effortlessly and its advanced data compression and
+retention policies make it ideally suited for building an extensive fire
+knowledge base, ensuring the efficient storage and rapid retrieval of
+Automation in Construction 167 (2024) 105722 
+8 
+Y.-J. Kim et al.
+Fig. 6. Fire hazard factors (a) at 60 s and (b) at 300 s.
+Table 2
+1D virtual sensor data.
+Column name Data type Properties
+knowledge_id INT NOT NULL
+time TIMESTAMPTZ NOT NULL
+sensor_id INT NOT NULL
+data DOUBLE NOT NULL
+Table 3
+2D fire hazard factors.
+Column name Data type Properties
+knowledge_id INT NOT NULL
+time TIMESTAMPTZ NOT NULL
+x_coordinate INT NOT NULL
+y_coordinate INT NOT NULL
+gas_temperature DOUBLE NOT NULL
+smoke_visibility DOUBLE NOT NULL
+co_concentration DOUBLE NOT NULL
+fire knowledge over extended periods. The virtual sensor data and fire
+hazard factors are stored and retrieved using the standard Structured
+Query Language (SQL) supported by TimescaleDB.
+Tables 2 and 3 list the structures of the 1D virtual sensor data and
+the 2D fire hazard factors, respectively.
+4.3.2. Building fire status similarity measurement
+The fire knowledge discovery process is performed as follows. First,
+by invoking the knowledge discovery FE, a fixed amount of candi-
+date fire knowledge with high similarity is discovered from the fire
+knowledge base and imported to the potential status attributes. Subse-
+quently, the building fire status similarity measure FE identifies the fire
+knowledge with the highest similarity to the potential status attributes.
+In this process, the potential status attributes act as a type of cache
+memory, and the similarity measure FE can be performed with a low
+computational overhead owing to the fixed-size search space.
+To implement the two FEs above, we considered the dynamic time
+warping (DTW) algorithm, which is a nonlinear mapping technique
+used to measure the similarity between two temporal sequences. Unlike
+traditional similarity measures based on the Euclidean distance, DTW
+first allows nonlinear mapping to obtain an optimal alignment between
+two sequences, thereby enabling accurate similarity measurements that
+minimize errors due to the presence of time distortions and time
+shifts [60]. Let the real sensor data 𝑅𝑆 = ( 𝑋1, 𝑋2, … , 𝑋𝑁 ) and virtual
+sensor data 𝑉 𝑆 = ( 𝑋′
+1, 𝑋′
+2, … , 𝑋′
+𝑀 ) have different lengths 𝑁 and 𝑀,
+respectively. DTW constructs a cost matrix𝐷 of size 𝑁 ×𝑀 where 𝐷(𝑖, 𝑗)
+is the cost of aligning the𝑖th element of 𝑅𝑆 with the 𝑗th element of 𝑉 𝑆.
+The cost matrix 𝐷 is computed recursively using the following formula:
+𝐷(𝑖, 𝑗) = 𝑑(𝑋𝑖, 𝑋′
+𝑗 ) + min
+{ 𝐷(𝑖, 𝑗 − 1),
+𝐷(𝑖 − 1, 𝑗 − 1),
+𝐷(𝑖 − 1, 𝑗)
+(1)
+𝐷(0, 0) = 0 , 𝐷(𝑖, 0) = 𝐷(0, 𝑖) = ∞ (2)
+where the distance function 𝑑() is any distance metric. In this study,
+𝑑(𝑋𝑖, 𝑋′
+𝑗 ) is defined as
+𝑑(𝑋𝑖, 𝑋′
+𝑗 ) =
+√
+(𝑋𝑖 − 𝑋′
+𝑗 )2 (3)
+and consequently, the DTW distance can be calculated as
+𝐷𝑇 𝑊 (𝑅𝑆, 𝑉 𝑆 ) = 𝐷(𝑁, 𝑀 ) (4)
+DTW enables accurate similarity measurements by calculating the
+cost matrix; however, there are some issues with applying the original
+DTW to the knowledge discovery process. During a fire emergency,
+real sensor data are continuously collected to reflect the status of the
+building. This means that the knowledge discovery FE and the building
+status similarity measure FE are invoked repeatedly whenever new
+observation data are added. Because the original DTW outputs the
+similarity distance only when a cost matrix of size 𝑁 × 𝑀 is completely
+calculated, the time complexity is 𝑂(𝑘𝑁𝑀 ) at every time tick 𝑡 when
+𝑘 fire knowledge exists. Therefore, the computational cost increases
+significantly as new observation data accumulate.
+To address these technical issues, we modified the original DTW into
+an online version. As presented in Algorithm 1 , online DTW calculates
+the cost matrix in a cumulative manner using the following steps:
+Automation in Construction 167 (2024) 105722 
+9 
+Y.-J. Kim et al.
+Algorithm 1 Online Dynamic Time Warping
+Require:
+𝑋𝑡 be the observation data at time 𝑡
+𝑉 𝑆 =< 𝑋 ′
+1, 𝑋′
+2, ..., 𝑋′
+𝑀 >
+Let:
+𝑑() be the distance between two points
+𝐷[𝑁][𝑀] be the cumulative cost matrix
+1: function Online DTW(𝑋𝑡, 𝑉 𝑆)
+2: ⊳ Initializing the first column for cost matrix 𝐷
+3: if 𝑡 == 1 then
+4: 𝐷[0][0 ∶ 𝑀] ← 0
+5: end if
+6: ⊳ Initializing the new column for cost matrix 𝐷
+7: 𝐷[𝑡][0 ∶ 𝑀] ← inf
+8: ⊳ calculate cost matrix 𝐷 for new column
+9: for 𝑖 = 1 to 𝑀 do
+𝐷[𝑡][𝑖] = 𝑑(𝑋𝑡, 𝑉 𝑆[𝑖]) + min
+{ 𝐷[𝑡 − 1][𝑖],
+𝐷[𝑡][𝑖 − 1],
+𝐷[𝑡 − 1][𝑖 − 1]
+10: end for
+return D[t][M]
+11: end function
+(1) From the detection of a fire such that𝑡 = 1, a cost matrix with the
+first column in which the first element is zero and the remaining
+elements are infinite is constructed.
+(2) A new column associated with time t is initialized to infinity and
+concatenated into cost matrix 𝐷.
+(3) Each element of the new column is then calculated according to
+Eq. (1).
+(4) Return similarity distance with 𝐷[𝑡][𝑀].
+(5) When a new observation 𝑋𝑡 is added to the 𝑅𝑆, online DTW is
+invoked again, and steps (2)–(4) are repeated.
+The time complexity for invoking the online DTW is only 𝑂(𝑘𝑀).
+Because the similarity distance can be obtained from the cost matrix
+accumulated at each time tick, the online DTW is not affected by the
+length of the accumulated observation data.
+4.3.3. Building fire risk assessment
+In this study, the ARET and RRET were introduced to assess the
+fire risk for each route and zone. The ARET signifies the time allocated
+to each evacuation route to ensure safe evacuation. Specifically, it is
+the duration from the moment a fire is ignited until the egress route
+becomes untenable to occupants. The ARET is defined as
+𝐴𝑅𝐸𝑇𝑧,𝑝 = min(𝑇𝐶𝑂 , 𝑇𝑡𝑒𝑚𝑝, 𝑇𝑣𝑖𝑠) (5)
+where 𝐴𝑅𝐸𝑇𝑧,𝑝 represents the time at which the egress route𝑝 between
+Zone 𝑧 and a certain exit becomes untenable for the occupants. 𝑇𝐶𝑂,
+𝑇𝑡𝑒𝑚𝑝, and 𝑇𝑣𝑖𝑠 represent the time from fire ignition to when the carbon
+monoxide, gas temperature, and smoke visibility on route 𝑝 reach
+the untenability criteria, respectively. The untenability criteria may
+differ according to building characteristics. NFPA 101 [61], the SFPE
+Handbook of Fire Protection Engineering [62], and certain studies [63]
+provide guidelines for defining untenability criteria. Table 4 provides
+the untenability criteria considered for calculating the ARET in this
+study.
+While the ARET determines when a specific route becomes unten-
+able, the RRET determines the time required to travel through that
+route at a specific point in time. The RRET can be calculated by
+considering the occupant movement speeds and route distances, as
+shown in Eq. (6)
+𝑅𝑅𝐸𝑇𝑧,𝑝(𝑡) =
+∑
+𝑖∈𝑝
+𝑑𝑖
+𝑣𝑖(𝑡) (6)
+Table 4
+Untenability criteria.
+Life safety parameter Tenability acceptance condition
+Smoke layer height 2.0 m
+Smoke visibility ≥10 m of visibility
+Air temperature ≤100 ◦C
+Carbon monoxide concentration ≤2800 ppm
+where 𝑅𝑅𝐸𝑇𝑧,𝑝(𝑡) represents the time required to travel through egress
+route 𝑝 between Zone 𝑧 and a specific exit at a specific point in time𝑡. 𝑑𝑖
+is the distance of the 𝑖th trajectory on route 𝑝, and 𝑣𝑖(𝑡) is the movement
+speed required to travel along the 𝑖th trajectory at time 𝑡.
+During a fire emergency, hazardous factors such as air temperature,
+smoke obscuration, and toxic gases impair occupants’ physical move-
+ment abilities and psychological conditions. Furthermore, extended
+exposure to such hazardous factors can significantly delay or even
+impede evacuation. For movement speed, we followed the approach
+proposed in [64], which describes the occupant moving speed as a
+function of three major fire hazard factors (air temperature, smoke vis-
+ibility, and concentration of carbon monoxide). Eqs. (7)–(10) describe
+the calculation of movement speed 𝑣𝑖(𝑡).
+Specifically, from the reference speed, which representing the oc-
+cupant movement speed under unimpeded conditions, the movement
+speeds 𝑣𝑖(𝑡) on the 𝑖th trajectory are affected by the impact func-
+tions 𝑓𝑖(𝑡), which are influenced by the fire hazard factors of smoke
+visibility 𝑣𝑖𝑠𝑖(𝑡)(𝑚), the concentration of carbon monoxide 𝐶𝑂 𝑖(𝑡)(%),
+and air temperature 𝑇 𝑒𝑚𝑝𝑖(𝑡)(◦C). 𝑡𝑒𝑥𝑝 represents the exposure time
+(min) in the toxic gas-covered area. 𝑣0 and 𝑣𝑚𝑎𝑥 are the reference
+movement speed (i.e. representing the evacuee’s moving speed under
+unimpeded conditions) and the maximum movement speed of the
+occupants, respectively, which are commonly set to 1.2 m/s and 4 m/s,
+respectively [65].
+𝑣𝑖(𝑡) = 𝑣0 × 𝑓 𝑣𝑖𝑠
+𝑖 (𝑡) × 𝑓 𝐶𝑂
+𝑖 (𝑡) × 𝑓 𝑇 𝑒𝑚𝑝
+𝑖 (𝑡) (7)
+𝑓 𝑣𝑖𝑠
+𝑖 (𝑡) =
+⎧
+⎪
+⎪
+⎨
+⎪
+⎪⎩
+1 𝑣𝑖𝑠𝑖(𝑡) ≥ 7.5 m
+1.375 − 2.8125
+𝑣𝑖𝑠𝑖(𝑡) 2.5 m ≤ 𝑣𝑖𝑠𝑖(𝑡) < 7.5 m
+0.25 𝑣𝑖𝑠𝑖(𝑡) < 2.5 m
+(8)
+𝑓 𝐶𝑂
+𝑖 (𝑡) =
+⎧
+⎪
+⎪
+⎪
+⎨
+⎪
+⎪
+⎪⎩
+1 𝐶𝑂 𝑖(𝑡) < 0.1
+1 − (0.2115 + 1.788𝐶𝑂 𝑖(𝑡))
+× 𝐶𝑂 𝑖(𝑡) × 𝑡𝑒𝑥𝑝𝑜𝑠𝑢𝑟𝑒 0.1 ≤ 𝐶𝑂 𝑖(𝑡) < 0.25
+0 𝐶𝑂 𝑖(𝑡) ≥ 2.5
+(9)
+𝑓 𝑇 𝑒𝑚𝑝
+𝑖 (𝑡) =
+⎧
+⎪
+⎪
+⎨
+⎪
+⎪⎩
+1 𝑇 𝑒𝑚𝑝𝑖(𝑡) ≤ 30 ◦C
+1 +
+(𝑣𝑚𝑎𝑥−𝑣0)×( 𝑇 𝑒𝑚𝑝𝑖 (𝑡)−30
+60−30 )2
+𝑣0
+30 ◦C < 𝑇 𝑒𝑚𝑝𝑖(𝑡) ≤ 60 ◦C
+𝑣𝑚𝑎𝑥
+𝑣0
+[
+1 − ( 𝑇 𝑒𝑚𝑝𝑖(𝑡)−60
+120−60 )2
+]
+60 ◦C < 𝑇 𝑒𝑚𝑝𝑖(𝑡) < 120 ◦C
+(10)
+After calculating both the ARET and RRET, it is possible to evaluate
+the safety margin of route 𝑝 by subtracting the RRET and the elapsed
+time t from the ARET as follows:
+𝑆𝑀𝑧,𝑝(𝑡) = 𝐴𝑅𝐸𝑇𝑧,𝑝 − (𝑡 + 𝑅𝑅𝐸𝑇𝑧,𝑝(𝑡)) (11)
+Finally, based on the safety margin 𝑆𝑀𝑧,𝑝(𝑡), we can assess the risk
+information for Zone 𝑧 by determining the safest route and the safety
+margin of that route.
+𝑝∗
+𝑧 = arg max
+𝑝∈𝑃 ′𝑧
+𝑆𝑀𝑧,𝑝(𝑡) (12)
+𝑆𝑀𝑧,𝑝(𝑡)∗ = max
+𝑝∈𝑧
+𝑆𝑀𝑧,𝑝(𝑡) (13)
+Automation in Construction 167 (2024) 105722 
+10 
+Y.-J. Kim et al.
+Table 5
+Consideration of fire class, fire size, and fire-initiation location to construct the fire knowledge base.
+Fire class Fire size (m) Fire locations
+[A, B, C, D, K] [0.5 × 0.5, 1.0 × 1.0, 2.0 × 2.0] Inside each room (216 points)
+Uniformly distributed in corridors (38 points)
+where 𝑝∗
+𝑧 is the safest route, 𝑆𝑀 ∗
+𝑧,𝑝 is the safety margin of the safest
+route, and 𝑧 represents the egress routes between Zone 𝑧 and the
+escape exits.
+The safety margin of the safest route 𝑝∗
+𝑧 in Zone 𝑧 provides the
+following information to determine the safety of Zone 𝑧:
+1. If 𝑆𝑀𝑧,𝑝(𝑡)∗ > 0, the risk level in Zone 𝑧 is considered to be
+low, indicating that there is sufficient time for evacuation, and
+prepare for movement action must be made within the time
+frame of |𝑆𝑀𝑧,𝑝(𝑡)∗|.
+2. If 𝑆𝑀𝑧,𝑝(𝑡)∗ ≈ 0 , the risk level in Zone 𝑧 is determined to be
+medium, meaning that all egress routes between Zone 𝑧 and
+the escape exits will be blocked immediately. Consequently, the
+occupants located in Zone 𝑧 must begin evacuating.
+3. If 𝑆𝑀𝑧,𝑝(𝑡)∗ < 0, the risk level in Zone 𝑧 is assessed as high, indi-
+cating that all egress routes between Zone 𝑧 and the escape exits
+have already been blocked, and time |𝑆𝑀𝑧,𝑝(𝑡)∗| has elapsed
+after blocking. Therefore, occupants located in Zone 𝑧 must be
+rescued with priority based on |𝑆𝑀𝑧,𝑝(𝑡)∗|.
+5. Case study
+To determine whether the proposed IDT-based FEMS can support
+fire responses in large-scale complex buildings (to answer RQ1), we
+conducted a case study focusing on an underground shopping mall. This
+case study also examined the effectiveness of fire knowledge discovery
+algorithms (to answer RQ2) and evaluated the performance of the
+zone-based risk assessment algorithm (to answer RQ3).
+5.1. Case building description
+The BIM model of the large complex building adopted in this case
+study was obtained from the Hoehyeon Underground Shopping Center
+in Jung-gu, Seoul, Korea. As shown in Fig. 7(a), the total building area
+is approximately 9031 m 2, with an average height of 2.4 m, width
+of 166 m, and length of 58 m. A total of 987 IoT sensor devices,
+including smoke density, carbon monoxide, and temperature sensors,
+are installed in each room and hallway. In this model, 19 zones are
+considered, which are connected to eight escape exits through egress
+routes (light green lines).
+5.2. Preparation of fire knowledge base and test scenarios
+To construct a rich fire knowledge base, numerous virtual fire
+scenarios were modeled and simulated considering various types of
+fires, as indicated in Table 5. As shown in Fig. 7(b), the initial locations
+of the virtual fires (depicted by red rectangles) were distributed in each
+room (216 points) and corridor (38 points). For each fire-initiation
+location, five fire classes were considered according to the NIST fire
+classification: ordinary combustible materials (Class A), flammable liq-
+uids (Class B), electrical equipment (Class C), combustible metals (Class
+D), and cooking oils (Class K). In addition, fire sizes of 0.5 m × 0 .5 m ,
+1.0 m × 1 .0 m, and 2.0 m × 2 .0 m were applied to model the virtual fire
+scenarios. Accordingly, a total of 3810 (254 locations × five fire classes
+× three fire sizes) virtual fire scenarios were modeled and simulated to
+construct the fire knowledge base.
+The experiments on the IDT-based FEMS were conducted with a
+number of test scenarios, assuming that fires occurred inside rooms and
+corridors, as shown by the yellow rectangle in Fig. 7(b). The detailed
+settings of the test scenarios are listed in Table 6. Considering safety
+and site constraints, we constructed simulation test scenarios instead
+of creating actual fire situations so that the sensor data acquired from
+these test scenario simulations were considered real sensor data.
+Table 6
+Consideration of fire class, fire size, and fire-initiation location for test scenarios.
+Test Fire location Fire Fire
+scenario class size (m)
+A Zone1: Inside room 1 A 1.0 × 1.0
+B Zone2: Inside room 12 C 0.5 × 0.5
+C Zone3: Corridor in front of room 54 A 1.0 × 1.0
+D Zone4: Inside room 166 K 2.0 × 2.0
+E Zone5: Inside room 21 D 0.5 × 0.5
+F Zone6: Corridor in front of room 68 A 1.0 × 1.0
+G Zone7: Inside room 171 K 1.0 × 1.0
+H Zone8: Corridor in front of room 72 A 2.0 × 2.0
+I Zone9: Inside room 136 K 2.0 × 2.0
+J Zone10: Corridor in front of room 143 A 1.0 × 1.0
+K Zone11: Corridor in front of room 35 A 1.0 × 1.0
+L Zone12: Inside room 86 B 0.5 × 0.5
+M Zone13: Corridor in front of room 188 A 2.0 × 2.0
+N Zone14: Corridor in front of room 190 A 1.0 × 1.0
+O Zone15: Corridor in front of room 97 A 1.0 × 1.0
+P Zone16: Corridor in front of room 103 A 1.0 × 1.0
+Q Zone17: Inside room 201 K 2.0 × 2.0
+R Zone18: Corridor in front of room 210 A 1.0 × 1.0
+S Zone19: Corridor in front of room 216 A 1.0 × 1.0
+Table 7
+Top five similar fire knowledge at 𝑡 = 30.
+Rank Location Fire class Fire size (m) DTW distance
+1 Room 1 A 1.0 × 1.0 5.99
+2 Room 1 B 1.0 × 1.0 6.10
+3 Room 1 K 1.0 × 1.0 6.14
+4 Room 1 D 1.0 × 1.0 6.21
+5 Room 1 C 1.0 × 1.0 6.26
+6. Results and analysis
+6.1. Analysis of IDT-based FEMS on test scenarios
+In Test Scenario A, it was assumed that a fire of Class A and size
+1.0 × 1.0 initiated in Room 1, and 30 s passed since it was detected.
+From the recognition state, the IDT sequentially invoked the knowledge
+discovery, and building state similarity measure FEs to discover fire
+knowledge similar to the current building state. This discovery process
+took approximately 1 s on a Core i-9 3.5 GHz, thus satisfying the
+need to perform in near real time during a fire emergency. Table 7
+lists the top five similar fire knowledge derived through online DTW-
+based similarity measurements. These represented the fire scenarios
+that occurred in Room 1. For the smallest DTW distance of 5.99, the
+most similar fire knowledge was recognized as a fire of Class A and size
+1.0 × 1.0, which was identical to Test Scenario A.
+In the response state, the ARET for each route was first calculated
+by comparing the untenability criteria with the recognized fire hazard
+factors using Table 4 and Eq. (5). Fig. 8 shows the untenable time of
+the area and some examples of the calculated ARET in Zones 1 and
+19. As the fire spread, starting from the top-left corner, the untenable
+time showed low values near Room 1 and increased in the bottom-right
+direction. Accordingly, the calculated ARETs were less than 24 s in
+Zone 1, whereas they were more than 1000 s in Zone 19. For egress
+routes between Zone 1 and Exits 1, 2, and 5, the ARETs were 10 s, 20
+s, and 24 s, respectively, indicating that the egress routes will become
+untenable in that order.
+From the calculated ARETs for all egress routes, the RRET, SM, and
+safest routes were calculated using Eqs. (6), (11) and (12), respectively.
+Automation in Construction 167 (2024) 105722 
+11 
+Y.-J. Kim et al.
+Fig. 7. Experimental settings for the case study.
+Fig. 8. Calculated ARET in test scenario A.
+Table 8 lists the distances, ARET, RRET, and SM for egress routes to
+all exits in Zones 1–7, which are relatively more dangerous than the
+other zones. The red, blue, and purple colors of each cell represent the
+shortest route, safest route, and route that overlaps the shortest and
+safest routes, respectively. For Zones 1–3, which were close to the fire
+source, the SMs of all egress routes had negative values, indicating that
+people in those zones may be under threat by the fire while escaping.
+Therefore, the people in these zones must evacuate immediately or
+be rescued by fire responders. In such cases, the safest routes derived
+through the minimum SM can support safe evacuation and rescue, even
+if the distances are longer than the shortest route. Taking Zone 1 as an
+example, the safest route was tenable for 14 s longer than the shortest
+route (ARET > 14 s), and it took 12.5 s less to evacuate (RRET< 12.5 s)
+because of the relatively low impact of the fire on the movement speed.
+In Zone 4, evacuees can escape safely if they use the safest route rather
+than the shortest. As described in Table 8 , the shortest route reached
+an untenable condition before the completion of escape (ARET = 42.0 s
+< RRET = 52.5 s), whereas the safest route allowed a marginal time of
+90.8 s (ARET = 165.0 s > RRET = 74.2 s). Accordingly, when using the
+safest route, evacuees in Zone 4 can take pre-movement action, which
+is allowed up to 90.8 s. For Zones 5–7, which were far from the fire
+source, both the safest and shortest routes had positive SMs. Therefore,
+evacuees in these zones can escape safely and rapidly regardless of
+whether they choose the shortest or safest route.
+The safety margin calculated for each zone can help firefighters
+to establish appropriate rescue strategies. Fig. 9 shows the maximum
+safety margin for each zone and the rescue priority derived based on
+the safety margin. The red-labeled zones on the left side of Fig. 9 have
+a negative safety margin, indicating that injury can occur regardless of
+the safest route used in these zones. Therefore, the occupants located
+in the red-labeled zones require immediate rescue. After the rescue of
+the most dangerous area is complete, rescue efforts prioritize the zones
+Automation in Construction 167 (2024) 105722 
+12 
+Y.-J. Kim et al.
+Table 8
+ARET, RRET, and SM of Zones 1 to 7.
+Zone Metrics Exit 1 Exit 2 Exit 3 Exit 4 Exit 5 Exit 6 Exit 7 Exit 8
+1
+Dist 18.0 80.0 118.0 160.0 24.0 80.0 114.0 170.0
+ARET 10.0 20.0 20.0 20.0 24.0 20.0 20.0 20.0
+RRET 68.7 97.7 128.9 163.9 56.2 97.7 126.0 172.7
+SM −58.7 −77.7 −108.9 −143.9 −32.2 −77.7 −106.0 −152.7
+2
+Dist 20.0 52.0 90.0 132.0 52.0 72.0 112.0 168.0
+ARET 10.0 31.0 31.0 31.0 10.0 31.0 31.0 31.0
+RRET 74.8 74.2 105.4 140.4 120.0 95.8 124.2 170.8
+SM −64.8 −43.2 −74.4 −109.4 −110.0 −64.8 −93.2 −139.8
+3
+Dist 33.0 65.0 103.0 145.0 39.0 65.0 99.0 155.0
+ARET 10.0 60.0 60.0 60.0 20.0 60.0 60.0 60.0
+RRET 81.2 85.0 116.2 151.2 68.8 85.0 113.3 160.0
+SM −71.2 −25.0 −56.2 −91.2 −48.8 −25.0 −53.3 −100.0
+4
+Dist 46.0 78.0 116.0 158.0 26.0 52.0 86.0 142.0
+ARET 10 132.0 165.0 165.0 42.0 165.0 165.0 165.0
+RRET 97.3 95.8 127.1 162.1 52.5 74.2 102.5 149.2
+SM −87.3 36.2 37.9 2.9 −10.5 90.8 62.5 15.8
+5
+Dist 50.0 22.0 59.0 101.0 83.0 48.0 82.0 138.0
+ARET 10.0 78.0 78.0 78.0 42.0 78.0 78.0 78.0
+RRET 100.2 48.8 80.8 115.0 99.6 70.4 98.8 145.4
+SM −90.2 29.2 −2.0 −37.0 −57.6 7.6 −20.8 −67.4
+6
+Dist 63.0 35.0 72.0 114.0 70.0 35.0 69.0 125.0
+ARET 10.0 132.0 179.0 179.0 42.0 179.0 179.0 179.0
+RRET 111.1 59.6 90.8 125.8 88.8 59.6 87.9 134.6
+SM −101.1 72.4 88.2 53.2 −46.8 119.4 91.1 44.4
+7
+Dist 76.0 48.0 85.0 127.0 57.0 22.0 56.0 112.0
+ARET 10.0 132.0 362.0 362.0 42.0 362.0 362.0 362.0
+RRET 121.9 70.4 101.7 136.7 77.9 48.8 77.1 123.8
+SM −111.9 61.6 260.3 225.3 −35.9 313.2 284.9 238.2
+Fig. 9. Rescue strategy based on safety margin of the zones.
+in ascending order of their safety margins. For example, as indicated by
+the yellow-labeled zones, rescue is first undertaken for Zone 5, which
+has a low safety margin of 29.2, followed by Zones 6, 4, 8, and 9,
+which have safety margins of 72.4, 90.8, 143.4, and 263.5, respectively.
+The safety margin represents the minimum possible time to escape
+from the building without injury; therefore, considering that time when
+determining rescue priorities can reduce the number of injuries.
+To measure the impact of fires of different locations, classes, and
+sizes, IDT-based potential fire risk assessments were conducted for 19
+test fire scenarios. Details of location, class, and size of fire in each test
+scenario are shown in Fig. 7(b) and Table 6. As a result of the similarity
+comparison, fire knowledge with the same fire class, fire size, and
+closest fire-initiation location was discovered in the corresponding test
+scenario, as depicted in the second column of Table 9 (labeled by their
+location-class-size). The lowest safety margins of the top-1 dangerous
+zone were observed in test scenarios C and F, where a fire was initiated
+in the corridor. This was due to the immediate blockage of escape
+routes, as they overlapped with the fire-spread paths in these scenarios,
+highlighting the need for firefighters to prioritize rescue efforts in these
+zones. When considering the fire size, the largest gap in safety margins
+among the top-1–3 dangerous zones was recorded in test scenarios B,
+E, and L, which had a small fire size of 0.5 × 0.5. Conversely, in Test
+Scenario M, in which a large fire occurred in the corridor, the smallest
+gap in the safety margin was observed. This indicates that fire size
+substantially affects the rate of spread, and smaller safety margin gaps
+necessitate a more urgent response in terms of rescue and evacuation
+strategies.
+To evaluate the precision of the fire knowledge-based risk assess-
+ment, the safety margins calculated from the discovered fire knowledge
+and test scenarios were compared, as listed in Table 10. When there was
+fire knowledge closely resembling the fire-initiation location of the test
+scenario in the fire knowledge base, the errors in the derived safety
+margin were found to be less than 5.6 s. However, as the difference
+in the fire-initiation location increased, the error in the derived safety
+margin increased, reaching a limit of 33.1 s. These results imply that
+the more significant the differences in fire characteristics between the
+actual and virtual fires in the fire knowledge base, the more errors
+there may be in the derived potential risk assessments. Therefore, in
+such cases, expanding the fire knowledge base by thoroughly designing
+potential fire scenarios is necessary.
+Automation in Construction 167 (2024) 105722 
+13 
+Y.-J. Kim et al.
+Table 9
+Results of the potential fire risk assessment.
+Test scenario Discovered knowledge Top-1 dangerous Top-2 dangerous Top-3 dangerous
+Zone SM Zone SM Zone SM
+A (room) 1-A-1.0 × 1.0 2 −43.2 1 −32.2 3 −25.0
+B (room) 12-C-0.5 × 0.5 2 −30.9 5 33.2 3 161.7
+C (Corridor) 229-A-1.0 × 1.0 3 −96.6 1 −35.2 6 −5.6
+D (room) 166-K-2.0 × 2.0 4 −77.6 3 −24.9 1 −12.4
+E (room) 21-D-0.5 × 0.5 5 −43.0 2 59.9 8 107.4
+F (Corridor) 231-A-1.0 × 1.0 6 −93.1 9 −13.5 3 −6.9
+G (room) 171-K-1.0 × 1.0 7 −29.9 4 −12.5 6 6.4
+H (Corridor) 221-A-2.0 × 2.0 8 −64.7 5 −59.5 6 −55.8
+I (room) 136-K-2.0 × 2.0 9 −71.8 6 −45.3 12 −37.3
+J (Corridor) 244-A-1.0 × 1.0 10 −65.5 7 −35.9 13 −23.8
+K (Corridor) 224-A-1.0 × 1.0 11 −48.7 15 −23.3 12 −11.5
+L (room) 86-B-0.5 × 0.5 11 −40.7 12 −15.6 8 91.7
+M (Corridor) 247-A-2.0 × 2.0 17 −64.2 13 −60.8 12 −50.3
+N (Corridor) 252-A-1.0 × 1.0 14 −47.6 13 −30.0 18 −22.7
+O (Corridor) 226-A-1.0 × 1.0 15 −65.7 11 −3.6 19 23.8
+P (Corridor) 237-A-1.0 × 1.0 16 −81.8 12 −5.5 19 6.8
+Q (room) 201-K-2.0 × 2.0 17 −88.2 18 −48.4 19 −29.1
+R (Corridor) 254-A-1.0 × 1.0 18 −58.6 17 −33.9 19 −18.1
+S (Corridor) 255-A-1.0 × 1.0 19 −50.6 18 −46.8 17 −8.7
+Table 10
+Errors between safety margins calculated from the discovered fire knowledge and test
+scenario.
+Scenario A B C D E F G H I J
+Error (s) 4.0 5.6 0.8 8.8 2.5 1.2 2.6 16.3 2.4 1.6
+Scenario K L M N O P Q R S
+Error (s) 11.0 4.0 33.1 0.2 4 9.5 9.4 8.2 2.9
+Table 11
+Comparison of processing times for fire simulation, original DTW, online DTW, and
+online DTW with parallel processing under the following conditions: the length of real
+sensor data 𝑁 = 10 , length of virtual sensor data 𝑀 = 3600 , and number of fire
+knowledge 𝑘 = 3810.
+Method Processing time
+Fire simulation >8 h
+Original DTW 781.71 s
+Online DTW 37.68 s
+Online DTW (parallel) 0.88 s
+6.2. Effect of online DTW-based fire knowledge discovery
+The proposed IDT-based FEMS utilizes a knowledge accumulation
+and discovery approach to leverage computationally intensive fire sim-
+ulations in emergencies. To evaluate the effectiveness of Online DTW-
+based fire knowledge discovery, we compared the processing times of
+the fire simulation and similarity measurement algorithms, as shown in
+Table 11. This evaluation was conducted on a Core i-9 3.5 GHz com-
+puting system, and similarity measurement algorithms were performed
+under the following conditions: 𝑘 = 3810 fire knowledge, length of real
+sensor data 𝑁 = 10, and length of virtual sensor data 𝑀 = 3600.
+As shown in Table 11, the processing time of the fire simulation
+utilizing the FDS exceeded 8 h, indicating that conducting such sim-
+ulations during a fire emergency is impractical. Although the original
+DTW required a relatively low processing time (781.71 s) in the simi-
+larity measurement, which is not trivial for application in time-critical
+situations where fire recognition must be performed within a short
+period of time after a fire is detected. However, the proposed online
+DTW significantly reduced the processing time to 37.68 s by calculating
+the DTW cost matrix in a cumulative manner, and the processing time
+could be further minimized to 0.88 s by introducing parallel processing.
+During a fire, the length 𝑁 of the real sensor data progressively in-
+creased, leading to a notable expansion in the processing time disparity
+between the original and online DTW, as illustrated in Fig. 10. Because
+the time complexity of the original DTW was 𝑂(𝑘𝑁𝑀 ), the processing
+time increased exponentially, requiring a significant time of 12 493.85
+s at 𝑁 = 50. In contrast, online DTW showed a constant processing time
+of 37.77 s on average when calculating the cost matrix by accumulating
+a 1× 𝑀 partial cost matrix at each time instead of calculating the entire
+cost matrix of 𝑁 × 𝑀. Accordingly, online DTW can support real-time
+fire recognition with a consistent processing time that is not affected
+by the size of 𝑁.
+6.3. Impact of zone-based risk assessment
+To evaluate the impact of zone-based risk assessment, this study
+performed an evacuation simulation using Pathfinder [66]. The default
+settings of Pathfinder were used as parameters for all personal char-
+acteristics, and the change in movement speed due to fire in Eq. (7)
+was applied to the entire space. Fig. 11 illustrates a comparison of
+the evacuation time and injuries between escaping via the shortest and
+safest routes with varying occupant capacities (500, 1000, 2000, and
+3000) in Test Scenario A.
+The evacuation through the shortest routes required 94.3, 136.3,
+227.0, and 323.5 s, whereas evacuation through the safest routes
+required shorter times of 85.8, 109.5, 175.0, and 258.5 s, respectively.
+Accordingly, the selection of the safest route could save up to 65 s
+when there were 3000 occupants in the building. This effect was mainly
+relevant to the occupants in Zones 1–3. In evacuation via the shortest
+route, occupants encountering the fire-spread path at Exit 1 experi-
+enced significant delays owing to the impact of the fire, prolonging
+the evacuation process. Conversely, in evacuation via the safest route,
+occupants quickly completed the evacuation by avoiding the fire-spread
+path as much as possible. Evacuation via the shortest route resulted
+in 73, 158, 366, and 708 injuries, whereas evacuation via the safest
+route resulted in 32, 73, 146, and 302 injuries, respectively. Utilizing
+the safest routes rather than the shortest routes reduced the number
+of injuries by up to 406. This is because the shortest route becomes
+untenable in Zones 1, 2, and 3 during evacuation, whereas the safest
+routes with a high ARET are relatively tenable for a long time.
+7. Discussion, limitation, and future work
+Regarding the RQ1 on providing appropriate fire situation informa-
+tion to stakeholders in large complex buildings, this study designed
+and developed an IDT-based FEMS. The system is based on an IDT,
+which has attributes, behaviors, and interfaces, and adopts a cloud–
+edge computing structure to manage the vast data generated in the
+building [51,52]. Through a case study of the Hoehyeon underground
+shopping mall, we examined in detail how situational information is
+Automation in Construction 167 (2024) 105722 
+14 
+Y.-J. Kim et al.
+Fig. 10. Comparison of processing times for original DTW and online DTW with increasing length of real sensor data 𝑁.
+Fig. 11. Comparison of (a) the total evacuation time and (b) the total number of injuries between the shortest route-based and the safest route-based evacuation.
+processed within the system and obtained (Section 6.1 ). Additionally,
+the development outcomes of applications linked to the system, pre-
+sented in the appendix, address stakeholder concerns regarding the
+utilization of situational information.
+Trends in fire and smoke spread provide crucial information for
+fire responses. However, owing to the long processing time of CFD
+simulations, this information is mainly used only in post-incident anal-
+yses [13]. To overcome this issue, we constructed a knowledge base to
+accumulate various fire scenarios through simulations and introduced
+a strategy to extract and use the scenario that was most similar to
+the ongoing fire situation. In this process, we proposed fire knowledge
+discovery algorithms that can find a similar scenario within 0.88 s. This
+overcomes the simulation execution speed issue, which requires over
+8 h, enabling real-time utilization (Section 6.2). This answers the RQ2.
+During a fire, safe areas at the current time can become hazardous
+as the fire spreads. Large complex buildings take longer to evacuate
+and rescue from than regular buildings. Therefore, potential risks must
+be considered to ensure safe evacuation and prompt rescue. Based on
+the guidelines in [ 61–63], we proposed a zone-based risk assessment
+algorithm that considers three fire-related risk factors. This algorithm
+calculates the safety margin time for each zone, enabling fire stake-
+holders to respond safely by considering the potential risks. Evacuation
+considering potential hazards resulted in a promising outcome, reduc-
+ing the evacuation time by 65 s and decreasing the number of injuries
+by 406 compared to the shortest-path-based evacuation (Section 6.3 ).
+This answered RQ3.
+Despite the promising results of the IDT-based FEMS, this study has
+three major limitations that must be addressed in future studies.
+First, as the number of buildings managed by the proposed sys-
+tem increases and the number of sensors within the buildings in-
+creases, there is a potential burden on computing and network re-
+sources that could lead to system malfunctions [ 67]. We believe that
+the issue of computing resources can be mitigated by prioritizing
+critical tasks using container-based orchestrators [68], which are incor-
+porated into our system design for efficient resource deployment and
+management. Running an IDT at the edge can reduce resource strain
+by saving network bandwidth; however, if urgent data transmission is
+not guaranteed, malfunctions may still occur. Applying priority-based
+networks [ 69] or time-sensitive networking technologies [ 70] to the
+network infrastructure of the system is a potential solution.
+Second, the accuracy of the fire and smoke spread trends derived by
+the system depends on the knowledge accumulated in the knowledge
+base. An underdeveloped knowledge base can lead to failure of the fire
+response. We believe that future studies can construct a sufficiently
+developed knowledge base to handle various fire scenarios using the
+following techniques: (1) Setting a DTW distance threshold to alert
+experts regarding insufficient fire scenarios, prompting the generation
+of relevant scenarios, and (2) automatically generating fire scenarios
+using generative AI technologies [71]. The proposed system allows for
+large-scale knowledge base construction in the cloud and facilitates the
+replacement and updating of IDT FEs, making it easy to adopt these
+strategies and technologies.
+Automation in Construction 167 (2024) 105722 
+15 
+Y.-J. Kim et al.
+Third, the fire risk assessment in this study has room for improve-
+ment as it was conducted in limited situations. The study considered
+only a limited number of fire risk factors during the risk assessment and
+assumed an average speed for human movement when calculating the
+RRET. This approach does not account for obstacles and blocked paths
+within buildings or individual physical characteristics such as age and
+disability. These limitations can be addressed by updating the fire risk
+assessment FE in the proposed system. For instance, in the former case,
+we can reflect the changes in building conditions perceived through
+spatial monitoring [72] in the ARET calculation (Eq. (5)) or derive the
+impact of state changes on the evacuation speed and incorporate it into
+the RRET calculation (Eq. (7)). In the latter case, we can optimize the
+evacuation and rescue plans by providing personalized risk assessment
+information based on detecting and tracking evacuees [23] within the
+building, considering individual differences rather than the average
+speed.
+8. Conclusion
+This paper presented an IDT-based FEMS for fire emergency man-
+agement in large complex buildings. The IDT-based FEMS seamlessly
+integrates the cloud, edge, and device layers to ensure immediate access
+to fire information during emergencies. The IDT of the edge layer, built
+with an object-oriented design, efficiently gathers and processes data
+on the physical state of a building measured from the device layer.
+This process adheres to behavioral logic and encompasses detection,
+recognition, response, and treatment. These are executed using FEs that
+provide the necessary fire information for each phase of emergency
+management. For real-time fire recognition, the IDT-based FEMS uses a
+strategic approach for knowledge accumulation and discovery. In this
+approach, computationally intensive fire modeling and simulations can
+be executed in the cloud layer of the FEMS. Simultaneously, the edge-
+based IDT discerns similarities in the simulated fire knowledge relevant
+to the current building status. The similarity measurement between the
+real and simulated virtual sensor data employs an efficient online DTW
+algorithm. The IDT utilizes discovered fire knowledge to evaluate fire
+risks in various zones within a building by introducing metrics such as
+ARET, RRET, and SM between specific zones and exits. This enables
+the IDT to provide information on potential risks by zone, along with
+fire and smoke spread trends. We expect that the proposed IDT-based
+FEMS will significantly enhance building fire emergency management
+by providing crucial fire information during emergencies.
+CRediT authorship contribution statement
+Young-Jin Kim: Writing – review & editing, Writing – original
+draft, Software, Methodology, Investigation, Formal analysis, Data cu-
+ration, Validation, Visualization, Conceptualization. Hanjin Kim: Writ-
+ing – review & editing, Writing – original draft, Software, Methodol-
+ogy, Investigation, Formal analysis, Data curation, Conceptualization,
+Validation, Visualization. Beomsu Ha: Visualization, Validation, Data
+curation. Won-Tae Kim: Writing – review & editing, Supervision,
+Resources, Project administration, Funding acquisition.
+Declaration of competing interest
+The authors declare that they have no known competing finan-
+cial interests or personal relationships that could have appeared to
+influence the work reported in this paper.
+Data availability
+The authors do not have permission to share data.
+Acknowledgments
+This paper was supported 100% by the IITP grant funded by the ICT
+R&D program of MSIT in 2024 year (No. 2022-0-00438, Development
+of core technology for the operation and prediction of intelligent digital
+twin federation). Young-Jin Kim and Hanjin Kim contributed equally to
+this work.
+Appendix A. FEMS applications
+Fig. A.12 shows the FEMS application provided by the IDT-based
+FEMS. To construct a fire knowledge base, fire experts model poten-
+tial fire scenarios using Blender, a fire-scenario design application, as
+shown in Fig. A.12(a). Blender is an open-source three-dimensional
+modeling software that supports BIM model import in IFC format,
+FDS modeling, and FDS file export by applying the BlenderBIM and
+BlenderFDS plugins. When the fire scenario modeling is completed, the
+fire experts send the modeled FDS extension file to the Building Fire
+Emergency Manager through FDS Upload Web, as shown in the bottom-
+right corner of Fig. A.12(a). The Fire Scenario M&S FEs then run the
+FDS software using the FDS file and store the simulation results in the
+fire knowledge base.
+Existing building fire-monitoring applications primarily provide vi-
+sualized information by overlaying sensor data collected in real time
+on a virtual building. However, this only shows the current state of
+fire spread, making it difficult to preemptively understand the complex
+fire-spread patterns in complex buildings. Fig. A.12(b) shows an FEMS
+application that can be used in the fire recognition and response
+stages, visualizing the two-dimensional fire hazard factor information
+of the most similar fire knowledge through the web. In a fire situation,
+evacuees and rescuers can use the scrollbar at the bottom of the image
+to understand future fire spread trends in advance, allowing them to
+derive an optimal response strategy.
+Fig. A.12(c) shows a structure support FEMS application utilizing
+IDT-based risk assessment results. Based on the risk assessment, the
+application displays the risk level of each area to help firefighters
+establish an efficient rescue strategy during the response and treatment
+stages. The risk level of each zone, derived through each area’s safety
+margin, is categorized into three levels, ‘‘E1’’, ‘‘E2’’, and ‘‘E3’’, and is
+marked in the zones with red, yellow, and green labels, respectively.
+Firefighters can use this to prioritize areas with higher risk and proceed
+with rescue operations accordingly.
+Fig. A.12(d) shows an FEMS application for evacuees that uses IDT-
+based risk assessment results. Similarly, the risk level information of
+each zone, derived from each area’s safety margin, is used to calculate
+safe evacuation routes for evacuees. The AR application running on
+the smartphone displays the current location of the evacuee and the
+calculated safe route.
+Appendix B. Fire prediction based on fire knowledge generated
+from the FDS
+In this study, we predicted the expansion and migration of fire prod-
+ucts based on fire knowledge generated by FDS. To confirm the validity
+of fire knowledge-based fire prediction, this Appendix introduces a real
+fire experiment conducted at the National Institute of Standards and
+Technology (NIST).
+Fig. B.13 shows the building layout of a manufactured home, which
+was a test site constructed as part of NIST’s Home Smoke Alarm Project.
+A temperature sensor (depicted as a black circle) was installed in
+Bedroom #1, and two real fire experiments were conducted with the
+fire-initiation point in the upper right corner of the living room and the
+upper side in Bedroom #1.
+To predict fire behavior, we generated fire knowledge with fire-
+initiation points uniformly distributed across the building area using
+the FDS, which are depicted as triangles in Fig. B.13.
+Automation in Construction 167 (2024) 105722 
+16 
+Y.-J. Kim et al.
+Fig. A.12. Applications provided by the IDT-based FEMS.
+Fig. B.13. Building layout of the manufactured home in NIST’s home smoke alarm project.
+Fig. B.14. Building layout of the manufactured home in NIST’s home smoke alarm
+project.
+Comparing the fire status similarities in this experimental setting,
+the fire knowledge closest to the actual fire location was identified as
+the most similar, as depicted by the blue and orange filled triangles in
+Fig. B.13. A comparison of temperature data between most similar fire
+knowledge and experimental data is shown in Fig. B.14. The solid lines
+refer to real fire experiments, the dotted lines refer to fire knowledge,
+and the blue and orange colors represent the fire scenarios initiated in
+the living room and Bedroom #1, respectively.
+In the temperature data presented in Fig. B.14, both the experimen-
+tal data and fire knowledge of the Bedroom #1 fire started to increase
+simultaneously at 40 s and reached the untenable threshold of 100 ◦C
+at approximately 134 s, with a small difference of 3 s. In the case of the
+living room fire, both the experimental data and fire knowledge started
+to gradually increase from 100 s, with almost identical trends. These
+experiments inspired us to use FDS-based fire knowledge to predict
+building fires.
+References
+[1] J. Sun, L. Hu, Y. Zhang, A review on research of fire dynamics in high-rise
+buildings, Theor. Appl. Mech. Lett. 3 (4) (2013) 042001, http://dx.doi.org/10.
+1063/2.1304201.
+[2] A. Rahmani, M. Salem, Simulation of fire in super high-rise hospitals using
+fire dynamics simulator (FDS), Electron. J. Gen. Med. 17 (3) (2020) 5, http:
+//dx.doi.org/10.29333/ejgm/7848.
+[3] M. Easir, A. Khan, E.A. Khan, M.A. Ahmed, H. Khan, S.C. Majumder, Fire emer-
+gency evacuation simulation of a shopping mall using fire dynamic simulator
+(FDS), J. Chem. Eng. 30 (1) (2017) 32–36, http://dx.doi.org/10.3329/jce.v30i1.
+34795.
+Automation in Construction 167 (2024) 105722 
+17 
+Y.-J. Kim et al.
+[4] E. Shaw, T. Roper, T. Nilsson, G. Lawson, S.V. Cobb, D. Miller, The heat is
+on: Exploring user behaviour in a multisensory virtual environment for fire
+evacuation, in: Proceedings of the 2019 CHI Conference on Human Factors
+in Computing Systems, Association for Computing Machinery, 2019, pp. 1–13,
+http://dx.doi.org/10.1145/3290605.3300856.
+[5] R. Fahy, Toward creating a database on delay times to start evacuation and
+walking speeds for use in evacuation modeling, in: 2nd International Symposium
+on Human Behaviour in Fire, Boston, MA, USA, 2001, pp. 175–183, URL https:
+//www.researchgate.net/publication/44082840, "(Accessed 09 October 2023)".
+[6] J.H. Park, S. Lee, S. Yun, H. Kim, W.T. Kim, Dependable fire detection system
+with multifunctional artificial intelligence framework, Sensors 19 (9) (2019)
+2025, http://dx.doi.org/10.3390/s19092025.
+[7] Y.J. Kim, H. Kim, S. Lee, W.T. Kim, Trustworthy building fire detection
+framework with simulation-based learning, IEEE Access 9 (2021) 55777–55789,
+http://dx.doi.org/10.1109/ACCESS.2021.3071552.
+[8] Y.J. Kim, W.T. Kim, Uncertainty assessment-based active learning for reliable
+fire detection systems, IEEE Access 10 (2022) 74722–74732, http://dx.doi.org/
+10.1109/ACCESS.2022.3190852.
+[9] M.Y. Cheng, K.C. Chiu, Y.M. Hsieh, I.T. Yang, J.S. Chou, Y.W. Wu, BIM integrated
+smart monitoring technique for building fire prevention and disaster relief,
+Autom. Constr. 84 (2017) 14–30, http://dx.doi.org/10.1016/j.autcon.2017.08.
+027.
+[10] M.O. Wong, S. Lee, IFC-based information exchange for multi-agency response
+to indoor fire emergencies, Autom. Constr. 144 (2022) 104623, http://dx.doi.
+org/10.1016/j.autcon.2022.104623.
+[11] P.A. Beata, A.E. Jeffers, V.R. Kamat, Real-time fire monitoring and visualization
+for the post-ignition fire state in a building, Fire Technol. 54 (4) (2018)
+995–1027, http://dx.doi.org/10.1007/s10694-018-0723-1.
+[12] A. Cardil, S. Monedero, C.A. Silva, J. Ramirez, Adjusting the rate of spread of
+fire simulations in real-time, Ecol. Model. 395 (2019) 39–44, http://dx.doi.org/
+10.1016/j.ecolmodel.2019.01.017.
+[13] R.K. Janardhan, S. Hostikka, Predictive computational fluid dynamics simulation
+of fire spread on wood cribs, Fire Technol. 55 (6) (2019) 2245–2268, http:
+//dx.doi.org/10.1007/s10694-019-00855-3.
+[14] M. Choi, S. Chi, Optimal route selection model for fire evacuations based
+on hazard prediction data, Simul. Model. Pract. Theory 94 (2019) 321–333,
+http://dx.doi.org/10.1016/j.simpat.2019.04.002.
+[15] M. Kobes, I. Helsloot, B. de Vries, J.G. Post, Building safety and human behaviour
+in fire: A literature review, Fire Saf. J. 45 (1) (2010) 1–11, http://dx.doi.org/
+10.1016/j.firesaf.2009.08.005.
+[16] D. Kim, H.S. Cha, S. Jiang, The prediction of fire disaster using BIM-based
+visualization for expediting the management process, Sustainability (Switzerland)
+15 (4) (2023) 3719, http://dx.doi.org/10.3390/su15043719.
+[17] D. Jones, C. Snider, A. Nassehi, J. Yon, B. Hicks, Characterising the digital twin:
+A systematic literature review, CIRP J. Manuf. Sci. Technol. 29 (2020) 36–52,
+http://dx.doi.org/10.1016/j.cirpj.2020.02.002.
+[18] D. Piromalis, A. Kantaros, Digital twins in the automotive industry: The road
+toward physical-digital convergence, Appl. Syst. Innov. 5 (4) (2022) 65, http:
+//dx.doi.org/10.3390/asi5040065.
+[19] F. Jiang, L. Ma, T. Broyd, K. Chen, Digital twin and its implementations in the
+civil engineering sector, Autom. Constr. 130 (2021) 103838, http://dx.doi.org/
+10.1016/j.autcon.2021.103838.
+[20] R. Cheng, L. Hou, S. Xu, A review of digital twin applications in civil and
+infrastructure emergency management, Buildings 13 (5) (2023) 1143, http:
+//dx.doi.org/10.3390/buildings13051143.
+[21] V.V. Tuhaise, J.H.M. Tah, F.H. Abanda, Technologies for digital twin applications
+in construction, Autom. Constr. 152 (2023) 104931, http://dx.doi.org/10.1016/
+j.autcon.2023.104931.
+[22] M. Deng, C.C. Menassa, V.R. Kamat, From BIM to digital twins: A systematic
+review of the evolution of intelligent building representations in the AEC-FM
+industry, J. Inf. Technol. Construct. 26 (2021) 58–83, http://dx.doi.org/10.
+36680/J.ITCON.2021.005.
+[23] Y. Ding, Y. Zhang, X. Huang, Intelligent emergency digital twin system for
+monitoring building fire evacuation, J. Build. Eng. 77 (2023) 107416, http:
+//dx.doi.org/10.1016/j.jobe.2023.107416.
+[24] R. Molinaro, J.S. Singh, S. Catsoulis, C. Narayanan, D. Lakehal, Embedding data
+analytics and CFD into the digital twin concept, Comput. & Fluids 214 (2021)
+104759, http://dx.doi.org/10.1016/j.compfluid.2020.104759.
+[25] S.-J. Yun, J.-W. Kwon, W.-T. Kim, A novel digital twin architecture with
+similarity-based hybrid modeling for supporting dependable disaster management
+systems, Sensors 22 (13) (2022) 4774, http://dx.doi.org/10.3390/s22134774.
+[26] H. Benseghir, A.B. Ibrahim, M.N.I. Siddique, M.N. Kabir, Y.M. Alginahi, Mod-
+elling emergency evacuation from an industrial building under spreading fire
+using a social force model with fire dynamics, Mater. Today: Proc. 41 (2020)
+38–42, http://dx.doi.org/10.1016/j.matpr.2020.10.999.
+[27] D. Purser, ASET and RSET: addressing some issues in relation to occupant
+behaviour and tenability, Fire Saf. Sci. 7 (2003) 91–102, http://dx.doi.org/10.
+3801/IAFSS.FSS.7-91.
+[28] F. Khan, Z. Xu, J. Sun, F.M. Khan, A. Ahmed, Y. Zhao, Recent advances in
+sensors for fire detection, Sensors 22 (9) (2022) 3310, http://dx.doi.org/10.
+3390/s22093310.
+[29] X.S. Chen, C.C. Liu, I.C. Wu, A BIM-based visualization and warning system for
+fire rescue, Adv. Eng. Inform. 37 (2018) 42–53, http://dx.doi.org/10.1016/j.aei.
+2018.04.015.
+[30] S. Kanangkaew, N. Jokkaw, T. Tongthong, A real-time fire evacuation system
+based on the integration of building information modeling and augmented
+reality, J. Build. Eng. 67 (2023) 105883, http://dx.doi.org/10.1016/j.jobe.2023.
+105883.
+[31] H. Chen, L. Hou, G.K. Zhang, S. Moon, Development of BIM, IoT and AR/VR
+technologies for fire safety and upskilling, Autom. Constr. 125 (2021) 103631,
+http://dx.doi.org/10.1016/j.autcon.2021.103631.
+[32] L. Kong, Q. Yang, Q. Zhou, J. Xing, X. Sun, R. Zou, Embedding knowledge into
+BIM: A case study of extending BIM with firefighting plans, J. Build. Eng. 49
+(2022) 103999, http://dx.doi.org/10.1016/j.jobe.2022.103999.
+[33] J.S. Chou, M.Y. Cheng, Y.M. Hsieh, I.T. Yang, H.T. Hsu, Optimal path planning
+in real time for dynamic building fire rescue operations using wireless sensors
+and visual guidance, Autom. Constr. 99 (2019) 1–17, http://dx.doi.org/10.1016/
+j.autcon.2018.11.020.
+[34] V. Babrauskas, J.M. Fleming, B.D. Russell, RSET/ASET, a flawed concept for
+fire safety assessment, Fire Mater. 34 (7) (2010) 341–355, http://dx.doi.org/10.
+1002/fam.1025.
+[35] G. Ma, Z. Wu, BIM-based building fire emergency management: Combining
+building users’ behavior decisions, Autom. Constr. 109 (2020) 102975, http:
+//dx.doi.org/10.1016/j.autcon.2019.102975.
+[36] H. Fang, S. Lo, J.T. Lo, Building fire evacuation: An IoT-aided perspective
+in the 5G era, Buildings 11 (12) (2021) 643, http://dx.doi.org/10.3390/
+buildings11120643.
+[37] M.O. Wong, S. Lee, Indoor navigation and information sharing for collaborative
+fire emergency response with BIM and multi-user networking, Autom. Constr.
+148 (2023) 104781, http://dx.doi.org/10.1016/j.autcon.2023.104781.
+[38] V.K. Kodur, S. Venkatachari, M.Z. Naser, Egress parameters influencing emer-
+gency evacuation in high-rise buildings, Fire Technol. 56 (5) (2020) 2035–2057,
+http://dx.doi.org/10.1007/s10694-020-00965-3.
+[39] X. Yi, C. Lei, J. Deng, L. Ma, J. Fan, Y. Liu, L. Bai, C.M. Shu, Numerical
+simulation of fire smoke spread in a super high-rise building for different fire
+scenarios, Adv. Civ. Eng. 2019 (2019) http://dx.doi.org/10.1155/2019/1659325.
+[40] J.W. Kwon, S.J. Yun, W.T. Kim, A semantic data-based distributed computing
+framework to accelerate digital twin services for large-scale disasters, Sensors
+22 (18) (2022) 6749, http://dx.doi.org/10.3390/s22186749.
+[41] M. Grieves, J. Vickers, Digital twin: Mitigating unpredictable, undesirable emer-
+gent behavior in complex systems, Transdiscip. Perspect. Complex Syst.: New
+Find. Approaches (2016) 85–113, http://dx.doi.org/10.1007/978-3-319-38756-
+7_4.
+[42] D.G.J. Opoku, S. Perera, R. Osei-Kyei, M. Rashidi, Digital twin application in
+the construction industry: A literature review, J. Build. Eng. 40 (2021) 102726,
+http://dx.doi.org/10.1016/j.jobe.2021.102726.
+[43] F. Shao, Y. Wang, Intelligent overall planning model of underground space based
+on digital twin, Comput. Electr. Eng. 104 (2022) 108393, http://dx.doi.org/10.
+1016/j.compeleceng.2022.108393.
+[44] S.H. Khajavi, M. Tetik, Z. Liu, P. Korhonen, J. Holmstrom, Digital twin for
+safety and security: Perspectives on building lifecycle, IEEE Access 11 (2023)
+52339–52356, http://dx.doi.org/10.1109/ACCESS.2023.3278267.
+[45] T. Wang, V.J. Gan, D. Hu, H. Liu, Digital twin-enabled built environment sensing
+and monitoring through semantic enrichment of BIM with SensorML, Autom.
+Constr. 144 (2022) 104625, http://dx.doi.org/10.1016/j.autcon.2022.104625.
+[46] L. Jiang, J. Shi, C. Wang, Z. Pan, Intelligent control of building fire protection
+system using digital twins and semantic web technologies, Autom. Constr. 147
+(2023) 104728, http://dx.doi.org/10.1016/j.autcon.2022.104728.
+[47] T. Zhang, Z. Wang, Y. Zeng, X. Wu, X. Huang, F. Xiao, Building artificial-
+intelligence digital fire (AID-fire) system: A real-scale demonstration, J. Build.
+Eng. 62 (2022) 105363, http://dx.doi.org/10.1016/j.jobe.2022.105363.
+[48] F. Tao, B. Xiao, Q. Qi, J. Cheng, P. Ji, Digital twin modeling, J. Manuf. Syst.
+64 (2022) 372–389, http://dx.doi.org/10.1016/j.jmsy.2022.06.015.
+[49] F. Tao, H. Zhang, A. Liu, A.Y. Nee, Digital twin in industry: State-of-the-art,
+IEEE Trans. Ind. Inform. 15 (4) (2019) 2405–2415, http://dx.doi.org/10.1109/
+TII.2018.2873186.
+[50] D.N. Ford, C.M. Wolf, Smart cities with digital twin systems for disaster
+management, J. Manage. Eng. 36 (4) (2020) 04020027, http://dx.doi.org/10.
+1061/(asce)me.1943-5479.0000779.
+[51] S. Singh, Optimize cloud computations using edge computing, in: 2017 Inter-
+national Conference on Big Data, IoT and Data Science, BID, 2017, pp. 49–53,
+http://dx.doi.org/10.1109/BID.2017.8336572.
+[52] A. Mijuskovic, A. Chiumento, R. Bemthuis, A. Aldea, P. Havinga, Resource man-
+agement techniques for cloud/fog and edge computing: An evaluation framework
+and classification, Sensors 21 (5) (2021) http://dx.doi.org/10.3390/s21051832,
+URL https://www.mdpi.com/1424-8220/21/5/1832.
+[53] T. Kubernetes, Production-grade container orchestration, 2022, URL https://
+kubernetes.io/, "(Accessed 09 October 2023)".
+[54] S. Kumar, J.K. Du, KubeEdge: A kubernetes native edge computing frame-
+work, 2019, URL https://kubernetes.io/blog/2019/03/19/kubeedge-k8s-based-
+edge-intro/, "(Accessed 09 October 2023)".
+Automation in Construction 167 (2024) 105722 
+18 
+Y.-J. Kim et al.
+[55] G. Pardo-Castellote, Omg data-distribution service: Architectural overview,
+in: 23rd International Conference on Distributed Computing Systems Work-
+shops, 2003. Proceedings, IEEE, 2003, pp. 200–206, http://dx.doi.org/10.1109/
+MILCOM.2003.1290110.
+[56] U. Hunkeler, H.L. Truong, A. Stanford-Clark, MQTT-S—A publish/subscribe
+protocol for wireless sensor networks, in: 2008 3rd International Conference
+on Communication Systems Software and Middleware and Workshops, COM-
+SWARE’08, IEEE, 2008, pp. 791–798, http://dx.doi.org/10.1109/COMSWA.2008.
+4554519.
+[57] J. Kreibich, Using SQLite, "O’Reilly Media, Inc.", ISBN: 9780596521189, 2010.
+[58] R. Dijkman, J. Hofstetter, J. Koehler, Business process model and notation, OMG
+Specif. Object Manage. Group 89 (2011) http://dx.doi.org/10.1007/978-3-642-
+25160-3.
+[59] E. ASTM, Standard test method for surface burning characteristics of building ma-
+terials, 2023, URL https://www.astm.org/e0084-23b.html, "(Accessed 09 October
+2023)".
+[60] L. Liu, W. Li, H. Jia, Method of time series similarity measurement based on
+dynamic time warping, Comput. Mater. Continua 57 (1) (2018) http://dx.doi.
+org/10.32604/cmc.2018.03511.
+[61] NFPA, 101-Life Safety Code, NFPA, ISBN: 9781455926268, 2021.
+[62] M. Hurley, D. Gottuk, J. Hall, K. Harada, E. Kuligowski, M. Puchovsky, J.
+Torero, J. Watts, C. WIECZOREK, SFPE Handbook of Fire Protection Engineering,
+Springer, ISBN: 9781493925643, 2015.
+[63] W.P.M. Airah, Tenability criteria for design of smoke hazard management sys-
+tems, Ecol. J. (2011) 32–37, URL https://airah.org.au/Common/Uploadedfiles/
+Archive/Ecolibrium/2011/2011_08_01.pdf, "(Accessed 09 October 2023)".
+[64] R.F. Cao, E.W.M. Lee, W. Xie, D.L. Gao, Q. Chen, A.C.Y. Yuen, G.H. Yeoh, R.K.K.
+Yuen, Development of an agent-based indoor evacuation model for local fire risks
+analysis, J. Saf. Sci. Resil. 4 (1) (2023) 75–92, http://dx.doi.org/10.1016/j.jnlssr.
+2022.09.006.
+[65] Q. Xie, S. Guo, Y. Zhang, C. Wang, C. Ma, Q. Li, An integrated method for
+assessing passenger evacuation performance in ship fires, Ocean Eng. 262 (2022)
+112256, http://dx.doi.org/10.1016/j.oceaneng.2022.112256.
+[66] C. Thornton, R. O’Konski, B. Hardeman, D. Swenson, Pathfinder: An agent-based
+egress simulator, in: Pedestrian and Evacuation Dynamics, Springer US, ISBN:
+9781441997258, 2011, pp. 889–892.
+[67] W. Alsafery, O. Rana, C. Perera, Sensing within smart buildings: A survey, ACM
+Comput. Surv. 55 (13s) (2023) http://dx.doi.org/10.1145/3596600.
+[68] B. Tang, J. Luo, M.S. Obaidat, P. Vijayakumar, Container-based task scheduling
+in cloud-edge collaborative environment using priority-aware greedy strategy,
+Cluster Comput. 26 (6) (2023) 3689–3705, http://dx.doi.org/10.1007/s10586-
+022-03765-2.
+[69] S. Yun, D.-S. Cho, H.-s. Kim, H. Kim, W.-T. Kim, An intelligence-defined
+networking architecture with importance-based network resource control, IEEE
+Internet Things J. 10 (4) (2023) 2922–2933, http://dx.doi.org/10.1109/JIOT.
+2021.3118471.
+[70] Z. Feng, C. Wu, Q. Deng, Y. Lin, S. Gao, Z. Gu, On the scheduling of fault-tolerant
+time-sensitive networking with IEEE 802.1CB, IEEE Trans. Comput.-Aided Des.
+Integr. Circuits Syst. 43 (6) (2024) 1715–1728, http://dx.doi.org/10.1109/TCAD.
+2024.3352925.
+[71] L. Jia, D. Yang, Y. Ren, C. Qian, Q. Feng, B. Sun, Z. Wang, A dynamic test
+scenario generation method for autonomous vehicles based on conditional gener-
+ative adversarial imitation learning, Accid. Anal. Prev. 194 (2024) 107279, http:
+//dx.doi.org/10.1016/j.aap.2023.107279, URL https://www.sciencedirect.com/
+science/article/pii/S0001457523003263.
+[72] X. Hu, R.H. Assaad, A BIM-enabled digital twin framework for real-time
+indoor environment monitoring and visualization by integrating autonomous
+robotics, LiDAR-based 3D mobile mapping, IoT sensing, and indoor posi-
+tioning technologies, J. Build. Eng. 86 (2024) 108901, http://dx.doi.org/10.
+1016/j.jobe.2024.108901, URL https://www.sciencedirect.com/science/article/
+pii/S2352710224004698.
+Automation in Construction 167 (2024) 105722 
+19 

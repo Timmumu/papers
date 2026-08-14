@@ -13,3 +13,12 @@ Tunnels play important roles in integrated transport infrastructure. A digital t
 | Yes | Yes | Yes | Yes | Yes | **Include** |
 
 **Note:** Tunnel DT construction + virtual-real fusion; accident rescue & emergency
+
+## Step-3 Deep-Read Coding (Prompt B)
+
+| P | Q | R | U Tier | V | W | X | Z | AA | AB | AC | AD | AE | AF |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| Yes | Yes | Yes | Tier 2 - Digital Shadow (one-way physical to virtual) | 0 | 0 | 1 | Design for Safety (DfS) | None | Digital Twin platform (no machine learning) | Multi (two or more data types) | Single case study | 4 | Design for Safety |
+
+**Key evidence (AG):** Tunnel digital twin construction and virtual-real fusion application (China Academy of Transportation Sciences): BIM technology constructs static tunnel scene model; 3D registration/projection integrates multi-channel surveillance video into 3D virtual scene in real time; multi-source sensing data fused for traffic flow, accident rescue, facility management, emergency response; management model for tunnel operations. One-way monitoring→virtual-real fusion→management; no actuation and no learning loop.
+(full-text source: Endnote)

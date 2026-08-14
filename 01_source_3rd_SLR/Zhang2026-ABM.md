@@ -13,3 +13,12 @@ The aerial building machine (ABM) provides an integrated solution for high-rise 
 | Yes | Yes | Yes | Yes | Yes | **Include** |
 
 **Note:** DT synchronous jacking control of aerial building machine; structural safety
+
+## Step-3 Deep-Read Coding (Prompt B)
+
+| P | Q | R | U Tier | V | W | X | Z | AA | AB | AC | AD | AE | AF |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| Yes | Yes | Yes | Tier 3 - Digital Twin (bidirectional, two-way) | 0 | 1 | 0 | Design for Safety (DfS) | Implemented | Reinforcement Learning (RL) | Multi (two or more data types) | Simulation | 4 | Design for Safety |
+
+**Key evidence (AG):** DT-enabled synchronous jacking control of an aerial building machine (ABM) using a scale model (HUST): scale experimental platform; deep neural network (DNN-PID) for dynamic error compensation; reinforcement learning tunes control parameters; transfer learning migrates DNN-PID controller to scale model; DT system for visual presentation of jacking data and equipment states during synchronous control; jacking tests show 0.407 mm synchronization error (max <0.46 mm across 10 conditions), 29% max error reduction with fewer iterations; DNN-PID reduces MSE by 5.87 mm vs traditional PID. Bidirectional closed-loop (monitoring->control) -> Tier 3; implemented RL tuning + transfer learning (implemented learning mechanism, no convergence proof).
+(full-text source: Endnote)

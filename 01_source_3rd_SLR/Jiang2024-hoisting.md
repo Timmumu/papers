@@ -13,3 +13,12 @@ Unsafe hoisting operations have been consistently associated with numerous safet
 | Yes | Yes | Yes | Yes | Yes | **Include** |
 
 **Note:** DT+KG early-warning of unsafe hoisting operations
+
+## Step-3 Deep-Read Coding (Prompt B)
+
+| P | Q | R | U Tier | V | W | X | Z | AA | AB | AC | AD | AE | AF |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| Yes | Yes | Yes | Tier 2 - Digital Shadow (one-way physical to virtual) | 0 | 1 | 0 | Design for Safety (DfS) | None | Ontology / semantic | Multi (two or more data types) | Simulation | 4 | Design for Safety |
+
+**Key evidence (AG):** Early-warning of unsafe hoisting operations via DT + knowledge graph (HUST): DT framework mirrors real-time operational status of tower crane (lifting, luffing, rotation); knowledge graph identifies unsafe hoisting operations by leveraging real-time data from the DT; scaled-down tower crane replica in lab; warning rate >70%, false alarm rate <20%. One-way monitoring→KG analysis→early warning; no actuation and no learning loop (KG is rule-based).
+(full-text source: Endnote)

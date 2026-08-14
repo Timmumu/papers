@@ -13,3 +13,12 @@ Main road widening can reduce the clearance of the low-level underpass road, res
 | Yes | Yes | Yes | Yes | Yes | **Include** |
 
 **Note:** DT clearance checking for underpasses; collision prevention at design
+
+## Step-3 Deep-Read Coding (Prompt B)
+
+| P | Q | R | U Tier | V | W | X | Z | AA | AB | AC | AD | AE | AF |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| Yes | Yes | Yes | Tier 1 - Digital Model (static, no live data) | 1 | 0 | 0 | Design for Safety (DfS) | None | Digital Twin platform (no machine learning) | Multi (two or more data types) | Single case study | 3 | Design for Safety |
+
+**Key evidence (AG):** Digital twin approach for underpass clearance checking in highway widening projects (UCL/HUST): online map data (DSM, DEM, aerial photos) → digital twin of existing main road + underpass road → BIM model of widened road; clearance check and redesign at preliminary design stage; cost-effective without field surveys; implemented on a UK underpass road. One-way design-stage analysis→clearance check; no live data link, no actuation, no learning loop.
+(full-text source: Endnote)

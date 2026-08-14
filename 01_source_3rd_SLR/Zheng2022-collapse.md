@@ -13,3 +13,12 @@ The collapse of engineering structures can cause significant casualties and have
 | Yes | Yes | Yes | Yes | Yes | **Include** |
 
 **Note:** DT-based building collapse accident investigation
+
+## Step-3 Deep-Read Coding (Prompt B)
+
+| P | Q | R | U Tier | V | W | X | Z | AA | AB | AC | AD | AE | AF |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| Yes | Yes | Yes | Tier 2 - Digital Shadow (one-way physical to virtual) | 0 | 0 | 1 | Design for Safety (DfS) | None | Finite Element Method / physics-based | Multi (two or more data types) | Single case study | 4 | Design for Safety |
+
+**Key evidence (AG):** Digital twin-based investigation of a building collapse accident (Tsinghua U): virtual digital building models (BIM, FE model, physics-engine model) built from real-world info; real-world data mapped into virtual space to construct highly realistic multistage models before and after the collapse, synchronized; investigators integrate/update/check models to reveal collapse mechanism; validated on a real collapse accident (columns exceeded critical buckling stress from welding-induced local buckling/plastic deformation). One-way data->model->cause diagnosis; no actuation, no learning loop.
+(full-text source: Endnote)

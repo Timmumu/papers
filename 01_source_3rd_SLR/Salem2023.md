@@ -13,3 +13,12 @@ This study aims to analyze and discuss the risks facing construction projects by
 | Yes | Yes | Yes | Yes | Yes | **Include** |
 
 **Note:** DT risk systematization for construction projects; anomaly detection
+
+## Step-3 Deep-Read Coding (Prompt B)
+
+| P | Q | R | U Tier | V | W | X | Z | AA | AB | AC | AD | AE | AF |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| Yes | Yes | Yes | Tier 1 - Digital Model (static, no live data) | 0 | 1 | 0 | Design for Safety (DfS) | None | Digital Twin platform (no machine learning) | Multi (two or more data types) | Conceptual (no test) | 3 | Lifecycle / governance |
+
+**Key evidence (AG):** Risk systematization approach for construction projects using Digital Twins for Construction Projects (DTCP) (UT Cluj-Napoca): reviews risks and proposes risk treatment procedure + custom risk matrix adapted to DTCP; aims to improve prediction capabilities for decision-makers; conceptual framework with no DT built or validated; no live data link, no actuation, no learning loop.
+(full-text source: Endnote)

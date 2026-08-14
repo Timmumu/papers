@@ -1,0 +1,1613 @@
+IEEE TRANSACTIONS ON AUTOMATION SCIENCE AND ENGINEERING, VOL. 23, 2026 10449
+Integrating LLMs and Digital Twins for Adaptive
+Multi-Robot Task Allocation in Construction
+Min Deng
+ , Member, IEEE, Bo Fu
+ , Lingyao Li
+ , and Xi Wang
+ , Member, IEEE
+Abstract—Multi-robot systems are emerging as a promising
+solution to the growing demand for productivity and safety
+across industrial sectors. However, e ﬀectively coordinating
+multiple robots in dynamic and uncertain environments, such
+as construction sites, remains a challenge, particularly due
+to unpredictable factors like material delays, unexpected site
+conditions, and weather-induced disruptions. To address these
+challenges, this study proposes an adaptive task allocation
+framework that strategically leverages the synergistic potential
+of Digital Twins, Integer Programming (IP), and Large Language
+Models (LLMs). The multi-robot task allocation problem is
+formally modeled using IP, considering task dependencies, robot
+heterogeneity, scheduling constraints, and replanning needs. A
+narrative-driven schedule adaptation mechanism is introduced,
+where unstructured natural language inputs are interpreted by an
+LLM to autonomously update optimization constraints, enabling
+human-in-the-loop ﬂexibility without manual programming. A
+digital twin system enables real-time synchronization between
+physical operations and their digital representations and
+serves as the user interface, creating a closed-loop feedback
+mechanism that keeps the system responsive to site changes. A
+case study demonstrates both the computational e ﬃciency of
+the optimization algorithm and the reasoning performance of
+LLMs, achieving over 97% accuracy in constraint and parameter
+extraction. The results conﬁrm the practicality, adaptability,
+and cross-domain applicability of the proposed methods.
+Note to Practitioners —Construction projects often face sudden
+disruptions, such as changing priorities, late material arrivals,
+or weather delays, that can a ﬀect planned robot operations.
+This work presents a practical approach through a real-time
+site digital twin, connected to a language-based interface that
+understands plain human instructions. The system is integrated
+with a scheduling module that can allocate and replan tasks
+based on human instructions. This enables site managers to
+adapt robot assignments instantly without modifying the code
+manually, preserving operational e ﬃciency and minimizing
+downtime. While the current simulation setup simpliﬁes certain
+aspects of real-world construction scenarios, the framework is
+designed for straightforward integration with existing multi-
+robot and human-robot collaborative construction systems,
+Received 15 August 2025; revised 27 December 2025 and 17 March
+2026; accepted 5 May 2026. Date of publication 28 May 2026; date of
+current version 4 June 2026. This article was recommended for publication
+by Associate Editor D. Gurdur Broo and Editor J. Gu upon evaluation of
+the reviewers’ comments. (Min Deng and Bo Fu contributed equally to this
+work.) (Corresponding authors: Xi Wang; Lingyao Li.)
+Min Deng is with the Department of Civil and Environmental Engi-
+neering, University of Tennessee, Knoxville, TN 37996 USA (e-mail:
+mindeng@utk.edu).
+Bo Fu is with Amazon Robotics, North Reading, MA 01864 USA (e-mail:
+bofu@amazon.com).
+Lingyao Li is with the School of Information, University of South Florida,
+Tampa, FL 33620 USA (e-mail: lingyaol@usf.edu).
+Xi Wang is with the Department of Construction Science, Texas A&M
+University, College Station, TX 77843 USA (e-mail: xiwang@tamu.edu).
+This article has supplementary downloadable material available at
+https://doi.org/10.1109/TASE.2026.3697962, provided by the authors.
+Digital Object Identiﬁer 10.1109/TASE.2026.3697962
+making it well-positioned for near-term industry adoption.
+Beyond construction, it can beneﬁt manufacturing, logistics, and
+other domains requiring ﬂexible multi-agent coordination.
+Index Terms—Construction robotics, multi-robot systems, task
+allocation, scheduling and coordination, digital twins.
+I. I NTRODUCTION
+W
+ITH rising demands for faster project delivery and
+improved eﬃciency, automation is becoming an essen-
+tial solution for the construction industry [1], [2], [3].
+Robotics, particularly the use of coordinated teams of robots,
+oﬀers a promising approach that could revolutionize traditional
+construction practices. Robotic systems are being employed
+on construction sites to assist with tasks such as material
+delivery [4], assembly [5], [6], [7], and installation [8], [9],
+with the potential to signiﬁcantly improve eﬃciency [10], [11]
+and safety [12]. However, e ﬀectively coordinating multiple
+robots in dynamic and unpredictable construction environ-
+ments remains a considerable challenge. Ensuring smooth
+interoperability and avoiding operational conﬂicts require
+sophisticated algorithms and management strategies [13], [14],
+[15]. In addition, the limited number of available robots and
+their diverse capabilities add complexity to task assignment.
+This necessitates task allocations that are not only e ﬃcient
+but also aligned with each robot’s specialized skills and
+functional strengths, thereby making the problem NP-hard
+[16].
+Although existing solvers and algorithms based on stan-
+dard Integer Programming (IP) [17] and Genetic Algorithms
+(GA) [18] can address task allocation problems in multiple
+scenarios, they lack the ﬂexibility to adapt to changes in
+construction sites. When implemented, these methods are
+generally designed to ﬁnd solutions under static constraints
+[19], [20], [21]. Uncertainties in construction environments
+may arise from various sources, including human decision-
+making, abrupt weather shifts, delays in material supply,
+and operational disruptions. These factors can inﬂuence task
+priorities, durations, or dependencies. For example, sudden
+weather changes, such as an unexpected rainstorm, might
+force the suspension of outdoor tasks [22], [23]. Operational
+events like unforeseen robot malfunctions or the deployment
+of new robots require recalculations to maintain optimal task
+assignments. However, purely mathematical algorithms lack
+the ability to reason about these real-world construction site
+dynamics. Therefore, recalculating task schedules in response
+to these changes often requires extensive manual intervention
+and algorithmic reconﬁguration, which is time-consuming and
+impractical. As a result, the existing task allocation approaches
+might result in project delays [23], underutilized labor [24],
+1558-3783 © 2026 IEEE. All rights reserved, including rights for text and data mining, and training of artiﬁcial intelligence and
+similar technologies. Personal use is permitted, but republication /redistribution requires IEEE permission.
+See https://www.ieee.org/publications/rights/index.html for more information.
+Authorized licensed use limited to: CITY UNIV OF HONG KONG. Downloaded on August 12,2026 at 15:34:18 UTC from IEEE Xplore.  Restrictions apply. 
+10450 IEEE TRANSACTIONS ON AUTOMATION SCIENCE AND ENGINEERING, VOL. 23, 2026
+[25], and resource ine ﬃciencies [26]. In addition to the lack
+of reasoning capability, current research also lacks the ability
+to understand task requirements in real time based on actual
+construction progress. These limitations and gaps highlight
+the need for ﬂexible approaches capable of adapting to the
+dynamic and ever-changing conditions of construction sites,
+leading to the following research questions:
+• RQ1. What task allocation approaches can e ﬀectively
+handle dynamic characteristics and uncertainties inherent
+in multi-robot operations on construction sites?
+• RQ2. How can real-time task information from con-
+struction progress be used to dynamically adjust task
+assignments for multiple robots?
+To address these research questions, this study introduces
+an optimization framework for multi-robot task allocation
+(MRTA) that integrates digital twin, large language models
+(LLMs) [27], and IP. It continuously integrates real-time
+sensor inputs and robot state information to update task
+statuses, site conditions, and resource availability, ensuring
+that optimization constraints remain consistent with current
+ﬁeld conditions. At the same time, it interprets unstructured
+human instructions through an LLM-based reasoning module
+and translates them into structured constraint updates for the
+IP model. This uniﬁed mechanism enables adaptive, human-in-
+the-loop task allocation under evolving site conditions without
+manual reprogramming. The key contributions of this study are
+as follows:
+1) We develop a digital twin-based framework that enables
+communications between real-time robotic operations
+and digital building models (e.g., Building Information
+Models (BIMs)). This integration supports the dynamic
+updating of task statuses and material supplies for task
+management and robot control.
+2) We formulate the MRTA problem as an IP model tai-
+lored to the complexities of dynamic construction tasks.
+The model accounts for task interdependencies, hetero-
+geneous robot capabilities, and evolving constraints.
+3) We propose a novel mechanism for narrative-driven
+task allocation adaptation, whereby an LLM interprets
+unstructured natural language inputs and autonomously
+modiﬁes optimization constraints. This approach facil-
+itates human-in-the-loop decision-making while elim-
+inating the need for manual reconﬁguration of the
+optimization code.
+4) We validate the proposed framework through exten-
+sive simulation-based experiments. They demonstrate
+both the computational e ﬃciency of the optimization
+methods and the reasoning accuracy of multiple LLMs.
+The results demonstrate the framework’s e ﬀectiveness,
+adaptability, and potential for practical deployment in
+real-world construction scenarios.
+The rest of this paper is organized as follows. Section II
+reviews the related literature and identiﬁes key research gaps.
+Section III presents the detailed research methodology, includ-
+ing the design of the closed-loop digital twin system, the
+formulation of the optimization function, and the development
+of the LLM-driven adaptive decision-making mechanism.
+Section IV demonstrates and validates the proposed system
+and algorithms through a case study, with further discussion
+provided in Section V. Section VI concludes the paper.
+II. R ELATED WORK
+A. Robotic Automation in Construction
+Recent studies have explored the potential of integrating
+robots into construction tasks [28]. Exploratory studies, such
+as Yu et al. [29], investigated long-horizon robotic drywall
+installation tasks through LLM-based modularized skill trans-
+fer. K¨ulz et al. [30] enabled rapid robot hardware adaptation to
+meet speciﬁc demands of construction tasks and successfully
+demonstrated the system for autonomous drilling. To further
+improve the e ﬃciency, precision, and adaptability of robots,
+many researchers have also started to implement the concept
+of digital twins [31], [32]. For example, a BIM-integrated
+system that enabled task planning and simulation for con-
+struction robots in indoor wall painting was developed by
+Kim et al. [33]. They linked BIM data with ROS and facilitated
+robot behavior simulation based on construction schedules and
+site conditions. Wang et al. [34] presented a BIM-integrated
+framework that can dynamically update an interactive digital
+twin from BIM data, enabling robots to adjust work plans in
+response to site deviations with human oversight. The system
+combined human ﬂexibility with robotic precision to improve
+construction robustness by demonstrating drywall and block
+placement tests. Moreover, a digital twin-enabled safety mon-
+itoring system for worker-robot collaboration on construction
+sites was proposed in [35]. By integrating workers, robots, and
+manipulated materials, the digital twin dynamically calculates
+separation distances for safety monitoring.
+While these studies have demonstrated the potential of
+implementing robots to assist with construction tasks, they
+primarily focus on single-task or narrowly scoped applications,
+without considering the scenarios when a variety of tasks
+and multi-robots exist. Additionally, existing approaches often
+require manual adjustments to accommodate evolving site
+conditions, highlighting a gap in automation for adaptive task
+management.
+B. Algorithms for MRTA
+Driven by industrial demands and future trends, MRTA has
+emerged as a signiﬁcant research area in robotics, focusing on
+the eﬃcient coordination and assignment of tasks among mul-
+tiple robots to accomplish complex objectives [36]. Existing
+studies have explored various optimization methods to enhance
+performance metrics such as task completion time [37], [38],
+[39] and resource utilization [40], [41]. For example, game
+theory was often used for solving the MRTA, such as the
+study conducted by Martin et al. [42], which employed the
+Shapley value to measure the individual contributions of
+robots and tasks. The authors partitioned complex MRTA
+problems into smaller subproblems by clustering robots and
+tasks based on their Shapley values, eﬀectively balancing robot
+capabilities and task demands. The simulations demonstrated
+that this framework outperformed conventional metaheuristic
+algorithms, such as Genetic Algorithms (GA), in both solution
+Authorized licensed use limited to: CITY UNIV OF HONG KONG. Downloaded on August 12,2026 at 15:34:18 UTC from IEEE Xplore.  Restrictions apply. 
+DENG et al.: INTEGRATING LLMs AND DIGITAL TWINS FOR ADAPTIVE MRTA 10451
+quality and computational e ﬃciency. In addition, Yan and
+Di [43] introduced a hyper-heuristic algorithm for MRTA
+problems involving compulsory and optional (“functional”)
+tasks. The developed algorithm assigned functional tasks using
+an inﬂuence di ﬀusion model optimized by Particle Swarm
+Optimization (PSO). Simulation results demonstrated superior
+performance compared to existing benchmarks, particularly
+with increasing numbers of functional tasks.
+With more complex scenarios, a stochastic programming
+framework was proposed by Fu et al. [13] to simultaneously
+optimize task decomposition, assignment, and scheduling for
+heterogeneous robot teams. Unlike conventional approaches
+that assumed ﬁxed task decompositions, this framework cap-
+tured uncertainties in task requirements and agent capabilities
+using stochastic representations. It enhanced robustness and
+ﬂexibility by minimizing risk through Conditional Value at
+Risk (CVaR). The results demonstrated scalability, low opti-
+mality gaps, and e ﬀective trade-oﬀs among energy, time, and
+success probabilities. Furthermore, some recent works have
+investigated static, logistics-oriented task assignment problems
+using heuristic or genetic-algorithm-based strategies, such as
+truck–drone coordination and multi-UA V delivery schedul-
+ing. In these settings, route planning and load constraints
+are optimized through decoupled or hybrid multi-population
+GA formulations [44], [45]. Other studies have employed
+multi-agent deep reinforcement learning to optimize UA V
+coordination under communication, energy, and charging con-
+straints in 6G-enabled network environments [46]. These
+approaches enhance UA V trajectory planning and task com-
+pletion performance under uncertainty [47].
+Despite considerable advancements, existing MRTA
+approaches often fail to adequately address dynamic
+uncertainties and unforeseen events prevalent in real-
+world scenarios, such as construction environments. Such
+uncertainties often necessitate human-like reasoning to
+manage e ﬀectively, as they can alter task dependencies,
+initiation times, and task durations.
+C. Applications of LLMs in Construction
+The integration of LLMs into the construction industry
+has emerged as a transformative area of research, reshaping
+traditional approaches to data management, decision-making,
+and communication. Recent studies have explored the potential
+of LLMs to enhance construction information exchange [48],
+planning [49], and inspection [50] through their advanced
+information processing capabilities. For example, Chen et al.
+[51] introduced a Meet2Mitigate (M2M) framework to auto-
+mate the capture, transcription, and analysis of construction
+meetings by integrating speaker diarization, automatic speech
+recognition (ASR), and LLMs with retrieval-based summa-
+rization. The M2M prototype showed signiﬁcant accuracy,
+promising a seamless, automated solution for meeting recaps
+that enhances project management and decision alignment
+across teams. This study conﬁrmed LLMs’ ability to extract
+essential information from fragmented content and demon-
+strated their potential to obtain real-time construction site
+information through communicating with humans. In addition,
+the capabilities of LLMs in information integration were
+investigated by Forth and Borrmann [52], who proposed
+a methodology to automate the enrichment of BIMs with
+missing data. By leveraging Semantic Textual Similarity (STS)
+and ﬁne-tuned LLMs, the approach enabled e ﬃcient map-
+ping of thermal properties to construction elements, such
+as walls and spaces, based on architectural and mechanical,
+electrical, and plumbing (MEP) data. Tested on real-world
+case studies, the framework demonstrated high accuracy in
+construction-speciﬁc matching tasks. Moreover, Prieto et al.
+[53] explored the potential of LLM for generating construction
+schedules, ﬁnding that it can produce coherent and logi-
+cally organized schedules that fulﬁll project requirements.
+Participants reported a positive interaction experience with
+the tool. One step further, Kim et al. [54] developed a
+framework integrating LLMs, BIM, and robotic systems to
+enhance autonomous task planning in construction, aiming to
+address challenges with dynamic site conditions. The pro-
+totype achieved high accuracy in managing task responses
+and adapting to environmental changes, demonstrating the
+potential for improving task adaptability and e ﬃciency in
+complex construction environments. In terms of construction
+site inspection, a framework named AutoRepo, which could
+use multimodal LLMs and autonomous vehicles to automate
+report generation, was presented by Du et al. [50]. It aimed at
+improving eﬃciency and reducing human error in traditional
+inspection practices. AutoRepo had shown the potential to
+deliver high-quality, standardized reports with greater accuracy
+and speed. The reports generated by the framework were
+deemed satisfactory based on expert reviews.
+Although existing studies demonstrate promising appli-
+cations of LLMs in construction-related tasks, they lack
+a comprehensive framework for dynamic multi-robot task
+management in rapidly changing construction environments.
+Speciﬁcally, they did not leverage the potential of LLMs to
+autonomously reassign and adapt tasks in response to real-time
+environmental factors. Additionally, while some frameworks
+incorporate structured data sources such as BIMs, these mod-
+els primarily serve as static information databases for data
+retrieval, annotation, or schedule generation. These systems
+are typically limited to o ﬄine or single-platform operations
+and lack real-time interaction with physical robots or dynamic
+site feedback.
+III. M ETHODOLOGY
+The methodology developed in this study is illustrated in
+Fig. 1. It introduces a scalable framework for situation-aware
+decision-making in multi-robot task allocation, enabled by an
+LLM. The system is capable of operating with or without
+an initial digital model (e.g., BIM) and has a closed-loop
+feedback mechanism that synchronizes the physical site with
+its digital representation.
+The digital twin serves as a bridge for synchronization
+between the physical site and the digital model. The digital
+model integrates: (1) a list of construction tasks and their
+precedence relationships that can either be presented in the
+form of a structured list or be automatically extracted from
+the BIM; (2) site information (i.e., material supplies and loca-
+tions), which can either be manually entered or automatically
+Authorized licensed use limited to: CITY UNIV OF HONG KONG. Downloaded on August 12,2026 at 15:34:18 UTC from IEEE Xplore.  Restrictions apply. 
+10452 IEEE TRANSACTIONS ON AUTOMATION SCIENCE AND ENGINEERING, VOL. 23, 2026
+Fig. 1. LLM and digital twin enhanced dynamic robot task allocation.
+detected by robots on the physical site and then transmitted to
+the digital model; and (3) building information that includes
+object geometries, types, and poses. It includes the completed
+structures as well as placeholders for components that have
+not yet been constructed. Each component is associated with
+attribute information, including its name (reference ID), layer
+(unbuilt, as-built, materials, or inactive), material type, instal-
+lation pose, and gripping pose. Based on this information, a
+comprehensive task list that contains the completion status
+can be extracted. It covers all active tasks (i.e., tasks that are
+scheduled to be performed in this project stage), including both
+the ones that are completed and the pending ones waiting to
+be assigned and executed.
+Human supervision plays a critical role in interpreting
+construction progress and intervening when unforeseen uncer-
+tainties occur, such as weather disruptions, equipment failures,
+or site access limitations. When human workers identify that
+changes are needed, they initiate updates through the digi-
+tal twin interface by providing a natural-language narrative
+describing the required adjustments. Once the digital twin
+receives the narrative, it forwards the text to the LLM module
+in the central processor for interpretation using ROS messages
+routed through Rosbridge.
+The central processor coordinates the intelligent decision-
+making layer. Here, an LLM interprets contextual inputs (i.e.,
+natural language updates from human operators) with support
+from a domain knowledge repository. Rather than solving the
+optimization problem directly, the LLM identiﬁes the relevant
+parameters. It then translates the narrative into structured
+constraint updates for the IP model in the task allocation
+module. The IP model then performs replanning using the
+updated constraint sets to generate an optimized task allocation
+plan. The updated task allocation plan is then sent to the robot
+controllers, which execute the tasks accordingly. Completion
+data ﬂows back to the digital twin and task model, ensuring
+continuous updates and alignment between the virtual and
+physical environments.
+A. Digital Twin System
+As a critical component of the proposed framework, the
+digital twin system integrates the digital model and the sys-
+tem central processor to continuously monitor and manage
+the project’s status. It also functions as the user interface,
+connecting human users with system backends. This enables
+users to visualize, supervise, and intervene in the project
+using natural language via keyboard or voice input to submit
+narrative updates that modify task allocation constraints. The
+digital twin state at time t is formalized as:
+S t = D0 + F(S t−1, Rt, S It, ∆task, ∆robot) (1)
+Here, S t represents the current state of the digital twin at time
+t, D0 denotes the initial information from the digital model
+D, F is the state update function, Rt and S It denote the robot
+states (i.e., arm joint states and base locations and orientations)
+and site information at time t, respectively, and ∆task and ∆robot
+capture updates to task statuses and robot statuses (i.e., high-
+level task each robot in the team is performing) at time t,
+respectively.
+Fig. 2 illustrates the system architecture and information
+ﬂow of the technical implementation. The digital twin inte-
+grates four modules, including the synchronized visualization
+module, task status tracker, robot status tracker, and user
+command receiver. These modules enable the digital twin to
+support three core system functions: (1) Visualization provides
+a uniﬁed, real-time representation of the task environment and
+robot states, allowing human users to observe site conditions
+as they evolve; (2) Supervision enables users to monitor task
+progress and robot assignments through updated task and robot
+status streams; and (3) Intervention allows users to modify task
+allocation constraints through natural-language inputs, which
+Authorized licensed use limited to: CITY UNIV OF HONG KONG. Downloaded on August 12,2026 at 15:34:18 UTC from IEEE Xplore.  Restrictions apply. 
+DENG et al.: INTEGRATING LLMs AND DIGITAL TWINS FOR ADAPTIVE MRTA 10453
+Fig. 2. Digital twin system framework.
+are forwarded from the digital twin to the LLM module for
+automated interpretation and decision-making. The technical
+details for each function are shown below.
+1) Visualization (D 0, Rt, S It → S t): The synchronized
+visualization module, adapted from [34], is responsible for
+continuously updating the visual representation of the site and
+robots in the digital twin based on S It and Rt. Before the
+process starts, robot emulators are generated by transmitting
+the URDF models of the robots and associated mesh ﬁles
+from ROS to the digital twin using the ROS# library. In the
+initial state S 0, the basic digital twin scene is generated from
+D0, which includes both geometric and attribute information.
+In this step, component geometries received from D are
+instantiated at the corresponding locations in the digital twin
+as the environment. Attribute information embedded in D is
+transmitted to the digital twin to adjust the properties of the
+corresponding components, such as its name, layer, attachment
+oﬀset, and visualization (e.g., color).
+During runtime, the robot emulators mirror on-site robots by
+subscribing to their state data Rt from ROS, thereby reﬂecting
+synchronized robot states to human users. Speciﬁcally, each
+virtual robotic arm updates its joint states according to the
+subscribed ROS messages and adjusts dependent links accord-
+ingly, while transforms of the mobile robot bases are similarly
+subscribed and used to update the virtual robot base poses.
+S It in this study focuses on construction materials and the
+evolving as-built environment. Mesh models of construction
+materials are extracted from their BIM components. When
+materials are detected on site, the digital twin instantiates
+their meshes at the subscribed poses. Once a robot grasps
+a material, it is attached to the robot’s end-e ﬀector and
+moves accordingly throughout the manipulation process. After
+installation, the mesh is detached and added to the building
+model, with its layer updated from “materials” to “as-built”.
+The corresponding uninstalled component is removed from
+the “unbuilt” layer, ensuring that the digital twin continuously
+reﬂects the evolving construction state.
+2) Supervision (D0, ∆Task, ∆Robot → S t): The supervi-
+sion function allows the users to quickly get an oversight
+of construction progress and multi-robot operations, thereby
+facilitating intervention and decision making. The capability
+is implemented through two coordinated modules, robot status
+tracker and task status tracker. At t = 0, the task status
+tracker extracts from D a comprehensive list of tasks involved.
+According to the progress, each task is marked as unini-
+tiated, ongoing, or completed. As construction progresses,
+these labels are updated according to ∆task, which is achieved
+through communication with the robot controller in ROS.
+When a robot begins executing a task, it publishes a message
+on the designated ROS topic, prompting the digital twin to
+change the corresponding task label from uninitiated to ongo-
+ing. Meanwhile, the robot status tracker updates the operation
+status of each robot using the task name. Once a completion
+message is received, the corresponding task status is updated
+to completed, and the robot status remains synchronized with
+the task it is currently performing. If a robot is not executing
+any task, its status is marked as idle.
+3) Intervention (S t → U): The user command receiver
+module supports user interventions when users make inter-
+vention decisions U during the visualization and supervision
+process or uncertainties occur. In these cases, users can submit
+high-level instructions in natural language by keyboard typing
+or directly through voice. The narrative text is sent to the LLM
+through Rosbridge using the ROS# library and processed by
+the embedded LLM into actionable constraint modiﬁcations.
+These modiﬁcations are then forwarded as valid inputs to the
+task allocation module, which updates robot task assignment.
+After the completion of tasks or upon reaching a project
+milestone, the updated task list and building information are
+transmitted to update the digital model. This information
+includes components installed during construction and changes
+in site conditions, such as leftover construction materials on-
+site. As a result, the digital model maintains an up-to-date
+record and accurate representation of the project. This closed-
+loop feedback mechanism ensures that the digital model
+accurately reﬂects the project’s as-built condition. It also
+enhances the model’s utility in subsequent phases of work,
+such as facility management, progress auditing, and future
+renovations.
+B. Multi-Robot Task Allocation: Plan Creation
+This section formally deﬁnes the task allocation and
+scheduling problem, formulates it as an integer program, and
+describes the algorithms used to solve it.
+Suppose there are nA capabilities, denoted by
+A = {1,..., nA}, nR heterogeneous robots, denoted by
+R ={1,..., nR}, and nT tasks, denoted by T ={1,..., nT}.
+Each robot has a subset of capabilities, and each task requires
+a team of robots with the required capabilities to serve it.
+When a team of qualiﬁed robots Ri ⊂ R arrive, the task
+i∈ T can be completed after time duration T D
+i . A robot may
+only serve one task at a time. Additionally, each task may
+have a set of dependencies Ti⊂ T , i.e., other tasks that must
+be completed beforehand. The goal is to schedule tasks on a
+Authorized licensed use limited to: CITY UNIV OF HONG KONG. Downloaded on August 12,2026 at 15:34:18 UTC from IEEE Xplore.  Restrictions apply. 
+10454 IEEE TRANSACTIONS ON AUTOMATION SCIENCE AND ENGINEERING, VOL. 23, 2026
+TABLE I
+DEFINITION OF THE NOTATION
+set of available robots in a way that minimizes the makespan,
+the time by which all tasks have been completed.
+We formulate the above-mentioned task allocation and
+scheduling problem as an integer program. Here, we provide
+common notations in Table I. The decision variables are xir
+for task assignment and ts
+ir, te
+ir, ts
+i , and te
+i for scheduling.
+1) Objective Function: The objective function jointly mini-
+mizes the makespan and the individual task completion times.
+The third piece in the objective function penalizes the number
+of robots assigned to tasks. The makespan is deﬁned as the
+maximum end time among all tasks. We set Cm≫ Cs≈ Cr to
+ensure that the makespan is the primary objective.
+min
+xir, ts
+i, te
+i,
+ts
+ir, te
+ir
+ 
+Cm max
+i∈T
+te
+i + Cs
+X
+i∈T
+te
+i + Cr
+X
+i∈T
+X
+r∈R
+xir
+!
+(2)
+2) Variable Bound Constraints: x ir is a binary task alloca-
+tion variable, equal to 1 if task i∈ T is assigned to a team
+that contains robot r∈ R, and 0 otherwise. The scheduling
+variables are continuous, with the requirement that the end
+time is always larger than the start time.
+xir∈{ 0, 1}, ∀i∈ T, ∀r∈ R (3)
+0≤ ts
+i≤ te
+i, ∀i∈ T (4)
+0≤ ts
+ir≤ te
+ir, ∀i∈ T, ∀r∈ R (5)
+3) Task Dependency Constraints: The task dependency is
+speciﬁed using the time variables. If task i depends on the
+completion of task j, then task i can start only after task j is
+completed.
+ts
+i≥ te
+j, ∀ j∈ Ti, ∀i∈ T (6)
+4) Task Requirement Constraints: A capability model is
+introduced to deﬁne the task requirement constraints. Let
+akr∈ R≥0 denote the amount of capability k∈ A available on
+robot r∈ R, and let bki∈ R≥0 denote the amount of capability
+k∈ A required to execute task i∈ T . The robot team assigned
+to a task must collectively possess all the capabilities required
+by that task, as enforced by (7).
+X
+r∈R
+akr xir≥ bki, ∀k∈ A, ∀i∈ T (7)
+5) Task Schedule Constraints: Equation (8) speciﬁes the
+relation between the task start and end time. The constraints
+(9)- (12) are organized into two groups. The ﬁrst group,
+(9)-(10), ensures that when robot r∈ R is in the team assigned
+to task i∈ T , the task start time ts
+i equals the robot-speciﬁc
+start time ts
+ir. Similarly, the second group, (11)-(12), guarantees
+that the task end time te
+i matches te
+ir under the same assignment.
+Note that Tlarge is a large time constant.
+te
+i = ts
+i + T D
+i , ∀i∈ T (8)
+ts
+i≤ ts
+ir + Tlarge(1− xir), ∀r∈ R, ∀i∈ T (9)
+ts
+i≥ ts
+ir− Tlarge(1− xir), ∀r∈ R, ∀i∈ T (10)
+te
+i≤ te
+ir + Tlarge(1− xir), ∀r∈ R, ∀i∈ T (11)
+te
+i≥ te
+ir− Tlarge(1− xir), ∀r∈ R, ∀i∈ T (12)
+6) Robot Schedule (No-Overlap) Constraints: Each robot
+can perform at most one task at a time, so their task schedules
+must not overlap, as speciﬁed in (13)-(14). The auxiliary
+variable zi jr equals 0 when robot r∈ R is assigned to both
+tasks i, j∈ T , thereby activating the no-overlap constraints.
+When yi jr = 1, task i is scheduled before task j; otherwise,
+task j is scheduled before task i.
+zi jr = 2− xir− x jr, ∀i< j∈ T, ∀r∈ R
+te
+ir≤ ts
+jr + Tlarge(1− yi jr + zi jr), ∀i< j∈ T, ∀r∈ R
+(13)
+te
+jr≤ ts
+ir + Tlarge (yi jr + zi jr), ∀i< j∈ T, ∀r∈ R (14)
+yi jr∈{ 0, 1}, ∀i< j∈ T, ∀r∈ R (15)
+7) Time Window Constraints (Optional): The time window
+constraint is an optional condition that requires a task to be
+completed within a speciﬁed time interval.
+T s
+i ≤ ts
+i≤ te
+i≤ T e
+i, ∀i∈ T with a time constraint (16)
+8) Task Conﬂict Constraints (Optional): The task conﬂict
+constraints are optional and ensure that two tasks i and
+j with conﬂicting resource requirements are not executed
+concurrently. yi j is a binary auxiliary variable.
+te
+i≤ ts
+j + Tlarge(1− yi j), ∀i< j∈ T with conﬂicts (17)
+te
+j≤ ts
+i + Tlarge yi j, ∀i< j∈ T with conﬂicts (18)
+yi j∈{ 0, 1}, ∀i< j∈ T with conﬂicts (19)
+The above integer program can be solved using a CP-
+SAT solver. A CP-SAT solver is an optimization engine
+that combines constraint programming (CP) techniques with
+Boolean satisﬁability (SAT) solving methods. It is designed
+to e ﬃciently tackle combinatorial optimization problems -
+such as scheduling, planning, and assignment tasks - by
+systematically exploring potential solutions while adhering to
+a set of constraints. In our work, we employ the CP-SAT solver
+provided by Google OR-Tools to e ﬃciently solve the integer
+program.
+C. LLM-Driven Adaptive Decision-Making
+To enable adaptive task reallocation in response to dynamic
+site conditions, we introduce a formal mapping that captures
+Authorized licensed use limited to: CITY UNIV OF HONG KONG. Downloaded on August 12,2026 at 15:34:18 UTC from IEEE Xplore.  Restrictions apply. 
+DENG et al.: INTEGRATING LLMs AND DIGITAL TWINS FOR ADAPTIVE MRTA 10455
+TABLE II
+TYPES OF CONSTRAINT AND PARAMETER CHANGES
+Fig. 3. Pipeline for narrative-driven adaptive schedule optimization.
+how the LLM interprets natural language narratives and trans-
+forms them into actionable modiﬁcations to the task allocation
+problem. This process serves as the core of the narrative-driven
+adaptation mechanism, facilitating human-in-the-loop ﬂexi-
+bility without requiring direct manipulation of optimization
+code.
+Fig. 3 illustrates the pipeline for enabling adaptive multi-
+robot task allocation driven by natural language inputs. The
+process begins with a narrative containing dynamic project
+updates, such as task sequencing preferences, resource delays,
+or timing adjustments. An LLM processes this narrative to
+extract actionable information, identifying relevant task enti-
+ties (e.g., painting, window installation, wall-drilling) and
+interpreting relationships such as precedence constraints or
+temporal shifts. To ensure accurate task reference, a structured
+database is used to map textual descriptions to corresponding
+task IDs (e.g., wall-drilling → T6).
+Next, the extracted instructions are categorized into discrete
+ﬂag types, each representing a speciﬁc kind of modiﬁ-
+cation as demonstrated in Table II. Each ﬂag is paired
+with a structured parameter representation, which encapsu-
+lates the necessary information to modify the optimization
+code.
+Let the input to the LLM be a narrative description N ,
+such as a sentence or paragraph provided by a site supervisor
+or worker, describing changes in site conditions, task statuses,
+or scheduling preferences. The LLM acts as a function:
+M : N→{(Ck,θ k)}K
+k=1 (20)
+where:
+M is the mapping function learned or encoded by the LLM
+Ck is the type of constraint (e.g., dependency, time shift)
+θk is the parameter set for the update
+Each (Ck,θ k) pair deﬁnes a ﬂagged constraint to be dynam-
+ically injected into the optimization model. These ﬂags are
+associated with predeﬁned templates in the integer program-
+ming codebase, allowing seamless integration with the solver
+without altering the base model structure. For example:
+• A narrative like “Our skilled wall-drilling worker will be
+arriving an hour late” will yield (C = 3,θ ={T6, +1}).
+• A command like “The owner has requested that paint-
+ing be completed before window installation” maps to
+(C = 1,θ ={T13≺ T9}).
+where Ti represents a task identiﬁer deﬁned in the example
+case study shown in Table III.
+To ensure consistency, the LLM references a structured task
+knowledge base T ={(Ti, Desci)} that maps textual task names
+to task IDs. This helps avoid ambiguity and ensures each
+extracted constraint can be accurately linked to the model.
+The LLM output is then parsed into a structured JSON
+format and passed to the optimization backend, which updates
+the constraint set accordingly:
+Cnew = Coriginal ∪{Ck (θk)} (21)
+This interaction between the LLM and the optimizer ensures
+the system can continuously adapt to evolving conditions while
+maintaining model transparency and interpretability.
+Please note that the optimization algorithm operates inde-
+pendently of the LLM. Using an LLM to solve mathematical
+optimization problems would be ine ﬃcient and unreliable due
+to its limitations in numerical computation and algorithmic
+convergence. We leverage the LLM’s strengths in natural
+language understanding and reasoning to interpret unstructured
+human or contextual inputs and translate them into structured
+updates for the IP model constraints. The actual optimization
+is executed by a proven solver that guarantees mathematical
+correctness and reproducibility. This separation o ﬀers advan-
+tages in the following aspects:
+• Transparency. The optimization process remains gov-
+erned by deterministic mathematical models, while all
+LLM-generated modiﬁcations are explicitly logged.
+• Interpretability. Each natural-language instruction can
+be traced to its corresponding change in the constraint
+set, which avoids closed-box decision pathways.
+Authorized licensed use limited to: CITY UNIV OF HONG KONG. Downloaded on August 12,2026 at 15:34:18 UTC from IEEE Xplore.  Restrictions apply. 
+10456 IEEE TRANSACTIONS ON AUTOMATION SCIENCE AND ENGINEERING, VOL. 23, 2026
+• Scalability. The modular design allows the LLM or solver
+to be independently upgraded or replaced, ensuring ﬂex-
+ibility for larger-scale or domain-speciﬁc deployments.
+D. LLM Implementation and Prompt Design
+Prompt design is critical for LLMs to perform high-quality
+information extraction, particularly given the intricate nature
+of construction scheduling tasks [55], [56]. To create e ﬀective
+prompts tailored for construction project scheduling, we utilize
+prompt engineering strategies articulated by White et al. [55].
+These strategies emphasize the necessity of integrating con-
+text descriptions, structured templates, and explicit output
+formatting into prompts. In our scenario, context descriptions
+detail construction tasks, their interdependencies, durations,
+and associated robotic capabilities, and we further employ
+JSON as the structured output format to ensure clarity.
+In addition, we incorporate two techniques into our prompt
+design. The ﬁrst technique is chain-of-thought (CoT) prompt-
+ing, which guides the LLM through step-by-step reasoning
+[57]. This approach can facilitate accurate task identiﬁcation
+and constraint recognition by prompting the LLM to engage
+in deliberate, intermediate reasoning stages before concluding.
+Speciﬁcally, our CoT prompts instruct the LLM to: (1) care-
+fully read the task description; (2) identify the speciﬁc task and
+associated robotic system; (3) determine the constraint type;
+(4) extract relevant parameters; and (5) format the extracted
+information. The second technique is few-shot learning. Given
+that prior research indicates LLMs excel in few-shot learning
+scenarios [58], [59], we provide multiple examples within our
+prompt. These examples serve as explicit references, allowing
+the LLM to capture task requirements more e ﬀectively and
+thereby enhancing the accuracy of its outputs. By leveraging
+these prompt engineering techniques, we develop a structured
+prompt template tailored for prompting LLMs to analyze task
+descriptions of construction project scheduling (see Supple-
+mentary Material - Prompt Design.pdf).
+For model selection, we refer to the widely recognized
+Multi-task Language Understanding (MMLU) benchmark
+[60]. We utilize two popular LLM families, OpenAI’s
+GPT series and Anthropic’s Claude series, because of their
+demonstrated capabilities in complex reasoning and strong
+performance across diverse NLP tasks [61], [62]. Speciﬁcally,
+from OpenAI, we select GPT-4o-mini, GPT-4o, GPT-4.1-mini
+and GPT-4.1. From Anthropic, we include Claude-Haiku and
+Claude-Sonnet.
+E. Multi-Robot Task Allocation: Replanning
+Suppose the task schedule and robot assignments have
+already been determined through the task allocation opti-
+mization described in the previous section, and the plan has
+been partially executed. At time T R, updated information
+becomes available reﬂecting changes in task conditions, such
+as modiﬁcations to robot capabilities, availability, expected
+task durations, additional task dependencies, or time window
+constraints. These changes may render the current plan infea-
+sible or suboptimal, necessitating the generation of a new plan.
+At this point, some tasks have been completed, others are in
+progress, and the rest have not yet started. For the completed
+and ongoing tasks, their assigned robots and schedules must
+remain unchanged during the replanning. Furthermore, in
+many real-world scenarios, modifying the original plan may
+incur additional operational costs. For instance, altering the
+schedule may disrupt human worker timelines, resource book-
+ings, and supply deliveries, and rescheduling these elements
+often requires additional overhead and expenditure. To account
+for this, penalties can be introduced into the optimization to
+discourage unnecessary deviations from the original plan.
+Given an original task allocation and scheduling plan,
+represented by the solution to the variables 0xir, 0ts
+ir, 0te
+ir, 0ts
+i ,
+and 0te
+i , let T− ={i∈ T | 0ts
+i≤ T R} denote the set of tasks that
+are ongoing or completed by the replanning time T R, and let
+T+ ={i∈ T | 0ts
+i > T R} represent the set of tasks that have
+not yet started. The replanning optimization is formulated as
+follows.
+1) Replanning Optimization: The replanning objective
+jointly minimizes the makespan and individual task completion
+times while also penalizing deviations from the original plan.
+We set Cm≫ Cs≈ Cr≈ Cx≈ Ct to ensure that the makespan
+remains the primary objective, with the other terms balanced
+relative to one another. The constraints include the original
+constraints (3)-(19), along with additional constraints (25)-(26)
+to ensure plan consistency.
+min
+xir, ts
+i, te
+i,
+ts
+ir, te
+ir
+(Cm max
+i∈T
+te
+i + Cs
+X
+i∈T
+te
+i + Cr
+X
+i∈T
+X
+r∈R
+xir
++ Cx∆x + Ct∆t)
+subject to (3)− (19) and (25)− (26) (22)
+2) Plan Change Penalty: Changes to the original task
+assignments and schedules are penalized during replanning
+to ensure that the new plan accommodates updated task
+conditions, keeping deviations from the original plan to a
+minimum. This constraint helps the optimization focus on
+only those adjustments that are truly necessary to address
+the disturbance, thereby limiting the scope of modiﬁcations
+and reducing the likelihood of incurring additional operational
+costs.
+∆x =
+X
+∀i∈T+
+X
+∀r∈R
+|xir− 0xir| (23)
+∆t =
+X
+∀i∈T+
+ 
+|ts
+i− 0ts
+i| +|te
+i− 0te
+i|
+
+(24)
+3) Historical Plan Constraints for Completed Tasks: The
+robot assignments and task schedules for ongoing or com-
+pleted tasks must remain unchanged to ensure consistency
+between the updated plan and the actual execution.
+ts
+i = 0ts
+i, te
+i = 0te
+i, ∀i∈ T− (25)
+xir = 0xir ∀r∈ R, ∀i∈ T− (26)
+IV. C ASE STUDY
+To validate the proposed framework, a case study is con-
+ducted to verify the system workﬂow and evaluate module
+capabilities. A BIM is employed in this study as the digital
+environment for evaluating the proposed framework. Rhino
+Authorized licensed use limited to: CITY UNIV OF HONG KONG. Downloaded on August 12,2026 at 15:34:18 UTC from IEEE Xplore.  Restrictions apply. 
+DENG et al.: INTEGRATING LLMs AND DIGITAL TWINS FOR ADAPTIVE MRTA 10457
+Fig. 4. Simulation of the task allocation and completion.
+is used as the BIM platform, which o ﬀers an intuitive user
+interface to edit attribute data and can be interfaced with
+other applications. The robotic agents receive task assignments
+based on priority, dependencies, and spatial constraints, ensur-
+ing an optimized workﬂow. Human workers can interact with
+the system by updating task priorities, modifying scheduling
+constraints, or assigning speciﬁc tasks to robots based on
+evolving site conditions. As robotic agents complete their
+tasks, the BIM is updated in real-time, reﬂecting changes in
+the construction progress.
+Although the construction projects experience a wide spec-
+trum of uncertainties, the relative severity and frequency of
+these events vary signiﬁcantly across project types, locations,
+and operational practices. In this case study, the considered
+uncertainties, including weather impacts [23], material supply
+delays [63], equipment malfunctions [64], and task-level dis-
+ruptions [65], are presented as representative examples rather
+than an exhaustive set of industry-critical risks. The goal is to
+demonstrate how the proposed framework adapts to di ﬀerent
+categories of disruptions by dynamically updating constraint
+sets in real time. It does not aim to prioritize or quantify
+speciﬁc types of uncertainty. This design choice ensures that
+the evaluation focuses on the framework’s general adaptability
+and not on the criticality of individual disturbances.
+The physical site is simulated in Gazebo, 1 with inter-robot
+communication established through ROS. Fig. 4 demonstrates
+an example scenario of the simulation. It is important to
+note that the robots are not expected to handle all tasks
+independently, but rather to complete or assist with speciﬁc
+tasks, with human workers often remaining essential to the
+1Simulation setup: construction materials (e.g., window frames) are
+assumed to be accurately detectable, and their poses are known exactly by the
+robots (no detection noise is modeled). Once the gripper contacts a material,
+the object is assumed to move rigidly with the manipulator and friction is
+not explicitly modeled. For onboard sensing, the IMU measurements include
+Gaussian white noise with angular rate standard deviation 2 ×10−4 rad/s (bias
+mean 7.5 × 10−6 rad/s) and linear acceleration standard deviation 1 .7 × 10−2
+m/s2 (bias mean 0.1 m /s2). The laser scanner measurements include Gaussian
+white noise with a standard deviation of 0.01 m. The range limits are 0.12-3.5
+m with a resolution of 0.015 m, and the scanner provides 360 samples.
+process. For example, once a robot transfers and places the
+frame strips on the ground near a window, the associated
+transfer task is completed, and a human worker installs the
+frame on the wall. The actions of human workers are not
+modeled; instead, the world state is updated, and the frames are
+teleported onto the wall. Following installation, the simulation
+updates the building state speciﬁcations and transmits the
+relevant information to the digital twin for incorporation into
+the BIM data.
+The multi-platform digital twin integration in the case
+study is designed to reﬂect the key components required for
+practical deployment in real construction environments. BIM
+provides standardized representations of site geometry, task
+deﬁnitions, and construction sequences that are commonly
+available in practice. Unity serves as the digital twin and
+user interface, enabling real-time visualization, monitoring,
+and human-in-the-loop interaction with the task allocation
+process. Gazebo simulation is used to emulate robot execution
+and sensing during validation. In real-world deployment, this
+component would be replaced by physical robots and on-site
+sensor streams without altering the higher-level task allocation
+and decision-making pipeline. Through this integration, the
+case study validates the system’s ability to interpret human
+narratives, update optimization constraints via the LLM–digital
+twin integration, and adapt multi-robot task allocation in real
+time. While Gazebo does not capture all low-level execution
+complexities of construction robotics, these details are orthog-
+onal to the focus of this work. Robust solutions for robot
+control, perception, and communication have been extensively
+studied and can be directly incorporated into the proposed
+framework.
+A. Digital Twin Demonstration
+The digital twin is developed using Unity, with a project
+template designed to automatically generate interactive digital
+twins from di ﬀerent BIMs, eliminating the need for manual
+setup each time [34]. This template includes ﬁve key com-
+ponents: (1) robot emulators for robot state synchronization;
+(2) BIM object templates for digital model visualization;
+Authorized licensed use limited to: CITY UNIV OF HONG KONG. Downloaded on August 12,2026 at 15:34:18 UTC from IEEE Xplore.  Restrictions apply. 
+10458 IEEE TRANSACTIONS ON AUTOMATION SCIENCE AND ENGINEERING, VOL. 23, 2026
+Fig. 5. Screenshot of digital twin interface.
+(3) site information templates for site data rendering; (4) user
+interface elements for user supervision and intervention; and
+(5) BIM update functions. A screenshot of the digital twin
+interface and the robot status tracker is shown in Fig. 5.
+The robot emulators are created by subscribing to robot
+descriptions from ROS through the ROS# library [66]. Robot
+URDF ﬁles and meshes, stored in ROS, are retrieved and
+stored in Unity as game objects. These game objects represent
+the hierarchical structure of each robot: links are structured
+as children of their respective parent links, allowing dynamic
+transformation updates based on real-time state data. A ded-
+icated script is attached to each robot emulator to subscribe
+to robot states (i.e., arm joint states and base locations and
+orientations), enabling continuous pose synchronization.
+“Prefab” game object templates are used to visualize BIM
+components. For each component in BIM, a prefab object
+template is instantiated in the Unity scene. The mesh of the
+instantiated object is automatically set to the component mesh
+received from the BIM to replicate the site environment. The
+script attached to the template can change the name, layer,
+material, and state of the instantiated object according to its
+BIM attributes. For example, the objects that have not yet
+been constructed are rendered as hidden or transparent in the
+digital twin. This BIM-Unity communication is established
+with Rhino. Inside, which is an open-source plugin to run
+Rhino and its API inside other applications on the Windows
+operating system.
+For the site information, this case study speciﬁcally focuses
+on the construction materials. Monitoring the states of materi-
+als is essential in construction projects for supply management
+and task scheduling. Additionally, due to their large size and
+weight, these materials pose signiﬁcant safety considerations
+during robot manipulation. Both the resting and active mate-
+rials are tracked. Locations of the materials resting on site
+are detected by robots and instantiated in the digital twin
+as game objects. For materials being manipulated, they are
+attached as a child to the end e ﬀector or moving platform
+of the corresponding robot based on their attachment o ﬀsets.
+Therefore, they can move with the robot during operation.
+In addition, the user interface elements are created. The
+digital twin is initiated with two buttons on the top-left corner
+for users to access the task status tracker and the robot status
+tracker. Once the “Task Status” button is clicked, a panel
+shows up with text inside displaying a comprehensive task list
+along with the status of each task (i.e., uninitiated, ongoing,
+or completed). The initial task list is received from the BIM
+at project initiation. As construction progresses, task statuses
+are updated via messages received from ROS. Similarly, the
+“Ongoing” button provides the users with a summary of the
+current task each robot is performing, shown as task IDs,
+followed by high-level task descriptions, also via messages
+received from ROS. An example of robot status tracker is
+demonstrated in Fig. 5. At the bottom-right corner of the
+UI, two additional buttons are used to collect user inputs.
+The keyboard button pops up a text input ﬁeld for typing,
+while the voice button transcribes spoken input to text with
+the transcription API from OpenAI. The text collected is
+then passed to the LLM module for further processing and
+interpretation.
+The human can archive the current project status to the
+BIM at the project milestone or when the work is ﬁnished
+by pressing a keyboard button. The task statuses are sent
+to Rhino through COMPAS FAB framework [67] to update
+the corresponding component attribute information in the
+BIM. The layer of the components installed during the job
+period is switched from the “Unbuilt” layer to “As-built”
+layer, with the model visualization updated according to layer
+changes. The materials left over on construction sites and their
+corresponding locations are also sent to be instantiated in the
+BIM on the “Material” layer for potential future use.
+Authorized licensed use limited to: CITY UNIV OF HONG KONG. Downloaded on August 12,2026 at 15:34:18 UTC from IEEE Xplore.  Restrictions apply. 
+DENG et al.: INTEGRATING LLMs AND DIGITAL TWINS FOR ADAPTIVE MRTA 10459
+TABLE III
+DURATIONS AND DEPENDENCIES OF THE CONSTRUCTION TASKS
+TABLE IV
+ROBOT CAPABILITIES AND QUANTITIES
+B. Construction Tasks and Robot Capabilities
+Typical construction tasks, such as element delivery, win-
+dow installation, wall drilling, HV AC duct installation, wiring,
+wall painting, and site inspections, are used to showcase the
+capabilities of the methodologies developed in this study. The
+assumed durations and dependencies of these tasks are detailed
+in Table III. Additionally, seven types of robots with varying
+capabilities, as outlined in Table IV, are considered alongside
+these construction-related tasks. For instance, robots equipped
+with a cargo container can assist with material transport and
+element delivery tasks. Robots with an Indoor Air Quality
+(IAQ) sensor can help with site inspections. When multiple
+robots are eligible to perform the same task, robot assignment
+is determined through the optimization in Sec. III-B, which
+minimizes the overall task completion time and the number of
+assigned robots.
+C. LLM Performance Analysis
+To assess the ability of LLMs to interpret constraints with
+varying levels of complexity, we collaborated with four con-
+struction domain experts to create a test set of 500 descriptive
+narrative samples (see Supplementary Material: Dataset). Each
+sample includes one or more types of constraint and parameter
+changes as deﬁned in Table II. The dataset is evenly divided
+TABLE V
+AVERAGE PERFORMANCE ACROSS ALL DIFFICULTY LEVELS
+into ﬁve groups based on the number of changes described
+in each sample. For example, the ﬁrst group contains 100
+samples, each involving a single change. The second group
+includes 100 samples with two randomly selected changes,
+and so on, up to the ﬁfth group, which contains samples with
+ﬁve randomly selected changes.
+We then deﬁne three metrics to comprehensively evaluate
+the LLMs’ performance, including (1) Constraint Accuracy;
+(2) Parameter Accuracy; and (3) Joint Accuracy. Constraint
+Accuracy measures how accurately the LLM identiﬁes the
+categories of changes, as deﬁned and labeled from 1 to 5 in
+Table II. Parameter Accuracy evaluates the accuracy of speciﬁc
+extracted values or attributes given each constraint, such as
+task duration or robot change. Finally, the Joint Accuracy
+assesses the proportion of cases in which the LLM provides
+entirely accurate responses across all evaluated constraints and
+parameters.
+To ensure accuracy, the LLM outputs follow a strict
+JSON-formatted schema deﬁning allowable constraint types
+and parameter ranges. The prompting process embeds
+construction-domain knowledge as in-context learning
+examples, which allows the model to recognize equivalent
+terminology that may vary among practitioners (e.g., “duct
+installation” vs. “HV AC ﬁtting”) and still map them to
+the correct standardized task entities. This contextual
+embedding helps the model interpret site-speciﬁc language
+and measurement units more accurately. With few-shot and
+chain-of-thought prompting, this approach guides step-by-step
+reasoning to improve precision and robustness.
+The evaluation of the selected LLMs’ performance across
+ﬁve task diﬃculty levels is presented in Fig. 6 and Table V.
+The results reveal that Constraint Accuracy remains high
+(close to 100%) across all LLMs, demonstrating their robust
+ability to interpret and classify task relationships accurately,
+even as task complexity increases.
+The results show that GPT-4.1, GPT-4.1-mini, and GPT-4o
+outperform Anthropic’s Claude models and GPT-4o-mini
+across ﬁve complexity levels. In particular, GPT-4.1 and
+GPT-4o maintain consistently high accuracy scores (typically
+above 95%) across di ﬃculty levels. In contrast, Claude
+models achieve moderate Parameter Accuracy (generally
+between 70% and 80%). This pattern suggests that Claude
+and GPT-4o-mini models encounter di ﬃculties extracting
+precise details, such as task durations and robot types, from
+complex textual descriptions.
+Authorized licensed use limited to: CITY UNIV OF HONG KONG. Downloaded on August 12,2026 at 15:34:18 UTC from IEEE Xplore.  Restrictions apply. 
+10460 IEEE TRANSACTIONS ON AUTOMATION SCIENCE AND ENGINEERING, VOL. 23, 2026
+Fig. 6. Performance evaluation of selected LLMs across ﬁve complexity levels.
+In terms of the Joint Accuracy metric, which provides a
+more integrated assessment, GPT-4.1 achieves the highest Joint
+Accuracy across all diﬃculty levels (consistently above 95%),
+underscoring its comprehensive understanding and robust
+performance in combined reasoning tasks. GPT-4o and GPT-
+4.1-mini also show commendable Joint Accuracy at lower
+complexity but exhibit noticeable performance drops at higher
+diﬃculty. The other three selected LLMs, Claude-Haiku,
+Claude-Sonnet, and GPT-4o-mini models display substantial
+reductions in Joint Accuracy, especially at higher complexity
+levels, often falling below 40%.
+Overall, the evaluation identiﬁes OpenAI’s GPT-4.1 models
+as the top performers across all assessed metrics, consis-
+tently achieving accuracy higher than 98% with narrower
+conﬁdence intervals across all ﬁve complexity levels. This
+indicates that GPT-4.1 oﬀers superior precision and reliability
+in handling intricate construction scheduling analyses com-
+pared to other evaluated models. While GPT-4o models also
+deliver strong performance, they exhibit noticeable limitations
+as task complexity increases. These ﬁndings are promising for
+construction project scheduling as they illustrate the capability
+of advanced LLMs, particularly GPT-4.1, to reliably automate
+and accurately manage complex scheduling tasks.
+D. Optimization Results
+To evaluate the performance and e ﬃciency of formulated
+task allocation algorithms in construction tasks, we randomly
+vary the number of available robots for each type according to
+the number ranges speciﬁed in Table IV. In addition, we vary
+the number of tasks as outlined in Table III by generating
+either one or two sets from the groups {T1, T6, T7, T12, T13},
+{T2, T3, T8, T9}, and {T4, T5, T10, T11}. Tasks within the same
+group are selected together to maintain the task dependencies.
+Overall, 1024 test scenarios with di ﬀerent combinations of
+robots and tasks were created to evaluate the proposed frame-
+work (row 1 in TABLE VI).
+To simulate scenarios with additional time window con-
+straints (row 2 in TABLE VI), we randomly select between
+one and three tasks and impose a condition that these tasks
+must start after a randomly chosen period of 2 to 4 hours,
+reﬂecting scheduling conﬂicts. For scenarios with task conﬂict
+TABLE VI
+EVALUATION OF THE TASK ALLOCATION ALGORITHM
+constraints (row 3 in TABLE VI), we enforce that tasks in the
+set{T6, T7, T8, T9, T12, T13} cannot be performed concurrently,
+as they require collaboration with a single available worker
+for these tasks. Similarly, we generated 1024 test scenarios
+incorporating various combinations of robots and tasks with
+either the time window or task conﬂict constraints. To evaluate
+the replanning optimization (row 4 in TABLE VI), the plan
+created without time constraints is used as the original plan,
+and additional time window constraints are introduced during
+replanning. The updated plan should leverage the original plan
+while satisfying the time constraints and accounting for the
+penalty associated with deviations from the original plan.
+The IP-based task allocation is applied to the generated test
+scenarios. The CP-SAT solver provided by Google OR-Tools
+is used to solve the integer program. It employs Lazy Clause
+Generation (LCG) to prune the search space. The solver is
+run with default parameters and no time limit is imposed: the
+algorithm terminates only when it ﬁnds the optimal solution
+or exhausts the search space to prove infeasibility. Table VI
+summarizes the number of tasks, robots, decision variables,
+and constraints in each scenario, along with the corresponding
+computational times to ﬁnd the optimal solution. According to
+the table, on average, the optimal solutions are found within
+one second, demonstrating the eﬃciency of our task allocation
+formulation. The initial plan can be generated o ﬄine, where
+computation times on the order of seconds remain fully
+practical. Under real-time construction conditions, replanning
+Authorized licensed use limited to: CITY UNIV OF HONG KONG. Downloaded on August 12,2026 at 15:34:18 UTC from IEEE Xplore.  Restrictions apply. 
+DENG et al.: INTEGRATING LLMs AND DIGITAL TWINS FOR ADAPTIVE MRTA 10461
+Fig. 7. Example of the optimized task allocation and schedule.
+TABLE VII
+TASK ALLOCATION USING THE GENETIC ALGORITHM
+completes in at most 0.08 seconds. This indicates that the sys-
+tem supports sub-second real-time updates for a comparatively
+large construction scenario involving 27 tasks and 15 robots.
+To evaluate the e ﬀectiveness of the proposed integer-
+programming task allocation algorithm, we compare it with
+a genetic-algorithm (GA) approach. To maintain computation
+times on the order of one second, the GA population size is set
+to 100 with a maximum of 150 generations. The performance
+results are summarized in Table VII. Under these settings, the
+GA ﬁnds feasible solutions in 63% of the scenarios involving
+task conﬂicts and in 100% of the remaining scenarios, whereas
+the proposed method is guaranteed to return optimal solutions.
+For the cases in which the GA does ﬁnd feasible solutions,
+its average optimality gap relative to the proposed method
+is consistently positive, as shown in Table VII. Overall, the
+GA-based task allocation yields a lower success rate, inferior
+solution quality, and longer computation times compared to
+the proposed approach.
+Fig. 7 presents an example of task allocation results. Fol-
+lowing these results, we ran the simulation, and the scene at
+the snapshot time was captured as shown in Fig. 4 and Fig. 5.
+In this scenario, the robot ﬂeet includes two robots of type R1,
+two of type R2, and one each of types R3, R6, and R7. These
+robots are assigned to complete one set of wall installation
+and painting tasks, one set of electrical wiring tasks, one set of
+HV AC duct installation tasks, two sets of window installation
+tasks, and a site inspection. The optimal completion time for
+the schedule is calculated to be 5.25 hours.
+In addition to the initial plan, a replanned scenario is also
+illustrated. We present a scenario in which, at 0.2 hours into
+the schedule, the workers realize that the structural materials
+required for the HV AC duct installation are unavailable due
+to delivery delays and will not arrive until 0.5 hours. This
+disruption necessitates a reallocation of tasks. Applying the
+replanning framework described in Section III-E, the system
+minimally adjusts the initial plan to accommodate the dis-
+turbance. Considering the penalties for deviating from the
+original schedule, the updated plan reassigns R1 to execute
+task T5 before T4, reversing the original task order (as shown
+in Fig. 7).
+V. D ISCUSSION
+The ﬁndings of this study highlight the potential of inte-
+grating LLMs, optimization algorithms, and digital twins to
+address challenges in multi-robot coordination on dynamic
+construction sites. The results have demonstrated the e ﬀec-
+tiveness of the adaptive system architecture. By separating the
+reasoning capabilities of the LLM from the task optimization
+algorithm itself, the framework preserves ﬂexibility while
+maintaining computational rigor. The results conﬁrm that the
+optimization model remains interpretable and robust while
+beneﬁting from the LLM’s ability to interpret unstructured
+input and dynamically generate task-speciﬁc modiﬁcations.
+Although the accuracy of LLMs in interpreting construction-
+relevant narratives varies across models, the results underscore
+their practical viability. In particular, advanced models such
+as GPT-4.1 consistently extracted constraints and parameters
+with high accuracy, even as task complexity increased. This
+suggests strong potential for LLMs to serve as intelligent inter-
+mediaries between human planners and autonomous systems,
+especially in time-sensitive, information-rich environments.
+Importantly, because the framework is not dependent on a
+speciﬁc LLM architecture, continued advances in LLM capa-
+bilities are expected to further enhance its performance and
+adaptability over time. At the system level, the integration of
+a digital twin enabled a closed-loop information ﬂow between
+the physical construction site and its virtual representation.
+Real-time updates of task progress, robot states, and envi-
+ronmental changes are synchronized through the digital twin,
+Authorized licensed use limited to: CITY UNIV OF HONG KONG. Downloaded on August 12,2026 at 15:34:18 UTC from IEEE Xplore.  Restrictions apply. 
+10462 IEEE TRANSACTIONS ON AUTOMATION SCIENCE AND ENGINEERING, VOL. 23, 2026
+which allows for continuous reﬁnement of task allocations
+and site-level decision-making. This capability is especially
+valuable in dynamic construction settings, where conditions
+shift frequently and adaptability is paramount. The simula-
+tion results have supported the practicability of the proposed
+framework.
+Through the digital twin interface, users can monitor
+task progress, visualize robot operations, and intervene when
+unexpected events occur (e.g., weather disruption or prior-
+ity change). Human input is given in natural language and
+processed by the LLM interpreter, which translates these
+instructions into formalized constraint updates for the IP opti-
+mizer. The optimizer then recalculates the task allocation plan
+automatically, ensuring that user decisions are consistently
+propagated through the system without manual reprogram-
+ming.
+Beyond the context of construction, the proposed frame-
+work exhibits strong potential for scalability and cross-domain
+applications. The generalizable principles of optimization,
+real-time feedback, and natural language reasoning, make it
+highly adaptable to other sectors such as manufacturing, logis-
+tics, warehousing, and industrial assembly. In these domains,
+similar to construction, tasks often follow strict sequences,
+depend on heterogeneous agent capabilities, and may be
+subject to unexpected disruptions. Additionally, the digital
+twin integration oﬀers signiﬁcant beneﬁts for sectors that rely
+heavily on spatial coordination and progress tracking, such as
+infrastructure development and maintenance.
+Despite some promising outcomes, there are several lim-
+itations in this study. For example, the current simulation
+setup simpliﬁes certain aspects of real-world construction
+scenarios. In particular, the collaboration between robots and
+human workers is not explicitly modeled, resulting in ideal-
+ized task transitions that may di ﬀer slightly from real-world
+conditions. While the current study evaluates a representative
+construction scenario, extending the framework to additional
+cases remains an important direction for future work. These
+scenarios can be incorporated by adjusting BIM task graphs,
+robot conﬁgurations, and constraint deﬁnitions within the
+digital twin, without modifying the core decision-making
+architecture. Additionally, although LLMs demonstrate strong
+performance under structured prompting, their role in this
+framework is currently limited. Future work will extend the
+LLM toward proactive conﬂict detection and pre-optimization
+reasoning. This extension will allow the framework to identify
+potential inconsistencies before solver execution while pre-
+serving transparency and mathematical rigor.
+VI. C ONCLUSION
+This research introduced an integrated framework for
+adaptive multi-robot task allocation in dynamic construc-
+tion environments, combining digital twin technology, IP
+optimization, and LLM-driven narrative interpretation. The
+proposed system addresses the challenges posed by real-time
+uncertainties, enabling e ﬃcient and ﬂexible task rescheduling
+without manual intervention. By decoupling the reasoning
+and optimization processes, the framework maintains algo-
+rithmic transparency and scalability, o ﬀering a structured and
+scalable solution adaptable to evolving site conditions. Empir-
+ical evaluations demonstrated the computational robustness of
+the optimization model. They also showed that LLMs can
+eﬀectively extract constraint modiﬁcations from unstructured
+natural language descriptions with high accuracy. The estab-
+lishment of a closed-loop feedback mechanism between the
+physical construction site and its digital twin representation
+further enhances situational awareness and supports contin-
+uous system adaptation. Overall, the proposed framework
+demonstrates the potential of integrating LLMs, optimization,
+and digital twins to support intelligent multi-robot operations
+in construction and other industrial applications.
+REFERENCES
+[1] H. Begi ´c, M. Gali ´c, and Z. Dola ˇcek-Alduk, “Digitalization and automa-
+tion in construction project’s life-cycle: A review,” J. Inf. Technol.
+Construct., vol. 27, pp. 441–460, Apr. 2022.
+[2] Q. Chen, B. Garc ´ıa de Soto, and B. T. Adey, “Construction automation:
+Research areas, industry concerns and suggestions for advancement,”
+Autom. Construct., vol. 94, pp. 22–38, Oct. 2018.
+[3] A. Klarin and Q. Xiao, “Automation in architecture, engineer-
+ing and construction: A scientometric analysis and implications for
+management,” Eng., Construct. Architectural Manage. , vol. 31, no. 8,
+pp. 3308–3334, Jul. 2024.
+[4] K. S. Saidi, T. Bock, and C. Georgoulas, “Robotics in construction,”
+in Springer Handbook of Robotics . Cham, Switzerland: Springer, 2016,
+pp. 1493–1520.
+[5] S. Liu, X. V . Wang, and L. Wang, “Digital twin-enabled advance
+execution for human–robot collaborative assembly,” CIRP Ann., vol. 71,
+no. 1, pp. 25–28, 2022.
+[6] X. Wang, S. Wang, C. C. Menassa, V . R. Kamat, and W. McGee,
+“Automatic high-level motion sequencing methods for enabling multi-
+tasking construction robots,” Autom. Construct. , vol. 155, Nov. 2023,
+Art. no. 105071.
+[7] B. Fu et al., “Digital twin-based smart manufacturing: Dynamic line
+reconﬁguration for disturbance handling,”IEEE Trans. Autom. Sci. Eng.,
+vol. 22, pp. 14892–14905, 2025.
+[8] B. M. Tehrani, S. BuHamdan, and A. Alwisy, “Robotics in assembly-
+based industrialized construction: A narrative review and a look
+forward,” Int. J. Intell. Robot. Appl. , vol. 7, no. 3, pp. 556–574, Sep.
+2023.
+[9] J. Xu, M. Dixit, and X. Wang, “Adaptive visual perception for robotic
+construction process: A multi-robot coordination framework,” 2024,
+arXiv:2412.11275.
+[10] M. Gharbia, A. Chang-Richards, Y . Lu, R. Y . Zhong, and H. Li, “Robotic
+technologies for on-site building construction: A systematic review,”
+J. Building Eng. , vol. 32, Nov. 2020, Art. no. 101584.
+[11] A. Attalla, O. Attalla, A. Moussa, D. Shaﬁque, S. B. Raean, and
+T. Hegazy, “Construction robotics: Review of intelligent features,” Int.
+J. Intell. Robot. Appl. , vol. 7, no. 3, pp. 535–555, Sep. 2023.
+[12] B. Xiao, C. Chen, and X. Yin, “Recent advancements of robotics in
+construction,” Autom. Construct., vol. 144, Dec. 2022, Art. no. 104591.
+[13] B. Fu, W. Smith, D. M. Rizzo, M. Castanier, M. Gha ﬀari, and K. Barton,
+“Robust task scheduling for heterogeneous robot teams under capability
+uncertainty,” IEEE Trans. Robot. , vol. 39, no. 2, pp. 1087–1105, Apr.
+2023.
+[14] O. Valero, J. Antich, A. Tauler-Rossell ´o, J. Guerrero, J.-J. Mi ˜nana, and
+A. Ortiz, “Multi-robot task allocation methods: A fuzzy optimization
+approach,” Inf. Sci., vol. 648, Nov. 2023, Art. no. 119508.
+[15] T. Lei, P. Chintam, C. Luo, L. Liu, and G. E. Jan, “A convex optimization
+approach to multi-robot task allocation and path planning,” Sensors,
+vol. 23, no. 11, p. 5103, May 2023.
+[16] B. Abdzadeh, S. Noori, and S. F. Ghannadpour, “Simultaneous schedul-
+ing of multiple construction projects considering supplier selection and
+material transportation routing,” Autom. Construct., vol. 140, Aug. 2022,
+Art. no. 104336.
+[17] L. A. Wolsey, Integer Programming. Hoboken, NJ, USA: Wiley, 2020.
+[18] F. A. Omara and M. M. Arafa, “Genetic algorithms for task scheduling
+problem,” J. Parallel Distrib. Comput. , vol. 70, no. 1, pp. 13–22, Jan.
+2010.
+[19] K. Wang and A. Jacquillat, “A stochastic integer programming approach
+to air tra ﬃc scheduling and operations,” Oper. Res. , vol. 68, no. 5,
+pp. 1375–1402, Sep. 2020.
+Authorized licensed use limited to: CITY UNIV OF HONG KONG. Downloaded on August 12,2026 at 15:34:18 UTC from IEEE Xplore.  Restrictions apply. 
+DENG et al.: INTEGRATING LLMs AND DIGITAL TWINS FOR ADAPTIVE MRTA 10463
+[20] C. Perreault-Laﬂeur, M. Carvalho, and G. Desaulniers, “A stochas-
+tic integer programming approach to reserve sta ﬀ scheduling with
+preferences,” Int. Trans. Oper. Res. , vol. 32, no. 1, pp. 289–313, Jan.
+2025.
+[21] L. R. Abreu, J. O. Cunha, B. A. Prata, and J. M. Framinan, “A genetic
+algorithm for scheduling open shops with sequence-dependent setup
+times,” Comput. Oper. Res., vol. 113, Jan. 2020, Art. no. 104793.
+[22] J. Deng, “Research on the risk early warning of construction engineering
+under the coupling disaster of typhoons and rainstorms in coastal
+areas based on BP neural network,” J. Coastal Res. , vol. 105, no. sp1,
+pp. 151–154, Dec. 2020.
+[23] S. J. Schuldt, M. R. Nicholson, Y . A. Adams, and J. D. Delorit,
+“Weather-related construction delays in a changing climate: A systematic
+state-of-the-art review,” Sustainability, vol. 13, no. 5, p. 2861, Mar.
+2021.
+[24] D. Yu, Q. Lv, G. Srivastava, C.-H. Chen, and J. C.-W. Lin,
+“Multiobjective evolutionary model of the construction industry based
+on network planning,” IEEE Trans. Ind. Informat. , vol. 19, no. 2,
+pp. 2173–2182, Jul. 2022.
+[25] J. Lee, M. Park, H.-S. Lee, T. Kim, S. Kim, and H. Hyun, “Workﬂow
+dependency approach for modular building construction manufacturing
+process using dependency structure matrix (DSM),” KSCE J. Civil Eng.,
+vol. 21, no. 5, pp. 1525–1535, Jul. 2017.
+[26] T. Jin, Z. Cai, B. Li, C. Zheng, G. Jiang, and J. Cheng, “Improving
+resource utilization by timely ﬁne-grained scheduling,” in Proc. 15th
+Eur. Conf. Comput. Syst. , Apr. 2020, pp. 1–16.
+[27] H. Naveed et al., “A comprehensive overview of large language models,”
+2023, arXiv:2307.06435.
+[28] I. Armeni et al., “Construction robotics and automation [TC spot light],”
+IEEE Robot. Autom. Mag. , vol. 31, no. 4, pp. 186–192, Dec. 2024.
+[29] H. Yu, V . R. Kamat, and C. C. Menassa, “Generalizable skill learning
+for construction robots with crowdsourced natural language instructions,
+composable skills standardization, and a large language model,” ASCE
+OPEN, Multidisciplinary J. Civil Eng., vol. 3, no. 1, Dec. 2025, Art. no.
+04025014.
+[30] J. K ¨ulz, M. Terzer, M. Magri, A. Giusti, and M. Altho ﬀ, “Holistic
+construction automation with modular robots: From high-level task
+speciﬁcation to execution,” IEEE Trans. Autom. Sci. Eng. , vol. 22,
+pp. 16716–16727, 2025.
+[31] M. Deng, C. C. Menassa, and V . R. Kamat, “From BIM to digital
+twins: A systematic review of the evolution of intelligent building
+representations in the AEC-FM industry,” J. Inf. Technol. Construct. ,
+vol. 26, pp. 58–83, Feb. 2021.
+[32] X. Wang, C.-J. Liang, C. C. Menassa, and V . R. Kamat, “Interactive
+and immersive process-level digital twin for collaborative human–robot
+construction work,” J. Comput. Civil Eng. , vol. 35, no. 6, Nov. 2021,
+Art. no. 04021023.
+[33] S. Kim, M. Peavy, P.-C. Huang, and K. Kim, “Development of BIM-
+integrated construction robot task planning and simulation system,”
+Autom. Construct., vol. 127, Jul. 2021, Art. no. 103720.
+[34] X. Wang, H. Yu, W. McGee, C. C. Menassa, and V . R. Kamat,
+“Enabling building information model-driven human–robot collaborative
+construction workﬂows with closed-loop digital twins,” Comput. Ind. ,
+vol. 161, Oct. 2024, Art. no. 104112.
+[35] X. Lin, Z. Guo, X. Jin, and H. Guo, “Digital twin-enabled safety moni-
+toring system for seamless worker-robot collaboration in construction,”
+Autom. Construct., vol. 174, Jun. 2025, Art. no. 106147.
+[36] H. Chakraa, F. Gu ´erin, E. Leclercq, and D. Lefebvre, “Optimization
+techniques for multi-robot task allocation problems: Review on the state-
+of-the-art,” Robot. Auto. Syst. , vol. 168, Oct. 2023, Art. no. 104492.
+[37] X. Bai, A. Fielbaum, M. Kronm ¨uller, L. Knoedler, and J. Alonso-
+Mora, “Group-based distributed auction algorithms for multi-robot
+task assignment,” IEEE Trans. Autom. Sci. Eng. , vol. 20, no. 2,
+pp. 1292–1303, Apr. 2023.
+[38] ´A. Calvo and J. Capit ´an, “Heterogeneous multirobot task allocation for
+long-endurance missions in dynamic scenarios,” IEEE Trans. Robot. ,
+vol. 41, pp. 6494–6513, 2025.
+[39] H. Guo, Z. Miao, J. Ji, and Q. Pan, “An e ﬀective collaboration
+evolutionary algorithm for multi-robot task allocation and scheduling in
+a smart farm,” Knowl.-Based Syst., vol. 289, Apr. 2024, Art. no. 111474.
+[40] Z. Pan and Y . Yu, “Optimizing heterogeneous multi-robot team compo-
+sition for long-horizon construction tasks: Time- and utilization-guided
+simulation,” Autom. Construct., vol. 165, Sep. 2024, Art. no. 105520.
+[41] D. Lee, “Resource-based task allocation for multi-robot systems,” Robot.
+Auto. Syst., vol. 103, pp. 151–161, May 2018.
+[42] J. G. Martin, F. J. Muros, J. M. Maestre, and E. F. Camacho, “Multi-
+robot task allocation clustering based on game theory,” Robot. Auto.
+Syst., vol. 161, Mar. 2023, Art. no. 104314.
+[43] F. Yan and K. Di, “Solving the multi-robot task allocation with func-
+tional tasks based on a hyper-heuristic algorithm,” Appl. Soft Comput. ,
+vol. 146, Oct. 2023, Art. no. 110628.
+[44] X. Bai, Y . Ye, B. Zhang, and S. S. Ge, “E ﬃcient package delivery
+task assignment for truck and high capacity drone,” IEEE Trans. Intell.
+Transp. Syst., vol. 24, no. 11, pp. 13422–13435, Nov. 2023.
+[45] X. Bai et al., “E ﬃcient hybrid multi-population genetic algorithm for
+multi-UA V task assignment in consumer electronics applications,”IEEE
+Trans. Consum. Electron., vol. 71, no. 2, pp. 2395–2406, May 2025.
+[46] M. L. Betalo, S. Leng, A. M. Seid, H. N. Abishu, A. Erbad, and X. Bai,
+“Dynamic charging and path planning for UA V-powered rechargeable
+WSNs using multi-agent deep reinforcement learning,” IEEE Trans.
+Autom. Sci. Eng. , vol. 22, pp. 15610–15626, 2025.
+[47] M. Leranso Betalo, I. Ullah, F. Berhanu Tesema, Z. Wu, J. Li, and
+X. Bai, “Generative AI-driven multiagent DRL for task allocation
+in UA V-assisted EMPD within 6G-enabled SAGIN networks,” IEEE
+Internet Things J. , vol. 12, no. 17, pp. 35890–35907, Sep. 2025.
+[48] Y . Wang, H. Luo, and W. Fang, “An integrated approach for automatic
+safety inspection in construction: Domain knowledge with multimodal
+large language model,” Adv. Eng. Informat., vol. 65, May 2025, Art. no.
+103246.
+[49] Z. Qian and C. Shi, “Large language model-empowered paradigm for
+automated geotechnical site planning and geological characterization,”
+Autom. Construct., vol. 173, May 2025, Art. no. 106103.
+[50] H. Pu, X. Yang, J. Li, and R. Guo, “AutoRepo: A general framework
+for multimodal LLM-based automated construction reporting,” Expert
+Syst. Appl., vol. 255, Dec. 2024, Art. no. 124601.
+[51] G. Chen, A. Alsharef, A. Ovid, A. Albert, and E. Jaselskis,
+“Meet2Mitigate: An LLM-powered framework for real-time issue identi-
+ﬁcation and mitigation from construction meeting discourse,” Adv. Eng.
+Informat., vol. 64, Mar. 2025, Art. no. 103068.
+[52] K. Forth and A. Borrmann, “Semantic enrichment for BIM-based build-
+ing energy performance simulations using semantic textual similarity and
+ﬁne-tuning multilingual LLM,”J. Building Eng., vol. 95, Oct. 2024, Art.
+no. 110312.
+[53] S. A. Prieto, E. T. Mengiste, and B. Garc ´ıa de Soto, “Investigating the
+use of ChatGPT for the scheduling of construction projects,” Buildings,
+vol. 13, no. 4, p. 857, Mar. 2023.
+[54] K. Kim, M. Ivashchenko, P. Ghimire, and P.-C. Huang, “Context-aware
+and adaptive task planning for autonomous construction robots through
+llm-robot communication,” Available SSRN J., 2024.
+[55] J. White et al., “A prompt pattern catalog to enhance prompt engineering
+with chatgpt,” 2023, arXiv:2302.11382.
+[56] S. Atreja, J. Ashkinaze, L. Li, J. Mendelsohn, and L. Hemphill,
+“Prompt design matters for computational social science tasks but in
+unpredictable ways,” 2024, arXiv:2406.11980.
+[57] M. Bosma et al., “Chain-of-thought prompting elicits reasoning in
+large language models,” in Proc. Adv. Neural Inf. Process. Syst. , 2022,
+pp. 24824–24837.
+[58] T. B. Brown et al., “Language models are few-shot learners,” in Proc.
+NIPS, 2020, pp. 1877–1901.
+[59] S. Hegselmann, A. Buendia, H. Lang, M. Agrawal, X. Jiang, and
+D. Sontag, “TabLLM: Few-shot classiﬁcation of tabular data with large
+language models,” in Proc. Int. Conf. Artif. Intell. Statist. (PMLR), 2023,
+pp. 5549–5581.
+[60] D. Hendrycks et al., “Measuring massive multitask language
+understanding,” 2020, arXiv:2009.03300.
+[61] L. Fan, W. Hua, L. Li, H. Ling, and Y . Zhang, “NPHardEval: Dynamic
+benchmark on reasoning ability of large language models via complexity
+classes,” 2023, arXiv:2312.14890.
+[62] Y . Sonoda et al., “Diagnostic performances of GPT-4o, Claude 3 opus,
+and Gemini 1.5 pro in ‘diagnosis please’ cases,” Jpn. J. Radiol., vol. 42,
+no. 11, pp. 1231–1235, Nov. 2024.
+[63] M. O. Sanni-Anibire, R. Mohamad Zin, and S. O. Olatunji, “Causes of
+delay in the global construction industry: A meta analytical review,” Int.
+J. Construct. Manage. , vol. 22, no. 8, pp. 1395–1407, Jun. 2022.
+[64] R. S. Lopes, C. A. V . Cavalcante, and M. H. Alencar, “Delay-time
+inspection model with dimensioning maintenance teams: A study of a
+company leasing construction equipment,” Comput. Ind. Eng. , vol. 88,
+pp. 341–349, Oct. 2015.
+[65] S. Durdyev and M. R. Hosseini, “Causes of delays on construction
+projects: A comprehensive list,” Int. J. Manag. Projects Bus. , vol. 13,
+no. 1, pp. 20–46, Jan. 2020.
+[66] Siemens/Ros-Sharp. Accessed: Jun. 10, 2025. [Online]. Available: https://
+github.com/siemens/ros-sharp/wiki
+[67] R. Rust et al.. (2018). COMPAS FAB: Robotic Fabrication Package
+for the COMPAS Framework . [Online]. Available: https: //github.com/
+compas-dev/compas fab/
+Authorized licensed use limited to: CITY UNIV OF HONG KONG. Downloaded on August 12,2026 at 15:34:18 UTC from IEEE Xplore.  Restrictions apply. 
+10464 IEEE TRANSACTIONS ON AUTOMATION SCIENCE AND ENGINEERING, VOL. 23, 2026
+Min Deng (Member, IEEE) received the B.E. degree
+(Hons.) in architectural environment engineering
+from the University of Nottingham Ningbo, China,
+in 2015, the M.S. degree in intelligent building tech-
+nology and the M.Phil. degree in civil engineering
+from The Hong Kong University of Science and
+Technology in 2016 and 2018, respectively, and the
+M.S. degree in robotics and the Ph.D. degree in
+civil engineering from the University of Michigan,
+Ann Arbor, in 2023. He is currently an Assistant
+Professor with the Department of Civil and Environ-
+mental Engineering, University of Tennessee, Knoxville. His research interests
+include embodied AI, human–robot collaboration, coordinated multi-robot
+systems, digital twins, and robot learning for adaptive autonomy in complex
+and unstructured environments.
+Bo Fu received the B.S. degree in vehicle engi-
+neering from Tongji University, China, in 2017,
+the M.S. degree in mechanical engineering from
+Carnegie Mellon University in 2019, and the Ph.D.
+degree in robotics from the University of Michigan
+in 2024. He is currently an Applied Scientist with
+Amazon Robotics. His research interests include
+robust and resilient decision-making for heteroge-
+neous multi-agent systems under uncertainty using
+optimization and learning-based approaches. The
+application areas include large-scale multi-robot col-
+laboration, multi-agent path ﬁnding, warehouse management, human–robot
+interaction, robotic construction, and smart manufacturing systems.
+Lingyao Li received the B.S. and M.S.E. degrees in
+ocean engineering from Harbin Engineering Univer-
+sity in 2012 and 2014, respectively, and the Ph.D.
+degree in civil and environmental engineering from
+the University of Maryland in 2021. Subsequently,
+he completed post-doctoral training with the Uni-
+versity of Maryland in 2022 and the University
+of Michigan in 2024. He is currently an Assistant
+Professor with the School of Information, University
+of South Florida. His research interests center on AI
+agents and large language models, with application
+areas, including health systems and urban systems.
+Xi Wang (Member, IEEE) received the B.S. degree
+in construction management from Dongbei Univer-
+sity of Finance and Economics, China, in 2017,
+the M.S.E. degree in construction engineering and
+management from the University of Michigan, Ann
+Arbor, in 2018, and the M.S. degree in robotics
+and the Ph.D. degree in civil engineering from the
+University of Michigan, Ann Arbor, in 2022. She is
+currently an Assistant Professor with the Department
+of Construction Science, Texas A&M University.
+Her research interests include context-aware robotic
+construction, human–robot interaction, and multi-robot coordination. She is
+the Co-Chair of IEEE RAS Technical Committee on Construction Robotics.
+Authorized licensed use limited to: CITY UNIV OF HONG KONG. Downloaded on August 12,2026 at 15:34:18 UTC from IEEE Xplore.  Restrictions apply. 

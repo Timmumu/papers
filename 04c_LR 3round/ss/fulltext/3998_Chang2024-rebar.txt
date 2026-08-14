@@ -1,0 +1,1063 @@
+Automation in Construction 160 (2024) 105303
+Available online 9 February 2024
+0926-5805/© 2024 The Authors. Published by Elsevier B.V. This is an open access article under the CC BY license ( http://creativecommons.org/licenses/by/4.0/).
+Autonomous dimensional inspection and issue tracking of rebar using 
+semantically enriched 3D models 
+Chun-Cheng Chang , Tsung-Wei Huang , Yi-Hsiang Chen , Jacob J. Lin
+*
+, Chuin-Shan Chen
+* 
+Department of Civil Engineering, National Taiwan University, Taipei, Taiwan   
+ARTICLE INFO  
+Keywords: 
+Autonomous 
+Rebar inspection 
+Dimensional quality control 
+Digital twin 
+Deep learning 
+Computer vision 
+Building information modeling 
+ABSTRACT  
+Accurate and efficient inspection of rebar dimensions has proven to be a persistent challenge for researchers and 
+practitioners. This paper introduces a semantically enriched 3D model-based system that employs computer 
+vision and deep learning for location-aware identification and tracking of rebar issues. The system comprises four 
+modules: (A) digital twin generation, (B) segmentation, (C) inspection, and (D) issue identification and tracking. 
+The generation module constructs 3D models from rebar structures. The segmentation and inspection modules 
+analyze the 3D models, enriching them with semantic information. The issue identification and tracking module 
+exchanges information between the semantically enriched 3D models and the building information models across 
+time. An experiment on a column rebar cage is conducted. A precision of over 90% and a recall of over 97% are 
+reported in 3D instance segmentation. Diameter inspection achieves an accuracy of 95.5% for large-size rebars. 
+Spacing inspection achieves a mean relative error of 0.98%. The defective spacing is identified and tracked.   
+1. Introduction 
+Reinforced concrete structures are the most used structures in con -
+struction as a result of their strength and economy. Furthermore, rebars 
+play a significant role in reinforced concrete structures since they pro -
+vide most of the tensile strength. To successfully execute rebar con -
+struction, it is imperative to consider key aspects, such as scheduling, 
+quality, and cost. In terms of scheduling, enhancements of supply chain 
+and installation planning have been undertaken [ 1 – 3 ]. In terms of 
+quality, rigorous inspections must be implemented across material, 
+processing, and installation phases. Among these inspections, rebar 
+dimensional quality control (DQC), which aims to inspect the dimen -
+sional properties of rebars (e.g., the spacing of tie rebars and the 
+diameter of each rebar), is probably the most critical part since bearing 
+capacity of a structure is subjected to proper arrangement of rebars. 
+Rebar DQC varies from project to project and is performed on con -
+struction sites, thereby posing a challenge for further investigation. With 
+the advanced and rapid development of machine learning (ML), deep 
+learning (DL), and computer vision (CV), these technologies offer 
+promising solutions to traditional engineering problems [ 4 – 8 ]. These 
+successful breakthroughs inspire us to develop a novel rebar dimen -
+sional quality control based on semantically enriched 3D models and 
+building information modeling (BIM), proposing a solution to the 
+aforementioned challenge. 
+The traditional approach to perform rebar DQC requires qualified 
+inspectors and tap measures, which is time-consuming, labor-intensive, 
+and error-prone. In recent years, several studies [ 7 , 9 , 10 ] have been 
+conducted to improve the quality and efficiency of rebar DQC. Accord -
+ing to them, a 3D-based system is preferred and can be divided into four 
+major processes: (A) 3D reconstruction of rebar structures, (B) rebar 
+geometric extraction from 3D models, (C) measurement of rebar 
+dimensional properties, and (D) examination of measured dimensional 
+properties. Although research on each process has been developed, 
+certain difficulties remain when connecting the processes, such as full 
+automation, acquisition of semantically enriched rebar 3D models, and 
+rebar issue tracking. Below is a summary of related work:  
+(A) Terrestrial laser scanning (TLS) and the combination of structure 
+from motion (SfM) and multi-view stereo (MVS) are commonly 
+utilized to build 3D models from real assets in construction. First, 
+since TLS is capable of scanning large structures rapidly and 
+provides highly accurate data, it has been adopted in precast 
+element inspection [ 5 , 7 , 11 – 14 ]; common structural component 
+inspection [ 15 – 18 ]; rebar inspection [ 19 – 21 ]; mechanical, elec -
+trical, and plumbing inspection [ 9 , 22 , 23 ]; and industrial equip -
+ment inspection [ 24 , 25 ]. However, TLS has been found to be 
+* Corresponding author. 
+E-mail addresses: jacoblin@ntu.edu.tw (J.J. Lin), dchen@ntu.edu.tw (C.-S. Chen).  
+Contents lists available at ScienceDirect 
+Automation in Construction 
+journal homep age: www.el sevier.com/l ocate/autcon 
+https://doi.org/10.1016/j.autcon.2024.105303 
+Received 30 April 2023; Received in revised form 29 January 2024; Accepted 29 January 2024   
+Automation in Construction 160 (2024) 105303
+2
+impractical on construction sites, owing to low mobility, high 
+spatial demand, and the requirement of operators. Second, since 
+the SfM-to-MVS pipeline shows great potential for generating 3D 
+scenes from common 2D images, it has been applied in large-scale 
+reconstruction from Internet photos [26–28], reinforced concrete 
+structure inspection [6], and rebar inspection [10,29–31]. How -
+ever, the relatively low accuracy of point clouds poses a challenge 
+in dimensional inspections. Furthermore, SfM's up-to-scale point- 
+cloud results cause a limitation in automated processes.  
+(B) To separate individual structural components, pipes, or rebars 
+from a point cloud of as-built facilities, computer vision (CV) 
+algorithms and deep learning (DL)-based approaches are possible 
+solutions. First, random sample consensus (RANSAC) [32] and 
+Hough transform [33] are frequently adopted in rebar inspection 
+[20,21], pipe inspection [9,22,23], and structural component 
+inspection [5,11,34,35]. However, RANSAC is hard to scale to 
+large-size point clouds [16,36] and performing a Hough trans -
+form on a large dataset is computationally expensive [16]. Sec -
+ond, although DL-based 2D instance segmentation models such as 
+Mask R-CNN [37] have been successfully applied in 2D rebar 
+inspection [38,39], the segmentation results lack global spatial 
+information. As a result, 3D segmentation models (e.g., Point 
+Transformer [40]) may directly tackle the issue, but annotating 
+rebar data in a 3D space is too costly. Hence, a combination of 2D 
+segmentation and 3D fusion may be the solution. Chen et al. [31] 
+demonstrated a prototype of a hybrid method. Nonetheless, the 
+integration of 2D and 3D information remains an open problem.  
+(C) Diameter inspections of cylindrical point-cloud instances (e.g., 
+rebars and pipes) are usually transformed into projections and 2D 
+circle fitting. Although the geometric fitting and algebraic fitting 
+have been applied in the literature [17,18,20,21,24,25] and show 
+advantages in accuracy and efficiency, respectively, they both 
+suffer from noise and outliers. Hence, the robust fitting method of 
+the Hough transform is preferred, which has been implemented in 
+several studies [9,22,23,34]. In spacing inspection, studies 
+[38,41] have demonstrated automated approaches by using CV 
+algorithms and DL. However, these studies were limited to 2D 
+images, where information on the rebar's location is missing. 
+Other studies [12,21,30,39] presented 3D rebar spacing inspec -
+tion. Nonetheless, they were limited to rebar structures of simple 
+arrangement.  
+(D) Recently, advancements in digital technology have facilitated 
+issue identification in construction-related inspections. Studies 
+[11,42] have utilized TLS to obtain point-cloud data of precast 
+elements and perform dimensional measurement by CV algo -
+rithms. Then, measurements were matched and compared with 
+the tolerances extracted from BIM models. Finally, the inspection 
+results were stored in an Industry Foundation Classes (IFC) 
+format. One study [9] demonstrated a similar Scan-vs-BIM 
+method, but on pipes and conduits. Matching Scan-and-BIM is 
+necessary to extract corresponding tolerances of as-built struc -
+tures from BIM models. Maalek [15] investigated the registration 
+of common structural components. They leveraged global regis -
+tration when as-built information was provided without con -
+struction error, while global registration and subsequent local 
+registration were integrated when construction error was con -
+tained in the data. 
+Despite that previous studies have shown advancements in the 3D- 
+based rebar DQC framework, the following research gaps exist: (1) in -
+spection algorithms are not fully automated or limited to strong as -
+sumptions (2) on-site rebar structures are hard to transform into 
+semantic information, and (3) efficient rebar issue tracking is not 
+explored. First, the algorithm in SfM only computes relative rotation and 
+translation between images. The need for manual scale calibration of the 
+reconstruction [30] hinders the 3D reconstruction from being fully 
+automated. Also, existing studies mostly simplified the configurations of 
+rebar installation. Specifically, they have assumed that rebars are ar -
+ranged orthogonally, constrained to 2D surfaces, and positioned within 
+well-illuminated surroundings. These stringent assumptions limit the 
+inspection to relatively simple rebar structures, such as slabs and walls. 
+Second, current methods include analyzing the complex rebar structures 
+in either a 2D or 3D way. On the one hand, the 2D methods are relative 
+mature and capable of extracting semantic attributes. However, the 
+spatial information is lost inherently. On the other hand, the 3D methods 
+come with a higher cost and can only be performed on well-arranged 
+rebar structures. Third, implementing a tracking system in quality 
+control has always been a challenging task. Despite there have been 
+studies [8] proposing BIM-based issue tracking systems, critical issue 
+identification and tracking still require manual handling and integra -
+tion. Regarding rebar DQC, the issues to be confirmed often involve 
+errors in the diameter of a single rebar or the spacing between two 
+specific rebars not meeting the specifications. Linking such small-scale 
+rebar dimensional defects with their location poses significant 
+challenges. 
+Furthermore, to facilitate rebar issue tracking, digital twins (DTs), 
+which are defined as physical products, virtual products, and connections 
+between them [43], are incorporated in this study. DTs are expected to 
+resolve problems regarding semantic enrichment and interoperable 
+building representations, which are identified as the primary focuses in 
+construction technologies [44]. Sacks et al. [45] conceptually explored 
+digital twin construction, which can be characterized by interactions 
+between four essential dimensions: physical–virtual, product–process, 
+intent–status, and data–information–knowledge–decisions. Based on the 
+inspection pipeline summarized from previous research and the concept 
+of DTs shown in Fig. 1 (b), an ideal rebar DQC system using semantically 
+enriched 3D model is formulated and achieves location-aware rebar issue 
+identification. By adding the time dimension into the digital twin con -
+struction proposed by Sacks et al. [45], an efficient rebar issue tracking 
+can be realized to connect issue identification results at different inspec -
+tion checkpoints. To be clear, the connection is essentially based on 
+consistent BIM models and registration of 3D reconstructions into BIM 
+models. 
+In summary, a novel rebar DQC system is proposed to overcome the 
+aforementioned obstacles. First, this study focuses on developing a 
+method that fuses DL and CV techniques to construct semantic 3D 
+models of on-site rebar structures. Second, rebar issue identification and 
+issue tracking are fulfilled through the incorporation of BIM and 
+semantically enriched 3D models. Third, algorithms utilized in the 
+processes are integrated to ensure that data processing works without 
+manual interference. Furthermore, this study adopts realistic configu -
+rations of rebar installation. Specifically, rebars include arbitrary di -
+ameters, orientations, ties, couplers, lap splicing, and are positioned in 
+outdoor environments. This facilitates the implementation of in -
+spections on complex rebar structures, such as columns. 
+This paper is organized in the following order. Section 1 introduced 
+the background, summarized past research, and explained the objec -
+tives. Section 2 elaborates on the methodology. Section 3 details the 
+experimental validation. Section 4 highlights and discusses the experi -
+mental results. Section 5 concludes the study and provides recommen -
+dations for future work. 
+2. Methodology 
+2.1. System workflow 
+Fig. 1(a) shows the system workflow, which includes four modules: 
+(A) DT generation, (B) segmentation, (C) inspection, and (D) issue 
+identification and tracking. First, the DT generation module constructs a 
+3D model from a rebar structure. Then, the segmentation module and 
+inspection module perform analytics on the 3D model. Finally, the issue 
+identification and tracking module exchanges information between the 
+C.-C. Chang et al.                                                                                                                                                                                                                               
+Automation in Construction 160 (2024) 105303
+3
+semantically enriched 3D model and the BIM model over time. 
+The system inputs a structural component (e.g., column and slab) 
+and works with LOD 400 BIM models (i.e., BIM models with rebar de -
+tailing). The workflow can be characterized as (1) an autonomous pro -
+cess, (2) as-built vs. as-designed, and (3) a structural-component-to- 
+rebar flow. First, the system inputs images and a BIM model, processes 
+them with CV, DL, and BIM techniques, and outputs an issue report. The 
+system is autonomous since no manual interference is required in the 
+algorithms. Second, the information is extracted from the as-built 
+semantically enriched 3D model and the as-designed BIM model. 
+Accordingly, identifying underlying issues is accomplished by 
+comparing the as-built and the as-designed parts. Third, a structural- 
+component-level model is constructed and decomposed into a rebar- 
+level model. Ultimately, the semantically enriched 3D model and the 
+BIM model comparison is at the rebar level. 
+Fig. 1 (b) shows that the proposed system is fundamentally a DT- 
+based framework that includes three conceptual dimensions: (1) phys -
+ical – virtual, (2) past – future, and (3) status – intent (adapted from [ 45 ]). 
+The DT generation and analytical processes (i.e., segmentation and in -
+spection) are performed at different checkpoints. In this study, different 
+checkpoints indicate whether the inspection is conducted when the 
+rebar structure is defective or rectified. The semantic as-built 3D model 
+is then compared with the as-designed BIM model to identify underlying 
+issues. To incorporate results from different checkpoints, the issue- 
+tracking process is utilized. We note that the aforementioned “ as-built 
+3D model ” is actually the “ status DT ” and the “ as-designed BIM model ” 
+is actually the “ intent DT. ” Hence, the proposed system is based on two 
+types of DT. 
+2.2. Digital twin generation 
+Generating 3D models from 2D images is preferred since the equip -
+ment required to collect 2D data is more convenient and applicable to a 
+construction site than that used to collect 3D data, such as TLS and Lidar. 
+The process is divided into data collection and 3D reconstruction, which 
+collects 2D images and reconstructs 3D point clouds from 2D images. 
+2.2.1. Data collection 
+A sports camera, GoPro Hero 9 Black, is utilized to collect 2D images 
+on a construction site, thanks to its high mobility, flexible shooting 
+mode, and high resolution. A worker can walk on a construction site 
+while holding the camera without restrictions. Either interval shooting 
+or video recording is suitable for collecting the required data. The 
+maximum 5K resolution is expected to meet the requirement of 
+inspecting small-size objects. 
+During the shooting, the camera's movement, the movement speed, 
+and the distance between the camera and the rebar structure are care -
+fully chosen. Images are collected in spatial order to retrieve more 
+precise camera poses when sequential matching is utilized during SfM. 
+The camera is moved slowly at around 5 cm to 10 cm per frame to ensure 
+a sufficient area of overlap in subsequent photos. In addition, the camera 
+is kept close at around 30 cm to 50 cm to the rebar structure to ensure 
+adequate pixels of rebars. 
+2.2.2. 3D reconstruction 
+The generation of a 3D point cloud from 2D images is accomplished 
+by the SfM-to-MVS pipeline and a proposed scale calibration algorithm. 
+First, SfM is utilized to reconstruct the intrinsic and extrinsic parameters 
+Fig. 1. System workflow and its interpretation as a DT-based system.  
+C.-C. Chang et al.                                                                                                                                                                                                                               
+Automation in Construction 160 (2024) 105303
+4
+of the camera for each image. A pixel-wise correspondence search with 
+known camera poses generates depth maps, a point cloud, and a mesh. 
+In this study, COLMAP [ 46 , 47 ] is utilized to perform the reconstruction. 
+Exhaustive feature matching is adopted rather than sequential feature 
+matching since it provides more accurate results at the rebar level. 
+Although photometric and geometric consistency are utilized in COL -
+MAP, the depth maps are complete at the structural-component level but 
+not the rebar level. Hence, generating depth maps from a mesh elimi -
+nates the discontinuity of rebars in depth maps. 
+Commonly, scale ambiguity in the SfM coordinate system is over -
+come by selecting artificial objects with known sizes, such as predefined 
+surveying points. Although this measure can be easily implemented, it 
+requires manual interference. Hence, this study proposes an automated 
+scale calibration algorithm using AprilTag [ 48 , 49 ], which is an efficient 
+and robust fiducial system. Fig. 2 presents the proposed scale calibration 
+approach. A single AprilTag of a known family is placed on the structural 
+component at an arbitrary position. During one recording process, it is 
+sufficient to capture a AprilTag only once. For example, when recording 
+a slab and the surrounding columns and walls, only one AprilTag is 
+needed. Furthermore, the AprilTag can appear only once in several 
+frames. Then, the images containing AprilTags are collected and pro -
+cessed by the proposed algorithm. Finally, the scale factor is calculated 
+to calibrate the SfM-based point cloud. 
+2.3. Segmentation 
+The rebar structure 3D models should be segmented into smaller 
+rebar instances to perform a further inspection. Considering the accu -
+racy and feasibility of acquiring 3D annotations, a hybrid model 
+combining 2D DL and CV is proposed and illustrated in Fig. 3 . The 
+hybrid model is divided into (1) a DL-based 2D instance segmentation 
+model to obtain 2D segmentation masks of rebar spacings and (2) a 3D 
+clustering algorithm to integrate 2D masks of the same rebar from 
+different viewpoints into a unique 3D instance. 
+2.3.1. 2D instance segmentation 
+Mask R-CNN [ 37 ] is adopted to conduct 2D instance segmentation. 
+Furthermore, a rebar segmentation model [ 38 ] that is trained on an on- 
+site rebar dataset is utilized as a pre-trained model. Fine-tuning is per -
+formed, owing to the difference in the targeted domain. 
+Datasets of 155, 27, and 10 images are used in the training, valida -
+tion, and testing. While the images include columns, slabs, and walls, 
+this study focuses on inspecting columns. The labeling categories are 
+formulated as spacing and intersection, which are shown in the middle 
+of Fig. 3 . This is designed to conform with the nature of rebar arrange -
+ment and to facilitate spacing inspection. First, in common structural 
+components, vertical and horizontal rebars naturally form grids. In 
+consideration of the occlusion due to rebar arrangement, recognizing a 
+spacing segment as the first step is more intuitive than recognizing 
+complete rebar. Second, a spacing instance provides information about 
+the relationship between its ends, which is useful in spacing inspection. 
+2.3.2. 3D clustering 
+A 3D clustering algorithm using CV techniques is developed to 
+cluster 2D masks into 3D line instances automatically. The process is 
+divided into (1) preprocessing of 2D masks, (2) clustering of raw in -
+stances, and (3) clustering of spacing instances. First, 2D masks were 
+back-projected to 3D and are named “ raw instances. ” After the raw in -
+stances were down-sampled, their orientations and center lines were 
+estimated by 3D line RANSAC and 2D circle Hough transform, 
+respectively. 
+Second, Density-Based Spatial Clustering of Applications with Noise 
+(DBSCAN) [ 50 ] was used to cluster raw instances into non-overlapping 
+instances named “ spacing instances. ” The end coordinates of the center 
+lines were utilized during the clustering. After spacing instances were 
+extracted, outliers were removed. 
+Third, DBSCAN was also used to cluster spacing instances into 
+complete linear instances named “ line instances. ” The segmentation 
+method for linear objects presented in [ 16 ] was adopted. The orientation 
+vector and the coordinate of the projected point from an arbitrary 
+reference point were utilized during the clustering. Finally, lap splices 
+were separated through repeated clustering on the aforementioned 
+grouped line instances with a lowered distance threshold in DBSCAN. 
+Fig. 4 summarizes the differences between the aforementioned raw 
+instance, spacing instance, line instance, and rebar. 
+2.3.3. Semantically enriched 3D model 
+As a result, this module enriches the complicated 3D rebar model 
+with substantial semantic information, thereby enabling thorough and 
+practical inspections. After the point cloud was segmented into line in -
+stances, as depicted in Fig. 3 , essential rebar attributes can be efficiently 
+acquired. Subsequently, these attributes facilitate a range of inspections. 
+For instance, by measuring the cross section of a line instance's points, 
+the diameter can be obtained and checked; by measuring the center lines 
+between two line instances, the spacing can be obtained and checked; by 
+measuring the overlapping distance along the longitudinal axis of two 
+line instances, it is possible to determine and validate the lap splicing 
+length and lap splicing location. 
+2.4. Inspection 
+To ensure structural integrity, the dimensions of rebars should be 
+checked, where diameter and spacing are the most important items to be 
+inspected. Thus, a diameter inspection algorithm utilizing robust CV 
+algorithms and a spacing inspection algorithm integrating DL and CV 
+algorithms are developed. 
+2.4.1. Diameter inspection 
+A diameter inspection algorithm using CV algorithms is developed to 
+automatically measure each line instance's diameter. The process is 
+demonstrated in Fig. 5 and can be divided into (1) preprocessing, (2) 
+spacing-instance-level diameter classification, and (3) line-instance- 
+level diameter classification. 
+The preprocessing consists of inpainting, down-sampling, and 
+Fig. 2. Illustration of fiducial-marker-based scale calibration.  
+C.-C. Chang et al.                                                                                                                                                                                                                               
+Automation in Construction 160 (2024) 105303
+5
+projection from 3D to 2D. Since only the outer faces of rebars are 
+recognized by the 2D instance segmentation model, spacing instances 
+are incomplete and should be inpainted. The rough center line of the 
+spacing instance was first estimated. Then, points within an extended 
+radius from the center line were resampled from the overall point cloud. 
+After inpainting, the resampled instances were down-sampled and pro -
+jected from a 3D space to a 2D plane. 
+The measurement of diameter is formulated as a classification 
+problem that categorizes each line instance into the best-fitting diam -
+eter. This is accomplished by circle fitting, and a 2D circular Hough 
+transform is utilized because of its robustness. Diameters of D10 to D32 
+rebars, i.e., 9.53, 12.7, 15.9, 19.1, 22.2, 25.4, 28.7, and 32.2 mm, are 
+adopted since they are the most commonly used sizes in Taiwan's con -
+struction industry. A Hough transform was conducted for each pre -
+defined diameter, outputting the number of inliers and the estimated 
+center. Then, the spacing instance was classified into the diameter with 
+the maximum number of inliers. Finally, the diameter of the line 
+instance was determined by a majority voting on the contained spacing 
+instances. 
+2.4.2. Spacing inspection 
+A spacing inspection algorithm using CV algorithms and DL is 
+developed to automatically detect spacings on arbitrary axes and mea -
+sure the spacing distances. The process is demonstrated in Fig. 6 and can 
+be divided into (1) clustering of line instances and (2) spacing detection 
+and measurement. First, to fulfill the automated spacing detection, the 
+meaning of spacing is revisited, and it can be geometrically defined as 
+the relationship between two line instances in the same orientation. 
+Intuitively, line instances with nearly identical orientations were clus -
+tered into groups by using DBSCAN ( Fig. 6 (b)). 
+Second, whether each pair of line instances in a group should be 
+linked was determined by checking if any spacing instance lies in the 
+space between the pair ( Fig. 6 (c)). In other words, a spacing instance 
+that lies between a pair indicates the pair is related. To implement the 
+strategy, the line instances in a group were projected onto 2D. Then, the 
+following criteria were examined to determine if the relationship of a 
+pair exists:  
+1. 2D overlapping ratio of the pair and the spacing instances;  
+2. Included angle between the pair and the spacing instances;  
+3. Nearest neighbors of the spacing instances; and  
+4. Height difference (the z-value after projection) between the pair and 
+the spacing instances. 
+Finally, the spacing distance of a detected pair was measured by 
+calculating the distance between two center lines. 
+2.5. Issue identification and issue tracking 
+To discover the dimensional defects contained in the inspection re -
+sults, an issue identification algorithm utilizing BIM and CV techniques 
+Fig. 3. Illustration of a hybrid model for point-cloud segmentation. At the “ 3D instances ” step, a color map indicates different segmented instances.  
+Fig. 4. Geometric differences between rebar, line, spacing, and raw instances. 
+A rebar may consist of multiple line instances, a line instance may consist of 
+multiple spacing instances, and a spacing instance may consist of multiple 
+raw instances. 
+Fig. 5. Detailed workflow of diameter inspection. On the left side, a color map indicates different spacing instances.  
+C.-C. Chang et al.                                                                                                                                                                                                                               
+Automation in Construction 160 (2024) 105303
+6
+is proposed. In addition, to keep track of the issues until they are 
+rectified, an issue-tracking algorithm is established. BIM is leveraged as 
+ground truth in this module since the digitalized information facilitates 
+automation and enables tracking over time. 
+2.5.1. Issue identification 
+Fig. 7 presents the concept of the proposed issue identification 
+method. It is divided into a Scan-vs-BIM registration algorithm and a 
+Scan-vs-BIM comparison algorithm, which constructs rebar correspon -
+dences and checks attributes in each correspondence. 
+The Scan-vs-BIM registration algorithm is further divided into (1) 
+geometry extraction, (2) structural-component-level registration, and 
+(3) rebar-level correspondence. First, Autodesk Revit was used to 
+construct the LOD 400 BIM model and convert it to the IFC format. The 
+geometric information of each rebar in the IFC file was interpreted and 
+saved in a point-cloud format. Second, the 3D model and BIM point 
+clouds were aligned by coarse and fine registrations. At the coarse 
+(global) stage, Fast Point Feature Histogram (FPFH) [ 51 ] was utilized as 
+a feature descriptor, and RANSAC was utilized to retrieve the best 
+alignment in multiple iterations. At the fine (local) stage, the best 
+transformation matrix of coarse registration was inputted as an initial 
+constraint in the Iterative Closest Point (ICP) algorithm [ 52 ]. Iteratively, 
+the optimum transformation was found through the cycle of finding 
+correspondences and finding alignment. Third, after the structural 
+components were aligned, the rebar correspondences between the 3D 
+model and the BIM model can be recognized by querying neighboring 
+rebars and calculating the average point distance. 
+The Scan-vs-BIM comparison algorithm is divided into (1) attribute 
+extraction and (2) attribute-wise comparison. First, the rebar attributes 
+of interest (i.e., diameter and spacing) were extracted from the LOD 400 
+BIM model of IFC format. A rebar attribute contains a specified value 
+and a tolerance. Second, the inspection results in the 3D model were 
+compared with the attributes in the BIM model. During the comparison 
+of diameter, majority voting was performed (i.e., the diameter of a outer 
+tie rebar is determined by the majority of diameters of four lines on each 
+side), while during the comparison of spacing, averaging was per -
+formed. These are attributed to the fact that rebar in the BIM model may 
+correspond to multiple lines in the 3D model. 
+This study utilizes LOD 400 BIM models to fulfill issue identification, 
+which can be extended to more complicated rebar DQC such as the 
+location of lap splices and shape of tie rebars. However, if only a basic 
+inspection is required, such as checking rebar diameters or spacings, 
+using LOD 300 BIM models or pure attribute information would be 
+sufficed. 
+2.5.2. Issue tracking 
+An issue-tracking algorithm is proposed to record the expected 
+rectification process of dimensional issues automatically. It is assumed 
+that as-designed BIM models used at different checkpoints are the same, 
+i.e., the design of the structural component remains the same. This holds 
+in most cases since the design rarely changes at the rebar installation 
+stage. First, the issue identification algorithm was executed on the se -
+mantic 3D models at different checkpoints. All issues were registered to 
+the rebar instances in the BIM model. Then, an attribute-wise 
+Fig. 6. Detailed workflow of spacing inspection. A color map indicates different line instances throughout the spacing inspection.  
+Fig. 7. Illustration of Scan-vs-BIM issue identification. Different colors in the semantic 3D model represent different segmented instances.  
+C.-C. Chang et al.                                                                                                                                                                                                                               
+Automation in Construction 160 (2024) 105303
+7
+consistency check was conducted to ensure the corresponding rebars in 
+each issue had been inspected at distinct checkpoints. Finally, the 
+inconsistent issues were discarded, while attribute-wise issues that 
+passed the consistency check were kept and visualized. 
+3. Experimental validation 
+3.1. Experimental setup 
+To validate the proposed system, an experiment on a column rebar 
+cage was conducted to simulate the defects contained in the structure 
+and to identify and rectify them ( Section 3.2 to Section 3.5 ). Further -
+more, the proposed system was tested on a concrete slab at a construc -
+tion site. This was done to showcase its applicability when BIM models 
+are unavailable. ( Section 3.6 ). 
+Fig. 8 (a) shows the configuration of the column. It was designed to 
+be realistic and complicated regarding diameter, shape, arrangement, 
+and splicing. D25 and D29 were adopted for the main rebars, while D13 
+was adopted for the tie bars. The hook angle, hook extension length, 
+spacing of tie bars, and size of the rebar structure all complied with 
+common practice. Lap splicing and couplers were both adopted to in -
+crease the complexity. Fig. 8 (b) shows the two checkpoints of the 
+experiment. At checkpoint 1, the top-layer tie rebar was moved away 
+from the second-layer tie rebar, which forms a defective enlarged 
+spacing, while at checkpoint 2, the rebar arrangement conformed with 
+the project requirements. 
+3.2. Digital twin generation 
+In the DT generation module, the results of data collection, the SfM- 
+to-MVS pipeline, and scale calibration are presented. First, at both 
+checkpoints, images were collected from top to bottom at each angle 
+surrounding the column. It took 136 s and 102 s to collect 273 images 
+and 205 images, respectively, with the interval shooting mode at each 
+checkpoint. Second, the camera model and the camera poses were suc -
+cessfully generated. Fig. 9 presents the obtained camera poses and 
+sparse point cloud on the left side. The ratio of aligned images reaches 
+100% in both cases. Furthermore, the depth maps, the point cloud, and 
+the mesh were successfully generated. Fig. 9 presents the obtained dense 
+point cloud on the right side. Third, all AprilTags contained in the 
+collected images were detected in both cases. Corners and orientations 
+of the AprilTags were extracted. Subsequently, the scale factor was 
+calculated to calibrate the point cloud. Manual measurement on the 
+point cloud is utilized as the ground truth to evaluate the proposed al -
+gorithm. The average relative error of the scale factor is only 0.25%, 
+which should be sufficiently accurate for construction-related activities. 
+3.3. Segmentation 
+In the segmentation module, the results of 2D instance segmentation 
+and 3D clustering are presented. First, the 2D instance segmentation 
+model was established by fine-tuning the pre-trained model. It started to 
+converge after around 5000 iterations from the pre-trained weights. 
+Average precisions (AP) [ 53 ] of 54.1%, 50.1%, and 50.4% were reported 
+during training, validation, and testing on column images, respectively. 
+The precision scores are high regarding the segmentation task and show 
+the model performs well and steadily on experimental columns. Fig. 10 
+presents the predicted masks of the column. Most of the spacings and 
+intersections were correctly predicted. Predicted masks at checkpoint 1 
+were slightly incomplete because the model is sensitive to the scale of 
+the image, i.e., the shooting distance. 
+Second, semantic 3D line instances were obtained by the proposed 
+3D clustering algorithm. Fig. 11 demonstrates the 3D clustering results. 
+Fig. 8. Experimental setup of the column.  
+Fig. 9. Visualization of 3D reconstruction. (a) shows the camera poses (pre -
+sented as red rectangles) and sparse point clouds (presented as gray dots) on the 
+left and dense point clouds are presented on the right at checkpoint 1. (b) shows 
+the camera poses (presented as red rectangles) and sparse point clouds (pre -
+sented as gray dots) on the left and dense point clouds are presented on the 
+right at checkpoint 2. (For interpretation of the references to color in this figure 
+legend, the reader is referred to the web version of this article.) 
+C.-C. Chang et al.                                                                                                                                                                                                                               
+Automation in Construction 160 (2024) 105303
+8
+In both cases, the desired line instances were successfully obtained. 
+Taking checkpoint 2 as an example, 3323 inliers out of 3710 raw in -
+stances were clustered into 332 spacing instances. Then, 306 inliers out 
+of 332 spacing instances were clustered into 48 line instances with lap 
+splices separated. Table 1 presents the performance of the hybrid 3D 
+instance segmentation model. Overall, the model achieves high preci -
+sion and recall of over 90% on both main rebars and tie rebars. The 
+precision and recall reach 100%, especially on main rebars, since larger 
+areas in an image can mitigate the negative effects of occlusion. For 
+instance, when processing an image from an oblique viewpoint, the 
+predicted mask of a main rebar will be less occluded by front-layer re -
+bars than that of a tie rebar. Accordingly, the 3D clustering would be 
+more accurate. In addition, the lower precision compared with the recall 
+on tie rebars is attributed to the insufficiency of the 2D model. 
+3.4. Inspection 
+In the inspection module, the results of the diameter inspection and 
+spacing inspection are presented. First, the diameter inspection results at 
+the line and rebar levels are demonstrated in Fig. 12 . Table 2 presents 
+the quantitative results. Through a 2D circular Hough transform and 
+Scan-vs-BIM registration, the diameters at the line and rebar levels were 
+successfully measured. In terms of large diameter, accuracy reaches over 
+90% at both levels and at both checkpoints. An accuracy of over 95% is 
+even typically reported, showing the algorithm is feasible for large- 
+diameter rebars. In terms of small diameter, the average accuracies 
+Fig. 10. Visualization of 2D instance segmentation. Green areas denote rebar 
+spacing and red areas denote rebar intersections. (For interpretation of the 
+references to color in this figure legend, the reader is referred to the web 
+version of this article.) 
+Fig. 11. Visualization of 3D clustering at different stages. A color map indicates 
+different instances at each step and at each stage. 
+Table 1 
+Quantitative results of 3D instance segmentation at the line-instance level.  
+Rebar 
+Type 
+Precision (%) Recall (%)  
+Chkpt. 1 Chkpt. 2 Avg. Chkpt. 1 Chkpt. 2 Avg. 
+Main 100 (11/ 
+11) 
+100 (11/ 
+11) 
+100 100 (11/ 
+11) 
+100 (11/ 
+11) 
+100 
+Tie 82.9 (34/ 
+41) 
+97.3 (36/ 
+37) 
+90.1 94.4 (34/ 
+36) 
+100 (36/ 
+36) 
+97.2 
+Note: the number in parentheses denotes the number of instances. 
+Fig. 12. Visualization of diameter inspection at different levels.  
+C.-C. Chang et al.                                                                                                                                                                                                                               
+Automation in Construction 160 (2024) 105303
+9
+are 70.8% and 77.8% at the line and rebar levels, respectively. 
+Compared with the classification accuracy of similar diameters [ 20 ], this 
+study achieves similar performance as in previous research. However, an 
+accurate TLS-based point cloud and an experimental slab with a simple 
+rebar arrangement were utilized in the previous research. In contrast, a 
+noisy SfM-based point cloud and an experimental column with a com -
+plex rebar arrangement are utilized in this study. Furthermore, in terms 
+of small-diameter rebars, a non-negligible performance difference be -
+tween the two checkpoints is observed. Further investigation shows that 
+this is attributed to the uncertainty in 3D reconstruction. Small-size 
+diameter inspection utilizing SfM-based point clouds remains a chal -
+lenge since even noise of 1 mm in point clouds may cause significant 
+errors in the subsequent inspections. 
+Second, Fig. 13 demonstrates that all groups of line instances with 
+identical orientations were correctly detected at each checkpoint. 
+Fig. 14 shows the measurement results of the first group at each 
+checkpoint. Table 3 presents the quantitative performance of the 
+spacing inspection algorithm. The mean error (ME) is 0.06 mm, showing 
+Table 2 
+Quantitative results of diameter inspection.  
+Rebar Diameter Accuracy (%) 
+This study Kim et al. [20] 
+Chkpt. 1 Chkpt. 2 Avg.  
+Line Level Rebar Level Line Level Rebar Level Line Level Rebar Level Line Level Rebar Level 
+D25 – D32 100 100 90.9 90.9 95.5 95.5 65.1 97.2 
+D10 – D13 52.9 55.6 88.6 100 70.8 77.8 40.8 77.3  
+Fig. 13. Visualization of spacing detection. A color map indicates different instances in each group of line instances with identical orientations. Gray areas denote 
+instances outside the group under inspection. 
+C.-C. Chang et al.                                                                                                                                                                                                                               
+Automation in Construction 160 (2024) 105303
+10
+the model is unbiased. In addition, a mean absolute error (MAE) of 1.61 
+mm is reported, which is lower than the 2.20 mm of a similar inspection 
+in the literature [ 20 ]. A mean relative error (MRE) of only 0.98% in -
+dicates the proposed algorithm would be accurate for construction- 
+related activities. 
+3.5. Issue identification and issue tracking 
+In the issue identification and tracking module, the results of BIM 
+extraction, Scan-vs-BIM registration, issue identification, and issue 
+tracking are presented. First, Table 4 demonstrates the extracted 
+information from the LOD 400 BIM model in the IFC format. These 
+include ID, rebar type, diameter, spacing, and spacing group ID. In 
+addition, a geometric representation in point-cloud format was also 
+generated for point-cloud registration. 
+Second, structural-component-level registration was accomplished 
+through coarse and fine registrations. A root-mean-square error (RMSE) 
+of 32.32 mm was achieved at the coarse stage, while a satisfying RMSE 
+of 12.32 mm was achieved at the fine stage. However, it is shown that 
+the registration algorithm is limited to geometrically distinct structures 
+because it failed to align the lap splices to the correct side. During the 
+rebar-level correspondence, the accuracy reached 100% at both check -
+point 1 and checkpoint 2 despite the existence of outlying instances and 
+misplaced lap splices. 
+Finally, quality defects were identified by the proposed Scan-vs-BIM 
+comparison algorithm ( Table 5 ). The intentional spacing issue at 
+checkpoint 1 was successfully identified. After dimensional quality is -
+sues at each checkpoint were identified, consistent issues across time 
+were derived and visualized for manual interpretation ( Fig. 15 ). 
+3.6. On-site slab experiment 
+In the second experiment, the rebar spacing of a slab in a RC build -
+ing, which is shown in Fig. 16 (a), was conducted. The design specifi -
+cation of the rebar spacing for the slab is 150 mm with a tolerance of 20 
+mm. We sometimes only have simple design specifications in a con -
+struction site like this example. It demonstrates the applicability of the 
+proposed system when BIM models are unavailable. 
+Regarding DT generation, 78 images were collected in 39 s and the 
+ratio of aligned images reached 100%. Besides, the relative error of scale 
+calibration was merely 1.20% compared with manual measurement. 
+The reconstructed dense point cloud is shown in Fig. 16 (b). Regarding 
+segmentation, 3530 raw instances extracted from the 2D segmentation 
+masks were clustered into 57 line instances. The 3D instance segmen -
+tation model achieved a precision and recall exceeding 80%. Regarding 
+Fig. 14. Visualization of spacing measurement. A color map indicates different 
+line instances in each group. Gray areas denote instances outside the group 
+under inspection. The spacing distance is in millimeters. 
+Table 3 
+Quantitative results of the spacing inspection.   
+This study Kim et al. [20]  
+Chkpt. 1 Chkpt. 2 Avg. 
+ME (mm) 0.05 0.06 0.06 – 
+MAE (mm) 1.87 1.35 1.61 2.20 
+MRE (%) 1.11 0.84 0.98 –  
+Table 4 
+Extracted geometric representation and attributes of the BIM model. Only the first three rebars of each type are presented for conciseness.  
+Geometric Representation Attribute 
+ID (truncated) Rebar Type Diameter (mm) Spacing (mm) Spacing Group ID 
+3FX3HMK Main 28.7   
+3FXFHMK Main 28.7   
+3FXBHMK Main 28.7   
+3FXZHMe Tie 12.7 150 273,132 
+3FXdHMe Tie 12.7 150 273,132 
+3FXxHMe Tie 12.7 150 273,132  
+Table 5 
+Issue identification results. Only the first three rebars of each type are presented 
+in Table 4 .   
+Diameter (mm) Spacing (mm) 
+ID (truncated) BIM Chkpt. 1 Chkpt. 2 BIM Chkpt. 1 Chkpt. 2 
+FX3HMK 28.7 28.7 28.7    
+FXFHMK 28.7 28.7 28.7    
+FXBHMK 28.7 28.7 28.7    
+FXZHMe 12.7 12.7 12.7 150 188 155 
+FXdHMe 12.7 9.53 12.7 150 158 157 
+FXxHMe 12.7 9.53 12.7 150 152 152 
+Note: Bold text indicates the identified defect in spacing quality. 
+C.-C. Chang et al.                                                                                                                                                                                                                               
+Automation in Construction 160 (2024) 105303
+11
+inspection, spacings on the x-axis and the y-axis were detected and 
+measured by the proposed algorithm. 
+Regarding issue identification, the results of rebar axis recognition 
+and rebar spacing comparison are presented. First, exactly two spacing 
+groups were detected in the inspection module. By comparing spacing 
+inspection results on each axis and conducting orthographic projection, 
+issue identification results on both axes are visualized in Fig. 16 (c) and 
+(d). In the Figure, green lines denote the rebars with a spacing distance 
+that complies with design requirements, while red lines denote the re -
+bars with a spacing distance that exceeds design tolerances (in this case, 
+20 mm). The values of issue identification results are tabulated in 
+Table 6 . Again, the values highlighted in red in the table exceed design 
+tolerances. By utilizing the proposed framework, even granular issues at 
+the mm level can be detected. 
+4. Discussion 
+Due to the inherent complexity, rebar DQC is conventionally con -
+ducted through manual procedures, such as measurement and inter -
+pretation of project requirements. In this study, the manual procedures 
+are replaced with automated algorithms, such as automated scale cali -
+bration in 3D reconstruction and automated spacing detection. As a 
+result, merely attaching fiducial markers and collecting images are 
+manually conducted. The processing algorithms are fully automated, 
+thereby benefiting construction management. First, video recorders 
+could partially substitute for qualified inspectors. This reduces time, 
+effort, and cost to accomplish rebar inspection. Second, the proposed 
+pipeline can be further integrated with UAV, which would be the 
+desirable inspection scheme in the long term. Third, information is 
+digitalized, well-organized, and accessible through the DT- and BIM- 
+based system, forming a rebar dataset and enabling later profound 
+analytics. 
+In the past, semantic rebar information acquisition vastly relied on 
+time-consuming and labor-intensive work. This study establishes a rebar 
+3D model that represents and synchronizes with the real rebar structure 
+by integrating DL and CV techniques. First, a tuned SfM-to-MVS pipeline 
+and image detection are successively utilized to build 3D models. Sec -
+ond, in segmentation, DL fundamentally detects rebars in complex 
+structures, and conventional 3D clustering recovers the missing parts 
+and removes the redundant parts. Third, the diameter inspection is 
+achieved by combining robust 3D line detection and robust 2D circle 
+fitting. The spacing inspection is achieved by combining 3D clustering 
+and segmentation. The extracted semantic information enables further 
+construction management, such as inspection and documentation. 
+Traditional rebar DQC depends on inspector-driven number check -
+ing between measurement results and design tolerances. This paper 
+proposed a comparison of semantic 3D models and BIM models (i.e., 
+status DT and intent DT). The identified issues can also be effectively 
+tracked across time by using BIM technology. The introduced system has 
+good potential to be extended to other domains. For instance, the DT- 
+and BIM-based scheme may be applied to other rebar DQCs (e.g., the 
+bending radius of hooks), other rebar inspections (e.g., binding wire 
+tying and material inspection of rebar chairs), and other construction 
+inspections (e.g., progress monitoring and inspection of embedded 
+pipes). 
+5. Conclusions 
+This study established an autonomous system that fuses deep 
+learning (DL), computer vision (CV), digital twins (DT), and building 
+information modeling (BIM) to conduct novel rebar dimensional quality 
+control. The system consists of four modules. The DT generation module 
+collects images of a structural component using a GoPro. It reconstructs 
+a scale-calibrated 3D point-cloud model via a structure-from-motion to 
+multi-view stereo pipeline and an AprilTag-based algorithm. The seg -
+mentation module decomposes the 3D model via 2D instance segmen -
+tation using Mask R-CNN and 3D clustering using Density-Based Spatial 
+Clustering of Applications with Noise. The inspection module measures 
+the rebar diameter using a 2D circular Hough transform, while rebar 
+spacing is measured by integrating segmentation results and CV 
+Fig. 15. Visualization of issue tracking of the defective rebar spacing. The spacing distance is in millimeters.  
+C.-C. Chang et al.                                                                                                                                                                                                                               
+Automation in Construction 160 (2024) 105303
+12
+techniques. The issue identification and tracking module discovers the 
+dimensional defects and keeps track of them using Scan-vs-BIM regis -
+tration and comparison. 
+An experiment on a column rebar cage was conducted to validate the 
+proposed system. Collected images were all aligned during 3D recon -
+struction. The error of scale calibration was 0.25%, which should be 
+sufficient for construction-related tasks. The hybrid model reported an 
+average precision of 50.4% on the column images of the test dataset in 
+the 2D instance segmentation stage. Subsequently, it reported a preci -
+sion of over 90% and a recall of over 97% on both main rebars and tie 
+rebars in the 3D instance segmentation stage. In the case of rebar 
+instance, the diameter inspection reached a high accuracy of 95.5% and 
+77.8% for large-size and small-size rebars, respectively. The spacing 
+inspection approach achieved a low mean relative error of 0.98%. In 
+issue identification, the proposed method reported a root-mean-square 
+error of 12.32 mm during the structural-component-level registration 
+and an accuracy of 100% during the rebar-level correspondence. Finally, 
+the defective spacing was successfully identified and tracked. 
+In summary, three highlights of the proposed system were revealed. 
+First, the system was built as an autonomous rebar inspection pipeline 
+by developing automated algorithms, such as automated scale calibra -
+tion. Furthermore, the autonomous pipeline benefits construction 
+management. For example, qualified inspectors can be partially replaced 
+with video recorders. Second, a semantic rebar 3D model was estab -
+lished by integrating DL and CV techniques. For instance, the combi -
+nation of DL-based 2D instance segmentation and conventional 3D 
+clustering accomplishes rebar segmentation. Consequently, accurate 
+and robust information can be utilized for construction management, 
+such as inspection and documentation. Third, underlying issues were 
+effectively identified and tracked by the DT- and BIM-based information 
+systems. This system is essentially based on Scan-vs-BIM methods, i.e., 
+the comparison between status DT and intent DT. Furthermore, the 
+proposed approach can be extended to other applications, such as ma -
+terial inspection of rebar chairs and progress monitoring. 
+Nevertheless, certain limitations of the proposed system have been 
+revealed, indicating future research direction. First, unsatisfying 
+Fig. 16. Experimental results of the on-site slab. In (c) and (d), green denotes rebar with spacing distance that complies with project requirements; while red denotes 
+rebar with spacing distance that exceeds tolerances. (For interpretation of the references to color in this figure legend, the reader is referred to the web version of 
+this article.) 
+Table 6 
+Issue identification results of the on-site slab. The values in row X-axis correspond to the values from left to right in Fig. 16 (c). The values in row Y-axis correspond to 
+the values from top to bottom in Fig. 16 (d).  
+Spacing (mm) 
+X-axis 145 140 152 158 145 158 162 157 152 141 151 157 150 165 150 139 150 161 159 133 
+Y-axis 160 151 151 148 155 166 157 142 153 136 170 154 147 142 155 175 139 172 142 164 
+Note: Bold text indicates the identified defect in spacing quality. 
+C.-C. Chang et al.                                                                                                                                                                                                                               
+Automation in Construction 160 (2024) 105303
+13
+segmentation performance under certain conditions is observed. More 
+diverse data, augmentation, and unsupervised training techniques can 
+be explored to minimize incorrect predictions in 2D instance segmen -
+tation. Second, unsatisfying diameter inspection performance on small- 
+diameter rebars is observed. DL-based approaches may be suitable to 
+increase the accuracy since it is feasible to obtain 3D annotations for 
+classification. DL-based point-cloud classification models, such as Point 
+Transformer [ 40 ], are recommended to substitute for the CV-based 
+method. Third, the diameter inspection performance may degrade 
+when the proposed system is applied to other rebar structures (e.g., slabs 
+and walls) due to formwork installation. Similar to the second point, DL- 
+based approaches offer the possibility to overcome the issue. 
+CRediT authorship contribution statement 
+Chun-Cheng Chang: Writing – original draft, Methodology. Tsung- 
+Wei Huang: Writing – original draft, Data curation. Yi-Hsiang Chen: 
+Writing – original draft, Validation, Investigation. Jacob J. Lin: Writing 
+– review & editing, Supervision, Conceptualization. Chuin-Shan Chen: 
+Writing – review & editing, Supervision, Resources, Project adminis -
+tration, Funding acquisition, Conceptualization. 
+Declaration of competing interest 
+The authors declare that they have no known competing financial 
+interests or personal relationships that could have appeared to influence 
+the work reported in this paper. 
+Data availability 
+Data will be made available on request. 
+Acknowledgments 
+This research was sponsored by the National Science and Technology 
+Council of Taiwan and Sinotech Engineering Consultants Inc. via the 
+grants MOST 110-2622-E-002-018 and MOST 111-2622-E-002-025. The 
+authors want to acknowledge the NTUCE-NCREE Joint Artificial Intel -
+ligence Research Center and the National Center of High-performance 
+Computing (NCHC) in Taiwan for providing computational and stor -
+age resources. 
+References 
+[1] D. Castro-Lacouture, M.J. Skibniewski, Implementing a b2b e-work system to the 
+approval process of rebar design and estimation, J. Comput. Civ. Eng. 20 (2006) 
+28 – 37, https://doi.org/10.1061/(ASCE)0887-3801(2006)20:1(28) . 
+[2] D. Castro-Lacouture, M. Skibniewski, Development of an e-business solution for the 
+integration of steel reinforcement supply chain in construction projects, in: 
+Proceedings of the First International Conference on Construction in the 21st 
+Century, CITC2002, Miami, Florida, USA, 2002, pp. 197 – 204. URL, https://www. 
+citcglobal.com/_files/ugd/0d72f4_e3f3d11ffa57475e98dc3ec7ad68d2c2.pdf . 
+[3] L.E. Bernold, M. Salim, Placement-oriented design and delivery of concrete 
+reinforcement, J. Constr. Eng. Manag. 119 (1993) 323 – 335, https://doi.org/ 
+10.1061/(ASCE)0733-9364(1993)119:2(323) . 
+[4] N.-W. Chi, J.-P. Wang, J.-H. Liao, W.-C. Cheng, C.-S. Chen, Machine learning-based 
+seismic capability evaluation for school buildings, Autom. Constr. 118 (2020) 
+103274, https://doi.org/10.1016/j.autcon.2020.103274 . 
+[5] M.-K. Kim, H. Sohn, C.-C. Chang, Automated dimensional quality assessment of 
+precast concrete panels using terrestrial laser scanning, Autom. Constr. 45 (2014) 
+163 – 177, https://doi.org/10.1016/j.autcon.2014.05.015 . 
+[6] C. Zhang, Surface defect detection, segmentation and quantification for concrete 
+bridge assessment using deep learning and 3D reconstruction, Ph.D. thesis, Hong 
+Kong University of Science and Technology, 2021, https://doi.org/10.14711/ 
+thesis-991012879661203412 . 
+[7] Z. Xu, R. Kang, R. Lu, 3D reconstruction and measurement of surface defects in 
+prefabricated elements using point clouds, J. Comput. Civ. Eng. 34 (2020) 
+04020033, https://doi.org/10.1061/(ASCE)CP.1943-5487.0000920 . 
+[8] Y.-C. Lin, Y.-T. Hsu, Enhancing the visualization of problems tracking and 
+management integrated BIM technology for general contractor in construction, in: 
+Collaboration and Integration in Construction, Engineering, Management and 
+Technology, Springer, London, UK, 2021, pp. 427 – 432, https://doi.org/10.1007/ 
+978-3-030-48465-1_71 . 
+[9] F. Bosch ´e, M. Ahmed, Y. Turkan, C.T. Haas, R. Haas, The value of integrating scan- 
+to-BIM and scan-vs-BIM techniques for construction monitoring using laser 
+scanning and BIM: the case of cylindrical MEP components, Autom. Constr. 49 
+(2015) 201 – 213, https://doi.org/10.1016/j.autcon.2014.05.014 . 
+[10] M. Golparvar-Fard, B. Ghadimi, K.S. Saidi, G.S. Cheok, M. Franaszek, R.R. Lipman, 
+Image-based 3D mapping of rebar location for automated assessment of safe 
+drilling areas prior to placing embedments in concrete bridge decks, in: 
+Construction Research Congress 2012: Construction Challenges in a Flat World, 
+West Lafayette, Indiana, 2012, pp. 960 – 970, https://doi.org/10.1061/ 
+9780784412329.097 . 
+[11] M.-K. Kim, Q. Wang, J.-W. Park, J.C. Cheng, H. Sohn, C.-C. Chang, Automated 
+dimensional quality assurance of full-scale precast concrete elements using laser 
+scanning and BIM, Autom. Constr. 72 (2016) 102 – 114, https://doi.org/10.1016/j. 
+autcon.2016.08.035 . 
+[12] Q. Wang, J.C. Cheng, H. Sohn, Automated estimation of reinforced precast 
+concrete rebar positions using colored laser scan data, Comput. Aided Civ. Inf. Eng. 
+32 (2017) 787 – 802, https://doi.org/10.1111/mice.12293 . 
+[13] Q. Wang, M.-K. Kim, J.C. Cheng, H. Sohn, Automated quality assessment of precast 
+concrete elements with geometry irregularities using terrestrial laser scanning, 
+Autom. Constr. 68 (2016) 170 – 182, https://doi.org/10.1016/j. 
+autcon.2016.03.014 . 
+[14] S. Yoon, Q. Wang, H. Sohn, Optimal placement of precast bridge deck slabs with 
+respect to precast girders using 3D laser scanning, Autom. Constr. 86 (2018) 
+81 – 98, https://doi.org/10.1016/j.autcon.2017.11.004 . 
+[15] R. Maalek, Field information modeling (FIM)TM: best practices using point clouds, 
+Remote Sens. 13 (2021) 967, https://doi.org/10.3390/rs13050967 . 
+[16] R. Maalek, D.D. Lichti, J.Y. Ruwanpura, Robust segmentation of planar and linear 
+features of terrestrial laser scanner point clouds acquired from construction sites, 
+Sensors 18 (2018) 819, https://doi.org/10.3390/s18030819 . 
+[17] R. Maalek, D.D. Lichti, J.Y. Ruwanpura, Automatic recognition of common 
+structural elements from point clouds for automated progress monitoring and 
+dimensional quality control in reinforced concrete construction, Remote Sens. 11 
+(2019) 1102, https://doi.org/10.3390/rs11091102 . 
+[18] R. Maalek, D.D. Lichti, R. Walker, A. Bhavnani, J.Y. Ruwanpura, Extraction of 
+pipes and flanges from point clouds for automated verification of pre-fabricated 
+modules in oil and gas refinery projects, Autom. Constr. 103 (2019) 150 – 167, 
+https://doi.org/10.1016/j.autcon.2019.03.013 . 
+[19] K. Ishida, N. Kano, K. Kimoto, Shape recognition with point clouds in rebars, in: 
+Proceedings of the International Symposium on Automation and Robotics in 
+Construction, volume 29, International Association for Automation and Robotics in 
+Construction, Eindhoven, Netherlands, 2012, p. 1, https://doi.org/10.22260/ 
+ISARC2012/0018 . 
+[20] M.-K. Kim, J.P.P. Thedja, H.-L. Chi, D.-E. Lee, Automated rebar diameter 
+classification using point cloud data based machine learning, Autom. Constr. 122 
+(2021) 103476, https://doi.org/10.1016/j.autcon.2020.103476 . 
+[21] M.-K. Kim, J.P.P. Thedja, Q. Wang, Automated dimensional quality assessment for 
+formwork and rebar of reinforced concrete components using 3D point cloud data, 
+Autom. Constr. 112 (2020) 103077, https://doi.org/10.1016/j. 
+autcon.2020.103077 . 
+[22] M. Ahmed, C.T. Haas, R. Haas, Autonomous modeling of pipes within point clouds, 
+in: ISARC. Proceedings of the International Symposium on Automation and 
+Robotics in Construction, volume 30, The International Association for Automation 
+and Robotics in Construction, Montreal, Canada, 2013, p. 1, https://doi.org/ 
+10.22260/ISARC2013/0120 . 
+[23] M.F. Ahmed, C.T. Haas, R. Haas, Automatic detection of cylindrical objects in built 
+facilities, J. Comput. Civ. Eng. 28 (2014) 04014009, https://doi.org/10.1061/ 
+(ASCE)CP.1943-5487.0000329 . 
+[24] H. Son, C. Kim, C. Kim, Knowledge-based approach for 3D reconstruction of as- 
+built industrial plant models from laser-scan data, in: Proceedings of the 30th 
+International Symposium on Automation and Robotics in Construction and Mining: 
+Building the Future in Automation and Robotics, International Association for 
+Automation and Robotics in Construction, Montreal, Canada, 2013, pp. 885 – 893, 
+https://doi.org/10.22260/ISARC2013/0096 . 
+[25] H. Son, C. Kim, C. Kim, Fully automated as-built 3D pipeline extraction method 
+from laser-scanned data based on curvature computation, J. Comput. Civ. Eng. 29 
+(2015) B4014003, https://doi.org/10.1061/(ASCE)CP.1943-5487.0000401 . 
+[26] S. Agarwal, Y. Furukawa, N. Snavely, I. Simon, B. Curless, S.M. Seitz, R. Szeliski, 
+Building Rome in a day, Commun. ACM 54 (2011) 105 – 112, https://doi.org/ 
+10.1145/2001269.2001293 . 
+[27] N. Snavely, S.M. Seitz, R. Szeliski, Photo tourism: exploring photo collections in 
+3D, ACM Trans. Graph. 25 (2006) 835 – 846, https://doi.org/10.1145/ 
+1141911.1141964 . 
+[28] N. Snavely, S.M. Seitz, R. Szeliski, Modeling the world from internet photo 
+collections, Int. J. Comput. Vis. 80 (2008) 189 – 210, https://doi.org/10.1007/ 
+s11263-007-0107-3 . 
+[29] M. Akula, R.R. Lipman, M. Franaszek, K.S. Saidi, G.S. Cheok, V.R. Kamat, Real-time 
+drill monitoring and control using building information models augmented with 
+3D imaging data, Autom. Constr. 36 (2013) 1 – 15, https://doi.org/10.1016/j. 
+autcon.2013.08.010 . 
+[30] K. Han, J. Gwak, M. Golparvar-Fard, K. Saidi, G. Cheok, M. Franaszek, R. Lipman, 
+Vision-based field inspection of concrete reinforcing bars, in: Proceedings of the 
+13th International Conference on Construction Applications of Virtual Reality, 
+London, UK, 2013, pp. 30 – 31. URL, https://itc.scix.net/pdfs/convr-2013-28.pdf . 
+C.-C. Chang et al.                                                                                                                                                                                                                               
+Automation in Construction 160 (2024) 105303
+14
+[31] Y.-H. Chen, S.-J. Chuang, C.-C. Chang, Y.-H. Lo, T.-W. Huang, Y.-Q. Qiu, G.-C. Lin, 
+Z.-M. Huang, S.-A. Zhou, C.-S. Chen, Novel rebar inspection using deep learning 
+and digital twin, Magaz. Chin. Inst. Civ. Hydraulic Eng. 48 (2021) 15 – 21, https:// 
+doi.org/10.6653/MoCICHE.202104_48(2).0003 . 
+[32] M.A. Fischler, R.C. Bolles, Random sample consensus: a paradigm for model fitting 
+with applications to image analysis and automated cartography, Commun. ACM 24 
+(1981) 381 – 395, https://doi.org/10.1145/358669.358692 . 
+[33] P.V.C. Hough, Method and Means for Recognizing Complex Patterns, 1962. US 
+Patent 3,069,654 . 
+[34] M. Bueno, L. Díaz-Vilari ˜no, H. Gonz ´alez-Jorge, J. Martínez-S ´anchez, P. Arias, 
+Quantitative evaluation of CHT and GHT for column detection under different 
+conditions of data quality, J. Comput. Civ. Eng. 31 (2017) 04017032, https://doi. 
+org/10.1061/(ASCE)CP.1943-5487.0000678 . 
+[35] L. Díaz-Vilari ˜no, B. Conde, S. Lagüela, H. Lorenzo, Automatic detection and 
+segmentation of columns in as-built buildings from point clouds, Remote Sens. 7 
+(2015) 15651 – 15667, https://doi.org/10.3390/rs71115651 . 
+[36] A. Nguyen, B. Le, 3D Point Cloud Segmentation: A Survey, in: 2013 6th IEEE 
+Conference on Robotics, Automation and Mechatronics, Institute of Electrical and 
+Electronics Engineers, Manila, Philippines, 2013, pp. 225 – 230, https://doi.org/ 
+10.1109/RAM.2013.6758588 . 
+[37] K. He, G. Gkioxari, P. Doll ´ar, R. Girshick, Mask r-cnn, in: 2017 IEEE International 
+Conference on Computer Vision, Venice, Italy, 2017, pp. 2980 – 2988, https://doi. 
+org/10.1109/ICCV.2017.322 . 
+[38] S.J. Chuang, Rebar Spacing Recognition with Instance Segmentation and Active 
+Learning, Master ’ s thesis, National Taiwan University, 2021, https://doi.org/ 
+10.6342/NTU202103220 . 
+[39] Y. Kardovskyi, S. Moon, Artificial intelligence quality inspection of steel bars 
+installation by integrating mask r-cnn and stereo vision, Autom. Constr. 130 (2021) 
+103850, https://doi.org/10.1016/j.autcon.2021.103850 . 
+[40] H. Zhao, L. Jiang, J. Jia, P.H. Torr, V. Koltun, Point transformer, in: Proceedings of 
+the IEEE/CVF International Conference on Computer Vision, Montreal, Canada, 
+2021, pp. 16259 – 16268, https://doi.org/10.48550/arXiv.2012.09164 . 
+[41] X. Zhang, J. Zhang, M. Ma, Z. Chen, S. Yue, T. He, X. Xu, A high precision quality 
+inspection system for steel bars based on machine vision, Sensors 18 (2018) 2732, 
+https://doi.org/10.3390/s18082732 . 
+[42] M.-K. Kim, J.C. Cheng, H. Sohn, C.-C. Chang, A framework for dimensional and 
+surface quality assessment of precast concrete elements using BIM and 3D laser 
+scanning, Autom. Constr. 49 (2015) 225 – 238, https://doi.org/10.1016/j. 
+autcon.2014.07.010 . 
+[43] M. Grieves, Digital Twin: Manufacturing Excellence through Virtual Factory 
+Replication, White Paper 1, 2014, pp. 1 – 7. URL, https://www.researchgate.net/pu 
+blication/275211047 . 
+[44] R. Sacks, M. Girolami, I. Brilakis, Building information modelling, artificial 
+intelligence and construction tech, Developm. Built Environ. 4 (2020) 100011, 
+https://doi.org/10.1016/j.dibe.2020.100011 . 
+[45] R. Sacks, I. Brilakis, E. Pikas, H.S. Xie, M. Girolami, Construction with Digital Twin 
+Information Systems, Data-Centric Engineering 1, 2020, https://doi.org/10.1017/ 
+dce.2020.16 . 
+[46] J.L. Schonberger, J.-M. Frahm, Structure-from-motion revisited, in: Proceedings of 
+the IEEE Conference on Computer Vision and Pattern Recognition, Las Vegas, 
+Nevada, 2016, pp. 4104 – 4113, https://doi.org/10.1109/CVPR.2016.445 . 
+[47] J.L. Sch ¨onberger, E. Zheng, J.-M. Frahm, M. Pollefeys, Pixelwise view selection for 
+unstructured multi-view stereo, in: European Conference on Computer Vision, 
+Springer, Amsterdam, Netherlands, 2016, pp. 501 – 518, https://doi.org/10.1007/ 
+978-3-319-46487-9_31 . 
+[48] E. Olson, Apriltag: A robust and flexible visual fiducial system, in: 2011 IEEE 
+International Conference on Robotics and Automation, Institute of Electrical and 
+Electronics Engineers, Shanghai, China, 2011, pp. 3400 – 3407, https://doi.org/ 
+10.1109/ICRA.2011.5979561 . 
+[49] J. Wang, E. Olson, Apriltag 2: Efficient and robust fiducial detection, in: 2016 
+IEEE/RSJ International Conference on Intelligent Robots and Systems, Institute of 
+Electrical and Electronics Engineers, Daejeon, Korea (South), 2016, 
+pp. 4193 – 4198, https://doi.org/10.1109/IROS.2016.7759617 . 
+[50] M. Ester, H.-P. Kriegel, J. Sander, X. Xu, A density-based algorithm for discovering 
+clusters in large spatial databases with noise, in: Proceedings of the Second 
+International Conference on Knowledge Discovery and Data Mining vol. 96, 1996, 
+pp. 226 – 231. Portland, USA . 
+[51] R.B. Rusu, N. Blodow, M. Beetz, Fast point feature histograms (FPFH) for 3D 
+registration, in: 2009 IEEE International Conference on Robotics and Automation, 
+Institute of Electrical and Electronics Engineers, Kobe, Japan, 2009, 
+pp. 3212 – 3217, https://doi.org/10.1109/ROBOT.2009.5152473 . 
+[52] P. Besl, N.D. McKay, A method for registration of 3-D shapes, IEEE Trans. Pattern 
+Anal. Mach. Intell. 14 (1992) 239 – 256, https://doi.org/10.1109/34.121791 . 
+[53] T.-Y. Lin, M. Maire, S. Belongie, J. Hays, P. Perona, D. Ramanan, P. Doll ´ar, C. 
+L. Zitnick, Microsoft COCO: Common objects in context, in: European Conference 
+on Computer Vision, Springer, Zurich, Switzerland, 2014, pp. 740 – 755, https:// 
+doi.org/10.1007/978-3-319-10602-1_48 . 
+C.-C. Chang et al.                                                                                                                                                                                                                               

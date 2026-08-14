@@ -13,3 +13,12 @@ With rapid urbanization, the utilization of underground space has become an impo
 | Yes | Yes | Yes | Yes | Yes | **Include** |
 
 **Note:** DT framework for large cavern stability; real-time monitoring & optimization
+
+## Step-3 Deep-Read Coding (Prompt B)
+
+| P | Q | R | U Tier | V | W | X | Z | AA | AB | AC | AD | AE | AF |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| Yes | Yes | Yes | Tier 2 - Digital Shadow (one-way physical to virtual) | 0 | 1 | 0 | Design for Safety (DfS) | None | Finite Element Method / physics-based | Multi (two or more data types) | Single case study | 4 | Design for Safety |
+
+**Key evidence (AG):** Digital twin-driven stability optimization framework for large underground caverns (Hanyang U): five-dimensional DT framework (physical objects, virtual objects, service systems, DT data, interconnections) with six modules (structure, geology, material, behavior, performance, environment); IFC standards for interoperability; seven-step methodology (geological assessment, virtual modeling, BIM-based design, construction, real-time monitoring, optimization); case study demonstrates improved deformation monitoring and rock support efficiency. One-way monitoring→optimization→stability management; no actuation and no learning loop (optimization is rule-based, not learning).
+(full-text source: Endnote)

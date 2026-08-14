@@ -13,3 +13,12 @@ Vibration accidents of high-rise buildings are frequently reported around the gl
 | Yes | Yes | Yes | Yes | Yes | **Include** |
 
 **Note:** Edge-cloud DT for high-rise vibration anomaly detection/localization
+
+## Step-3 Deep-Read Coding (Prompt B)
+
+| P | Q | R | U Tier | V | W | X | Z | AA | AB | AC | AD | AE | AF |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| Yes | Yes | Yes | Tier 2 - Digital Shadow (one-way physical to virtual) | 0 | 0 | 1 | Design for Safety (DfS) | None | Digital Twin platform (no machine learning) | Multi (two or more data types) | Single case study | 4 | Design for Safety |
+
+**Key evidence (AG):** Edge-cloud collaborative digital twin for vibration anomaly detection and localization in high-rise buildings (Shenzhen U): wireless time-synchronized smart sensor (WTSS) with edge computing for anomaly detection; cloud server runs structural dynamics DT model for vibration source localization; BIM-based management platform for visualization; validated on 17-story high-rise teaching building with harmonic excitation tests. One-way monitoring→detection→localization; no actuation and no learning loop.
+(full-text source: Endnote)

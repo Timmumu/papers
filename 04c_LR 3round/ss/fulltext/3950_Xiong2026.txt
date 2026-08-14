@@ -1,0 +1,1535 @@
+Edge-cloud collaborative digital twin for vibration anomaly detection and 
+localization in high-rise buildings
+Chen Xiong
+a
+, Huijin Zhu
+a
+, Jie Huang
+a
+, Kuangyu Chen
+a
+, Weizong Lai
+a
+, Linlin Xie
+b
+,  
+Liu Mei
+a , *
+a
+State Key Laboratory of Intelligent Construction and Healthy Operation and Maintenance of Deep Underground Engineering, Guangdong Provincial Key Laboratory of 
+Durability for Marine Civil Engineering, College of Civil and Transportation Engineering, Shenzhen University, Shenzhen 518060, China
+b
+School of Civil and Transportation Engineering, Beijing University of Civil Engineering and Architecture, No. 1 Zhanlanguan Road, Beijing 100044, China
+ARTICLE INFO
+Keywords:
+Abnormal vibration detection
+High-rise buildings
+Edge computing
+Cloud computing
+Digital twin
+ABSTRACT
+Vibration accidents of high-rise buildings are frequently reported around the globe and the downtime of high-rise 
+buildings for accident investigation can lead to substantial social and economic losses for stakeholders. This 
+research developed an edge-cloud collaborative framework for vibration anomaly detection and vibration source 
+localization. Firstly, a high-precision vibration sensor with wireless time synchronization and edge computing 
+capability is introduced. Secondly, a vibration anomaly detection algorithm is proposed based on edge 
+computing of sensor nodes. Thirdly, a vibration source localization algorithm is proposed based on cloud 
+computing of a structural dynamics digital twin model. Finally, the effectiveness of the proposed methods is 
+validated through a case study of a 17-story high-rise building, and the results indicate that vibration anomaly 
+events can be reliably detected and localized. The outcomes of this study are expected to provide a useful 
+reference for vibration anomaly management of high-rise buildings.
+1. Introduction
+According to the Council on Tall Buildings and Urban Habitat, there 
+are more than 6400 high-rise buildings over 150 m built worldwide by 
+March 1, 2023 [1] . High-rise buildings serve crucial urban functions, 
+including hospitals and office spaces. Any sudden occurrence of vibra -
+tion anomalies in these structures can impair their functionality, 
+resulting in substantial direct and indirect economic losses [2] .
+Several high-rise buildings have experienced vibration anomalies 
+that differ from those caused by typhoons or earthquakes. These vibra -
+tions are more sudden and usually cause widespread panic. It is usually 
+impossible to find the cause of the vibration in the first place, and 
+subsequent investigations result in prolonged closures of the buildings, 
+leading to significant economic losses. For example, on May 18, 2021, 
+the Saige Building ( Fig. 1 a) in Shenzhen encountered a vibration 
+anomaly caused by wind-induced vortex resonance of the top-floor mast 
+[3] . After nearly four months of closure, the building resumed operation, 
+but the owner suffered a net profit loss of approximately 55 million RMB 
+that year [4] . Similarly, on February 7, 2013, occupants on the 20th 
+floor of the Information Building in Shanghai experienced intermittent 
+abnormal shaking, prompting an emergency evacuation. Nonetheless, 
+the cause of the building's shaking remains unknown [5] . Additionally, 
+on September 5, 2013, a 50-story office building in Nanjing underwent 
+several intense up-and-down shaking events within an hour due to 
+construction work involving a road roller at a nearby construction site 
+[6] . Moreover, on July 5, 2011, TechnoMart ( Fig. 1 b), a 39-story 
+shopping mall building in Seoul, experienced abnormal vertical 
+shaking lasting 10 min due to crowd movement inside the building, 
+leading to a two-day evacuation of residents [7,8] . Lastly, on January 
+20, 2022, a 33-story high-rise residential building in Seoul encountered 
+structural resonance caused by group dancing within the building after 
+two months of investigation and lockdown [9] .
+High-rise buildings typically exhibit relatively low lateral stiffness 
+and damping ratios, making them susceptible to external excitations 
+such as wind loads, crowd activities, and mechanical vibrations. Struc -
+tural vibrations induced by earthquakes or typhoons exhibit distinct 
+characteristics that can be quickly identified to prevent unnecessary 
+panic. Vibrations caused by equipment operation or human activities 
+within the 1 – 10 Hz frequency range not only coincide with many high- 
+order vibration modes of tall buildings but also fall within the sensitive 
+* Corresponding author.
+E-mail address: meiliu@szu.edu.cn (L. Mei). 
+Contents lists available at ScienceDirect
+Engineering Structures
+journal homepage: www.else vier.com/loc ate/engstruc t
+https://doi.org/10.1016/j.engstruct.2025.122061
+Received 14 January 2025; Received in revised form 26 May 2025; Accepted 23 December 2025  
+Engineering Structures 352 (2026) 122061 
+Available online 5 January 2026 
+0141-0296/© 2025 Elsevier Ltd. All rights are reserved, including those for text and data mining, AI training, and similar technologies. 
+range of human perception [10] . The inability to promptly determine 
+the cause and location of such vibration sources often leads to public 
+panic events. The aforementioned vibration anomaly events of high-rise 
+buildings in Shenzhen, Seoul, and Nanjing demonstrate that vibration 
+sources can be located at the top, middle, and base of the buildings. Yet, 
+in each case, the inability to immediately identify the vibration source 
+led to building evacuations and months-long investigations before 
+resuming normal operations, resulting in substantial economic losses. If 
+a vibration anomaly can be detected and localized while still weak 
+(below the human perception threshold), timely elimination of the 
+source can prevent such events from escalating into public incidents.
+In the field of structural health monitoring (SHM) for high-rise 
+buildings, extensive research has been conducted on operational 
+modal analysis (OMA) [11 – 14] and damage detection and localization 
+[15 – 17] . However, limited research has been reported on the detection 
+and localization of vibration anomalies specifically for high-rise build -
+ings. Existing research on vibration source localization primarily focuses 
+on seismic localization, occupant localization, and pipeline leakage 
+localization. For instance, travel-time inversion was proposed to deter -
+mine earthquake hypocenter coordinates [18] . The double-difference 
+earthquake location method was proposed to minimize the residuals 
+between observed and theoretical travel-time differences of seismic 
+pairs at each station [19] . Schloemann et al. [20] introduced a time 
+difference of arrival (TDoA)-based method to localize impact sources 
+within buildings. Mirshekari et al. [21] proposed an occupant localiza -
+tion approach using TDoA and footstep-induced floor vibrations. Lah 
+et al. [22] introduced a pipeline leakage localization method by esti -
+mating TDoA through vibration signal correlation. Wang and Zhu [23]
+developed a two-stage impact source localization method based on the 
+time of arrival (ToA) of impact waves recorded from multiple vibration 
+monitoring points. The localization accuracy was validated through 
+numerical simulations and field experiments conducted at a construc -
+tion site with ongoing impact piling work.
+These algorithms were designed for transient pulse excitations, 
+whereas high-rise building vibration anomalies are typically non-pulse- 
+like and persistent, limiting the applicability of TDoA/ToA methods. 
+Consequently, vibration anomaly detection and localization in high-rise 
+buildings remain underexplored.
+In most SHM applications, the SHM system is designed based on the 
+cloud computing pattern, where all sensor data are transmitted to a 
+cloud server for centralized processing [24,25] . While this pattern is 
+feasible in wired SHM systems, it has been found to be challenging and 
+inappropriate for wireless sensor networks (WSNs) when it comes to 
+transmitting large time-history data [26] . On one hand, implementing a 
+WSN based on the cloud computing pattern would result in high energy 
+consumption and reduced battery life of sensor nodes due to the 
+continuous wireless connection to the cloud server and the significant 
+data transmission requirements for time-history vibration data. On the 
+other hand, the cloud computing pattern is not suitable for real-time 
+detection of vibration anomalies due to the inherent delay in data 
+transmission and cloud analysis.
+Edge computing is a computing paradigm that performs computation 
+at the network edge, which has gained significant research interest in 
+the field of SHM. For instance, Wei et al. [27] proposed a multi-resource 
+computing offload algorithm for optimizing energy consumption in 
+mobile edge computing, resulting in more than 12 % of energy saving. 
+Zonzini et al. [28] introduced an innovative extreme edge data 
+compression strategy tailored for low-power and low-cost SHM appli -
+cations. Experimental results from wind turbine monitoring demon -
+strated that this strategy reduced the energy consumption of a sensor 
+node by over 16 %. Additionally, Abner et al. [29] presented three 
+strategies for conserving battery power in wireless monitoring sensors 
+for infrastructures using edge computing, significantly enhancing the 
+sensor's battery lifespan and reducing the frequency of on-site hardware 
+maintenance. Based on the above research, edge computing shows 
+promise in addressing challenges related to response time, battery life, 
+and bandwidth costs [30] . However, due to limited computing and 
+memory resources, as well as network bandwidth constraints, edge 
+computing faces challenges in achieving satisfactory performance when 
+dealing with complex problems.
+Owing to the complementary advantages and disadvantages of cloud 
+computing and edge computing, an increasingly common approach is to 
+integrate them in real-world applications [31] . This approach is known 
+as edge-cloud collaboration (ECC), which combines the low latency 
+characteristics of edge computing with the powerful computing capa -
+bilities of cloud computing [32] . Early explorations of ECC have been 
+conducted in both academia and industry. For example, Yu et al. [33]
+designed an ECC framework for industrial anomaly detection, where 
+cloud algorithms are responsible for extracting and optimizing anomaly 
+diagnosis rules, while edge algorithms detect anomalies based on these 
+rules. This method significantly reduces network load and computa -
+tional pressure on the cloud. Gang et al. [34] proposed an ECC frame -
+work for electric load monitoring, which performs processing at the edge 
+and optimization in the cloud. Ding et al. [35] introduced an ECC 
+framework for healthcare monitoring that enables lesion detection at the 
+edge and high-performance modeling in the cloud. As observed, current 
+ECC frameworks primarily operate in the mode of edge detection with 
+cloud-based dataset training or modeling. However, no reports have 
+been made on edge-cloud collaborative intelligence for anomaly 
+detection and localization in high-rise buildings.
+The aforementioned edge and clouding computing can help to ac -
+quire, process and analysis data from physical world. When combined 
+with more complicated simulation and visualization models as the dig -
+ital replica of the real world entities, the concept of digital twin can be 
+involved. A digital twin represents a cyber-physical system that enables 
+visualization, modeling, simulation, analysis, prediction, and optimi -
+zation [36] . It has found applications in various civil engineering fields, 
+including buildings [37 – 40] , infrastructure [41,42] , and construction 
+sites [43,44] . The digital twin is considered a promising technology with 
+the potential to transform the construction industry and provide solu -
+tions to various challenges [45] . Furthermore, Jiang et al. [46] argued 
+that technologies such as digital twin, building information modeling 
+(BIM), and cyber-physical systems (CPS) are not mutually exclusive; 
+instead, they can mutually reinforce civil engineering digitalization. 
+Therefore, the digital twin represents a broader concept that can be 
+integrated with edge-cloud collaborative computing, BIM models, and 
+simulation models to establish a comprehensive digital system for 
+enhanced management and disaster prevention of civil structures.
+Therefore, an edge-cloud collaborative digital twin framework is 
+presented for the purpose of vibration anomaly detection and localiza -
+tion in high-rise buildings. The composition of the framework is detailed 
+in Section 2 , followed by the introduction of the hardware composition 
+and vibration anomaly detection algorithm in Section 3 . In Section 4 , a 
+vibration source localization method is proposed. Additionally, Section 
+Fig. 1. Vibration anomaly events of high-rise buildings.
+C. Xiong et al.                                                                                                                                                                                                                                   Engineering Structures 352 (2026) 122061 
+2 
+5 introduces a BIM-based online monitoring and management platform. 
+To demonstrate the effectiveness of the framework, a case study is 
+conducted for a 17-story teaching building in Section 6 .
+2. Overview of the methodology
+The proposed edge-cloud collaborative (ECC) digital twin framework 
+for vibration anomaly detection and localization in high-rise buildings 
+comprises three main components: edge sensing for vibration anomaly 
+detection, cloud computing for vibration source localization, and a BIM- 
+empowered monitoring management platform, as illustrated in Fig. 2 .
+The first module is edge sensing for vibration anomaly detection, 
+which involves: (1) a novel wireless time-synchronized smart sensor 
+node, and (2) a vibration anomaly detection algorithm specifically 
+designed for high-rise buildings.
+The second module utilizes cloud computing for vibration source 
+localization and BIM-based visualization, and consists of three compo -
+nents: (1) a digital twin model for structural dynamic simulation, con -
+structed using modal parameters derived from operational modal 
+analysis; (2) a vibration anomaly detection algorithm that performs vi -
+bration source localization by utilizing both the measured and simulated 
+spectrum amplitude features; and (3) a BIM-empowered online moni -
+toring and management platform capable of displaying real-time vi -
+bration data during normal operation states and visualizing abnormal 
+vibration sources through the BIM model during abnormal states.
+3. Edge sensing for vibration anomaly detection
+The detection of vibration anomaly in high-rise buildings requires 
+high-precision time-synchronized monitoring of building vibrations. In 
+this section, details of the smart sensor node and vibration anomaly 
+detection algorithm are introduced.
+3.1. Wireless time-synchronized smart sensor
+Extensive research has been conducted on wireless time- 
+synchronized smart sensors for structural health monitoring, with 
+notable contributions including the state-of-the-art MEMS-based Xnode 
+sensor developed by Professor Spencer's team [47] . This sensor in -
+corporates three dedicated circuit boards handling data acquisition, 
+wireless transmission, and power management respectively. The struc -
+tural health monitoring system consists of multiple sensing nodes and a 
+gateway node, with wireless time synchronization implemented using 
+the IEEE 802.15.4 protocol [48] . This system has been successfully 
+deployed in bridge monitoring applications.
+Building upon the Xnode design concept, we propose a new wireless 
+time-synchronized smart sensor (WTSS) featuring three key improve -
+ments: First, our design achieves greater functional integration by 
+Fig. 2. Framework of proposed methodology.
+C. Xiong et al.                                                                                                                                                                                                                                   Engineering Structures 352 (2026) 122061 
+3 
+combining multiple capabilities including data acquisition, wireless 
+transmission, power management and edge computing into a compact 
+circuit layout ( Fig. 3 a); second, the nodes implement LoRa-based wire -
+less time synchronization, which enables communication over long 
+distance between nodes; third, our system eliminates the need for 
+gateway nodes. Each node directly transmits data to the cloud via 4 G 
+wireless communication, which not only removes the requirement for 
+separate gateway nodes but also provides substantially greater band -
+width for cloud connectivity.
+The logical composition of the WTSS is illustrated in Fig. 3 b. The 
+node primarily comprises a motherboard, an acceleration sensor mod -
+ule, a Raspberry Pi computing module, a LoRa wireless communication 
+module, and a 4 G wireless transmission module. The motherboard in -
+tegrates an STM32 microcontroller chip (ARM Cortex-M), a LoRa 
+SX1276 module, and an acceleration sensor. The STM32 performs two 
+primary functions: First, it acquires vibration data from the sensor 
+module through the serial peripheral interface (SPI) and transmits these 
+data to the Raspberry Pi via a serial port. Second, it controls the LoRa 
+wireless communication module for time synchronization. The LoRa 
+SX1276 module, manufactured by Semtech [49] , is an ultra-long-range, 
+highly sensitive wireless communication module. For wireless time 
+synchronization among WTSS nodes, we implement a chain network 
+structure comprising two node types: a single root node R and multiple 
+relay nodes J
+i
+. The root node R is positioned at the building's top floor, 
+with time synchronization timestamps propagating between adjacent 
+nodes in a top-down manner along the chain network ( Fig. 3 c). This 
+synchronization between root node R and relay node J
+i
+, as well as be -
+tween relay nodes, is implemented through timestamp exchange using 
+the Network Time Protocol (NTP) [50] .
+For vibration data acquisition, the study utilizes the EPSON M- 
+A352AD10 acceleration sensor, a tri-axial digital accelerometer known 
+for its high sensitivity and low noise level. The sensor has a typical noise 
+density of 0.2ug/(Hz)
+1/2 
+[51] .
+The Raspberry Pi Zero 2 W module [52] , equipped with a quad-core 
+64-bit ARM Cortex-A53 CPU, is utilized for edge computing. The 
+Raspberry Pi board runs a Linux operating system (64-bit, Debian 11.2 
+version), which incorporates a Python language compiler. By deploying 
+vibration signal processing algorithms written in Python, the system 
+achieves the identification of abnormal vibrations, with the detailed 
+implementation process of the anomaly detection algorithm elaborated 
+in Section 3.2 . The vibration data and analysis results from the WTSS 
+node are transmitted to the cloud server via the Waveshare SIM7600G 
+4 G module [53] . The data transmission employs the MQTT protocol 
+[54] , where the sensor node acts as the publisher under QoS1 level, 
+sending the collected data through an established connection to a 
+designated topic on the cloud platform. The cloud platform, functioning 
+as the subscriber, continuously monitors the topic to receive real-time 
+data reported by the sensor, thereby completing the data transfer from 
+the terminal device to the cloud.
+3.2. Vibration anomaly detection algorithm
+This section describes the proposed vibration anomaly detection al -
+gorithm implemented at the sensor node, as depicted in Fig. 4 a. The 
+algorithm comprises four primary steps:
+(1) The WTSS nodes are adopted to acquire the vibration on different 
+stories of a high-rise building as the historical data for a certain period of 
+time. Note that the historical vibration data is acquired during normal 
+operation of the building, the acquired historical vibration data are 
+deemed as the baseline to evaluate the normality of current vibration.
+(2) Short-time Fourier transform (STFT) is performed on the histor -
+ical vibration data using the window size of a few minutes. The 
+maximum amplitude values at different frequency points are extracted 
+as the historical spectrum envelope, represented by the dashed line in 
+Fig. 4 b.
+(3) Applying STFT to the current vibration data using the same 
+window size to obtain the current spectrum, illustrated by the red line in 
+Fig. 4 b.
+(4) Comparing the current spectrum with the historical spectrum 
+envelope. If the current spectrum exceeds α times the historical spec -
+trum envelope at any frequency point, it is determined that a vibration 
+anomaly event has occurred, and the corresponding frequency is 
+recorded as the vibration anomaly frequency ω .
+To ensure a timely response for vibration anomaly detection, the 
+algorithm can be implemented using Python and executed on the 
+Raspberry Pi module of the WTSS. When a vibration anomaly event is 
+detected, the WTSS nodes promptly upload the spectrum feature data, 
+which includes the vibration anomaly frequency ω and its amplitude, 
+along with the high-sampling-rate vibration time-history data to the 
+cloud server.
+4. Cloud computing for vibration source localization
+4.1. Digital twin model for structural dynamic simulation
+In this section, the structural dynamics digital twin model (DTM) of 
+high-rise buildings is established to assist in finding the source of exci -
+tation of a vibration anomaly event. The DTM is constructed through 
+model updating based on the measured frequency spectrum data. The 
+process of developing the DTM involves model establishment, opera -
+tional modal analysis, and model updating. This paper specifically fo -
+cuses on reinforced concrete (RC) frame-shear wall high-rise buildings, 
+which can be effectively modeled using a multiple degrees of freedom 
+(MDOF) flexural-shear model [55] . The MDOF flexural-shear model is 
+commonly employed for the design and simulation of RC frame-shear 
+wall buildings, with shear wall elements represented by 
+Euler-Bernoulli springs and frame elements modeled as shear springs. 
+Previous studies have demonstrated the performance of the MDOF 
+flexural-shear model in simulating the dynamic responses of RC 
+Fig. 3. Hardware composition of the WTSS node.
+C. Xiong et al.                                                                                                                                                                                                                                   Engineering Structures 352 (2026) 122061 
+4 
+frame-shear wall buildings [56 – 59] . The global stiffness matrix K and 
+mass matrix M of a representative three story MDOF flexural-shear 
+model is demonstrated in Eqs. (1) and (2) . 
+K =
+⎡
+⎢
+⎢
+⎢
+⎢
+⎢
+⎢
+⎢
+⎢
+⎢
+⎢
+⎢
+⎢
+⎢
+⎢
+⎢
+⎢
+⎢
+⎢
+⎢
+⎢
+⎢
+⎢
+⎢
+⎢
+⎢
+⎣
+12 i
+1
+l
+2
+1
++
+12 i
+2
+l
+2
+2
++ Ψ
+1
++ Ψ
+2
+ 
+12 i
+2
+l
+2
+2
+  Ψ
+2
+0
+6 i
+2
+l
+2
+ 
+6 i
+1
+l
+1
+6 i
+2
+l
+2
+0
+ 
+12 i
+2
+l
+2
+2
+  Ψ
+2
+12 i
+2
+l
+2
+2
++
+12 i
+3
+l
+2
+3
++ Ψ
+2
++ Ψ
+3
+ 
+12 i
+3
+l
+2
+3
+  Ψ
+3  
+6 i
+2
+l
+2
+6 i
+3
+l
+3
+ 
+6 i
+2
+l
+2
+6 i
+3
+l
+3
+0  
+12 i
+3
+l
+2
+3
+  Ψ
+3
+12 i
+3
+l
+2
+3
++ Ψ
+3 0  
+6 i
+3
+l
+3
+ 
+6 i
+3
+l
+3
+6 i
+2
+l
+2
+ 
+6 i
+1
+l
+1
+ 
+6 i
+2
+l
+2
+0 4 ( i
+1
++ i
+2
+) 2 i
+2
+0
+6 i
+2
+l
+2
+6 i
+3
+l
+3
+ 
+6 i
+2
+l
+2
+ 
+6 i
+3
+l
+3
+2 i
+2
+4 ( i
+2
++ i
+3
+) 2 i
+3
+0
+6 i
+3
+l
+3
+ 
+6 i
+3
+l
+3
+0 2 i
+3
+4 i
+3
+⎤
+⎥
+⎥
+⎥
+⎥
+⎥
+⎥
+⎥
+⎥
+⎥
+⎥
+⎥
+⎥
+⎥
+⎥
+⎥
+⎥
+⎥
+⎥
+⎥
+⎥
+⎥
+⎥
+⎥
+⎥
+⎥
+⎦
+(1) 
+M =
+⎡
+⎢
+⎢
+⎢
+⎢
+⎢
+⎢
+⎢
+⎢
+⎢
+⎢
+⎢
+⎣
+m
+1
+0 0 0 0 0
+0 m
+2
+0 0 0 0
+0 0 m
+3
+0 0 0
+0 0 0 I
+1
+0 0
+0 0 0 0 I
+2
+0
+0 0 0 0 0 I
+3
+⎤
+⎥
+⎥
+⎥
+⎥
+⎥
+⎥
+⎥
+⎥
+⎥
+⎥
+⎥
+⎦
+(2) 
+where i
+j
+= Π
+j
+/ l
+j
+, Π
+j 
+is the total flexural stiffness of the j
+th 
+floor, l
+j 
+is height 
+of the j
+th 
+floor; Ψ
+j 
+is the total shear stiffness of the j
+th 
+floor; m
+j 
+is the mass 
+of the j
+th 
+floor, and I
+j 
+is the moment of inertia of flexural members on the 
+j
+th 
+floor.
+The l
+j
+, m
+j
+, and I
+j 
+in Eqs. (1) – (2) can be determined based on basic 
+design information of the building. The initial flexural and shear stiff -
+ness parameters Π
+j 
+and Ψ
+j 
+can be determined according to the first and 
+second mode frequencies [55] . Subsequently, the flexural and shear 
+stiffness parameters can be further updated according to the modal 
+parameters obtained through operational modal analysis.
+Specifically, the procedure for establishing the DTM consists of four 
+Fig. 4. Proposed algorithm for vibration anomaly detection.
+Fig. 5. Digital twin model for structural dynamic simulation using MDOF flexural-shear model.
+C. Xiong et al.                                                                                                                                                                                                                                   Engineering Structures 352 (2026) 122061 
+5 
+steps ( Fig. 5 ): (1) Creating a preliminary MDOF flexural-shear model 
+based on the basic design information [55,56] , which includes structural 
+height, floor mass, first and higher-order natural frequencies, etc. (2) 
+Collecting vibration data from the building during normal operation 
+using WTSS nodes. (3) Applying the covariance-driven stochastic sub -
+space identification method (SSI-COV) [60] to perform operational 
+modal analysis and extract the modal parameters such as building nat -
+ural frequencies and mode shapes. (4) Using the obtained modal pa -
+rameters as targets, the stiffness parameters Π
+j 
+and Ψ
+j 
+of the MDOF 
+flexural-shear model can be updated using the particle swarm optimi -
+zation algorithm (PSO) [61] , and the loss function is presented in Eq. 
+(3) . 
+L = α
+∑
+p
+k = 1
+1
+p
+[( ω
+k
+  ̂ω
+k
+) / ω
+k
+]
+2
++
+∑
+p
+k = 1
+∑
+q
+j = 1
+1
+pq
+[( φ
+jk
+  ̂φ
+jk
+)
+/
+φ
+jk
+]
+2
+(3) 
+where ω
+k 
+and ̂ω
+k 
+are the actual and predicted natural frequencies of the 
+k
+th 
+mode; p is the number of modes adopted in the model updating; ϕ
+jk 
+and ̂φ
+jk 
+are the actual and predicted mode shape parameters of the k
+th 
+mode on the j
+th 
+floor; q is the number of floors; α is a factor that can 
+influence the contribution of the first and second terms.
+4.2. Vibration source localization algorithm
+The vibration anomaly investigated in this study primarily focuses on 
+building vibrations caused by harmonic excitation. A series of harmonic 
+excitation tests conducted in this study reveal that the amplitude of 
+structural frequency response at different floors varies significantly 
+when horizontal harmonic excitation is applied at a certain floor. Fig. 6
+illustrates the acceleration spectra of the 5th, 8th, 11th, 14th, and 17th 
+floors of a 17-story high-rise building when horizontal 8 Hz harmonic 
+excitation was applied to the 5th, 8th, and 11th floors, respectively. The 
+results indicate significant variations in the amplitudes of the accelera -
+tion spectra at 8 Hz for the five floors.
+As evident in Fig. 6 , the floor closest to the excitation source does not 
+necessarily exhibit the largest amplitude. This is because in high-rise 
+buildings, the dynamic response typically results from the super -
+position of multiple vibration modes. Excitation at different floors 
+activates distinct modal combinations ( Fig. 7 ). When the excitation 
+source is proximate to the stationary point of a vibration mode, the floor 
+near the stationary point exhibits relatively small amplitude.
+The DTM discussed in Section 4.1 is utilized for conducting time- 
+history analysis. An 8 Hz harmonic excitation is applied to the DTM, 
+and the acceleration spectra of all stories are obtained. The amplitudes 
+at 8 Hz in the acceleration spectra from both the test and the simulation 
+are extracted as spectrum amplitude feature (SAF) vectors. Fig. 8 illus -
+trates the normalized SAF vectors for different excitation conditions. 
+The comparison exhibits correlative trends between the SAF vectors 
+obtained from the test and the simulation under identical harmonic 
+excitation conditions. Additionally, the SAF vectors exhibit distinct 
+patterns for excitations on different floors, allowing for the prediction of 
+the excitation location based on the shape of the obtained SAF vector.
+To further demonstrate this phenomenon, we have added a simula -
+tion case study where 8 Hz harmonic excitations were sequentially 
+applied on the 2nd to 17th floors. As shown in Fig. 9 , the SAFs of the 
+building exhibits completely different patterns when excited at different 
+floors. By comparing the measured SAF with the simulated SAF values, 
+the approximate location of the vibration source can be determined. 
+Moreover, the results in Fig. 9 a (pink curve) further demonstrate the test 
+observations in Fig. 6 . When the excitation was applied on the 5th floor, 
+the large vibrational amplitudes occurred on the 8th and 14th floors, 
+while the 5th and 11th floors showed relatively small responses. 
+Consequently, an algorithm for vibration source localization is proposed 
+based these observations.
+The fundamental idea of the proposed vibration source localization 
+method is to compare the SAF vector of the measured abnormal vibra -
+tion with the SAF vectors obtained through the structural dynamic 
+simulation of the DTM under all possible excitation load cases. The 
+method consists of six steps, as depicted in Fig. 10 :
+(1) Collect the frequency spectra of all WTSS nodes after receiving 
+the vibration anomaly alert from the edge nodes.
+(2) Compute the normalized ( L
+2
+-Norm = 1) SAF vector v ( Eq. (4) ) of 
+the measured vibration anomaly based on the amplitude of the 
+abnormal frequency ω .
+(3) Perform time-history analyses of the DTM with unit sinusoidal 
+Fig. 6. Acceleration spectra of different floors under 8 Hz excitation on the 5th, 8th and 11th floors respectively.
+C. Xiong et al.                                                                                                                                                                                                                                   Engineering Structures 352 (2026) 122061 
+6 
+excitation applied to different floors, respectively.
+(4) Calculate the normalized SAF matrix W ( L
+2
+-Norm = 1 for each 
+column vector) ( Eq. (5) ) based on the amplitude of the frequency spectra 
+of the DTM subjected to different load cases.
+(5) Determine the similarity between the measured SAF vector v and 
+the simulated SAF matrix W using Eq. (6) .
+(6) Calculate the floor of the vibration source, l , by identifying the 
+argument of the maxima in the similarity vector s according to Eq. (7). 
+v =
+[
+ρ
+1
+ρ
+2
+… ρ
+j
+]
+(4) 
+W = [ φ
+1
+φ
+2
+…φ
+k
+] =
+⎡
+⎢
+⎢
+⎣
+φ
+11
+φ
+12
+⋯ φ
+1 k
+φ
+21
+φ
+22
+⋯ φ
+2 k
+⋯ ⋯ ⋯ ⋯
+φ
+j 1
+φ
+j 2
+⋯ φ
+jk
+⎤
+⎥
+⎥
+⎦
+(5) 
+s = v × W =
+[
+ρ
+1
+ρ
+2
+… ρ
+j
+]
+×
+⎡
+⎢
+⎢
+⎣
+φ
+11
+φ
+12
+⋯ φ
+1 k
+φ
+21
+φ
+22
+⋯ φ
+2 k
+⋯ ⋯ ⋯ ⋯
+φ
+j 1
+φ
+j 2
+⋯ φ
+jk
+⎤
+⎥
+⎥
+⎦
+= [ s
+1
+s
+2
+… s
+k
+] (6) 
+l = argmax ( s ) (7) 
+where ρ
+j 
+is normalized spectral value of the measured anomaly vi -
+bration frequency on the j
+th 
+floor; φ
+jk 
+is the normalized spectral value of 
+the simulated response vibration on the j
+th 
+floor of the DTM with exci -
+tation subjected on the k
+th 
+floor; s
+k 
+is the similarity value between the 
+measured SAF vector v and the simulated SAF vector φ
+k 
+with excitation 
+subjected on the k
+th 
+floor.
+5. BIM-empowered online monitoring and management 
+platform
+This study has developed a web-based platform for data visualization 
+and vibration anomaly management in high-rise buildings. The platform 
+specifically integrates the BIM model of the building to visualize the 
+sensor locations and the floors where vibration sources are detected. 
+Fig. 11 illustrates the main components of the platform, which includes 
+the data flow module, the back-end data processing module, and the 
+front-end visualization module.
+(1) Data flow module:
+The data flow module of the platform operates as follows. The fre -
+quency spectra and vibration data from all WTSS nodes are transmitted 
+to the cloud server via the MQTT protocol. The server stores the newly 
+uploaded data in the MySQL database as hot data. After a certain time 
+period, the server transfers the hot data from the MySQL database to 
+object storage as cold data to improve operational efficiency. The cold 
+data includes raw data, which preserves the original vibration data with 
+a high sampling rate, and downsampled snapshot data for fast preview.
+(2) Back-end data processing module:
+The back-end data processing module of the platform connects with 
+the MySQL database and object storage using the Flask-SQLAlchemy 
+library [62] . The module consists of a series of algorithms, including 
+operational modal analysis and DTM updating using the obtained modal 
+Fig. 7. Schematic diagram of dynamic response superposition of multiple vibration modes.
+Fig. 8. Test and simulated SAF vectors with excitation on the 5th, 8th and 11th 
+floors respectively.
+C. Xiong et al.                                                                                                                                                                                                                                   Engineering Structures 352 (2026) 122061 
+7 
+parameters. The module transmits the analysis results to the front-end 
+visualization module through the WebSocket protocol for real-time 
+display.
+(3) Front-end visualization module:
+The front-end visualization module of the platform operates as fol -
+lows. The BIM model of the building is pre-processed to reduce unnec -
+essary components for fast buffer and maneuver on the web-based 
+platform. The BIM model is converted to the glb format and imported to 
+the platform using the Three.js engine [63] . The module decodes the 
+data received from the back-end through the WebSocket protocol, 
+enabling real-time display of acceleration time-history data, frequency 
+spectrum data, and vibration anomaly alert events.
+6. Illustrative examples
+To demonstrate the effectiveness of the proposed ECC digital twin 
+framework, a 77.7-meter-high, 17-story RC frame-shear wall teaching 
+building is studied in this section. Ambient vibration tests were per -
+formed to assess the performance of the WTSS node. Additionally, a 
+series of sinusoidal excitation tests were conducted to illustrate the 
+effectiveness of the vibration anomaly detection and localization 
+methods.
+6.1. Performance of the WTSS
+In this study, the vibration measurement performance of the pro -
+posed WTSS was verified by comparing it with a high-precision wired 
+Fig. 9. Simulated SAF vectors with excitation on the 2nd to 17th floors respectively.
+Fig. 10. Procedure of the vibration source localization method.
+C. Xiong et al.                                                                                                                                                                                                                                   Engineering Structures 352 (2026) 122061 
+8 
+sensor. As depicted in Fig. 12 , the WTSS was compared to the wired 
+piezoelectric sensor PCB393b31 (PCB31), which was installed on the 
+17th floor of the building. PCB31 is a single-axis accelerometer that was 
+horizontally mounted on a test stand, aligned with the weak axis di -
+rection of the building.
+The sampling rate of the WTSS was set to 500 Hz, while the PCB31 
+sensor utilized the NI9234 acquisition system with a sampling rate of 
+1651.6 Hz, which is the lowest setting available for the system. Both 
+sensors collected ambient vibration data for a duration of 3 min. The 
+collected data underwent processing, including detrending, band-pass 
+filtering (0.2 – 20 Hz), and fast Fourier transform (FFT), to derive the 
+acceleration time-history data and Fourier spectra. As illustrated in 
+Fig. 13 a-b, in the time domain, the acceleration waveforms measured by 
+the two sensors closely resemble each other, exhibiting an amplitude 
+range of ± 35 μ g. In the frequency domain ( Fig. 13 c-d), the spectra of the 
+two sensors also exhibit good agreement, with the first peak corre -
+sponding to the frequency of 1.05 Hz, which represents the first-order 
+natural frequency in the direction of the weak axis of the building. 
+This test demonstrates that the WTSS can achieve precise and reliable 
+vibration measurement performance comparable to that of the high- 
+precision PCB sensor.
+To validate the time synchronization accuracy of the monitoring 
+network, multiple WTSS nodes were deployed across multiple floors in 
+the studied high-rise building. As illustrated in Fig. 14 a, the WTSS nodes 
+implemented time synchronization within the chain network using the 
+procedure presented in Section 3.1 . Meanwhile, each WTSS node was 
+externally connected to a global navigation satellite system (GNSS) 
+module for receiving pulse-per-second (PPS) signals from satellites. By 
+comparing local timestamps recorded upon reception of each PPS signal, 
+the clock offset between WTSS nodes was recorded.
+As illustrated in Fig. 14 b, each WTSS was mounted with a GNSS 
+antenna to ensure uninterrupted satellite signal reception. The perfor -
+mance of the proposed LoRa-based time synchronization method was 
+evaluated with 300-s and 600-s intervals, and each test was conducted 
+continuously for 6000 s. The results presented in Fig. 15 demonstrate 
+consistent synchronization errors of less than 20 μ s across both test 
+scenarios, with maximum observed deviations of 16 μ s (300-s interval) 
+and 19 μ s (600-s interval). These findings quantitatively confirm the 
+reliability of the proposed wireless time synchronization method for 
+building-scale deployment.
+6.2. Vibration anomaly detection and localization
+The tests conducted in the previous section have successfully verified 
+the performance of the proposed WTSS. This section focuses on 
+demonstrating the effectiveness of the vibration anomaly detection and 
+localization methods. Because previous abnormal vibration events were 
+predominantly caused by steady-state single-frequency vibrations, 
+including low-frequency mechanical reciprocations and mast oscilla -
+tions, harmonic excitation was adopted as the abnormal excitation. 
+Specifically, load case of vibration anomaly in the building is simulated 
+through the sinusoidal motion of a mass block driven by a shaking table, 
+as shown in Figure 16 a. The mass block is 21 kg, the measured accel -
+eration time history of the mass is shown in Figure 16 b. The peak ac -
+celeration is 0.403 g and the calculated excitation force amplitude is 
+82.9 N. The excitation force is transferred to the building structure 
+through the friction between the shaking table and the slab.
+The arrangement of the shaking table and WTSS nodes in the 
+building is shown in Figure 17 . Due to the prohibitive costs of full-floor 
+instrumentation in real-world applications, especially for high-rise and 
+super-tall structures, a sparse sensor deployment strategy is adopted, 
+Fig. 11. Schematic diagram of the online monitoring platform.
+Fig. 12. Ambient vibration test on the 17th floor of the teaching building.
+C. Xiong et al.                                                                                                                                                                                                                                   Engineering Structures 352 (2026) 122061 
+9 
+with WTSS-1 to WTSS-5 arranged on the 17th, 14th, 11th, 8th and 5th 
+floors respectively, constituting a five-node vertical chain sensor 
+network. The shaking table is arranged along the x-axis of the corridor 
+on the 5th, 8th, 11th, 14th and 17th floors, respectively, to simulate the 
+vibration anomaly on a specific floor.
+6.2.1. Digital twin model updating
+During routine operation, acceleration time-history records were 
+continuously streamed to the cloud server, where the covariance-driven 
+stochastic subspace identification (SSI-COV) algorithm [ 60 ] was applied 
+to extract the structure ’ s modal properties. The resulting stabilization 
+diagram ( Fig. 18 ) serves to eliminate spurious modes, where the red 
+poles satisfy three stability criteria: (1) frequency variation between 
+adjacent poles less than 1 %, (2) damping ratio variation less than 5 %, 
+and (3) modal assurance criterion (MAC) values greater than 0.98 for all 
+Fig. 13. Comparison of time-history and spectrum data.
+Fig. 14. Synchronization performance test using GNSS PPS as reference.
+Fig. 15. Time synchronization errors under different synchronization intervals.
+C. Xiong et al.                                                                                                                                                                                                                                   Engineering Structures 352 (2026) 122061 
+10 
+Fig. 16. Shaking table and time history of mass.
+Fig. 17. Arrangement of shaking table and sensors in the building.
+Fig. 18. SSI-COV stabilization diagram for modal identification of the building.
+C. Xiong et al.                                                                                                                                                                                                                                   Engineering Structures 352 (2026) 122061 
+11 
+mode shapes ( Fig. 19 c) [ 12 ]. Furthermore, the retained poles were then 
+cross-checked against the calibrated digital-twin model ( Fig. 19 d). Most 
+diagonal MAC values exceed 0.85 while the off-diagonal terms remain 
+near zero, confirming that the experimentally-identified modes are 
+physically meaningful and mutually orthogonal, rather than numerical 
+artefacts.
+For independent verification, the same data set was also processed 
+with the NExT-ERA technique [64,65] . A comprehensive correlation 
+study among the three data sets (DTM, SSI-COV and NExT/ERA) is 
+presented in Fig. 19 , which assembles six MAC heat maps. The 
+auto-MAC of the DTM ( Fig. 19 a) exhibits unit diagonals and negligible 
+off-diagonal entries, verifying the mathematical orthogonality of the 
+numerical eigenvectors. Auto-MAC matrices for NExT/ERA and SSI-COV 
+( Figs. 19 b and 19 c) maintain unit diagonals and off-diagonals below 
+0.16, demonstrating that measurement noise and order selection have 
+only a minor influence on shape orthogonality. Cross-MAC analysis 
+further substantiates the robustness of the experimental procedures: 
+SSI-COV versus DTM ( Fig. 19 d) yields diagonal MACs of 1.00, 0.95, 0.84 
+and 0.87 for modes 1 – 4, whereas NExT/ERA versus DTM ( Fig. 19 e) at -
+tains 1.00, 0.99, 0.93 and 0.89. The direct comparison between the two 
+data-driven techniques ( Fig. 19 f) reveals almost indistinguishable mode 
+shapes, with diagonals of 0.99, 0.97, 0.91 and 0.99 and all off-diagonals 
+below 0.17. Because MAC values exceeding 0.80 are widely accepted as 
+indicative of strong correlation and those above 0.90 as excellent, the 
+uniformly high diagonals and low off-diagonals across all matrices 
+provide compelling quantitative evidence that the poles retained after 
+the SSI-COV stability screening correspond to the structure ’ s true dy -
+namic characteristics and that the three identification routes are inter -
+nally consistent and mutually reinforcing.
+After eliminating the false modes, the first to fourth order natural 
+frequencies along the x-axis are shown in Table 1 and the first to fourth 
+order mode shapes are shown in Fig. 20 .
+The MDOF flexural-shear model described in Section 4.1 is used as 
+the structural dynamics DTM for the building. The mass of each floor is 
+determined according to the design details, and the stiffness of the 
+flexural and shear springs were updated using the particle swarm opti -
+mization algorithm (PSO) according to the modal parameters obtained 
+through operational modal analysis. The first to fourth order modes of 
+the updated DTM agree well with the test results, as shown in Table 1
+and Fig. 20 .
+6.2.2. Detection of abnormal vibration
+In the case study, the historical spectrum envelopes of all WTSS 
+nodes were acquired through the short-time Fourier transform (STFT) of 
+the collected vibration data of the building under normal operation, as 
+shown by the dashed lines in Fig. 21 a. The abnormal vibration is 
+detected if the current vibration spectrum amplitude exceeds twice that 
+of the historical spectrum envelope at some specific frequency point.
+The excitation test started with the shaking table applying an 8 Hz 
+simple harmonic excitation on the 5th floor of the building. As depicted 
+Fig. 19. Modal assurance criterion among different models.
+Table 1 
+Four natural frequencies along the x-axis obtained from test and modal analysis.
+Natural frequency (Hz)
+Mode Digital twin model SSI-COV NExT/ERA
+Mode-1 0.979 1.054 1.036
+Mode-2 3.222 2.892 2.950
+Mode-3 6.095 6.916 6.969
+Mode-4 9.838 9.337 9.242
+C. Xiong et al.                                                                                                                                                                                                                                   Engineering Structures 352 (2026) 122061 
+12 
+by the red curve in Fig. 21 a, all WTSS nodes were able to detect the 
+vibration anomaly at 8 Hz. For instance, even though the node located 
+on the 17th floor is considerably distant from the excitation source on 
+the 5th floor, it can still capture the 8 Hz spike. It is worth noting that the 
+vibration generated by the shaking table was very subtle (with an 
+excitation force of 82.9 N), and completely imperceptible to human. The 
+clearly identified 8 Hz spikes on all five floors indicate the high sensi -
+tivity of the WTSS nodes. The normalized vibration anomaly SAF vector 
+is calculated by the cloud server as shown in Fig. 21 b. The excitation 
+tests were further carried out on the 8th, 11th, 14th and 17th floors 
+subsequently, and the corresponding SAF vectors are shown in Fig. 22 a.
+6.2.3. Localization of vibration source
+According to the vibration anomaly frequency of 8 Hz identified in 
+Section 6.2.2, a series of time-history analyses were performed using the 
+DTM with the 8 Hz sinusoidal excitation applied on the 5th, 8th, 11th, 
+14th and 17th floors respectively, and the corresponding SAF vectors are 
+shown in Fig. 22 b.
+The measured vibration anomaly SAF matrix V (i.e. [ v
+5
+, v
+8
+, v
+11
+, v
+14
+, 
+v
+17
+]
+T
+) and the simulated SAF matrix W for excitation source on the 5th, 
+8th, 11th, 14th and 17th floors were obtained respectively through the 
+preceding excitation tests and time-history analyses. The similarity 
+matrix S (i.e. [ s
+5
+, s
+8
+, s
+11
+, s
+14
+, s
+17
+]
+T
+) was calculated using the equation S 
+= V × W to demonstrate the similarity between the measured and 
+simulated SAF vectors, as shown in Fig. 23 . The first row of the similarity 
+matrix S is s
+5
+, which means the similarity between the measured vi -
+bration anomaly SAF vector v
+5 
+(excitation on the 5th floor) and the 
+simulated SAF matrix W. The maximum value of s
+5 
+is the fifth value, 
+which means the measured SAF vector s
+5 
+exhibits the best similarity 
+with the simulated SAF vector w
+6 
+(excitation applied on the 6th floor). 
+This indicates that the predicted floor location of the vibration source 
+has a one-floor margin of error. Considering that the primary objective 
+of this study is to achieve zonal-level vibration source localization rather 
+than floor-specific identification, this limitation is deemed acceptable 
+for the current research scope.
+To better demonstrate the performance of edge and cloud computing 
+paradigms, we separately recorded the analysis times for both 
+Fig. 20. Mode shapes obtained from OMA test and modal analysis of the digital twin model.
+Fig. 21. Vibration anomaly detection and SAF vector with 8 Hz excitation on 
+the 5th floor.
+Fig. 22. SAF vectors obtained through shaking table excitation test and DTM 
+simulation with excitations on the 5th, 8th, 11th, 14th and 17th floors 
+respectively.
+C. Xiong et al.                                                                                                                                                                                                                                   Engineering Structures 352 (2026) 122061 
+13 
+approaches. Edge computing was implemented on a Raspberry Pi Zero 
+2 W module, performing the vibration anomaly detection algorithm. 
+Through 300 test runs, edge computing consistently achieved processing 
+times below 80 ms ( Fig. 24 a). For cloud computing, the tests were 
+conducted on a server equipped with an Intel i5–9600KF CPU and 48 GB 
+RAM. After 300 test runs, all computational times were less than 1 s 
+( Fig. 24 b).
+6.2.4. Visualization platform
+This study developed a web-based platform for the visualization of 
+vibration data and assessment results. Upon completion of the analysis 
+regarding vibration anomaly detection performed by the back-end, the 
+obtained results are subsequently transmitted to the front-end webpage 
+for visualization. As shown in Fig. 25 a, the platform demonstrates an 
+alert of a detected vibration anomaly on the 17th floor of the building. 
+Furthermore, the platform provides detailed information concerning the 
+position and the status of the WTSS nodes ( Fig. 25 b). Moreover, the 
+platform provides real-time visualization of acceleration time-history 
+and frequency spectrum of each sensor node, as shown in Fig. 25 c. In 
+summary, this web-based visualization platform greatly facilitates the 
+vibrational safety management and assessment of the building.
+7. Discussion and limitations
+This study presents an integrated wireless smart sensor system with 
+edge-cloud computing algorithms for vibration monitoring in high-rise 
+buildings, featuring three key innovations. First, we developed an 
+edge-cloud collaborative framework that distributes vibration detection 
+algorithms to edge nodes, which reduces cloud computing workload and 
+data transmission requirements while enabling near real-time vibration 
+source localization and visualization. Second, we designed a compact, 
+highly integrated wireless sensor that combines high-precision vibration 
+measurement (0.2 μ g/(Hz)
+1/2 
+noise density) with onboard edge 
+computing capabilities (Linux-based Python environment), achieves less 
+than 20 μ s time synchronization through a novel LoRa-based chain 
+network, and enables direct 4 G cloud connectivity without requiring 
+gateway nodes. Third, we established a digital twin-based vibration 
+source localization methodology employing an updated flexural-shear 
+MDOF model for building simulation, performing dynamic analysis 
+under floor-specific excitations, and implementing SAF vector matching 
+between simulated and measured responses to identify vibration 
+sources.
+This study demonstrates the feasibility of an edge-cloud collabora -
+tive framework and proposes a novel vibration source localization 
+method. However, three key limitations warrant discussion to guide 
+future research directions:
+(1) The current SAF vector comparison method achieves only zonal- 
+level localization because SAF vectors exhibit similar patterns when 
+excitations are applied to adjacent floors. This limitation underscores 
+the need for more precise floor-specific identification techniques.
+(2) The framework currently supports only single-frequency steady- 
+state excitations. Extending it to multi-source and non-stationary vi -
+bration scenarios will require further theoretical and experimental 
+development.
+Fig. 23. Similarity matrix S between the measured SAF matrix V and the simulated SAF matrix W.
+(a) Edge computing (b) Cloud computing
+Fig. 24. Computational performance of edge and cloud computing.
+C. Xiong et al.                                                                                                                                                                                                                                   Engineering Structures 352 (2026) 122061 
+14 
+(3) Edge sensors currently implement only basic signal processing. 
+Advances in edge computing hardware are expected to enable the 
+deployment of sophisticated deep learning models, thereby improving 
+detection accuracy and optimizing computational resource allocation 
+across the edge-cloud system.
+8. Conclusions
+An edge-cloud collaborative digital twin framework for vibration 
+anomaly detection and localization in high-rise buildings is proposed in 
+this study. The framework includes a wireless time-synchronized smart 
+sensor (WTSS), a series of vibration anomaly detection and localization 
+methods, and a BIM-empowered online platform. The inferred conclu -
+sions are as follows:
+(1) A digital twin framework for vibration monitoring of high-rise 
+buildings is proposed in this study. The framework features vibration 
+monitoring and anomaly detection at the edge sensors. Meanwhile, the 
+digital twin model updating, vibration source localization, and platform 
+management are performed at the cloud server. The assessment results 
+can be visualized through a BIM-based management platform.
+(2) A wireless time-synchronized smart sensor (WTSS) is proposed in 
+this study. The sensor integrates a high-sensitive accelerometer, an edge 
+computing module, a wireless data transmission module and a wireless 
+time synchronization module. The WTSS sensor is very compact in size 
+with the dimension of 10 cm*8 cm*4.5 cm. The sensitive and vibration 
+measurement performance of the WTSS sensor is validated by 
+comparing with the PCB393B31 piezoelectric sensor.
+(3) An edge-cloud collaborative assessment method for vibration 
+anomaly detection and localization in high-rise buildings is proposed. 
+The method was validated through a series of harmonic excitation tests 
+for a 17-story high-rise teaching building. A very weak 8 Hz harmonic 
+excitation with the excitation force amplitude of 82.9 N was applied 
+using a shaking table deployed on 5th, 8th, 11th, 14th, and 17th floors 
+respectively. Although the excitation is very weak, the proposed WTSS 
+sensors can clearly identify the features of the excitation and the vi -
+bration anomaly event can be detected through the edge computing of 
+Fig. 25. Illustration of the visualization platform.
+C. Xiong et al.                                                                                                                                                                                                                                   Engineering Structures 352 (2026) 122061 
+15 
+WTSS sensors using the proposed anomaly detection algorithm. More -
+over, the location of the vibration source can be estimated through the 
+cloud computing of the proposed vibration localization algorithm using 
+the structural dynamics digital twin model.
+In summary, the outcomes of this study are expected to provide a 
+useful tool for the rapid detection and localization of vibration anomaly 
+in high-rise buildings and assist in safety operation and maintenance of 
+building structures.
+CRediT authorship contribution statement
+Linlin Xie: Supervision. Weizong Lai: Software. Liu Mei: Supervi -
+sion. Huijin Zhu: Validation, Writing – original draft, Methodology, 
+Visualization. Chen Xiong: Project administration, Funding acquisition, 
+Data curation, Methodology, Formal analysis, Conceptualization. 
+Kuangyu Chen: Writing – review & editing, Project administration, 
+Supervision. Jie Huang: Writing – original draft, Validation, Visuali -
+zation, Methodology.
+Declaration of Competing Interest
+The authors declare that they have no known competing financial 
+interests or personal relationships that could have appeared to influence 
+the work reported in this paper.
+Acknowledgements
+The authors are grateful for the financial support from the National 
+Natural Science Foundation of China (Grant No. 52178492), Shenzhen 
+Municipal Natural Science Foundation Basic Research General Project 
+(Grant No. JCYJ20230808104814029; JCYJ20240813142818025), and 
+Guangdong Basic and Applied Basic Research Foundation (Grant No. 
+2023A1515011376).
+Data availability
+Data will be made available on request.
+References
+[1] Explore Data, Skyscrapercenter.Com, n.d. 〈 https://www.skyscrapercenter.com/ 
+explore-data 〉 . (Accessed data: May 26, 2025).
+[2] Hu W, Xu Z, Bian X, Tang D, Lu W, Li C, Teng J, Cunha 
+´
+A. Operational modal 
+analysis and continuous dynamic monitoring of high-rise building based on 
+wireless distributed synchronized data acquisition system. Struct Control Health 
+Monit 2022;29. https://doi.org/10.1002/stc.3063 .
+[3] Shenzhen Saige Building vibrates and the cause is identified! It is because of it, 
+CCTV.Com, n.d. 〈 http://news.cctv.com/2021/07/16/ARTInEKw8OgIRn47c8f 
+latW4210716.shtml 〉 . (Accessed data: May 26, 2025). (in Chinese).
+[4] Shenzhen Sage: “ 518 ” Sage Plaza building vibration incident brought net profit loss 
+of about 55 million yuan, CCTV.Com, n.d. 〈 http://tv.cctv.com/2022/01/06/ 
+VIDEA6eEYYZBXSwi1nYG4buJ220106.shtml 〉 . (Accessed data: May 26, 2025). (in 
+Chinese).
+[5] The skyscrapers in Lujiazui swayed, causing employees to evacuate and the 
+Earthquake Bureau did not detect any earthquake, NetEasenews.Com, n.d. 〈 https: 
+//m.163.com/house/article/8N66OL3A00073SDJ.html 〉 . (Accessed data: May 26, 
+2025). (in Chinese).
+[6] Nanjing Xinjiekou skyscraper shaking due to resonance between roller and 
+building, Chinanews.Com, n.d. 〈 https://www.chinanews.com.cn/house/2013/09 
+-06/5256554.shtml 〉 . (Accessed data: May 26, 2025). (in Chinese).
+[7] Lee S-H, Lee K-K, Woo S-S, Cho S-H. Global vertical mode vibrations due to human 
+group rhythmic movement in a 39 story building structure. Eng Struct 2013;57: 
+296 – 305. https://doi.org/10.1016/j.engstruct.2013.09.035 .
+[8] Lee K, Lee S-H, Kim G-C, Woo S-S. Global vertical resonance phenomenon between 
+steel building and human rhythmic excitations. J Constr Steel Res 2014;92:164 – 74. 
+https://doi.org/10.1016/j.jcsr.2013.09.001 .
+[9] Vibrations reported at commercial residential building in Seoul, Donga.Com, n.d. 
+〈 https://www.donga.com/en/article/all/20220124/3165019/1 〉 . (Accessed data: 
+May 26, 2025).
+[10] Kwok KCS, Hitchcock PA, Burton MD. Perception of vibration and occupant 
+comfort in wind-excited tall buildings. J Wind Eng Ind Aerodyn 2009;97:368 – 80. 
+https://doi.org/10.1016/j.jweia.2009.05.006 .
+[11] Reynders E.System identification methods for (operational) modal analysis: review 
+and comparison, Archives of Computational Methods in Engineering. 19 (2012) 
+51 – 124. https://doi.org/10.1007/s11831-012-9069-x..
+[12] Rainieri C, Fabbrocino G. Operational Modal Analysis of Civil Engineering 
+Structures: An Introduction and Guide for Applications. New York, NY: Springer 
+New York; 2014. https://doi.org/10.1007/978-1-4939-0767-0 .
+[13] Brincker R, Ventura C. John. Introduction to Operational Modal Analysis. Wiley 
+and Sons, Chichester, West Sussex; 2015 .
+[14] Zhou K, Li Q-S, Han X-L. Modal identification of civil structures via stochastic 
+subspace algorithm with Monte Carlo – based stabilization diagram. J Struct Eng 
+2022;148:04022066. https://doi.org/10.1061/(ASCE)ST.1943-541X.0003353 .
+[15] Nguyen QT, Livao ˘glu R. Damage detection at storey and element levels of high-rise 
+buildings: a hybrid method. Neural Comput Appl 2022;34:12765 – 88. https://doi. 
+org/10.1007/s00521-022-07111-w .
+[16] Nguyen QT, Livao ˘glu R. Damage detection of high-rise buildings using an 
+eigenvalue problem-based inverse solution. Soil Dyn Earthq Eng 2022;152:107019. 
+https://doi.org/10.1016/j.soildyn.2021.107019 .
+[17] Abdelbarr MH, Massari A, Kohler MD, Masri SF. Decomposition approach for 
+damage detection, localization, and quantification for a 52-story building in 
+downtown Los Angeles. J Eng Mech 2020;146:04020089. https://doi.org/ 
+10.1061/(ASCE)EM.1943-7889.0001809 .
+[18] Spencer C, Gubbins D. Travel-time inversion for simultaneous earthquake location 
+and velocity structure determination in laterally varying media. Geophys J Int 
+1980;63:95 – 116. https://doi.org/10.1111/j.1365-246X.1980.tb02612.x .
+[19] Waldhauser F. A double-difference earthquake location algorithm: method and 
+application to the Northern Hayward Fault, California. Bull Seismol Soc Am 2000; 
+90:1353 – 68. https://doi.org/10.1785/0120000006 .
+[20] Schloemann J, Malladi VVNS, Woolard AG, Hamilton JM, Buehrer RM, 
+Tarazaga PA. Vibration Event Localization in an Instrumented Building. In: De 
+Clerck J, editor. Experimental Techniques, Rotating Machinery, and Acoustics, 
+Volume 8. Springer International Publishing, Cham; 2015. p. 265 – 71. https://doi. 
+org/10.1007/978-3-319-15236-3_24 .
+[21] Mirshekari M, Pan S, Fagert J, Schooler EM, Zhang P, Noh HY. Occupant 
+localization using footstep-induced structural vibration. Mech Syst Signal Process 
+2018;112:77 – 97. https://doi.org/10.1016/j.ymssp.2018.04.026 .
+[22] Lah AAA, Dzyauddin RA, Yusoff N, Ismifaizul M, Ismail M, Ahmad NA, Ahmad R. 
+Leakage Localis Using Cross Correl Wirel threeaxis Vib Sens (2019 2023. https:// 
+doi.org/10.48550/arXiv.1912.07802 . Accessed data: June 22,.
+[23] Wang S, Zhu S. Impact source localization and vibration intensity prediction on 
+construction sites. Measurement 2021;175:109148. https://doi.org/10.1016/j. 
+measurement.2021.109148 .
+[24] Lo C, Lynch JP, Liu M. Distributed model-based nonlinear sensor fault diagnosis in 
+wireless sensor networks. 470 – 484 Mech Syst Signal Process 2016:66 – 7. https:// 
+doi.org/10.1016/j.ymssp.2015.05.011 .
+[25] Cho S, Park J-W, Sim S-H. Decentralized system identification using stochastic 
+subspace identification for wireless sensor networks. Sensors 2015;15:8131 – 45. 
+https://doi.org/10.3390/s150408131 .
+[26] Verma R.K., Pattanaik K.K., Dissanayake P.B.R., Dammika A.J., Buddika H.A.D.S., 
+Kaloop M.R.Damage detection in bridge structures: an edge computing approach, 
+(2020). http://arxiv.org/abs/2008.06724. (Accessed data: June 22, 2023)..
+[27] Wei Z, Yu X, Zou L. Multi-resource computing offload strategy for energy 
+consumption optimization in mobile edge computing. Processes 2022;10:1762. 
+https://doi.org/10.3390/pr10091762 .
+[28] Zonzini F, Dertimanis V, Chatzi E, Marchi LD. System identification at the extreme 
+edge for network load reduction in vibration-based monitoring. IEEE Internet 
+Things J 2022;9:20467 – 78. https://doi.org/10.1109/JIOT.2022.3176671 .
+[29] Abner M, Wong PK-Y, Cheng JCP. Battery lifespan enhancement strategies for edge 
+computing-enabled wireless Bluetooth mesh sensor network for structural health 
+monitoring. Autom Constr 2022;140:104355. https://doi.org/10.1016/j. 
+autcon.2022.104355 .
+[30] Shi W, Cao J, Zhang Q, Li Y, Xu L. Edge computing: vision and challenges. IEEE 
+Internet Things J 2016;3:637 – 46. https://doi.org/10.1109/JIOT.2016.2579198 .
+[31] Yao J, Zhang S, Yao Y, Wang F, Ma J, Zhang J, Chu Y, Ji L, Jia K, Shen T, Wu A, 
+Zhang F, Tan Z, Kuang K, Wu C, Wu F, Zhou J, Yang H. Edge-Cloud Polarization 
+and Collaboration: Compr. Surv. AI. Accessed data: June 22, Collab a Compr Surv 
+AI 2023;2022. Accessed data: June 22,, 〈 http://arxiv.org/abs/2111.06061 〉 .
+[32] Rong G, Xu Y, Tong X, Fan H. An edge-cloud collaborative computing platform for 
+building AIoT applications efficiently. J Cloud Comput 2021;10:36. https://doi. 
+org/10.1186/s13677-021-00250-w .
+[33] Yu X, Yang X, Tan Q, Shan C, Lv Z. An edge computing based anomaly detection 
+method in IoT industrial sustainability. Appl Soft Comput 2022;128:109486. 
+https://doi.org/10.1016/j.asoc.2022.109486 .
+[34] Gang Y, Liu X, Tong D, Zhou J. Non-invasive power load monitoring method based 
+on cloud edge collaboration. IOP Conference Series Earth Environmental Science 
+2020;512:012115. https://doi.org/10.1088/1755-1315/512/1/012115 .
+[35] Ding S, Li L, Li Z, Wang H, Zhang Y. Smart electronic gastroscope system using a 
+cloud – edge collaborative framework. Future Gener Comput Syst 2019;100: 
+395 – 407. https://doi.org/10.1016/j.future.2019.04.031 .
+[36] Pan Y, Zhang L. Roles of artificial intelligence in construction engineering and 
+management: A critical review and future trends. Autom Constr 2021;122:103517. 
+https://doi.org/10.1016/j.autcon.2020.103517 .
+[37] Bonci A, Carbonari A, Cucchiarelli A, Messi L, Pirani M, Vaccarini M. A cyber- 
+physical system approach for building efficiency monitoring. Autom Constr 2019; 
+102:68 – 85. https://doi.org/10.1016/j.autcon.2019.02.010 .
+C. Xiong et al.                                                                                                                                                                                                                                   Engineering Structures 352 (2026) 122061 
+16 
+[38] Wei Y, Akinci B. A vision and learning-based indoor localization and semantic 
+mapping framework for facility operations and management. Autom Constr 2019; 
+107:102915. https://doi.org/10.1016/j.autcon.2019.102915 .
+[39] Xie X, Merino J, Moretti N, Pauwels P, Chang JY, Parlikad A. Digital twin enabled 
+fault detection and diagnosis process for building HVAC systems. Autom Constr 
+2023;146:104695. https://doi.org/10.1016/j.autcon.2022.104695 .
+[40] Wang T, Gan VJL, Hu D, Liu H. Digital twin-enabled built environment sensing and 
+monitoring through semantic enrichment of BIM with SensorML. Autom Constr 
+2022;144:104625. https://doi.org/10.1016/j.autcon.2022.104625 .
+[41] Lu R, Brilakis I. Digital twinning of existing reinforced concrete bridges from 
+labelled point clusters. Autom Constr 2019;105:102837. https://doi.org/10.1016/ 
+j.autcon.2019.102837 .
+[42] Pregnolato M, Gunner S, Voyagaki E, De Risi R, Carhart N, Gavriel G, Tully P, 
+Tryfonas T, Macdonald J, Taylor C. Towards civil engineering 4.0: concept, 
+workflow and application of digital twins for existing infrastructure. Autom Constr 
+2022;141:104421. https://doi.org/10.1016/j.autcon.2022.104421 .
+[43] Lee D, Lee SH, Masoud N, Krishnan MS, Li VC. Integrated digital twin and 
+blockchain framework to support accountable information sharing in construction 
+projects. Autom Constr 2021;127:103688. https://doi.org/10.1016/j. 
+autcon.2021.103688 .
+[44] Boje C, Guerriero A, Kubicki S, Rezgui Y. Towards a semantic construction digital 
+twin: directions for future research. Autom Constr 2020;114:103179. https://doi. 
+org/10.1016/j.autcon.2020.103179 .
+[45] Opoku D-GJ, Perera S, Osei-Kyei R, Rashidi M. Digital twin application in the 
+construction industry: a literature review. J Build Eng 2021;40:102726. https:// 
+doi.org/10.1016/j.jobe.2021.102726 .
+[46] Jiang F, Ma L, Broyd T, Chen K. Digital twin and its implementations in the civil 
+engineering sector. Autom Constr 2021;130:103838. https://doi.org/10.1016/j. 
+autcon.2021.103838 .
+[47] Cui S, Hoang T, Mechitov K, Fu Y, Spencer BF. Jr, Adaptive edge intelligence for 
+rapid structural condition assessment using a wireless smart sensor network. Eng 
+Struct 2025;326:119520. https://doi.org/10.1016/j.engstruct.2024.119520 .
+[48] Fu Y, Mechitov K, Hoang T, Kim JR, Memon SA, Spencer BF. Jr, Efficient and high- 
+precision time synchronization for wireless monitoring of civil infrastructure 
+subjected to sudden events. Struct Control Health Monit 2021;28(1):e2643. 
+https://doi.org/10.1002/stc.2643 .
+[49] SX1276, Semtech.Com, n.d. 〈 https://www.semtech.com/products/wireless-rf/lo 
+ra-connect/sx1276 〉 . (Accessed data: June 22, 2023).
+[50] Mills DL. Internet time synchronization: the network time protocol. IEEE Trans 
+Commun 2002;39(10):1482 – 93 .
+[51] Epson ’ s M-A352 accelerometer ideal for structure health monitoring, Corporate. 
+Epson, n.d. 〈 https://corporate.epson/en/news/2018/180903.html 〉 (Accessed 
+data: June 22, 2023).
+[52] Raspberry Pi Zero 2 W, raspberrypi.com, n.d. 〈 https://www.raspberrypi.com/prod 
+ucts/raspberry-pi-zero-2-w/ 〉 . (Accessed 23 May. 2025).
+[53] SIM7600G-H 4G HAT (B) - Waveshare Wiki, waveshare.com, n.d. 〈 https://www. 
+waveshare.com/wiki/SIM7600G-H_4G_HAT_ 〉 (B). (Accessed 23 May. 2025).
+[54] MQTT - The Standard for loT messaging, MQTT.org, 2024. 〈 https://mqtt.org/ 〉 . 
+(Accessed 23 May. 2025).
+[55] Xiong C, Lu X, Guan H, Xu Z. A nonlinear computational model for regional seismic 
+simulation of tall buildings. Bull Earthq Eng 2016;14:1047 – 69. https://doi.org/ 
+10.1007/s10518-016-9880-0 .
+[56] Miranda E, Taghavi S. Approximate floor acceleration demands in multistory 
+buildings. I: Formulation. J Struct Eng 2005;131:203 – 11. https://doi.org/ 
+10.1061/(ASCE)0733-9445(2005)131:2(203) .
+[57] Zhang L, Lu X, Guan H, Xie L, Lu X. Floor acceleration control of super-tall 
+buildings with vibration reduction substructures: floor acceleration control of 
+super-tall buildings with vibration reduction substructures. Struct Des Tall Spec 
+Build 2017;26:e1343. https://doi.org/10.1002/tal.1343 .
+[58] Lu X, Tian Y, Wang G, Huang D. A numerical coupling scheme for nonlinear time 
+history analysis of buildings on a regional scale considering site-city interaction 
+effects. Earthq Eng Struct Dyn 2018;47:2708 – 25. https://doi.org/10.1002/ 
+eqe.3108 .
+[59] Kuang JS, Huang K. Simplified multi-degree-of-freedom model for estimation of 
+seismic response of regular wall-frame structures. Struct Des Tall Spec Build 2011; 
+20:418 – 32. https://doi.org/10.1002/tal.538 .
+[60] Peeters B, De Roeck G. Stochastic system identification for operational modal 
+analysis: a review. J Dyn Syst Meas Control 2001;123:659 – 67. https://doi.org/ 
+10.1115/1.1410370 .
+[61] Kennedy J, Eberhart R. Particle swarm optimization. Proceedings of ICNN'95 - 
+International Conference on Neural Networks. IEEE; 1995. https://doi.org/ 
+10.1109/ICNN.1995.488968 .
+[62] Flask-SQLAlchemy, Flask-SQLAlchemy.Palletsprojects.Com, n.d. 〈 https://fla 
+sk-sqlalchemy.palletsprojects.com/en/3.0.x/ 〉 . (Accessed data: May 26, 2025).
+[63] Three.js, n.d. 〈 https://threejs.org/ 〉 . (Accessed data: May 26, 2025).
+[64] James III GH, Carne TG, Lauffer JP. The natural excitation technique (NExT) for 
+modal parameter extraction from operating wind turbines. Sandia National Labs. 
+Albuquerque. NM (U S) SAND921666 UC 1993;261. 〈 https://www.osti.gov/biblio 
+/10139203 〉 .
+[65] Juang JN, Pappa RS. An eigensystem realization algorithm for modal parameter 
+identification and model reduction. J Guid Control Dyn 1985;8(5). https://doi.org/ 
+10.2514/3.20031 .
+C. Xiong et al.                                                                                                                                                                                                                                   Engineering Structures 352 (2026) 122061 
+17 

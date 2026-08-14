@@ -13,3 +13,12 @@ Digital twins are evolving to oversee the entire construction life cycle, with a
 | Yes | Yes | Yes | Yes | Yes | **Include** |
 
 **Note:** Adaptable bridge DT; what-if simulations; safety & lifespan
+
+## Step-3 Deep-Read Coding (Prompt B)
+
+| P | Q | R | U Tier | V | W | X | Z | AA | AB | AC | AD | AE | AF |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| Yes | Yes | Yes | Tier 2 - Digital Shadow (one-way physical to virtual) | 0 | 0 | 1 | Design for Safety (DfS) | None | Finite Element Method / physics-based | Multi (two or more data types) | Single case study | 4 | Lifecycle / governance |
+
+**Key evidence (AG):** Adaptable digital twin methodology for existing bridge management (HEIG-VD): integrates BIM + IFC (open interoperable formats) + ontology + FE models; laser-scanned 3D model converted to DT via IFC; enables structural analysis and what-if scenario simulations for maintenance decision-making; differential evolution algorithm for optimized FE model; case study demonstrates feasibility; cradle-to-cradle approach for end-of-life. One-way monitoring/analysis→maintenance decisions; no actuation and no learning loop (updates are manual inspection-based).
+(full-text source: Endnote)

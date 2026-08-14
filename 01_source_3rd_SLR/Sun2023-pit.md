@@ -13,3 +13,12 @@ Timely risk information acquisition and diagnosis during foundation pit excavati
 | Yes | Yes | Yes | Yes | Yes | **Include** |
 
 **Note:** DT intelligent risk prognosis & control of foundation pit excavation
+
+## Step-3 Deep-Read Coding (Prompt B)
+
+| P | Q | R | U Tier | V | W | X | Z | AA | AB | AC | AD | AE | AF |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| Yes | Yes | Yes | Tier 3 - Digital Twin (bidirectional, two-way) | 0 | 1 | 0 | Design for Safety (DfS) | None | Finite Element Method / physics-based | Multi (two or more data types) | Single case study | 4 | Design for Safety |
+
+**Key evidence (AG):** Intelligent risk prognosis and control of foundation pit excavation (FPE) based on DT (Beijing U Tech): physical space (RFID + sensors capture components, environment, personnel) + virtual space (high-fidelity physics-based model); data fusion from physical and virtual space; FE model (FLAC3D) updated with real-time parameters; geometric model updated via point data; risk prognosis and control measures established based on safety state; validated on Wuhan Metro Line. Bidirectional — virtual model updated from physical, control measures from virtual → Tier 3; no learning loop (model updating is manual).
+(full-text source: Endnote)

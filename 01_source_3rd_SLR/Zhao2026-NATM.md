@@ -13,3 +13,12 @@ During the construction of new Austrian tunnelling method (NATM) tunnels, inhere
 | Yes | Yes | Yes | Yes | Yes | **Include** |
 
 **Note:** DT simulation for NATM tunnel construction under uncertainty; safety/schedule
+
+## Step-3 Deep-Read Coding (Prompt B)
+
+| P | Q | R | U Tier | V | W | X | Z | AA | AB | AC | AD | AE | AF |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| Yes | Yes | Yes | Tier 2 - Digital Shadow (one-way physical to virtual) | 0 | 1 | 0 | Design for Safety (DfS) | None | Other / Mixed | Multi (two or more data types) | Single case study | 4 | Predictive analytics / decision support |
+
+**Key evidence (AG):** DT-enabled simulation system for NATM tunnel construction process considering multi-source uncertainty (Tongji U): five-dimensional DT concept with four-layer architecture (perception, transmission, modelling, alternation); integrated discrete event simulation (DES) model as core; Markov random field (MRF) for stochastic geological modelling; AHP-DEMATEL tunnel vulnerability evaluation + delay probability density functions for construction uncertainties; validated on a real-world tunnel project for schedule estimation, site communication, safe/efficient completion. One-way monitoring->simulation->schedule/safety decision; no actuation, no learning loop.
+(full-text source: Endnote)

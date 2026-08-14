@@ -13,3 +13,12 @@ High stacking precision is essential to prevent structural collisions, reduce sa
 | Yes | Yes | Yes | Yes | Yes | **Include** |
 
 **Note:** DT-driven pose/trajectory prediction for MiC stacking; collision prevention
+
+## Step-3 Deep-Read Coding (Prompt B)
+
+| P | Q | R | U Tier | V | W | X | Z | AA | AB | AC | AD | AE | AF |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| Yes | Yes | Yes | Tier 2 - Digital Shadow (one-way physical to virtual) | 0 | 1 | 0 | Design for Safety (DfS) | None | Transformer / Large Language Model (LLM) | Multi (two or more data types) | Single case study | 4 | Predictive analytics / decision support |
+
+**Key evidence (AG):** Digital twin-driven pose estimation and trajectory prediction for modular integrated construction (MiC) on-site stacking (PolyU): UWB sensors + IMUs capture real-time dynamic activities of smart stacking objects; DT of stacking operations interacts with physical counterparts in real time for seamless mapping/visualization; PosTraFormer network (spatio-temporal feature fusion of trajectory point relations) for 6-D module pose estimation and trajectory prediction to provide stacking guidance; comparative experiments + case studies show higher trajectory prediction performance. One-way monitoring/prediction→guidance for crane operators; no actuation and no learning loop (PosTraFormer is offline-trained).
+(full-text source: Endnote)

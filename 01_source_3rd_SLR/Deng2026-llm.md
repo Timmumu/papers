@@ -13,3 +13,11 @@ Multi-robot systems are emerging as a promising solution to the growing demand f
 | Yes | Yes | Yes | Yes | Yes | **Include** |
 
 **Note:** Closed-loop site DT + LLM; productivity & safety motivation
+
+## Step-3 Deep-Read Coding (Prompt B) (full-text source: Adaptive multi-robot task allocation framework (UTK/Amazon/TAMU): DT system enables real-time synchronization between physical operations and digital representations as user interface, creating closed-loop feedback; Integer Programming models task allocation (dependencies, heterogeneity, scheduling, replanning); LLM interprets natural-language inputs to autonomously update optimization constraints (97% accuracy in constraint/parameter extraction) without manual programming; case study demonstrates computational efficiency and LLM reasoning. Closed-loop feedback + LLM-based constraint adaptation → Tier 3; no learning loop (LLM is inference-time, not self-improving).)
+
+| P | Q | R | U Tier | V | W | X | Z | AA | AB | AC | AD | AE | AF |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| Yes | Yes | Yes | Tier 3 - Digital Twin (bidirectional, two-way) | 0 | 1 | 0 | Design for Safety (DfS) | None | Transformer / Large Language Model (LLM) | Multi (two or more data types) | Single case study | 4 | Predictive analytics / decision support |
+
+**Key evidence (AG):** Endnote

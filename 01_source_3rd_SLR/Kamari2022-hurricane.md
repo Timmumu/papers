@@ -13,3 +13,12 @@ Hurricanes are among the most devastating natural disasters in the United States
 | Yes | Yes | Yes | Yes | Yes | **Include** |
 
 **Note:** Vision-based DT for wind-borne debris risk; hurricane preparedness
+
+## Step-3 Deep-Read Coding (Prompt B)
+
+| P | Q | R | U Tier | V | W | X | Z | AA | AB | AC | AD | AE | AF |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| Yes | Yes | Yes | Tier 1 - Digital Model (static, no live data) | 0 | 1 | 0 | Design for Safety (DfS) | None | Perception / Computer Vision | Multi (two or more data types) | Single case study | 4 | Design for Safety |
+
+**Key evidence (AG):** Vision-based digital twinning and threat assessment for construction site disaster preparedness (Texas A&M): deep learning encodes disaster risk context into construction site digital twin models to identify and analyze potential wind-borne debris characteristics and impacts; case studies on nine piles of construction materials; rapid 2D/3D semantic segmentation for vulnerability flagging. Static DT for risk assessment — no live data link, no actuation, no learning loop.
+(full-text source: Endnote)

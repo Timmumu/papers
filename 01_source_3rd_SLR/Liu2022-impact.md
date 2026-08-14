@@ -13,3 +13,12 @@ Civil infrastructure O&M requires intelligent monitoring techniques and control 
 | Yes | Yes | Yes | Yes | Yes | **Include** |
 
 **Note:** DT+ML impact response prediction of prestressed steel structures
+
+## Step-3 Deep-Read Coding (Prompt B)
+
+| P | Q | R | U Tier | V | W | X | Z | AA | AB | AC | AD | AE | AF |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| Yes | Yes | Yes | Tier 2 - Digital Shadow (one-way physical to virtual) | 0 | 0 | 1 | Design for Safety (DfS) | None | Other / Mixed | Multi (two or more data types) | Single case study | 4 | Predictive analytics / decision support |
+
+**Key evidence (AG):** DT-based impact response prediction of prestressed steel structures (Beijing U Tech): high-fidelity DT from 3D laser scanning + BIM + FE simulation; improved BP algorithm predicts structural impact response; perception/transmission/analysis/service layers; validated on prestressed steel structure experiment. One-way monitoring→prediction→safety assessment; no actuation and no learning loop (BP is offline-trained).
+(full-text source: Endnote)

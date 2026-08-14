@@ -13,3 +13,12 @@ Emergency evacuation in complex buildings benefits from tight coupling between d
 | Yes | Yes | Yes | Yes | Yes | **Include** |
 
 **Note:** IFC+MCS real-time evacuation routing; DT-like emergency management
+
+## Step-3 Deep-Read Coding (Prompt B)
+
+| P | Q | R | U Tier | V | W | X | Z | AA | AB | AC | AD | AE | AF |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| Yes | Yes | Yes | Tier 2 - Digital Shadow (one-way physical to virtual) | 0 | 0 | 1 | Design for Safety (DfS) | None | Ontology / semantic | Multi (two or more data types) | Single case study | 4 | Predictive analytics / decision support |
+
+**Key evidence (AG):** IFC-based framework for semantic integration of BIM and mobile crowd sensing in real-time evacuation routing (KNTU): IFC models transformed into dynamic decision graph with spaces/exits/sensors annotated by live crowd-sensed info; Wi-Fi-based indoor localization with two-stage crowdsensing; multi-criteria shortest-path routing via extended Dijkstra with dynamically updated weights (distance to hazards, travel time, exit availability, route safety index); AHP weight prioritization; implemented in four-story academic building. One-way monitoring→routing guidance; no actuation and no learning loop (Dijkstra is algorithmic, not learning).
+(full-text source: Endnote)

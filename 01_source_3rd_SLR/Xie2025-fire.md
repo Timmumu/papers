@@ -13,3 +13,12 @@ Complex dynamics inherent of building fire poses big challenges to firefighting 
 | Yes | Yes | Yes | Yes | Yes | **Include** |
 
 **Note:** AIoT DT for smart firefighting; super real-time fire forecast
+
+## Step-3 Deep-Read Coding (Prompt B)
+
+| P | Q | R | U Tier | V | W | X | Z | AA | AB | AC | AD | AE | AF |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| Yes | Yes | Yes | Tier 2 - Digital Shadow (one-way physical to virtual) | 0 | 0 | 1 | Design for Safety (DfS) | None | LSTM / RNN (recurrent networks) | Multi (two or more data types) | Single case study | 4 | Design for Safety |
+
+**Key evidence (AG):** AIoT-powered building digital twin for smart firefighting and super real-time fire forecast (PolyU): AIoT-integrated DT maps building fires to digital fire scene; ADLSTM-Fire model transforms discrete sensor-array data into high-dimensional spatiotemporal temperature fields; forecasts fire development and hazardous regions 60s in advance; validated via full-scale building fire experiment; 93% reconstruction accuracy, 92% forecast accuracy. One-way monitoring→forecast→firefighting support; no actuation and no learning loop (offline-trained).
+(full-text source: Endnote)

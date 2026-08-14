@@ -13,3 +13,12 @@ Modern large complex buildings, with their vast expanses and multipurpose usabil
 | Yes | Yes | Yes | Yes | Yes | **Include** |
 
 **Note:** Informative DT fire emergency management; evacuation risk
+
+## Step-3 Deep-Read Coding (Prompt B)
+
+| P | Q | R | U Tier | V | W | X | Z | AA | AB | AC | AD | AE | AF |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| Yes | Yes | Yes | Tier 2 - Digital Shadow (one-way physical to virtual) | 0 | 0 | 1 | Design for Safety (DfS) | None | Statistical / change-point | Multi (two or more data types) | Single case study | 4 | Design for Safety |
+
+**Key evidence (AG):** Informative digital twin (IDT) based fire emergency management system (Sehan U/KUT): cloud-edge-device layers; edge-layer IDT built with object-oriented design gathers/processes building state data; fire recognition via online DTW similarity measurement between real and simulated virtual sensor data; risk assessment with ARET/RRET/SM metrics per zone; case study shows 0.88s fire recognition processing time and 65s evacuation time reduction. One-way monitoring→fire recognition→risk assessment; no actuation and no learning loop (DTW is similarity matching, not learning).
+(full-text source: Endnote)

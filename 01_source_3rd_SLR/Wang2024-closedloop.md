@@ -13,3 +13,12 @@ The introduction of assistive construction robots can significantly alleviate ph
 | Yes | Yes | Yes | Yes | Yes | **Include** |
 
 **Note:** Closed-loop DT for BIM-driven human-robot workflows; as-built updating
+
+## Step-3 Deep-Read Coding (Prompt B)
+
+| P | Q | R | U Tier | V | W | X | Z | AA | AB | AC | AD | AE | AF |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| Yes | Yes | Yes | Tier 3 - Digital Twin (bidirectional, two-way) | 0 | 1 | 0 | Design for Safety (DfS) | None | Digital Twin platform (no machine learning) | Multi (two or more data types) | Single case study | 4 | Design for Safety |
+
+**Key evidence (AG):** BIM-driven closed-loop digital twin framework for human-robot collaborative construction (TAMU/U Michigan): BIM drives robot functions; robot adaptively adjusts plans based on actual site conditions; human co-worker oversees and intervenes (change task sequence, workspace geometry, new motion plan); as-built information sent back to BIM forming closed-loop; drywall installation case study + Gazebo simulation + physical robotic arm experiments. Bidirectional closed-loop — BIM updated with as-built data → Tier 3; no learning loop (adaptation is rule-based, not learning).
+(full-text source: Endnote)

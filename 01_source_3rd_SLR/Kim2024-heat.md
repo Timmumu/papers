@@ -13,3 +13,12 @@ To effectively mitigate heat risks, it is crucial to pinpoint areas of high vuln
 | Yes | Yes | Yes | Yes | Yes | **Include** |
 
 **Note:** DT-enabled spatio-temporal heat risk monitoring for workers
+
+## Step-3 Deep-Read Coding (Prompt B)
+
+| P | Q | R | U Tier | V | W | X | Z | AA | AB | AC | AD | AE | AF |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| Yes | Yes | Yes | Tier 2 - Digital Shadow (one-way physical to virtual) | 0 | 1 | 0 | Design for Safety (DfS) | None | Other / Mixed | Multi (two or more data types) | Single case study | 4 | Design for Safety |
+
+**Key evidence (AG):** Digital twin-enabled heat risk monitoring for construction workers (Texas A&M): geometric digital twin of construction site + real-time weather station data + computational simulations for spatio-temporal heat risk analysis; case study in Stephenville, Texas, shows superior fidelity vs black-globe thermometer; near-real-time heat risk maps enable targeted interventions. One-way monitoring→simulation→risk maps; no actuation and no learning loop (microclimate simulation is physics-based, not learning).
+(full-text source: Endnote)

@@ -13,3 +13,12 @@ In this study, to address the problems of multiple dimensions, large scales, com
 | Yes | Yes | Yes | Yes | Yes | **Include** |
 
 **Note:** DT+AI intelligent tensioning of prestressed cables; safety evaluation
+
+## Step-3 Deep-Read Coding (Prompt B)
+
+| P | Q | R | U Tier | V | W | X | Z | AA | AB | AC | AD | AE | AF |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| Yes | Yes | Yes | Tier 3 - Digital Twin (bidirectional, two-way) | 0 | 1 | 0 | Design for Safety (DfS) | None | Other / Mixed | Multi (two or more data types) | Single case study | 4 | Design for Safety |
+
+**Key evidence (AG):** Intelligent tensioning method for prestressed cables via DT + AI integration (Beijing U Tech): fusion mechanism of DTs and AI for intelligent tensioning; multi-dimensional/multi-scale modeling for visualization; AI control center with closed-loop control framework; sensing equipment + intelligent algorithms for high-fidelity twin model and safety performance evaluation; enables dynamic perception, real-time processing, intelligent diagnosis, and intelligent decision-making. Closed-loop control framework → Tier 3; no learning loop (AI is control/decision, not self-improving).
+(full-text source: Endnote)

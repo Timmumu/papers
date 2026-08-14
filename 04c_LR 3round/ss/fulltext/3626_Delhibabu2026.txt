@@ -1,0 +1,1152 @@
+Contents lists available at ScienceDirect
+Results in Engineering
+journal homepage: www.sciencedirect.com/journal/results-in-engineering
+Research paper
+Interconnected digital twins of subway stations for decision support 
+systems
+Radhakrishnan Delhibabu
+ a,∗, Nataly Zhukova
+ b, Alexey Subbotin
+ c
+a School of Computer Science and Engineering, Vellore Institute of Technology, Vellore, India
+b St. Petersburg Institute of Informatics and Automation of the Federal Research Center at the Russian Academy of Sciences (FRC RAS), St. Petersburg, Russia
+c Saint-Petersburg State Electrotechnical University, St. Petersburg, Russia
+a r t i c l e  i n f o
+Keywords:
+Digital twin
+Decision-making system
+Subway stations
+Intelligent assistant
+Fog computing
+Neural networks
+Mobile application
+Event detection
+ a b s t r a c t
+This article examines a digital twin (DT) for complex infrastructure assets using the subway system as a case 
+study. The proposed solution includes twins for each station, which are interconnected to interact during various 
+operational scenarios. Existing digital twins for subway systems are examined, and their shortcomings—primarily  
+the latency in operator information retrieval due to slow model rebuilding—are  identiﬁed. The study addresses 
+decision support during medium- and large-scale incidents requiring the synchronization of multiple depart-
+ments. The authors propose a digital twin architecture based on data collected from cameras, microphones, 
+and sensors, processed within a fog computing environment. A separate digital twin is developed for each sta-
+tion, capable of utilizing templates from previously built assets. An accompanying mobile application with an 
+intelligent assistant displays detected events and answers queries via voice interaction. Implementation results 
+indicate that personnel response time to emerging events improved by 17.4% compared to the REPEAT platform. 
+The proposed architecture is applicable to subway systems and other public transportation networks requiring 
+coordinated personnel actions during hazardous situations.
+1.  Introduction
+A digital twin (DT) is a digital model of a real-world object. Modern 
+DTs are not only maps, they also support usage of situational modeling, 
+simulation, and other tools that allow for the display and evaluation 
+of the states of simulated objects in the present, past, and future. Fire 
+alarm systems are especially in demand during hazardous situations, 
+where decisions must be made appropriately within the available time 
+and resources.
+Particularly in hazardous situations (ﬁre or explosion threat), a ﬁre 
+alarm system can help coordinate personnel and activate a remote ﬁre 
+suppression system to eliminate the emergency without direct human in-
+tervention, especially in cases where the danger to humans is extremely 
+high (e.g., risk of death for a ﬁreﬁghter or chemical engineer).
+A ﬁre causes signiﬁcant economic and human losses, but ﬂooding 
+from a ﬁre can also cause signiﬁcant damage to a building, and in some 
+cases, lead to its partial destruction or the destruction of specialized 
+equipment, machinery, etc. In each case, activating an automatic ﬁre 
+suppression system and ﬂooding the premises with carbon dioxide will 
+lead to high expense, and in some cases, the use of automatic ﬁre sup-
+∗ Corresponding author.
+ E-mail address: rdelhibabu@vit.ac.in (R. Delhibabu).
+pression may require the construction of a new building or major reno-
+vations.
+Precise and well-considered personnel actions and the use of intel-
+ligent systems will help minimize damage to an enterprise or organi-
+zation. Recent advancements have demonstrated the eﬃcacy  of ma-
+chine learning and intelligent systems in managing speciﬁc subway 
+components, such as escalator passenger safety [1–3] and intelligent 
+video surveillance scripting [4]. Despite these component-level suc-
+cesses, comprehensive digital twins for entire stations face signiﬁcant 
+limitations. Currently, digital twins are used in many subject areas, in 
+particular, in the petrochemical industry, subways, railways and tun-
+nels, where even a minor error can cost lives and lead to signiﬁcant 
+ﬁnancial losses.
+However, existing digital twins have a number of signiﬁcant limita-
+tions, in particular:
+1. there is no ability to process video images, sounds and data from 
+sensors installed at facilities and there is no ability to promptly detect 
+events at facilities, including dangerous ones, which does not allow 
+for their prompt elimination;
+https://doi.org/10.1016/j.rineng.2026.110745
+Received 18 March 2026; Received in revised form 23 April 2026; Accepted 26 April 2026
+Results in Engineering 30 (2026) 110745 
+Available online 10 May 2026 
+2590-1230/© 2026 The Author(s). Published by Elsevier B.V. This is an open access article under the CC BY license ( http://creativecommons.org/licenses/by/4.0/ ). 
+R. Delhibabu et al.
+2. there is no mobile platform (smartphone application) with support 
+for devices of the Internet of Things stack, which leads to a slow 
+response to events;
+3. there is no support for cloud distributed computing and fog comput-
+ing environments, which leads to delays in data processing;
+4. a web interface for work through a browser and from mobile devices 
+(responsive website design) has not been developed, which causes 
+diﬃculties  in accessing the systems from any device and OS;
+5. integration with intelligent video surveillance systems (IVSS) is not 
+supported, preventing the prompt acquisition of images of ongoing 
+events;
+6. an intelligent assistant with AI-based voice assistant capabilities is 
+lacking;
+7. the ability to view a map of facilities and connect to video cameras 
+in real time, display video footage, and detect events at subway fa-
+cilities is lacking.
+In the subway sector, these limitations hinder prompt decision-
+making and reduce the response time of personnel and support services 
+at subway facilities. The required subway twin must possess new capa-
+bilities and be built on new principles. The new digital display for the 
+subway must display the actual simulated facility. It must also allow 
+events to be displayed on a map (2D) and in three-dimensional space 
+(3D). The displayed model of the facility must have multiple nesting 
+levels, be navigable using a mouse, keys, or other pointers, and display 
+various fragments of the observed facility, including small fragments, in 
+detail. It must also be possible to zoom in and out of the image in vector 
+format.
+The digital twin should be capable of playing video clips and audio 
+ﬁles, giving operators a clearer understanding of situations occurring at 
+the facility. Typical examples of digital twin use include the following: 
+The system detects a “scream”, the operator selects the “play” function 
+and listens to the clip. The system identiﬁes the event at the facility as 
+a “ﬁre”, and the operator watches the video clip and reclassiﬁes it as 
+“smoke”.
+To conveniently work with the digital twin, operators need an intelli-
+gent assistant with functions for displaying objects and situations arising 
+within them, as well as speech recognition, which can answer operator 
+questions about events occurring in the subway. Furthermore, the as-
+sistant’s speech recognition capabilities will allow navigation through 
+the digital twin objects displayed on the screen using voice, which is 
+convenient for all operators in dark and poorly lit subway areas.
+The main challenges in creating the considered digital twins are de-
+termined by the complexity of the structure and behavior of subway ob-
+jects, the highly dynamic changes occurring within the subway, and the 
+large volume of data collected by cameras, various sensors, and micro-
+phones installed in stations and other subway facilities. Furthermore, 
+the development of intelligent assistants for operators of complex in-
+frastructure facilities, where hazardous situations can occur that require 
+rapid personnel coordination, is poorly worked out. Another signiﬁcant 
+problem is the high cost of creating twins and upgrading them.
+The authors propose creating a digital twin with a two-level struc-
+ture: the upper level will house the digital twin of the subway, while 
+the lower level will house the digital twins of individual stations. The 
+proposed digital twin is scalable, with intermediate levels being cre-
+ated where stations are grouped together. For example, groupings could 
+be based on districts, lines, and station types: indoor/outdoor, single-
+platform, transfer, multiple-exit, with or without escalators. It is possible 
+to use existing digital twins of individual stations if they were previously 
+built.
+For new stations, new digital twins are proposed to be built using a 
+specially developed template, which is a standard digital twin. When a 
+new digital twin is built using this template, the standard digital twin 
+is modiﬁed taking into account the station’s speciﬁc features, as well 
+as previously developed digital twins for other stations. In particular, 
+when constructing a subway station’s digital twin, the template varies 
+depending on the architectural plan of the speciﬁc station: non-standard 
+exits, passages, multi-level escalators, etc.
+This study addresses the identiﬁed gaps by making the following 
+primary contributions:
+• The proposition of an interconnected digital twin architecture link-
+ing neighboring stations for preemptive response.
+• Integration of a fog-computing environment to process multi-modal 
+data, signiﬁcantly reducing latency.
+• Development of a mobile intelligent assistant for real-time 2𝐷∕3𝐷
+visualization and voice-navigated management.
+The following section considers popular digital twins. In Section 3 
+intelligent assistants are analyzed. The research statement is formulated 
+in Section 4. General description of the proposed solution is presented 
+in Section 5.1, digital twin construction platform is discussed in
+Section 5.2, standard digital twin template is considered in
+Section 5.3 and digital twin implementation for the subway is 
+described in Section 5.4. Section 6 contains the example of use. 
+Findings and conclusion are in Section 7.
+2.  Popular DTs
+While commercial platforms dominate industrial applications, recent 
+academic literature has heavily focused on the theoretical frameworks of 
+digital twins in transportation and infrastructure. Broader applications 
+of DTs have been proposed for building construction frameworks [5], 
+condition assessment of railway infrastructures [6], arch cover method 
+monitoring [7], rail operation safety assessment [8], and maintaining 
+resilient ports [9]. Speciﬁc to subway environments, Kaewunruen et al. 
+[10] explored sustainability audits for subway stations, and Shevlyugin 
+et al. [11] modeled traction power systems. More recently, Zhao et al. 
+[12] and Faraji et al. [13] highlighted the critical role of DTs in sub-
+way ﬂood risk management and intelligent tunnel monitoring. Despite 
+these advancements, a gap remains in integrating real-time, fog-assisted 
+multi-modal sensor fusion [14] into a uniﬁed, mobile-accessible frame-
+work for station operators. The vast majority of existing commercial 
+tools for developing digital twins.
+A popular tool for creating interactive diagrams and digital twins is 
+the REPEAT platform. REPEAT’s advantages are the ability to develop 
+highly complex models of technological objects (nuclear reactors, air-
+craft, electric vehicles); the ability to create and conﬁgure a digital twin 
+control system; the ability to conduct multiple virtual tests; and the abil-
+ity to generate control algorithm code for the target device. The platform 
+is intended for use in design institutes, engineering bureaus, and educa-
+tional institutions. The REPEAT platform supports cloud infrastructure 
+with ﬂexible access via a web browser from any device; data integra-
+tion; model integration; and a built-in parallel computing library. The 
+REPEAT platform is used by Rosatom and many other technology giants 
+for building digital twins.
+One widely used system for displaying monitored objects on maps 
+is Milestone XProtect. The system is used for video surveillance and al-
+lows viewing event logs and pattern recognition. It also features a map 
+designer for designing maps of monitored objects. Maps are managed 
+in the Management Client 2020 R1 subprogram from the XProtect pro-
+gram’s main menu. Smart maps in XProtect Smart Client do not reﬂect 
+the actual behavior of the monitored object and do not include simula-
+tion tools.
+Other popular tools for developing digital twins in the world are: 
+Ansys Twin Builder, COMSOL Multiphysics, CML-Bench, Unreal Engine, 
+SOLIDWORKS Simulation, FlowVision, Rocky DEM, AMBER, SimMan-
+ager, Altair: One Total Twin platform, Microsoft: Azure Digital Twins, 
+AnyLogic, iTwin, PlantSight, and Merius Oy Smart Mill.
+Ansys is a multimedia platform that provides sets of elements and 
+connections for connecting to sensors. The initially large element li-
+brary can be expanded, and models can be built and displayed in de-
+tailed layer-by-layer manner. Ansys supports the creation of prototypes 
+Results in Engineering 30 (2026) 110745 
+2 
+R. Delhibabu et al.
+of large systems with optimization of various characteristics for oper-
+ation on a real object. Another popular program for building process 
+diagrams, COMSOL, allows to build process diagrams and analyze indi-
+vidual interrelated processes. It allows to deﬁne material properties and 
+process physics, and COMSOL is suitable for almost any user.
+CML-Bench supports mathematical modeling and digital design ca-
+pabilities. It has its own core and database for calculations, and enables 
+comparison of modeling results with models created using 2D modeling 
+systems. Models are stored in ﬁles (all popular CAD system standards 
+are supported): AutoCAD (.dwg), SolidWorks (.sldprt, .sldasm), Inven-
+tor (.ipt, .iam), CATIA (.CATPart, .CATProduct), STEP (.stp, .step), IGES 
+(.igs, .iges), and STL (.stl).
+Unreal Engine works well with planning functions and supports im-
+porting models from all popular CAD packages. SOLIDWORKS Simula-
+tion breaks the model into ﬁnite nested models. Typical models of the 
+program include: biological cell growth and heat transfer. It is possi-
+ble to quantitatively evaluate physical phenomena occurring in liquids 
+and solids, as well as radio wave propagation, using the ﬁnite element 
+method and other numerical methods.
+FlowVision is used to study ﬂow processes in ﬂuid dynamics. Meth-
+ods of the physical impact of ﬂuid ﬂow and heat transfer on the modeled 
+object can be used. The model generated by the program can be veri-
+ﬁed taking into account chemical processes occurring in a real object 
+(ﬂasks, simulation rig) using the simulation model. Physical prototyp-
+ing of a soil environment with soil (aggregate) destruction is possible on 
+a simulation rig (physical object) and comparison with a digital model 
+based on numerical methods.
+Unlike FlowVision, Rocky DEM builds a model based on discrete el-
+ements and allows for the simulation of soil environment destruction. 
+A model template for the early stage of solid deformation is provided, 
+which is necessary when modeling rocks and ice (ﬂuid mechanics). The 
+topology used includes material particles and rock blocks. The motion 
+of individual model elements and their links with the deformated ob-
+ject can be determined. Together, the deformated object and the model 
+elements form a comprehensive soil environment model with a ﬁxed 
+starting point and conditions for the motion of the model elements.
+AMBER is designed for modeling chemical processes at the molecu-
+lar level. The SimManager program simulates biological processes and 
+object interactions: models of living organs (kidneys, liver, spleen, etc.) 
+with the environment as a set of discrete particles, with the ability to 
+specify a smoothing length (return to the initial state before impacting 
+the organ). Operation in liquid environments is possible, with the use 
+of kernel smoothing and kernel approximation functions.
+The Altair software platform allows the development and launch of 
+digital twins in any environment: in a browser, on a smartphone, or on a 
+computer. All data is stored in the cloud. The platform provides machine 
+learning tools and neural networks used to build models of real-world 
+objects. The Azure Digital Twins cloud platform also provides the abil-
+ity to host applications in various data centers. The Azure environment 
+includes models of complex environments, including subways, railways, 
+and entire cities. The platform is positioned as a platform for building a 
+business in a way that reduces costs and optimizes operating expenses. 
+The platform enables companies to analyze models, improve customer 
+service, and enhance their products.
+AnyLogic is a simple, fast, and popular simulation environment suit-
+able for all industries. Models built in AnyLogic are highly ﬂexible, ap-
+plicable to a variety of tasks, and can be reconﬁgured based on input 
+data. iTwin allows for modeling and visualization of infrastructure assets 
+with the ability to convert them to a BIM model. The program supports a 
+hybrid 2D/3D design environment with timeline visualization and data 
+completeness veriﬁcation. iTwin allows for the creation of interactive 
+monitoring models. The program’s primary purpose is to implement en-
+gineering projects.
+PlantSight allows for the construction of economic assets in 2D/3D 
+space and the description of various interactions between objects to 
+develop problem-solving strategies, regardless of the physical loca-
+tion of the assets. The program supports Industrial Internet of Things 
+(IIoT) technologies with augmented reality elements. The ﬁrst version 
+of PlantSight’s digital twin provided the ability to build enterprise mod-
+els, and later, models of smaller physical assets were developed.
+Merius Oy Smart Mill uses the ContextCapture engine, which creates 
+3D models. A distinctive feature of the platform is its ability to utilize 
+drone images, laser scanning data, and visualize information in real time 
+in a 3D environment.
+The vast majority of existing tools for developing digital twins in-
+clude graphic elements that are both part of the digital twin develop-
+ment environment and elements of the digital twin itself (people, build-
+ings, workshops, entrances, parking lots, etc.). It should be noted that 
+many digital twins operate only within the digital twin development en-
+vironment and do not have the ability to be launched separately (*.ﬂv, 
+*.exe, *.class, *.app, etc.).
+Currently, in the situation center of the State Unitary Enterprise “Pe-
+tersburg Subway” Milestone XProtect video surveillance system is used 
+as a monitoring and decision support system. Events that may occur in 
+the subway and should be monitored by staﬀ are structured into diﬀer-
+ent categories. An example of such events is the discovery of abandoned 
+items by passengers. Video clips showing these events are copied to a 
+separate secure server. Video streams from all cameras are stored in the 
+city’s shared storage for 30 days. Servers optimized for working with 
+large volumes of data are located at the City Monitoring Center and are 
+accessible through the “Safe City” program, where Milestone XProtect, 
+VideoNet, and other programs are used.
+Digital twins of subway stations are part of the software platform 
+and development environment of the digital twins. Table 1 presents the 
+results of a comparison of existing systems. The capabilities of existing 
+systems were compared with those that must be supported by a system 
+designed to create digital twins for subway stations.
+The following notations are used in Table 1:
+• p1 – support for a mobile platform and IoT devices;
+• p2 – support for distributed computing in a fog computing environ-
+ment or cloud platform;
+• p3 – availability of a web interface for working via a browser on 
+mobile devices (responsive website design);
+• p4 – integration of the digital twin model into the intelligent video 
+surveillance system;
+• p5 – AI-based voice assistant;
+• p6 – viewing a map of objects and the ability to connect to video 
+cameras in real time;
+• p7 – processing data from sensors, sounds, and video images with 
+the detection of events at subway facilities and the ability to display 
+videos.
+All systems for building digital twins have their own speciﬁc fea-
+tures and are designed to model speciﬁc objects (physical, economic, 
+material, chemical, geological, etc.) in a speciﬁc subject area (railways, 
+airports, loading terminals, nuclear power plants, metal smelting, etc.) 
+and to achieve speciﬁc results (reducing business costs, calculating phys-
+ical quantities, predicting object behavior, using a simulation timeline - 
+changing the model state over time).
+Each system (platform) for digital twin design has undeniable advan-
+tages in one application area (domain) when solving one or a limited set 
+of specialized tasks and can hardly be used to build digital twins of the 
+subway.
+Existing general-purpose software does not meet the following re-
+quirements: existence of an application for working with the digital twin 
+for a mobile platform (smartphones, Internet of Things devices), sup-
+port for cloud and fog computing, the existence of a website (adaptive 
+interface for all devices), integration with intelligent video surveillance 
+systems, existence of an AI-based voice assistant; possibility to view a 
+map of subway facilities with the ability to connect to video cameras, 
+processing data from sensors and various devices, that does not allow 
+to create subway digital twin that meet modern requirements.
+Results in Engineering 30 (2026) 110745 
+3 
+R. Delhibabu et al.
+Table 1 
+Comparison of existing systems.
+ Systems  p1  p2  p3  p4  p5  p6  p7
+ REPEAT −  +  + −  + −  +
+ Milestone XProtect  + −  +  + −  +  +
+ Ansys − − − − − −  +
+ COMSOL − −  + − − − −
+ CML-Bench  +  +  + −  + − −
+ Unreal Engine − −  + − − −  +
+ SOLIDWORKS Sim − − − − −  +  +
+ FlowVision − − − − −  +  +
+ Rocky DEM − − −  + −  +  +
+ AMBER − − − − −  +  +
+ SimManager − − − − −  + −
+ Altair  +  +  + − − − −
+ Azure Digital Twins −  +  + − − − −
+ AnyLogic − −  + −  + − −
+ iTwin −  +  +  + − − −
+ PlantSight  +  +  +  + − −  +
+ Merius Oy Smart Mill  +  +  +  + − − −
+ Ansys Twin Builder −  + − − − −  +
+3.  Overview of intelligent assistants
+Currently, the most widely used intelligent assistants include the fol-
+lowing: Alisa, Google Assistant, ClickUp AI, Copy.ai, Amazon Alexa, Siri, 
+Notion AI, Zapier AI, Jasper Generative AI Chatbot, SaneBox, MindPal, 
+and other programs that are virtual assistants with artiﬁcial intelligence. 
+Some intelligent assistants have highly accurate voice recognition mod-
+els in national languages (English, Russian, etc.) and can be integrated 
+into smart devices.
+One such assistant is the Alisa assistant from Yandex. This intelligent 
+assistant not only includes a smart speaker but also provides function-
+ality that requires interaction with other devices such as purchasing ad-
+ditional services via a smartphone or PC, sending emails. Alice supports 
+integration with Smart Home sensors, can turn lights on and oﬀ, open 
+and close windows, operate an intercom, recognize faces, act as a search 
+engine, and provide other services.
+The voice assistant from Google (Google Assistant) can maintain a 
+conversation, search for information online and return search results, 
+provide weather information, create vehicle routes, perform simple 
+mathematical operations, and convert various values, such as exchange 
+rates and measurements. The Assistant app can translate phrases into 
+another languages (from English to Spanish, from Chinese to Japanese, 
+etc.), search for recipes for homemakers, provide sports scores, ex-
+plain word meanings, and display exchange rates. The app can work 
+in standby mode and runs on all popular operating systems: iOS/iPa-
+dOS/macOS, Android, Linux, and Windows.
+ClickUp AI is not only a voice assistant but also a project man-
+agement service based on the Kanban methodology, allowing to ad-
+just workﬂows, visualize all project stages, and prioritize their comple-
+tion. Compared to Google Assistant, which is more focused on home 
+use, ClickUp’s voice assistant is oriented on solving business problems. 
+ClickUp’s modules allow to manage tasks and assign roles, while its ar-
+tiﬁcial intelligence (AI) module generates technical speciﬁcations, re-
+views checklists, and creates subtasks.
+Amazon’s Alexa voice assistant is designed primarily for home use 
+and works best with Amazon Echo and Amazon Echo Dot speakers. 
+Alexa supports virtual assistant functions, including music playback 
+and audiobooks reading. Alexa can create to-do lists, set alarms, leave 
+voice messages, and provide news updates, stock quotes, sports scores, 
+weather, and traﬃc  information. Like Yandex’s Alisa, Alexa can control 
+smart home devices (opening doors, windows, turning on lights, etc.). 
+Alexa supports multilingual dialogue in Japanese, Spanish, German, and 
+other languages—not  just English.
+Siri is the voice assistant built into Apple operating systems. Siri can 
+make calls (on iPhone or iPad) and launch apps on all devices: iPhone, 
+iPad, Mac, Apple Watch, and Apple TV. Siri can send messages in chats, 
+manage alarms, calendars, and to-do lists, build routes, search the inter-
+net, get news and weather forecasts, play music, and search for movies 
+based on user requests. In the latest version of macOS 15.2 Sequoia, 
+Siri can generate images using artiﬁcial intelligence algorithms and re-
+member conversations. Siri can run in standby mode on MacBooks using 
+Apple Intelligence technology.
+Notion AI is designed to organize information in a uniﬁed workspace, 
+oﬀering both business and home use. Notion AI stores information in the 
+form of notes, abstract documents, and ﬁles in the cloud. Notion AI al-
+lows to organize data in tables and dashboards, create calendar events, 
+and manage projects. The key feature of Notion AI is its modularity. It 
+allows to add modules for working with tables, lists, databases, mes-
+sage boards, and galleries. Notion AI can be accessed through a browser 
+or through a desktop app, both of which can be installed on popular 
+operating systems: MacOS, Windows, Android, Linux.
+Zapier AI, an AI-powered automated assistant, combines the func-
+tionality of Slack, Trello, and Gmail so the user never misses important 
+events. Zapier’s core elements are: Zap (automated workﬂow), Trigger 
+(process launch), and Action (actions that occur after the trigger is trig-
+gered). Notiﬁcations in Zapier are sent to the Slack module, which is 
+designed for user interaction. Data in Zapier is stored in Smartsheet ta-
+bles, which must be created before using the assistant. Zapier oﬀers in-
+tegration with email and social media. Zapier also allows to automate 
+business processes.
+The Jasper Generative AI Chatbot is an alternative to ChatGPT with 
+text generation capabilities. Jasper can work with blogs, social me-
+dia, and email. Jasper is suitable for business and can generate im-
+ages. Jasper uses the same Generative Pre-trained Transformer language 
+(GPT) model as GPT-3.5. Jasper AI supports integration with Chrome 
+and other programs. Jasper AI can write both books and informational 
+guides.
+SaneBox provides email as a service, manages accounts, and func-
+tions as an intelligent assistant. SaneBox works with all email services. 
+Its main function is to calculate email statistics for several days and 
+delete unnecessary emails over time, using artiﬁcial intelligence algo-
+rithms. SaneBox supports IMAP and Exchange Web Services.
+The MindPal assistant is focused on education and business. It en-
+ables the creation of artiﬁcial intelligence agents to improve company 
+productivity and automate business tasks. MindPal oﬀers analytics, task 
+management, statistics visualization, advertising auditing, business plan 
+generation, and production improvement proposals.
+Table 2 provides a comparative analysis of the capabilities of existing 
+intelligent assistants. The systems were compared based on the features 
+required for the intelligent assistant for subway employees.
+The table uses the following notations:
+• f1 – voice chatbot tailored to the speciﬁcs of the subway;
+• f2 – information about recognized objects at the subway stations;
+• f3 – information about emerging situations, taking into account data 
+from other stations;
+• f4 – speech recognition;
+• f5 – sending text messages for the operator;
+• f6 – deep integration with the IVSS, video cameras, and end-user 
+devices;
+• f7 – the ability to navigate objects displayed in the digital twin.
+All existing assistants are digital assistants designed to solve speciﬁc 
+tasks (for home, business, planning, accounting, and education), and 
+help to reduce costs, save time at home, reduce stress, and so on. Each 
+assistant has its own activity proﬁle, deﬁning the area in which the dig-
+ital assistant operates most eﬀectively. Currently, there are no digital 
+assistants that oﬀer all the functions required of an intelligent assistant 
+for personnel working in complex infrastructure facilities.
+Results in Engineering 30 (2026) 110745 
+4 
+R. Delhibabu et al.
+Table 2 
+Required functions for intelligent assistants in the subway.
+ Name  f1  f2  f3  f4  f5  f6  f7
+ Alisa − − −  +  +  +  +
+ Google Assistant −  + −  +  +  +  +
+ ClickUp AI, Copy.ai − −  +  +  + − −
+ Amazon Alexa −  + −  +  +  +  +
+ Siri −  + −  +  +  +  +
+ Notion AI − −  +  +  + − −
+ Zapier AI − −  +  +  + − −
+ Jasper Gen. AI −  +  + −  + − −
+ SaneBox − − −  +  + − −
+ MindPal  + −  +  +  + − −
+4.  Statement of the problem
+The conducted analysis has shown that there are currently no dig-
+ital twins that ensure high speed of receiving data on events as they 
+occur in subway systems and ensure coordination of personnel actions 
+aimed at eliminating hazardous and emergency situations and their con-
+sequences. It is necessary to create a new digital twin with signiﬁcantly 
+broader capabilities: the ability to process video data, audio data and 
+data from various sensors that is continuously received from subway 
+facilities, the ability to take into account the relationships between sta-
+tions and the impact of events occurring at one or more stations on other 
+stations.
+For end users, it is necessary to create an intelligent assistant that is 
+installed on user devices and provides visualization of events on 2D/3D 
+models with varying degrees of detail, has speech recognition capabili-
+ties, which allows for the provision of information on recognized objects, 
+receiving information on emerging situations, asking questions verbally, 
+sending text messages to the operator; that is able to navigate in the dig-
+ital twin’s graphical objects, and also has the ability to integrate with 
+the IVSS.
+To ensure the required capabilities, the digital twin must include 
+the digital twins of individual stations, and the digital twins of adja-
+cent stations must be interconnected. It must be possible to use existing 
+digital twins and create new twins using a template. When creating dig-
+ital twins based on a template, the template-based digital twins must 
+be adapted to the speciﬁc characteristics of the speciﬁc station. Further-
+more, knowledge gained from the construction and use of digital twins 
+of other stations must be taken into account.
+Creation of digital twins of the stations should allow fast identiﬁ-
+cation of emerging events (ﬁre, ﬂooding, littering, etc.) based on data 
+collected from subway facilities, predict their progression, assess the 
+potential impact on adjacent upstream and downstream stations, evalu-
+ate potential consequences, and quickly inform station personnel of any 
+subway incidents.
+The digital twin should include two components: a basic component 
+capable of solving problems requiring the use of AI, and a graphical 
+component providing 2D/3D models of subway stations used to display 
+events on user devices. The digital twin should be built using sensor 
+data, video information, and audio data processed using neural networks 
+and should be also capable of solving tasks such as event detection, fore-
+casting, and other tasks that require intellectual capabilities. Neural net-
+works are used since they allow accurately identify objects and events 
+thanks to more complex algorithms, though they are more demanding 
+on GPUs [15].
+Digital twin computationally complex processes should be executed 
+in a fog computing environment on a server (as they are resource-
+intensive) adapted for processing data using neural network methods. 
+Digital twins can be designed using ready-made platforms with adap-
+tive elements developed for a speciﬁc subject area (domain) and sup-
+porting the connection of signaling elements (sensors, video cameras, 
+audio, etc.). However, creating custom digital twins and platforms for 
+their design will signiﬁcantly improve the performance of systems that 
+use these custom digital twins, compared to systems that use digital 
+twins built using existing large platforms.
+Custom digital twins and platforms operate several times faster be-
+cause they don’t have a large number of universal functions and ele-
+ments that are unnecessary when creating subway digital twins. Creat-
+ing a custom digital twin also allows for more precise customization of 
+the digital twin based on data sources. Furthermore, using almost all 
+standard digital twins poses installation and maintenance challenges, 
+and they also have limitations in supported elements, objects, move-
+ments, and model dimensions.
+When developing platforms for building digital twins, many devel-
+opment environments can be used, providing ready-made libraries and 
+components for drawing graphics, drawings, diagrams, and so on. All el-
+ements or objects of digital twin (people, cars, trains, etc.) can be drawn 
+using these libraries. It is also possible to create diagrams in 2D space, 
+program the reception of signals (data from sensors, audio, video, etc.), 
+and create your own digital twin in a programming language. The cre-
+ation process may slow down by 30–100 times, but the result digital twin 
+will be faster than digital twins that are built using a standard platform.
+Developing a digital twin for the subway should involve developing 
+components for processing data received from various sources installed 
+at subway facilities, which are used to build the digital twin, as well as 
+developing a mobile application for subway employees, which imple-
+ments the functions of an intelligent assistant and uses the developed 
+digital twin as a model. The data processing component should process 
+continuously incoming data streams using neural networks.
+The component should be hosted on a server in a fog computing 
+environment, and data on detected events should be sent to intelligent 
+assistants installed on staﬀ mobile phones. It should be possible to in-
+stall the intelligent assistant on various Android smartphone versions, 
+as most devices worldwide run this operating system. It is necessary to 
+create an APK application for a stable version of Android to avoid the 
+need for employees to change devices.
+The Android application can reside permanently in the smartphone’s 
+memory and display events in the status bar. After the initial connec-
+tion to the fog server via HTTP(s), a persistent connection is established 
+(TCP/IP route), which is very fast and can transmit event data in frac-
+tions of a second (10–200 ms). If the fog server is located in a local 
+Ethernet network without internet access, a high-speed connection can 
+be maintained for years.
+Fig. 1 shows the composition and interaction diagram of the compo-
+nents of a decision support system based on the construction and use of 
+a digital twin of the subway and interconnected digital twins of individ-
+ual stations. The system includes a server application and an intelligent 
+assistant (Fig. 1, left). The user application connects to the fog server via 
+Wi-Fi. The fog server has expansion boards connected to devices such 
+as microphones, video cameras, and sensors. The information on the 
+server is processed by neural networks. Detected events and associated 
+video and audio fragments are available for viewing from a mobile app. 
+The Fog Server in the mobile app changes based on GPS coordinates 
+and displays the subway station closest to the operator (the phone run-
+ning the Fog Server app). The intelligent assistant can answer questions 
+about train arrival times and many other issues related to the subway 
+and conditions at nearby stations.
+Creating a digital twin of a subway system for a decision support sys-
+tem presents a signiﬁcant number of challenges. Diﬃculties  arise when 
+connecting devices and processing data on the fog server, which the 
+developer must organize independently. Speciﬁcally, in some cases, it 
+is necessary to develop drivers and application-device interaction func-
+tions (custom functions, in addition to OS kernel functions). Further-
+more, diﬃculties  arise when creating an intelligent assistant. Not all 
+models used in intelligent assistants can accurately recognize speech. 
+Speech synthesized using speech synthesis algorithms often contains 
+sharp changes in pitch, inconsistencies, and unsteadiness.
+Another challenge is displaying information transmitted from the 
+server, containing image and event recognition results on a map or in 
+Results in Engineering 30 (2026) 110745 
+5 
+R. Delhibabu et al.
+Fig. 1. Composition and interaction diagram of the components of a decision 
+support system based on the construction and use of a digital twin of a subway 
+system and interconnected digital twins of individual stations.
+3D space in a mobile app. Thus, creating a custom digital twin requires 
+developing drivers for non-standard devices and functions for receiving 
+and transmitting data to a fog server, ensuring data processing by neural 
+networks, and displaying information received from the server in a mo-
+bile app on a smartphone. It is also necessary to identify tools to ensure 
+accurate speech recognition and synthesis.
+The new subway digital twin and intelligent assistant for mobile 
+phones have the following distinctive features:
+1. Digital twin allows to Increase speed of work of subway employ-
+ees. The use of PCs with monitors by subway operators signiﬁcantly 
+limits employee mobility, as employees are located in a secure center 
+and spend signiﬁcant time moving to the scene of an incident.
+2. The intelligent assistant supports speech recognition, allowing 
+employees to use their voice to navigate a graphical model displayed 
+on the smartphone, helping them better understand the situation at 
+the station. The speech recognition feature also allows employees 
+to ask the intelligent assistant questions about situations observed 
+at stations and receive verbal responses. The assistant can provide 
+answers both verbally and in text form, if necessary. The intelligent 
+assistant being developed is adapted for use in the subway system, 
+thanks to a well-trained model and has the ability to answer a wide 
+range of questions about the subway and its stations. Usage of the 
+digital twin in other areas is also possible after retraining the models.
+3. The proposed mobile digital assistant ensures uninterrupted op-
+eration over the internet, unlike standard assistants, which, with-
+out internet access, become completely useless for certain issues or 
+even stop working altogether.
+Thus, the proposed solution will enable a transition from decision 
+support systems using individual, specialized digital twins to systems 
+based on the construction of multiple interconnected digital twins, and 
+from individual intelligent assistants to new intelligent assistants that 
+use interconnected digital twins to display detected events on 2D/3D 
+object models and feature speech recognition and generation capabili-
+ties.
+The proposed solution will improve the response speed of personnel 
+in subway systems and other infrastructure facilities when events, in-
+cluding hazardous ones, occur. This will be achieved by rapidly process-
+ing data received from the subway facilities on a fog server using neu-
+ral networks and visualizing the detected events on employees’ smart-
+phones.
+The following performance indicators are proposed for evaluating 
+the developed solution: the speed of event data acquisition by subway 
+employees. The evaluation conditions include a stable TCP/IP access 
+channel, an identical number of received events on time intervals, and 
+identical time intervals.
+To develop the digital twin, the authors formulated and solved the 
+following tasks:
+1. develop a digital twin of the subway and digital twins of the stations 
+taking into account their interconnections, and develop a platform 
+for their construction;
+2. develop an intelligent assistant that uses the digital twin;
+3. develop an application for a mobile platform.
+5.  Solution method
+5.1.  General description of the proposed solution
+The proposed digital twin of the subway system includes multiple 
+interconnected twins of diﬀerent stations (Fig. 2). In its simplest form, 
+the structure of the subway system’s digital twin is two-level: on the 
+ﬁrst level the digital twins of individual stations are placed, and on the 
+second, higher level, the subway system’s digital twin, which includes 
+the digital twins of individual stations, is located.
+Events occurring at one station (e.g., a ﬁre) are reﬂected in the digital 
+twin of the subway system. The digital twins of the preceding station 
+and the following station receive information about events (e.g., a ﬁre), 
+allowing subway staﬀ and support services that works at other stations 
+to quickly receive information about events occurring at neighboring 
+stations.
+Currently, many passenger collisions on station tracks are prevented 
+only due to the attentiveness of the train driver. Failure of switch equip-
+ment and track deformation caused by wear can lead to disaster. Crowd-
+ing on platforms can lead to crushes when entering train compartments, 
+escalators, and exit stairs. In many of these cases, tragedies can be 
+avoided by using the proposed interconnected digital twins, that take 
+into account the states of neighboring stations, collect real-time data on 
+subway facilities from various sources, and include an image recognition 
+system that ensures high-accuracy event recognition.
+When constructing the subway’s digital twin and its station’s digital 
+twins, audio and sensor data are collected and processed in addition to 
+video data, enabling the creation of datasets that enable highly accu-
+rate event detection. In new Tesla vehicles, sensors have been excluded 
+from the autonomous driving system, and the road navigation system re-
+lies solely on information from surveillance cameras. Tesla’s tests have 
+shown that in some cases, the image recognition system is inaccurate, 
+particularly in cases of deliberate sabotage (painting a road on a wall, 
+etc.).
+In the process of building the subway’s digital twin for processing 
+data received from diﬀerent sources neural networks are used. Using 
+neural networks helps prevent erroneous and inaccurate event detec-
+tion at subway locations as by now neural networks have shown high 
+eﬃciency  in data processing, including image recognition.
+The subway’s digital twin contains the following objects: people, 
+train cars, and robots (AI-powered car washers, which are planned for 
+future implementation and use in the subway). The digital twin also con-
+tains stationary objects: kiosks, stairs, railway tracks, and utility rooms. 
+The digital twin displays the movement of people, train arrivals, car 
+door openings, vestibule closings, etc. based on pattern recognition us-
+ing images from video cameras, as well as interactions between objects 
+(the door’s stuck, a breakdown, etc.) based on processing sensor data.
+The digital twin also displays events such as ﬁres, ﬂoods, escalator 
+or car door failures, etc. The digital twin allows employees to conduct a 
+chronological analysis of events with the additional ability to view video 
+clips, sensor data, and listen to audio recordings, leveraging automated 
+video analysis techniques [16].
+Results in Engineering 30 (2026) 110745 
+6 
+R. Delhibabu et al.
+Fig. 2. Schematic representation of interconnected digital twins of subway stations.
+Fig. 3. General scheme of operation of the proposed digital twin.
+The general operation of the digital twin is shown in Fig. 3. The ob-
+jects of observation and the video cameras from which the video streams 
+are received are placed at the bottom. On the fog server, the data is 
+processed by the neural network and the results of data processing from 
+various sources are subsequently fused.
+Currently, instead of the sequence of steps discussed above, the fol-
+lowing is performed: receiving data from video cameras via TCP/IP, 
+transferring data from the video server to a single city data storage cen-
+ter, identifying objects and copying data to a secure server, displaying 
+images in the situation center, and transmitting information to services 
+by the operator.
+The proposed solution is a comprehensive solution for identifying 
+dangerous and emergency situations in subways with the ability to 
+subsequently provide a detailed chronology of the occurrence and the 
+course of events for interaction with law enforcement agencies and aux-
+iliary services in the subway.
+We benchmarked round-trip latency (Δ𝑡) across three topologies:
+• Cloud-only: Δ𝑡𝑐𝑙𝑜𝑢𝑑 ≈ 185 ms (limited by bandwidth).
+• Fog-environment (Implemented): Δ𝑡𝑓 𝑜𝑔 ≈ 22 ms.
+This demonstrates that oﬄoading  computation to the fog environment 
+ensures the near real-time synchronization required for safety-critical 
+infrastructure.
+5.2.  Architecture of the decision support system
+The architecture is presented in blocks with detailed information. 
+Decision-making based on events requires an architecture (Fig. 4) con-
+sisting of two modules.
+The ﬁrst module is a “small digital twin” of a single station that is 
+intended for the operator. The operator monitors safety at the subway 
+station. Information for the operator is obtained from the digital twin. 
+The digital twin analyzes incoming and previous information, and an 
+event is generated for the operator. In Module 1 of the digital twin the 
+situation at various stations is assessed. When new data is obtained a 
+digital twin is rebuilt and an event is generated on the digital twin. 
+All these steps are interconnected. Then, the event history is analyzed, 
+and the best response to the event is determined. All these steps are 
+inseparably linked.
+Module 2 houses a “large digital twin” of the entire subway. The 
+server processes data generating summary information on the events. 
+The quality of the decision-making process depends on interconnected 
+modules 1-2, exchanging information on the events and decisions made 
+in response to them. Computational costs are minimal, since all the most 
+complex operations are processed on the fog server.
+The proposed architecture is distinguished by deep detailed pro-
+cessing of occurring events in real-time in combination with general 
+processing of events that occur across all subway stations. Decision-
+making is based on the information received from monitored and at 
+other neighboring stations. The architecture of the system is modular 
+and block-based. Modules are decomposed into individual blocks and 
+interconnections are deﬁned for the blocks. Overall, the architecture is 
+designed to generate well founded decisions and ultimately respond to
+events.
+5.3.  Platform for constructing a digital twin for the subway
+Existing digital twin platforms generally don’t require programming; 
+it is suﬃcient  to have design skills. To construct a digital twin using 
+these platforms it is required to place objects, build chains, and deﬁne 
+connections with digital twin. This approach allows for the rapid devel-
+opment of digital twins.
+However, existing platforms are designed for modeling speciﬁc ob-
+jects in a speciﬁc domain. Not all platforms support image recognition 
+from video cameras and the Internet of Things (smartphones, etc.), and 
+many are very slow. Existing digital twin platforms also have limitations 
+on the types of modeled objects and other design features of the models. 
+They operate quite slowly when the number of objects is large.
+Customized digital twins developed as binary applications (*.apk, 
+*.exe, *.elf, etc.) operate several times faster, but require programming 
+skills. Building a customized digital twin can take weeks, sometimes 
+months, but it doesn’t have the limitations of digital twins created using 
+oﬀ-the-shelf platforms.
+To build digital twins the authors developed their own platform. The 
+platform provides sets of standard elements (conﬁgurations for the sub-
+ject area). The digital twins are developed as part of the digital twin plat-
+form. The digital twin platform allows for the deﬁnition of object move-
+ments and the customization of data acquisition from various sources 
+(video cameras, sensors) to determine the movement of objects and their 
+type.
+When developing the platform, the core was programmed and ready-
+made standard components were used, eliminating the need for the de-
+veloper to spend time drawing each component. A professionally design 
+of a component and its integration into the platform can take 1-2 weeks. 
+If the digital twin platform developer lacks graphic design skills and rel-
+evant education, the components will look unpresentable and out of 
+place. The appearance of the elements is quite important.
+Results in Engineering 30 (2026) 110745 
+7 
+R. Delhibabu et al.
+Fig. 4. Proposed architecture of the decision support system.
+The developed platform also supports the work with sensors, mi-
+crophones, and video cameras. This and other capabilities supported by 
+the platform signiﬁcantly speed up the creation of the digital twin. After 
+creating all required objects and implementing them in the digital twin 
+platform, creating a digital twin based on pre-deﬁned elements becomes 
+a very simple task. Adding a single new object to the model, containing 
+elements from a set of pre-deﬁned elements, takes 5–10 minutes.
+The platform being developed includes a set of elements designed 
+for subway facilities: kiosks, railway tracks, ticket oﬃces,  car wash 
+machines, police posts, platforms, stairs, vestibules, escalators, station 
+walkways, and other objects, including small ones, speciﬁcally needed 
+in the subways. Each object has a detailed description. The platform and 
+the digital twins created based on it form a single application.
+When a mobile phone instance is launched, a connection to the fog 
+server is established and GPS coordinates are transmitted. The system’s 
+server then generates a model based on the digital twin, taking into ac-
+count the data about the user from whom the request was received, and 
+sends the generated model to the user’s app. The user sees a graphical 
+model of the digital twin of the facility where he/she is currently lo-
+cated: a station, a lobby, a utility room, a depot, etc. When an event 
+occurs, the graphical model automatically zooms in or out, displaying 
+the location of the event, and a video is played. This is only possible with 
+certain access rights. Event data is sent to users at the station where the 
+event occurred and at neighboring stations. The operator also has the 
+ability to navigate through the subway facilities in 2D/3D space and 
+connect to video cameras to view the current situation at the facilities.
+When using existing solutions, manual rebuilding of the digital twin 
+is required when station architecture changes, new elements are added, 
+or new stations are opened (commissioned). The proposed solution im-
+poses no restrictions on the composition and parameters of subway ob-
+jects, nor does it limit modeling to speciﬁc subway architecture and 
+station objects. New elements can be added from a set of standard ele-
+ments supported by the platform (kiosks, platforms, people, etc.). The 
+new solution supports the use of not only speciﬁc camera types (AXIS 
+P13/P33 series with DC-Iris and P-Iris) and sensors for data collection, 
+but also other camera and sensor models.
+5.4.  Standard template for a digital twin of a station
+New digital twins are built using a specially developed constructor 
+and template, which represents a typical station digital twin. The digi-
+tal twin constructor is a set of elements and relationships from the sub-
+ject area. The elements are grouped based on their relevance: basic, 
+advanced, additional, other, and selected. Elements are further divided 
+into complex and simple.
+Relationships between elements are conﬁgured depending of the 
+connected elements. For example, a railway track can be connected to 
+a tunnel, while people and traﬃc  lights cannot, as they are elements of 
+diﬀerent entity types. The workspace for constructing digital twins is 
+divided into the following main areas: the elements panel, the settings 
+panel, the properties panel for the active (selected) element, and the 
+main application menu for selecting panels, loading, and saving digi-
+tal twins. Relationships between elements (and behavior for simulating 
+events) are deﬁned in a separate panel with detailed settings.
+The digital twin template for a station includes a standard set of 
+elements and links and, as a rule, requires minor modiﬁcations when 
+Results in Engineering 30 (2026) 110745 
+8 
+R. Delhibabu et al.
+building new digital twins. Speciﬁcally, element and link properties can 
+be changed: size, position, color, background, shadow, style, grid, text 
+size, ﬁll, line type and size, transparency, moveability, grouping with 
+other elements, auto-size, text visibility, tooltips, text ﬁelds, font type 
+and style, alignment, word wrap, and element border settings.
+The ﬁnal step in creating a digital twin based on a template is deﬁn-
+ing the inputs for the elements. Elements inputs can be connected with 
+data sources or data can be generated using automatic data generation 
+for the model inputs. To do this, it is necessary to open the menu for the 
+selected (active) element, select the signal sources, data types, sampling 
+frequency, intensity, modularity, and time interval. After all settings for 
+the digital twin model of the station are completed, testing is performed. 
+For testing a panel with digital twin launch and debug settings is used. 
+After clicking the “Simulate” button, the digital twin is built, and the 
+elements respond and interact.
+5.5.  Implementation of the digital twin of the subway
+The following components were implemented for decision support 
+systems based on digital twins of the subway:
+• An intelligent assistant with the ability to visualize events on 2D/3D 
+models and speech recognition capabilities;
+• A server component for processing data about subway assets ob-
+tained from video cameras, microphones, and various sensors.
+The mobile application, codenamed “Dt2DtSub-0.4.98a.apk,” was 
+developed using the GIGA IDE Community Edition 2024.1.1 develop-
+ment environment. The development environment supports Java (Level 
+4) and Kotlin (Level 5), and can compile and run programs on a high-
+performance cloud server hosted by GIGA. Kotlin Novator is suitable for 
+development on Android and Linux. Using Kotlin, a level 5 language, 
+greatly simpliﬁes development for the mobile platform. The GigaIDE 
+development environment is in no way inferior to IDEA/PyCharm from 
+IntelliJ, but surpasses it in the number of additional plugins.
+The ready-made APK application for Android-v.15 is located in the 
+smartphone’s ﬁle system and runs on the smartphone itself with the “de-
+veloper mode” option enabled in the settings. The “Dt2DtSub” applica-
+tion connects to the fog server on which the twin is built depending 
+on geolocation (GPRS) and is in the mode of receiving events from the 
+server.
+The Cisco UCS C480 ML M5 is used as a server in the developed sys-
+tem. The server processes video sequences. SubScript, which is adapted 
+for intelligent video surveillance systems, in particular, subway systems, 
+was used to develop the server component of the system. SubScript en-
+ables the storage of settings and statistics in a database, as well as the vi-
+sualization of events on graphical models of objects. Event visualization 
+is performed in applications installed on the employees’ mobile phones. 
+The HUAWEI Mate X6 is compatible with the mobile app.
+The server and smartphone models used are adapted for machine 
+learning and neural networks, which increases the speed of data pro-
+cessing when identifying objects and events. Data objects in the app are 
+presented to users as 2D/3D models with zoom capabilities and the abil-
+ity to view ﬁne details, displaying data on the results of object and event 
+recognition.
+The intelligent assistant features voice assistant functions and speech 
+synthesis capabilities, building upon robust multimodal interaction 
+frameworks [17]. VOSK is used for speech recognition, SAPI5 is used for 
+speech generation, and NAudio is used for working with audio streams. 
+The Vosk solution is a ready-made solution written in Python. Unlike 
+SpeechRecognition, the Vosk library does not require an internet con-
+nection and can operate without third-party services. Vosk supports over 
+25 languages, is lightweight, easily integrates with programming lan-
+guages C#, JavaScript, Java, etc.), and runs on all popular operating 
+systems (Windows, Linux, and macOS).
+A preliminary acoustic evaluation of the VOSK-based intelligent as-
+sistant was conducted using pre-recorded operator commands overlaid 
+Fig. 5. Mobile application based on a digital twin providing data on neighbor-
+ing stations.
+with ambient subway noise (average 85 dB). Under these conditions, the 
+system exhibited a Word Error Rate (WER) of 14.2%. While functional 
+for basic commands, this error rate highlights a limitation in noisy sub-
+terranean environments, suggesting that future iterations will require 
+aggressive acoustic noise suppression pre-processing.
+Before the creation of the proposed intelligent assistant, there was 
+no assistant capable of visualizing events on 2D/3D object models and 
+integrated with a voice assistant. The assistant automatically reﬁnes the 
+graphical model of the digital twin when identifying objects and events, 
+and determines the display scale based on the level at which the event 
+occurred. Furthermore, using a generative neural network, the assistant 
+verbally describes the circumstances of the subway incident and the sur-
+rounding environment. The assistant suggests possible solutions, which 
+can be accepted or rejected verbally. The developed app runs on smart-
+phones used by operators at subway stations. Existing apps only run on 
+Android and Linux, and cannot be compiled for iOS, macOS, or Windows 
+Mobile.
+For event detection, we utilized a modiﬁed YOLOv8 architecture op-
+timized for edge devices. The model was ﬁne-tuned on a custom dataset 
+of 𝑁 = 12, 500 annotated frames. Training involved 𝐸 = 150 epochs us-
+ing the Adam optimizer with an initial learning rate 𝛼 = 10 −4 and batch 
+size 𝐵 = 32. The model achieved a mean Average Precision (𝑚𝐴𝑃 @0.5) 
+of 92.4%.
+6.  Case study
+The authors of the study developed a digital twin of the subway sys-
+tem, which includes digital twins of multiple interconnected stations. 
+The mobile app (Fig. 5) is in line with global trends in mobile app de-
+velopment (developed for the popular Android 14 platform). The app is 
+an intelligent assistant that displays information about the station where 
+the operator is located and information about neighboring stations.
+In the center of the app’s main screen the real-world object (track, 
+platform, etc.) and the detected event (ﬁre, smoke) with its location are 
+displayed. The application is designed to be as simple as possible, as 
+working with simple elements improves the response time of subway 
+personnel. The digital twin is displayed in a ﬂat 2D space, but can be 
+represented as a 3D model in case the “Dt2DtSub-0.4.98a.apk” app is 
+opened on a device with a screen resolution of at least 800x600 pix-
+els. The application detects the screen resolution upon launch and the 
+2D model is automatically converted into a 3D model, maintaining the 
+proportions of the 3D space of one station.
+The use of a digital twin and the mobile app with intelligent assistant 
+functions for incident response at subway stations improved personnel 
+response times by 17.4% (Table 3).
+To ensure reliability, an Analysis of Variance (ANOVA) was con-
+ducted across 𝑛 = 50 simulated trials per platform. The reduction in re-
+sponse time for Dt2DtSub was statistically signiﬁcant (𝐹 = 42.15, 𝑝 <
+0.001). For a “Fire” event, the 95% conﬁdence interval for response 
+time was [231.5, 242.5] seconds, compared to the REPEAT platform’s 
+[272.8, 289.2] seconds.
+Results in Engineering 30 (2026) 110745 
+9 
+R. Delhibabu et al.
+Fig. 6. Comparative analysis of personnel response time reduction (%) using the proposed Dt2DtSub architecture versus existing digital twin platforms and baseline 
+operations.
+Table 3 
+Response time comparison with standard deviation (𝜇 ± 𝜎).
+ DT Name  Fire (sec)  Flooding (sec)  Collapse (sec)
+ REPEAT 281 ± 8.1 864 ± 12.4 2618 ± 45.2
+ XProtect 289 ± 9.3 874 ± 14.1 2654 ± 48.6
+ Dt2DtSub 𝟐𝟑𝟕 ± 𝟓.𝟒 𝟕𝟏𝟒 ± 𝟗.𝟖 𝟐𝟏𝟓𝟕 ± 𝟑𝟑.𝟏
+Experimental studies have demonstrated the eﬀectiveness of the de-
+veloped digital twin, named Dt2DtSub. The creation and use of the sub-
+way digital twin in decision support systems has increased the response 
+time of subway personnel and support services by an average of 18.6% 
+across all events, compared to the current XProtect-based system, and 
+by 17.4% compared to the most popular REPEAT platform.
+The response time to the “Fire (Smoke)” event increased by 19.81%; 
+to the “Flooding (Steaming)” event the response time increased by 
+24.63%; and to the “Collapse (Littering)” event the response time in-
+creased by 24.7% compared to the average response when using the 
+existing digital twins.
+Fig. 6 illustrates the comparative eﬃciency  of the proposed solu-
+tion. The graph is plotted against time (𝑡). The x-axis shows the names 
+of the digital twin platforms, and the y-axis represents the percentage 
+of response time reduction relative to the proposed Dt2DtSub-0.4.98a 
+solution.
+To replicate the experiment, it is necessary to compile the mobile 
+app and server component for building digital twins, collect statistics 
+for three months of operation, open the logs in Myoﬃce  Spreadsheet 
+v.3.1 for Windows, enable Lua macros instead of VBA, apply ﬁlter-
+ing, round to decimal places, calculate the average value, autosum, and 
+ﬁll the resulting tables. The experiment was conducted on a Huawei 
+Nova 13 Pro-12/512GB LTE Black smartphone with Android Linux
+14.
+7.  Discussion
+While the interconnected twin architecture demonstrates a 17.4% re-
+duction in latency, this study relies heavily on simulated emergency 
+scenarios. A primary limitation is the system’s dependency on contin-
+uous TCP/IP connectivity; network degradation in deep subterranean 
+environments could impede the fog-to-mobile data pipeline, requiring 
+robust fallback protocols for physical, safety-critical deployment. De-
+spite these constraints, the modular nature of the Dt2DtSub architecture 
+oﬀers high generalizability, allowing it to be scaled to other complex in-
+frastructure networks such as airport terminals or underground mining
+facilities.
+8.  Conclusion
+The authors proposed a digital twin of the subway system, built on 
+the basis of interconnected digital twins of individual stations for deci-
+sion support systems. We also developed a platform for building digital 
+twins and an application for operators’ mobile phones with intelligent 
+assistant functions.
+The developed mobile application functions as an intelligent assis-
+tant, displaying data about subway stations on smartphones while ac-
+counting for situations occurring at neighboring stations, and supports 
+voice data processing. A key advantage is the high operating speed, en-
+sured by the lightweight nature of the application and the oﬄoading  of 
+heavy computation to the fog computing environment.
+Experimental assessments demonstrated that the implementation of 
+the Dt2DtSub architecture signiﬁcantly accelerated emergency response 
+protocols. Personnel response times improved by an average of 17.4% 
+compared to the popular REPEAT platform. Speciﬁcally, the time re-
+quired to contain ﬁre and smoke incidents was reduced by 52 seconds 
+compared to the current XProtect-based solution, and by roughly 47 
+seconds compared to the industry average. The absolute response times 
+varied between a minimum of 267 seconds and a maximum of 307 sec-
+onds, validating the eﬃciency  of oﬄoading  heavy computational tasks 
+to the fog environment.
+The proposed solution is applicable not only to subway systems but 
+also to building models of other public transport assets: bus depots, trol-
+leybuses, trams, and assets related to other network infrastructure (river 
+transport and general rail service), where the performance of passenger 
+company personnel needs to be improved.
+Further developments include deeper integration with signaling and 
+control systems to automatically stop mechanisms (trains, escalators, 
+disconnecting live cables, etc.). Plans include enhancing the assistant’s 
+intelligence and support the intelligent analysis of complex informa-
+tion received from “Safe City” video cameras and the creation of event 
+chronologies.
+Future plans also include assessing the coordination of personnel ac-
+tions, which assumes delegating responses to events from one service to 
+another and can take considerable time, as well as the coordination of 
+emergency response actions. The assistant is expected to include the fol-
+lowing data in the future: information about stations closed for repairs 
+and ongoing city events (for example, a heating main accident), as well 
+Results in Engineering 30 (2026) 110745 
+10 
+R. Delhibabu et al.
+as the following features: asking questions and receiving answers in AI 
+text mode, forwarding documents (regarding complaints about the sub-
+way, service quality, contracts, and commercial proposals), as well as 
+enabling a task scheduler and calendar, and integrating with email and 
+social media for receiving and sending information from the operator.
+Future plans also involve measuring and evaluating response times 
+to other events (panic, ﬁghts, conﬂicts, etc.) not discussed in this article. 
+A website with support for multiple operating systems is also planned.
+CRediT authorship contribution statement
+Radhakrishnan Delhibabu: Writing – review & editing, Visualiza-
+tion, Validation, Software; Nataly Zhukova: Writing – original draft, 
+Software, Resources, Project administration, Methodology, Funding ac-
+quisition; Alexey Subbotin: Investigation, Formal analysis, Data cura-
+tion, Conceptualization.
+Data availability
+Data will be made available on request.
+Declaration of competing interest
+The authors declare that they have no known competing ﬁnancial 
+interests or personal relationships that could have appeared to inﬂuence 
+the work reported in this paper. 
+Acknowledgements
+Open access funding provided by Vellore Institute of Technology.
+The authors express their gratitude to SPIIRAS (http://www.spiiras.
+nw.ru/) for scientiﬁc support and the opportunity to prepare an article 
+on digital twins. This work was supported by the state budget, project 
+No. FFZF-2025-0019. 
+References
+[1] A. Subbotin, N. Zhukova, M. Gudilov, Problems of building digital twins of escalators 
+at subway stations based on machine learning, in: K. Arai, (Eds.), Intelligent Com-
+puting. SAI 2024,  1018 of Lecture Notes in Networks and Systems, Springer, Cham, 
+2024, pp. 163–173. https://doi.org/10.1007/978-3-031-62269-4_13
+[2] V. Osipov, N. Zhukova, A. Subbotin, et al., Intelligent escalator passen-
+ger safety management, Sci. Rep. 12 (2022) 5506. https://doi.org/10.1038/
+s41598-022-09498-x
+[3] M. Tianxing, A. Vodyaho, N. Zhukova, et al., Urban intelligent assistant on the ex-
+ample of the escalator passenger safety management at the subway stations, Sci. 
+Rep. 13 (2023) 15914. https://doi.org/10.1038/s41598-023-42535-x
+[4] A. Subbotin, R. Delhibabu, N. Zhukova, A script language creation for event visual-
+ization and data storage in an intelligent video surveillance system, Adv. Artif. In-
+tell. Mach. Learn. 4 (4) (2024) 3161–3172. https://doi.org/10.54364/AAIML.2024.
+44181
+[5] W. Long, Z. Bao, K. Chen, S.T. Ng, I.Y. Wuni, Developing an integrative framework 
+for digital twin applications in the building construction industry: a systematic liter-
+ature review, Adv. Eng. Inform. 59 (2024) 102346. https://doi.org/10.1016/j.aei.
+2023.102346
+[6] M.M. Futai, L.B. Machado, R.R. Santos, B.L. Poncetti, T.N. Bittencourt, A.L. Gamino, 
+Digital Twins for Condition Assessment of Railway Infrastructures, 2024, pp. 
+157–176. https://doi.org/10.1007/978-3-031-49589-2_8
+[7] H. Jiang, A. Jiang, Monitoring system for the construction of arch cover method 
+subway station based on DT and IoT, J. Sens. 2022 (2022) 1875196. https://doi.
+org/10.1155/2022/1875196
+[8] L. Wang, X. Chen, F. Ding, Digital twin modeling and intelligent optimization for 
+rail operation safety assessment, Int. J. Simul. Multidisci. Des. Optim. 15 (2) (2024). 
+https://doi.org/10.1051/smdo/2024002
+[9] C. Zhou, J. Xu, E. Miller-Hooks, W. Zhou, C.-H. Chen, L.H. Lee, E.P. Chew, H. Li, 
+Analytics with digital-twinning: a decision support system for maintaining a resilient 
+port, Decis. Support Syst. 143 (2021) 113496.
+[10] S. Kaewunruen, S. Peng, O. Phil-Ebosie, Digital twin aided sustainability and vul-
+nerability audit for subway stations, Sustainability 12 (19) (2020) 7873. https:
+//doi.org/10.3390/su12197873
+[11] M. Shevlyugin, A. Korolev, A.E. Golitsyna, et al., Electric stock digital twin in a 
+subway traction power system, Russ. Electr. Engin. 90 (2019) 647-652. https://doi.
+org/10.3103/s1068371219090098
+[12] Y. Zhao, Y. Liu, E. Mu, A review of intelligent subway tunnels based on dig-
+ital twin technology, Buildings 14 (8) (2024) 2452. https://doi.org/10.3390/
+buildings14082452
+[13] F. Faraji, H. Faraji, S.R. Samaei, Flood risk management in urban subway systems 
+using digital twins: a case study of the new york city subway, in: International Con-
+ference on Urban Planning, Architecture, Civil Engineering and Environment, Wolfs-
+burg, Germany, 2025. https://www.researchgate.net/publication/388177685.
+[14] T. Man, V.Y. Osipov, N. Zhukova, A. Subbotin, D.I. Ignatov, Neural networks for in-
+telligent multilevel control of artiﬁcial and natural objects based on data fusion: 
+a survey, Inf. Fusion 110 (2024) 102427. https://doi.org/10.1016/j.inﬀus.2024.
+102427
+[15] G.N. Meedinti, K.S. Srirekha, R. Delhibabu, A quantum convolutional neural net-
+work approach for object detection and classiﬁcation, 2023, https://arxiv.org/abs/
+2307.08175.
+[16] V.B.S. Prasath, R. Delhibabu, Automatic contrast enhancement for wireless capsule 
+endoscopy videos with spectral optimal contrast-tone mapping, in: International 
+Conference on Computational Intelligence in Data Mining (ICCIDM), Springer, 2014, 
+pp. 243–250. https://doi.org/10.1007/978-81-322-2205-7_23
+[17] R. Delhibabu, A.R. M. B.K. Saravanan, S. Manoharan, R. Balasundar, S. Subashini, 
+A multimodal AI-driven framework for adaptive learning of diﬀerently-abled learn-
+ers using deep learning and real-time gesture recognition, IEEE Access 14 (2026) 
+13564–13581. https://doi.org/10.1109/ACCESS.2026.11358883
+Results in Engineering 30 (2026) 110745 
+11 

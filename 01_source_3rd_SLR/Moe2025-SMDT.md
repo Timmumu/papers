@@ -13,3 +13,12 @@ The construction industry remains one of the most hazardous sectors, requiring i
 | Yes | Yes | Yes | Yes | Yes | **Include** |
 
 **Note:** FL-based Safety Monitoring DT for multi-worker safety prediction
+
+## Step-3 Deep-Read Coding (Prompt B)
+
+| P | Q | R | U Tier | V | W | X | Z | AA | AB | AC | AD | AE | AF |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| Yes | Yes | Yes | Tier 2 - Digital Shadow (one-way physical to virtual) | 0 | 1 | 0 | Design for Safety (DfS) | Implemented | Other / Mixed | Multi (two or more data types) | Single case study | 4 | Predictive analytics / decision support |
+
+**Key evidence (AG):** FL-based Safety Monitoring Digital Twin (SMDT) framework for multi-worker safety prediction (Jeju National U): DT platform + central FL server; edge devices (Raspberry Pi) represent workers and IoT nodes; real-world construction safety data (worker status, weather, structural parameters); dynamic node selection mechanism (normal distribution) optimizes global model convergence in FL; DT supports device registration, model creation, real-time control, visualization of FL training, and safety prediction. One-way monitoring→FL aggregation→safety prediction; implemented FL training loop but no convergence criterion.
+(full-text source: Endnote)

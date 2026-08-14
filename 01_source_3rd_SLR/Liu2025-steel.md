@@ -13,3 +13,12 @@ In the process of large-span steel structure construction, because its structure
 | Yes | Yes | Yes | Yes | Yes | **Include** |
 
 **Note:** DT-driven intelligent safety control of large-span steel construction
+
+## Step-3 Deep-Read Coding (Prompt B)
+
+| P | Q | R | U Tier | V | W | X | Z | AA | AB | AC | AD | AE | AF |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| Yes | Yes | Yes | Tier 2 - Digital Shadow (one-way physical to virtual) | 0 | 1 | 0 | Design for Safety (DfS) | None | Other / Mixed | Multi (two or more data types) | Single case study | 4 | Predictive analytics / decision support |
+
+**Key evidence (AG):** Digital twin-driven intelligent safety control for large-span steel mesh frame structures (Beijing U Tech): DT model built from actual engineering data + FE analysis; random forest algorithm analyzes influencing factors of overall jacking construction process (jacking height difference and jacking speed most influential); real-time monitoring + fault diagnosis; validated on airport reconstruction project. One-way monitoring→analysis→safety control; no actuation and no learning loop (random forest is offline-trained).
+(full-text source: Endnote)

@@ -13,3 +13,11 @@ This study proposes a methodological framework for integrating structural health
 | Yes | Yes | Yes | Yes | Yes | **Include** |
 
 **Note:** SHM-DT framework, damage levels, early warning; heritage basilica
+
+## Step-3 Deep-Read Coding (Prompt B)
+
+| P | Q | R | U Tier | V | W | X | Z | AA | AB | AC | AD | AE | AF |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| Yes | Yes | Yes | Tier 1 - Digital Model (static, no live data) | 0 | 0 | 1 | Design for Safety (DfS) | None | Finite Element Method / physics-based | Multi (two or more data types) | Conceptual (no test) | 4 | BIM-to-Digital-Twin architecture |
+
+**Key evidence (AG):** Methodological framework for integrating SHM with numerical DT models for seismic assessment of heritage buildings (Basilica Maria Auxiliadora, Lima): numerical models in 3DEC and SAP2000 (modal + time-history of 34 seismic ground-motion records) identify susceptible zones and recommended sensor locations; sensor deployment and validation against experimental models are explicitly future work - no DT implemented, no live data link, no learning loop. Source: Endnote library (front-matter DOI verified).

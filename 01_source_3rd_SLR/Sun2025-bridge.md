@@ -13,3 +13,12 @@ The rapid expansion of civil infrastructure in China underscores the critical ne
 | Yes | Yes | Yes | Yes | Yes | **Include** |
 
 **Note:** Data+knowledge-driven bridge DT for smart O&M; failure risk prediction
+
+## Step-3 Deep-Read Coding (Prompt B)
+
+| P | Q | R | U Tier | V | W | X | Z | AA | AB | AC | AD | AE | AF |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| Yes | Yes | Yes | Tier 2 - Digital Shadow (one-way physical to virtual) | 0 | 0 | 1 | Design for Safety (DfS) | None | Ontology / semantic | Multi (two or more data types) | Single case study | 4 | Predictive analytics / decision support |
+
+**Key evidence (AG):** Data and knowledge-driven bridge digital twin modeling (DK-DTM) framework for smart O&M (Beijing U Tech): multi-source data collection + spatiotemporal modeling + expert knowledge reasoning; real-time data from spatial/temporal models; expert knowledge model for automated structural health assessment; supports monitoring, prediction, and decision-making for efficient maintenance. One-way monitoring→assessment→decision support; no actuation and no learning loop (expert knowledge is rule-based, not learning).
+(full-text source: Endnote)

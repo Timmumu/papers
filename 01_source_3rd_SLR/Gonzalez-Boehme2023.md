@@ -13,3 +13,12 @@ In the field of construction, human-robot collaboration and mixed reality (MR) o
 | Yes | Yes | Yes | Yes | Yes | **Include** |
 
 **Note:** Robot DT for motion preview & safe workspace entry; construction HRC
+
+## Step-3 Deep-Read Coding (Prompt B)
+
+| P | Q | R | U Tier | V | W | X | Z | AA | AB | AC | AD | AE | AF |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| Yes | Yes | Yes | Tier 3 - Digital Twin (bidirectional, two-way) | 0 | 1 | 0 | Design for Safety (DfS) | None | Perception / Computer Vision | Multi (two or more data types) | Single case study | 4 | Design for Safety |
+
+**Key evidence (AG):** Mixed Reality-based human-robot collaboration for timber frame construction (USM Chile): vision-based collaborative industrial robot system for wood stereotomy; carpenter lays out joinery with conventional marks, robot cuts based on visual interpretation; digital twin of robot previsualizes all motions for task validation and safety (when to enter workspace); real-time visual feedback between human and robot; 3D model of cut shape constructed from vision system data. Bidirectional human-robot collaboration with robot executing physical tasks → Tier 3; no ML learning loop (rule-based mark interpretation).
+(full-text source: Endnote)

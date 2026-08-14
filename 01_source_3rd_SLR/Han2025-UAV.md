@@ -13,3 +13,12 @@ Monitoring large-scale work sites is challenging, particularly in vast outdoor a
 | Yes | Yes | Yes | Yes | Yes | **Include** |
 
 **Note:** UAV+DT worker monitoring & authorization; operational safety
+
+## Step-3 Deep-Read Coding (Prompt B)
+
+| P | Q | R | U Tier | V | W | X | Z | AA | AB | AC | AD | AE | AF |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| Yes | Yes | Yes | Tier 2 - Digital Shadow (one-way physical to virtual) | 0 | 1 | 0 | Design for Safety (DfS) | Implemented | Perception / Computer Vision | Multi (two or more data types) | Single case study | 4 | Design for Safety |
+
+**Key evidence (AG):** UAV-based framework for worker monitoring and management on large-scale construction sites (CUHK): pretrained YOLO-LCA model (detection accuracy improved 31.5%→96.4%) + multi-object tracking + 3D site reconstruction for precise global registration and situational awareness; cross-referencing UAV detections with GPS-enabled worker IDs for authorization verification; large-scale validation across multiple construction projects in Hong Kong; continuous UAV data collection enables iterative model retraining, improving detection robustness. One-way monitoring→authorization verification→decision support; implemented retraining loop but no convergence criterion.
+(full-text source: Endnote)

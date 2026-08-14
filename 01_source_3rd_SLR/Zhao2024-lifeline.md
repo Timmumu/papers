@@ -13,3 +13,7 @@ Hidden risks of service state of urban lifeline infrastructures under the comple
 | Yes | Yes | Yes | Yes | Yes | **Include** |
 
 **Note:** DT-driven predictive diagnosis of urban lifeline hidden risks; perspective
+
+## Step-3 Deep-Read Coding (Prompt B)
+
+**Stage-2 exclusion:** P=No, Q=Yes, R=No. Perspective article reviewing structural monitoring/evaluation/diagnosis for urban lifeline infrastructures; proposes a conceptual paradigm of integrated structural state-effect DT modeling and predictive diagnosis of hidden risks, and countermeasures for three bottleneck issues (multi-source point monitoring + area detection data fusion). No DT is built or validated and no specific methodology is implemented - R=No -> Stage-2 exclude. [Full-text source: Endnote]

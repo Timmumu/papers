@@ -13,3 +13,12 @@ The increasing aging of underground pipe networks and the lack of effective insp
 | Yes | Yes | Yes | Yes | Yes | **Include** |
 
 **Note:** Geometric DT for pipeline deformation/blockage defect assessment
+
+## Step-3 Deep-Read Coding (Prompt B)
+
+| P | Q | R | U Tier | V | W | X | Z | AA | AB | AC | AD | AE | AF |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| Yes | Yes | Yes | Tier 1 - Digital Model (static, no live data) | 0 | 0 | 1 | Design for Safety (DfS) | None | Other / Mixed | Multi (two or more data types) | Single case study | 4 | Perception / Computer Vision |
+
+**Key evidence (AG):** Geometric digital twin for condition assessment of large-diameter pipelines (Dalian U/Tongji): laser scanning point clouds → density-based clustering + fitting + region growing algorithm → accurate 3D surface mapping; geometric DT enables quantitative assessment of structural deformation (mean error <1 mm) and blockage defects; validated experimentally vs total station. Static DT for condition assessment — no live data link, no actuation, no learning loop.
+(full-text source: Endnote)

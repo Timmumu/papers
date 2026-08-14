@@ -13,3 +13,12 @@ The rapid deterioration of building facades presents substantial safety hazards 
 | Yes | Yes | Yes | Yes | Yes | **Include** |
 
 **Note:** Climbing-robot + defect segmentation + DT platform for facade inspection
+
+## Step-3 Deep-Read Coding (Prompt B)
+
+| P | Q | R | U Tier | V | W | X | Z | AA | AB | AC | AD | AE | AF |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| Yes | Yes | Yes | Tier 2 - Digital Shadow (one-way physical to virtual) | 0 | 1 | 0 | Design for Safety (DfS) | None | Perception / Computer Vision | Multi (two or more data types) | Single case study | 4 | Perception / Computer Vision |
+
+**Key evidence (AG):** Simultaneous digital twin framework for building facade inspection (Tsinghua U): wall-climbing robot (negative pressure adhesion) with RGB camera + penetrating sensors; real-time vision-based defect segmentation (mAP 0.775) and metric quantification (length error 1.140 cm, center error 0.826 cm); cloud-based DT platform for quantitative defect visualization, spatiotemporal traceability, and data-driven project management; on-site inspection cycle latency 2.8-4.8s; validated on real building projects. One-way monitoring→DT→decision support; no actuation and no learning loop.
+(full-text source: Endnote)

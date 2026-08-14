@@ -13,3 +13,12 @@ Slope safety management is transitioning toward the digital twin paradigm, where
 | Yes | Yes | Yes | Yes | Yes | **Include** |
 
 **Note:** Automated slope digital models + web DT; slope safety management
+
+## Step-3 Deep-Read Coding (Prompt B)
+
+| P | Q | R | U Tier | V | W | X | Z | AA | AB | AC | AD | AE | AF |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| Yes | Yes | Yes | Tier 1 - Digital Model (static, no live data) | 0 | 0 | 1 | Design for Safety (DfS) | None | Perception / Computer Vision | Multi (two or more data types) | Single case study | 4 | BIM-to-Digital-Twin architecture |
+
+**Key evidence (AG):** Automated digitalization of engineered slopes for interactive digital twin visualization (HKUST): city-scale LiDAR point clouds → DrainNet (CNN, 81.26% Dice) for drainage channel delineation → automated parametric BIM modeling (Grasshopper, 9x faster than Dynamo) → web-based digital twin platform for interactive visualization and asset management. Static BIM models for visualization — no live data link, no actuation, no learning loop.
+(full-text source: Endnote)

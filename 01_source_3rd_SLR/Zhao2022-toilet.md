@@ -13,3 +13,7 @@ Poor indoor air quality reduces the comfort experienced in the environment and c
 | Yes | Yes | Yes | Yes | Yes | **Include** |
 
 **Note:** DT evaluation of public toilet ventilation; health/safety of IAQ
+
+## Step-3 Deep-Read Coding (Prompt B)
+
+**Stage-2 exclusion:** P=Yes, Q=No, R=Yes. DT evaluation of public toilet ventilation design (Southeast U/NUS): Revit BIM digital twins of different ventilation systems; CFD-based pollutant diffusion simulation + DesignBuilder energy simulation; all-air AC with 400mm exhaust height reduces energy 20.4% and carbon by 30681 kg CO2. Focus is indoor air quality/comfort/energy in a building, NOT construction/operation SAFETY (hazards, accidents, structural) or QUALITY (defects/rework) - Q=No -> Stage-2 exclude. [Full-text source: Endnote]

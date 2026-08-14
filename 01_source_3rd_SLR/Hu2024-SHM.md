@@ -13,3 +13,12 @@ Structural health monitoring (SHM) of civil infrastructure is critically importa
 | Yes | Yes | Yes | Yes | Yes | **Include** |
 
 **Note:** BIM-enabled DT for real-time SHM; IoT+DSP+structural analysis
+
+## Step-3 Deep-Read Coding (Prompt B)
+
+| P | Q | R | U Tier | V | W | X | Z | AA | AB | AC | AD | AE | AF |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| Yes | Yes | Yes | Tier 2 - Digital Shadow (one-way physical to virtual) | 0 | 0 | 1 | Design for Safety (DfS) | None | Digital Twin platform (no machine learning) | Multi (two or more data types) | Single case study | 4 | Design for Safety |
+
+**Key evidence (AG):** BIM-enabled digital twin framework for real-time structural health monitoring (NJIT): wireless IoT sensing (strain gauges, laser displacement) + digital signal processing (WT with sym4 kernel optimal) + structural analysis domain knowledge; sensor data interpolation in Revit for visualization of structural behaviors at different locations; DT updating frequency of 5 Hz; validated on prototyped structural frame under bending forces. One-way monitoring→visualization→decision support; no actuation and no learning loop (interpolation is static mapping).
+(full-text source: Endnote)

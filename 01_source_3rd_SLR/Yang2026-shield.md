@@ -13,3 +13,12 @@ Optimizing shield tunneling parameters is critical for ensuring both safety and 
 | Yes | Yes | Yes | Yes | Yes | **Include** |
 
 **Note:** DT multi-objective optimization of shield tunneling parameters; safety
+
+## Step-3 Deep-Read Coding (Prompt B)
+
+| P | Q | R | U Tier | V | W | X | Z | AA | AB | AC | AD | AE | AF |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| Yes | Yes | Yes | Tier 3 - Digital Twin (bidirectional, two-way) | 0 | 1 | 0 | Design for Safety (DfS) | None | Other / Mixed | Multi (two or more data types) | Single case study | 4 | Predictive analytics / decision support |
+
+**Key evidence (AG):** DT-based framework for multi-objective optimization of shield tunneling parameters (Shenzhen U/HUST): layered architecture (data acquisition, preprocessing, modeling, optimization); SHAP identifies key parameters; ABC-NSGA-III hybrid optimization algorithm; optimized parameters iteratively fed back into DT to guide parameter adjustment; validated on Shanghai Airport Link Line project; 32.02% overall optimization rate, shield attitude deviation reduced 2.21-17.13%. Bidirectional — optimization→feedback→guidance → Tier 3; no learning loop (optimization is algorithmic, not learning).
+(full-text source: Endnote)

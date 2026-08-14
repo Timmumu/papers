@@ -13,3 +13,12 @@ Construction sites routinely face multi-trade concurrency, spatiotemporal coupli
 | Yes | Yes | Yes | Yes | Yes | **Include** |
 
 **Note:** DT×Transformer closed-loop for SCP operations; risk prediction, AR execution
+
+## Step-3 Deep-Read Coding (Prompt B)
+
+| P | Q | R | U Tier | V | W | X | Z | AA | AB | AC | AD | AE | AF |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| Yes | Yes | Yes | Tier 3 - Digital Twin (bidirectional, two-way) | 0 | 1 | 0 | Design for Safety (DfS) | None | Transformer / Large Language Model (LLM) | Multi (two or more data types) | Single case study | 4 | Design for Safety |
+
+**Key evidence (AG):** DT x Transformer closed-loop intelligent construction system for high-rise self-climbing platform (HUST/UNSW): video/sensor/BIM/text aligned at component level via Component-ID+Timestamp; multimodal Transformer for operation-state recognition and short-horizon risk prediction; policy module encodes safety/resource/spatial precedence constraints to generate feasible task sequences delivered to crews via AR with acknowledgments to close the loop; validated on high-rise SCP project (extends risk-warning lead time, reduces violation rates, shortens decision latency). Bidirectional closed-loop (DT->reasoning->AR execution) -> Tier 3; no learning loop.
+(full-text source: Endnote)

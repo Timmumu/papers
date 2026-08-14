@@ -13,3 +13,7 @@ The construction industry has been trying to enhance the level of digitalization
 | Yes | Yes | Yes | Yes | Yes | **Include** |
 
 **Note:** Text-mining systematic review of DTs in construction; safety & productivity
+
+## Step-3 Deep-Read Coding (Prompt B)
+
+**Stage-2 exclusion:** P=No, Q=Yes, R=No. Systematic and quantitative review of digital twins in construction using text mining (Indiana State U): investigates impacts and potentials of DTs via literature review + text mining; identifies leading/core technologies and applications; no DT built, evaluated, or methodologically developed - R=No -> Stage-2 exclude. [Full-text source: Endnote]

@@ -13,3 +13,12 @@ Digital twins (DTs) are increasingly adopted to enhance the monitoring, manageme
 | Yes | Yes | Yes | Yes | Yes | **Include** |
 
 **Note:** BIM-based DT of urban roads; defect detection & predictive maintenance
+
+## Step-3 Deep-Read Coding (Prompt B)
+
+| P | Q | R | U Tier | V | W | X | Z | AA | AB | AC | AD | AE | AF |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| Yes | Yes | Yes | Tier 1 - Digital Model (static, no live data) | 0 | 0 | 1 | Design for Safety (DfS) | None | Digital Twin platform (no machine learning) | Multi (two or more data types) | Cross-project (multiple real projects) | 4 | BIM-to-Digital-Twin architecture |
+
+**Key evidence (AG):** BIM-based DT framework for urban roads (Sapienza/Politecnico di Torino): integrates MMS-derived LiDAR point clouds with municipal GIS layers and authoritative geodatabases; multi-scale workflow (city-wide LoD200 to asset-level LoD400) with IFC 4.3 semantic enrichment; geometric accuracy ±3 cm; integrates 45+ km of urban road network; supports multi-scale visualization, asset management, and predictive maintenance. Static DT — no live data link, no actuation, no learning loop (sensor-integrated updates are future work).
+(full-text source: Endnote)

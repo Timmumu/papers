@@ -13,3 +13,12 @@ Digital twin is a virtual replica of a physical system that updates in real time
 | Yes | Yes | Yes | Yes | Yes | **Include** |
 
 **Note:** MBSE-designed DT for bridge rotation construction monitoring; risk prediction
+
+## Step-3 Deep-Read Coding (Prompt B)
+
+| P | Q | R | U Tier | V | W | X | Z | AA | AB | AC | AD | AE | AF |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| Yes | Yes | Yes | Tier 1 - Digital Model (static, no live data) | 0 | 1 | 0 | Design for Safety (DfS) | None | Ontology / semantic | Multi (two or more data types) | Conceptual (no test) | 3 | BIM-to-Digital-Twin architecture |
+
+**Key evidence (AG):** MBSE-based design of a DT system for rotation-construction monitoring of a 90m+90m single-tower cable-stayed bridge (SWJTU): V-model architecture via RFLP (requirements-functional-logical-physical) process; SysML models for requirements/functions/behavior/integration; DT intended to predict risks and optimize rotation construction plans before implementation; MBSE improves design efficiency and early flaw detection. Design-phase work only - DT not yet implemented/deployed, model validation is future work; no live data link, no learning loop.
+(full-text source: Endnote)

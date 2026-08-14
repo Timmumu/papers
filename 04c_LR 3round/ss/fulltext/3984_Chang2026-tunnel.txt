@@ -1,0 +1,1789 @@
+A transformer-based surrogate modeling strategy for tunnel digital twin in 
+full-field displacement prediction under adjacent tunnel construction
+Xiangyu Chang
+a
+, Hongyun Fan
+a
+, Yuguang Fu
+a , *
+, Chengjia Han
+a
+, Hao Wang
+b
+,  
+Jianxiao Mao
+b
+a
+School of Civil and Environmental Engineering, Nanyang Technological University, Singapore
+b
+Key Laboratory of C & PC Structures of Ministry of Education, Southeast University, Nanjing, China
+ARTICLE INFO
+Keywords:
+Digital twin
+Shield tunnel
+Surrogate modeling
+Transformer
+Cross-attention fusion
+Adjacent excavation
+ABSTRACT
+Accurately predicting ground settlement and tunnel lining deformation is essential for ensuring the safety and 
+efficiency of shield tunnel projects, especially in urban areas affected by adjacent excavations. Rapid and reliable 
+forecasts of tunnel behavior support proactive design decisions and risk mitigation. However, most existing 
+surrogate models offer limited predictive resolution and accuracy, as they predict responses only at sparse 
+monitoring points and ignore spatial information, which restricts their applicability in building comprehensive 
+digital twin (DT) systems for full-field simulation. To address these limitations, this study proposes a DT 
+framework for predicting ground settlement and lining deformation in shield tunnels affected by adjacent 
+excavation. A hybrid surrogate model, called the Dual-Fusion Swin-Table Transformer Network (DF-STTN), is 
+developed by combining Swin Transformer and TabTransformer to handle spatial and non-spatial inputs. To 
+enhance multimodal interaction, a dual-stage fusion strategy is applied. The model is trained on high-fidelity 
+finite element data, then updated and validated using results from laboratory-scale tunnel excavation tests. 
+Results demonstrate that the inclusion of spatial information improves prediction accuracy, with notable im -
+provements achieved when three measurement points of the tunnel are used. DF-STTN outperforms conventional 
+convolution-based and single-fusion models in both ground settlement and lining deformation tasks. The pro -
+posed framework achieves high predictive accuracy and generalization capability for early-stage tunnel design 
+and excavation risk assessment.
+1. Introduction
+Urban development has led to a significant increase in underground 
+infrastructure projects, particularly in densely populated cities where 
+space is limited. One common engineering challenge in the design phase 
+is planning new tunnel construction near existing operational tunnels, 
+where the impact of excavation-induced ground movements must be 
+carefully assessed in advance. These interactions often lead to ground 
+settlement and structural deformation of the existing tunnel lining, 
+which may compromise structural integrity and operational safety 
+[ 25 , 42 ]. Moreover, due to geological variability, complex soil-structure 
+interaction, and evolving excavation stages, conventional deterministic 
+models and static empirical charts often fail to capture the full range of 
+possible deformation behaviors during adjacent tunneling[ 31 ]. Reliable 
+prediction of such responses during the early design stage is therefore 
+critical to avoid costly remediation, ensure compliance with safety 
+standards, and support decision-making in the planning and design.
+Recent advancements in computational modeling and sensing tech -
+nologies have introduced the concept of a digital twin (DT) 
+[ 10 , 18 , 19 , 36 ]. A DT is a virtual replica of a physical system, capable of 
+dynamically utilizing various data sources to simulate structural 
+behavior under different scenarios[ 2 , 6 ]. In tunneling applications, a DT 
+can be used during the design stage to evaluate the potential impact of 
+sequential excavation on nearby structures, allowing engineers to pro -
+actively assess risk and optimize design strategies. This approach en -
+hances the ability to test multiple design alternatives virtually, reducing 
+reliance on conservative assumptions and overdesign. Despite its po -
+tential, the application of DTs in the design of underground infrastruc -
+ture presents several challenges. High-fidelity numerical simulations, 
+such as finite element (FE) models, are commonly used to represent 
+soil – structure interaction but are computationally intensive and not 
+easily adaptable when new data becomes available[ 3 , 4 , 7 , 34 ]. 
+* Corresponding author.
+E-mail address: yuguang.fu@ntu.edu.sg (Y. Fu). 
+Contents lists available at ScienceDirect
+Advanced Engineering Informatics
+journal homepag e: www.else vier.com/loc ate/aei
+https://doi.org/10.1016/j.aei.2025.104045
+Received 4 August 2025; Received in revised form 7 October 2025; Accepted 30 October 2025  
+Advanced Engineering Informatics 69 (2026) 104045 
+Available online 7 November 2025 
+1474-0346/© 2025 Elsevier Ltd. All rights are reserved, including those for text and data mining, AI training, and similar technologies. 
+Additionally, the behavior of tunnels under adjacent excavation is 
+highly nonlinear and dependent on spatial–temporal factors, making it 
+difficult for traditional models to generalize across different construc -
+tion scenarios[ 5 ]. This gap between simulation and reality highlights the 
+need for lightweight and effective models that can combine simulation 
+accuracy with speed to support rapid exploration of design options.
+Data-driven models, particularly surrogate models, have gained 
+attention in this regard. These models approximate the behavior of more 
+complex simulations by learning from precomputed results or experi -
+mental data, enabling faster prediction with minimal loss of accuracy 
+[ 8 , 9 , 43 , 44 ]. In tunnel engineering, surrogate modeling approximates 
+the nonlinear mapping between excavation/tunnel parameters and 
+deformation responses, thereby reducing reliance on costly FE simula -
+tions. This approach follows the fundamental principle of function 
+approximation, where machine learning models serve as universal 
+approximators of complex soil–structure interaction functions that are 
+otherwise captured through high-fidelity but computationally expensive 
+FE simulations. There are various surrogate modeling approaches 
+available, such as response surface methodology [ 24 ], Kriging [ 32 ], 
+regression methods [ 1 , 16 , 46 ], polynomial expansions [ 15 ], and proper 
+orthogonal decomposition [ 13 , 41 ]. In general, these surrogate modeling 
+methods perform effectively when the prediction task involves only a 
+few output variables, such as surface settlements at selected locations or 
+deformations at key points around the tunnel lining [ 22 ]. However, the 
+key challenge in the context of DTs for adjacent tunneling is that reliable 
+design requires capturing full-field responses across many spatial posi -
+tions, excavation stages, and even different types of outputs (e.g., 
+ground settlement, tunnel lining deformation). Unlike point-based pre -
+dictions, which only estimate behavior at selected monitoring locations, 
+full-field prediction demands a model that can represent the continuous 
+deformation field of the ground and lining. In this case, traditional 
+surrogate modeling approaches reveal clear shortcomings. First, they 
+typically scale poorly because their formulations (e.g., polynomial ex -
+pansions, response surfaces, or regression-based methods) become un -
+stable or computationally prohibitive as the dimensionality of the 
+problem increases. Second, they often rely on simplified or limited input 
+features, which restricts their ability to incorporate diverse information 
+such as soil heterogeneity, construction parameters, and spatial geom -
+etry. Third, they struggle to generalize beyond the conditions repre -
+sented in the training data, making them sensitive to changes in geology, 
+tunnel geometry, or construction sequence [ 2 , 3 , 4 , 6 , 22 ]. To address 
+these limitations, more advanced surrogate modeling techniques are 
+needed. Such models would enable the development of comprehensive 
+and adaptive DT frameworks capable of delivering full-field predictions 
+under varying scenarios.
+Multimodal data fusion has emerged as a promising approach for 
+enhancing surrogate modeling in complex engineering tasks, as it en -
+ables the integration of diverse data types, such as spatial coordinates, 
+tabular features, and sequential information, into a unified learning 
+framework [ 11 ]. By combining different modalities, models can better 
+capture the intricate relationships between excavation parameters, 
+geological conditions, and system responses, ultimately improving pre -
+dictive performance and generalization. For example, Luo et al. [ 26 ] 
+proposed a visual navigation framework combining Multimodal Graph 
+Learning and Action Boost Memory to help agents navigate using only 
+visual input. By dynamically modeling spatial, semantic, and historical 
+information, the method significantly improves navigation success and 
+efficiency in unseen environments. Yang et al. [ 38 , 39 ] proposes a 
+Multimodal Knowledge-Guided Model (MKGM) for the joint recognition 
+of bridge defects and structural information by integrating visual fea -
+tures, knowledge graphs, and label co-occurrence through a dual-graph 
+convolutional network and MambaVision. By capturing hierarchical 
+semantic associations among defects, components, and structural re -
+gions, the model achieves superior performance. These examples 
+collectively highlight the growing potential of multimodal data fusion to 
+improve model robustness, accuracy, and applicability in a wide range 
+of engineering contexts.
+In this paper, the DT framework is designed to provide a lightweight 
+yet accurate virtual replica of adjacent tunneling processes, with the 
+specific goal of predicting full-field deformation of an existing tunnel 
+during new excavation. The Dual-Fusion Swin-Table Transformer 
+Network (DF-STTN) serves as the methodological core of the proposed 
+DT framework. This capability is realized through a hybrid Transformer- 
+based surrogate modeling architecture that integrates both spatial and 
+tabular modalities [ 20 , 33 ]. Transformers, originally developed for nat -
+ural language processing, are chosen in this work because of their 
+theoretical strength in capturing long-range dependencies through self- 
+attention mechanisms. This property is particularly relevant for 
+tunneling problems, where localized excavation can induce deformation 
+at distant parts of the tunnel and ground surface. In contrast to 
+convolution-based networks that emphasize local features, attention- 
+based models dynamically assign importance weights across the entire 
+input domain, making them well-suited for geotechnical systems char -
+acterized by both local variability and global interactions[ 21 , 35 , 45 ]. 
+Spatio-temporal models (e.g., recurrent networks, ConvLSTMs) are 
+effective at learning sequential dynamics but often face challenges in 
+scalability and capturing long-range spatial dependencies, which are 
+essential in adjacent tunneling where excavation at one location can 
+influence deformation far away [ 40 ]. Graph-based models can represent 
+irregular geometries and local connectivity, yet they typically require 
+complex graph construction and incur high computational costs when 
+extended to dense, full-field predictions [ 14 ]. Moreover, adjacent 
+tunneling problems involve two distinct types of data: (1) non-spatial/ 
+tabular data, such as soil stiffness, tunnel burial depth, and lining 
+thickness, which describe global system properties, and (2) spatial data, 
+such as settlement and deformation fields, which capture location- 
+dependent responses. By explicitly designing a dual-fusion Trans -
+former architecture, this study ensures that both modalities are pro -
+cessed appropriately: TabTransformer for tabular features and Swin 
+Transformer for spatial grids, before being integrated in a complemen -
+tary way. This design reflects the principle that predictive accuracy 
+improves when models account for both global system descriptors and 
+local spatial patterns. This makes them especially well-suited for ap -
+plications involving high-dimensional, structured, or sequential data. 
+This architecture forms the core of the proposed DT framework, sup -
+porting high-resolution, multimodal prediction of tunnel behavior.
+In summary, this study proposes a DT framework tailored for the 
+design phase of tunnel projects involving adjacent excavation. The 
+proposed approach integrates deep learning-based surrogate modeling, 
+feature encoding, and model updating to construct a lightweight and 
+adaptive DT capable of simulating the deformation behavior of an 
+existing tunnel. The proposed framework provides practical guidance 
+for adjacent tunnel design by enabling efficient full-field prediction of 
+deformation and supporting risk-informed engineering decision- 
+making. Key innovations of the proposed framework include: 
+(1) Spatial and non-spatial information are obtained from a para -
+metric FE model, where simulation outputs are converted into 
+structured inputs for the surrogate model. Including spatial fea -
+tures, compared to counterparts using only non-spatial data, en -
+hances the ability to capture spatial positional relationships and 
+improves prediction accuracy.
+(2) A surrogate model, i.e., Dual-Fusion Swin-Table Transformer 
+Network (DF-STTN), is developed to integrate spatial and tabular 
+modalities. It employs a two-stage structure to separately predict 
+ground settlement and lining deformation, improving interpret -
+ability and accuracy. Spatial and non-spatial features are 
+extracted using a Swin Transformer and TabTransformer, then 
+fused via dual-stage fusion (early and late) for effective multi -
+modal interaction.
+(3) A data-driven model updating method is used to iteratively best 
+estimate soil parameters by minimizing prediction errors against 
+X. Chang et al.                                                                                                                                                                                                                                  Advanced Engineering Informatics 69 (2026) 104045 
+2 
+test data. This process enables adaptive updating of the surrogate 
+model, allowing it to generalize and remain effective under 
+different excavation scenarios or test setups.
+(4) A laboratory-scale test, emulating real tunnel projects, is con -
+ducted and then used to validate the proposed strategy of using 
+the new surrogate model, ensuring the modeled system accu -
+rately reflects the observed tunnel behavior.
+2. Methodology
+2.1. Overview of the method
+This study proposes a DT framework for tunnel behavior prediction 
+and evaluation. The DT framework is structured in four layers (see 
+Fig. 1 ): (1) Physical system layer, where a scaled tunnel test system 
+represents the real-world twin; (2) Data acquisition layer, which collects 
+measurements such as settlement, lining deformation, and acceleration; 
+(3) Digital modeling and data fusion layers, where numerical simula -
+tions and multimodal features are used to train the surrogate model (DF- 
+STTN) and iteratively update soil parameters; and (4) Service and 
+interaction layer, which enables prediction, assessment, and test setup 
+adjustments.
+Firstly, the physical twin is established using a laboratory-scale 
+testbed designed to replicate tunnel excavation scenarios. The system 
+includes a physical tunnel model, a data acquisition system, and a sensor 
+network that captures tunnel responses including settlement, lining 
+deformation, strain, soil pressure, and acceleration. These experimental 
+measurements form the test dataset, which is used both for model 
+validation and for updating the virtual model.
+It should be clarified that, due to the data availability and setup 
+flexibilities, a laboratory-scale setup is adopted in this study to establish 
+the DT framework. In particular, compared to the real tunnel physical 
+twin, the designed system offers more flexibilities of setup configura -
+tions, e.g., tunnel diameters and inter-tunnel distances, and provides 
+more comprehensive data collection schemes in the lab. Furthermore, 
+the proposed methodology is not limited to such lab test configuration, 
+which can be further extended and applicable to real tunnels in full-field 
+applications, if available.
+Secondly, a high-fidelity FE Model is constructed to simulate tunnel 
+responses under varying design and soil conditions. This includes 
+parametric modeling where multiple input variables (e.g., soil proper -
+ties, tunnel geometry) are systematically varied, verification of simula -
+tion results, and generation of a comprehensive dataset comprising over 
+1000 samples. Key outputs from the simulations, such as ground set -
+tlement and lining deformation, are used to build the training dataset for 
+the surrogate model.
+Thirdly, a deep learning-based surrogate model is developed to 
+replace the computationally intensive FE model simulations. This model 
+includes both non-spatial (design parameters and soil properties) and 
+spatial (a distance matrix representing spatial relationships between 
+tunnel segments and soil) input features. To maintain accuracy under 
+real-world conditions, a model updating module is integrated. It uses 
+Fig. 1. The framework of the proposed method.
+X. Chang et al.                                                                                                                                                                                                                                  Advanced Engineering Informatics 69 (2026) 104045 
+3 
+test data from the physical layer to iteratively adjust key model pa -
+rameters, especially soil properties, through optimization techniques.
+Finally, the updated model is used to provide rapid predictions for 
+new test scenarios or design variations. This integrated DT framework 
+enables accurate, tunnel behavior prediction and model updating by 
+seamlessly combining physical testing, numerical simulation, and deep 
+learning.
+2.2. Data feature extraction
+The input data used for surrogate model training includes both non- 
+spatial and spatial information extracted from the FE simulation results. 
+Two distinct types of spatial information, ground settlement and lining 
+deformation, are extracted separately to construct two surrogate 
+models, each tailored to its respective output type. Two types of feature 
+information are illustrated as follows.
+Non-spatial information : Non-spatial features consist of scalar 
+input parameters that describe the tunnel design and soil conditions. 
+These include soil mechanical properties (e.g., stiffness, friction angle, 
+cohesion), tunnel geometric parameters, and construction-related inputs 
+such as burial depth or cover thickness. These parameters are directly 
+extracted from the FE model input.
+Spatial information : Spatial information captures the geometric 
+and positional context of deformation responses in the tunnel system. It 
+is essential for learning location-dependent patterns in both ground and 
+lining behavior. Fig. 2 illustrates the procedures of spatial information 
+extraction.
+Table 1 summarizes input and output variables for the surrogate 
+model. Two distinct types of spatial data are extracted from the FE 
+model outputs: ground settlement features and lining deformation fea -
+tures. For each case, the input is structured as a 224 × 224 × 3 grid, 
+where each spatial point includes three components representing rela -
+tive distances between the surface (or lining) grid points and predefined 
+tunnel measurement points. The 224 × 224 grid resolution was chosen 
+as a balance between spatial detail and computational efficiency. 
+Correspondingly, each case has a single-channel 224 × 224 target 
+output, which is the interpolated deformation field (ground settlement 
+or lining deformation) derived from the FE simulation. This output 
+serves as the prediction target for the surrogate model.
+(a) Ground settlement spatial information
+Ground settlement features represent the distance features on the 
+surface above the tunnel, influenced by tunnel geometry and location. 
+These features are organized on a uniform grid to reflect spatial varia -
+tions in surface location. To prepare this data for model input, the 
+following preprocessing steps are applied to extract and standardize the 
+spatial information: 
+Step 1: Grid extraction: The ground surface information from the FE 
+model is extracted and projected onto a surface grid. Due to sym -
+metry, only half the domain is considered, and the data is mirrored as 
+necessary.
+Step 2: Interpolation: Displacement values from the FE mesh are 
+interpolated onto a uniform grid of size 224 × 224 to ensure con -
+sistency across samples. A 2D deformation map d
+zd 
+representing the 
+vertical settlement distribution on the ground surface. This serves as 
+the prediction target for the surrogate model.
+Fig. 2. Spatial information extraction.
+Table 1 
+Summary of input and output variables for the surrogate model.
+Category Variable type Description Format/ 
+Dimension
+Non- 
+spatial 
+inputs 
+1 £ 7 
+tensor
+Soil stiffness Elastic modulus of soil strata Scalar
+​ Density Density of soil strata Scalar
+​ Poisson ’ s ratio Poisson ’ s ratio of soil strata Scalar
+​ Friction angle Internal friction angle of soil Scalar
+​ Cohesion Cohesion parameter of soil Scalar
+​ Tunnel 
+diameter
+Tunnel geometry, such as 
+tunnel diameter, lining 
+thickness, etc.
+Scalar
+​ Tunnel depth Parameters related to 
+excavation/construction 
+process
+Scalar
+Spatial 
+inputs
+Ground 
+settlement grid
+Relative distances of ground 
+surface points to reference 
+tunnel points
+224 × 224 × 3 
+tensor
+​ Lining 
+deformation 
+grid
+Relative distances of lining 
+points to reference tunnel 
+points
+224 × 224 × 3 
+tensor
+Outputs Ground 
+settlement
+Interpolated settlement 
+deformation field
+224 × 224 × 1 
+tensor (single 
+map)
+​ Lining 
+deformation
+Interpolated lining 
+deformation field
+224 × 224 × 1 
+tensor (single 
+map)
+X. Chang et al.                                                                                                                                                                                                                                  Advanced Engineering Informatics 69 (2026) 104045 
+4 
+Step 3: Spatial feature components: Each grid point on the 224 × 224 
+ground grid is paired with spatial descriptors that encode its relative 
+position to measurement points of the new tunnel. These spatial 
+features help the model understand how ground-level deformation 
+correlates with the tunnel structure below. Specifically, each grid 
+point is associated with a tuple:
+( d
+1
+, d
+2
+, d
+3
+) (1) 
+where d
+j 
+=
+̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅ ̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅ ̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅ ̅̅̅̅̅ ̅
+ 
+x
+1 i
+  x
+3 j
+)
+2
++
+(
+y
+1 i
+  y
+3 j
+)
+2
++
+ 
+z
+1 i
+  z
+3 j
+)
+2
+√
+is the Euclidean 
+distance from the grid point ( x
+1i
+, y
+1i
+, z
+1i
+) to the j
+th 
+tunnel measurement 
+point, for j = 1, 2, 3.
+(b) Lining deformation spatial information
+Lining deformation features capture distance features on the outer 
+surface of the tunnel lining. Due to the cylindrical geometry, a special 
+coordinate transformation is required to unwrap the surface into a 
+planar form suitable for modeling. Fig. 3 shows the procedures of spatial 
+information extraction of the lining deformation. 
+Step 1: Geometry Unwrapping: The cylindrical tunnel lining is 
+unwrapped into a rectangular representation, where the horizontal 
+axis corresponds to the arc length around the tunnel circumference, 
+and the vertical axis represents the longitudinal tunnel axis.
+Step 2: Coordinate Transformation: To unwrap the cylindrical tunnel 
+lining onto a 2D plane, we first compute the arc length between a 
+reference vertex (typically located at the top of the tunnel) and each 
+node along the outer perimeter of the tunnel. As shown in Fig. 3 , this 
+step is calculated by identifying the angle γ between the reference 
+direction (from the center to the vertex) and the line connecting the 
+center to the target node ( x
+c
+, y
+c
+, z
+c
+).
+Given the tunnel outer radius R , the arc length for node i is calculated 
+as: 
+arc length
+i
+= R ⋅ γ (2) 
+where the angle γ is obtained using trigonometric geometry in the tunnel 
+cross-section. This arc_length represents the vertical coordinate of the 
+node in the unwrapped 2D plane, with the horizontal coordinate being 
+the value x
+i 
+in the tunnel longitudinal axis. 
+Step 3: Mesh Inconsistency Adjustment: Due to geometric mis -
+matches between the high-fidelity FE model and the simplified tun -
+nel representation, direct alignment between mesh nodes cannot 
+always be achieved. To address this, a local neighborhood interpo -
+lation strategy is applied to remap the high-resolution FE data onto a 
+uniform grid in the unwrapped 2D plane. This ensures consistent 
+spatial correspondence between all samples. A 2D deformation map 
+d
+zl 
+representing the lining deformation distribution of the tunnel 
+lining. This serves as the prediction target for the surrogate model.
+Step 4: Spatial Feature Components: Although the mesh has been 
+interpolated into a 2D format for consistency, this interpolation al -
+ters the original node locations. Therefore, to preserve spatial 
+awareness for modeling, we recover the 3D coordinates ( x , y , z ) of 
+each grid point on the cylindrical tunnel surface using the tunnel 
+outer radius R and the angle θ derived from arc_length . This gives the 
+full 3D position of the point:
+Fig. 3. Procedures of spatial information extraction of the lining deformation.
+X. Chang et al.                                                                                                                                                                                                                                  Advanced Engineering Informatics 69 (2026) 104045 
+5 
+( x
+2
+, y
+2
+, z
+2
+)
+Then, for each measurement point P
+j
+=
+(
+x
+3 j
+, y
+3 j
+, z
+3 j
+)
+on the tunnel, 
+spatial information on the 224 × 224 × 3 lining grid is calculated by: 
+d
+j
+=
+̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅ ̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅ ̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅ ̅̅
+ 
+x
+2
+  x
+3 j
+)
+2
++
+(
+y
+2
+  y
+3 j
+)
+2
++
+ 
+z
+2
+  z
+3 j
+)
+2
+√
+j = 1 , 2 , 3 (3) 
+where these distances ( d
+1
+, d
+2
+, d
+3
+) represent the spatial relationships 
+between each lining grid point and the tunnel measurement points.
+2.3. Surrogate modeling method
+To approximate the outputs of computationally expensive FE model 
+simulations, a surrogate model that combines spatial and tabular mo -
+dalities through the DF-STTN is developed (see Fig. 4 ). The proposed DF- 
+STTN is grounded in the fundamental principle of function approxima -
+tion, where deep neural networks serve as universal approximators that 
+can map complex nonlinear relationships between input parameters (e. 
+g., soil stiffness, tunnel geometry, depth) and output deformation re -
+sponses. Its domain-specific superiority lies in its alignment with phys -
+ical deformation behavior. In the context of adjacent tunneling, these 
+nonlinear mappings represent the physical relationship between 
+excavation-induced stress redistribution and resulting ground and lining 
+deformation. The model ’ s dual-modal fusion mechanism enables 
+simultaneous learning of global structural effects, captured through 
+features like tunnel geometry, depth, and soil properties, and localized 
+spatial interactions, represented by 2D spatial grids that reflect how 
+deformation propagates around tunnels and interfaces. Additionally, the 
+cross-modal fusion module captures correlations between input pa -
+rameters and localized deformation responses, consistent with estab -
+lished geotechnical principles where stiffer soils or deeper tunnels 
+constrain settlement.
+The model consists of three major components: (1) a 
+Table Transformer encoder for non-spatial features, (2) a Swin Trans -
+former encoder for spatial features, and (3) a cross-attention module for 
+multimodal fusion. The goal is to learn a mapping: 
+f
+θ
+:
+ 
+X
+non   spatial
+, X
+spatial
+)
+→ y (4) 
+where X
+spatial
+∈ R
+H × W × C 
+is the spatial input tensor, X
+non spatial
+∈ R
+d 
+is the 
+vector of non-spatial input, and y is the predicted deformation response 
+(e.g., ground settlement and lining deformation).
+(a) Table Transformer for non-spatial feature encoding.
+The non-spatial input X
+non spatial
+∈ R
+d 
+is embedded as a token 
+sequence[ 27 ]: 
+T
+( 0 )
+= [ t
+1
+, t
+2
+, ⋯ , t
+m
+] (5) 
+This sequence is then passed through a series of Transformer encoder 
+layers. Each layer is composed of two primary sub-blocks: a multi-head 
+self-attention mechanism (MHSA) and a feed-forward network (FFN).
+In MHSA, the token sequence T
+( l ) 
+at layer l is processed as follows: 
+MHSA
+ 
+T
+( l )
+)
+= Concat ( head
+1
+, ⋯ , head
+h
+) W
+O
+(6) 
+where each attention head is computed by: 
+head
+i
+= Attention
+ 
+T
+( l )
+W
+Q
+i
+, T
+( l )
+W
+K
+i
+, T
+( l )
+W
+V
+i
+)
+(7) 
+The output of the attention block is then passed through a FFN of the 
+form: 
+FFN ( t ) = σ ( tW
+1
++ b
+1
+) W
+2
++ b
+2
+(8) 
+where σ ( ⋅ ) denotes a non-linear activation function (i.e., ReLU), and W
+1
+, 
+W
+2
+, b
+1
+, and b
+2 
+are trainable parameters.
+Each sub-block is followed by layer normalization and a residual 
+connection, which help keep the training process stable and ensure 
+smoother gradient flow across the transformer layers.[ 33 ].
+(b) Swin Transformer for spatial feature encoding.
+Let the spatial input be divided into patches of size P × P , giving N =
+H
+P
+⋅
+W
+P 
+patches. Each patch x
+i
+∈ R
+P
+2
+⋅ C 
+is linearly projected into an embed -
+ding vector z
+i
+∈ R
+d
+, forming the sequence[ 20 ]: 
+Z
+( 0 )
+= [ z
+1
+, z
+2
+, ⋯ , z
+N
+] ∈ R
+N × d
+(9) 
+The sequence is then passed through a series of Swin Transformer 
+blocks, where each block consists of a Window-based Multi-Head Self- 
+Attention (W-MSA) layer and a Shifted Window MSA (SW-MSA) layer 
+in alternating fashion [ 23 ]. These attention mechanisms are used to 
+capture both local and global dependencies across the spatial domain 
+[ 38 , 39 ].
+Within each attention layer, the input sequence Z
+( l ) 
+is projected into 
+three matrices: the query matrix Q , key matrix K , and value matrix V , as 
+follows: 
+Fig. 4. DF-STTN for the surrogate model.
+X. Chang et al.                                                                                                                                                                                                                                  Advanced Engineering Informatics 69 (2026) 104045 
+6 
+Q = Z
+( l )
+W
+Q
+, K = Z
+( l )
+W
+K
+, V = Z
+( l )
+W
+V
+(10) 
+where W
+Q
+, W
+K
+, and W
+V 
+are learnable projection matrices, and d
+k 
+is the 
+dimension of each attention head. The attention output is computed 
+using scaled dot-product attention: 
+Attention ( Q , K , V ) = Softmax
+(
+QK
+T
+̅̅̅̅ ̅
+d
+k
+√
+)
+V (11) 
+To enhance cross-window communication, the Swin Transformer 
+introduces a shifted window mechanism in alternating layers. In this 
+approach, the partitioning of attention windows is shifted by half the 
+window size to enable interactions between neighboring regions that 
+would otherwise be disjoint[ 23 ].
+Each stage of the Swin Transformer also includes a patch merging 
+operation, which downsamples the spatial resolution while increasing 
+the channel depth. Formally, this is represented as: 
+Z
+( l + 1 )
+= Downsample
+ 
+Z
+( l )
+)
+(12) 
+This hierarchical structure enables the model to capture multi-scale 
+spatial features effectively, which is critical for learning localized 
+deformation patterns in complex geometries.
+(c) Cross-attention fusion
+To integrate information from both spatial and non-spatial modal -
+ities, the model includes two levels of feature fusion: a late-stage fusion 
+and an early-stage fusion, both based on attention mechanisms[ 12 , 37 ]. 
+These fusion strategies allow the model to effectively combine spatial 
+features from the Swin Transformer with non-spatial features from the 
+Table Transformer at different stages of the network.
+The late-stage fusion is designed to integrate high-level semantic 
+representations from both modalities. Let F
+Sw
+∈ R
+n × d 
+represent the 
+spatial features obtained from the Swin Transformer encoder, and F
+TA
+∈
+R
+m × d 
+denote the non-spatial feature representations output by the 
+Table Transformer.
+The cross-attention is constructed by projecting F
+Sw 
+into query vec -
+tors and F
+TA 
+into key and value vectors using learnable weight matrices 
+[ 8 , 9 ]: 
+Q = F
+Sw
+W
+Q
+, K = F
+TA
+W
+K
+, V = F
+TA
+W
+V
+(13) 
+The fused representation is then computed using scaled dot-product 
+attention: 
+F
+fused
+= Softmax
+(
+QK
+T
+̅̅̅̅ ̅
+d
+k
+√
+)
+V (14) 
+Finally, an Add & Norm step is applied by combining the original 
+Swin features with the fused output, followed by layer normalization: 
+F
+output
+= LayerNorm
+ 
+F
+Sw
++ F
+fused
+)
+(15) 
+This fused representation F
+output 
+serves as the input to the final 
+prediction head, enabling the model to make informed predictions based 
+on both spatial geometry and non-spatial design or material properties.
+In addition to late-stage fusion, an early-stage fusion module is also 
+implemented to inject non-spatial context earlier in the processing 
+pipeline. This mechanism shares a similar attention-based structure with 
+the late-stage fusion. Intermediate spatial features Feat
+Sw 
+and non- 
+spatial features Feat
+Ta 
+are aligned and fused through attention before 
+being fed into the deeper stages of the Swin Transformer. This early 
+interaction enhances the feature representation by allowing spatial 
+encoding to adapt based on design-related cues from the beginning of 
+the network.
+In summary, these two fusion strategies enable the model to leverage 
+complementary strengths of spatial and tabular data at multiple levels, 
+thereby improving the overall robustness and generalization of tunnel 
+behavior prediction.
+(d) Output prediction
+The final fused features F
+output 
+are passed through a multilayer per -
+ceptron layer (MLP) f
+out 
+to generate predictions: 
+̂y = f
+out
+( F
+output
+) (16) 
+The dimensionality of the prediction ̂y depends on the task at hand. 
+For ground settlement prediction, the output takes the form 
+̂y ∈ R
+224 × 224
+, representing a 2D spatial map of settlement values on the 
+surface. Similarly, for lining deformation prediction, the output also lies 
+in R
+224 × 224
+, corresponding to the unwrapped tunnel surface grid.
+To train the model, the Mean Squared Error (MSE) is used as the loss 
+function, which penalizes deviations between predicted and actual 
+values. The MSE loss is defined as: 
+L =
+1
+N
+∑
+N
+i = 1
+‖ ̂y
+i
+  y
+i
+‖
+2
+2
+(17) 
+where N is the number of training samples, 
+⃦
+⃦
+̂y
+i
+  y
+i
+⃦
+⃦
+2
+2 
+is the squared L2 
+norm (Euclidean distance squared) between prediction and ground truth 
+for the i -th sample, ̂y
+i 
+is the predicted deformation map, and y
+i 
+is the 
+corresponding ground truth.
+2.4. Model updating strategy
+The DF-STTN is utilized to effectively capture the complex nonlinear 
+relationships between the input features and the corresponding target 
+outputs. Then, the model is updated to ensure generalization perfor -
+mance. Test data from the physical experiment is used to perform back- 
+analysis, as outlined in Algorithm 1. The baseline model is inverted to 
+estimate unknown soil parameters by minimizing the error between the 
+model predictions and observed test data. A genetic algorithm (GA) is 
+applied to identify the best-fitting parameters. In principle, other opti -
+mization algorithms (e.g., Bayesian optimization, gradient-based 
+methods) could also be adopted within the same framework.
+Algorithm 1 Model updating framework based on back analysis for soil properties.
+Input:
+  Test data Y test (e.g., ground settlement or lining deformation)
+  Initial guess of soil parameters θ
+0
+  Trained surrogate model f ( ⋅ ; θ )
+  Optimization algorithm (e.g., GA, Bayesian optimization)
+Output:
+  Estimated soil parameters θ *
+1: Initialize θ ← θ
+0
+2: Set convergence threshold ε and maximum iterations max_iter
+3: For iteration = 1 to max_iter do
+4: Predict output: 
+ˆ
+Y ← f ( θ )
+5: Compute error: L = ||
+ˆ
+Y   Y _test||
+2 
+(i.e., MSE loss)
+6: If L < ε then
+7: Break
+8: Update θ using optimization algorithm to minimize L
+9: End For
+10: Return optimized parameters θ *
+The updated surrogate model is then deployed for predictive analysis. 
+The estimated soil properties and updated conditions are fed into the 
+surrogate model to simulate future tunnel behavior. The predicted 
+outputs are compared against experimental results for validation, 
+ensuring the reliability of the DT system.
+3. Case study
+3.1. Test introduction and data collection
+The engineering site selected for this study is located along Singa -
+pore ’ s Cross-Island Line, focusing on evaluating the effects of con -
+structing a new tunnel for the Cross-Island Line on the existing tunnels of 
+other MRT lines, as illustrated in Fig. 5 . The existing tunnel is a single- 
+track structure composed of circular segment linings with staggered 
+X. Chang et al.                                                                                                                                                                                                                                  Advanced Engineering Informatics 69 (2026) 104045 
+7 
+joints. Its key specifications are: outer diameter of 12 m, lining thickness 
+of 0.45 m, ring width of 2 m, and tunnel depth of 35 m. The lining is 
+made of C50-grade concrete with an elastic modulus of 35 GPa [ 7 ]. It is 
+assumed that a new Cross-Island Line tunnel, sharing the same structural 
+parameters, will be constructed to underpass the existing tunnels at 
+specific locations. The crossing angle between the new large-diameter 
+tunnel and the existing tunnels is approximately 90 degrees.
+Due to the limited availability and high cost of obtaining compre -
+hensive field monitoring data, this study adopts a laboratory-scale 
+testing approach to evaluate the impact of adjacent tunnel excavation. 
+While field measurements are often sparse and subject to environmental 
+constraints, controlled laboratory tests allow for precise monitoring and 
+repeatable conditions, enabling systematic validation of surrogate 
+models. However, physical model tests are also time-consuming and 
+resource-intensive. To overcome these limitations, a hybrid strategy is 
+employed, combining experimental data with high-fidelity FE simula -
+tions, to generate a rich dataset for training and validating the surrogate 
+model. This integration ensures both data quantity and quality while 
+reducing the reliance on extensive physical testing. Although the lab- 
+scale test provides valuable insights, it still has limitations such as 
+scale effects and simplified boundary conditions. To mitigate these is -
+sues, measures such as careful material selection, similarity criteria, and 
+cross-verification with FE outputs are implemented to enhance the 
+representativeness and feasibility of the experiment.
+3.1.1. Lab test setup
+Fig. 6 illustrates the test apparatus, which is composed of four main 
+components: a model box, an existing tunnel model, a tunnelling system, 
+and a data acquisition system. The similarity coefficient for the geom -
+etry of the model is selected as C
+L 
+= 48. The outer diameter of the tunnel 
+lining was 250 mm. The dimension of the soil mass (length × width ×
+height) was 1250 mm × 1250 mm × 1250 mm. The PE pipe has a 
+Young ’ s modulus of 1.4 GPa, while the concrete lining has a Young ’ s 
+modulus of 35 GPa, resulting in a modulus scale factor of 25. Based on 
+Fig. 5. Cross Island Line in Singapore.
+Fig. 6. Test apparatus.
+X. Chang et al.                                                                                                                                                                                                                                  Advanced Engineering Informatics 69 (2026) 104045 
+8 
+this modulus scale factor and the geometric scaling, the remaining scale 
+factors employed in the model test are derived through similitude 
+analysis, as summarized in Table 2 .
+Linear Variable Differential Transformers (LVDT) were used to 
+monitor ground settlement and lining deformation, with the sensors 
+evenly spaced throughout the measurement area (see Fig. 6 ). As shown 
+in Fig. 7 , three tests were conducted with different tunnel spacings and 
+radiuses to analyze ground and lining deformation response.
+The tunnelling system comprised a tunnel lining (same as the exist -
+ing tunnel), a spiral blade for excavation, and a tunnelling platform. 
+During the excavation process, the tunnel was excavated in 13 stages, 
+with each step advancing 10 cm. Note that the next step was only carried 
+out once the monitoring data from all sensors had stabilized.
+3.1.2. FE modelling
+Fig. 8 presents a schematic of the FE model, which has dimensions of 
+80 m (width) × 80 m (length) × 70 m (height) to minimize boundary 
+effects. The model details can be found in Chang et al. [ 7 ].
+The soil properties listed in Table 3 were derived from laboratory 
+tests on sand specimens and are used to model soil behavior in the FE 
+simulations. The parameters have the following meanings: Density ( D ) 
+reflects the mass per unit volume of the soil and varies with compaction 
+state; Elastic modulus ( E ) represents soil stiffness and controls deform -
+ability, directly influencing ground settlement and lining response; 
+Poisson ’ s ratio ( ν ) describes the lateral strain response under axial 
+loading, affecting soil – structure interaction; Friction angle ( φ ) is a 
+measure of shear strength and governs excavation stability; and Cohe -
+sion ( c ), though typically small for sand, accounts for minor bonding 
+effects observed in laboratory-prepared specimens. The variations in 
+these properties correspond to differences in compaction and stress 
+conditions during testing, ensuring that the simulation inputs reflect 
+realistic soil behavior. The soil part is modeled as a homogeneous and 
+isotropic material adhering to Mohr-Coulomb failure model. In this 
+study, soil stratification was not explicitly considered because the lab -
+oratory soil was uniform sand. This assumption provides a reasonable 
+simplification for the baseline model. The average values of the soil 
+properties in Table 3 are chosen as follows: D = 2100 g/cm
+3 
+(Density), E 
+= 60 MPa (Elastic modulus), ν = 0.3 (Poisson ’ s ratio), φ = 25
+◦ 
+(Friction 
+angle), c = 1.005 kPa (Cohesion). For design parameters, TD = 45 m 
+(Depth of the new tunnel), and TDi = 12 m (Diameter of the new tunnel). 
+These parameters were used as input for the Mohr-Coulomb failure 
+model. All other settings were kept the same as those in Test 1. The 
+detailed simulation procedures for the new tunnel excavation are sum -
+marized as follows: 
+(1) The initial step comprises two sequential phases. First, the tunnel 
+model is deactivated to allow the surrounding soil to reach a 
+natural equilibrium state. Subsequently, the existing tunnel is 
+introduced by activating its lining elements. The system, 
+comprising both soil and tunnel, is then allowed to continue 
+settling until a stable equilibrium is achieved. The displacement 
+field obtained at this stage is recorded as the initial condition and 
+will be subtracted from the subsequent results to accurately 
+simulate the excavation-induced deformations.
+(2) The soil elements ahead of the tunnel face are deactivated to 
+simulate the removal of ground during shield advancement. Face 
+pressure is then applied at the excavation front to maintain sta -
+bility. Subsequently, the shield tail region is activated, followed 
+by the simulation of tail grouting. Finally, the tunnel lining 
+elements are activated to provide structural support. During the 
+simulation, soil settlement and tunnel lining deformation are 
+monitored to assess the structural stability of the tunnel.
+Figs. 9 and 10 present a comparison between the numerical results 
+and the measured data at corresponding locations. The numerical model 
+demonstrates a similar trend to the experimental observations, sug -
+gesting that the finite difference model performs reasonably well. 
+However, noticeable discrepancies remain, highlighting the presence of 
+significant residuals. This indicates a need for further refinement of the 
+soil property parameters to better represent the actual ground 
+conditions.
+3.2. Surrogate model of ground settlement
+3.2.1. Surrogate model development
+Seven input variables of numerical simulations were set to 1000 
+levels each, including five parameters of the soil part and the new tunnel 
+depth and diameter. By substituting the sample data obtained from the 
+LHS experimental design into the parametric FE model for calculation, 
+1000 effective sample datasets can be obtained. The dataset is then 
+shuffled and split into two parts: 800 samples are designated as the 
+training set, while the remaining 200 samples are used as the validation 
+and test set. The input data used for surrogate model training includes 
+both non-spatial (1 × 7) and spatial (224 × 224 × 3) information. 
+Ground settlement fields with 224 × 224 derived from the FE simulation 
+serve as the prediction targets for the surrogate model. Table 4 shows the 
+hyperparameters of DF-STTN. The selection of these hyperparameters 
+was based on a combination of empirical tuning and reference to 
+established practices in Transformer-based models [ 23 , 27 ].
+The effect of training sample size on the predictive performance of 
+the surrogate model was assessed by varying the number of training 
+samples from 100 to 800. As presented in Table 5 , the MSE exhibited a 
+decreasing trend with the increase in sample size. A substantial reduc -
+tion in MSE was observed between 100 and 500 samples, dropping from 
+7.5367 to 1.1755, indicating a significant improvement in model accu -
+racy during the early stages of training. Beyond 500 samples, the rate of 
+improvement diminished, with the MSE gradually decreasing to 0.8565 
+at 800 samples. This trend indicates that although increasing the amount 
+of training data further improves model performance, the incremental 
+improvements become progressively smaller. Therefore, 700 samples 
+can be considered a cost-effective threshold, balancing model accuracy 
+with computational and data collection costs.
+To evaluate the influence of spatial information on model perfor -
+mance, different numbers of measurement points along the tunnel were 
+included in the input data. The configurations are illustrated in Fig. 11 , 
+where spatial points were progressively added along the tunnel 
+Table 2 
+Scale factors of the tunnel testbed.
+Parameter dimension Length 
+L
+Stiffness FL
+-2
+Force 
+F
+Mass 
+FL
+-3
+Stress FL
+-2
+Strain 
+1
+Moment 
+FL
+Scale factor 48 25 4.0E + 04 0.625 25 1.0 1.6E + 06
+Fig. 7. Experimental condition.
+X. Chang et al.                                                                                                                                                                                                                                  Advanced Engineering Informatics 69 (2026) 104045 
+9 
+alignment to provide localized observations of ground settlement. As 
+shown in Table 6 , the inclusion of spatial points consistently improved 
+the predictive accuracy of the surrogate model across all evaluation 
+metrics. Notably, the model with no spatial input exhibited the highest 
+MSE (1.7626), RMSE (1.3276), MAE (1.4969), and MAPE (1.7023), 
+along with the lowest R
+2 
+value (0.9704). With the addition of even a 
+single spatial point, substantial improvements were observed, reducing 
+the MSE to 1.2048 and increasing the R
+2 
+to 0.9879. The performance 
+continued to improve as more spatial points were added, with the largest 
+relative gains observed up to three points. For example, the configura -
+tion with three points achieved an MSE of 0.8565 and an R
+2 
+of 0.9898, 
+indicating a strong fit between predictions and actual ground settlement 
+values. Beyond three points, the improvements became more modest, 
+suggesting diminishing returns with additional points. These results 
+imply that incorporating a small number of spatial points (e.g., three) 
+can already provide high predictive accuracy while maintaining 
+computational efficiency. This highlights that even limited spatial in -
+formation can meaningfully enhance the accuracy of full-field settle -
+ment prediction.
+To assess the effectiveness of different surrogate modeling ap -
+proaches, seven networks were evaluated on the ground settlement 
+prediction task. For CNN-FCNN, a Convolutional Neural Network (CNN) 
+is used to extract spatial features, while a Fully Connected Neural 
+Network (FCNN) processes the non-spatial tabular input[ 28 , 30 ]. The 
+features from both branches are concatenated and passed through fully 
+connected layers to generate the final prediction. ResNet-FCNN replaces 
+the CNN encoder with a ResNet-18 backbone to extract spatial features, 
+while retaining the FCNN for processing non-spatial inputs [ 17 ]. ResNet- 
+FiLM-I integrates spatial and non-spatial information through a Feature- 
+Fig. 8. The FE model in Abaqus.
+Table 3 
+Lower/upper bounds of input variables of numerical simulations.
+Parameter/unit Range
+Soil
+Density (g/cm
+3
+) 1950 – 2250
+Elastic modulus (MPa) 40 – 80
+Poisson ’ s ratio 0.2 – 0.4
+Friction angle ( ◦ ) 10 – 40
+Cohesion (kPa) 0.01 – 2
+Design parameters
+Depth of the new tunnel (m) 35 – 50
+Diameter of the new tunnel (m) 10 – 14
+Fig. 9. Comparison of numerical and test results for ground settlement.
+X. Chang et al.                                                                                                                                                                                                                                  Advanced Engineering Informatics 69 (2026) 104045 
+10 
+wise Linear Modulation (FiLM) mechanism[ 29 ]. A ResNet-18 backbone 
+extracts high-level spatial features from image-based inputs. Non-spatial 
+features are then used to modulate these spatial features via a FiLM 
+layer, which applies learned affine transformations (scaling and shift -
+ing) to the feature maps. ResNet-FiLM-II builds upon the ResNet-FiLM 
+architecture by integrating FiLM layers directly into the residual 
+blocks of ResNet-18. Instead of applying FiLM modulation after feature 
+extraction, this design fuses non-spatial features into each residual 
+block, allowing more fine-grained and context-aware modulation 
+throughout the spatial encoding process. Swin-T-I combines a Swin 
+Transformer for spatial encoding and a TabTransformer for non-spatial 
+input processing. After separate feature extraction, the outputs are 
+flattened and concatenated, followed by a fully connected prediction 
+head. Swin-T-II also uses Swin and TabTransformers, but fuses their 
+outputs via an across-head cross-attention mechanism, enabling more 
+selective integration of spatial features.
+Table 7 shows model performances of seven networks. Among these, 
+the proposed DF-STTN achieved the best overall performance, with the 
+lowest MSE (0.8565), RMSE (0.9254), MAE (0.7102), and MAPE 
+(0.9215), while maintaining a high R
+2 
+score of 0.9898. The performance 
+of ResNet-based models improved when equipped with FiLM, indicating 
+the benefit of adaptive conditioning [ 29 ]. While the ResNet-FiLM-II 
+achieved the highest R
+2 
+(0.9944), its error metrics remained higher 
+than those of the DF-STTN, suggesting a slightly inferior balance be -
+tween accuracy and stability. The superiority of DF-STTN is further 
+confirmed by the error maps shown in Table 8 . These visualizations 
+reveal that this model not only captures the overall spatial distribution 
+of ground settlement with high fidelity but also produces the smallest 
+deviation from ground truth across representative samples. In contrast, 
+CNN-based models exhibit larger localized errors, especially in regions 
+with steep gradients. These results demonstrate that integrating spatial 
+feature extraction via Swin Transformer with tabular conditioning en -
+ables more accurate and robust predictions, making DF-STTN a strong 
+candidate for surrogate modeling in geotechnical applications.
+3.2.2. Model updating and analysis
+To enhance the reliability of the baseline surrogate model, a model 
+updating framework was established based on back analysis. In this 
+study, soil parameters were chosen as the focus of the update process 
+because they have a significant impact on ground deformation and are 
+often highly uncertain in practice. Due to the limited availability of test 
+data, the back analysis was conducted on a subset of specific monitoring 
+points, as shown in Fig. 6 .
+GA was employed as the optimization method due to its global search 
+capabilities and robustness against local minima. Other parameters, 
+such as design variables (e.g., tunnel geometry and tunnel location) and 
+spatial information, were considered known and kept constant during 
+the optimization process to isolate the influence of soil properties. The 
+GA settings used in this study included a population size of 50, a 
+crossover rate of 0.8, a mutation rate of 0.1, and a maximum of 100 
+generations. These parameters were selected based on empirical testing 
+to balance convergence speed and global search performance. The 
+fitness function was defined as MSE between the predicted and observed 
+settlement at selected monitoring points. As shown in Fig. 12 , both the 
+best and mean fitness values rapidly decreased over generations, 
+demonstrating effective convergence of the GA. The best fitness value 
+stabilized after approximately 20 generations, indicating that the model 
+successfully identified a set of soil parameters yielding high predictive 
+accuracy. The resulting predictions and corresponding true values are 
+summarized in Fig. 12 . The best individual identified by the GA corre -
+sponds to an MSE of 0.9319. The predicted values closely match the 
+measured settlements at all selected positions, validating the effective -
+ness of the model updating procedure. This approach allows for the 
+refinement of soil parameters in data-scarce conditions, thereby 
+improving the fidelity of numerical simulations based on the trained DL 
+model.
+To evaluate the reliability of the back-analyzed soil parameters, the 
+estimated values were compared with laboratory test results for the sand 
+used in the experiment. The main parameters of soil properties are 
+summarized in Table 9 . The estimated parameters were derived through 
+model updating using the surrogate model and field measurements. The 
+comparison reveals that the estimated values exhibit good agreement 
+with the experimentally measured parameters. The relative errors for all 
+five parameters remain within acceptable bounds, with the largest de -
+viation observed in Poisson ’ s ratio (3.103 %) and the smallest in density 
+(0.267 %). Notably, the friction angle and cohesion, which are critical 
+parameters influencing shear strength and deformation characteristics 
+in sandy soils, show minimal errors of 3.537 % and 0.594 %, respec -
+tively. These results confirm the effectiveness of the back analysis 
+framework in estimating soil properties with high accuracy, even under 
+conditions with limited measurement data. The close match also 
+Fig. 10. Comparison of numerical and test results for lining deformation.
+Table 4 
+Hyperparameters of DF-STTN.
+Model components Name Value
+Table Transformer 
+encoder
+Embedding dimension 128
+Number of attention heads 4
+Number of encoder layers 6
+Dimension of the feedforward network 
+model
+256
+dropout value 0.1
+Swin Transformer 
+encoder
+Patch size 4
+Patch embedding dimension 96
+Depth of each Swin Transformer layer [2, 2, 6, 2]
+Number of attention heads in different 
+layers
+[3, 6, 12, 
+24]
+Window size 7
+Stochastic depth rate 0.1
+Cross-attention module Node of MLP (one hidden layer) 2048
+Table 5 
+MSE for ground settlement prediction using 
+different training sample sizes.
+Sample number MSE
+100 samples 7.5367
+200 samples 3.9878
+300 samples 2.5748
+400 samples 1.6796
+500 samples 1.1755
+600 samples 0.9840
+700 samples 0.8859
+800 samples 0.8565
+X. Chang et al.                                                                                                                                                                                                                                  Advanced Engineering Informatics 69 (2026) 104045 
+11 
+supports the use of the updated surrogate model for further predictive 
+tasks in similar geotechnical settings.
+The effectiveness of the estimated soil parameters obtained through 
+back analysis was further evaluated by comparing the resulting ground 
+settlement predictions with both simulation outputs and field mea -
+surements. Fig. 13(a) presents the comparison along the horizontal di -
+rection, while Fig. 13(b) shows the results along the vertical axis. In both 
+cases, the predicted settlements, computed using the updated soil 
+properties, demonstrate closer agreement with the test data than the 
+original numerical simulation results. In the horizontal direction, the 
+updated model notably reduces the overestimation observed in the 
+simulation. Along the vertical direction, the predicted results better 
+capture both the trend and magnitude of the observed settlement. These 
+findings confirm that the updated model enhances predictive accuracy. 
+This updated model serves as a new surrogate model, which can be 
+applied to future prediction tasks under similar or new configurations.
+3.3. Surrogate model of lining deformation
+3.3.1. Surrogate model development
+The influence of training sample size on model accuracy was assessed 
+by increasing the number of training samples from 100 to 800. As shown 
+in Table 10 , the MSE value decreased rapidly from 0.0908 (100 samples) 
+to 0.0074 (800 samples), indicating that additional training data sub -
+stantially improved the model predictive capability. Similar to the 
+ground settlement task, the model exhibited significant performance 
+improvements with smaller sample sizes, while additional gains became 
+progressively limited beyond 700 samples.
+To evaluate the role of spatial input, models were trained using zero 
+to five spatial measurement points (see Table 11 ). The results show that 
+spatial information improved prediction accuracy across all metrics. The 
+best performance was achieved using three spatial points (MSE =
+0.0074, R
+2 
+= 0.9951). Adding more than three points provided only 
+modest additional gains, suggesting diminishing returns beyond this 
+level. Overall, these results indicate that incorporating a small number 
+of spatial points is sufficient to achieve high predictive accuracy while 
+maintaining computational efficiency, highlighting the important role of 
+spatial information in full-field deformation prediction.
+Seven network architectures were tested for lining deformation 
+prediction. As summarized in Table 12 , the DF-STTN outperformed all 
+other models, achieving the lowest MSE (0.0074), RMSE (0.0860), and 
+MAE (0.0612), alongside the highest R
+2 
+(0.9951). Transformer-based 
+models generally outperformed convolution-based ones, particularly 
+in capturing complex spatial patterns. Error maps for representative 
+Fig. 11. Configurations of spatial measurement points used in the surrogate model.
+Table 6 
+Effect of spatial information on ground settlement prediction accuracy.
+Spatial information MSE RMSE MAE R2 MAPE
+No point 1.7626 1.3276 1.4969 0.9704 1.7023
+One point 1.2048 1.0976 0.9284 0.9879 1.1519
+Two points 1.0482 1.0238 0.8580 0.9888 1.0728
+Three points 0.8565 0.9254 0.7102 0.9898 0.9215
+Four points 0.9040 0.9508 0.7443 0.9888 0.9508
+Five points 0.8530 0.9235 0.7262 0.9891 0.9460
+Table 7 
+Comparison of network architectures for ground settlement prediction.
+Networks MSE RMSE MAE R2 MAPE
+CNN-FCNN 1.6322 1.2776 0.8990 0.9911 1.5022
+ResNet-FCNN 1.7370 1.3180 0.8703 0.9905 0.9745
+ResNet-FiLM-I 1.0812 1.0398 0.6573 0.9941 0.9360
+ResNet-FiLM-II 1.0336 1.0167 0.7418 0.9944 0.9418
+Swin-T-I 1.2230 1.1059 0.7392 0.9933 0.9223
+Swin-T-II 1.3385 1.1569 0.7437 0.9927 1.5429
+DF-STTN 0.8565 0.9254 0.7102 0.9898 0.9215
+X. Chang et al.                                                                                                                                                                                                                                  Advanced Engineering Informatics 69 (2026) 104045 
+12 
+samples ( Table 13 ) further confirm these findings. The DF-STTN model 
+produced the most accurate and smoothest predictions, closely match -
+ing the ground truth. Other models, such as CNN-FCNN and ResNet 
+variants, exhibited higher residuals and spatial inconsistency. These 
+results underscore the robustness and effectiveness of the DF-STTN 
+model in modeling complex deformation behavior.
+3.3.2. Model updating and analysis
+To improve the surrogate model for lining deformation, the model 
+updating procedure similar to that in Section 3.2.2 was implemented. 
+The goal was to estimate the underlying soil parameters that best 
+reproduce observed lining deformation at selected monitoring points. 
+Due to the limited availability of test data, the back analysis focused on 
+four key locations along the tunnel lining, as shown in Fig. 6 . As illus -
+trated in Fig. 14 , both the best and mean fitness values (MSE) rapidly 
+converged within the first 20 generations, indicating stable and effective 
+optimization. The best fitness value reached 0.00098, demonstrating 
+excellent agreement between predicted and test values.
+The accuracy of the estimated soil parameters for the lining defor -
+mation model was assessed by comparing them against experimentally 
+obtained values, as summarized in Table 14 . The estimated parameters 
+obtained through back analysis demonstrate high consistency with the 
+real values, with relative errors all remaining below 4 %. Notably, 
+cohesion shows the highest deviation (3.919 %), while elastic modulus 
+and Poisson ’ s ratio exhibit minor errors of 1.029 % and 1.379 %, 
+respectively. Further validation is presented in Fig. 15 , which compares 
+the predicted lining deformation with both simulation data and test 
+measurements along the tunnel horizontal direction. The predicted 
+Table 8 
+Ground settlement prediction and error maps from different models.
+Note: The x and y axes represent pixel indices corresponding to different locations on the ground surface. The legend represents ground settlement (ground truth) and 
+error values (error maps), and its unit is millimeters (mm).
+Fig. 12. GA convergence process during surrogate model updating for 
+ground settlement.
+Table 9 
+Measured vs. predicted soil parameters for the ground settlement surrogate 
+model.
+Soil 
+properties
+Density 
+(g/cm
+3
+)
+Elastic 
+modulus 
+(MPa)
+Poisson ’ s 
+ratio
+Friction 
+angle ( ◦ )
+Cohesion 
+(kPa)
+Real value 1983.00 68.000 0.290 21.49 0.842
+Estimated 
+value
+1977.69 69.573 0.281 22.25 0.847
+Error (%) 0.267 2.313 3.103 3.537 0.594
+X. Chang et al.                                                                                                                                                                                                                                  Advanced Engineering Informatics 69 (2026) 104045 
+13 
+values based on the updated model align closely with the test data. The 
+deviations are minimal across all positions, demonstrating that the 
+updated surrogate model not only improves parameter estimation but 
+also enhances predictive capability for deformation.
+3.4. Rapid deformation prediction
+To assess the generalization performance of the updated surrogate 
+model, two test configurations, referred to as Tests 2 and 3, were 
+introduced (see Fig. 7 ). The updated surrogate model directly predicted 
+responses based on the estimated soil parameters obtained previously. 
+Ground settlement predictions along both horizontal and vertical di -
+rections are shown in Fig. 16 , respectively. The predicted values exhibit 
+excellent agreement with the test data, accurately capturing both the 
+trend and magnitude of settlement. Slight deviations appear at a few 
+points, but the overall predictive quality remains high. Fig. 17 illustrates 
+the predicted tunnel lining deformation for Tests 2 and 3. The predicted 
+curve aligns closely with the measured deformation, including the peak 
+location and deformation gradient across the tunnel section. This dem -
+onstrates the potential of the proposed framework as a key component of 
+a DT system for tunnel engineering. In practical applications, DTs can be 
+used to optimize tunnel design by simulating deformation responses 
+under varying geometric layouts and construction parameters, enabling 
+engineers to evaluate and select more resilient and cost-effective design 
+alternatives during the planning phase.
+Overall, the successful application of the updated model to the Tests 
+2 and 3 scenario demonstrates its potential for rapid deployment in 
+geotechnical practice. It enables efficient assessment of tunnel perfor -
+mance in different design setups without retraining or costly numerical 
+simulations, greatly improving the practicality of data-driven modeling 
+in underground engineering.
+4. Conclusion
+This study presents a digital twin framework for predicting ground 
+settlement and shield tunnel deformation during adjacent tunnel con -
+struction. The proposed framework integrates a hybrid surrogate 
+modeling approach, Dual-Fusion Swin-Table Transformer Network (DF- 
+STTN), with model updating strategies to enable accurate and efficient 
+simulations of tunnel behavior under varying design and soil conditions. 
+By decoupling spatial and non-spatial inputs and leveraging advanced 
+Transformer architectures, the model effectively captures complex 
+spatial dependencies and tabular relationships. The following conclu -
+sions are obtained: 
+(1) The inclusion of spatial information was found to improve ground 
+settlement prediction accuracy, with noticeable performance 
+improvements observed even when three spatial measurement 
+points were used. This highlights that limited spatial context can 
+meaningfully enhance the modeling of excavation-induced 
+responses.
+(2) Comprehensive evaluations based on physical tunnel excavation 
+tests demonstrate that DF-STTN outperforms conventional 
+convolution-based and single-fusion models in both ground set -
+tlement and lining deformation tasks.
+(3) A model updating procedure using genetic algorithms enables 
+adaptive refinement of the surrogate model using sparse test data, 
+ensuring consistency with observed field behavior.
+(4) The updated model exhibits reliable generalization when applied 
+to new configurations without additional retraining, 
+Fig. 13. Comparison of ground settlement data: test data vs. simulation and prediction results.
+Table 10 
+MSE for Lining deformation prediction using 
+different sample sizes.
+Sample number MSE
+100 samples 0.0908
+200 samples 0.0486
+300 samples 0.0220
+400 samples 0.0180
+500 samples 0.0167
+600 samples 0.0179
+700 samples 0.0101
+800 samples 0.0092
+Table 11 
+Effect of spatial information on lining deformation prediction accuracy.
+Spatial information MSE RMSE MAE R2 MAPE
+No point 0.0190 0.1379 0.0929 0.9875 0.0589
+One point 0.0148 0.1216 0.0873 0.9903 0.0564
+Two points 0.0131 0.1144 0.0776 0.9914 0.0571
+Three points 0.0074 0.0860 0.0642 0.9951 0.0474
+Four points 0.0082 0.0905 0.0700 0.9948 0.0495
+Five points 0.0084 0.0916 0.0682 0.9945 0.0481
+Table 12 
+Comparison of network architectures for lining deformation prediction.
+Networks MSE RMSE MAE R2 MAPE
+CNN-FCNN 0.0151 0.1230 0.0881 0.9900 0.0558
+ResNet-FCNN 0.0120 0.1093 0.0767 0.9921 0.0503
+ResNet-FiLM-I 0.0080 0.0894 0.0619 0.9947 0.0454
+ResNet-FiLM-II 0.0079 0.0889 0.0649 0.9948 0.0455
+Swin-T-I 0.0099 0.0996 0.0690 0.9935 0.0438
+Swin-T-II 0.0103 0.1017 0.0675 0.9932 0.0470
+DF-STTN 0.0074 0.0860 0.0612 0.9951 0.0474
+X. Chang et al.                                                                                                                                                                                                                                  Advanced Engineering Informatics 69 (2026) 104045 
+14 
+underscoring its potential for rapid deployment in early-stage 
+tunnel design.
+By providing full-field predictions of ground settlement and tunnel 
+lining deformation, the method allows engineers to assess potential risks 
+more comprehensively than traditional point-based approaches. Its 
+computational efficiency makes it feasible for use during the early 
+Table 13 
+Lining deformation prediction and error maps from different models.
+Note: The x and y axes represent pixel indices corresponding to different locations on the tunnel lining. The legend represents lining deformation (ground truth) and 
+error values (error maps), and its unit is millimeters (mm).
+Fig. 14. GA convergence process during surrogate model updating for lining 
+deformation.
+Table 14 
+Measured vs. predicted soil parameters for the lining deformation surrogate 
+model.
+Soil 
+properties
+Density 
+(g/cm
+3
+)
+Elastic 
+modulus 
+(MPa)
+Poisson ’ s 
+ratio
+Friction 
+angle ( ◦ )
+Cohesion 
+(kPa)
+Real value 1983.00 68.000 0.290 21.49 0.842
+Estimated 
+value
+1973.62 67.300 0.286 20.73 0.875
+Error (%) 0.473 1.029 1.379 3.537 3.919
+Fig. 15. Comparison of lining deformation data: test data vs. simulation and 
+prediction results.
+X. Chang et al.                                                                                                                                                                                                                                  Advanced Engineering Informatics 69 (2026) 104045 
+15 
+design stage, where multiple excavation scenarios and tunnel layouts 
+must be evaluated rapidly. Furthermore, the framework supports 
+adaptive updating with monitoring data, enabling continuous refine -
+ment of soil parameters and deformation predictions as new information 
+becomes available. These features make the method a practical decision- 
+support tool with guiding significance for adjacent tunnel construction 
+projects.
+Despite the promising results, several limitations should be 
+acknowledged. First, validation was conducted using scaled laboratory 
+tests, which, while controlled and repeatable, may not fully capture 
+field-scale soil and structural responses; incorporating monitoring data 
+in future work will help address this gap. Second, the current model 
+focuses on spatial deformation prediction across excavation stages but 
+does not explicitly capture time-dependent processes such as soil 
+consolidation or long-term ground – structure interaction. Extending the 
+surrogate model to incorporate temporal dynamics through spatio- 
+temporal modeling is an important direction for future development. 
+Third, ground settlement and lining deformation were modeled sepa -
+rately for interpretability and stability, but this neglects potential 
+coupling effects; integrated models will be explored to capture these 
+interactions.
+Future work will focus on enhancing the framework to address more 
+realistic and complex geotechnical conditions, including layered soil 
+strata, groundwater influence, and nonlinear soil – tunnel interactions 
+such as consolidation and creep. These factors are critical for accurately 
+simulating deformation in soft ground tunneling projects. To improve 
+modeling of sequential excavation processes, spatio-temporal Trans -
+former architectures will be investigated to capture both temporal 
+evolution and spatial dependencies in deformation patterns. Moreover, 
+integration with real-time sensor data, leveraging technologies such as 
+wireless sensor networks, automated total stations, and fiber-optic 
+monitoring, will enable continuous model updating and adaptive feed -
+back, supporting dynamic decision-making in a digital twin 
+environment.
+CRediT authorship contribution statement
+Xiangyu Chang: Writing – original draft, Visualization, Validation, 
+Software, Methodology, Investigation, Data curation, Conceptualiza -
+tion. Hongyun Fan: Writing – review & editing, Software, Investigation, 
+Data curation, Conceptualization. Yuguang Fu: Writing – review & 
+editing, Validation, Supervision, Investigation, Funding acquisition, 
+Conceptualization. Chengjia Han: Writing – review & editing, Super -
+vision, Methodology, Conceptualization. Hao Wang: Writing – review & 
+editing, Supervision, Methodology, Data curation, Conceptualization. 
+Jianxiao Mao: Writing – review & editing, Supervision, Methodology, 
+Conceptualization.
+Declaration of competing interest
+The authors declare that they have no known competing financial 
+interests or personal relationships that could have appeared to influence 
+the work reported in this paper.
+Acknowledgments
+This research/project was supported by the National Research 
+Foundation, Singapore under its AI Singapore Programme (AISG Award 
+No: AISG2-TC-2021-001), CoE Dean ’ s Interdisciplinary Grant 2024 (No. 
+025010-00001), and MOE AcRF Tier 1 (No. RG146/23).
+Data availability
+Data will be made available on request.
+Fig. 16. Comparison of ground settlement data: test data vs. prediction results.
+Fig. 17. Comparison of lining deformation data: test data vs. prediction results.
+X. Chang et al.                                                                                                                                                                                                                                  Advanced Engineering Informatics 69 (2026) 104045 
+16 
+References
+[1] B.-T. Cao, S. Freitag, G. Meschke, A hybrid RNN-GPOD surrogate model for real- 
+time settlement predictions in mechanised tunnelling, Adv. Model. and Simul. in 
+Eng. Sci. 3 (2016) 5, https://doi.org/10.1186/s40323-016-0057-9 .
+[2] J. Chang, H. Huang, M. Thewes, D. Zhang, H. Wu, Data-based postural prediction 
+of shield tunneling via machine learning with physical information, Comput. 
+Geotech. 174 (2024) 106584, https://doi.org/10.1016/j.compgeo.2024.106584 .
+[3] J. Chang, D. Zhang, H. Huang, J. Jia, A hybrid sensing of rotation-induced stress of 
+segmental lining during shield tunneling via WSN and surrogate numerical 
+modeling, Tunn. Undergr. Space Technol. 140 (2023) 105315, https://doi.org/ 
+10.1016/j.tust.2023.105315 .
+[4] X. Chang, H. Wang, Y. Zhang, Back analysis of rock mass parameters in tunnel 
+engineering using machine learning techniques, Comput. Geotech. 163 (2023) 
+105738, https://doi.org/10.1016/j.compgeo.2023.105738 .
+[5] X. Chang, H. Wang, Y. Zhang, F. Wang, Z. Li, Bayesian prediction of tunnel 
+convergence combining empirical model and relevance vector machine, 
+Measurement 188 (2022) 110621, https://doi.org/10.1016/j. 
+measurement.2021.110621 .
+[6] X. Chang, R. Zhang, J. Mao, Y. Fu, Digital twins in transportation infrastructure: an 
+investigation of the key enabling technologies, applications, and challenges, IEEE 
+Trans. Intell. Transport. Syst. 25 (2024) 6449 – 6471, https://doi.org/10.1109/ 
+TITS.2024.3401716 .
+[7] X. Chang, R. Zhang, J. Mao, Y. Fu, H. Fan, H. Wang, Modeling and quantitative 
+assessment of critical defects in shield tunnels with cascading effects, Geotech. 
+Geol. Eng. 43 (2025) 194, https://doi.org/10.1007/s10706-025-03186-z .
+[8] S.-Z. Chen, J. Liu, H. Yuan, Y. Tao, F. Xu, L. Yang, AM-MFF: a multi-feature fusion 
+framework based on attention mechanism for robust and interpretable lithium-ion 
+battery state of health estimation, Appl. Energy 381 (2025) 125116, https://doi. 
+org/10.1016/j.apenergy.2024.125116 .
+[9] Y. Chen, S. Xin, C. Xiangyu, S.N.B. Jusoh, L. Zhongxiang, B.H. Quan, H. Xinkai, 
+X. Jun, Prediction of surrounding rock deformation in a highway tunnel using an 
+LSTM-RF Hybrid Model, J. Eng. 2025 (2025) 6652758, https://doi.org/10.1155/ 
+je/6652758 .
+[10] H. Cruz, A.A. Raheem, S. Nazarian, Digital Twin Technology applications for 
+Transportation Infrastructure — A Survey-based Study, in: Computing in Civil 
+Engineering 2021. Presented at the ASCE International Conference on Computing 
+in Civil Engineering 2021, American Society of Civil Engineers, Orlando, Florida, 
+2022, pp. 350 – 357, https://doi.org/10.1061/9780784483893.044 .
+[11] X. Cui, F. Zhou, L. Zhang, X. Yuan, Generating fault signals for mobile robots based 
+on multimodal knowledge and multi-channel correlation generative adversarial 
+network, Adv. Eng. Inf. 66 (2025) 103448, https://doi.org/10.1016/j. 
+aei.2025.103448 .
+[12] W. Dai, X. Sun, W. Zhang, D. Wang, D. Tang, Y. Peng, A multi-source 
+heterogeneous information fusion network for comprehensive assessment of spot 
+welding quality, J. Manuf. Process. 135 (2025) 142 – 160, https://doi.org/10.1016/ 
+j.jmapro.2025.01.033 .
+[13] S. Freitag, B.T. Cao, J. Nini ´c, G. Meschke, Recurrent neural networks and proper 
+orthogonal decomposition with interval data for real-time predictions of 
+mechanised tunnelling processes, Comput. Struct. 207 (2018) 258 – 273, https:// 
+doi.org/10.1016/j.compstruc.2017.03.020 .
+[14] X. Fu, Y. Pan, L. Zhang, A causal-temporal graphic convolutional network (CT- 
+GCN) approach for TBM load prediction in tunnel excavation, Expert Syst. Appl. 
+238 (2024) 121977, https://doi.org/10.1016/j.eswa.2023.121977 .
+[15] X. Gan, J. Yu, X. Gong, M. Zhu, Probabilistic analysis for twin tunneling-induced 
+longitudinal responses of existing shield tunnel, Tunn. Undergr. Space Technol. 
+120 (2022) 104317, https://doi.org/10.1016/j.tust.2021.104317 .
+[16] C. Guo, Q. Guo, T. Zhang, W. Li, H. Zhu, Z. Yan, Study on real-time heat release 
+rate inversion for dynamic reconstruction and visualization of tunnel fire scenarios, 
+Tunn. Undergr. Space Technol. 122 (2022) 104333, https://doi.org/10.1016/j. 
+tust.2021.104333 .
+[17] K. He, X. Zhang, S. Ren, J. Sun, Deep Residual Learning for Image Recognition, 
+2015. https://doi.org/10.48550/arXiv.1512.03385 .
+[18] F. Hidayat, S.H. Supangkat, K. Hanafi, Digital twin of road and bridge construction 
+monitoring and maintenance, in: 2022 IEEE International Smart Cities Conference 
+(ISC2). Presented at the 2022 IEEE International Smart Cities Conference (ISC2), 
+IEEE, Pafos, Cyprus, 2022, pp. 1 – 7, https://doi.org/10.1109/ 
+ISC255366.2022.9922473 .
+[19] G. Huang, S.T. Ng, D. Li, Determinants of digital twin adoption in hospital 
+operation management, Urban Lifeline 1 (2023) 6, https://doi.org/10.1007/ 
+s44285-023-00005-w .
+[20] A. Lin, B. Chen, J. Xu, Z. Zhang, G. Lu, DS-TransUNet:Dual Swin Transformer U-Net 
+for medical image segmentation, 2021. https://doi.org/10.48550/arXiv.2106. 
+06716 .
+[21] Q. Liu, S. Chen, G. Liu, L. Yang, Q. Yuan, Y. Cai, L. Chen, Dual-perspective safety 
+driver secondary task detection method based on swin-transformer and cross- 
+attention, Adv. Eng. Inform. 65 (2025) 103320, https://doi.org/10.1016/j. 
+aei.2025.103320 .
+[22] Z. Liu, Q. Fang, Y. Shen, Q. Ai, H. Wang, X. Huang, Y. Yuan, Two-stage surrogate 
+modeling strategy for predicting foundation pit excavation-induced strata and 
+tunnel deformation, Tunnel. Undergr. Space Technol. 151 (2024) 105845, https:// 
+doi.org/10.1016/j.tust.2024.105845 .
+[23] Z. Liu, Y. Lin, Y. Cao, H. Hu, Y. Wei, Z. Zhang, S. Lin, B. Guo, Swin Transformer: 
+Hierarchical Vision Transformer using Shifted Windows, in: 2021 IEEE/CVF 
+International Conference on Computer Vision (ICCV). Presented at the 2021 IEEE/ 
+CVF International Conference on Computer Vision (ICCV), IEEE, 2021, 
+pp. 9992 – 10002, https://doi.org/10.1109/ICCV48922.2021.00986 .
+[24] Q. Lü, Z.-P. Xiao, J. Ji, J. Zheng, Reliability based design optimization for a rock 
+tunnel support system with multiple failure modes using response surface method, 
+Tunnel. Undergr. Space Technol. 70 (2017) 1 – 10, https://doi.org/10.1016/j. 
+tust.2017.06.017 .
+[25] Y. Lu, T. Han, Resilience of metro tunnel structures: monitoring deformation due to 
+surrounding engineering activities and effect of remediation treatment, Urban 
+Lifeline 1 (2023) 8, https://doi.org/10.1007/s44285-023-00009-6 .
+[26] J. Luo, B. Cai, Y. Yu, A. Ke, K. Zhou, J. Zhang, Learning multimodal adaptive 
+relation graph and action boost memory for visual navigation, Adv. Eng. Inform. 62 
+(2024) 102678, https://doi.org/10.1016/j.aei.2024.102678 .
+[27] A. Nassar, N. Livathinos, M. Lysak, P. Staar, TableFormer: table structure 
+understanding with transformers, 2022. https://doi.org/10.48550/arXiv.2203. 
+01017 .
+[28] F. Neha, D. Bhati, D.K. Shukla, M. Amiruzzaman, From classical techniques to 
+convolution-based models: A review of object detection algorithms, 2024. htt 
+ps://doi.org/10.48550/arXiv.2412.05252 .
+[29] E. Perez, F. Strub, H. de Vries, V. Dumoulin, A. Courville, FiLM: visual reasoning 
+with a general conditioning layer. 2017. https://doi.org/10.48550/arXiv.1709. 
+07871 .
+[30] X. Song, D. Li, C. Cho, Image-based machine learning approach for structural 
+damage detection through wavelet transforms, Urban Lifeline 2 (2024) 4, https:// 
+doi.org/10.1007/s44285-023-00010-z .
+[31] H. Taghavi Ganji, E. Seylabi, An LSTM RNN proposal for surrogate modeling the 
+dynamic response of buried structures to earthquake plane waves in soil half- 
+spaces, Computers and Geotechnics 164 (2023) 105796, https://doi.org/10.1016/ 
+j.compgeo.2023.105796 .
+[32] Y. Tao, W. He, H. Sun, Y. Cai, J. Chen, Multi-objective optimization-based 
+prediction of excavation-induced tunnel displacement, Undergr. Space 7 (2022) 
+735 – 747, https://doi.org/10.1016/j.undsp.2021.12.005 .
+[33] A. Vaswani, N. Shazeer, N. Parmar, J. Uszkoreit, L. Jones, A.N. Gomez, L. Kaiser, I. 
+Polosukhin, Attention Is All You Need, 2023. https://doi.org/10.48550/arXiv.1 
+706.03762 .
+[34] C. Wang, X. Liu, J. Li, E. Wang, N. Hu, W. Yao, Z. He, Back analysis of rock mass 
+parameters in mechanized twin tunnels based on coupled auto machine learning 
+and multi-objective optimization algorithm, J. Rock Mechanic. Geotech. Eng. 
+(2025), https://doi.org/10.1016/j.jrmge.2025.01.030 .
+[35] G. Wang, D. Liu, J. Xiang, L. Cui, Attention guided partial domain adaptation for 
+interpretable transfer diagnosis of rotating machinery, Adv. Eng. Informatic. 62 
+(2024) 102708, https://doi.org/10.1016/j.aei.2024.102708 .
+[36] J. Wu, X. Wang, Y. Dang, Z. Lv, Digital twins and artificial intelligence in 
+transportation infrastructure: Classification, application, and future research 
+directions, Computers and Electrical Engineering 101 (2022) 107983, https://doi. 
+org/10.1016/j.compeleceng.2022.107983 .
+[37] Y. Xu, C.-S. Ye, H.-M. Niu, S.-Y. Chen, Y. Luo, Q.-X. Zhu, Y.-L. He, Y. Zhang, M.- 
+Q. Zhang, MDFF: Multi-Domain feature fusion for anomaly recognition, Advanced 
+Engineering Informatics 64 (2025) 103047, https://doi.org/10.1016/j. 
+aei.2024.103047 .
+[38] Q. Yang, X. Yu, Y. Fu, Attention-based Encoder for Online Data Anomaly 
+Classification in Multivariate Time Series, J. Comput. Civ. Eng. 39 (2025) 
+04025094, https://doi.org/10.1061/JCCEE5.CPENG-6842 .
+[39] X. Yang, J. Yang, R. Li, H. Li, Q. Xiao, S. Jiang, MKGM: Multimodal knowledge- 
+guided joint recognition of bridge defect-structural information, Adv. Eng. 
+Informatic. 68 (2025) 103674, https://doi.org/10.1016/j.aei.2025.103674 .
+[40] Q. Yin, Y. Zhou, J. Rao, An intelligent prediction method for surface settlement of 
+shield tunnel construction based on CNN-BiLSTM-SA, KSCE J. Civil Eng. 29 (2025) 
+100061, https://doi.org/10.1016/j.kscej.2024.100061 .
+[41] Y. Zendaki, B.T. Cao, A. Alsahly, S. Freitag, G. Meschke, A simulation-based 
+software to support the real-time operational parameters selection of tunnel boring 
+machines, Undergr. Space 14 (2024) 176 – 196, https://doi.org/10.1016/j. 
+undsp.2023.06.006 .
+[42] D.-M. Zhang, X.-C. Xie, Z.-L. Li, J. Zhang, Simplified analysis method for predicting 
+the influence of deep excavation on existing tunnels, Comput. Geotechnic. 121 
+(2020) 103477, https://doi.org/10.1016/j.compgeo.2020.103477 .
+[43] H. Zhang, Y. Wu, J. Cheng, F. Luo, S. Yang, A deep learning-based surrogate model 
+for probabilistic analysis of high-speed railway tunnel crown settlement in spatially 
+variable soil considering construction process, Eng. Applicat. Artificial Intelligence 
+134 (2024) 108752, https://doi.org/10.1016/j.engappai.2024.108752 .
+[44] H. Zheng, M. Mooney, M. Gutierrez, Surrogate model for 3D ground and structural 
+deformations in tunneling by the sequential excavation method, Computers and 
+Geotechnics 154 (2023) 105142, https://doi.org/10.1016/j. 
+compgeo.2022.105142 .
+[45] X. Zhou, C. Chen, X. Lv, E. Zuo, M. Li, L. Wu, X. Chen, X. Wu, C. Chen, CMACF: 
+Transformer-based cross-modal attention cross-fusion model for systemic lupus 
+erythematosus diagnosis combining Raman spectroscopy, FTIR spectroscopy, and 
+metabolomics, Inform. Process. Manag. 61 (2024) 103804, https://doi.org/ 
+10.1016/j.ipm.2024.103804 .
+[46] D.Y. Zhuang, K. Ma, C.A. Tang, Z.Z. Liang, K.K. Wang, Z.W. Wang, Mechanical 
+parameter inversion in tunnel engineering using support vector regression 
+optimized by multi-strategy artificial fish swarm algorithm, Tunnel. Undergr. 
+Space Technol. 83 (2019) 425 – 436, https://doi.org/10.1016/j.tust.2018.09.027 .
+X. Chang et al.                                                                                                                                                                                                                                  Advanced Engineering Informatics 69 (2026) 104045 
+17 

@@ -13,3 +13,12 @@ As an emerging technology, digital twin (DT) is increasingly valued in bridge ma
 | Yes | Yes | Yes | Yes | Yes | **Include** |
 
 **Note:** Integrated WebGIS+WebBIM DT; defect modeling, maintenance, safety
+
+## Step-3 Deep-Read Coding (Prompt B)
+
+| P | Q | R | U Tier | V | W | X | Z | AA | AB | AC | AD | AE | AF |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| Yes | Yes | Yes | Tier 2 - Digital Shadow (one-way physical to virtual) | 0 | 0 | 1 | Design for Safety (DfS) | None | Digital Twin platform (no machine learning) | Multi (two or more data types) | Single case study | 4 | Lifecycle / governance |
+
+**Key evidence (AG):** Integrated bridge DT system (Cardiff U): combines WebGIS (Cesium), WebBIM (Xeokit), and graph algorithms (Neo4j) in a three-layer architecture with a common data environment (CDE); enables real-time monitoring, drone-enabled inspection, maintenance planning, traffic diversion, and logistics optimization; adaptive data structure with JSON-based bridge defect information modeling and triple-based roadmap graphs; SHM system flags structural issues and triggers alerts/traffic redirection; defects from drone inspection inform maintenance planning. One-way monitoring→analysis→decision support; no actuation and no learning loop.
+(full-text source: Endnote)

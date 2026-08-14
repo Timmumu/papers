@@ -13,3 +13,12 @@ Accidents tend to happen during tunnel construction due to the harsh environment
 | Yes | Yes | Yes | Yes | Yes | **Include** |
 
 **Note:** DT tunnel construction early warning; collapse predicted, personnel saved
+
+## Step-3 Deep-Read Coding (Prompt B)
+
+| P | Q | R | U Tier | V | W | X | Z | AA | AB | AC | AD | AE | AF |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| Yes | Yes | Yes | Tier 2 - Digital Shadow (one-way physical to virtual) | 0 | 1 | 0 | Design for Safety (DfS) | None | Digital Twin platform (no machine learning) | Multi (two or more data types) | Single case study | 4 | Design for Safety |
+
+**Key evidence (AG):** Digital-twin based multi-information intelligent early warning and safety management platform for tunnel construction (CUGB/Beijing Jiaotong U): WSN base stations for instruction sending, warning, positioning, information transmission; multi-source sensors (safety, environmental, construction, auxiliary) integrated; four-level early warning and emergency response plan; validated on Dongtianshan Tunnel (deep buried, extreme weather, harmful gas); collapse accident successfully predicted. One-way monitoring→early warning→management; no actuation and no learning loop.
+(full-text source: Endnote)

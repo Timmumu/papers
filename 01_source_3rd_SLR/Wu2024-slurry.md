@@ -13,3 +13,12 @@ Abnormal large-diameter slurry shield attitudes (SA) lead to safety and quality 
 | Yes | Yes | Yes | Yes | Yes | **Include** |
 
 **Note:** DT framework for slurry shield attitude prediction/optimization; safety & quality
+
+## Step-3 Deep-Read Coding (Prompt B)
+
+| P | Q | R | U Tier | V | W | X | Z | AA | AB | AC | AD | AE | AF |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| Yes | Yes | Yes | Tier 2 - Digital Shadow (one-way physical to virtual) | 0 | 1 | 0 | Design for Safety (DfS) | None | Other / Mixed | Multi (two or more data types) | Single case study | 4 | Predictive analytics / decision support |
+
+**Key evidence (AG):** Multisource information fusion for real-time prediction and multiobjective optimization of large-diameter slurry shield attitude (HUST): BO-CatBoost prediction model (R2 > 0.9, RMSE < 1.2, MAE < 0.9 across 3 soils) + MOEAD multiobjective optimization; SHAP identifies propulsive thrust as most influential; DT framework for SA control; validated on Yangtze River large-diameter slurry shield project (Wuhan). One-way monitoring→prediction→optimization; no actuation and no learning loop (offline-trained).
+(full-text source: Endnote)

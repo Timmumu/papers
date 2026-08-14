@@ -13,3 +13,12 @@ Dams in seismically active regions require rigorous structural assessment to ens
 | Yes | Yes | Yes | Yes | Yes | **Include** |
 
 **Note:** BIM+FEM+real-time SHM digital replica of dam; seismic safety
+
+## Step-3 Deep-Read Coding (Prompt B)
+
+| P | Q | R | U Tier | V | W | X | Z | AA | AB | AC | AD | AE | AF |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| Yes | Yes | Yes | Tier 2 - Digital Shadow (one-way physical to virtual) | 0 | 0 | 1 | Design for Safety (DfS) | None | Finite Element Method / physics-based | Multi (two or more data types) | Single case study | 4 | Design for Safety |
+
+**Key evidence (AG):** BIM-FEM-real-time monitoring framework for seismic assessment of Prince Moulay Abdellah Dam (Sapienza U): BIM digital replica interoperable with FEM simulations; real-time SHM sensor data captured during magnitude 6.8 earthquake (Sept 8, 2023); FEM analysis corroborated field measurements (abutments showed increased longitudinal displacement, central vault stable); BIM enables efficient monitoring data management. One-way monitoring→FEM validation→safety assessment; no actuation and no learning loop.
+(full-text source: Endnote)

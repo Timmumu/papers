@@ -13,3 +13,11 @@ Critical infrastructures are the backbone of our societies with increasingly com
 | Yes | Yes | Yes | Yes | Yes | **Include** |
 
 **Note:** DT framework for critical infrastructure resilience & crisis mgmt
+
+## Step-3 Deep-Read Coding (Prompt B)
+
+| P | Q | R | U Tier | V | W | X | Z | AA | AB | AC | AD | AE | AF |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| Yes | Yes | Yes | Tier 1 - Digital Model (static, no live data) | 0 | 0 | 1 | Design for Safety (DfS) | None | Digital Twin platform (no machine learning) | Multi (two or more data types) | Conceptual (no test) | 3 | Lifecycle / governance |
+
+**Key evidence (AG):** Digital Twin Conceptual Framework for critical infrastructure resilience (DLR): comprehensive requirements analysis for infrastructure crisis management/resilience, deriving a conceptual framework (virtual replica, virtual clones, smart-tool toolbox, human-operated control center) with guiding principles for construction/planning phases and a conceptual DT model; resilience cycle with learning from past events is discussed conceptually but not implemented; no DT built or validated, no learning loop. Source: Endnote library (front-matter DOI verified).

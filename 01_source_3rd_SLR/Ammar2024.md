@@ -13,3 +13,7 @@ Digital Twins have emerged as a transformative technology with immense potential
 | Yes | Yes | Yes | Yes | Yes | **Include** |
 
 **Note:** DT for guiderail safety-hardware condition & preventive maintenance
+
+## Step-3 Deep-Read Coding (Prompt B)
+
+**Stage-2 exclusion:** P=No, Q=Yes, R=Yes. Survey + case study on guiderail data management for a transportation agency: investigates current practices and proposes a data architecture for information-rich analytical models using DTs, but no DT is actually built or evaluated - P=No -> Stage-2 exclude. Source: Endnote library (front-matter DOI verified).

@@ -1,1607 +1,1332 @@
-IEEE SENSORS JOURNAL, VOL. 26, NO. 3, 1 FEBRUARY 2026 4139
-An Enhanced Digital Twin-Driven Fault
-Diagnosis Approach Based on Deep Multimodal
-Information Fusion for Marine Machinery
-Jiawen Sun
- , Hongxiang Ren
- , Y axin Dong, Boxiang Zhang, Shaoyang Qiu, and Yi Zhou
-Abstract—Condition monitoring and fault diagnosis of
-marine machinery are essential for ensuring the safety
-and stability of offshore operations. Traditional approaches,
-which typically rely solely on either physical mechanisms
-or large volumes of data, often struggle to achieve both
-high accuracy and adaptability to component degradation.
-To address this issue, this article proposes a novel digital
-twin framework based on deep multimodal information fusion
-(DMIF-DT) that integrates the complementary strengths of a
-physics-based model (PBM) and a data-driven model (DDM).
-An attention-enhanced multiscale convolutional network is
-developed to extract features from sensor measurements and calibrated simulation data. A low-rank fusion strategy is
-then employed to map the two modalities into a unified high-dimensional space for effective integration between the PBM
-and the DDM. Furthermore, a performance-degradation adaptive correction module, based on sensor measurements
-and probabilistic distribution features, is used to map health factors and feed them back to the PBM for component-
-level correction, thereby supporting periodic model updates. Experimental results show that the proposed DMIF-DT
-framework significantly reduces parameter prediction errors and achieves an average fault diagnosis accuracy of 98.02%
-under diverse operating conditions. By uniquely integrating a performance-degradation adaptive correction module with
-attention-enhanced multimodal fusion, the framework bridges physics-based and data-driven insights, providing a new
-approach for the intelligent health management of marine machinery.
-Index Terms— Adaptive correction, digital twin (DT), fault diagnosis, marine machinery, multimodal fusion.
-I. I NTRODUCTION
-T
-HE intelligent management of marine machinery systems
-is crucial for ensuring the safety and stability of maritime
-operations [1]. As operational time under harsh conditions
-increases, key components of marine machinery undergo pro-
-gressive performance degradation. This degradation can lead
-to reduced component functionality, fault occurrences, or even
-system failures. Therefore, it is of great significance to develop
-an accurate, reliable, and efficient fault detection and diagnosis
-method, which helps evaluate the health of machinery systems
-Received 26 November 2025; accepted 12 December 2025. Date of
-publication 22 December 2025; date of current version 2 February 2026.
-This work was supported in part by Guangxi Science and Technology
-Major Program under Grant GUIKE AA23062053, in part by Guangxi
-Key Research and Development Plan under Grant GUIKE AB22080106,
-in part by Dalian Science and Technology Innovation Fund Project
-under Grant 2022JJ12GX035, and in part by the Fundamental Research
-Funds for the Central Universities under Grant 3132025231. The asso-
-ciate editor coordinating the review of this article and approving it for
-publication was Dr. Xu Cheng.(Corresponding author: Hongxiang Ren.)
-The authors are with the College of Navigation and the College of
-Artificial Intelligence, Dalian Maritime University, Dalian 116026, China,
-and also with CNOOC Energy Technology and Services-Oil Production
-Services Company, Tianjin 300452, China (e-mail: dmu_rhx@163.com).
-Digital Object Identifier 10.1109/JSEN.2025.3644934
-during voyages and supports effective maintenance decisions
-when docked.
-Fault detection and diagnosis technology for marine
-machinery refers to the capability to identify and localize
-faults down to replaceable components or specific subsys-
-tems [2]. Timely and reliable diagnosis provides strong
-support for optimizing maintenance decisions and extending
-the service life of machinery, thereby reducing maintenance
-costs and improving system operational efficiency [3]. The
-two main techniques for marine machinery fault diagno-
-sis are model-based methods and data-driven methods [4].
-Model-based methods rely on prior knowledge of the struc-
-ture or internal mechanisms of the target system to enable
-the representation and analysis of its operating states [5].
-Milioulis et al. [6] developed a functional model of a marine
-liquefied natural gas (LNG) fuel supply system and identified
-critical faults by integrating failure mode, effects, and critical-
-ity analysis (FMECA) with fault tree analysis (FTA). In gen-
-eral, function-based modeling methods emphasize fault path
-reasoning and are well suited for system-level failure analysis.
-However, they depend on a predefined fault mode library and
-exhibit limitations in identifying performance degradation and
-1558-1748 © 2025 IEEE. All rights reserved, including rights for text and data mining, and training of artificial intelligence
-and similar technologies. Personal use is permitted, but republication/redistribution requires IEEE permission.
-See https://www.ieee.org/publications/rights/index.html for more information.
-Authorized licensed use limited to: CITY UNIV OF HONG KONG. Downloaded on July 04,2026 at 10:16:30 UTC from IEEE Xplore.  Restrictions apply. 
-4140 IEEE SENSORS JOURNAL, VOL. 26, NO. 3, 1 FEBRUARY 2026
-coupled faults. Physics-based models (PBMs) constructed
-from first principles are typically more accurate and capable
-of effectively capturing the nonlinear operational behavior
-of machinery [7]. For instance, Wang et al. [8] developed
-a PBM of a two-stroke low-speed marine diesel engine
-using MATLAB/Simulink to simulate typical fault scenarios,
-thereby supporting fault identification and health assessment.
-Benefiting from modular simulation strategies, PBMs offer
-strong interpretability. However, one key prerequisite for
-implementing PBMs is access to precise component character-
-istics, which are often derived under ideal design conditions.
-When the actual system deviates from the design point, PBM
-reliability and accuracy may decline. Moreover, as the opera-
-tional life of ship systems increases, component performance
-inevitably degrades, making it difficult for PBMs to maintain
-high-fidelity simulation of real-world behavior. Therefore, the
-dynamic mismatch between PBMs and the physical sys-
-tem remains a significant challenge for current model-based
-approaches [9].
-On the other hand, data-driven models (DDMs) use col-
-lected data and prior experience to extract high-dimensional
-features representing machinery health and construct fault
-identification models [10]. Numerous studies on DDMs
-have focused on modeling marine systems using machine
-learning techniques, including ensemble learning [11], sup-
-port vector machines [12], extreme learning machines [13],
-and various neural network architectures featuring efficient
-nonlinear multilayer modeling and adaptability [14], [15].
-Although these methods do not require an in-depth under-
-standing of the underlying physical mechanisms, they also
-present certain limitations. In practice, the imbalance and
-incompleteness of measurement data, together with the
-scarcity of labeled samples, make it challenging to obtain
-high-quality training datasets [16]. Moreover, inevitable noise
-and redundancy in the acquired data may distort feature
-representations and thus degrade the diagnostic performance
-of DDMs. To address these limitations, recent studies have
-proposed a variety of more advanced DDMs. For example,
-Huang et al. [17] developed a deep adversarial capsule network
-(DACN) that combines capsule networks with adversarial
-domain generalization for compound fault diagnosis under
-unseen conditions. Zhang et al. [18] proposed a self-supervised
-graph feature enhancement and scale attention-driven frame-
-work (EG-SAGCN) to improve diagnosis with limited labeled
-data. In addition, to address the challenges of nonstation-
-ary and imbalanced conditions in machinery fault diagnosis,
-Xu et al. [19] designed a domain-constrained cascadic multire-
-ceptive learning network (DC-CMLN) integrating multiscale
-feature extraction and domain-constrained label adjustment.
-Li et al. [20] presented a sensor-aware capsule neural net-
-work that integrates interpretable multisensory fusion with
-uncertainty-aware estimation for reliable remaining useful life
-prediction. The above advanced DDMs have demonstrated
-promising results in industrial prognostics and health manage-
-ment (PHM) tasks, providing valuable insights for developing
-more robust and generalizable diagnostic frameworks. How-
-ever, their application in marine machinery fault diagnosis still
-faces challenges, including the limited exploitation of physical
-knowledge and inadequate adaptability to performance degra-
-dation.
-Since the concept of the digital twin (DT) was proposed,
-it has attracted widespread interest [21]. As an innovative
-approach, the DT enables high-fidelity system modeling and
-supports condition awareness and management throughout the
-entire equipment lifecycle, which provides a more effective
-solution for fault prediction and health management of marine
-machinery. The core focus of the DT lies in the interaction
-between the physical and virtual spaces [22]. Multisource
-information from complex systems—such as sensor data and
-simulation model outputs—is integrated and transmitted to
-the virtual space to construct the DT model. Subsequently,
-the DT model enables functions such as condition monitoring
-and fault diagnosis. Finally, feedback information is sent back
-to the physical space to support optimization and decision-
-making.
-As mentioned above, PBMs and DDMs represent two dis-
-tinct paradigms in marine machinery modeling—mechanism-
-based and data-driven models, respectively. One of the key
-challenges in constructing DT systems is the effective integra-
-tion of these two approaches [23]. Currently, DT applications
-in marine machinery remain in an early stage of development,
-and research on model construction is still relatively limited.
-Hautala et al. [24] developed a DT system for marine engines
-based on a 1-D thermodynamic model, enhancing real-time
-simulation capability through optimization and simplification
-strategies. However, this study did not consider degradation
-adaptive modeling, suggesting that the DT model may have
-difficulty adapting when component performance declines due
-to wear, corrosion, or other aging effects during vessel opera-
-tion. To address this issue, Jeon and Theotokatos [9] proposed
-a trustworthiness assurance framework for marine engine DTs
-that incorporates residual analysis and credibility evaluation to
-mitigate model mismatches arising from degradation, thereby
-improving the engineering adaptability of the DT system.
-Li and Brennan [25] proposed a DT framework for virtual
-maintenance of complex marine equipment, integrating struc-
-tural modeling with operational data monitoring for predictive
-maintenance and fault warning. Similarly, Mousavi et al. [26]
-presented a DT framework combining finite element-based
-physical modeling with Bayesian uncertainty reasoning to
-detect damage and update system states under uncertain
-loading conditions. These methods further underscore the
-important role of DDMs in DT model development. Notably,
-DDMs are proficient in learning patterns and trends from
-data, making them particularly advantageous for modeling
-component degradation [27]. However, for complex marine
-machinery such as ship engines and propeller propulsion
-systems, DT models that effectively integrate PBMs and
-DDMs remain relatively underexplored in fault diagnosis and
-health management applications, especially when performance
-degradation is considered.
-Similar to how humans perceive the external environment
-through multiple sensory channels, such as vision and hearing,
-multimodal learning can integrate multisource heterogeneous
-information from complex systems by constructing joint repre-
-sentations [28]. In DT systems, the PBM typically offers high
-Authorized licensed use limited to: CITY UNIV OF HONG KONG. Downloaded on July 04,2026 at 10:16:30 UTC from IEEE Xplore.  Restrictions apply. 
-SUN et al.: ENHANCED DIGITAL TWIN-DRIVEN FAULT DIAGNOSIS APPROACH 4141
-modeling accuracy and interpretability but is not well suited
-for scenarios involving significant performance degradation
-[29], whereas the DDM excels at capturing data patterns
-and trends. Although recent hybrid DT and physics-informed
-learning approaches have combined these two paradigms to
-enhance diagnostic robustness, their information interaction
-and fusion remain insufficient. For instance, most existing
-frameworks adopt a unidirectional mapping strategy that
-either uses measurement data to correct PBM simulation
-outputs or employs PBM-generated data to augment DDM
-training. Therefore, it remains necessary to explore new strate-
-gies for the deep integration of PBM and DDM models,
-enabling feedback-based interaction and adaptive model updat-
-ing within the DT framework.
-Given the above, a novel DT approach based on deep
-multimodal information fusion (DMIF-DT) is proposed for
-fault diagnosis of marine machinery. Compared with tradi-
-tional hybrid DT methods that typically adopt a one-way
-mapping between physical and data models, the proposed
-framework establishes a feedback-enabled two-way interac-
-tion between the PBM and DDM, forming a closed-loop
-information exchange that enhances model consistency and
-integration effectiveness. Specifically, the PBM is constructed
-using a 1-D high-fidelity thermodynamic model, whereas
-the DDM utilizes an attention-enhanced multiscale feature
-fusion (AMSF) method to extract relevant data features. The
-two modalities are then integrated using a low-rank fusion
-strategy to form a joint representation. Furthermore, to allow
-the DT model to adapt to component performance degra-
-dation, a performance-degradation correction (PDC) module
-is introduced. This module adjusts the model using adaptive
-factors computed from sensor data and probability distribution
-outcomes, enabling better alignment with real-world measure-
-ments. Overall, the main contributions of this article are as
-follows.
-1) A deep multimodal information fusion DT framework
-is developed, featuring a feedback-enabled two-way
-interaction between the PBM and DDM to achieve more
-effective integration.
-2) A PDC mechanism, driven by Kullback–Leibler (KL)-
-divergence-based health indicators (HIs), is proposed
-to adaptively refine PBM parameters and maintain
-long-term consistency with real operating conditions.
-3) An attention-enhanced multiscale feature (MSF) extrac-
-tion and low-rank fusion network is adopted as an
-effective integration scheme to improve feature dis-
-criminability and capture high-order correlations across
-modalities.
-4) Compared with conventional model-based and data-
-driven methods, the proposed DMIF-DT framework
-demonstrates higher diagnostic accuracy and robustness
-across diverse operating conditions.
-The rest of this article is organized as follows. Section II
-presents the basic theories used in constructing the PBM and
-DDM. Section III describes the architecture and implemen-
-tation of the proposed DT framework in detail. Section IV
-systematically validates the proposed approach through a
-TABLE I
-TECHNICAL SPECIFICATIONS OF WARTSILA 9L34DF D UAL-FUEL
-ENGINE
-Fig. 1. Simulation model of the marine engine built using GT -SUITE.
-series of comparative experiments. Finally, Section V draws
-conclusions and outlines future research directions.
-II. T HEORETICAL BACKGROUND AND MODELING
-A. Establishment of the Marine Engine Simulation Model
-As a core system of marine machinery, the operational status
-of the marine engine directly affects the vessel’s propulsion
-performance and overall efficiency. Therefore, a simulation
-model of a marine engine is developed in this study to
-serve as the original PBM within the DT framework. The
-model is based on a Wartsila 9L34DF dual-fuel, medium-
-speed, turbocharged diesel engine, which functions as the
-generator prime mover in an electrically propelled ship. The
-detailed specifications of the engine are listed in Table I.
-Based on these technical specifications, the simulation model
-is constructed using GT-SUITE, as shown in Fig. 1. For a
-detailed description of the modeling process using GT-SUITE
-for marine engines, refer to [30].
-As shown in Fig. 1, the original PBM is developed using the
-standard component library available in GT-SUITE. Specif-
-ically, the heat transfer and combustion processes in the
-cylinder (CYL) are modeled using the Woschni equation
-and the Wiebe function, respectively. The intake and exhaust
-piping systems are simulated using 1-D methods to capture
-gas flow characteristics. In addition, the turbocharger (TC)
-unit consists of a compressor and a turbine. The compressor is
-positioned between the ambient environment and the charge air
-cooler (CAC), while the turbine is located between the exhaust
-manifold and the exhaust outlet. The input and output ports of
-each component are connected according to mass flow balance
-principles and the ideal gas law, allowing serial coupling
-Authorized licensed use limited to: CITY UNIV OF HONG KONG. Downloaded on July 04,2026 at 10:16:30 UTC from IEEE Xplore.  Restrictions apply. 
-4142 IEEE SENSORS JOURNAL, VOL. 26, NO. 3, 1 FEBRUARY 2026
-among components and forming a complete physics-based
-simulation model.
-B. Convolutional Neural Network
-The convolutional neural networks (CNNs), widely used
-in computer vision, have also shown strong potential for
-processing time-series data. Owing to its sparse connectivity
-and weight sharing, CNN can efficiently extract deep features
-from high-dimensional data [31]. In this study, the collected
-marine system parameters are 1-D time-series data; hence,
-feature extraction is performed using 1-D convolution. In the
-convolution process, the kernel functions as a filter that
-extracts features. The key formula associated with this process
-is as follows:
-X (l+1)
-j (τ ) = δ
-
-bl
-j +
-Fl
-∑
-f =1
-K l
-j f (τ ) ⊗ X l
-f (τ )
-
- (1)
-where X (l+1)
-j (τ ) denotes the activation of the jth feature map
-at time step τ in the (l+1)th layer, representing the output after
-the convolution operation. δ(·) denotes the activation function,
-for which the ReLU function is adopted in this study. bl
-j is
-the bias term, which adjusts the output of the convolution
-calculation. Fl denotes the number of input feature maps in the
-lth layer. K l
-j f denotes the convolution kernel that connects the
-f th input feature map to the jth output feature map in layer l.
-The operator ⊗ represents the 1-D convolution. X l
-f (τ ) denotes
-the value of the f th input feature map at time step τ in layer
-l, i.e., the input to the current layer.
-The pooling layer processes the feature maps produced by
-the convolutional layer, performing downsampling to reduce
-computational complexity while preserving local structural
-information. The average pooling operation, for example,
-is computed as follows:
-X l
-j+1,pool = 1
-|t |
-∑
-s∈t
-X l
-j (s) (2)
-where X l
-j+1,pool is the output of the pooling operation at layer
-l. t is the index set of the tth pooling window, defined
-by t = {s |(t − 1)r ≤ s < (t − 1)r + r }, with r denoting
-the kernel size. While convolutional layers focus on extract-
-ing deep hierarchical features, pooling layers reduce feature
-dimensionality to facilitate efficient and robust sequence mod-
-eling.
-Convolution and pooling layers are alternately applied to
-extract hierarchical features, which are then passed to the
-fully connected (FC) layer for further processing and output
-generation. In addition, to accelerate computation and reduce
-dependence on network initialization, a batch normalization
-layer is inserted between the convolutional layer and the ReLU
-activation function. The computation of the batch normaliza-
-tion layer is defined in the following equation:
-¯x (k)
-j =
-x (k)
-j − E
-[
-x (k)]
-√
-Var
-[
-x (k)] (3)
-where x (k)
-j denotes the jth activation value in the kth batch;
-E[x (k)] and Var[ x (k)] represent the mean and variance of
-Fig. 2. Architecture of the CAM.
-Fig. 3. Architecture of the SE module.
-the current batch, respectively; and ¯x (k)
-j is the normalized
-activation value.
-C. Attention Mechanism
-The attention mechanism in deep learning is inspired by the
-ability of the human visual system to selectively focus on key
-targets or local regions during information processing [32].
-In sequence modeling tasks, attention enables the model to
-capture the sensitivity of features across multiple dimensions.
-Its core idea is to assign importance weights to input elements
-so that the model focuses on the most relevant information
-for the task. This mechanism not only improves the model’s
-ability to process complex data but also enhances its inter-
-pretability and computational efficiency [33]. In this study,
-the channel-attention module (CAM) and the squeeze-and-
-excitation (SE) module are introduced as fundamental building
-blocks.
-The architecture of the CAM is shown in Fig. 2. In this
-module, the input feature map F is first compressed along
-the spatial dimensions using both max pooling and average
-pooling operations to facilitate the learning of channel-specific
-features [34]. The resulting features are subsequently passed
-through a shared multilayer perceptron (MLP) to generate
-corresponding weight vectors. Finally, a sigmoid activation
-function is applied to normalize the weights, producing the
-channel-attention map M C. This process can be expressed as
-M C = σ
-{
-MLP
-[
-Maxpool (F)
-]
-+ MLP
-[
-Avgpool(F)
-]}
-= σ
-{
-W1
-[
-W0
-(
-F C
-max
-)]
-+ W1
-[
-W0
-(
-F C
-avg
-)]}
+Academic Editor: Paolo Renna
+Received: 20 January 2026
+Revised: 4 February 2026
+Accepted: 9 February 2026
+Published: 12 February 2026
+Copyright: © 2026 by the authors.
+Licensee MDPI, Basel, Switzerland.
+This article is an open access article
+distributed under the terms and
+conditions of the Creative Commons
+Attribution (CC BY) license.
+Article
+Human-in-the-Loop Digital Twin Modeling for Smart Civil
+Infrastructure Operation and Maintenance
+Zhe Sun 1,2 , Yibing Wang 1, Weicheng Guo 3 and Qinglei Meng 4,*
+1 College of Architecture and Civil Engineering, Beijing University of Technology, Beijing 100124, China;
+zhesun@bjut.edu.cn (Z.S.); wangyibing@emails.bjut.edu.cn (Y.W.)
+2 Chongqing Research Institute, Beijing University of Technology, Chongqing 401121, China
+3 School of Physics and Optoelectronic Engineering, Beijing University of Technology, Beijing 100124, China;
+13683170316@139.com
+4 Beijing Yuedu Construction Engineering Co., Ltd., Beijing 102699, China
+* Correspondence: mqlhw@aliyun.com
+Abstract
+Traditional inspection and diagnosis methods for civil infrastructure operation and main-
+tenance (CI O&M) rely heavily on human efforts. Such efforts are always affected by
+subjective judgment and human errors due to engineering knowledge and prior experi-
+ences of field engineers. On the other hand, recent development of AI-driven tools could
+achieve effective information acquisition but lacks interpretability and engineering credibil-
+ity. How to integrate human knowledge with AI capacity for safe and effective CI O&M
+is thus necessary in this new era. This paper presents a human-in-the-loop digital twin
+(HITL-DT) framework that enables safety risk sensing, prediction and control for smart CI
+O&M. The proposed framework fuses human cognition (i.e., individual perception and
+team situation awareness), AI and engineering knowledge for 1) risk sensing and diagnosis
+based on spatiotemporal changes and 2) risk prediction and control for smart CI O&M.
+Qualitative analysis indicates that the HITL-DT approach produces more explainable, trust-
+worthy, and actionable diagnostic outputs, which enhance the reliability and proactivity of
+CI O&M.
+Keywords: digital twin; human-in-the-loop; civil infrastructure; operation and maintenance
+1. Introduction
+With the continuous expansion of global infrastructure networks and the growing
+number of structures that are reaching or exceeding their design service life, the operation
+and maintenance (O&M) of civil infrastructure (CI) is facing increasing complexity. Data
+from the New Climate Economy and McKinsey show that global infrastructure assets
+now exceed USD 100 trillion. Around 60% of bridges and roads are already in mid- or
+late-life stages and are entering periods of concentrated aging and performance decline [1].
+According to the Federal Highway Administration (FHWA) and the ASCE report based
+on the National Bridge Inventory (NBI), the United States has more than 619,000 bridges.
+Over 42% of these bridges have been in service for more than 50 years, and about 7.5%
+are classified as structurally deficient [2]. Studies by the OECD and the European Union
+further show that many key bridges and tunnels in the core Trans-European Transport
+Network (TEN-T) were built in the 1960s and 1970s and now face pressure from outdated
+functions and delayed rehabilitation [3].
+Appl. Sci. 2026, 16, 1848 https://doi.org/10.3390/app16041848
+Appl. Sci. 2026, 16, 1848 2 of 28
+At the same time, the digitalization level of infrastructure O&M is rising worldwide.
+Smart monitoring devices, large-scale sensor networks, and automated inspection systems
+are driving exponential growth in data volume. In intelligent transportation systems
+and infrastructure IoT deployments, city- and nation-level networks rely on millions of
+sensor nodes, and a single large monitoring system can generate gigabytes to terabytes of
+high-frequency data each day [4,5]. According to the Ministry of Transport of China, the
+total length of rural roads exceeded 4.5 × 106 km by the end of 2023. In several provinces
+and cities, automated pavement condition surveys using inspection vehicles and digital
+platforms have achieved or nearly achieved a 70% automation rate, which demonstrates
+a clear improvement in the digitalization level of rural road O&M [ 6]. These trends
+indicate that modern CI has become a large-scale and highly complex system with multi-
+scale characteristics, wide spatial coverage, diverse structural forms, and heterogeneous
+data sources.
+Although many countries are promoting smart monitoring, health diagnosis, and
+digital management, current CI O&M systems are approaching the practical limits of
+purely data-driven automation when applied to infrastructure networks of this scale and
+complexity. This challenge highlights the need for digital twin (DT) frameworks that go
+beyond data aggregation and visualization, and that can explicitly incorporate human
+expertise, engineering knowledge, and explainable reasoning mechanisms.
+DTs have become an important technical pathway for CI O&M. A DT establishes a
+dynamic mapping among the physical structure, the virtual model, and real-time multi-
+source data. This mapping enables state visualization, behavior prediction, and quantitative
+decision support, which strengthens monitoring, diagnosis, and risk assessment. However,
+recent reviews in leading international journals show several major limitations in current
+DT applications for infrastructure: (1) high cost and complexity of multi-source data fusion
+and real-time updating; (2) weak integration between DT workflows and organizational
+or human decision processes; and (3) limited capability to formalize structural codes
+and engineering knowledge within DT systems. In parallel, deep learning and data-
+driven methods in Structural Health Monitoring (SHM) have achieved notable progress
+but still face key challenges, including incomplete data, weak explainability, poor scene
+generalization, and limited ability to absorb expert knowledge and engineering standards.
+Recent studies report that common SHM models for images and sensor data exhibit poor
+scalability, weak real-time performance, insufficient coupling of multi-variable features, and
+limited interpretability, which restrict real engineering deployment [7]. Similar conclusions
+have been repeatedly emphasized in multimodal SHM research.
+Compared with fully automated monitoring algorithms, traditional manual inspection
+and expert-based judgment retain strong advantages in understanding structural codes,
+recognizing subtle abnormalities, and handling complex field conditions. However, this
+human-centered approach faces severe scalability constraints when applied to large-scale
+infrastructure networks. According to the White Paper Development of China’s Rural
+Roads in the New Era issued by the State Council Information Office, China completed the
+rehabilitation of 58,000 unsafe rural bridges over the past decade. The proportion of Class
+I, II, and III rural road bridges increased from 83.2% to 98%, and the number of unsafe
+bridges declined each year [8]. This achievement required extensive human and material
+resources within a concentrated time period, showing that large-scale O&M relies heavily
+on massive resource input. Under routine O&M conditions, the rapidly increasing number
+of structures, the accelerating aging of bridges, and the combined impact of hidden damage
+and extreme events make it difficult for manual inspection and human-led decisions to
+provide full coverage in time, space, and precision.
+https://doi.org/10.3390/app16041848
+Appl. Sci. 2026, 16, 1848 3 of 28
+The analysis above reveals a critical research gap: existing CI O&M approaches
+remain polarized between data-driven automation with limited interpretability and human-
+centered assessment with limited scalability, while systematic integration mechanisms
+between humans, AI, and engineering knowledge remain underdeveloped.
+To address this gap, this study proposes a human-AI-knowledge (HAK) integrated
+digital twin framework with explicit human-in-the-loop (HITL) interaction for CI O&M.
+The proposed framework combines human experience and cognition, structural codes,
+engineering knowledge, and explainable artificial intelligence within a unified DT envi-
+ronment. Through knowledge formalization, human experience modeling, explainable AI
+reasoning, and multi-source spatiotemporal data fusion, the framework supports intelli-
+gent recognition of structural changes, mechanism-based diagnosis, and risk prediction.
+This study does not aim to improve performance only through data-driven optimization.
+Instead, it focuses on improving engineering interpretability, diagnostic credibility, and
+practical feasibility in DT-based CI O&M systems. The HITL interaction links the device
+layer, the model layer, and the decision layer. In this way, the system becomes more reliable
+and more transparent, and it can be applied more easily in real projects. It also supports
+continuous development, joint participation, and long-term knowledge storage. In this
+study, we mainly show that the proposed framework is feasible in practice, logically consis-
+tent, and reasonable from an engineering point of view. We do not focus on quantitative
+performance comparison in this paper. This will be studied in future work.
+2. Literature Review
+2.1. Digital Twin Modeling
+DTs are a key technology in CI. They link physical structures with virtual models
+and support real-time reflection and prediction of structural conditions. From a system
+engineering point of view, a DT has continuous and two-way mapping between the physical
+entity, the virtual model, and related data streams. Because of this mapping, the digital
+model can change over time and follow the operating state of the infrastructure [9].
+In construction and infrastructure projects, DT modeling usually uses geometric
+information, material parameters, and sensor networks to build accurate models of the
+physical system [10]. In the virtual domain, many studies use hybrid modeling methods.
+These methods combine mechanism-based, data-driven, and knowledge-based approaches.
+Abualdenien and Borrmann show that clearly defined meta-models and multi-level model
+structures are important for keeping consistency and allowing models to work at different
+levels of detail [ 11]. Chiachío et al. show that virtual models should be updated and
+checked continuously with multi-source monitoring data. In this way, a closed loop
+can be built between the physical system and the digital system [ 12]. Jiang et al. also
+propose a multi-domain DT framework. This framework organizes different types of data,
+models, and semantic information in one unified structure, so it can support complex
+infrastructure systems [13].
+Recent studies show that DT development is changing. In the past, it mainly focused
+on a “physical-virtual” two-domain framework. Now, it is moving to a more integrated
+“human-machine-knowledge” framework. In this new view, human interaction and knowl-
+edge are treated as core parts of the DT system. They are not seen as external inputs
+anymore. A recent review on human-centered DTs shows that human-machine collab-
+oration and knowledge integration are important for reasoning and decision-making in
+complex and uncertain situations [14]. These studies show that DT modeling is changing
+from a data-centered approach to a knowledge-centered and human-centered approach.
+Because of this change, DTs can provide a more reliable foundation for intelligent O&M.
+https://doi.org/10.3390/app16041848
+Appl. Sci. 2026, 16, 1848 4 of 28
+2.2. Human Factors in Civil Infrastructure Operation and Maintenance (CI O&M)
+Human factors are very important in CI O&M. They directly affect monitoring quality,
+risk judgment, and decision reliability. Many studies show that structural inspection
+and defect detection still depend a lot on the experience and professional knowledge
+of field engineers. When compared with fully automated systems, humans are usually
+more sensitive to small abnormalities, complex environmental effects, and rare operating
+conditions. Reason’s classical work shows that human judgment and understanding of
+context are important safety barriers in complex systems [15]. Hollnagel also shows that
+situational awareness and adaptability are important for dealing with unexpected events
+in real operations [16].
+In infrastructure monitoring practice, many studies show that automated sensing
+and robotic inspection technologies improve efficiency. But human expertise is still very
+important. Ahmed et al. show that non-destructive bridge evaluation now uses robotic
+platforms and advanced sensors more often. But experts are still needed to judge how
+serious the damage is and to connect inspection results with engineering knowledge [17].
+Sun et al. show that structural health monitoring becomes more reliable and easier to
+understand when HITL mechanisms are used. This is important for damage interpretation,
+risk assessment, and decision checking in uncertain situations [18].
+At the same time, sole reliance on manual inspection has clear limitations. Large-scale
+infrastructure networks and high-frequency monitoring tasks impose significant cogni-
+tive and physical burdens on inspectors. Al-Sabbag et al. show that human-machine
+collaboration, supported by interactive visualization and mixed reality, can enhance in-
+spection effectiveness by enabling engineers to verify and correct automated detection
+observations [19]. From a broader perspective, Asad et al. argue that human-centric DTs
+should explicitly incorporate human perception, interaction, and decision-making capa-
+bilities to support effective collaboration between engineers and intelligent systems [20].
+Recent overviews of DT applications in structural health monitoring further confirm that
+human expertise remains necessary for model calibration, anomaly interpretation, and
+maintenance planning in complex operational environments [21].
+Human factors are a strength of traditional CI O&M practices. They are also an
+important part that future DTs and intelligent monitoring systems must consider. When
+human experience, situational understanding, and decision-making processes are included,
+the system becomes stronger. This forms the basic foundation for the proposed HAK-
+integrated O&M framework.
+2.3. AI for Civil Infrastructure Operation and Maintenance (CI O&M)
+AI is now an important tool in CI O&M. It is widely used in SHM, damage detection,
+and performance evaluation. Many recent reviews show that machine learning meth-
+ods can automatically extract features from vibration data, strain data, and image data.
+These features help with damage detection and condition assessment through pattern
+recognition [22,23]. Azimi et al. review many studies and show that deep learning mod-
+els, especially CNNs, perform well in damage detection tasks. These tasks include crack
+detection and structural anomaly recognition. Because of this, inspection efficiency and
+automation levels are improved [24].
+In sensor-based monitoring, AI shows clear advantages in processing large and differ-
+ent types of data. Gharavi et al. show that AI-based SHM systems use piezoelectric sensor
+networks with different types and positions. These systems can capture complex struc-
+tural responses and improve the accuracy of damage location under different operating
+conditions [25]. Recent studies also show that deep learning methods can learn time and
+space relationships from long-term monitoring data. This supports structural condition
+https://doi.org/10.3390/app16041848
+Appl. Sci. 2026, 16, 1848 5 of 28
+evaluation and maintenance decisions [ 26]. These abilities are very useful in CI O&M
+situations with continuous sensing and large amounts of data.
+AI-based methods have many advantages. But they still face clear challenges in real
+engineering applications. Review studies show that data-driven models are sensitive
+to data quality, sensor placement, and changes in operating conditions. These factors
+can reduce their robustness and generalization ability in real infrastructure systems [26].
+Plevris and Papazafeiropoulos also point out that AI models for SHM and infrastructure
+maintenance must be combined carefully with engineering knowledge and domain rules.
+This is necessary to ensure reliability and safety, especially in rare events or complex
+damage situations [27]. Because of these limitations, AI methods in CI O&M should not
+only use data efficiently. They should also follow engineering knowledge and constraints.
+2.4. Human-AI Collaborations
+Human-machine collaboration is now an important ability in intelligent CI O&M. The
+main idea is to combine engineers’ practical judgment with the speed and consistency of
+artificial intelligence. In this way, monitoring and decision-making become more reliable
+and easier to understand. Many recent studies show that intelligent systems should support
+active human involvement. This includes supervision, intervention, and correction. They
+should not completely replace human decision-making. Wang et al. show that human-
+centered and design-oriented computational thinking helps engineers better understand
+and control intelligent systems. This is important for complex engineering tasks that need
+continuous interaction between humans and algorithms [28].
+In engineering and built-environment fields, many studies show that human partic-
+ipation can support automated reasoning. Humans provide contextual understanding
+and qualitative judgment. Abouelela shows that human-centered design is important
+for creating working environments that function well and are dependable. This means
+that system performance is closely related to human perception and interaction [29]. Ro-
+bitzsch also shows that structured human judgment can be added to data-driven mod-
+els. This can improve robustness and reduce uncertainty when the data are complex or
+noisy [30]. These results show that human involvement can reduce the weaknesses of fully
+automated systems.
+Human involvement is also very important for keeping systems adaptable and trust-
+worthy [31]. Jaryani et al. show that adding structured knowledge representations to intel-
+ligent systems makes interaction between human operators and computational modules
+more transparent. This helps people and systems make decisions together in engineering
+applications [32]. A recent review by Firmino de Souza et al. also shows that transparency,
+feedback, and the ability for human intervention are important factors for building trust in
+human-machine collaboration [33].
+Although existing research has advanced DT modeling, human-centered system
+design, artificial intelligence, and trust-aware interaction, these efforts remain largely
+independent. Current studies rarely provide a unified framework that can jointly represent
+human experience, AI reasoning, and structured engineering knowledge within a single
+DT system. As a result, limitations remain in reliability, explainability, and generalization,
+which motivates the need for an integrated HAK framework addressed in this study.
+3. A Human-in-the-Loop Digital Twin (HITL-DT) Framework for Smart
+Civil Infrastructure Operation and Maintenance
+This section presents the proposed methodology for an HITL-DT framework designed
+to support smart operation and maintenance of civil infrastructure. The framework for-
+malizes the integration of physical entities, virtual entities, and bidirectional interaction
+https://doi.org/10.3390/app16041848
+Appl. Sci. 2026, 16, 1848 6 of 28
+mechanisms within a digital twin environment. By integrating human experience (H), AI-
+based reasoning (A), and engineering knowledge (K), the proposed HITL-DT methodology
+enables dynamic monitoring of structural conditions, prediction of state evolution, and
+engineering-consistent risk assessment. As illustrated in Figure 1, these three components
+jointly constitute an HAK-integrated digital twin system, forming the methodological
+foundation for the subsequent diagnostic and decision-support processes.
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+Figure 1. HITL-DT framework for smart CI O&M.
+Figure 1 illustrates the overall HITL-DT modeling framework and its operational
+workflow for smart CI O&M. The framework is organized around a multi-layer digital twin
+architecture, where physical entity modeling, virtual entity modeling, and physical-virtual
+interactions constitute the core DT layers. Human experience integration, AI interaction,
+and engineering knowledge integration are incorporated as complementary but essential
+components that interact with the DT through validation, constraint, triggering, and
+consistency-check mechanisms. Rather than representing simple information exchange,
+the directed links indicate how human judgment, AI-based inference, and engineering
+knowledge collaboratively constrain, activate, and verify DT-based diagnosis and decision
+processes. Through this closed-loop interaction, the DT functions as a coordination and
+decision-support hub, enabling interpretable, engineering-consistent, and operationally
+feasible smart O&M.
+3.1. Digital Twin (DT) Modeling for Smart CI O&M
+DT modeling is a core component of intelligent infrastructure O&M. By constructing
+the physical entity, the virtual entity, and the bidirectional interaction between them, a DT
+achieves real-time structural state mapping and decision feedback. The physical entity
+provides a computable physical foundation and supports analyses such as finite element
+https://doi.org/10.3390/app16041848
+Appl. Sci. 2026, 16, 1848 7 of 28
+simulation while staying synchronized with sensor data and inspection records. The
+virtual entity builds a computational representation of the structure through mechanism-
+based models, data-driven models, and knowledge-based models, which enables reliable
+prediction of structural responses. The physical-virtual interaction ensures synchronized
+updates and closed-loop reasoning between the physical and virtual domains and forms the
+basis for integrating human experience, AI-based reasoning, and engineering knowledge.
+3.1.1. Physical Entity Modeling
+The physical entity is the basic layer of a DT. Its goal is to represent the real physical
+properties of infrastructure in a way that can be calculated and updated. Traditional BIM
+focuses on static representation. But the physical entity focuses on engineering analysis and
+time-based updates. The model must support calculations such as finite element analysis
+and dynamic response simulation. It must also update continuously using data from
+sensors, inspections, and O&M activities. The physical entity gives a real and reliable basis
+for virtual model simulation, human experience integration, AI reasoning, and knowledge
+rules. Because of this, the three parts of HAK can work in the same physical context
+and cooperate well. In Formula (1), the physical entity is described as a time-changing
+physical state. This state is driven by sensing data, inspection data, and O&M data from
+different sources.
+Xp(t) = Φ(S(t)), S (t) = {Ds(t), Di(t), DO&M(t)} (1)
+Zp(t) = F (S(t), I(t), O(t)) (2)
+Xp(t) = U
+ 
+Xp(t − ∆t), Zp(t)
+ (3)
+In Formula (1), Xp(t) is the time-changing physical state of the infrastructure. It
+includes geometric properties, material parameters, and structural condition indicators.
+Ds(t) is the sensor data from the monitoring system.Di(t) is the inspection and survey data.
+DO&M(t) is the O&M records collected during service. The mapping function Φ describes
+a physics-based transformation. It combines different types of input data into an updated
+physical state. It focuses on continuous updates and not static representation. Because of
+this formulation, the physical entity gives a computable and unified physical base. This
+base supports cooperation between human experience, AI reasoning, and engineering
+knowledge in the DT.
+Formulas (2) and (3) explain the internal process of the mapping function Φ. They
+divide it into two steps. In Formula (2), Zp(t) is a set of structural observations that follow
+physical rules. These observations come from combining multi-source data. The data
+include monitoring data S(t) inspection and survey records I(t), and O&M information
+O(t). The fusion operator F aligns data in time and space. It also changes data meaning
+when needed and reduces noise. In this way, different inputs become unified observation
+variables in the same physical context. They are not simply put together. These observation
+variables show structural behavior. They include deformation features, damage-related
+indices, and correction terms linked to maintenance actions.
+Based on these unified observations, Formula (3) shows how the physical entity
+changes through a physics-constrained state update process. Here, Xp(t − ∆t) is the
+physical state at the previous time step, and U is an update operator. It combines new
+observations Zp(t) with the past state under physical and engineering constraints. This
+formulation keeps the state continuous over time. It stops non-physical jumps in the state.
+So the physical entity can change step by step when new monitoring, inspection, and O&M
+data are available.
+https://doi.org/10.3390/app16041848
+Appl. Sci. 2026, 16, 1848 8 of 28
+3.1.2. Virtual Entity Modeling
+The virtual entity is the computing core of a digital twin. It supports structural
+visualization, behavior simulation, and mechanism-based reasoning. Its purpose is to copy
+the physical structure. It also provides a modeling space for condition understanding,
+change prediction, and O&M decision support. The virtual entity usually includes three
+types of models. The first type is mechanism-based models. These models apply physical
+constraints so structural responses can be calculated under loads, environmental effects, and
+damage conditions. The second type is data-driven models. These models use monitoring
+data for state identification and performance prediction. The third type is knowledge-
+based models. These models include engineering codes, construction logic, and past cases.
+They help improve clarity and engineering consistency. These models work together in
+a modular way. They form one reasoning space that works well with large amounts of
+data and with limited data. The virtual entity stays synchronized with the physical entity
+through sensor data, inspection results, and O&M records. In this way, the virtual entity
+can change over time. This idea is described in Formula (4).
+Xv(t) = Ψ
+
+Mphys (t), Mdata (t), Mknow (t)
+
 (4)
-where M C ∈ RC×1×1 represents the channel-attention map.
-F C
-max ∈ R1×1×C and F C
-avg ∈ R1×1×C are the max- and average-
-pooled features, respectively. σ denotes the sigmoid activation
-function. W0 ∈ RC/r ×C and W1 ∈ RC×C/r are the weights of
-the MLP.
-The SE module aims to enhance the representational quality
-of convolutional features by explicitly modeling interchannel
-dependencies, as illustrated in Fig. 3. It operates through
-two key stages: squeeze and excitation [35]. First, the input
-feature X = [ x1, x2, . . . ,xc] undergoes a squeeze operation
-fsq, which performs global information compression over
-the spatial dimensions to generate a compact descriptor for
-Authorized licensed use limited to: CITY UNIV OF HONG KONG. Downloaded on July 04,2026 at 10:16:30 UTC from IEEE Xplore.  Restrictions apply. 
-SUN et al.: ENHANCED DIGITAL TWIN-DRIVEN FAULT DIAGNOSIS APPROACH 4143
-each channel. Then, the excitation operation fex, implemented
-using two FC layers, models channel-wise dependencies and
-generates attention weights via a sigmoid activation function.
-Finally, a scaling operation fscale is applied to rescale the orig-
-inal features according to the computed attention, producing
-attention-enhanced output features. This process is formulated
-as
-zc = fsq (xc) = 1
-H × W
-H∑
-i=1
-W∑
-j=1
-xc (i, j) (5)
-sc = fex (zc, W ) = σ [W2δ (W1zc)] (6)
-˜xc = fscale (xc, sc) = sc · xc (7)
-where xc denotes the feature value at location (i, j) in channel
-c. zc is the global descriptor of channel c. sc represents
-the attention weight generated by the excitation module. W1
-and W2 are the weight matrices of the two linear layers.
-σ and δ denote the ReLU and sigmoid activation functions,
-respectively.˜xc is the final attention-weighted output feature.
-III. M ETHODOLOGY
-A. Overall Framework of the Proposed DT
-The proposed DT framework for marine machinery com-
-prises the PBM, DDM, multimodal fusion, and functional
-modules, as illustrated in Fig. 4. This framework aims
-to construct a virtual DT model that closely reflects the
-actual operating behavior of a marine engine by integrat-
-ing mechanism-based modeling with data-driven approaches,
-thereby supporting accurate fault diagnosis and degradation
-prediction.
-The PBM performs simulation modeling by describing
-the physical and thermodynamic relationships among inter-
-nal engine components, with its output serving as the
-mechanism-based modality. To address the inevitable perfor-
-mance degradation of engine components, a PDC module is
-employed to construct HIs that characterize degradation trends.
-These indicators are used to periodically refine key parameters
-of the PBM, maintaining the long-term accuracy and reliability
-of the simulation model.
-The DDM is constructed using sensor data collected during
-actual engine operation to uncover latent patterns in the engine
-state data. Specifically, an AMSF method is designed to facil-
-itate deep feature extraction and interaction. By enhancing the
-representation of degradation-related features under varying
-operating conditions, the AMSF improves the adaptability and
-robustness of the DT framework. Details of the AMSF method
-are provided in Section III-C.
-A low-rank multimodal fusion (LMF) model is adopted
-to integrate PBM and DDM modalities, generating a joint
-representation in a high-dimensional feature space. Compared
-with single-modality information, the fused representation
-provides greater expressive capacity and improved diagnostic
-sensitivity. Based on this integrated representation, the DT
-performs condition monitoring and fault diagnosis for the
-marine engine. Diagnostic results and degradation information
-are periodically fed back through the PDC mechanism to refine
-PBM parameters.
-B. Adaptive PDC for PBM
-Performance degradation of marine machinery components
-overextended service periods is inevitable. This degradation
-causes key parameters to drift from their initial baselines and
-reduces PBM accuracy within the DT system. To address this
-issue, a PDC module is developed by integrating historical
-monitoring data and model knowledge. The module employs
-KL divergence to capture distributional differences in repre-
-sentative operating conditions across historical voyages. Using
-these differences, HIs are constructed to track degradation
-trends and enable periodic correction of key PBM components,
-thereby maintaining long-term model accuracy.
-The overall structure of the PDC module is shown in Fig. 5,
-which consists of three blocks: KL divergence calculation,
-HI construction, and PBM update. First, the KL divergence
-calculation block estimates probability distributions of com-
-ponent performance parameters under consistent operating
-conditions using data from multiple voyages. For a repre-
-sentative condition c, performance feature distributions from
-two voyages are denoted as P (i)
-c and P ( j)
-c . To obtain these
-distributions, kernel density estimation (KDE) with a Gaussian
-kernel is applied to measurement samples under the healthy
-baseline and the current operating state. The bandwidth h
-follows Silverman’s rule of thumb:
-h = 1.06σ n−1/5 (8)
-where σ and n denote the sample standard deviation and the
-sample size, respectively. The KL divergence between the two
-distributions is defined as
-DKL
-(
-P (i)
-c ∥ P ( j)
-c
-)
-=
-∑
-x∈X
-P (i)
-c (x) log P (i)
-c (x)
-P ( j)
-c (x)
-. (9)
-This process is repeated across multiple voyages to construct
-KL divergence vectors that capture changes in component
-conditions. Next, the HI construction block takes both the
-KL divergence vector and the current state signal Sreal of the
-engine as input, and uses an MLP to predict a set of HIs
-HIs = Fθ (Sreal, DKL) (10)
-where HIs ∈ Rn denotes the predicted values of n HIs,
-each corresponding to a key PBM component. Fθ is the
-MLP model parameterized by θ. These indicators are not
-only highly sensitive to degradation trends but also physically
-interpretable.
-Finally, the PBM update block performs adaptive correc-
-tion of key model parameters based on the predicted HIs.
-Each degraded component is assigned a correction coeffi-
-cient derived from its HI, which adjusts the associated PBM
-parameters through a bounded updating rule. Specifically,
-parameter variations are scaled by a predefined adaptation
-rate to control the correction amplitude and clipped within
-physically reasonable limits to prevent abrupt or nonphysical
-changes. Through this process, the PBM continuously tracks
-the evolving performance of the engine and remains consistent
-with actual engine conditions.
-Authorized licensed use limited to: CITY UNIV OF HONG KONG. Downloaded on July 04,2026 at 10:16:30 UTC from IEEE Xplore.  Restrictions apply. 
-4144 IEEE SENSORS JOURNAL, VOL. 26, NO. 3, 1 FEBRUARY 2026
-Fig. 4. Overall framework of the proposed DT for marine machinery.
-Fig. 5. PDC module for PBM updating under performance degradation.
-C. Attention-Enhanced MSF Fusion
-In this section, AMSF is developed to enhance the capability
-of the DDM in extracting critical fault features. It comprises
-an MSF extraction module, an improved CAM (ICAM), and
-an SE module based on sliding-window pooling (Sliding-SE).
-1) MSF Extraction and Fusion: Effective feature extraction
-from diverse fault signals is essential for accurate diagno-
-sis [36]. To overcome the limitations of single-scale CNNs,
-this study designs an MSF extraction and fusion module.
-Specifically, two improvements are introduced to the 1-D
-CNN. First, multiple convolutional kernels with different
-scales are applied in parallel to extract features from the
-input data, providing stronger generalization capabilities com-
-pared to single-scale convolution. Second, a cross-level feature
-fusion mechanism is incorporated to reduce potential infor-
-mation loss in deep networks. The fused features retain more
-detailed degradation information of mechanical components
-and offer a more comprehensive representation of system
-condition variations.
-The architecture of MSF is shown in Fig. 6. After the ini-
-tial convolutional, three identically structured MSF extraction
-blocks are stacked to iteratively extract and reconstruct mean-
-ingful intrinsic features from the input samples. In each block,
-kernels of different sizes (w1 ̸= w2 ̸= w3) are employed
-to extract fault-related features at multiple scales, and the
-fused results enhance shared representations while preserv-
-ing scale-specific characteristics for accurate and stable fault
-identification. The above process can be expressed as:
-Xinit = InitConv (X ) (11)
-X (l)
-wi = f
-(
-W (l)
-wi ∗ X (l)
-input + b(l)
-wi
-)
+Ωphys (t) = G
+
+Mphys (t)
+
+(5)
+∼
+Xv(t) = H
+
+Mdata (t)Ωphys (t)
+
+(6)
+Xv(t) = K
+ ∼
+Xv(t), Mknow (t)
+
+(7)
+In Formula (4), Xv(t) is the virtual state of the DT at time t. It describes structural
+behavior and condition in a computational way. Mphys (t) is the mechanism-based model.
+It includes structural mechanics and physical constraints. This keeps structural responses
+physically clear and computable. Mdata (t) is the data-driven model. It uses monitoring
+data for state identification and performance prediction. It can adapt when data avail-
+ability changes. Mknow (t) is the knowledge-based model. It includes engineering codes,
+construction logic, and case experience. It improves clarity and engineering consistency.
+The mapping function Ψ combines these different models into one reasoning space. This
+reasoning space stays synchronized with the physical entity over time. Because of this, the
+virtual entity becomes a computing base that supports later human input and AI reasoning
+in the DT.
+Formulas (5) to (7) explain this integration process in three steps. In Formula (5),
+Ωphys (t) is the physics-based feasible space of the virtual entity at time t. It is the set
+of possible structural states limited by structural mechanics, material properties, and
+boundary conditions. The operator G translates mechanism-based models into physical
+constraints. These include equilibrium conditions, constitutive relations, and parameter
+limits. In Formula (6),
+∼
+Xv(t) is an intermediate virtual state. It is inferred by data-driven
+models before knowledge-based checking. The operator H performs state identification
+and performance prediction using monitoring data. It works under the limits of the feasible
+space Ωphys (t). This keeps the data-driven result physically acceptable. In Formula (7),
+Xv(t) is the final virtual state of the DT after engineering validation. The operator K
+combines the intermediate state
+∼
+Xv(t) with the knowledge-based model Mknow (t). This
+model includes engineering codes, construction logic, and case experience. It checks and
+improves the virtual state. This improves engineering clarity, consistency, and readiness for
+decision-making.
+https://doi.org/10.3390/app16041848
+Appl. Sci. 2026, 16, 1848 9 of 28
+3.1.3. Physical-Virtual Interactions
+Physical-virtual interaction is the main mechanism in a digital twin. It allows real-time
+mapping and closed-loop reasoning. It keeps the physical structure and the virtual entity
+synchronized at the state, behavior, and knowledge levels. Sensor data, inspection records,
+and O&M information move from the physical domain to the virtual entity. They update
+model parameters, damage states, and behavior predictions. At the same time, diagnostic
+results, performance evaluations, and risk alerts are produced in the virtual domain. These
+results are sent back to support physical O&M decisions. In this way, a closed operational
+cycle is formed. Effective interaction requires not only reliable data transmission but also
+rapid model recalibration when new information becomes available. Under incomplete
+or noisy multi-source data, mechanism-based models, AI analysis, and knowledge rules
+jointly constrain updates to enhance robustness and credibility. Through this bidirectional
+interaction, the DT enables dynamic state tracking, behavior prediction, and decision
+support, providing the operational foundation for coordinated HAK integration.
+3.2. Human Experience Integration
+Human experience integration aims to incorporate the field perception of engineers,
+the shared cognition formed through team collaboration, and the experience-based de-
+cision logic accumulated from long-term practice into the DT in a systematic way. By
+converting human advantages in anomaly recognition, situational understanding, and
+decision-making into recordable and computable inputs, a DT gains more reliable judg-
+ment capability under complex, ambiguous, or data-limited operating conditions. As
+illustrated in Figure 2, these human-derived capabilities can be transformed into structured
+information that supports more robust interpretation of structural conditions.
+ 
+ 
+ 
+ 
+ 
+ 
+Figure 2. Human experience integration for DT modeling.
+Figure 2 presents the flow of human experience from field cognition, team situa-
+tion awareness, and experience-based decision-making into the DT through a series of
+recordable and computable outputs. These include labels and annotations from individual
+perception, reasoning chains and consensus observations from team collaboration, and
+priority scores or decision rules from experiential judgment. These structured inputs are
+https://doi.org/10.3390/app16041848
+Appl. Sci. 2026, 16, 1848 10 of 28
+added to the virtual entity. This gives the DT better contextual understanding. It also
+makes later reasoning, prediction, and decision support more reliable.
+3.2.1. Human Cognition
+Human cognition shows the special role of engineers in field inspection, visual recog-
+nition, and situational judgment. It is the first step in adding human ability into a DT. In
+real O&M work, engineers can find small cracks, material problems, and geometric changes
+through visual checks, touch, and experience. These features are often hard for automated
+systems to detect. Engineers also understand environmental conditions, construction his-
+tory, and structural weaknesses. This helps them make judgments in complex or unclear
+situations. To let a DT use human input, these thinking processes must be changed into
+structured information. The information must be recorded, described, and computed. For
+example, inspection notes and simple damage judgments can be changed into labels, rules,
+or semantic forms. These forms can interact with the virtual entity. Human perceptual
+ability works together with the continuous monitoring ability of the DT. Because of this, the
+system can make more reliable recognition and judgment when data are missing, conditions
+change quickly, or new damage patterns appear. This base supports later team decisions
+and AI reasoning.
+3.2.2. Team Situation Awareness
+Team situation awareness is the shared understanding of an O&M team during in-
+spection, data interpretation, and risk assessment. It is an important part of the human-
+experience layer in a DT. In real projects, different roles take part. These roles include
+inspection engineers, monitoring analysts, structural experts, and managers. Each role has
+different information. This information includes field observations, sensor data, mecha-
+nism knowledge, and management needs. Team awareness comes from combining these
+different inputs. The team uses communication, documentation, and collaboration. By
+doing this, the team builds a consistent understanding of structural conditions and a shared
+view of risks. Team-level awareness reduces bias. It also improves the ability to deal
+with complex problems. To let a DT use collective intelligence, team discussions, expert
+opinions, and decision processes must be changed into structured knowledge. This knowl-
+edge includes decision reasons, agreement steps, and the basis for risk levels. After this
+change, the DT includes both individual views and team judgments. This gives a more
+complete understanding of conditions and more reliable diagnostic results. It also makes
+later decisions more transparent and easier to trace.
+3.2.3. Experience-Based Decision-Making
+Experience-based decision-making shows the practical decision logic that engineers
+build through long-term work. It is a main way for human knowledge to enter a DT. In
+real O&M work, many important decisions do not depend only on data or model results.
+They depend on expert understanding of damage patterns, risk change, and construction
+or maintenance limits. For example, when engineers see similar damage, they can quickly
+decide which problems need immediate repair, which can be observed for some time, and
+which are caused by the environment and do not need heavy treatment. These decisions
+include judging the current condition, predicting future risk, balancing resource limits, and
+using engineering codes in a flexible way. To let a DT use this experience, these decisions
+must be changed into clear rules, steps, or semantic forms. These forms help the system
+understand the logic behind expert decisions. Engineers’ working strategies can be encoded
+and used together with AI models and mechanism-based models. In this way, the DT can
+give stronger and more practical intelligent responses in complex or uncertain situations.
+https://doi.org/10.3390/app16041848
+Appl. Sci. 2026, 16, 1848 11 of 28
+3.3. AI Interaction
+AI interaction improves the DT. It helps the DT recognize structural states. It helps
+the DT predict future changes. It helps the DT give clear explanations. This part supports
+complex and changing O&M situations. It allows continuous monitoring. It supports data-
+based decisions. Figure 3 shows this module. It has three AI functions. The functions are
+state recognition, prediction with uncertainty, and explainable reasoning. These functions
+change multimodal monitoring data into useful results for action.
+Figure 3. Knowledge integration in the DT system.
+The DT uses data-driven state identification, prediction with uncertainty, and explain-
+able AI. It can track changes over time. It can find anomalies. It can also assess possible
+future risks. These functions make up the intelligent layer of the DT. This layer brings
+these abilities into one system. The system can then provide reliable and clear analysis for
+engineering decisions. It also supports cooperation between people and models. This idea
+is shown in Formula (8).
+Xint
+t (t) = I
+
+Mdata (t), Mpred (t), Mexplain (t)
+
+(8)
+In Formula (8), Xint
+t (t) is the state of the intelligent layer of the DT at time t. It includes
+the system’s abilities for state identification, risk prediction, and decision support.Mdata (t)
+https://doi.org/10.3390/app16041848
+Appl. Sci. 2026, 16, 1848 12 of 28
+is the data-driven model. It tracks structural changes and finds anomalies using real-time
+monitoring data. Mpred (t) is the predictive model with uncertainty. It helps the system
+assess future risks by checking possible changes and their uncertainty. Mexplain (t) is the
+explainable AI model. It helps engineers understand, check, and supervise the model’s
+decisions. This makes the system more transparent and trustworthy. The mapping function
+I combines these three abilities into one intelligent layer. This layer supports reliable, clear,
+and cooperative analysis for engineering decisions. This intelligent layer improves the DT.
+It gives real-time and data-based results. It supports risk prediction. It keeps the system
+understandable. These abilities are important for sound and reliable engineering decisions.
+3.3.1. Data-Driven Structural Health Assessments
+Data-driven structural state recognition allows a DT to monitor and assess the con-
+dition of civil infrastructure over time. It uses monitoring data, images, and operation
+records. With advanced sensors and imaging tools, AI models can find damage features
+such as cracks, unusual vibrations, and stiffness loss. This supports frequent and large-scale
+condition checks. It can do more than manual inspection. Data-driven recognition alone is
+sensitive to data noise, environmental effects, and special features of each structure. These
+factors reduce reliability and physical consistency. So AI-based recognition should use
+mechanism-based analysis and engineering knowledge. When this approach is used in a
+DT, it supports continuous state tracking of the physical entity. It also provides a clear and
+reliable base for real-time decision support and diagnostic reasoning.
+3.3.2. Predictive Modeling and Uncertainty Quantification
+Predictive modeling and uncertainty quantification aim to enable a DT to generate
+predictions and clearly indicate the confidence level of these predictions. Structural per-
+formance in infrastructure O&M is influenced by factors such as aging, environmental
+changes, unexpected loads, and material degradation. AI models can learn from historical
+monitoring data and damage-evolution patterns to predict future trends, such as stiffness
+reduction rate, fatigue accumulation, or the possible time window for abnormal behavior.
+However, all predictive models contain uncertainty. Sources of uncertainty include data
+noise, model bias, changes in operating conditions, and extreme events. To prevent inac-
+curate predictions from misleading O&M decisions, uncertainty quantification methods
+need to express the reliability range of a prediction, such as through probability distribu-
+tions, confidence intervals, or risk levels. Engineers can then understand the robustness of
+the prediction and combine it with mechanism-based analysis or expert judgment when
+necessary. These methods are summarized in Formula (9), which defines how uncertainty
+quantification integrates with predictive models.
+Xpred
+t (t) = P
+
+Mdata (t), Mpred (t), Muncertainty (t)
+
+(9)
+In Formula (9), Xpred
+t (t) represents the predicted state of the DT at timet, indicating the
+forecasted structural performance based on historical data and predictive models. Mdata (t)
+is the monitoring data model. It gives real-time data such as strain, displacement, and
+temperature. These data are important for state identification. Mpred (t) is the predictive
+model. It uses data-driven methods to predict future trends. These trends include material
+degradation and performance decline. Muncertainty (t) is the uncertainty model. It considers
+variability and unpredictability in predictions. It includes data noise, model bias, and
+changes in operating conditions. The mapping function P combines these parts into one
+prediction model. This model includes predicted results and their uncertainty. It gives a
+strong and reliable base for O&M decisions.
+https://doi.org/10.3390/app16041848
+Appl. Sci. 2026, 16, 1848 13 of 28
+This formulation lets engineers check the confidence level of predictions. It helps them
+make better and more reliable decisions. It also improves the overall performance of the
+DT in infrastructure management.
+3.3.3. Explainable AI Mechanisms
+Explainable AI helps a DT show results. It also shows the reasons for the results.
+This lets engineers understand why the model gives certain judgments. It also helps them
+keep control of the system. In infrastructure O&M, AI is used for damage detection, risk
+assessment, and degradation prediction. If a model gives a result and does not explain the
+reason, engineers may not trust it during important decisions. So explainable AI solves this
+problem. It can show feature importance. It can highlight the parts of the data the model
+uses. It can show reasoning steps. It can also give explanations in simple language. These
+methods make the model’s behavior clear. They help engineers supervise the system in a
+more reliable way during O&M work.
+3.4. Knowledge Integration
+Knowledge integration adds structural mechanics principles, engineering code rules,
+and past case experience into the DT in a clear and organized way. This part lets the
+DT carry out reasoning, checking, and judgment based on engineering logic. Mechanics
+knowledge is written in a clear form. Code rules are changed into computable rules. Case
+experience is stored in a searchable knowledge base. Because of this, the DT is not only a
+mix of data and models. The system can understand structural behavior. It can assess risks.
+It can also give clear decision support in a way similar to an engineer. This leads to more
+reliable and practical intelligent O&M.
+3.4.1. Formalization of Structural Engineering Knowledge
+The formalization of structural engineering knowledge changes mechanical laws,
+analysis methods, and component response rules into forms that a DT can compute and use
+for reasoning. This transformation allows a DT not only to perform numerical calculations
+but also to make judgments based on engineering logic. In traditional O&M work, engineers
+rely on experience to understand structural force patterns, stiffness degradation trends, load-
+displacement behavior, and damage evolution characteristics. Within a DT, these patterns
+need to be expressed through formulas, rules, or simplified models. For example, moment
+and shear transfer paths or stiffness contributions of different structural components can be
+encoded as inference conditions for model calibration, state assessment, or risk evaluation.
+The formalization of mechanics knowledge provides physical constraints for data-driven
+models and improves the rationality of predictions. This knowledge also enhances model
+robustness when data are incomplete or when operating conditions change.
+3.4.2. Computable Representation of Engineering Codes
+The computable representation of engineering codes aims to convert text-based re-
+quirements, diagrams, and tables in engineering standards into computational logic that a
+DT can automatically read, evaluate, and execute. In traditional O&M practice, engineers
+examine each requirement manually when assessing structural safety. When these rules
+exist only in text form, they cannot support automated reasoning or real-time compliance
+checks. By converting code contents into logical conditions, parameter limits, formula-
+based checks, or decision-tree structures, a DT can automatically match relevant clauses
+during state recognition, performance assessment, and risk diagnosis. For example, when
+deformation or stress problems are found, the DT can check set limits and give related
+suggestions. Computable code rules improve work speed. They reduce human mistakes.
+They also make decisions more consistent and easier to trace. When engineering standards
+https://doi.org/10.3390/app16041848
+Appl. Sci. 2026, 16, 1848 14 of 28
+change, the rule base can change too. This keeps the DT in line with current requirements.
+It also allows the DT to give reliable and automatic compliance support.
+3.4.3. Case-Based Knowledge Modeling
+Case-based knowledge modeling organizes past damage events, failure cases, mainte-
+nance actions, and repair results into one structured knowledge source. This lets the DT
+learn from past experience. It also helps the DT give suggestions that match real engineer-
+ing practice. During long service life, infrastructure can show many types of damage. These
+include crack growth, corrosion increase, fatigue failure, and sudden problems. Many of
+these events are recorded in engineering documents. These cases can be organized into
+searchable knowledge records. When similar damage appears, the DT can find related
+examples and make decisions by comparison. Case knowledge is different from code rules
+and mechanics models. It shows the variation and uncertainty that exist in real engineering
+work. It supplements scenarios that analytical models cannot fully capture and provides
+practical grounding for AI reasoning and human decision-making. As case records increase
+and interact with real-time monitoring data, the knowledge base can be updated contin-
+uously. This process strengthens the self-learning capability of the DT and improves its
+ability to understand and respond to rare or previously unseen conditions.
+4. HITL-DT-Driven Smart Sensing and Diagnosis of Civil
+Infrastructure Deteriorations
+The HAK framework proposed in this section defines an operational methodology
+for smart sensing and diagnostic reasoning in civil infrastructure operation and mainte-
+nance. By linking human cognition and team situational awareness with AI-driven feature
+extraction and structured engineering knowledge, the proposed HITL-DT workflow en-
+ables coordinated, interpretable, and mechanism-grounded deterioration diagnosis. As
+illustrated in Figure 4, the workflow explicitly specifies how multi-source information
+is collected, aligned, analyzed, and validated through a closed-loop interaction among
+perception, human interpretation, and knowledge-guided verification, thereby providing a
+methodological basis for subsequent diagnostic and decision-support processes.
+Figure 4 illustrates the operational workflow of the proposed HAK-driven frame-
+work for spatiotemporal monitoring and diagnosis of civil infrastructure deterioration.
+Building on the HITL-DT architecture, the framework is organized into three tightly cou-
+pled stages: multi-source spatiotemporal perception, AI-based change detection, and
+knowledge-guided diagnostic reasoning. These stages operate in a closed-loop manner,
+where human cognition, AI inference, and engineering knowledge collaboratively con-
+tribute to change interpretation, mechanism-based validation, and decision support. Rather
+than presenting isolated analytical steps, the workflow emphasizes engineering consistency,
+interpretability, and operational feasibility, enabling the digital twin to function as a reliable
+decision-support system for smart CI O&M under complex and uncertain field conditions.
+4.1. Spatiotemporal Data Collection
+Spatiotemporal data collection is the starting point of an HAK-driven monitoring
+system. This process integrates human perception gathered from manual inspections,
+consensus information formed through team collaboration, and high-frequency automated
+data provided by machine vision. These information sources have different roles. Machine
+vision helps visual sensing under human guidance and checking. Human perception
+gives context and experience-based understanding. Team collaboration combines and
+checks information through group judgment. These three types of data support each
+other. They form a multi-source base. This base includes detailed observations, contextual
+https://doi.org/10.3390/app16041848
+Appl. Sci. 2026, 16, 1848 15 of 28
+understanding, and quantitative features. Figure 5 shows how these different inputs come
+together into one spatiotemporal data stream for the DT.
+Through this combined database, a DT can obtain comprehensive and continuous
+information about structural conditions within real operational contexts, which provides
+reliable inputs for later change detection and diagnostic analysis.
+ 
+Figure 4. HAK-driven spatiotemporal monitoring and diagnostic workflow for smart CI O&M.
+4.1.1. Human Cognition
+Human cognition has an important role in collecting spatiotemporal information. It
+captures detailed, contextual, and unclear features. It is the main source of high-quality
+field information for a DT. During inspections, engineers can find early signs such as small
+cracks, local deformation, and material weathering through sight and touch. Engineers
+can also notice sounds, smells, and vibrations. This helps them find possible abnormal
+structural conditions. Engineers also observe environmental factors such as weather
+changes, construction activities, and traffic conditions. These observations give important
+context for later data analysis and change study. In the HAK framework, these inspection
+results can be changed into structured information. They can be entered into the DT through
+semantic labels, text notes, voice records, or mobile forms. These human inputs work
+together with AI-based automatic recognition and case knowledge from the knowledge
+base. In this way, a multi-source monitoring system is formed.
+https://doi.org/10.3390/app16041848
+Appl. Sci. 2026, 16, 1848 16 of 28
+ 
+ 
+ 
+Figure 5. Multi-source spatiotemporal data integration.
+4.1.2. Team Situation Awareness
+Team situation awareness focuses on the shared cognitive benefit that comes from
+people with different roles working together during spatiotemporal information collection.
+This component is an important link between human input and knowledge in the HAK
+framework. In real inspection and monitoring work, field inspectors, monitoring engineers,
+structural analysts, and managers share information. They discuss it and check it again
+based on their own expertise. This teamwork builds a shared understanding of structural
+conditions. It also makes up for the limits of individual observations. It also reduces
+judgment errors caused by personal bias. In the HAK framework, team conclusions are
+changed into structured data or semantic labels for the DT. These results join AI recognition
+outputs and case records from the knowledge base. Together, they form a data foundation
+based on multi-party agreement.
+4.1.3. Machine Vision
+Machine vision supports spatiotemporal data collection by extending human sensing
+through automated visual acquisition while remaining embedded in human interpretation
+and validation. Using UAVs, fixed cameras, mobile devices, or vehicle-mounted systems,
+visual information on cracks, spalling, corrosion, and deformation can be continuously cap-
+tured as images, videos, or point clouds. Within the HAK framework, machine vision does
+not operate as an autonomous inspection module; instead, sensing tasks and interpretation
+criteria are guided by expert knowledge and inspection experience. Machine-vision results
+are checked against semantic records from human inspections. They are also checked
+against team review decisions. AI analysis can mark possible anomalies using common
+features stored in the knowledge base. Human judgment is then used to confirm or adjust
+these results. In this HITL process, machine vision gives frequent and context-related visual
+data. The data also follow engineering rules. This supports later diagnosis.
+https://doi.org/10.3390/app16041848
+Appl. Sci. 2026, 16, 1848 17 of 28
+4.2. Spatiotemporal Change Detection
+Spatiotemporal change detection finds real structural changes at different times or
+under different operating conditions. It uses monitoring data from many sources. The HAK
+framework aligns, extracts, and checks human inspection data, team-reviewed information,
+and machine-vision results. It changes change detection from simple image comparison or
+signal analysis into a broader judgment process. This process includes semantic information,
+engineering knowledge, and AI ability. Figure 6 shows this three-step process. It shows
+how multi-source alignment, AI-based extraction, and knowledge-based checking work
+together to support change detection.
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+Figure 6. Workflow of HAK-based spatiotemporal change detection.
+This integrated process gives stronger and more meaningful evidence for later diag-
+nosis. It makes sure that the detected changes show real structural behavior. They are
+not caused by noise, environmental effects, or observation bias. The system uses machine
+intelligence, human expertise, and knowledge rules together. So it produces more reliable
+and easier-to-understand change detection results.
+4.2.1. Multi-Source Spatiotemporal Data Alignment
+Multi-source spatiotemporal data alignment puts different types of data into one
+shared space and time system. The data come from human inspection, team review, and
+machine vision. This lets the DT understand structural changes in one clear context. Human
+inspection records have semantic descriptions. Team review gives summarized conclusions.
+Machine vision gives continuous and quantitative images or point clouds. These data
+types differ in time resolution, spatial accuracy, and expression style. The HAK framework
+combines the strengths of these three data sources. It uses precise location data from
+machine vision. It uses semantic labels from human input. It uses typical change patterns
+from the case knowledge base. This combination reduces errors that come from one data
+source. It keeps recognition stable in unclear or noisy environments.
+4.2.2. AI-Driven Change Extraction
+AI-driven change extraction finds structural differences over time. It uses machine-
+vision data, monitoring signals, and comparison from different data sources. AI models can
+find patterns such as crack growth, surface damage, unusual displacement, and stiffness
+loss. They use image comparison, point cloud matching, feature tracking, and time-series
+analysis. These methods support large-scale and frequent monitoring. Real detection in
+practice is affected by lighting, noise, environmental effects, and sensor errors. AI alone can
+give false alarms. It can also miss real damage. The HAK framework improves reliability.
+It adds semantic notes from human inspection. It adds team review results. It also uses
+typical change patterns from the case knowledge base. For example, AI may detect a
+small crack extension. Human inspection can explain the context. The team can judge if
+https://doi.org/10.3390/app16041848
+Appl. Sci. 2026, 16, 1848 18 of 28
+it is important for engineering. Case knowledge can check if the change matches known
+damage patterns.
+4.2.3. Knowledge-Enhanced Change Validation
+Knowledge-based change validation checks the changes found by AI or human in-
+spection. It makes sure the changes are real. It makes sure the changes are important
+from an engineering view. In monitoring work, lighting changes, stains, noise, and camera
+angle shifts can create false changes. So a structured knowledge system is needed to check
+these results. The HAK framework uses structural mechanics rules, code limits, and case
+knowledge. It checks if the detected changes match force paths. It checks if they match
+common damage types. It checks if they match known cases. This process separates real
+risk signals from unimportant disturbances. Contextual descriptions from human inspec-
+tion and shared risk assessments formed by the team also support validation, because
+these inputs help identify background factors such as construction activities, weather, or
+incidental events. AI provides preliminary change features, human inspection adds seman-
+tic interpretation, and the knowledge base offers mechanism-based justification, which
+together produce a more accurate and confident judgment.
+4.3. Spatiotemporal Change Diagnosis
+Spatiotemporal change diagnosis focuses on transforming detected changes into
+engineering-meaningful judgments. The HAK framework upgrades the diagnostic process
+from single-signal analysis to multi-source contextual reasoning by integrating AI-based
+recognition, human situational understanding, and mechanism knowledge, code rules, and
+historical cases from the knowledge layer. Changes are first explained through human–AI
+collaboration, then verified using structural mechanics to determine whether they represent
+real damage, and finally evaluated through codes and case knowledge to infer intervention
+levels. This process forms a scientific, explainable, and credible diagnostic chain. These
+methods are summarized in Formula (10), which defines how the diagnostic process
+integrates multiple data sources and reasoning layers.
+Xdiag
+t (t) = R
+
+MAI (t), Mhuman (t), Mmechanism (t), Mknowledge (t)
+
+(10)
+∼
+Xt = I(MAI (t), Mhuman (t)) (11)
+ˆXt = V
+ ∼
+Xt, Mmechanism (t)
+
 (12)
-h(l)
-f = X (l)
-w=1 ⊕ X (l)
-w=3 ⊕ X (l)
-w=5 (13)
-where X denotes the initial 1-D input sequence. Xinit rep-
-resents the output after the initial convolution. X (l)
-wi denotes
-the output of a convolutional kernel with size wi in the lth
-multiscale convolutional block, in which l ∈ {1, 2, 3}. For
-Authorized licensed use limited to: CITY UNIV OF HONG KONG. Downloaded on July 04,2026 at 10:16:30 UTC from IEEE Xplore.  Restrictions apply. 
-SUN et al.: ENHANCED DIGITAL TWIN-DRIVEN FAULT DIAGNOSIS APPROACH 4145
-Fig. 6. Architecture of the MSF extraction and fusion module.
-l = 1, the input is Xinit, while for l > 1, it is the output of the
-previous multiscale fusion block. f (·) denotes the activation
-function. W (l)
-wi refers to the convolutional kernel with size wi
-in the lth block, producing 64 output channels. b(l)
-wi is its
-corresponding bias. h(l)
-f represents the output after scale-wise
-fusion in the lth block. The symbol ⊕ denotes the element-
-wise addition.
-To further enhance feature representation, a layer con-
-catenation module is introduced to fuse information across
-hierarchical levels. Features at different depths capture
-progressively abstract representations, and their integration
-improves the characterization of subtle engine condition
-changes. As shown in Fig. 6, outputs from multiple multiscale
-extraction blocks are first reduced in dimension and then
-concatenated to form a fused feature representation. The fusion
-process is defined as follows:
-Hfusion = Concat
-(
-h(1)
-f , h(2)
-f , h(3)
-f
-)
+Xdiag
+t = E
+
+ˆXt, Mknowledge (t)
+
+(13)
+In Formula (10), Xdiag
+t (t) is the diagnostic state at time t. It shows the engineering
+judgment of detected changes. It uses data from many sources. MAI (t) is the AI recog-
+nition model. It finds possible structural changes and anomalies through data analysis.
+Mhuman (t) is the human understanding model. It includes expert judgment, contextual
+knowledge, and field observations. It gives a more detailed explanation of detected changes.
+Mmechanism (t) is the mechanism-based model. It uses structural mechanics rules to check if
+the detected changes show real damage. Mknowledge (t) is the knowledge-based model. It
+includes engineering codes, past cases, and expert knowledge. It checks how serious the
+detected changes are and suggests action levels. The mapping function R combines these
+parts into one diagnostic framework. This framework supports a clear, explainable, and
+reliable diagnosis process for O&M decisions.
+https://doi.org/10.3390/app16041848
+Appl. Sci. 2026, 16, 1848 19 of 28
+Formulas (11) to (13) explain this reasoning process in three steps. In Formula (11),
+∼
+Xt is an intermediate change state. It comes from cooperation between AI and humans.
+AI results are understood together with human context. In Formula (12), ˆXt is a checked
+change state after mechanism-based validation. This step makes sure the interpreted
+changes follow structural mechanics rules. In Formula (13), Xdiag
+t is the final diagnostic
+state. It combines the checked change state with knowledge-based models. It judges the
+severity level and suggests suitable actions.
+These steps form a diagnostic chain. The chain moves from interpretation to physical
+checking to engineering-based decisions. This formulation lets engineers use AI results,
+human experience, and engineering knowledge together. It forms a clear and trustworthy
+diagnostic process. It helps make decisions that are scientific and practical.
+4.3.1. Human-AI Collaborative Interpretation
+Human-AI collaborative interpretation combines human experience, AI detection
+capability, and knowledge-based rules to analyze the source, nature, and risk of observed
+changes. AI can provide an initial assessment of a change but often lacks context and
+engineering interpretation. The HAK framework incorporates semantic descriptions from
+human inspections and situational consensus from team discussions to support multi-
+angle interpretation with historical experience. For example, when AI detects slight crack
+development, human input can use construction history to judge whether the change relates
+to normal shrinkage, and team discussions can establish a shared view on its risk level. AI
+performs rapid screening, while humans provide contextual reasoning, and together they
+form a complementary interpretive mechanism. This process gives the DT a more credible
+and engineering-relevant preliminary diagnosis.
+4.3.2. Mechanism-Based Damage Identification
+Mechanism-based damage identification links detected changes with structural me-
+chanics principles to determine whether a change represents real damage and to understand
+possible causes. In real O&M work, explanations must rely on force-transfer paths, com-
+ponent stiffness, load history, and boundary conditions. The HAK framework uses AI
+for efficient change extraction, supplements this with human experience and contextual
+judgment, and uses mechanics formulas, code limits, and typical deterioration patterns
+stored in the knowledge layer to support scientific identification. For example, when crack
+extension is detected, mechanics knowledge can determine whether the crack relates to
+tensile stress concentration or fatigue accumulation, case knowledge can compare the trend
+with documented deterioration patterns, and human inspection information can help judge
+whether environmental or construction-related factors contributed to the change.
+4.3.3. Code- and Case-Guided Diagnostic Reasoning
+Code- and case-guided diagnostic reasoning enables the DT to provide engineering-
+constrained diagnostic conclusions after identifying change features and confirming dam-
+age. The HAK framework uses engineering codes, including limit values, strength require-
+ments, and structural provisions, to enable automatic checks of indicators such as crack
+width, deflection, and stress level. The case knowledge base provides degradation paths
+and intervention results from real projects. These records support reasoning about risk
+levels, future trends, and possible intervention actions. This approach makes sure that
+diagnostic results follow engineering standards. It also makes sure that they reflect real
+operational experience. This increases the reliability of the final conclusions.
+https://doi.org/10.3390/app16041848
+Appl. Sci. 2026, 16, 1848 20 of 28
+5. Human-AI-Knowledge (HAK)-Driven Risk Prediction and
+Proactive Control
+This section studies risk assessment, prediction, and proactive control of CI. It shows
+how the HAK framework brings together human experience, AI analysis, and engi-
+neering knowledge into one risk management process. The DT uses information from
+many sources. It uses clear reasoning. So it can find problems early. It can support
+future decisions. Figure 7 shows this HAK-based risk management process. It shows
+how input from humans, AI, and knowledge turns into risk assessment, prediction, and
+proactive control.
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+Figure 7. HAK-driven risk management framework.
+This integrated method makes structural condition assessment more complete. It
+makes risk prediction more reliable. It makes proactive control easier to use in practice.
+These abilities change CI maintenance from passive reaction to active prevention. They
+give stronger support for long-term safety. They give stronger support for efficiency.
+5.1. Risk Prediction of CI O&M
+Structural risk prediction tries to estimate possible future problems, degradation,
+or failure based on the current state of the structure and its change over time. In the
+HAK framework, this process uses AI, human expertise, and engineering knowledge. AI
+models study defect growth and predict future structural response. But they often lack
+clear cause explanation. They may also be weak when data are limited. Engineers use
+mechanism-based judgment. They consider site conditions, structural layout, material
+behavior, and past experience. This helps them judge if the predicted risks are reasonable.
+Team collaboration reduces personal bias. It improves the stability of interpretation. The
+knowledge layer gives physical limits and code limits. Structural mechanics explains how
+damage grows. It explains how loads change. Engineering codes set safety limits. Case
+knowledge connects observed changes with known damage patterns. These parts work
+together. Risk prediction follows data trends. It follows engineering logic. This idea is
+shown in Formula (14).
+Xdiag
+t (t) = R
+
+MAI (t), Mhuman (t), Mmechanism (t), Mknowledge (t)
+
 (14)
-where Hfusion is the final output feature map after cross-level
-concatenation, with a channel size of 32 × 3 = 96. Concat(·)
-denotes the horizontal concatenation operation.
-2) Attention-Based Feature Enhancement Module: Although
-the MSF serves as the backbone network and effectively
-captures temporal features, its output typically involves a
-straightforward aggregation of information across the temporal
-and channel dimensions. This uniform treatment may lead
-to suboptimal performance [37]. In fault diagnosis tasks,
-sensor parameters contribute differently to model decisions
-over time, and information from certain channels may be more
-critical for identifying specific fault patterns. To address this,
-a dual-attention feature enhancement module is introduced to
-refine the MSF outputs by highlighting informative channels
-and enhancing the representation of MSFs. It strengthens
-relevant feature responses while suppressing interference from
-irrelevant ones and consists of an ICAM and an SE module
-based on Sliding-SE. The specific design will be introduced
-in detail as follows.
-When handling multivariate time-series data, the traditional
-CAM mainly relies on global pooling statistics to generate
-channel weights. Although it can capture some interchannel
-dependencies, its limited feature fusion capability hinders the
-Fig. 7. Structure of the ICAM.
-extraction of deep interaction features, reducing its effective-
-ness in complex pattern recognition tasks. To overcome this
-limitation, this study proposes an ICAM, which enhances
-interchannel interactions by explicitly modeling dependencies
-using multiscale convolution operations. As shown in Fig. 7,
-the input feature map F ∈ RC×T is processed by three
-parallel 1-D convolution layers with kernel sizes of 1, 3,
-and 5 to capture local features under different receptive
-fields. The resulting outputs at each scale are denoted as
-X1, X2, X3 ∈ RC×T . The similarity between X2 and X3
-is then calculated to generate the channel-attention matrix
-M ∈ RC×C, where the similarity score matrix is defined
-as
-S = X2 · X T
-3 ∈ RC×C . (15)
-Subsequently, a softmax operation is applied to each row to
-normalize the attention weights along the channel dimension,
-resulting in the final attention matrix M
-Mi, j = exp
-(
-Si, j
-)
-∑C
-k=1 exp
-(
-Si,k
-) (16)
-where Mi, j denotes the attention weight from the ith channel
-to the jth channel, with i, j ∈ {1, 2, . . . ,C}. The attention
-weights for each channel sum to 1. The attention matrix M
-is then multiplied by the feature map X1, extracted at the
-first scale, to obtain attention-enhanced features that capture
-interchannel dependencies. These features are added to the
-residual features to generate the final module output, which is
-defined as follows:
-Fca = α · (M · X1) + F (17)
-Authorized licensed use limited to: CITY UNIV OF HONG KONG. Downloaded on July 04,2026 at 10:16:30 UTC from IEEE Xplore.  Restrictions apply. 
-4146 IEEE SENSORS JOURNAL, VOL. 26, NO. 3, 1 FEBRUARY 2026
-Fig. 8. Structure of the improved SE module based on Sliding-SE.
-where Fca represents the output of the ICAM. α
-is a learnable scaling factor used to balance the
-contribution of attention-enhanced features and residual
-information.
-As a local enhancement unit within the feature extraction
-network, ICAM incorporates multiscale convolutional kernels
-to increase the diversity of channel feature representations,
-thereby emphasizing critical channel features in the early
-stages of extraction.
-The SE module has been widely adopted in deep learn-
-ing architectures for its simplicity and strong performance.
-However, its global average pooling (GAP) operation, while
-effective in static domains such as image analysis, is less suit-
-able for fault diagnosis in marine machinery. Sensor data from
-such equipment often exhibit stage-wise and nonstationary
-patterns, where direct GAP aggregation can obscure critical
-local fluctuations and weaken the extraction of degradation-
-related features. To address this, a modified SE module based
-on Sliding-SE is proposed. It applies sliding max pooling
-(SMP) and sliding average pooling (SAP) for fine-grained
-feature compression, which are then integrated with GAP to
-generate a fused representation that preserves global trends
-while emphasizing key local features.
-The structure of the Sliding-SE is illustrated in Fig. 8.
-Given an input feature map H ∈ RC×T , SMP and SAP are
-independently applied to each channel using a pooling window
-of size k and stride s, respectively, producing two compressed
-feature maps:
-Hsmp (c, i) = max
-t∈Wi
-H (c, t) (18)
-Hsap (c, i) = 1
-k
-∑
-t∈Wi
-H (c, t) (19)
-where c ∈ {1, 2, . . . ,C}, t ∈ {1, 2, . . . ,T }, and Wi denotes
-the ith window along the temporal dimension. Subsequently,
-GAP is applied to the outputs of SMP and SAP to further
-compress them into channel-level descriptors
-zsmp (c) = 1
-L
-L∑
-i=1
-Hsmp (c, i) (20)
-zsap (c) = 1
-L
-L∑
-i=1
-Hsap (c, i) (21)
-where L represents the number of temporal steps after pooling,
-determined by the input length T , window size k, and stride s.
-Finally, the two descriptors are concatenated to form a fused
-representation
-z =
-[
-zsmp, zsap
-]
-∈ R2C . (22)
-The fused vector z is subsequently fed into two FC layers
-to perform a nonlinear transformation, yielding the attention
-weights for each channel
-s = σ (W2 · ReLU (W1 · z)) ∈ RC (23)
-where W1 ∈ R(2C/r )×2C and W2 ∈ RC×(2C/r ), in which
-r denotes the channel reduction ratio. σ (·) represents the
-sigmoid activation function. The resulting attention vector s is
-reshaped to match the dimensions of the input and is applied
-to the feature map H via channel-wise multiplication for
-recalibration. The final output of the module is defined as
-Hse (c, t) = s (c) · H (c, t) . (24)
-The Sliding-SE improves the sensitivity of each channel
-to salient local features through sliding pooling operations,
-thereby enhancing the retention of critical information during
-the fusion process.
-3) Overall Process of the AMSF: The overall process of
-AMSF is illustrated in Fig. 9 and includes feature extraction,
-multiscale fusion with attention enhancement, and final output
-prediction. First, the input multivariate time-series data pass
-through three stacked multiscale convolution modules. Each
-module applies multiple 1-D convolutional kernels of different
-sizes to capture local patterns across varying receptive fields.
-An ICAM is inserted after the first multiscale convolution
-module to enhance the response of key feature channels,
-thereby improving the perception of shallow features toward
-potential fault patterns. Then, the fused features from the three
-convolutional modules are reduced in dimension and concate-
-nated along the channel axis to achieve unified fusion across
-hierarchical levels. The Sliding-SE module is applied to the
-fused feature maps to further improve the network capacity to
-capture local abnormal features while preserving global trend
-information. Finally, the enhanced feature representations are
-passed through an FC layer to complete feature extraction.
-AMSF progressively enhances feature discriminability and
-temporal modeling through the joint effect of local convolution
-modeling and channel-attention mechanisms, providing richer
-and more distinctive representations for subsequent multi-
-modal fusion.
-D. Low-Rank Multimodal Fusion
-PBM and DDM reflect the condition of the marine engine
-from different perspectives and serve as two distinct forms
-of engine information representation. Multimodal feature
-fusion enables the capture of correlations and complemen-
-tary information between these representations. Compared
-with traditional fusion strategies such as simple concatena-
-tion or full bilinear pooling, LMF achieves a better balance
-between representation capability and computational effi-
-ciency, making it well suited for marine engine condition
-monitoring. Therefore, the LMF method is introduced to
-integrate the outputs of both the PBM and the DDM. While
-capturing high-order interactions between modalities, LMF
-Authorized licensed use limited to: CITY UNIV OF HONG KONG. Downloaded on July 04,2026 at 10:16:30 UTC from IEEE Xplore.  Restrictions apply. 
-SUN et al.: ENHANCED DIGITAL TWIN-DRIVEN FAULT DIAGNOSIS APPROACH 4147
-Fig. 9. Process of the AMSF .
-Fig. 10. Structure of dual-modal low-rank tensor fusion.
-employs the low-rank decomposition to reduce computa-
-tional complexity [38], thereby improving fusion efficiency
-and enhancing feature representation in the DT modeling
-process.
-The LMF fusion process is illustrated in Fig. 10. First, the
-outputs from PBM and DDM are denoted as x p ∈ Rd p and
-xd ∈ Rdd , respectively. These outputs are passed through
-an MSF extraction network to obtain unified feature repre-
-sentations, f p and fd. To construct a bimodal tensor, a bias
-term (constant 1) is appended to each feature vector, and an
-outer product is computed to generate the multimodal tensor
-representation Z
-Z =
-[
-f p; 1
-]
-⊗
-[
-fd ; 1
-]
-(25)
-where ⊗ denotes the tensor outer product operation, resulting
-in Z ∈ R(d p+1)×(dd +1). To reduce the computational cost
-associated with tensor operations, a low-rank decomposition
-strategy is adopted. The high-dimensional weight tensor W is
-represented as the sum of rank- r outer products of vectors
-W =
-r∑
-i=1
-w(i)
-p ⊗ w(i)
-d (26)
-where w(i)
-p ∈ Rd p+1 and w(i)
-d ∈ Rdd +1 are the low-rank factors
-corresponding to the PBM and DDM modalities, respectively.
-The final fused representation h ∈ Rdh is obtained through a
-weighted tensor summation
-h =
-r∑
-i=1
-(
-w(i)
-p ·
-[
-f p; 1
-])
-·
-(
-w(i)
-d ·
-[
-fd ; 1
-])
-. (27)
-By constructing and aggregating low-rank vector pairs,
-LMF not only compresses intramodal information but also
-TABLE II
-PERFORMANCE PARAMETERS OF ENGINE COMPONENTS
-preserves intermodal interactions. The resulting fused output
-h serves as the input to the fault diagnosis model, enabling
-accurate identification of key performance-degradation
-patterns.
-IV. E XPERIMENTS
-A. Data Generation and Preprocessing
-1) Data Generation: A dataset containing both healthy and
-fault-labeled conditions was collected to validate the pro-
-posed fault diagnosis method. The dataset comprises local
-parameters, such as the temperatures and pressures of key
-components, and global measurements that reflect overall
-system performance, as shown in Table II. However, for
-essential onboard machinery such as marine engines and
-generators, it is almost impossible to obtain sufficient fault
-data under real operating conditions, limiting the feasibility
-of comprehensive diagnostic experiments [39]. To address
-this limitation, the constructed PBM + PDC model was
-employed to generate supplementary fault data while care-
-fully preventing potential simulator leakage during data
-partitioning.
-In addition, the generated fault data should be generalizable
-to real operating conditions. Notably, when a fault does not
-alter the fundamental in-CYL combustion mechanism, the
-combustion, heat transfer, and other submodels developed
-under healthy conditions remain applicable [9], allowing the
-PBM + PDC to accurately reproduce the operating character-
-istics of different fault categories. Furthermore, the simulated
-and measured data demonstrate an approximately consistent
-mapping between engine status and operating signals, ensuring
-that the overall results under multiple operating conditions
-Authorized licensed use limited to: CITY UNIV OF HONG KONG. Downloaded on July 04,2026 at 10:16:30 UTC from IEEE Xplore.  Restrictions apply. 
-4148 IEEE SENSORS JOURNAL, VOL. 26, NO. 3, 1 FEBRUARY 2026
-TABLE III
-MEASUREMENT PARAMETERS AND CORRESPONDING NOISE TYPES
-Fig. 11. Illustration of the data segmentation process.
-reliably reflect the fault diagnosis performance of the proposed
-method.
-2) Data Preprocessing: To better simulate the operating
-conditions of the marine engine, this study incorporates the
-uncertainties associated with sensor measurements. Based
-on the relevant measurement principles, the simulated noise
-added to the engine signals includes white Gaussian noise
-(WGN), inherent human calibration error (HCE), intrinsic bias
-noise (IBN), and sinusoidal disturbance noise (SDN) [40].
-It should be noted, however, that evaluating the influence of
-these stochastic noise types on model accuracy is not the
-primary focus of this study. The amplitudes of each noise type
-were randomly and uniformly generated within the predefined
-ranges given in Table III, corresponding to ±0.25%, ±0.3%,
-and ±0.5% of the nominal values for speed/power, tempera-
-ture, and pressure measurements, respectively.
-To reduce the computational burden of subsequent model-
-ing, the collected raw data were normalized using the min–max
-method, defined as follows:
-x ′
-i = xi − xi,min
-xi,max − xi,min
-(28)
-where xi and x ′
-i denote the original and normalized values,
-respectively. xi,max and xi,min represent the maximum and
-minimum values of the dataset, respectively.
-After normalization, the time-series data were segmented
-using a sliding-window method, as illustrated in Fig. 11. The
-window length was set to 160 time steps, with a stride
-of 80. With the PBM simulation time step set to 0.1 s,
-each resulting sample contains a sequence length of 160 and
-a feature dimension of 8. This configuration ensures that
-each segmented sample effectively captures the dynamic state
-variations of the marine engine across multiple power cycles.
-3) Datasets: The experimental data consist of both sensor
-measurements and simulation outputs processed with appropri-
-ate noise levels. Each fault category comprises 5000 samples.
-TABLE IV
-DIVISION OF DATASETS
-Fig. 12. Relative errors between simulated and measured aver-
-age exhaust gas temperatures under different engine load conditions.
-(a) 100% load, (b) 75% load, (c) 50% load, and (d) 25% load.
-The datasets were partitioned according to Table IV, with 70%
-of the samples for training, 20% for validation, and 10% for
-testing. Four representative datasets corresponding to engine
-loads of 100%, 75%, 50%, and 25% were constructed to
-evaluate the performance of the proposed method. Each dataset
-maintains the same fault category distribution and noise level
-configuration.
-B. Validation of Adaptive PDC
-This section aims to validate the effectiveness of the pro-
-posed PDC module in improving the accuracy of the PBM.
-To verify the reliability of the model across various operating
-conditions, the simulated average exhaust gas temperatures
-were compared with the corresponding measured values under
-different load conditions (100%, 75%, 50%, and 25%). The
-mean absolute percentage error (MAPE) was used as the
-evaluation metric, defined as follows:
-MAPE = 1
-N
-N∑
-i=1
-⏐⏐⏐⏐
-Xi,sim − Xi,obs
-Xi,obs
-⏐
-⏐⏐⏐ × 100% (29)
-where N denotes the number of samples under each load con-
-dition. Xi,sim and Xi,obs represent the simulated and observed
-average exhaust gas temperatures, respectively.
-Fig. 12 shows the relative error distribution between
-PBM-simulated and measured average exhaust gas tempera-
-tures under four load conditions. The results reveal noticeable
-discrepancies between PBM outputs and actual engine mea-
-surements, with the relative error increasing as the load
-decreases. The maximum relative error observed is 7.6%.
-Moreover, under medium- and low-load conditions, the sim-
-ulated values are consistently higher than the measured ones,
-indicating a clear pattern of systematic error.
-Authorized licensed use limited to: CITY UNIV OF HONG KONG. Downloaded on July 04,2026 at 10:16:30 UTC from IEEE Xplore.  Restrictions apply. 
-SUN et al.: ENHANCED DIGITAL TWIN-DRIVEN FAULT DIAGNOSIS APPROACH 4149
-TABLE V
-HI D EFINITIONS AND ASSOCIATED SENSOR PARAMETERS FOR EACH
-COMPONENT
-Fig. 13. Component-level HI variation predicted by the PDC module
-across different voyages.
-The PDC module is used to adaptively correct the long-term
-predictive accuracy of the PBM. In this study, HIs were
-developed for three key components of the PBM—TC, CYL,
-and CAC—to characterize performance-degradation trends.
-Table V lists the selected components, HI definitions, and
-associated measurement parameters used in their construction.
-The HIs predicted by the PDC module form the basis for itera-
-tive simulation updates, ensuring ongoing consistency between
-the PBM and the actual mechanical condition. To ensure accu-
-rate HI construction, measurement data from 30 consecutive
-voyages under stable engine load conditions were selected.
-Data were sampled at 1-s intervals, yielding 5400 HI training
-samples per component.
-Fig. 13 presents the trends of component-level HIs predicted
-by the PDC module across consecutive voyages. The mean
-values of sensor measurements exhibit random fluctuations due
-to noise interference, which hampers their ability to accurately
-reflect the actual condition of the components. In contrast,
-the HI values predicted using KL divergence—derived from
-differences in probability distributions—as input parameters
-exhibit a general downward trend, effectively capturing the
-long-term performance degradation of engine components.
-To further assess the effectiveness of the PDC module,
-adaptive correction was applied to relevant modeling param-
-eters in the PBM based on the predicted HIs. Table VI
-summarizes the relative errors between the simulation outputs
-after PDC correction and the corresponding measurements,
-covering representative global performance and thermody-
-namic parameters. As shown in the table, the relative errors
-of the average values under all load conditions remain below
-4%, indicating that the corrected PBM can reliably simulate
-Fig. 14. Comparison of simulated and measured parameters before
-and after PDC correction under low-load conditions. (a) TC speed
-(Ntc). (b) Peak CYL pressure (P m). (c) CAC outlet temperature (T cac).
-(d) Average exhaust gas temperature (Tae).
-the real engine behavior. In addition, Fig. 14 illustrates a
-comparison of model outputs before and after correction
-under low-load conditions. The results clearly show that the
-simulation errors of the PBM corrected by the PDC module
-are lower than those of the original PBM. In particular, the
-relative error of Pm decreased from 5.56% to 2.14% after
-correction [Fig. 14(b)]. Moreover, the MAPE values of Ntc,
-Tcac, and Tae were reduced by 21.76%, 35.59%, and 54.36%,
-respectively, when using the PBM + PDC model compared to
-the original PBM. These findings demonstrate that the PDC
-module effectively mitigates the systematic errors caused by
-state variations during prolonged operation of marine engine
-components. Therefore, the PBM + PDC model enables rea-
-sonably accurate condition monitoring within the proposed DT
-framework.
-C. Fault Injection
-The PBM + PDC-based marine engine model can replicate
-the behavior of real engines under various fault conditions.
-The fault categories considered in this study primarily focus on
-gradual time-dependent degradation, including wear, fouling,
-and erosion, which ultimately manifest as changes in the
-thermodynamic parameters of the engine [41]. Among key
-engine components, the TC, CYL, and CAC are particularly
-prone to early stage faults that are difficult to detect in
-real time [42]. Therefore, both single and combined fault
-scenarios are introduced by modifying the efficiency and flow
-characteristics of these three components.
-Table VII presents the fault injection scheme, which
-includes reductions in TC efficiency (TCE), air cooler effi-
-ciency (ACE), and anomalies in exhaust valve gap (EVG).
-The values 0.77, 0.89, and 0.80 correspond to the normal
-operating conditions of the actual engine for TCE, ACE,
-and EVG, respectively, and are considered representative of
-the healthy state. Fault-TCE- i, Fault-ACE-i, and Fault-EVG-i
-(i = 1, 2) denote varying levels of faults in the TC, CAC, and
-the exhaust valve of the CYL, respectively, while Fault-TCE-
-ACE and Fault-TCE-EVG represent combined faults involving
-Authorized licensed use limited to: CITY UNIV OF HONG KONG. Downloaded on July 04,2026 at 10:16:30 UTC from IEEE Xplore.  Restrictions apply. 
-4150 IEEE SENSORS JOURNAL, VOL. 26, NO. 3, 1 FEBRUARY 2026
-TABLE VI
-COMPARISON OF SIMULATED AND MEASURED PARAMETERS UNDER DIFFERENT LOAD CONDITIONS
-Fig. 15. Impact of different fault categories on engine performance
-parameters. (a) Effect of TCE onTto. (b) Effect of TCE on Tae. (c) Effect
-of ACE on Tcac. (d) Effect of ACE on Tae. (e) Effect of EVG on Pm.
-(f) Effect of EVG on Tae.
-multiple components. It should be noted that, in accordance
-with the real-world behavior of marine engines, the severity
-of each fault is randomly selected within a predefined range.
-Furthermore, as this study focuses on DT-based fault diagnosis
-methods for marine machinery, sensor faults are not considered
-within its scope.
-After determining the fault categories to be simulated,
-the state signals listed in Table II were selected as feature
-parameters for subsequent fault diagnosis. A dataset containing
-nine labels was then generated by combining sensor mea-
-surements with the fault injection scheme. Fig. 15 illustrates
-the variations in engine parameters during a single power
-cycle under different fault conditions. It is evident that distinct
-fault categories lead to different fluctuations in the thermody-
-namic parameters inside the engine. Moreover, as the fault
-severity increases, the deviations in parameters become more
-pronounced.
-D. Fault Diagnosis Based on the Proposed DT Approach
-The case study in Section IV-B validated the effectiveness
-of the proposed PDC module in enhancing the accuracy of
-the PBM. This improvement enables more accurate prediction
-of performance parameters for marine engine components,
-making the model suitable for condition monitoring of marine
-machinery. In this section, the fault injection scheme described
-in Section IV-C is applied to generate performance parameters
-of each engine component within the degradation range. These
-data are used to construct datasets under different engine loads
-for validating the fault diagnosis functionality. The dataset
-partitioning details are provided in Table IV.
-Fig. 16. Comparison of diagnostic accuracy between single-modality
-and multimodal methods under different load conditions.
-(a)–(d) Samples 1–4, respectively.
-1) Comparison of Multimodal and Single-Modality Methods:
-To evaluate the effectiveness of the proposed multimodal
-fusion-based DT approach, the AMSF model—representing
-an advanced deep learning method—is used as a baseline.
-The AMSF model is trained solely on the output data from the
-PBM (i.e., single modality). The fault diagnosis results for the
-nine predefined labels are presented in Fig. 16. Under all four
-engine load conditions, the multimodal fusion-based method
-consistently demonstrates superior diagnostic performance. Its
-accuracy across all normal and fault categories is significantly
-higher than that of the single-modality model. In particular,
-the AMSF model exhibits a noticeable decline in detection
-accuracy for the normal and combined fault categories. These
-results highlight the advantages of multimodal fusion over
-single-modality methods. Moreover, the diagnostic accuracy
-of the multimodal method shows minimal variation across
-different engine loads.
-Table VIII summarizes the average accuracies of the two
-models on the four sample datasets. Compared with the
-Authorized licensed use limited to: CITY UNIV OF HONG KONG. Downloaded on July 04,2026 at 10:16:30 UTC from IEEE Xplore.  Restrictions apply. 
-SUN et al.: ENHANCED DIGITAL TWIN-DRIVEN FAULT DIAGNOSIS APPROACH 4151
-TABLE VII
-FAULT CATEGORIES CORRESPONDING TO TCE, ACE, AND EVGS
-TABLE VIII
-AVERAGE ACCURACIES OF SINGLE -MODALITY AND MULTIMODAL
-METHODS
-single-modality model, the multimodal fusion method
-improves fault diagnosis accuracy under the various load
-conditions by 6.78%–11.62%, with an average gain of 9.30%.
-Overall, the proposed DT approach significantly improves
-diagnostic reliability, particularly under challenging operating
-conditions such as low-load scenarios.
-Building on the above analysis, the contribution of the
-proposed LMF strategy to the diagnostic performance of the
-DT approach was further assessed. Under identical exper-
-imental conditions, the LMF method was compared with
-the conventional concatenation approach and the full bilinear
-pooling method. As shown in Fig. 17, LMF consistently
-outperformed concatenation across all sample datasets under
-the four load conditions. Notably, although the diagnostic
-accuracy of bilinear pooling was comparable to that of
-LMF in certain datasets, its average inference time was
-longer, whereas LMF maintained computational efficiency
-close to that of concatenation. These results highlight that
-LMF achieves a balanced tradeoff between diagnostic accu-
-racy and inference efficiency within the proposed fusion
-framework.
-2) Comparison With Recently Published Fault Diagnosis
-Methods: The confusion matrices of the proposed DMIF-DT
-fault diagnosis method are presented in Fig. 18. As illustrated,
-Fig. 17. Performance comparison of fusion strategies under different
-load conditions.
-the approach achieves very high diagnostic accuracy. At the
-highest load condition [Fig. 18(a)], almost all samples in
-each fault category are correctly identified, with only a few
-misclassifications. Similarly, a strong diagnostic performance
-is observed under the other load conditions [Fig. 18(b)–(d)],
-demonstrating the excellent generalization capability of the
-proposed method. However, relatively more misclassification
-cases occur in the combined fault scenarios (labels 7 and
-8). This is because discriminative feature extraction becomes
-more challenging when multiple faults occur simultaneously.
-Table IX summarizes the diagnostic accuracies for each
-fault category under various load conditions. As shown, the
-prediction accuracy for every label is no lower than 94.00%.
-Even when the load decreases (e.g., to 50% and 25%),
-making the diagnosis more challenging, the overall diagnos-
-tic performance remains stable, with an overall accuracy of
-97.22% at the lowest load condition. These results confirm
-the robustness of the proposed DMIF-DT method in capturing
-fault features; its advantage is particularly evident under low-
-load conditions, where signal disturbance and noise are more
-pronounced.
-Authorized licensed use limited to: CITY UNIV OF HONG KONG. Downloaded on July 04,2026 at 10:16:30 UTC from IEEE Xplore.  Restrictions apply. 
-4152 IEEE SENSORS JOURNAL, VOL. 26, NO. 3, 1 FEBRUARY 2026
-TABLE IX
-FAULT DIAGNOSIS ACCURACIES OF THE PROPOSED DMIF-DT M ETHOD ACROSS FAULT CATEGORIES
-Fig. 18. Confusion matrices for fault diagnosis with the proposed
-DMIF-DT method under different load conditions. (a) 100% load,
-(b) 75% load, (c) 50% load, and (d) 25% load.
-Fig. 19. Performance comparison of the proposed DMIF-DT and recent
-fault diagnosis methods. (a) Accuracy. (b) FIR.
-To further verify and evaluate the diagnostic performance
-of the proposed DMIF-DT approach, several additional deep
-learning models were selected for comparative experiments.
-Long short-term memory (LSTM) networks and CNNs were
-included as representative AI methods from different model
-families [15]; both have been widely adopted in engineering
-practice and demonstrate excellent performance. In recent
-studies on marine machinery fault diagnosis, the CSA +
-MLP [43], GAT [44], and MHA-CNN [39] models have
-emerged as state-of-the-art techniques and were therefore used
-as additional baselines. Model performance was compared
-using overall accuracy and the fault-isolation rate (FIR),
-defined as the proportion of correctly identified fault types
-among all fault samples. Detailed results are presented in
-Fig. 19 and Table X.
-As shown by the overall accuracies in Fig. 19(a), the
-DMIF-DT approach exhibits clear advantages across all four
-load conditions, achieving higher diagnostic accuracy than any
-of the other methods. Under the highest load condition (100%),
-DMIF-DT attains an accuracy of 98.80%, outperforming the
-next-best MHA-CNN model (98.11%), whereas the remaining
-baselines drop to as low as 91.20% (LSTM). All models expe-
-rience a decline in performance under low-load conditions,
-with the CNN model showing the most notable drop—falling
-to 86.29% at 25% load. In contrast, DMIF-DT maintains high
-diagnostic reliability in these challenging scenarios. The better
-performance can be explained as follows. Because all features
-are learned end-to-end, DMIF-DT employs two independent
-processing streams to extract modality-specific features and
-fuses them at a higher level, thereby reducing the influence of
-redundant information and noise.
-The FIR measures a model’s ability to distinguish accurately
-among different fault categories. As shown in Fig. 19(b), the
-FIR of the DMIF-DT approach remains consistently above
-97% under all load conditions and reaches a maximum of
-98.90%. In contrast, traditional methods such as LSTM and
-CNN exhibit much greater variation in FIR, making it difficult
-for them to provide stable and reliable fault discrimination
-across different operating conditions. Although attention-based
-models such as GAT and MHA-CNN outperform the conven-
-tional baselines in terms of FIR, they still fall slightly short
-of the performance achieved by the proposed method.
-E. Ablation Study
-To explore the contribution of each module in the proposed
-DMIF-DT method to the fault diagnosis task, a series of
-ablation experiments was conducted. Specific modules in
-DMIF-DT were removed or replaced sequentially, resulting in
-seven ablation models: w/o MSF, where a single-scale CNN
-replaces the MSF module; w/o ICAM, where the ICAM is
-removed; w/o Sliding-SE, where the original SE module is
-used instead of the Sliding-SE; w/o LMF, where the LMF
-module is replaced by simple concatenation; w/o PDC, where
-the PDC module is removed; w/o Att, where both attention
-modules (ICAM and Sliding-SE) are removed; and w/o MSF
-+ LMF, where the MSF and LMF modules are jointly
-removed. These variants were used to evaluate the impact of
-each module individually and in combination. Fig. 20 details
-the changes in accuracy and FIR for every ablation model
-under different load conditions, while Table XI summarizes
-the average performance metrics of each model.
-As shown in Table XI, each ablation model exhibits a
-certain degree of performance decline compared with the com-
-plete DMIF-DT model. Among the single-module variants,
-the w/o PDC model shows the most significant decrease, with
-accuracy and FIR dropping by 4.37% and 4.03%, respectively.
-Authorized licensed use limited to: CITY UNIV OF HONG KONG. Downloaded on July 04,2026 at 10:16:30 UTC from IEEE Xplore.  Restrictions apply. 
-SUN et al.: ENHANCED DIGITAL TWIN-DRIVEN FAULT DIAGNOSIS APPROACH 4153
-TABLE X
-COMPARISON OF DIAGNOSTIC PERFORMANCE AMONG DIFFERENT METHODS
-Fig. 20. Diagnostic performance comparison of different ablation models under different load conditions. (a) Accuracy and accuracy decrease.
-(b) FIR and FIR decrease.
-Fig. 21. Visualization of intermediate features at three key stages using t-SNE. (a) Before attention stage (MSC output). (b) After attention stage
-(AMSF output). (c) LMF .
-TABLE XI
-AVERAGE DIAGNOSTIC ACCURACY AND FIR C OMPARISON OF
-ABLATION MODELS
-In addition, the combined ablation models show greater per-
-formance decline than the single-module ones.
-The performance loss caused by w/o MSF is also substan-
-tial, with accuracy and FIR decreasing by 3.39% and 1.98%,
-respectively. This finding indicates that the MSF module—
-by extracting and fusing MSFs—effectively enhances feature
-representation and thus contributes significantly to diagnos-
-tic performance. Likewise, replacing the LMF module with
-simple concatenation leads to a noticeable decline in per-
-formance, with accuracy dropping by 3.07% and FIR by
-2.41%, highlighting its important role in improving data reli-
-ability. By employing low-rank fusion, the DT framework can
-markedly reduce redundancy among cross-modal information
-and thereby extract more valuable features.
-In comparison, removing or replacing the ICAM and
-Sliding-SE modules results in only modest performance degra-
-dations: accuracy declines by 0.79% and 1.54%, while FIR
-decreases by 0.60% and 0.86%. These findings indicate that
-the ICAM and Sliding-SE modules make positive contri-
-butions to the overall diagnostic performance by enhancing
-channel-wise feature representation and improving temporal
-feature capture, respectively.
-To improve the transparency of the learned representations,
-the proposed framework visualizes the features at three key
-stages using t-SNE: (a) before attention (MSC output), (b)
-after attention (AMSF output), and (c) LMF. As shown in
-Fig. 21, the preattention features exhibit partially overlapping
-Authorized licensed use limited to: CITY UNIV OF HONG KONG. Downloaded on July 04,2026 at 10:16:30 UTC from IEEE Xplore.  Restrictions apply. 
-4154 IEEE SENSORS JOURNAL, VOL. 26, NO. 3, 1 FEBRUARY 2026
-clusters, indicating limited separability. After attention, the
-clusters become more compact and better separated, sug-
-gesting that the AMSF enhances discriminability through
-multiscale extraction with channel-wise recalibration. Follow-
-ing LMF, interclass boundaries are further enlarged, and the
-clusters are well separated, indicating that complementary
-PBM–DDM information is effectively integrated into a unified
-and more discriminative space.
-In summary, the above results highlight the impor-
-tance of each module within the digital twin framework,
-as using only part of the components results in reduced
-diagnostic performance. The complete DMIF-DT method
-achieves the highest accuracy and FIR, consistently deliv-
-ering the best overall performance under various operating
-conditions.
-V. C ONCLUSION
-To enable intelligent fault diagnosis for marine machinery,
-this study proposes a deep multimodal information fusion DT
-framework. Serving as two complementary modalities, the
-PBM and DDM describe the operating state of marine machin-
-ery from the mechanistic and data perspectives, respectively.
-An AMSF module performs deep extraction and enhancement
-of multimodal features, while a low-rank fusion strategy
-constructs a unified high-dimensional representation for high-
-accuracy fault diagnosis. To mitigate model mismatch caused
-by performance degradation, a PDC module leverages mea-
-sured data and probability distribution analysis to build a
-feedback-enabled interaction between the PBM and DDM,
-thereby improving model adaptability. The effectiveness of the
-proposed framework is demonstrated through case studies, and
-the principal findings are as follows.
-1) With PDC correction, the PBM improves the simula-
-tion accuracy of key components by 21.76%–61.51%,
-achieving a closer alignment with measured engine
-performance across different operating conditions and
-demonstrating potential for reliable long-term applica-
-tion.
-2) Through deep fusion, the PBM and DDM form a
-dual-direction information path. Compared with the sin-
-gle modality, the multimodal fusion approach increases
-average fault diagnosis accuracy by 9.30%, confirming
-the effectiveness of the fusion strategy in enhancing
-diagnostic robustness.
-3) Under the tested load conditions, DMIF-DT effectively
-identifies fault types and severities across multiple sce-
-narios, demonstrating strong generalization within the
-experimental scope. Moreover, DMIF-DT shows a clear
-accuracy advantage over other comparative models.
-4) Ablation studies indicate that AMSF—via the synergy
-of multiscale convolutional modeling and an improved
-channel-attention mechanism—effectively boosts diag-
-nostic performance by reinforcing fault feature repre-
-sentations.
-In summary, the proposed DT framework offers a valuable
-reference for predictive maintenance of marine machin-
-ery. Despite its high diagnostic performance, this study
-assumes that the PBM accurately captures the main thermo-
-dynamic behavior and that sensor data remain within valid
-ranges. Therefore, faults that violate these assumptions (e.g.,
-mechanical breakage or severe sensor failure) may limit the
-applicability of the framework. In addition, the proposed
-framework has been validated under the tested load conditions,
-and future work will focus on extending it toward engineering
-deployment to demonstrate its potential for practical applica-
-tion in shipboard monitoring systems.
-REFERENCES
-[1] Y . Li, Z. Guo, Z. Li, Z. Deng, and K. Noman, “Instantaneous angular
-speed-based fault diagnosis of multicylinder marine diesel engine using
-intrinsic multiscale dispersion entropy,” IEEE Sensors J., vol. 23, no. 9,
-pp. 9523–9535, May 2023, doi: 10.1109/JSEN.2023.3257832.
-[2] Z. Jin, J. Liu, M. Xu, H. Miao, and Z. Song, “An enhanced
-digital twin-driven fault detection and isolation method based
-on sensor series imaging mechanism for gas turbine engine,”
-Appl. Thermal Eng., vol. 257, Dec. 2024, Art. no. 124308, doi:
-10.1016/j.applthermaleng.2024.124308.
-[3] Y . Qin, T. Zhang, Q. Qian, and Y . Mao, “Large model for rotating
-machine fault diagnosis based on a dense connection network with
-depthwise separable convolution,” IEEE Trans. Instrum. Meas., vol. 73,
-pp. 1–12, 2024, doi: 10.1109/TIM.2024.3396841.
-[4] A. Coraddu, L. Oneto, F. Cipollini, M. Kalikatzarakis, G.-J. Meijn,
-and R. Geertsma, “Physical, data-driven and hybrid approaches to
-model engine exhaust gas temperatures in operational conditions,”
-Ships Offshore Struct., vol. 17, no. 6, pp. 1360–1381, Jun. 2022, doi:
-10.1080/17445302.2021.1920095.
-[5] Y . Raptodimos and I. Lazakis, “Application of NARX neural net-
-work for predicting marine engine performance parameters,” Ships
-Offshore Struct., vol. 15, no. 4, pp. 443–452, Apr. 2020, doi:
-10.1080/17445302.2019.1661619.
-[6] K. Milioulis, V . Bolbot, and G. Theotokatos, “Model-based safety anal-
-ysis and design enhancement of a marine LNG fuel feeding system,” J.
-Mar . Sci. Eng., vol. 9, no. 1, p. 69, Jan. 2021, doi:10.3390/jmse9010069.
-[7] J. A. P. Rubio, F. Vera-García, J. H. Grau, J. M. Cámara, and
-D. A. Hernandez, “Marine diesel engine failure simulator based on
-thermodynamic model,” Appl. Thermal Eng., vol. 144, pp. 982–995,
-Nov. 2018, doi: 10.1016/j.applthermaleng.2018.08.096.
-[8] R. Wang, H. Chen, C. Guan, W. Gong, and Z. Zhang, “Research on the
-fault monitoring method of marine diesel engines based on the manifold
-learning and isolation forest,” Appl. Ocean Res., vol. 112, Jul. 2021,
-Art. no. 102681, doi: 10.1016/j.apor.2021.102681.
-[9] J. Jeon and G. Theotokatos, “A framework to assure the trustworthiness
-of physical model-based digital twins for marine engines,” J. Mar . Sci.
-Eng., vol. 12, no. 4, p. 595, Mar. 2024, doi: 10.3390/jmse12040595.
-[10] P. Han, A. L. Ellefsen, G. Li, V . Asoy, and H. Zhang, “Fault prog-
-nostics using LSTM networks: Application to marine diesel engine,”
-IEEE Sensors J., vol. 21, no. 22, pp. 25986–25994, Nov. 2021, doi:
-10.1109/JSEN.2021.3119151.
-[11] Y . Tan, H. Tian, R. Jiang, Y . Lin, and J. Zhang, “A comparative investi-
-gation of data-driven approaches based on one-class classifiers for con-
-dition monitoring of marine machinery system,” Ocean Eng., vol. 201,
-Apr. 2020, Art. no. 107174, doi: 10.1016/j.oceaneng.2020.107174.
-[12] M. Cheliotis, I. Lazakis, and G. Theotokatos, “Machine learn-
-ing and data-driven fault detection for ship systems opera-
-tions,” Ocean Eng., vol. 216, Nov. 2020, Art. no. 107968, doi:
-10.1016/j.oceaneng.2020.107968.
-[13] C. He, T. Wu, R. Gu, Z. Jin, R. Ma, and H. Qu, “Rolling bearing
-fault diagnosis based on composite multiscale permutation entropy
-and reverse cognitive fruit fly optimization algorithm–extreme learning
-machine,” Measurement, vol. 173, Mar. 2021, Art. no. 108636, doi:
-10.1016/j.measurement.2020.108636.
-[14] T. Xie, W. Zhang, Y . Zhang, Z. Ahmed, and Y . Tang, “Marine
-current turbine multifault diagnosis based on optimization resampled
-modulus feature and 1-D-CNN,” IEEE Trans. Instrum. Meas., vol. 72,
-pp. 1–10, 2023, doi: 10.1109/TIM.2023.3267342.
-[15] C. Velasco-Gallego and I. Lazakis, “Mar-RUL: A remaining useful
-life prediction approach for fault prognostics of marine machin-
-ery,” Appl. Ocean Res., vol. 140, Nov. 2023, Art. no. 103735, doi:
-10.1016/j.apor.2023.103735.
-Authorized licensed use limited to: CITY UNIV OF HONG KONG. Downloaded on July 04,2026 at 10:16:30 UTC from IEEE Xplore.  Restrictions apply. 
-SUN et al.: ENHANCED DIGITAL TWIN-DRIVEN FAULT DIAGNOSIS APPROACH 4155
-[16] W. Li et al., “A perspective survey on deep transfer learning for fault
-diagnosis in industrial scenarios: Theories, applications and challenges,”
-Mech. Syst. Signal Process., vol. 167, Mar. 2022, Art. no. 108487, doi:
-10.1016/j.ymssp.2021.108487.
-[17] R. Huang, J. Li, Y . Liao, J. Chen, Z. Wang, and W. Li, “Deep adversarial
-capsule network for compound fault diagnosis of machinery toward
-multidomain generalization task,” IEEE Trans. Instrum. Meas., vol. 70,
-pp. 1–11, 2021, doi: 10.1109/TIM.2020.3042300.
-[18] X. Zhang, J. Liu, X. Zhang, and Y . Lu, “Self-supervised graph fea-
-ture enhancement and scale attention for mechanical signal node-level
-representation and diagnosis,” Adv. Eng. Informat., vol. 65, May 2025,
-Art. no. 103197, doi: 10.1016/j.aei.2025.103197.
-[19] Y . Xu et al., “Domain constrained cascadic multireceptive learning
-networks for machine health monitoring in complex manufacturing
-systems,” J. Manuf. Syst. , vol. 80, pp. 563–577, Jun. 2025, doi:
-10.1016/j.jmsy.2025.03.021.
-[20] D. Li, J. Chen, R. Huang, Z. Chen, and W. Li, “Sensor-aware Cap-
-sNet: Towards trustworthy multisensory fusion for remaining useful
-life prediction,” J. Manuf. Syst., vol. 72, pp. 26–37, Feb. 2024, doi:
-10.1016/j.jmsy.2023.11.009.
-[21] K.-M. Tsitsilonis, G. Theotokatos, C. Patil, and A. Coraddu, “Health
-assessment framework of marine engines enabled by digital twins,”
-Int. J. Engine Res., vol. 24, no. 7, pp. 3264–3281, Jul. 2023, doi:
-10.1177/14680874221146835.
-[22] Y . Bo, H. Wu, W. Che, Z. Zhang, X. Li, and L. Myagkov, “Methodology
-and application of digital twin-driven diesel engine fault diagnosis
-and virtual fault model acquisition,” Eng. Appl. Artif. Intell., vol. 131,
-May 2024, Art. no. 107853, doi: 10.1016/j.engappai.2024.107853.
-[23] Y . Qin, H. Liu, and Y . Mao, “Faulty rolling bearing digital twin
-model and its application in fault diagnosis with imbalanced sam-
-ples,” Adv. Eng. Informat., vol. 61, Aug. 2024, Art. no. 102513, doi:
-10.1016/j.aei.2024.102513.
-[24] S. Hautala, M. Mikulski, E. Söderäng, X. Storm, and S. Niemi,
-“Toward a digital twin of a mid-speed marine engine: From detailed
-1D engine model to real-time implementation on a target platform,”
-Int. J. Engine Res. , vol. 24, no. 12, pp. 4553–4571, Dec. 2023, doi:
-10.1177/14680874221106168.
-[25] S. Li and F. Brennan, “Implementation of digital twin-enabled virtually
-monitored data in inspection planning,” Appl. Ocean Res., vol. 144,
-Mar. 2024, Art. no. 103903.
-[26] Z. Mousavi, S. Varahram, M. M. Ettefagh, M. H. Sadeghi, W.-Q. Feng,
-and M. Bayat, “A digital twin-based framework for damage detection
-of a floating wind turbine structure under various loading conditions
-based on deep learning approach,” Ocean Eng., vol. 292, Jan. 2024,
-Art. no. 116563, doi: 10.1016/j.oceaneng.2023.116563.
-[27] Y . Huang, J. Tao, G. Sun, T. Wu, L. Yu, and X. Zhao, “A
-novel digital twin approach based on deep multimodal information
-fusion for aero-engine fault diagnosis,” Energy, vol. 270, May 2023,
-Art. no. 126894, doi: 10.1016/j.energy.2023.126894.
-[28] L. Zhou, H. Wang, and S. Xu, “Aero-engine gas path system health
-assessment based on depth digital twin,” Eng. Failure Anal., vol. 142,
-Dec. 2022, Art. no. 106790.
-[29] J. Zhang, Z. Wang, S. Li, and P. Wei, “A digital twin approach
-for gas turbine performance based on deep multi-model fusion,”
-Appl. Thermal Eng., vol. 246, Jun. 2024, Art. no. 122954, doi:
-10.1016/j.applthermaleng.2024.122954.
-[30] G. Theotokatos, S. Stoumpos, V . Bolbot, and E. Boulougouris,
-“Simulation-based investigation of a marine dual-fuel engine,” J.
-Mar . Eng. Technol., vol. 19, no. 1, pp. 5–16, Jan. 2020, doi:
-10.1080/20464177.2020.1717266.
-[31] C. W. Hong and J. Kim, “Exhaust temperature prediction for gas turbine
-performance estimation by using deep learning,” J. Electr . Eng. Technol.,
-vol. 18, no. 4, pp. 3117–3125, Jul. 2023, doi: 10.1007/s42835-023-
-01488-x.
-[32] S. Chu, J. Zhang, F. Liu, X. Kong, Z. Jiang, and Z. Mao, “Fault
-identification model of diesel engine based on mixed attention: Single-
-cylinder fault data driven whole-cylinder diagnosis,” Expert Syst. Appl.,
-vol. 255, Dec. 2024, Art. no. 124769, doi: 10.1016/j.eswa.2024.124769.
-[33] B. Hu, J. Liu, and Y . Xu, “A novel multi-scale convolutional neural
-network incorporating multiple attention mechanisms for bearing fault
-diagnosis,” Measurement, vol. 242, Jan. 2025, Art. no. 115927, doi:
-10.1016/j.measurement.2024.115927.
-[34] W. Chen, D. Zhang, M. Li, and D.-J. Lee, “STCAM: Spatial–temporal
-and channel attention module for dynamic facial expression recognition,”
-IEEE Trans. Affect. Comput., vol. 14, no. 1, pp. 800–810, Jan. 2023, doi:
-10.1109/TAFFC.2020.3027340.
-[35] J. Hu, L. Shen, S. Albanie, G. Sun, and E. Wu, “Squeeze-and-excitation
-networks,” IEEE Trans. Pattern Anal. Mach. Intell., vol. 42, no. 8,
-pp. 2011–2023, Aug. 2020, doi: 10.1109/TPAMI.2019.2913372.
-[36] Y . Dong, H. Jiang, Z. Wu, Q. Yang, and Y . Liu, “Digital twin-assisted
-multiscale residual-self-attention feature fusion network for hypersonic
-flight vehicle fault diagnosis,” Rel. Eng. Syst. Saf., vol. 235, Jul. 2023,
-Art. no. 109253, doi: 10.1016/j.ress.2023.109253.
-[37] H. Tian, L. Yang, and B. Ju, “Spatial correlation and temporal
-attention-based LSTM for remaining useful life prediction of turbo-
-fan engine,” Measurement, vol. 214, Jun. 2023, Art. no. 112816, doi:
-10.1016/j.measurement.2023.112816.
-[38] Z. Liu, Y . Shen, V . B. Lakshminarasimhan, P. P. Liang, A. B.
-Zadeh, and L.-P. Morency, “Efficient low-rank multimodal fusion with
-modality-specific factors,” in Proc. 56th Annu. Meeting Assoc. Comput.
-Linguistics, 2018, pp. 2247–2256.
-[39] X. Xu, Y . Lin, and C. Ye, “Fault diagnosis of marine machinery via
-an intelligent data-driven framework,” Ocean Eng., vol. 289, Dec. 2023,
-Art. no. 116302, doi: 10.1016/j.oceaneng.2023.116302.
-[40] Z. Liao et al., “Uncertainties in gas-path diagnosis of gas turbines:
-Representation and impact analysis,” Aerosp. Sci. Technol., vol. 113,
-Jun. 2021, Art. no. 106724, doi: 10.1016/j.ast.2021.106724.
-[41] R. Zhou, J. Cao, G. Zhang, X. Yang, and X. Wang, “Heat load forecast-
-ing of marine diesel engine based on long short-term memory network,”
-Appl. Sci., vol. 13, no. 2, p. 1099, Jan. 2023, doi: 10.3390/app13021099.
-[42] C. Velasco-Gallego and I. Lazakis, “RADIS: A real-time anomaly
-detection intelligent system for fault diagnosis of marine machin-
-ery,” Expert Syst. Appl. , vol. 204, Oct. 2022, Art. no. 117634, doi:
-10.1016/j.eswa.2022.117634.
-[43] P. Pan, D. Zhao, and Y . Li, “A fault diagnosis framework for rotating
-machinery of marine equipment: A semi-supervised learning framework
-based on contractive stacked autoencoder,” Proc. Inst. Mech. Eng., M, J.
-Eng. Maritime Environ., vol. 237, no. 3, pp. 625–636, Aug. 2023, doi:
-10.1177/14750902221143827.
-[44] S. Rigas, P. Tzouveli, and S. Kollias, “An end-to-end deep learning
-framework for fault detection in marine machinery,” Sensors, vol. 24,
-no. 16, p. 5310, Aug. 2024, doi: 10.3390/s24165310.
-Jiawen Sun received the B.Sc. degree in geo-
-graphic information science from Dalian Mar-
-itime University, Dalian, China, in 2018, where
-he is currently pursuing the Ph.D. degree in
-traffic and transportation engineering.
-His current research interests include machine
-learning, data-driven fault prediction methods,
-and digital twin ships.
-Hongxiang Ren received the Ph.D. degree
-in traffic and transportation engineering from
-Dalian Maritime University, Dalian, China,
-in 2009.
-He is currently a Professor with Dalian Mar-
-itime University. His current research interests
-include virtual reality, maritime simulation, and
-intelligent ships.
-Authorized licensed use limited to: CITY UNIV OF HONG KONG. Downloaded on July 04,2026 at 10:16:30 UTC from IEEE Xplore.  Restrictions apply. 
-4156 IEEE SENSORS JOURNAL, VOL. 26, NO. 3, 1 FEBRUARY 2026
-Yaxin Dong received the M.Sc. degree in traffic
-information engineering and control from Dalian
-Maritime University, Dalian, China, in 2020,
-where she is currently pursuing the Ph.D. degree
-in traffic information engineering and control.
-Her current research interests include mar-
-itime traffic safety and reliability analysis.
-Boxiang Zhang received the M.Sc. degree
-in traffic information engineering and control
-from Dalian Maritime University, Dalian, China,
-in 2024, where he is currently pursuing the Ph.D.
-degree in traffic information engineering and
-control.
-His current research interests include maritime
-simulation, machine learning, and numerical
-modeling.
-Shaoyang Qiu received the Ph.D. degree from
-the Key Laboratory of Marine Dynamic Simula-
-tion and Control, Ministry of Communications,
-Dalian Maritime University, Dalian, China, in
-2021.
-He is currently a Lecturer with the College of
-Artificial Intelligence, Dalian Maritime University.
-He has authored or co-authored more than ten
-papers on modeling and simulation. He has
-conducted in-depth research on the motion mod-
-eling of ship lifeboats and rescue boats and
-has applied these models to training simulators. His current research
-interests include digital twins, ship motion modeling, and virtual reality.
-Yi Zhou received the B.Sc. degree in process
-equipment and control engineering from Jiangsu
-Ocean University, Lianyungang, China, in 2008.
-He is currently a Senior Engineer with Off-
-shore Oil Engineering Service Company, Tianjin,
-China. His current research interests include
-intelligent ships and navigation condition simu-
-lation.
-Authorized licensed use limited to: CITY UNIV OF HONG KONG. Downloaded on July 04,2026 at 10:16:30 UTC from IEEE Xplore.  Restrictions apply. 
+https://doi.org/10.3390/app16041848
+Appl. Sci. 2026, 16, 1848 21 of 28
+In Formula (14), Xdiag
+t (t) is the predicted risk state of the structure at time t. It shows
+possible future risk situations based on the current state and its change over time. MAI (t)
+is the AI predictive model. It estimates future structural response by learning from past
+data and damage growth patterns. Mhuman (t) is the human input. It includes engineering
+judgment, contextual understanding, and field experience. It helps judge if the prediction
+is reasonable. Mknowledge (t) is the knowledge-based model. It includes structural mechanics
+rules, engineering codes, and case knowledge. It gives a base for understanding the
+risks. Mmechanism (t) is the mechanism-based model. It uses physical laws to make sure the
+predictions follow structural mechanics rules. The mapping function R combines these
+parts into one prediction model. This model brings together data-based results, expert
+input, and engineering knowledge. It gives a more reliable, clear, and scientifically based
+risk prediction.
+This formulation lets the DT predict possible risks. It also lets the DT explain where
+the risks come from. This helps engineers make decisions that are reliable and aware of the
+real situation.
+5.2. Proactive Risk Control of CI O&M
+Proactive risk control means taking action before small risks become real structural
+problems. The goal is to keep the structure safe and stable during its service life. In the HAK
+framework, this process uses AI prediction, human judgment, and engineering knowledge.
+AI studies monitoring data. It finds possible risk situations. It finds locations that may
+need early action. These results are based on trends. They need engineering checking.
+Engineers study the predicted changes. They consider site conditions, structural layout,
+construction effects, and environmental factors. This helps them separate real risks from
+normal changes. It helps them judge if the actions are practical. The knowledge layer
+gives rules and past experience. Engineering codes set safety limits for actions. Case
+knowledge gives example solutions and past results. The DT combines prediction trends. It
+combines human judgment. It combines knowledge reasoning. It gives ranked suggestions
+for intervention. This changes CI management from reacting after problems happen to
+acting before problems grow.
+6. Case Study
+This case study presents an application-oriented illustration of the proposed HITL-
+DT framework in a representative infrastructure operation and maintenance scenario.
+A typical reinforced concrete bridge deck crack deterioration case is adopted to ensure
+engineering relevance and generalizability. The case study shows the operational workflow
+and information interaction among AI-based perception, human-in-the-loop interpretation,
+and knowledge-guided validation in the digital twin environment. Figure 8 shows this
+process. It shows the step-by-step diagnostic and decision update process. A qualitative
+comparison with a purely AI-driven digital twin approach is further provided to highlight
+the advantages of the proposed framework in terms of explainability and engineering
+consistency. The case study serves to validate the logical coherence and practical operability
+of the HITL-DT framework.
+Figure 8 illustrates the core operational workflow of the proposed HITL-DT frame-
+work in the case study. The process starts from multi-source inspection and monitoring
+inputs, followed by AI-based perception that generates preliminary anomaly detection
+and risk signals. These AI outputs are then examined through HITL interpretation and
+engineering knowledge-guided consistency verification, ensuring that diagnostic results
+remain explainable and engineering-consistent. Based on the validated outcomes, diagnos-
+https://doi.org/10.3390/app16041848
+Appl. Sci. 2026, 16, 1848 22 of 28
+tic decisions are accepted or rejected and used to update the digital twin state, forming a
+closed-loop decision and update mechanism for infrastructure O&M.
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+Figure 8. Workflow of knowledge-guided HITL-DT diagnosis and update.
+6.1. Case Study Objective and Scope
+The objective of this case study is not to validate the performance of a specific bridge
+project, but to demonstrate the operational logic of the proposed HITL-DT framework in a
+representative infrastructure operation and maintenance scenario. A typical bridge crack
+deterioration scenario is used to illustrate how AI-based perception, human engineering
+cognition, and engineering knowledge are integrated within a digital twin environment to
+form a closed-loop collaborative mechanism, supporting interpretable and engineering-
+consistent diagnosis and decision support. This case study serves as an illustrative and
+mechanism-consistent validation, focusing on the operability and logical coherence of
+the proposed framework rather than quantitative performance evaluation or numerical
+comparison. Validation using real-world infrastructure data is beyond the scope of this
+illustrative case study and is considered a direction for future research.
+6.2. Engineering Scenario and Basic Assumptions
+6.2.1. Infrastructure Component and Deterioration Mode
+In this case study, crack deterioration of reinforced concrete bridge decks is selected as
+the representative application scenario. As a critical structural component directly subjected
+to traffic loading and environmental effects, bridge decks commonly experience cracking
+during long-term service, making it one of the most frequently observed deterioration
+modes in bridge operation and maintenance. This deterioration mode is selected for two
+main reasons. First, bridge deck cracks are associated with well-defined engineering indi-
+cators and classification criteria, supported by mature inspection standards and technical
+guidelines. Second, the mechanisms, evolution characteristics, and maintenance strategies
+of crack deterioration have been extensively documented in the existing literature and
+engineering practice, providing a solid knowledge base for knowledge-guided diagnosis.
+It should be noted that the engineering scenario constructed in this case study represents a
+typical and generalizable infrastructure O&M situation. The purpose is to demonstrate the
+applicability of the proposed HITL-DT framework under common deterioration conditions,
+rather than to analyze or evaluate a specific bridge project.
+6.2.2. Spatiotemporal Crack Data and Observation Assumptions
+In this case study, it is assumed that spatiotemporal crack evolution information is
+obtained through periodic inspections, combining manual inspection and image-based
+https://doi.org/10.3390/app16041848
+Appl. Sci. 2026, 16, 1848 23 of 28
+perception. The observed data mainly include the temporal variation in crack width and
+crack length, as well as the spatial location of cracks within the structural component.
+Synthetic or simulated crack growth data are used to show how the framework works. The
+crack trends follow common crack deterioration patterns reported in past studies. This case
+study looks at diagnostic logic, information flow, and cooperation between different agents.
+It does not study sensor accuracy, data collection systems, or specific detection algorithms.
+6.3. Operational Workflow of the HITL-DT Framework
+6.3.1. AI-Based Perception and Temporal Change Detection
+In the proposed HITL-DT framework, the AI module handles perception and early
+screening. It uses inspection images or past inspection records. It extracts main crack
+features. It studies changes over time in crack indicators such as crack width and crack
+length. It finds possible abnormal growth trends. The outputs of the AI module are only
+possible anomaly signals or risk signs. They start the next steps of human interpreta-
+tion and knowledge-based checking. They are not final diagnostic results. They are not
+maintenance decisions.
+6.3.2. Human-in-the-Loop Interpretation and Confirmation
+In the HITL stage, manual inspection experience and structural engineering judgment
+are added to the diagnostic process. They are used to interpret and confirm the possible
+anomalies found by the AI perception module. In this case study, human judgment is simu-
+lated with rule-based expert knowledge. The decision rules come from bridge inspection
+standards and common engineering limits, such as crack width classification levels. This
+stage works to remove AI false alarms that are caused by data noise or environmental
+disturbance. It also gives clear engineering meaning to the detected anomalies. In this way,
+the engineering credibility and consistency of the later diagnostic results are improved.
+6.3.3. Knowledge-Guided Diagnostic Consistency Verification
+In the knowledge-guided stage, design codes, common deterioration mechanisms,
+and past case rules are added to the diagnostic process. They are extra checks for AI results
+and HITL judgments. The system compares information from different sources. It checks
+this information against engineering knowledge. It checks whether the detected anomalies
+match known structural behavior, damage mechanisms, and code requirements. Through
+this process, the HITL-DT framework establishes a traceable diagnostic reasoning chain,
+explicitly linking data perception, human interpretation, and knowledge-based verification.
+This knowledge-guided consistency verification represents a key step that distinguishes
+the proposed HITL-DT framework from conventional data-driven digital twin systems.
+To further clarify the operational logic of this knowledge-guided consistency verification
+process, a compact pseudo-code representation is provided in Algorithm 1.
+Algorithm 1 provides a compact pseudo-code representation of the knowledge-guided
+diagnostic consistency verification process within the HITL-DT framework. It formalizes
+the integration of AI-based anomaly signals, HITL judgments, and engineering knowledge
+to perform multi-source information fusion and consistency checking. Through conflict
+detection and traceable reasoning chain construction, the algorithm supports validated
+diagnostic states and corresponding decision support outputs. This algorithmic representa-
+tion serves to clarify the operational logic of the proposed framework rather than to specify
+implementation-level details.
+https://doi.org/10.3390/app16041848
+Appl. Sci. 2026, 16, 1848 24 of 28
+Algorithm 1 Knowledge-guided diagnostic consistency verification
+Input: AI_signals, Human_judgment, Knowledge_base
+Output: Diagnostic_state, Decision_action
+1 K ← load_versioned (Knowledge_base)
+2 S_ai ← extract (AI_signals)
+3 S_h ← interpret (Human_judgment)
+4 S_f ← fuse (S_ai, S_h)
+5 C_k ← match (S_f, K)
+6 Conflicts ← detect_conflict (S_f, C_k)
+7 if Conflicts == ∅ then
+8 State ← validate (S_f)
+9 else
+10 State ← revise (S_f, Conflicts)
+11 end if
+12 ReasoningChain ← build_trace (S_f, K)
+13 Decision_action ← infer (State, ReasoningChain)
+6.3.4. Digital Twin-Driven Decision Support
+After integrating the outputs from AI perception, human-in-the-loop interpretation,
+and knowledge-guided consistency verification, the DT system generates decision support
+observations for infrastructure operation and maintenance. Typical recommended actions
+include continued monitoring, local repair, and preventive strengthening at different
+intervention levels. In this case study, the focus is on the decision-making process is not
+based on a single information source or isolated judgment, but is derived from the fusion
+of multi-source perception data, human cognitive inputs, and engineering knowledge
+constraints. In this process, the digital twin functions as a decision support and information
+integration platform, rather than a substitute for human engineering judgment.
+6.4. Qualitative Comparison and Framework Advantages
+To show the features and benefits of the proposed HITL-DT framework, a qualitative
+comparison is made with a DT system that uses only AI. The comparison shows that
+AI-only systems can detect anomalies quickly and work efficiently. But their diagnostic
+process often does not give clear engineering meaning. They are also more likely to produce
+false alarms in complex situations or when data are uncertain. The HITL-DT framework
+includes HITL interpretation and knowledge-based checking. Because of this, it shows
+better reliability in diagnostic explanation, engineering consistency, and false alarm control.
+This qualitative comparison shows that the HITL-DT framework fits complex and diverse
+infrastructure O&M situations better. It is especially useful when engineering credibility
+is important.
+6.5. Key Insights from the Case Study
+This case study gives several important insights. Human and AI work together in an
+HITL mechanism. This helps solve the limits of purely data-driven methods. It improves
+engineering meaning in diagnosis. It also increases the credibility of diagnostic results in
+real engineering work. The structured use of engineering knowledge adds clear logical
+limits between data perception and decision support. This stops diagnostic results from
+going against design codes. It also stops them from going against established engineering
+experience. The case study also shows that the proposed HITL-DT framework can be
+used in real infrastructure O&M work. The purpose of this case study is to show that the
+https://doi.org/10.3390/app16041848
+Appl. Sci. 2026, 16, 1848 25 of 28
+operational mechanism works. It does not try to achieve the best numerical results. It also
+does not try to perform better than other systems.
+7. Discussion
+Unlike many human-in-the-loop DT studies, which mainly focus on manual interven-
+tion or decision checking, the proposed framework clearly defines engineering knowledge
+as a third core part and places it inside a traceable diagnostic reasoning loop. This study
+shows that combining HAK in an HITL-DT framework gives a more reliable, clear, and
+scalable method for smart CI O&M. Existing DT and SHM methods usually depend on AI
+automation or expert manual assessment. Each method has limits. AI models work well for
+data collection and pattern recognition. But they often lack clear explanation. They can also
+become unstable when data are limited or noisy. Expert-based assessment depends on deep
+engineering knowledge. But it is subjective. It depends on individual experience. It can lead
+to inconsistent results. The proposed HAK framework connects these parts. It combines
+human perception, AI recognition and prediction, and engineering knowledge reasoning
+into one decision process. From a conceptual view, this integration changes DT-based O&M.
+It moves from separate intelligence parts to a coordinated human-AI-knowledge system.
+This hybrid design improves problems seen in earlier studies. These problems include
+weak explanation, low robustness under mixed field conditions, and weak use of domain
+engineering knowledge. These problems are common in purely data-driven AI models.
+The observations show the value of multi-source sensing. Human and team situa-
+tional inputs add more meaning to the data. This improves the reliability of spatiotemporal
+change detection. The framework uses human judgment and expert knowledge. It de-
+tects anomalies. It also gives engineering-based and trustworthy explanations for the
+changes. Traditional black-box AI models cannot do this. From an engineering view,
+this rule-based interpretation keeps diagnostic results consistent with structural behavior,
+design codes, and inspection standards. This ability to give clear explanations makes the
+decision process more transparent. It increases engineers’ trust in the system. It improves
+reliability. It also improves proactive control in CI O&M. The system uses human situa-
+tional awareness. It also uses engineering knowledge. This keeps predictions close to real
+conditions. This makes the system usable for different infrastructure types and environ-
+ments. From an engineering view, this rule-based interpretation keeps diagnostic results
+consistent with structural behavior. It also keeps them consistent with design codes and
+inspection standards.
+It should be stated that this case study gives qualitative and conceptual validation
+of the framework. It shows operational feasibility, logical consistency, and engineering
+reasonableness. It does not test numerical performance or optimization. The case study
+is used to check the internal logic and interaction process of the framework in typical
+O&M cases. The main contribution is to show how human cognition, AI perception, and
+engineering knowledge can work together in a closed-loop diagnostic and decision process.
+Large-scale data testing and comparison with other methods are important future tasks.
+Some challenges still exist. One major problem is how to change expert knowledge
+into computable rules that can be used inside AI models. Engineering knowledge is
+complex. It depends on context. It is hard to measure clearly. Future research can study
+automatic knowledge extraction and knowledge update methods. These methods can
+record expert knowledge and update it over time. Another problem is the high cost of
+building and keeping large multi-source data systems. Infrastructure systems are becoming
+more complex. The framework must also work for many types of infrastructure. Different
+systems have different designs, materials, and environments. From a practical view, these
+problems show the need for flexible and scalable human-AI cooperation methods. The
+https://doi.org/10.3390/app16041848
+Appl. Sci. 2026, 16, 1848 26 of 28
+system should not follow a fixed design for all cases. Future research should study adaptive
+human-AI cooperation. The system should adjust to different infrastructure needs and
+conditions. Cross-domain transfer methods should also be studied. The framework should
+work across different infrastructure types. This will improve scalability and robustness. If
+these problems are solved, the HITL-DT framework can improve further. It can lead to
+more scalable, intelligent, and context-aware DT systems for infrastructure.
+8. Conclusions
+This study establishes a comprehensive HITL DT framework that integrates HAK to
+address the growing complexity of smart CI O&M. As highlighted in previous top-tier
+studies, purely data-driven or fully automated DT systems remain limited in interpretability,
+generalization, and reliability when confronted with large-scale, heterogeneous, and noisy
+infrastructure data environments. Likewise, traditional human-centered O&M, although
+rich in contextual cognition and engineering judgment, cannot meet the massive spatial and
+temporal demands of modern infrastructure networks. The proposed HAK-integrated DT
+framework bridges this gap by combining the complementary strengths of human cognition,
+AI-driven analysis, and engineering-knowledge reasoning into a unified modeling and
+diagnostic system.
+At the modeling level, the framework enhances the physical–virtual mapping by
+formalizing structural mechanics knowledge, embedding computable engineering code
+rules, and establishing a continuously expandable case knowledge base. At the perception
+level, it integrates human inspection inputs, team situation awareness, and machine-vision
+data into a multi-source spatiotemporal sensing system, which strengthens the reliability
+of change detection. At the diagnostic and prediction levels, human–AI collaborative inter-
+pretation, mechanism-based validation, and knowledge-guided reasoning together enable
+explainable, traceable, and engineering-grounded assessment of structural deterioration.
+This integrated approach transforms CI O&M from fragmented workflows into a coherent,
+closed-loop, and evolutionary digital ecosystem.
+The HAK framework moves DT research from a simple “physical-virtual” model to
+a system that includes human input and engineering knowledge. It shows how HITL
+mechanisms can improve the credibility of DT applications. It also improves robustness
+and practical use in complex infrastructure environments. Future work can extend this
+framework to autonomous learning. It can also support knowledge transfer between
+different infrastructure systems. It can support full-lifecycle risk management. These
+steps can help the long-term development of smart, resilient, and sustainable CI O&M.
+The framework is modular in design. Human participation and knowledge parts can be
+adjusted based on infrastructure size, data conditions, and organizational capacity. This
+allows the framework to be used in large and diverse CI networks.
+Author Contributions: Conceptualization, Z.S., Y.W., W.G. and Q.M.; Methodology, Z.S., Y.W., W.G.
+and Q.M.; Validation, Z.S., Y.W., W.G. and Q.M.; Formal analysis, Z.S., Y.W. and Q.M.; Investigation,
+Z.S. and Q.M.; Resources, Z.S. and Y.W.; Data curation, Z.S. and Q.M.; Writing—original draft, Z.S.,
+Y.W., W.G. and Q.M.; Writing—review & editing, Z.S., Y.W., W.G. and Q.M.; Visualization, Z.S., Y.W.,
+W.G. and Q.M.; Supervision, Z.S.; Funding acquisition, Z.S. and Q.M. All authors have read and
+agreed to the published version of the manuscript.
+Funding: This work was supported by the National Natural Science Foundation of China (Grant No.
+52408145) and the Natural Science Foundation of Chongqing (Grant No. CSTB2023NSCQ-MSX1013).
+Data Availability Statement: Data will be made available on request.
+Conflicts of Interest: Author Qinglei Meng was employed by the company Beijing Yuedu Construc-
+tion Engineering Co., Ltd. The remaining authors declare that the research was conducted in the
+https://doi.org/10.3390/app16041848
+Appl. Sci. 2026, 16, 1848 27 of 28
+absence of any commercial or financial relationships that could be construed as a potential conflict
+of interest.
+References
+1. Thacker, S.; Adshead, D.; Fay, M.; Hallegatte, S.; Harvey, M.; Meller, H.; O’Regan, N.; Rozenberg, J.; Watkins, G.; Hall, J.W.
+Infrastructure for sustainable development. Nat. Sustain. 2019, 2, 324–331. [CrossRef]
+2. American Society of Civil Engineers (ASCE). 2021 Report Card for America’s Infrastructure: Bridges; ASCE: Reston, VA, USA, 2021.
+Available online: https://infrastructurereportcard.org (accessed on 1 December 2025).
+3. OECD. Bridging Divides: Transport Infrastructure for Connectivity and Growth; OECD Publishing: Paris, France, 2017. Available
+online: https://www.oecd.org (accessed on 1 December 2025).
+4. Laña, I.; Sanchez-Medina, J.J.; Vlahogianni, E.I.; Del Ser, J. From data to actions in intelligent transportation systems: A prescription
+of functional requirements for model actionability. Sensors 2021, 21, 1121. [CrossRef] [PubMed]
+5. Zeng, F.; Pang, C.; Tang, H. Sensors on Internet of Things Systems for the Sustainable Development of Smart Cities: A Systematic
+Literature Review. Sensors 2024, 24, 2074. [CrossRef] [PubMed]
+6. Ministry of Transport of the People’s Republic of China.Statistical Bulletin on the Development of the Transport Industry in 2023;
+Ministry of Transport: Beijing, China, 2024. Available online: http://www.mot.gov.cn (accessed on 1 December 2025). (In
+Chinese)
+7. Kim, J.-W.; Choi, H.-W.; Kim, S.-K.; Na, W.S. Review of Image-Processing-Based Technology for Structural Health Monitoring of
+Civil Infrastructures. J. Imaging 2024, 10, 93. [CrossRef] [PubMed]
+8. State Council Information Office of the People’s Republic of China.China’s Rural Roads in the New Era; White Paper; State Council
+Information Office: Beijing, China, 2024. Available online: https://www.gov.cn/zhengce/202411/content_6990096.htm (accessed
+on 1 December 2025).
+9. Madni, A.M.; Sievers, M. Model-based systems engineering: Motivation, current status, and research opportunities. Syst. Eng.
+2018, 21, 172–190. [CrossRef]
+10. Omrany, H.; Al-Obaidi, K.M.; Husain, A.; Ghaffarianhoseini, A. Digital Twins in the Construction Industry: A Comprehensive
+Review of Current Implementations, Enabling Technologies, and Future Directions. Sustainability 2023, 15, 10908. [CrossRef]
+11. Abualdenien, J.; Borrmann, A. A meta-model approach for formal specification and consistent management of multi-LOD
+building models. Adv. Eng. Inform. 2019, 40, 135–153. [CrossRef]
+12. Chiachío, M.; Megía, M.; Chiachío, J.; Fernández, J.; Jalón, M.L. Structural digital twin framework: Formulation and technology
+integration. Autom. Constr. 2022, 140, 104333. [CrossRef]
+13. Jiang, Y.; Li, M.; Wu, W.; Wu, X.; Zhang, X.; Huang, X.; Zhong, R.Y.; Huang, G.G.Q. Multi-domain ubiquitous digital twin model
+for information management of complex infrastructure systems. Adv. Eng. Inform. 2023, 56, 101951. [CrossRef]
+14. Krupas, M.; Kajati, E.; Liu, C.; Zolotova, I. Towards a Human-Centric Digital Twin for Human–Machine Collaboration: A Review
+on Enabling Technologies and Methods. Sensors 2024, 24, 2232. [CrossRef]
+15. Reason, J. Human Error; Cambridge University Press: Cambridge, UK, 1990.
+16. Hollnagel, E. Safety-II in Practice: Developing the Resilience Potentials; Routledge: London, UK, 2018.
+17. Ahmed, H.; La, H.M.; Gucunski, N. Review of Non-Destructive Civil Infrastructure Evaluation for Bridges: State-of-the-Art
+Robotic Platforms, Sensors and Algorithms. Sensors 2020, 20, 3954. [CrossRef] [PubMed]
+18. Sun, Z.; Chen, T.; Meng, X.; Bao, Y.; Hu, L.; Zhao, R. A Critical Review for Trustworthy and Explainable Structural Health
+Monitoring and Risk Prognosis of Bridges with Human-In-The-Loop. Sustainability 2023, 15, 6389. [CrossRef]
+19. Al-Sabbag, Z.A.; Yeum, C.M.; Narasimhan, S. Enabling human–machine collaboration in infrastructure inspections through
+mixed reality. Adv. Eng. Inform. 2022, 53, 101709. [CrossRef]
+20. Asad, U.; Khan, M.; Khalid, A.; Lughmani, W.A. Human-Centric Digital Twins in Industry: A Comprehensive Review of Enabling
+Technologies and Implementation Strategies. Sensors 2023, 23, 3938. [CrossRef]
+21. Wang, Q.; Huang, B.; Gao, Y.; Jiao, C. Current Status and Prospects of Digital Twin Approaches in Structural Health Monitoring.
+Buildings 2025, 15, 1021. [CrossRef]
+22. Ji, Y.; Zheng, S. Distributed Mode-Dependent Event-Triggered Passive Filtering for Flexible Manipulator with Semi-Markov
+Parameters. Sensors 2021, 21, 2058. [CrossRef]
+23. Wilson, S.; Laing, R.; Tan, E.W.; Wilson, C. Encapsulation of Electrically Conductive Apparel Fabrics: Effects on Performance.
+Sensors 2020, 20, 4243. [CrossRef]
+24. Azimi, M.; Eslamlou, A.D.; Pekcan, G. Data-Driven Structural Health Monitoring and Damage Detection through Deep Learning:
+State-of-the-Art Review. Sensors 2020, 20, 2778. [CrossRef]
+25. Gharavi, H.; Taban, F.; Korivand, S.; Jalili, N. AI-Powered Structural Health Monitoring Using Multi-Type and Multi-Position
+PZT Networks. Sensors 2025, 25, 5148. [CrossRef]
+https://doi.org/10.3390/app16041848
+Appl. Sci. 2026, 16, 1848 28 of 28
+26. Gomez-Cabrera, A.; Escamilla-Ambrosio, P .J. Review of Machine-Learning Techniques Applied to Structural Health Monitoring
+Systems for Building and Bridge Structures. Appl. Sci. 2022, 12, 10754. [CrossRef]
+27. Plevris, V .; Papazafeiropoulos, G. AI in Structural Health Monitoring for Infrastructure Maintenance and Safety.Infrastructures
+2024, 9, 225. [CrossRef]
+28. Wang, D.; Luo, L.; Luo, J.; Lin, S.; Ren, G. Developing Computational Thinking: Design-Based Learning and Interdisciplinary
+Activity Design. Appl. Sci. 2022, 12, 11033. [CrossRef]
+29. Abouelela, A. The Effectiveness of the Role of Interior Design in Creating Functional and Institutional Happiness for Work
+Environments: King Faisal University as a Model. Designs 2022, 6, 45. [CrossRef]
+30. Robitzsch, A. Regularized Mixture Rasch Model. Information 2022, 13, 534. [CrossRef]
+31. Bombo, G.; Cristofoli, N.L.; Santos, T.F.; Schüler, L.; Maia, I.B.; Pereira, H.; Barreira, L.; Varela, J. Dunaliella viridis TAV01: A
+Halotolerant, Protein-Rich Microalga from the Algarve Coast. Appl. Sci. 2023, 13, 2146. [CrossRef]
+32. Jaryani, S.; Yitmen, I.; Sadri, H.; Alizadehsalehi, S. Exploring the Fusion of Knowledge Graphs into Cognitive Modular Production.
+Buildings 2023, 13, 2306. [CrossRef]
+33. Firmino de Souza, D.; Sousa, S.; Kristjuhan-Ling, K.; Dunajeva, O.; Roosileht, M.; Pentel, A.; M õttus, M.; Can Özdemir, M.;
+Gratšjova, Ž. Trust and Trustworthiness from Human-Centered Perspective in Human–Robot Interaction (HRI)—A Systematic
+Literature Review. Electronics 2025, 14, 1557. [CrossRef]
+Disclaimer/Publisher’s Note: The statements, opinions and data contained in all publications are solely those of the individual
+author(s) and contributor(s) and not of MDPI and/or the editor(s). MDPI and/or the editor(s) disclaim responsibility for any injury to
+people or property resulting from any ideas, methods, instructions or products referred to in the content.
+https://doi.org/10.3390/app16041848

@@ -13,3 +13,12 @@ PurposeThis study explores the integration of monitored data from Tunnel Boring 
 | Yes | Yes | Yes | Yes | Yes | **Include** |
 
 **Note:** BIM+DT integration in mechanized tunnelling; rework reduction, lean
+
+## Step-3 Deep-Read Coding (Prompt B)
+
+| P | Q | R | U Tier | V | W | X | Z | AA | AB | AC | AD | AE | AF |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| Yes | Yes | Yes | Tier 2 - Digital Shadow (one-way physical to virtual) | 0 | 1 | 0 | Design for Quality (DfQ) | None | Digital Twin platform (no machine learning) | Multi (two or more data types) | Single case study | 4 | Lifecycle / governance |
+
+**Key evidence (AG):** Integration of BIM and digital twin in mechanized tunnelling construction (Implenia/NYU/Technion): design-science case study of a TBM tunnelling project; computational design algorithm automates TBM excavation-data integration into a Digital Twin Construction (DTC) system; DT generates real-time status of the tunnel physical state in short cycles; 90% reduction in DT modelling time; supports lean design/construction (bracketry design, reducing rework/uncertainty); challenges: data interoperability, standardized modelling. One-way data->DT->decision support for lean workflows; no actuation, no learning loop.
+(full-text source: Endnote)

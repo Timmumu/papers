@@ -1,0 +1,1331 @@
+Citation: Talmaki, S.A.; Kamat, V .R.
+Sensor Acquisition and Allocation for
+Real-Time Monitoring of Articulated
+Construction Equipment in Digital
+Twins. Sensors 2022, 22, 7635.
+https://doi.org/10.3390/s22197635
+Academic Editors: Roberto Teti and
+Baoping Cai
+Received: 25 August 2022
+Accepted: 7 October 2022
+Published: 9 October 2022
+Publisher’s Note: MDPI stays neutral
+with regard to jurisdictional claims in
+published maps and institutional afﬁl-
+iations.
+Copyright: © 2022 by the authors.
+Licensee MDPI, Basel, Switzerland.
+This article is an open access article
+distributed under the terms and
+conditions of the Creative Commons
+Attribution (CC BY) license (https://
+creativecommons.org/licenses/by/
+4.0/).
+sensors
+Article
+Sensor Acquisition and Allocation for Real-Time Monitoring of
+Articulated Construction Equipment in Digital Twins
+Sanat A. Talmaki and Vineet R. Kamat *
+Department of Civil and Environmental Engineering, University of Michigan, Ann Arbor, MI 48109-2125, USA
+* Correspondence: vkamat@umich.edu
+Abstract: The visibility available to an equipment operator on a dynamic construction site can often
+be blocked by various obstacles such as materials, temporary or permanent facilities, other equipment,
+and workers. Equipment monitoring in real-time digital twins can thus play a crucial role in accident
+prevention. This paper develops a scalable technical approach and presents a prototype application
+framework for transmitting real world sensor data to update 3D equipment models inside a graphical
+digital twin for concurrent visualization of a monitored construction operation. The developed
+framework and workﬂow can be extended to visualize any construction operation, as it occurs, inside
+a dynamic 3D world simply by outﬁtting the real equipment with appropriate sensors and connecting
+them to their virtual counterparts. The implemented proof-of-concept interface is described in the
+context of a real-time 3D digital twin for assisting excavator operators prevent unintended strikes
+with underground utilities. Experiments to validate the proposed technical approach by simulating
+the real-time motion of a backhoe loader’s articulated arm using orientation sensors installed on its
+boom, stick, and bucket are described. The experimental results characterize the scope and potential
+reasons for spatio-temporal discrepancies that can occur between a monitored real operation and
+its replicated digital twin. The effect of an operator warning mechanism based on preset safety
+thresholds is also investigated and described.
+Keywords: digital twin; monitoring; visualization; earthmoving; excavation safety
+1. Introduction
+In ﬁelds such as mining, quarrying, and construction, equipment monitoring can play
+a crucial role in accident prevention [1]. Construction jobsites, in particular, are occupied
+by workers and equipment, often belonging to different sub-contractors [2]. The visibility
+available to an operator on a dynamic construction site can often be blocked by various
+obstacles such as materials, temporary or permanent facilities, other equipment, and even
+workers [3]. It has been documented that vision is the primary source of information for
+equipment operators to avoid collisions with other entities on construction jobsites [4]. The
+importance of clear, unobstructed vision, coupled with the inherent poor visibility that
+operators of equipment such as dump trucks, loaders, and excavators deal with due to
+blind spots [5] and other issues, suggests that equipment monitoring and active visual
+guidance can play a critical role in jobsite safety [6].
+Operators in some engineering tasks have the added cognitive burden of using judg-
+ment and estimation while performing their activities. Examples of this are excavation
+in the presence of buried utilities, drilling in reinforced concrete slabs, and tunnel boring
+operations that involve manipulation around occluded infrastructure, such as underground
+utilities and ductwork embedded in concrete walls. In the case of buried utilities, any
+errors on the part of an operator can rupture a gas line leading to an explosion, damage a
+water or sewer main leading to ﬂooding, or sever an electric conduit resulting in the risk of
+electrocution or loss of power to homes and businesses [7–10].
+Sensors 2022, 22, 7635. https://doi.org/10.3390/s22197635 https://www.mdpi.com/journal/sensors
+Sensors 2022, 22, 7635 2 of 22
+The type of equipment that can be monitored can vary from jobsite to jobsite, and
+even a single jobsite can have monitoring requirements that span different categories of
+equipment. The type of sensing mechanism used to record the position and orientation of
+equipment is also an operation- and equipment-dependent parameter. Thus, any moni-
+toring framework intended for jobsite safety via active visual guidance must be scalable
+and generic in order to be capable of monitoring equipment and operations across a broad
+range of conditions and engineering activities.
+Equipment monitoring on a construction jobsite can be achieved using various ap-
+proaches. Video surveillance, additional supervision, computer vision, Global Positioning
+System (GPS), and Radio Frequency Identiﬁcation (RFID) are all examples of monitoring
+and control methods [11,12]. This paper describes the limitations of these existing meth-
+ods, and introduces a sensor-based, real-time 3D visualization and geometric proximity
+monitoring method. Through this method, an equipment operator is provided with a
+combination of visual assistance through real-time 3D visualization in a digital twin, and
+audio-visual warnings through proximity monitoring, that together can help prevent any
+impending interference, collision, or accident. The following sections describe the details of
+the proposed computational framework for providing real-time sensor updates by mapping
+ﬁeld-based sensor data to corresponding equipment components in a 3D digital twin.
+One construction operation in which equipment operators are routinely challenged
+on their skill and judgment, and often in equal measure, is excavation, especially when
+carried out in the presence of underground utilities. Excavation is thus selected as an
+illustrative proof-of-concept example of an operation where monitoring of equipment
+can provide critical assistance to operators, to help them perform the activity safely. As
+the existing buried utilities are covered by earth and soil, an operator cannot be certain
+of their location in relation to the equipment’s end-effector (a bucket in the case of a
+backhoe or excavator). Excavation has thus become one of the leading causes of damage to
+underground utilities [13,14].
+Whenever a buried utility is struck during excavation, it can result in loss of life,
+injuries, damage to property, and a disruption to general life and commerce. Based on
+statistics compiled during the Census of Fatal Occupational Injuries, published by the
+U.S. Bureau of Labor Statistics, there were 3645 contact-driven fatalities that occurred
+during construction in the time period between 2009 and 2018 [ 15]. Due to its inherent
+operational dangers, excavation is thus an ideal construction process to highlight the
+beneﬁts of equipment monitoring for improving safety.
+In the presented research, the authors’ instrument is a backhoe loader with orientation
+sensors that monitor the rotation of the boom, stick, and bucket, and track the articulation
+of the machine (and consequently the position of the bucket end-effector) in real-time.
+A generic and scalable framework and workﬂow for transmitting real world sensor data to
+update 3D equipment models inside a graphical virtual world for concurrent visualization
+is presented. The developed technical approach can be conceptually adapted and extended
+to visualize any construction operation as it occurs inside a dynamic 3D world, simply by
+outﬁtting the real equipment pieces with appropriate sensors and connecting them to their
+virtual counterparts.
+2. Real-Time 3D Visualization in Digital Twins
+3D visualization consists of two categories—real-time and post-processed. In the
+case of post-processed visualization, the input is provided entirely from a simulation
+model (visual simulation), or from pre-recorded data of actual resource locations (trace
+simulation) [16]. However, in the case of real-time visualization, particularly when an
+ongoing operation is concurrently represented in a virtual world (i.e., a digital twin), there
+is an inherent need to link the real world to the virtual world. For real-time visualization,
+it is essential for the position and orientation sensor data from the jobsite to update the
+corresponding 3D equipment models in the virtual world, in order to maintain a valid
+geometric display and related operational state.
+Sensors 2022, 22, 7635 3 of 22
+The use of real-time 3D visualization and geometric proximity monitoring has key
+advantages over other methods, especially when considering a construction jobsite. The
+use of conventional video cameras for monitoring safety on the jobsite is limited by phys-
+ical constraints. Video cameras can limit the ﬁeld of view in relation to the jobsite and
+equipment [17]. Additionally, it may not be feasible to place a camera in a location that
+provides the best perspective view of the equipment. Real-time 3D visualization, when
+combined with geometric proximity monitoring, provides spatial context in addition to
+visual guidance, i.e., the virtual environment can help “see” obstructions (e.g., buried
+utilities) that might not be visible either through video cameras or by the human operators
+themselves. Real-time concurrent 3D visualization in digital twins is thus a key requirement
+for effective equipment monitoring in any context aimed toward improving jobsite safety,
+and rather than mere observation or recording alone.
+3. Literature Review
+Equipment tracking and monitoring can occur at the macro- and micro-level. Macro-
+level tracking refers to those techniques where the location of the equipment in the global
+space is of interest to the site or ﬂeet manager. Examples of this are ﬂeet tracking appli-
+cations for trucks, cars, and other assets [18–20]. At the macro-level, the user is primarily
+interested in the location, but not the articulation (roll, pitch, and yaw angles) or the details
+of sub-component orientations. At the macro-level, it is historically common for several
+resources to be tracked at the same time [18–20].
+On the other hand, micro-level tracking is deﬁned as that which occurs predominantly
+at the per-equipment level, where the position of the equipment in global space along
+with detailed orientations of sub-components are monitored and displayed to the user
+for real-time visual analysis [21]. However, it must be noted that some information from
+the micro-level monitoring can also be used at the macro-level, such as a site manager
+overseeing the operations of several equipment on an earthwork jobsite by viewing the
+position of all equipment on site.
+The authors’ proposed methodology is targeted at micro-level equipment monitoring,
+and the remainder of this section describes existing micro-level tracking and monitoring
+approaches in civil and construction engineering. The Denavit-Hartenberg notation was
+used by Lu and Liang [ 3] to develop a kinematic model for simulating the movement
+of a backhoe excavator, an example of articulated construction equipment. The use of
+ultra-wideband (UWB) technology for tracking, monitoring, and estimating the pose of
+cranes was demonstrated by Zhang et al. [ 22] by attaching UWB tags along the crane’s
+boom and tip. Radio Frequency (RF) technology has been implemented to provide real-time
+warnings to RF-tagged equipment operators and workers by triggering alarms when the
+distance between pieces of equipment and/or workers drops below a safety threshold [23].
+The National Institute of Standards and Technology [ 24] developed a method to
+track the 3D position of a robotic crane using a laser-based 3D site measurement system
+to provide position and orientation information to reduce errors in an encoder-based
+control system, and to also map the crane’s location relative to other components in the
+work environment. Sensor data and related CAD models were presented to the user in a
+visualization system [24]. Oloufa et al. [25] have demonstrated the use of GPS technology
+for tracking equipment on a construction site, providing warnings to operators about
+impending collisions between two moving equipment. The use of real-time kinematic
+GPS was tested and demonstrated by Roberts et al. [26] for construction plant control and
+monitoring applications. Peyret et al. [27] used a combination of GPS sensors to track the
+motion of an asphalt paving machine’s blade by measuring its location in the vertical plane.
+A combination of orientation (rotation) sensors, Global Positioning System (GPS), and
+laser technology has been used in applications for earthwork, grading, and compaction
+operations to demonstrate equipment monitoring and control [28,29]. The use of computer
+vision technology has been demonstrated for the recognition of construction equipment
+on earthmoving jobsites that has a potential to detect, track, and measure the productivity
+Sensors 2022, 22, 7635 4 of 22
+of stationary and mobile equipment [11,21,30]. The ﬁeld of equipment teleoperation is an
+example of micro-level monitoring where the operator is not present in the equipment and
+controls the equipment remotely. Steffen et al. [ 31] demonstrated vehicle teleoperation
+through use of data from GPS and heading sensors by transmission over a wireless network
+and presentation through a 3D virtual display system.
+The authors identify two primary limitations in the existing approaches. First, some
+of the existing methods are limited by their narrow scope in being applicable to only a
+speciﬁc sensor-type and/or equipment type. Being applicable to any equipment type
+commonly found on a construction jobsite is a key requirement due to the number of
+different equipment pieces that may be present on any medium to large project. Second, the
+monitoring of equipment without providing operators with concurrent 3D visualization
+and proximity monitoring information limits its effectiveness due to the limited information
+being presented to the operators.
+4. Overview of the Proposed Methodology
+Equipment used on construction jobsites is often articulated in nature, i.e., its individ-
+ual components are linked through joints that allow rotation about their pivot. Examples of
+these types of equipment are hydraulic excavators, backhoe loaders, graders, dump trucks,
+and haulers. Monitoring such equipment involves tracking the rotation and translation
+that the equipment undergoes. The data collected is then transmitted to a 3D digital twin
+so that the real and virtual worlds can be geometrically correlated to one another. The 3D
+models in the virtual world, when combined with the stream of position-orientation data,
+can be used for carrying out proximity analysis and collision detection. Finally, the 3D
+visualization and related analytical output are presented to the operator. The entire process
+occurs in real-time or near real-time so that the output can be used by operators in their
+decision-making process.
+Thus, it can be seen that being able to represent and simulate dynamic articulated
+equipment from the real-world jobsite concurrently in a 3D digital twin requires a link
+joining the real and virtual aspects of the operation [ 32–34]. There is an added level of
+complexity due to various types of construction equipment often being present on a jobsite,
+at any given instant. Similarly, an equipment’s position and its sub-components’ orientation
+can be recorded and monitored through a wide range of sensors and techniques. It follows
+that any proposed methodology must be generic in its scope if it is intended to be extensible
+to a broad range of projects. The proposed methodology is schematically represented in
+Figure 1, with the data from the real-world interfacing with individual components of the
+equipment in the virtual world.
+Figure 1 uses an excavator model to schematically show how the equipment’s compo-
+nents can be connected to position and/or orientation sensor sources from the real world.
+A generic framework is capable of performing a similar allocation of sensor streams to
+different types of equipment, such as a grader, crane, or backhoe loader, based on the
+conﬁguration of sensors installed on them. Similarly, the position and orientation sensors
+can vary from one jobsite setup to another, examples of which are presented in Figure 1.
+Thus, the ability to work with non-restrictive conﬁgurations of sensors and 3D equipment
+models is an essential part of the proposed framework and workﬂow.
+Sensors 2022, 22, 7635 5 of 22
+Sensors 2022, 22, 7635 5 of 22 
+ 
+ 
+ 
+Figure 1. Proposed methodology and workflow for creating a link between real world sensor data 
+and 3D virtual equipment models in digital twins. 
+5. Technical Approach 
+In order to be able to replicate the real -world motion of articulated equipment con-
+currently in the digital twin, understanding of the underlying equipment motion concepts 
+is essential. This is primarily due to the complexity inherent in equipment such as back-
+hoes and excavators, where it is not feasible to obtain the location of the end -effector in a 
+direct manner [32]. These limitations in turn are caused by potential damage that the sen-
+sors can suffer if placed directly on the end-effector (bucket) where that can come in con-
+tact with earth, rocks, and soil over the course of operations. The remainder of this section 
+describes the key technical challenges involved in concurrently replicating the transla-
+tional and rotational motion of equipment inside a 3D digital twin.  
+5.1. Kinematics 
+Kinematics is the branch of mechanics that deals with the study of mo tion of a sin-
+gular object or a group of objects without considering their causes [35]. The field of kine-
+matics itself is further divided into two approaches: forward and inverse kinematics. For-
+ward kinematics refers to the use of the  kinematic equations to compute the position of 
+an object’s end-effector from specified values for the object’s joint parameters. Inverse kin-
+ematics on the other hand is the reverse procedure of forward kinematics. It is used to 
+compute the angles and/or lengths of individual li nks and joints of the object , and the 
+rotations and translations that the object must undergo in order for the end effector to be 
+present at a required (predetermined) final position and orientation. 
+In the case of equipment monitoring and operator assistance, the joint angle rotations 
+are recorded by the sensors, and thus the end-effector’s position and orientation, Pend-effector, 
+is computed through a forward kinematic process where P end-effector can be mathematically 
+stated as ‘f( Θ, L)’ for every rotational joint and arm from the object’s base to the end -
+effector, where ‘Θ’ is the rotational angle of the joint and ‘L’ is the length of the arm rotat-
+ing about the pivot for every joint. This relationship is graphically represented in Figure 
+2, using the example of an excavator. The reader is referred to [36] for additional discus-
+sion on the kinematic equations and process. 
+Figure 1. Proposed methodology and workﬂow for creating a link between real world sensor data
+and 3D virtual equipment models in digital twins.
+5. Technical Approach
+In order to be able to replicate the real-world motion of articulated equipment concur-
+rently in the digital twin, understanding of the underlying equipment motion concepts is
+essential. This is primarily due to the complexity inherent in equipment such as backhoes
+and excavators, where it is not feasible to obtain the location of the end-effector in a direct
+manner [32]. These limitations in turn are caused by potential damage that the sensors
+can suffer if placed directly on the end-effector (bucket) where that can come in contact
+with earth, rocks, and soil over the course of operations. The remainder of this section
+describes the key technical challenges involved in concurrently replicating the translational
+and rotational motion of equipment inside a 3D digital twin.
+5.1. Kinematics
+Kinematics is the branch of mechanics that deals with the study of motion of a singular
+object or a group of objects without considering their causes [35]. The ﬁeld of kinematics
+itself is further divided into two approaches: forward and inverse kinematics. Forward
+kinematics refers to the use of the kinematic equations to compute the position of an object’s
+end-effector from speciﬁed values for the object’s joint parameters. Inverse kinematics on
+the other hand is the reverse procedure of forward kinematics. It is used to compute the
+angles and/or lengths of individual links and joints of the object, and the rotations and
+translations that the object must undergo in order for the end effector to be present at a
+required (predetermined) ﬁnal position and orientation.
+In the case of equipment monitoring and operator assistance, the joint angle rotations
+are recorded by the sensors, and thus the end-effector’s position and orientation, Pend-effector,
+is computed through a forward kinematic process where Pend-effector can be mathematically
+stated as ‘f(Θ, L)’ for every rotational joint and arm from the object’s base to the end-effector,
+where ‘Θ’ is the rotational angle of the joint and ‘L’ is the length of the arm rotating about
+the pivot for every joint. This relationship is graphically represented in Figure 2, using
+the example of an excavator. The reader is referred to [36] for additional discussion on the
+kinematic equations and process.
+Sensors 2022, 22, 7635 6 of 22
+Sensors 2022, 22, 7635 6 of 22 
+ 
+ 
+ 
+Figure 2. Backhoe side view with schematic kinematic chain representing its boom, stick, and bucket 
+articulation. 
+As seen in Figure 2, the bucket’s position and orientation depends upon the cabin’s 
+position and the sum of the lengths and the rotational angles of the boom, stick, and bucket, 
+respectively. The lengths of the boom, stick, and bucket are considered from pivot-to-pivot, 
+so that the principles of forward kinematics can be applied to the computation. It must be 
+noted that there are limitations on sensor placement upon equipment due to physical con-
+straints and the harsh environment the equipment end-effector operates in. As a result, plac-
+ing a position sensor on the end-effector that comes in contact with soil and other materials 
+is difficult to achieve. Thus, the end-effector’s global position, i.e., position of its tip in rela-
+tion to other entities on the jobsite, must be computed in an indirect manner. 
+It follows that determination of the global position of an end -effector has two com-
+putations associated with it. The first is the position aspect of the equipment in the envi-
+ronment, i.e., on the jobsite. The second involves the articulated chain of linked elements 
+associated with the equipment. Thus, in the case of the backhoe shown in Figure 2, a GPS 
+receiver is placed on the top of the backhoe to provide the equipment position on a jobsite 
+in terms of latitude, long itude, and altitude. In some cases, a pair of GPS receivers are 
+placed on the cabin of the equipment to provide a more accurate position, as well as ori-
+entation (rotation) of the cabin [26]. Data from tilt measuring sensors placed along the 
+boom, stick, and bucket arms in combination with lengths of the respective components 
+can provide the distance of the end-effector tip, measured from the articulated chain base, 
+i.e., the pivot point of the boom. 
+Based on the placement of the position sensor on the equip ment, there may be an 
+offset between the position reported by the sensor and the base of the articulated chain. 
+Accurate integration of the two data computations requires the inclusion of the offset dis-
+tance between the base of the articulated chain and th e position reported by the position 
+sensor. The combination of every f(Θ, L) along the articulated chain provides only the 
+position of the end-effector with respect to the base of the articulation. In order to convert 
+this value to its global position so that the position value can be compared to other entities 
+on the jobsite, the base pivot offset is required. 
+Every element along the kinematic chain has a set of rotation axes associated with it. 
+The origin of the local axes corresponds to the rotation pivot of the element under consid-
+eration. At the same time, sensors placed on the equipment components record the rota-
+tion with respect to a set of global axes that are common for all the elements comprising 
+Figure 2. Backhoe side view with schematic kinematic chain representing its boom, stick, and
+bucket articulation.
+As seen in Figure 2, the bucket’s position and orientation depends upon the cabin’s
+position and the sum of the lengths and the rotational angles of the boom, stick, and bucket,
+respectively. The lengths of the boom, stick, and bucket are considered from pivot-to-pivot,
+so that the principles of forward kinematics can be applied to the computation. It must
+be noted that there are limitations on sensor placement upon equipment due to physical
+constraints and the harsh environment the equipment end-effector operates in. As a result,
+placing a position sensor on the end-effector that comes in contact with soil and other
+materials is difﬁcult to achieve. Thus, the end-effector’s global position, i.e., position of its
+tip in relation to other entities on the jobsite, must be computed in an indirect manner.
+It follows that determination of the global position of an end-effector has two computa-
+tions associated with it. The ﬁrst is the position aspect of the equipment in the environment,
+i.e., on the jobsite. The second involves the articulated chain of linked elements associated
+with the equipment. Thus, in the case of the backhoe shown in Figure 2, a GPS receiver is
+placed on the top of the backhoe to provide the equipment position on a jobsite in terms of
+latitude, longitude, and altitude. In some cases, a pair of GPS receivers are placed on the
+cabin of the equipment to provide a more accurate position, as well as orientation (rotation)
+of the cabin [26]. Data from tilt measuring sensors placed along the boom, stick, and bucket
+arms in combination with lengths of the respective components can provide the distance
+of the end-effector tip, measured from the articulated chain base, i.e., the pivot point of
+the boom.
+Based on the placement of the position sensor on the equipment, there may be an
+offset between the position reported by the sensor and the base of the articulated chain.
+Accurate integration of the two data computations requires the inclusion of the offset
+distance between the base of the articulated chain and the position reported by the position
+sensor. The combination of every f( Θ, L) along the articulated chain provides only the
+position of the end-effector with respect to the base of the articulation. In order to convert
+this value to its global position so that the position value can be compared to other entities
+on the jobsite, the base pivot offset is required.
+Every element along the kinematic chain has a set of rotation axes associated with
+it. The origin of the local axes corresponds to the rotation pivot of the element under
+consideration. At the same time, sensors placed on the equipment components record the
+rotation with respect to a set of global axes that are common for all the elements comprising
+Sensors 2022, 22, 7635 7 of 22
+the equipment. Thus, there exist a set of global axes as shown in Figure 3. These axes
+are familiarly called the X-, Y- and Z-Axes, and are deﬁned such that X-Axis points in
+the horizontal direction to the right, Y-Axis orthogonal to the plane deﬁned by X- and
+Z-Axes and in a direction pointing away from the reader, while the Z-Axis points in the
+vertically upward direction. The three commonly used terms to describe rotation of a body
+in 3-dimensional space are roll, pitch, and yaw. Roll is the rotation experienced about the
+X-Axis, pitch is the rotation about Y-Axis, and yaw is the rotation about Z-Axis, as shown
+in Figure 4.
+Sensors 2022, 22, 7635 7 of 22 
+ 
+ 
+the equipment. Thus, there exist a set of global ax es as shown in Figure 3. These axes are 
+familiarly called the X -, Y- and Z-Axes, and are defined such that X -Axis points in the 
+horizontal direction to the right, Y-Axis orthogonal to the plane defined by X- and Z-Axes 
+and in a direction pointing away from the reader, while the Z-Axis points in the vertically 
+upward direction. The three commonly used terms to describe rotation of a body in 3 -
+dimensional space are roll, pitch , and yaw. Roll is the rotation experienced about the X -
+Axis, pitch is the rotation about Y-Axis, and yaw is the rotation about Z-Axis, as shown in 
+Figure 4. 
+ 
+Figure 3. Global coordinate axes—X, Y, and Z about which a body experiences roll, pitch, and yaw 
+respectively. 
+ 
+Figure 4. Angles described in terms of roll, pitch, and yaw about the X-, Y-, and Z-Axis in both real 
+and virtual worlds. 
+Equipment components in an articulated chain have a parent-child hierarchical rela-
+tionship. Hence, in the case of an excavator, the track component is the parent of the cabin, 
+boom, stick , and bucket e lements. Similarly, the cabin component is the parent of the 
+boom, stick, and bucket components. In such a parent -child relationship, any rotation or 
+translation experienced by the parent is implicitly transferred to the child entities. For ex-
+ample, anticlockwise rotation of the cabin by 90 degrees about the Z-Axis, results in rota-
+tion of the cabin as well as its child elements—boom, stick, and bucket—by the same mag-
+nitude. However, the track component, which is the cabin component’s parent element, 
+is unaffected by this rotation. This behavior is represented in Figure 5.  
+Due to such rotation and translation of individual components, the position and ori-
+entation of the local origin of the coordinate axes gets altered. This results in a change in 
+direction of local X, Y, and Z axes. For example, rotation of the boom component in an 
+anti-clockwise direction results in corresponding rotation of the stick and bucket compo-
+nents by the same magnitude. Due to this, the local axes direction of X, Y, and Z differ 
+from their global directions, i.e., directions corresponding to zero translation and rotation. 
+This is represented in Figure 6, through side and top views of an excavator.  
+Figure 3. Global coordinate axes—X, Y, and Z about which a body experiences roll, pitch, and
+yaw respectively.
+Sensors 2022, 22, 7635 7 of 22 
+ 
+ 
+the equipment. Thus, there exist a set of global ax es as shown in Figure 3. These axes are 
+familiarly called the X -, Y- and Z-Axes, and are defined such that X -Axis points in the 
+horizontal direction to the right, Y-Axis orthogonal to the plane defined by X- and Z-Axes 
+and in a direction pointing away from the reader, while the Z-Axis points in the vertically 
+upward direction. The three commonly used terms to describe rotation of a body in 3 -
+dimensional space are roll, pitch , and yaw. Roll is the rotation experienced about the X -
+Axis, pitch is the rotation about Y-Axis, and yaw is the rotation about Z-Axis, as shown in 
+Figure 4. 
+ 
+Figure 3. Global coordinate axes—X, Y, and Z about which a body experiences roll, pitch, and yaw 
+respectively. 
+ 
+Figure 4. Angles described in terms of roll, pitch, and yaw about the X-, Y-, and Z-Axis in both real 
+and virtual worlds. 
+Equipment components in an articulated chain have a parent-child hierarchical rela-
+tionship. Hence, in the case of an excavator, the track component is the parent of the cabin, 
+boom, stick , and bucket e lements. Similarly, the cabin component is the parent of the 
+boom, stick, and bucket components. In such a parent -child relationship, any rotation or 
+translation experienced by the parent is implicitly transferred to the child entities. For ex-
+ample, anticlockwise rotation of the cabin by 90 degrees about the Z-Axis, results in rota-
+tion of the cabin as well as its child elements—boom, stick, and bucket—by the same mag-
+nitude. However, the track component, which is the cabin component’s parent element, 
+is unaffected by this rotation. This behavior is represented in Figure 5.  
+Due to such rotation and translation of individual components, the position and ori-
+entation of the local origin of the coordinate axes gets altered. This results in a change in 
+direction of local X, Y, and Z axes. For example, rotation of the boom component in an 
+anti-clockwise direction results in corresponding rotation of the stick and bucket compo-
+nents by the same magnitude. Due to this, the local axes direction of X, Y, and Z differ 
+from their global directions, i.e., directions corresponding to zero translation and rotation. 
+This is represented in Figure 6, through side and top views of an excavator.  
+Figure 4. Angles described in terms of roll, pitch, and yaw about the X-, Y-, and Z-Axis in both real
+and virtual worlds.
+Equipment components in an articulated chain have a parent-child hierarchical re-
+lationship. Hence, in the case of an excavator, the track component is the parent of the
+cabin, boom, stick, and bucket elements. Similarly, the cabin component is the parent of
+the boom, stick, and bucket components. In such a parent-child relationship, any rotation
+or translation experienced by the parent is implicitly transferred to the child entities. For
+example, anticlockwise rotation of the cabin by 90 degrees about the Z-Axis, results in
+rotation of the cabin as well as its child elements—boom, stick, and bucket—by the same
+magnitude. However, the track component, which is the cabin component’s parent element,
+is unaffected by this rotation. This behavior is represented in Figure 5.
+Due to such rotation and translation of individual components, the position and
+orientation of the local origin of the coordinate axes gets altered. This results in a change in
+direction of local X, Y, and Z axes. For example, rotation of the boom component in an anti-
+clockwise direction results in corresponding rotation of the stick and bucket components
+by the same magnitude. Due to this, the local axes direction of X, Y, and Z differ from their
+global directions, i.e., directions corresponding to zero translation and rotation. This is
+represented in Figure 6, through side and top views of an excavator.
+Sensors 2022, 22, 7635 8 of 22
+Sensors 2022, 22, 7635 8 of 22 
+ 
+ 
+ 
+Figure 5. Rotation of component (cabin) results in automatic rotation of child components (boom, 
+stick, and bucket) but not the parent component (tracks). 
+ 
+Figure 6. Local rotation axes for equipment components. 
+The cumulative effect of the parent components’ rotation on a given element’s local 
+axes represents an important parameter  in computations, as the rotation angles reported 
+by orientation sensors are typically computed with respect to absolute global axes (e.g., 
+the horizontal and vertical directions are computed with respect to the ground surface). 
+Thus, rotations imparted to the 3D models representing the components in the real world 
+need to be geometrically transformed so that the real-world rotation from the sensors cor-
+relates to the existing rotation value of the 3D model component. The transformation is 
+achieved by converting local rotations of individual components to their respective global 
+rotation values. 
+5.2. Kinematic Equivalence 
+A 3D model used to symbolize equipment in the real world can represent the real 
+world to varying levels of realism and detail. However, for  3D visualization and proxim-
+ity analysis of the operation to be valid and useful to the operator, the authors have iden-
+tified kinematic and dimensional equivalence as being essential requirements for a 3D 
+model. Kinematic equivalence, in this context, refers to the property of a 3D model to con-
+currently mirror in the virtual world the rotational and translation motion that a piece of 
+equipment and its sub-components undergo in the real world. This implies that the rota-
+tion or translation of a component, resulting in a position change of an end-effector in the 
+real world, must be replicated in the virtual world in such a manner that the end -effector 
+has the identical global position in the virtual world as it has in the real world.  
+The effect of kinematic non-equivalence is most evident in the case of objects having 
+curved bodies or objects having bends in their physical makeup , such as booms and 
+sticks/dippers. In such objects, these physical characteristics result in differences between 
+the axis correspondin g to a certain edge and the pivot -to-pivot rotation axis. For most 
+Figure 5. Rotation of component (cabin) results in automatic rotation of child components (boom,
+stick, and bucket) but not the parent component (tracks).
+Sensors 2022, 22, 7635 8 of 22 
+ 
+ 
+ 
+Figure 5. Rotation of component (cabin) results in automatic rotation of child components (boom, 
+stick, and bucket) but not the parent component (tracks). 
+ 
+Figure 6. Local rotation axes for equipment components. 
+The cumulative effect of the parent components’ rotation on a given element’s local 
+axes represents an important parameter  in computations, as the rotation angles reported 
+by orientation sensors are typically computed with respect to absolute global axes (e.g., 
+the horizontal and vertical directions are computed with respect to the ground surface). 
+Thus, rotations imparted to the 3D models representing the components in the real world 
+need to be geometrically transformed so that the real-world rotation from the sensors cor-
+relates to the existing rotation value of the 3D model component. The transformation is 
+achieved by converting local rotations of individual components to their respective global 
+rotation values. 
+5.2. Kinematic Equivalence 
+A 3D model used to symbolize equipment in the real world can represent the real 
+world to varying levels of realism and detail. However, for  3D visualization and proxim-
+ity analysis of the operation to be valid and useful to the operator, the authors have iden-
+tified kinematic and dimensional equivalence as being essential requirements for a 3D 
+model. Kinematic equivalence, in this context, refers to the property of a 3D model to con-
+currently mirror in the virtual world the rotational and translation motion that a piece of 
+equipment and its sub-components undergo in the real world. This implies that the rota-
+tion or translation of a component, resulting in a position change of an end-effector in the 
+real world, must be replicated in the virtual world in such a manner that the end -effector 
+has the identical global position in the virtual world as it has in the real world.  
+The effect of kinematic non-equivalence is most evident in the case of objects having 
+curved bodies or objects having bends in their physical makeup , such as booms and 
+sticks/dippers. In such objects, these physical characteristics result in differences between 
+the axis correspondin g to a certain edge and the pivot -to-pivot rotation axis. For most 
+Figure 6. Local rotation axes for equipment components.
+The cumulative effect of the parent components’ rotation on a given element’s local
+axes represents an important parameter in computations, as the rotation angles reported by
+orientation sensors are typically computed with respect to absolute global axes (e.g., the
+horizontal and vertical directions are computed with respect to the ground surface). Thus,
+rotations imparted to the 3D models representing the components in the real world need
+to be geometrically transformed so that the real-world rotation from the sensors corre-
+lates to the existing rotation value of the 3D model component. The transformation is
+achieved by converting local rotations of individual components to their respective global
+rotation values.
+5.2. Kinematic Equivalence
+A 3D model used to symbolize equipment in the real world can represent the real
+world to varying levels of realism and detail. However, for 3D visualization and proximity
+analysis of the operation to be valid and useful to the operator, the authors have identiﬁed
+kinematic and dimensional equivalence as being essential requirements for a 3D model.
+Kinematic equivalence, in this context, refers to the property of a 3D model to concurrently
+mirror in the virtual world the rotational and translation motion that a piece of equipment
+and its sub-components undergo in the real world. This implies that the rotation or
+translation of a component, resulting in a position change of an end-effector in the real
+world, must be replicated in the virtual world in such a manner that the end-effector has
+the identical global position in the virtual world as it has in the real world.
+The effect of kinematic non-equivalence is most evident in the case of objects having
+curved bodies or objects having bends in their physical makeup, such as booms and
+sticks/dippers. In such objects, these physical characteristics result in differences between
+the axis corresponding to a certain edge and the pivot-to-pivot rotation axis. For most
+Sensors 2022, 22, 7635 9 of 22
+equipment components, the sensors are often placed along an edge of the body, as shown
+in Figure 7, to ensure its position remains ﬁxed during the course of operations, and the
+sensors record the angle of a known edge in the real world.
+Sensors 2022, 22, 7635 9 of 22 
+ 
+ 
+equipment components, the sensors are often placed along an edge of the body, as shown 
+in Figure 7, to ensure its position remains fixed during the course of operations , and the 
+sensors record the angle of a known edge in the real world. 
+ 
+(a) (b) 
+Figure 7. (a) Orientation sensors placed along the upper edge of the stick/dipper; (b) lower edge of 
+the boom. 
+The problems associated with kinematic equivalency are graphically represented in 
+Figure 8. In order to ensure that the 3D model in the virtual world has kinematic equiva-
+lence to its real-world counterpart, the angular offset between the actual rotation axis (rep-
+resented by dashed line in Figure 8) and rotation axis corresponding to the sensor and 
+boom edge (represented by solid line in Figure 8) needs to be accounted for while trans-
+mitting orientation values from the real world to the virtual world. In the specific scenario 
+of the boom object shown in Figure 8, the angular offset needs to be subtracted from the 
+orientation sensor angle before being applied to the 3D virtual boom model. This ensures 
+that the boom tip will have the same global position in the real and virtual worlds. 
+ 
+Figure 8. Difference in actual rotation axis and rotation axis corresponding to physical edge of object 
+(boom). 
+Figure 7. (a) Orientation sensors placed along the upper edge of the stick/dipper; (b) lower edge of
+the boom.
+The problems associated with kinematic equivalency are graphically represented
+in Figure 8. In order to ensure that the 3D model in the virtual world has kinematic
+equivalence to its real-world counterpart, the angular offset between the actual rotation
+axis (represented by dashed line in Figure 8) and rotation axis corresponding to the sensor
+and boom edge (represented by solid line in Figure 8) needs to be accounted for while
+transmitting orientation values from the real world to the virtual world. In the speciﬁc
+scenario of the boom object shown in Figure 8, the angular offset needs to be subtracted
+from the orientation sensor angle before being applied to the 3D virtual boom model. This
+ensures that the boom tip will have the same global position in the real and virtual worlds.
+Sensors 2022, 22, 7635 9 of 22 
+ 
+ 
+equipment components, the sensors are often placed along an edge of the body, as shown 
+in Figure 7, to ensure its position remains fixed during the course of operations , and the 
+sensors record the angle of a known edge in the real world. 
+ 
+(a) (b) 
+Figure 7. (a) Orientation sensors placed along the upper edge of the stick/dipper; (b) lower edge of 
+the boom. 
+The problems associated with kinematic equivalency are graphically represented in 
+Figure 8. In order to ensure that the 3D model in the virtual world has kinematic equiva-
+lence to its real-world counterpart, the angular offset between the actual rotation axis (rep-
+resented by dashed line in Figure 8) and rotation axis corresponding to the sensor and 
+boom edge (represented by solid line in Figure 8) needs to be accounted for while trans-
+mitting orientation values from the real world to the virtual world. In the specific scenario 
+of the boom object shown in Figure 8, the angular offset needs to be subtracted from the 
+orientation sensor angle before being applied to the 3D virtual boom model. This ensures 
+that the boom tip will have the same global position in the real and virtual worlds. 
+ 
+Figure 8. Difference in actual rotation axis and rotation axis corresponding to physical edge of object 
+(boom). 
+Figure 8. Difference in actual rotation axis and rotation axis corresponding to physical edge of
+object (boom).
+Sensors 2022, 22, 7635 10 of 22
+In addition to kinematic equivalence, the authors also introduce the concept of dimen-
+sional equivalence. This refers to the characteristic of a 3D model and its sub-components
+to represent the real-world equipment’s constituent components in size and placement.
+In some cases, when the 3D models used to represent equipment in the virtual world do
+not have identical dimensions to the real-world equipment components, the following
+constraints are identiﬁed as being critical. First, any sub-component forming part of the
+overall 3D equipment model must have identical dimensions to the real-world equipment
+component, such that the extents along X, Y, and Z axes (i.e., length, width, and height
+dimensions) are identical in the real and virtual worlds.
+Through this constraint, rotation of equipment components in the virtual world results
+in the position of the component extremity being identical to the real world. Without
+dimensional equivalence, use of correct sensor rotation values will not provide the same
+global position for the component’s extremity, and in turn, that of the end-effector. Fur-
+thermore, for the geometric proximity analysis carried out on equipment components to
+provide values that are representative of the distances between the equipment and other
+jobsite entities (e.g., buried utilities), the dimensional extents need to be identical for the
+real and virtual world components.
+The second constraint with respect to dimensional equivalence relates to location of
+base pivot joints and their height with respect to the ground surface. In the case of the
+kinematic chain representing the boom, stick, and bucket, shown in Figure 2, the position of
+the end-effector tip in global space is dependent upon the height of the joint corresponding
+to boom rotation pivot. Thus, in addition to accurate rotation angles and dimensions, the
+height of base pivot points and their distance respect to other pivot joints is critical for
+accurate replication of the real-world equipment operation inside a 3D digital twin.
+5.3. Equipment Representation in a Concurrent Virtual World
+As described in the previous sections, equipment monitoring is achieved through a
+combination of sensors placed on equipment and replication of the equipment movement
+(translation and/or rotation) in a 3D digital twin. This virtual world provides operators
+with visual assistance as well as additional spatial context information, to allow them to
+perform their task better. Thus, it becomes evident that representation of equipment in 3D
+in an accurate and real-world representative manner is a primary need for the proposed
+equipment monitoring approach.
+Every object that is present in a 3D digital twin appears as a single cohesive entity.
+However, some objects are made up of one or more constituent components. Articulated
+construction equipment is an example of this. For instance, a construction crane consists
+of a cabin, boom, cable, and hook; a backhoe similarly consists of a track or wheelbase, a
+cabin, a front-end loader, and a boom, stick, and bucket at its opposite end. Thus, it can be
+seen that equipment of such type consists of more than a solitary sub-component, each of
+which is capable of translation, and/or rotation. The components in turn are linked to each
+other through a parent-child hierarchy, where translation or rotation of a parent component
+results in corresponding movement in a child component. This parent-child hierarchical
+representation is captured in a data representation structure, called scene graphs, through
+their layout and structure [37].
+Other ﬁelds, such as computer science, commonly uses graph structures, particularly
+where hierarchies are required to be represented. The two types of graph data structures
+that exist are undirected and directed graphs. Scene graphs are one of the most widely
+used implementations of graphs, particularly in the ﬁeld of computer graphics. Scene
+graphs are essentially directed acyclic graphs. They have a hierarchical tree structure for
+managing the object transformations, such as rotation, translation and scaling, level of
+detail, ﬁeld-of-view culling, state transformations, and animation [38].
+Scene graph implementations are typically based upon the lower-level graphics Appli-
+cation Programming Interfaces (APIs), such as OpenGL, and provide an additional layer
+of abstraction between the implementation and the underlying hardware. The authors
+Sensors 2022, 22, 7635 11 of 22
+refer the reader to [39] for more details on the use of scene graphs for creating 3D articu-
+lated equipment models. Through the use of scene graphs, equipment components can be
+ensured to be dimensionally and kinematically equivalent.
+5.4. Server-Client Approach
+One of the main challenges in designing effective equipment monitoring is the ability
+to connect a wide range of position and orientation sensors from the jobsite to 3D virtual
+model components for any of the commonly used equipment in the real world. Thus,
+scalability and non-speciﬁcity (or generality) are identiﬁed as the two key requirements
+for transmission and linking of real-world sensor data to the digital twin. Scalability
+refers to the ability to connect any number of sensors from the real world to 3D virtual
+equipment components in the virtual world. Non-speciﬁcity entails that sensors from the
+real world can transmit data and be connected to any equipment in a 3D virtual world that
+is representing its real-world counterpart.
+The two key requirements are enabled through a server-client approach to equipment
+monitoring. The server refers to the part of the framework that is responsible for recording
+and transmitting real world sensor data in an appropriate data format to the client. The
+client, in this case, equates to the digital twin, i.e., 3D visualization and proximity moni-
+toring algorithms that would consume the real-world sensor data. Insulation of the client
+from the sensors used on a jobsite ensures that the visualization and proximity monitoring
+are not restricted by the type of position or orientation sensors that may be implemented.
+In addition, this arrangement also allows multiple sensor data streams to be made available
+for the client.
+The common denominators for data transfer are speciﬁed through data structures for
+position and orientation. The position aspect of equipment on any jobsite can be accurately
+described through its latitude, longitude, and altitude. This corresponds to the X, Y, and Z
+locations of the equipment inside the 3D digital twin. The latitude, longitude, and altitude
+can be speciﬁed in geographic (spherical) or projected coordinate system units in such a
+way that the locations of all entities are speciﬁed in the same system.
+Orientation of a 3D model in a virtual world is speciﬁed through rotation about a
+speciﬁc axis or a combination of axes. By selection of appropriate axes of rotation in the
+virtual world, the rotations in real and virtual worlds can be correlated to each other. For
+example, the axis of rotation of sensors placed on equipment in the real world can be made
+equivalent to the global axes of rotation in the virtual world as described in the previous
+sections. Thus, the rotation values from the server are speciﬁed in terms of roll, pitch, and
+yaw, about the X-, Y-, and Z-Axis, respectively, as shown in Figure 4.
+Through the speciﬁcation of orientation angles in terms of roll, pitch, and yaw, the
+orientation angles from the real world can always be correlated to the virtual world,
+regardless of the sensors used. For example, the use of linear encoders to measure the
+extended lengths of pistons on the server side of an equipment monitoring operation
+can be modiﬁed at the server-side by converting the lengths of cylinder extension to
+equivalent rotation angles for the boom or stick. In this manner, the same visualization and
+proximity monitoring-based client can be used with both direct orientation sensors, such
+as accelerometers, and indirect approaches, such as linear encoders. Thus, insulation of
+the client visualization and proximity monitoring from the sensors used on the server side
+ensure scalability and non-speciﬁcity, as shown in Figure 9.
+Sensors 2022, 22, 7635 12 of 22
+Sensors 2022, 22, 7635 12 of 22 
+ 
+ 
+ 
+Figure 9. Server-Client approach for transmitting position and orientation sensor data stream from 
+the real to virtual world. 
+6. Sensor Stream Acquisition Allocation (S2A2) Framework 
+In this section, the authors introduce a computational framework developed to ena-
+ble transmission of real-world sensor data into a 3D digital twin. The framework is called 
+the Sensor Stream Acquisition Allocation (S2A2) framework. The S2A2 framework is de-
+signed as an interface to an existing real -time 3D visualization system, SeePlusPlus , that 
+has been developed by the authors for improving safety in excavation operations through 
+monitoring of excavators, and providing visual guidance and warnings against impend-
+ing collisions with buried utilities. The S2A2 framework is a link between articulated 3D 
+equipment models present in the virtual world (SeePlusPlus) and sensor data streams 
+from the re al world. Figure 10 shows a schematic overview of the proposed equipment 
+monitoring approach through real-time 3D visualization and proximity monitoring. 
+ 
+Figure 10. Schematic representation of S2A2 framework for integration with real-time 3D visualiza-
+tion and geometric proximity monitoring. 
+Figure 9. Server-Client approach for transmitting position and orientation sensor data stream from
+the real to virtual world.
+6. Sensor Stream Acquisition Allocation (S2A2) Framework
+In this section, the authors introduce a computational framework developed to enable
+transmission of real-world sensor data into a 3D digital twin. The framework is called
+the Sensor Stream Acquisition Allocation (S2A2) framework. The S2A2 framework is
+designed as an interface to an existing real-time 3D visualization system, SeePlusPlus, that
+has been developed by the authors for improving safety in excavation operations through
+monitoring of excavators, and providing visual guidance and warnings against impending
+collisions with buried utilities. The S2A2 framework is a link between articulated 3D
+equipment models present in the virtual world (SeePlusPlus) and sensor data streams
+from the real world. Figure 10 shows a schematic overview of the proposed equipment
+monitoring approach through real-time 3D visualization and proximity monitoring.
+Sensors 2022, 22, 7635 12 of 22 
+ 
+ 
+ 
+Figure 9. Server-Client approach for transmitting position and orientation sensor data stream from 
+the real to virtual world. 
+6. Sensor Stream Acquisition Allocation (S2A2) Framework 
+In this section, the authors introduce a computational framework developed to ena-
+ble transmission of real-world sensor data into a 3D digital twin. The framework is called 
+the Sensor Stream Acquisition Allocation (S2A2) framework. The S2A2 framework is de-
+signed as an interface to an existing real -time 3D visualization system, SeePlusPlus , that 
+has been developed by the authors for improving safety in excavation operations through 
+monitoring of excavators, and providing visual guidance and warnings against impend-
+ing collisions with buried utilities. The S2A2 framework is a link between articulated 3D 
+equipment models present in the virtual world (SeePlusPlus) and sensor data streams 
+from the re al world. Figure 10 shows a schematic overview of the proposed equipment 
+monitoring approach through real-time 3D visualization and proximity monitoring. 
+ 
+Figure 10. Schematic representation of S2A2 framework for integration with real-time 3D visualiza-
+tion and geometric proximity monitoring. 
+Figure 10. Schematic representation of S2A2 framework for integration with real-time 3D visualiza-
+tion and geometric proximity monitoring.
+Sensors 2022, 22, 7635 13 of 22
+As seen in Figures 1 and 10, the process of connecting sensor data streams from
+the real world to 3D equipment residing in a digital twin depends upon the ability to
+expose to the user the available 3D equipment components that can undergo rotation
+and/or translation. Furthermore, the 3D equipment must exhibit the same parent-child
+relationship in the virtual world as is evident in the real world. 3D equipment models
+used for such monitoring purposes are often built from individual sub-components, rather
+than consisting of a single model that is incapable of movement in its sub-components.
+These requirements are implemented in another software tool designed for creating 3D
+equipment models to assist in monitoring operations. The tool is hereon referred to as the
+‘Virtual Equipment Builder’ (VEB).
+VEB is designed as a graphical interface that allows users to load individual equipment
+components as child (or parent) elements of other components, and thus build up a
+complete equipment 3D model in the process. The complete equipment model can be
+saved for use in the SeePlusPlus real-time 3D visualization system. VEB is designed and
+developed as an interactive tool that allows users to manipulate the view, as well as change
+the position and/or orientation of components, while creating the complete equipment
+model. A screenshot of VEB with a created 3D excavator model is shown in Figure 11.
+Sensors 2022, 22, 7635 13 of 22 
+ 
+ 
+As seen in Figures 1 and 10, the process of connecting sensor data streams from the 
+real world to 3D equipment residing in a digital twin depends upon the ability to expose 
+to the user the available 3D equi pment components that can undergo rotation and/or 
+translation. Furthermore, the 3D equipment must exhibit the same parent -child relation-
+ship in the virtual world as is evident in the real world. 3D equipment models used for 
+such monitoring purposes are oft en built from individual sub -components, rather than 
+consisting of a single model that is incapable of movement in its sub -components. These 
+requirements are implemented in another software tool designed for creating 3D equip-
+ment models to assist in monitoring operations. The tool is hereon referred to as the ‘Vir-
+tual Equipment Builder’ (VEB). 
+VEB is designed as a graphical interface that allows users to load individual equip-
+ment components as child (or parent) elements of other components, and thus build up a 
+complete equipment 3D model in the process. The complete equipment model can be saved 
+for use in the SeePlusPlus real-time 3D visualization system. VEB is designed and developed 
+as an interactive tool that allows users to manipulate the view, as well as change the position 
+and/or orientation of components, while creating the complete equipment model. A screen-
+shot of VEB with a created 3D excavator model is shown in Figure 11. 
+ 
+Figure 11. Virtual Equipment Builder screenshot showing graphical interface and multiple views of 
+a 3D excavator being built. 
+SeePlusPlus is a 3D visualization system that provides users with visual guidance , 
+and also has an associated proximity monitoring and collision detection module. How-
+ever, for the virtual world in SeePlusPl us to be representative of real-world operations, a 
+user requires a method to connect real world sensor data to equipment components that 
+make up the 3D equipment models. Figure 12 shows a screenshot of SeePlusPlus display-
+ing a concurrent scene with an excavator and buried utilities. The terrain is rendered trans-
+lucent to enable visualization of otherwise occluded utilities. Proximity monitoring in the 
+scene is displayed to the user through three channels. First, numerical shortest distance to 
+collision; second, lines drawn between bucket and utilities; and third, traffic signal colors-
+based warning, showing green, amber, and red for varying levels of safety and accident 
+risk. Figure 12 also highlights the user command to activate the sensor connection inter-
+face for making the sensor data stream available from the S2A2 framework.  
+Figure 11. Virtual Equipment Builder screenshot showing graphical interface and multiple views of
+a 3D excavator being built.
+SeePlusPlus is a 3D visualization system that provides users with visual guidance,
+and also has an associated proximity monitoring and collision detection module. However,
+for the virtual world in SeePlusPlus to be representative of real-world operations, a user
+requires a method to connect real world sensor data to equipment components that make
+up the 3D equipment models. Figure 12 shows a screenshot of SeePlusPlus displaying a
+concurrent scene with an excavator and buried utilities. The terrain is rendered translucent
+to enable visualization of otherwise occluded utilities. Proximity monitoring in the scene is
+displayed to the user through three channels. First, numerical shortest distance to collision;
+second, lines drawn between bucket and utilities; and third, trafﬁc signal colors-based
+warning, showing green, amber, and red for varying levels of safety and accident risk.
+Figure 12 also highlights the user command to activate the sensor connection interface for
+making the sensor data stream available from the S2A2 framework.
+Sensors 2022, 22, 7635 14 of 22
+Sensors 2022, 22, 7635 14 of 22 
+ 
+ 
+ 
+Figure 12. Screenshot of SeePlusPlus showing a real-time scene containing an excavator and buried 
+utilities, associated proximity monitoring between bucket and utilities, and S2A2 initiation com-
+mand highlighted. 
+The connection between server streams and the client is implemented through 
+socket-based connections. In sensor implementations, data is transferred from the sensors 
+to a server-side application wirelessly or through a physi cal connection. The server -side 
+application then converts the raw data to position and/or orientation values that are re-
+quired by the client application. Thus, the server - and client-side applications can run on 
+the same physical machine , and the use of so cket-based connections ensures that data 
+transfer is application -independent. The command to initiate a client -side connection to 
+the server-side application provides the user with an interface, as shown in Figure 13. 
+ 
+Figure 13. Input dialog interface for creating new client service for connecting to a server-side data 
+stream. 
+A successful connection between client and server sides results in the new server 
+stream being added to the list of available sensors in the S2A2 interface. The interface also 
+presents the list of sub-components that make up the 3D equipment model. A screenshot 
+of the S2A2 interface is shown in Figure 14. As is evident from the S2A2 acronym, the 
+interface also allocates sensor streams to user defined equipment components. The 
+Figure 12. Screenshot of SeePlusPlus showing a real-time scene containing an excavator and buried
+utilities, associated proximity monitoring between bucket and utilities, and S2A2 initiation com-
+mand highlighted.
+The connection between server streams and the client is implemented through socket-
+based connections. In sensor implementations, data is transferred from the sensors to
+a server-side application wirelessly or through a physical connection. The server-side
+application then converts the raw data to position and/or orientation values that are
+required by the client application. Thus, the server- and client-side applications can run
+on the same physical machine, and the use of socket-based connections ensures that data
+transfer is application-independent. The command to initiate a client-side connection to
+the server-side application provides the user with an interface, as shown in Figure 13.
+Sensors 2022, 22, 7635 14 of 22 
+ 
+ 
+ 
+Figure 12. Screenshot of SeePlusPlus showing a real-time scene containing an excavator and buried 
+utilities, associated proximity monitoring between bucket and utilities, and S2A2 initiation com-
+mand highlighted. 
+The connection between server streams and the client is implemented through 
+socket-based connections. In sensor implementations, data is transferred from the sensors 
+to a server-side application wirelessly or through a physi cal connection. The server -side 
+application then converts the raw data to position and/or orientation values that are re-
+quired by the client application. Thus, the server - and client-side applications can run on 
+the same physical machine , and the use of so cket-based connections ensures that data 
+transfer is application -independent. The command to initiate a client -side connection to 
+the server-side application provides the user with an interface, as shown in Figure 13. 
+ 
+Figure 13. Input dialog interface for creating new client service for connecting to a server-side data 
+stream. 
+A successful connection between client and server sides results in the new server 
+stream being added to the list of available sensors in the S2A2 interface. The interface also 
+presents the list of sub-components that make up the 3D equipment model. A screenshot 
+of the S2A2 interface is shown in Figure 14. As is evident from the S2A2 acronym, the 
+interface also allocates sensor streams to user defined equipment components. The 
+Figure 13. Input dialog interface for creating new client service for connecting to a server-side
+data stream.
+A successful connection between client and server sides results in the new server
+stream being added to the list of available sensors in the S2A2 interface. The interface also
+presents the list of sub-components that make up the 3D equipment model. A screenshot of
+the S2A2 interface is shown in Figure 14. As is evident from the S2A2 acronym, the interface
+also allocates sensor streams to user deﬁned equipment components. The allocation is
+Sensors 2022, 22, 7635 15 of 22
+speciﬁed through a set of checkboxes that allows users to select which component of the
+sensor data stream may be used to update the selected equipment component. For example,
+selection of only Translate X, Translate Y, and Translate Z options of a sensor stream ensures
+that only its position aspect would be used to update the selected equipment component.
+Sensors 2022, 22, 7635 15 of 22 
+ 
+ 
+allocation is specified through a set of checkboxes that allows users to select which com-
+ponent of the sensor data stream may be used to update the selected equipment compo-
+nent. For example, selection of only Translate X, Translate Y, and Translate Z options of a 
+sensor stream ensures that only its position aspect would be used to update the selected 
+equipment component. 
+ 
+Figure 14. Graphical interface for user-defined connections between real world sensors and virtual 
+equipment components. 
+In a similar manner, the rotation can also be specified by choosing one or more of roll 
+(Rotate X), pitch (Rotate Y), and yaw (Rotate Z). Once an equipment component has been 
+allocated a sensor stream, its position and/or orientation is updated in real -time, as long 
+as the sensor in the real world is active and transmitting data. Thus, the S2A2 interface is 
+designed to work together with the SeePlusPlus real -time 3D visualization application in 
+providing real world sensor data to update the corresponding 3D equipment models. This 
+is necessary to enable the monitoring of operations and improve safety.  
+Table 1 describes the sensors required to measure position of the excavator , as well 
+as the orientation of its articulated components , such as boom and stick (or dipper), and 
+rotation of the cab around the track. In the experiment, the sensors were housed in pro-
+tective casings and attached using magnets to the metal components of the backhoe. In 
+more harsh environments, a weatherproof housing would be required. In the experiment, 
+the sensors communicated to the data collection device using a wireless Bluetooth mech-
+anism; however, other communication techniques such as UDP can also be used.  
+Table 1. List of sensors, placement on equipment , and communication techniques used/recom-
+mended. 
+Sensor Type Installation Location Quantity Measured Communication Technique 
+Accelerometer Boom Boom rotation angle UDP/Bluetooth 
+Accelerometer Stick (dipper) Stick rotation angle UDP/Bluetooth 
+GPS Roof of cab Equipment position UDP/Bluetooth 
+Accelerometer Roof of cab Cab rotation angle UDP/Bluetooth 
+7. Validation Experiments 
+In this section, the authors describe the procedure and setup used for carrying out 
+validation experiments. The experiments are designed to demonstrate the functioning of 
+the S2A2 framework and the accompanying 3D visualization when used to monitor and 
+track a backhoe, and characterize the extent to which an arbitrary construction operation 
+involving articulated equipment can be visualized in a real -time concurrent 3D virtual 
+world. Through the S2A2 framework, changes in the equipment’s articulation are tra ns-
+mitted to a 3D visualization in real-time. This position and orientation (pose) data is then 
+Figure 14. Graphical interface for user-deﬁned connections between real world sensors and virtual
+equipment components.
+In a similar manner, the rotation can also be speciﬁed by choosing one or more of roll
+(Rotate X), pitch (Rotate Y), and yaw (Rotate Z). Once an equipment component has been
+allocated a sensor stream, its position and/or orientation is updated in real-time, as long
+as the sensor in the real world is active and transmitting data. Thus, the S2A2 interface is
+designed to work together with the SeePlusPlus real-time 3D visualization application in
+providing real world sensor data to update the corresponding 3D equipment models. This
+is necessary to enable the monitoring of operations and improve safety.
+Table 1 describes the sensors required to measure position of the excavator, as well
+as the orientation of its articulated components, such as boom and stick (or dipper), and
+rotation of the cab around the track. In the experiment, the sensors were housed in protec-
+tive casings and attached using magnets to the metal components of the backhoe. In more
+harsh environments, a weatherproof housing would be required. In the experiment, the
+sensors communicated to the data collection device using a wireless Bluetooth mechanism;
+however, other communication techniques such as UDP can also be used.
+Table 1.List of sensors, placement on equipment, and communication techniques used/recommended.
+Sensor Type Installation Location Quantity Measured Communication Technique
+Accelerometer Boom Boom rotation angle UDP/Bluetooth
+Accelerometer Stick (dipper) Stick rotation angle UDP/Bluetooth
+GPS Roof of cab Equipment position UDP/Bluetooth
+Accelerometer Roof of cab Cab rotation angle UDP/Bluetooth
+7. Validation Experiments
+In this section, the authors describe the procedure and setup used for carrying out
+validation experiments. The experiments are designed to demonstrate the functioning of
+the S2A2 framework and the accompanying 3D visualization when used to monitor and
+track a backhoe, and characterize the extent to which an arbitrary construction operation
+involving articulated equipment can be visualized in a real-time concurrent 3D virtual
+world. Through the S2A2 framework, changes in the equipment’s articulation are trans-
+mitted to a 3D visualization in real-time. This position and orientation (pose) data is then
+used in the visualization to update the location and pose of corresponding dynamic entities.
+Sensors 2022, 22, 7635 16 of 22
+The updated 3D equipment components are then used in real-time proximity analysis to
+present distance and impending collision information to the operator of the equipment.
+The backhoe used in these experiments was a Caterpillar 430 E IT [40]. Screenshots
+from a simultaneous video recording of the real and virtual worlds is shown in Figure 15.
+The articulation of the equipment’s arm and end-effector was captured through a series
+of orientation sensors placed along its boom, stick, and bucket. The orientation sensors
+used in the experiment were XSens MTw [41]. Bluetooth wireless technology was used to
+transfer pose data from individual sensors to the device running the 3D visualization. The
+accuracy of the sensors and their calibration is measured through the proximity monitoring
+framework that uses the pose updates as input.
+Sensors 2022, 22, 7635 16 of 22 
+ 
+ 
+used in the visualization to update the location and pose of corresponding dynamic enti-
+ties. The updated 3D equipment components are then used in real-time proximity analysis 
+to present distance and impending collision information to the operator of the equipment. 
+The backhoe used in these experiments was a Caterpillar 430 E IT [40]. Screenshots 
+from a simultaneous video recording of the real and virtual worlds is shown in Figure 15. 
+The articulation of the equipment’s arm and end -effector was captured through a series 
+of orientation sensors placed along its boom, stick , and bucket. The orientation sensors 
+used in the experiment were XSens MTw [41]. Bluetooth wireless technology was used to 
+transfer pose data from individual sensors to the device running the 3D visualization. The 
+accuracy of the sensors and their calibration is measured through the proximity monitor-
+ing framework that uses the pose updates as input. 
+ 
+Figure 15. Images captured from a simultaneous video recording of the validation experiment 
+showing backhoe in the real world and the digital twin. 
+Through the 3D visualization and proximity analysis, the experiments demonstrate 
+equipment monitoring in t he following manner . In the first experiment, distances com-
+puted in the virtual world are compared to those in the real world. In the second experi-
+ment, the effect of audio and visual warnings on an operator’s performance is investi-
+gated. The rest of this section describes the experiment details and results obtained. 
+7.1. Experiment 1 
+The focus of this experiment was on capturing and representing the real -world 
+equipment articulation in a 3D virtual environment. Hence, the position aspect of the 
+equipment was discounted as the machine was assumed to be stationary. Through the 
+proximity monitoring framework, the distance between the equipment’s end -effector 
+(bucket in this case) and the ground surface on which the equipment was resting, was 
+monitored at all times. If the equipment’s articulation in the 3D virtual environment was 
+an accurate representation of the real world, the distance between the end -effector and 
+ground surface would be identical (after accounting for sensor-based inaccuracies) in both 
+the real and virtual worlds. 
+Figure 15. Images captured from a simultaneous video recording of the validation experiment
+showing backhoe in the real world and the digital twin.
+Through the 3D visualization and proximity analysis, the experiments demonstrate
+equipment monitoring in the following manner. In the ﬁrst experiment, distances computed
+in the virtual world are compared to those in the real world. In the second experiment, the
+effect of audio and visual warnings on an operator’s performance is investigated. The rest
+of this section describes the experiment details and results obtained.
+7.1. Experiment 1
+The focus of this experiment was on capturing and representing the real-world equip-
+ment articulation in a 3D virtual environment. Hence, the position aspect of the equipment
+was discounted as the machine was assumed to be stationary. Through the proximity
+monitoring framework, the distance between the equipment’s end-effector (bucket in this
+case) and the ground surface on which the equipment was resting, was monitored at
+all times. If the equipment’s articulation in the 3D virtual environment was an accurate
+representation of the real world, the distance between the end-effector and ground surface
+would be identical (after accounting for sensor-based inaccuracies) in both the real and
+virtual worlds.
+Sensors 2022, 22, 7635 17 of 22
+During the test, the equipment’s boom, stick, and bucket were manipulated by the
+operator, similarly to regular operations. As the validation required distance values from
+both the virtual and real worlds, the operator was instructed to stop motion of the equip-
+ment’s arm whenever a distance measurement was to be made in the real world. After the
+equipment had come to a complete halt, the distance between the end-effector (bucket)
+and the ground surface beneath it was measured using a measuring tape. This process
+was repeated for several different conﬁgurations of the boom, stick, and bucket. In total,
+15 distance measurements were made in the real world. Corresponding distances displayed
+by the proximity monitoring framework in the virtual world were also simultaneously
+recorded. The values obtained from real and virtual world measurements are shown
+in Table 2.
+Table 2. Comparison of distance measurements made in the real and virtual world for varying
+conﬁgurations of boom, stick, and bucket.
+Iteration No. Distance in Real World
+(m)
+Distance in Virtual World
+(m)
+Real World–Virtual World
+(m)
+1 3.07 3.12 0.05
+2 1.54 1.52 −0.02
+3 1.14 1.16 0.02
+4 0.63 0.66 0.03
+5 0.00 0.17 0.17
+6 0.66 0.68 0.02
+7 1.62 1.62 0.00
+8 2.18 2.08 −0.10
+9 2.48 2.39 −0.09
+10 2.84 2.71 −0.13
+11 1.82 1.87 0.05
+12 0.99 0.99 0.00
+13 0.61 0.67 0.06
+14 2.66 2.74 0.08
+15 2.54 2.59 0.05
+7.2. Experiment 2
+The second experiment was designed to test the latency of the S2A2 framework and
+effectiveness of the warnings provided by the 3D visualization and proximity monitoring
+system. The setup was similar to that in Experiment 1, where the equipment was assumed
+to be stationary and only orientation coordinates were used in the analysis. Unlike in
+Experiment 1, a tolerance check was introduced to warn the operator as soon as a preset
+safety threshold was breached. For the purpose of the test, distances of 2.0, 2.5 and 3.0 m
+were sequentially set as the safety threshold level between the end-effector and the ground
+surface. The proximity monitoring framework in this experiment was therefore designed to
+warn the operator when the end-effector came within the preset safety threshold distance
+to the ground surface.
+Once again, the test was carried out through multiple iterations with changeable
+articulation of the boom, stick, and bucket. The operator was instructed to halt the motion
+of the equipment as soon as an audio-visual warning was provided. Once the equipment
+was stopped, the distance between the end-effector and the ground surface was recorded.
+This process was repeated ten times and results from each iteration along with the distance
+by which the operator had penetrated the preset buffers (2.0, 2.5, 3.0 m) are presented in
+Table 3. The signiﬁcance of the results and their interpretation by the authors is presented
+in the following section.
+Sensors 2022, 22, 7635 18 of 22
+Table 3. Penetration depth of safety buffer for varying operating speeds and safety buffer depths
+(L = Low speed, H = High Speed, V = Very High Speed).
+Iteration
+No.
+Buffer
+Depth
+(m)
+Distance from the
+Ground Surface
+(m)
+Penetration into
+Safety Buffer
+(m)
+Operating Speed
+(L = Low, H = High,
+V = Very High)
+1 2.0 1.87 0.13 L
+2 2.0 1.01 0.99 H
+3 2.0 0.67 1.33 V
+4 2.5 2.22 0.28 L
+5 2.5 1.79 1.11 H
+6 2.5 0.80 1.70 V
+7 2.5 1.39 1.11 H
+8 2.5 1.54 0.96 H
+9 2.5 1.98 0.52 L
+10 2.5 2.12 0.38 L
+11 2.5 1.94 0.56 L
+12 2.5 2.07 0.43 L
+13 2.5 1.62 0.88 H
+14 3.0 2.74 0.26 L
+15 3.0 2.59 0.41 H
+8. Discussion of Results
+In Experiment 1, the difference between end-effector to ground surface distance in
+the real and virtual worlds can be attributed to the following factors. The ﬁrst and most
+signiﬁcant factor relates to the ground surface slope. The experiment was carried out in an
+indoor facility owned by the University of Michigan. The ﬂoor of this facility had a slight
+slope/gradient to it, designed to allow water drainage. However, in the virtual world,
+ground surface was modeled as a perfectly ﬂat surface due to non-availability of the indoor
+elevation data for the experiment site. Thus, a positive or negative slope for the ground
+surface in the real world would result in vertical distance values (from bucket tip to ground
+surface) that are less or greater than the corresponding values measured to a ﬂat surface in
+the digital twin.
+Second is the geometric difference between the bucket in the real and virtual worlds.
+The bucket of the backhoe was modeled from a pre-existing 3D model, and thus resulted
+in unintended dimensional variances between the bucket tip in the real and virtual world
+objects. The distance in Experiment 1 was measured as the vertical separation distance
+between the bucket teeth and ground surface. Hence, dimensional equivalence is stated as
+a key requirement for accurate monitoring of equipment on jobsites.
+The third source of error is based on the accuracy of angles measured and reported
+by the orientation sensors used in the experiment. The static accuracy of the MTw sensors
+used in the experiment is stated as being 0.5 degrees [41]. Thus, for a boom length of 2.75 m,
+as in the case of the Caterpillar 430 E IT, a 0.5 degrees error results in a vertical deviation
+of 0.09 m. The combination of these factors is attributed to the difference between real
+and virtual world values for distance between the backhoe bucket and ground surface,
+observed in Experiment 1. The mean separation distance error with the standard deviation
+(shown in Table 2) is 0.06 ± 0.05 m.
+Experiment 2 was designed to test the effect of audio and visual warnings on an
+operator when a preset safety threshold was breached by the end-effector. The experiment
+used safety thresholds of 2.0, 2.5, and 3.0 m. For each of the safety thresholds, the operator
+manipulated the equipment at varying speeds, categorized in Table 3 as ‘low’, ‘high’,
+and ‘very high’. Low corresponds to the angular speed when a bucket would be in close
+proximity to a surrounding object, or when working in a narrow or conﬁned space. High
+and very high correspond to the typical angular speed of the bucket that would be observed
+during the course of regular excavation operations. The safety threshold value was changed
+throughout the course of the experiment to ensure that the operator was responding to
+Sensors 2022, 22, 7635 19 of 22
+the warnings and not the learning-effect of the same threshold value. Different depth
+values also provided the opportunity to analyze the effect of larger safety buffers over
+smaller values.
+The goal of the safety buffer is to provide a warning to the operator with sufﬁcient
+reaction time to bring the equipment to a halt before the end-effector can come in physical
+contact with an object that may be occluded, such as buried utilities covered by the soil.
+The effectiveness of a safety buffer is analyzed by computing the magnitude by which the
+buffer was breached by the bucket. Table 4 shows the list of values by which the bucket
+breached the preset safety threshold (expressed as a percentage of the buffer depth) after
+the operator was provided with warnings. In Table 4, it can be observed that the magnitude
+by which the safety buffer was breached did not vary signiﬁcantly when the safety buffer
+depth was changed between 2.0, 2.5, and 3.0 m. For example, at very high operating speed,
+the safety buffer was breached by 67% for a 2.0 m buffer and 68% for a 3.0 m.
+Table 4. Breach of safety buffer for varying operating speeds expressed as percentage of the buffer
+depth (rounded to nearest whole number).
+Buffer Depth (m) Operating Speed
+(L = Low, H = High, V = Very High) % Safety Buffer Breached
+2.0 L 7
+2.0 H 50
+2.0 V 67
+2.5 L 11
+2.5 H 44
+2.5 V 68
+2.5 H 44
+2.5 H 38
+2.5 L 21
+2.5 L 15
+2.5 L 22
+2.5 L 17
+2.5 H 35
+3.0 L 9
+3.0 H 14
+The average percentage safety buffer penetration for L, H, and V operating speeds
+was found to be 15%, 38%, and 68%, respectively. Thus, it can be seen that the safety buffer
+depth depends on the operating speed of the equipment and the speciﬁc operating style
+of a given operator. The need for a dynamic safety buffer that adjusts itself based on the
+operating characteristics of a given operator is identiﬁed as one of the future goals of this
+research. In this way, the safety buffer provided gives the operator adequate time to take
+evasive action once a warning is sounded. During Experiment 2, it was observed that the
+operator would often react late to the audio and visual warnings due to lack of previous
+experience with such a system. Thus, operator training with the associated monitoring
+systems in a simulator or actual machine is identiﬁed as an associated requirement for
+maximum beneﬁt from such monitoring implementations.
+9. Conclusions and Future Work
+In this paper, the authors investigated the types of equipment monitoring that occurs
+on construction and mining jobsites, as well as in other commercial settings. The need
+for detailed or micro-level equipment monitoring was presented and the areas where its
+use can help reduce accidents and improve overall safety were described. The authors
+also presented a technical approach and workﬂow for equipment monitoring based on
+concurrent 3D visualization in digital twins, and real-time proximity monitoring using
+sensor-based input for updating 3D equipment components. The principles developed in
+the proposed methodology and technical approach were demonstrated through a prototype
+Sensors 2022, 22, 7635 20 of 22
+interface for mapping sensor data streams to speciﬁc equipment elements. This proof-
+of-concept interface was presented in context of a real-time 3D digital twin for assisting
+excavator operators in preventing unintended strikes with underground utilities.
+The paper also described two validation experiments to demonstrate the ability to sim-
+ulate the real-world motion of equipment in a concurrent 3D digital twin. The experiments
+simulate the motion of a backhoe loader’s articulated arm through orientation sensors
+installed on its boom, stick/dipper, and bucket. The results comparing accuracies in the
+real and virtual worlds are presented. In addition, the effect of a warning mechanism based
+on preset safety thresholds was investigated on the performance of the operator.
+The authors also introduced the concept of dynamic tolerance zones based on the
+speed of equipment operation, which in turn depends upon an operator. It can be seen
+from the results in Experiment 2 that higher operating speeds require larger tolerance zones.
+The ability to dynamically modify the tolerance zone size as a function of operator speed is
+thus identiﬁed as a future direction of this research. The future goals of this research also
+include experimenting with tracking sensors, such as linear encoders and other sensors,
+that are pre-installed or retroﬁtted on equipment [42]. The authors are also investigating
+the applicability of the proposed framework on other equipment types, such as cranes,
+dump trucks, and graders.
+Author Contributions: Both authors have equally contributed to the presented research study and
+the writing of this paper. S.A.T. was a Ph.D. student at the University of Michigan and was supervised
+by V .R.K. All authors have read and agreed to the published version of the manuscript.
+Funding: The presented research was funded by the US National Science Foundation (NSF) via
+Grants CMMI-927475 and CMMI-1160937. The writers gratefully acknowledge NSF’s support.
+Institutional Review Board Statement: Not applicable.
+Informed Consent Statement: Not applicable.
+Data Availability Statement: Not applicable.
+Acknowledgments: The writers thank Jerome Schulte, Samuel Moran, and backhoe-operator William
+Sodt for their assistance in providing the equipment for carrying out the validation experiments. In
+addition, the writers would also like to thank Sean O’Connor for his assistance in sensor installation-
+related activities. Any opinions, ﬁndings, conclusions, and recommendations expressed in this paper
+are those of the authors and do not necessarily reﬂect the views of the NSF, University of Michigan,
+TE Connectivity or the individuals mentioned herein.
+Conﬂicts of Interest: The authors declare no conﬂict of interest.
+References
+1. Mine Safety and Health Administration. Mining Equipment Camera Installation Tips for Best Results. MSHA Accident Prevention
+Program. 2012. Available online: http://www.msha.gov/Accident_Prevention/newtechnologies/initiatives/cameras/installtips.
+htm (accessed on 14 October 2012).
+2. Castro-Lacoutere, D.; Irizarry, J.; Arboleda, C.A. Ultra wideband positioning system and method for safety improvement in
+building construction sites. In Proceedings of the American Society of Civil Engineers Construction Research Congress, Grand
+Bahama Island, The Bahamas, 6–8 May 2007.
+3. Lu, M.; Liang, X. Real-Time 3D Positioning and Visualization of Articulated Construction Equipment. In Proceedings of the
+International Conference on Computing in Civil Engineering, Clearwater Beach, FL, USA, 17–20 June 2012; pp. 196–203.
+4. Hirabayashi, T.; Akizono, J.; Yamamoto, T.; Sakai, H.; Yano, H. Teleoperation of construction machines with haptic information
+for underwater applications. Autom. Constr. 2006, 15, 563–570. [CrossRef]
+5. Teizer, J.; Allread, B.S.; Mantripragada, U. Automating the blind spot measurement of construction equipment.Autom. Constr.
+2010, 19, 491–501. [CrossRef]
+6. Azar, E.R.; Kamat, V .R. Earthmoving equipment automation: A review of technical advances and future outlook.J. Inf. T echnol.
+Constr. (IT con)2017, 22, 247–265.
+7. Brammer, B. Dubuque Company Pays $5000 for Violating ‘One Call’ Law ; Iowa Department of Justice, Ofﬁce of the Attorney General:
+Des Moines, IA, USA, 2006. Available online: http://www.iowaattorneygeneral.gov/protecting_environment/2006/dubuque_
+company.html (accessed on 14 October 2012).
+Sensors 2022, 22, 7635 21 of 22
+8. Hanley, R. Newark airport is closed as crew cuts power lines. New Y ork Times, 10 January 1995. Available online: http:
+//www.nytimes.com/1995/01/10/nyregion/newark-airport-is-closed-as-crew-cuts-power-lines.html?pagewanted=2 (accessed
+on 17 June 2011).
+9. Wilder, F. The Fire Down Below.T exas Observer, 2 December 2010. Available online: http://www.texasobserver.org/cover-story/
+the-ﬁre-down-below (accessed on 31 October 2011).
+10. WRAL Archives. Who’s to Blame for Cary Gas Line Rupture? 2007. Available online: http://www.wral.com/news/local/story/
+1916911/ (accessed on 17 June 2011).
+11. Azar, E.R.; McCabe, B. Part based model and spatial–temporal reasoning to recognize hydraulic excavators in construction images
+and videos. Autom. Constr. 2012, 24, 194–202. [CrossRef]
+12. Navon, R. Research in automated measurement of project performance indicators. Autom. Constr. 2007, 16, 176–188. [CrossRef]
+13. Glink, I. Backyard digging poses unseen hazards. CBS News, 15 September 2012. Available online: http://www.cbsnews.com/83
+01-505145_162-57507838/backyard-digging-poses-unseen-hazards (accessed on 14 October 2012).
+14. PHMSA. Pipeline Incidents and Mileage Reports—Serious Incidents. 2012. Available online: http://primis.phmsa.dot.gov/
+comm/reports/safety/PSI.html (accessed on 14 October 2012).
+15. BLS, Bureau of Labor Statistics. Census of Fatal Occupational Injuries (CFOI). 2009–2018. Available online: www.bls.gov/iif/
+oshcfoi1.htm (accessed on 29 March 2022).
+16. Kamat, V .R.; Martinez, J.C. Visualizing simulated construction operations in 3D.J. Comput. Civ. Eng. 2001, 15, 329–337. [CrossRef]
+17. Huber, D.; Herman, H.; Kelly, A.; Rander, P .; Warner, R. Real-time Photorealistic Visualization of 3D Environments for Enhanced
+Teleoperation of Vehicles. In Proceedings of the 2nd International Conference on 3D Digital Imaging and Modeling, Kyoto, Japan,
+3–4 October 2009.
+18. Derekenaris, G.; Garofalakis, J.; Makris, C.; Prentzas, J.; Sioutas, S.; Tsakalidis, A. Integrating GIS, GPS and GSM technologies for
+the effective management of ambulances. Comput. Environ. Urban Syst. 2001, 25, 267–278. [CrossRef]
+19. Sterzbach, B.; Halang, W.A. A mobile vehicle on-board computing and communication system. Comput. Graph. 1996, 20, 659–667.
+[CrossRef]
+20. Zarazaga-Soria, F.J.; Álvarez, P .J.; Bañares, J.A.; Nogueras, J.; Valiño, J.; Muro-Medrano, P .R. Examples of vehicle location systems
+using CORBA-based distributed real-time GPS data and services. Comput. Environ. Urban Syst. 2001, 25, 293–305. [CrossRef]
+21. Liang, C.J.; Lundeen, K.M.; McGee, W.; Menassa, C.C.; Lee, S.; Kamat, V .R. A vision-based marker-less pose estimation system for
+articulated construction robots. Autom. Constr. 2019, 104, 80–94. [CrossRef]
+22. Zhang, C.; Hammad, A.; Rodriguez, S. Crane Pose Estimation Using UWB Real-Time Location System. J. Comput. Civ. Eng. 2012,
+26, 625–637. [CrossRef]
+23. Teizer, J.; Allread, B.S.; Fullerton, C.E.; Hinze, J. Autonomous pro-active realtime construction worker and equipment operator
+proximity safety alert system. Autom. Constr. 2010, 19, 630–640. [CrossRef]
+24. Lytle, A.M.; Saidi, K.S. NIST research in autonomous construction. Auton. Robot. 2007, 22, 211–221. [CrossRef]
+25. Oloufa, A.; Ikeda, M.; Hiroshi, O. GPS-Based wireless collision detection of construction equipment. In Proceedings of the 19th
+International Symposium on Automation and Robotics in Construction (ISARC), Washington, DC, USA, 23–25 September 2002;
+National Institute of Standards and Technology: Gaithersburg, MD, USA, 2002; pp. 461–466.
+26. Roberts, G.W.; Dodson, A.H.; Ashkenazi, V . Global Positioning System Aided Autonomous Construction Plant Control and
+Guidance. Autom. Constr. 1999, 8, 589–595. [CrossRef]
+27. Peyret, F.; Betaille, D.; Hintzy, G. High-Precision Application of GPS in the Field of Real-Time Equipment Positioning.Autom.
+Constr. 2000, 9, 299–314. [CrossRef]
+28. Leica Geosystems. Leica iCON Grade 42—Intelligent Grading Systems. 2012. Available online: http://www.leica-geosystems.
+com/en/Leica-iCON-grade-42_70038.htm (accessed on 4 October 2012).
+29. Trimble GCS900. Grade Control System—The Connected Machine. 2012. Available online: http://www.trimble.com/
+construction/heavy-civil/machine-control/grade-control/ (accessed on 4 October 2012).
+30. Liang, C.J.; Lundeen, K.M.; McGee, W.; Menassa, C.C.; Lee, S.; Kamat, V .R. Stacked hourglass networks for markerless pose
+estimation of articulated construction robots. In Proceedings of the 35th International Symposium on Automation and Robotics
+in Construction, Berlin, Germany, 20–25 July 2018.
+31. Steffen, M.A.; Will, J.D.; Murakami, N. Use of Virtual Reality for Teleoperation of Autonomous Vehicles. In Proceedings of the
+American Society of Agricultural and Biological Engineers Biological Sensorics Conference, Summer 2007, Minneapolis, MN,
+USA, 17–20 June 2007; Available online: http://gem.valpo.edu/~{}svl/research/pubs/useofvertualreality.pdf (accessed on
+4 October 2012).
+32. Liang, C.J.; McGee, W.; Menassa, C.C.; Kamat, V .R. Real-time state synchronization between physical construction robots and
+process-level digital twins. Constr. Robot. 2022, 6, 57–73. [CrossRef]
+33. Liang, C.J.; McGee, W.; Menassa, C.; Kamat, V . Bi-directional communication bridge for state synchronization between digital
+twin simulations and physical construction robots. In Proceedings of the International Symposium on Automation and Robotics
+in Construction (IAARC), Kitakyushu, Japan, 27–28 October 2020.
+34. Wang, X.; Liang, C.J.; Menassa, C.; Kamat, V . Real-time process-level digital twin for collaborative human-robot construction
+work. In Proceedings of the International Symposium on Automation and Robotics in Construction (IAARC), Kitakyushu, Japan,
+27–28 October 2020.
+Sensors 2022, 22, 7635 22 of 22
+35. Beggs, J.S. Kinematics; Taylor & Francis: Oxfordshire, UK, 1983; p. 1.
+36. Garg, A.; Kamat, V .R. Virtual Prototyping for Robotic Fabrication of Rebar Cages in Manufactured Concrete Construction. In
+Proceedings of the 2012 CONVR Conference, Taipei, Taiwan, 1–2 November 2012.
+37. Cunningham, S.; Bailey, M.J. Lessons from Scene Graphs: Using Scene Graphs to Teach Hierarchical Modeling. Comput. Graph.
+2001, 25, 703–711. [CrossRef]
+38. Kamat, V .R.; Martinez, J.C. Scene Graph and Frame Update Algorithms for Smooth and Scalable 3D Visualization of Simulated
+Construction Operations. J. Comput. -Aided Civ. Infrastruct. Eng. 2002, 17, 228–245. [CrossRef]
+39. Talmaki, S.A.; Kamat, V .R. Real-Time Hybrid Virtuality for Prevention of Excavation Related Utility Strikes.J. Comput. Civ. Eng.
+2014, 28, 04014001. [CrossRef]
+40. Caterpillar. Caterpillar 430E/430 EIT Backhoe Loader. 2012. Available online: http://www.cat.com/cda/layout?m=308397&x=7
+(accessed on 14 October 2012).
+41. XSens. XSens MTw—Wireless Motion Tracker. 2012. Available online: http://www.xsens.com/images/stories/products/PDF_
+Brochures/mtw%20leaﬂet.pdf (accessed on 14 October 2012).
+42. Landberg, L. Lasers/GPS Enhance Machine Control. 2002. Available online: http://www.constructionequipment.com/lasersgps-
+enhance-machine-control (accessed on 14 October 2012).

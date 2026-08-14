@@ -13,3 +13,12 @@ The safe, cost-effective advance of deep tunnels increasingly hinges on real-tim
 | Yes | Yes | Yes | Yes | Yes | **Include** |
 
 **Note:** UDi probabilistic rock-block failure prediction in DT workflow; tunnel safety
+
+## Step-3 Deep-Read Coding (Prompt B)
+
+| P | Q | R | U Tier | V | W | X | Z | AA | AB | AC | AD | AE | AF |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| Yes | Yes | Yes | Tier 2 - Digital Shadow (one-way physical to virtual) | 0 | 1 | 0 | Design for Safety (DfS) | None | Statistical / change-point | Multi (two or more data types) | Cross-project (multiple real projects) | 4 | Predictive analytics / decision support |
+
+**Key evidence (AG):** Universal Discontinuity Index (UDi) for probabilistic rock-block failure prediction in tunnels (Pontificia Universidad Catolica de Chile): single probabilistic score fusing physical damage, effective-stress intensity, active-fracture ratio, and kinematic feasibility; embedded in Poisson-regression early-warning model converting index updates to expected block counts; validated via DFN-KBT engine (5300 realizations) at El Teniente mine (R2 = 0.93); millisecond updates for real-time DT workflow. One-way monitoring→prediction→early warning; no actuation and no learning loop (UDi is a static probabilistic index, not self-improving).
+(full-text source: Endnote)

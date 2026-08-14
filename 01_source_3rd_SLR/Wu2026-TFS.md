@@ -13,3 +13,12 @@ Large diameter shield construction (LDSS) safety is particularly important. To e
 | Yes | Yes | Yes | Yes | Yes | **Include** |
 
 **Note:** Knowledge-data DT platform for tunnel face stability prediction/control
+
+## Step-3 Deep-Read Coding (Prompt B)
+
+| P | Q | R | U Tier | V | W | X | Z | AA | AB | AC | AD | AE | AF |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| Yes | Yes | Yes | Tier 3 - Digital Twin (bidirectional, two-way) | 0 | 1 | 0 | Design for Safety (DfS) | Implemented | Graph Neural Network (GNN) | Multi (two or more data types) | Single case study | 4 | Predictive analytics / decision support |
+
+**Key evidence (AG):** Knowledge-data driven digital twin platform for tunnel face stability (TFS) prediction and control in large-diameter slurry shield construction (HUST): bidirectional synchronization between physical entity and virtual model; BO-GCN-BiLSTM + SHAP for TFS prediction (avg R2 0.935, RMSE 0.162 across 6 geological types); expert knowledge integration; control of TFS by maintaining slurry pressure within optimal range; validated on Wuhan Metro Line 12. Bidirectional — prediction→control → Tier 3; implemented BO-GCN-BiLSTM, no convergence criterion.
+(full-text source: Endnote)

@@ -13,3 +13,11 @@ Bridges play an important role in transportation infrastructure systems. Intelli
 | Yes | Yes | Yes | Yes | Yes | **Include** |
 
 **Note:** Regional bridge-group DT; condition perception & safety warning
+
+## Step-3 Deep-Read Coding (Prompt B) (full-text source: Digital twin system for a regional bridges group (Shanghai, Tongji U): physical space - WIM + multi-source machine vision traffic-load monitoring on target bridge + lightweight sensors on bridge group; digital space - mechanical analysis models per bridge linked by measured traffic loads for working-condition perception and safety warning across the regional network; preliminarily implemented in a Shanghai bridges group. One-way monitoring→analysis→warning for operators; no actuation and no learning loop.)
+
+| P | Q | R | U Tier | V | W | X | Z | AA | AB | AC | AD | AE | AF |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| Yes | Yes | Yes | Tier 2 - Digital Shadow (one-way physical to virtual) | 0 | 0 | 1 | Design for Safety (DfS) | None | Perception / Computer Vision | Multi (two or more data types) | Single case study | 4 | Predictive analytics / decision support |
+
+**Key evidence (AG):** Endnote

@@ -13,3 +13,12 @@ The creation of structured informational models improves understanding of tunnel
 | Yes | Yes | Yes | Yes | Yes | **Include** |
 
 **Note:** Automated procedural modeling for tunnel inspection DT; defect detection
+
+## Step-3 Deep-Read Coding (Prompt B)
+
+| P | Q | R | U Tier | V | W | X | Z | AA | AB | AC | AD | AE | AF |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| Yes | Yes | Yes | Tier 1 - Digital Model (static, no live data) | 0 | 0 | 1 | Design for Safety (DfS) | None | Other / Mixed | Multi (two or more data types) | Single case study | 4 | Perception / Computer Vision |
+
+**Key evidence (AG):** Automated procedural modeling for tunnel inspection and digital twin development (USP): parametric modeling + field data → automated procedural modeling framework for tunnel inspection DT; PCD from Faro Focus 3D X330 laser scanner; Mesh Decimation Quality (MDQ) index evaluates mesh quality during decimation; procedural inspection grid identifies defects and classifies areas; Coastal Tunnel (Brazil) case study. Static DT for inspection — no live data link, no actuation, no learning loop.
+(full-text source: Endnote)

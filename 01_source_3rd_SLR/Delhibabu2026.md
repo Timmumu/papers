@@ -13,3 +13,11 @@ This article examines a digital twin (DT) for complex infrastructure assets usin
 | Yes | Yes | Yes | Yes | Yes | **Include** |
 
 **Note:** Station DTs for incident decision support; response -17.4%
+
+## Step-3 Deep-Read Coding (Prompt B) (full-text source: Interconnected digital twins of subway stations for decision support (VIT/FRC RAS): per-station DTs interconnected to interact during operational scenarios; cameras, microphones, sensors processed in fog computing; mobile app with intelligent assistant displays detected events and answers queries via voice; event detection for hazardous situations (fire/explosion); implementation improved personnel response time by 17.4% vs REPEAT platform. One-way monitoring→event detection→decision support for operators; no actuation and no learning loop.)
+
+| P | Q | R | U Tier | V | W | X | Z | AA | AB | AC | AD | AE | AF |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| Yes | Yes | Yes | Tier 2 - Digital Shadow (one-way physical to virtual) | 0 | 0 | 1 | Design for Safety (DfS) | None | Perception / Computer Vision | Multi (two or more data types) | Single case study | 4 | Predictive analytics / decision support |
+
+**Key evidence (AG):** Endnote

@@ -13,3 +13,12 @@ In the construction of super high-rise buildings, building machines (BMs) are in
 | Yes | Yes | Yes | Yes | Yes | **Include** |
 
 **Note:** DT monitoring of building machine jacking operation; ANN prediction
+
+## Step-3 Deep-Read Coding (Prompt B)
+
+| P | Q | R | U Tier | V | W | X | Z | AA | AB | AC | AD | AE | AF |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| Yes | Yes | Yes | Tier 2 - Digital Shadow (one-way physical to virtual) | 0 | 1 | 0 | Design for Safety (DfS) | None | Other / Mixed | Multi (two or more data types) | Single case study | 4 | Design for Safety |
+
+**Key evidence (AG):** DT construction method for monitoring operation status of building machine jacking operation (BMJO) (Hubei U Tech): DT framework with layered architecture; Blender geometric node group creates parametric virtual model; ANN enables online prediction of structural performance; motion model realizes real-time state mapping; real BM project validates system (quantitative monitoring, evaluation, early warning, real-time prediction of operational posture; high accuracy, fast analysis). One-way monitoring->prediction->early warning; no actuation, no learning loop.
+(full-text source: Endnote)

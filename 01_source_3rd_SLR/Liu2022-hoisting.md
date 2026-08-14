@@ -13,3 +13,12 @@ Prefabricated buildings have advantages when it comes to environmental protectio
 | Yes | Yes | Yes | Yes | Yes | **Include** |
 
 **Note:** DT+BN risk control for prefab hoisting operations
+
+## Step-3 Deep-Read Coding (Prompt B)
+
+| P | Q | R | U Tier | V | W | X | Z | AA | AB | AC | AD | AE | AF |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| Yes | Yes | Yes | Tier 2 - Digital Shadow (one-way physical to virtual) | 0 | 1 | 0 | Design for Safety (DfS) | None | Bayesian / probabilistic | Multi (two or more data types) | Single case study | 4 | Predictive analytics / decision support |
+
+**Key evidence (AG):** DT-based risk control framework for prefabricated building hoisting (Beijing U Tech): DEMATEL-ISM establishes hierarchical safety risk model considering correlation between risk factors; Bayesian network visualizes decision analysis process for risk control; real-time data interaction with DT model; key degree of indirect inducement variables calculated by probability; validated on a large prefabricated building project. One-way monitoring→analysis→decision support; no actuation and no learning loop (Bayesian network is offline-inferred).
+(full-text source: Endnote)

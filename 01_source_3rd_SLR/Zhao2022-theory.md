@@ -13,3 +13,12 @@ In traditional construction safety assessment, it is difficult to describe the s
 | Yes | Yes | Yes | Yes | Yes | **Include** |
 
 **Note:** DT model theory for tunnel construction safety assessment; settlement prediction
+
+## Step-3 Deep-Read Coding (Prompt B)
+
+| P | Q | R | U Tier | V | W | X | Z | AA | AB | AC | AD | AE | AF |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| Yes | Yes | Yes | Tier 2 - Digital Shadow (one-way physical to virtual) | 0 | 1 | 0 | Design for Safety (DfS) | None | LSTM / RNN (recurrent networks) | Multi (two or more data types) | Single case study | 3 | Predictive analytics / decision support |
+
+**Key evidence (AG):** Digital twin model theory for tunnel construction safety assessment (Beijing U Tech): IoT + smart sensors collect project data; DT built combining BIM + Midas + LSTM ML algorithm; black-box/gray-box/white-box hierarchical data processing; vault (arch crown) settlement predicted with high accuracy and dynamic safety-state assessment during tunnel construction. One-way monitoring->prediction->assessment; no actuation, no learning loop (LSTM offline-trained).
+(full-text source: Endnote)

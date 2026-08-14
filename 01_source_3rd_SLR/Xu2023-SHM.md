@@ -13,3 +13,12 @@ Structural health monitoring (SHM) is a critical component of ensuring the safet
 | Yes | Yes | Yes | Yes | Yes | **Include** |
 
 **Note:** BIM+real-scene 3D DT for building SHM; sensor/data management
+
+## Step-3 Deep-Read Coding (Prompt B)
+
+| P | Q | R | U Tier | V | W | X | Z | AA | AB | AC | AD | AE | AF |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| Yes | Yes | Yes | Tier 2 - Digital Shadow (one-way physical to virtual) | 0 | 0 | 1 | Design for Safety (DfS) | None | Digital Twin platform (no machine learning) | Multi (two or more data types) | Single case study | 4 | BIM-to-Digital-Twin architecture |
+
+**Key evidence (AG):** Digital twin model for monitoring building structural health by combining BIM and real-scene 3D model (Nanjing Tech U): fuses BIM with real-scene 3D model via rigid-body transformation (3D spatial position registration) + semantic information mapping (JSON); reconstructs BIM into sub-BIMs; sensor data stored in database and integrated with fused model; Nanjing Museum Old Hall case study. One-way monitoring→fusion→visualization; no actuation and no learning loop.
+(full-text source: Endnote)

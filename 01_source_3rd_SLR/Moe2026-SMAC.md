@@ -13,3 +13,12 @@ Decentralized federated learning (DFL) enables peer-to-peer training, but hyperp
 | Yes | Yes | Yes | Yes | Yes | **Include** |
 
 **Note:** DT orchestration layer for federated worker-safety AI; occupational risk
+
+## Step-3 Deep-Read Coding (Prompt B)
+
+| P | Q | R | U Tier | V | W | X | Z | AA | AB | AC | AD | AE | AF |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| Yes | Yes | Yes | Tier 2 - Digital Shadow (one-way physical to virtual) | 0 | 1 | 0 | Design for Safety (DfS) | None | Other / Mixed | Multi (two or more data types) | Single case study | 4 | Predictive analytics / decision support |
+
+**Key evidence (AG):** SMAC-based cooperative hyperparameter optimization for occupational risk assessment in decentralized federated on-device AI networks (Jeju National U): DFL framework with one-shot cooperative HPO (SMAC) + DT orchestration layer to manage edge nodes and network topologies; local SMAC tuning + performance-weighted aggregation; validated on worker-safety and MNIST datasets with Raspberry Pi testbed; convergence rounds reduced 42→18 (worker safety). One-way monitoring→HPO→risk assessment; no actuation and no learning loop (SMAC is hyperparameter optimization, not online learning).
+(full-text source: Endnote)

@@ -13,3 +13,12 @@ The geometric digitization of cable dome structures using Point Cloud Datasets (
 | Yes | Yes | Yes | Yes | Yes | **Include** |
 
 **Note:** PCD joint detection for geometric DT of cable domes; safety/stability
+
+## Step-3 Deep-Read Coding (Prompt B)
+
+| P | Q | R | U Tier | V | W | X | Z | AA | AB | AC | AD | AE | AF |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| Yes | Yes | Yes | Tier 1 - Digital Model (static, no live data) | 0 | 1 | 0 | Design for Safety (DfS) | None | Perception / Computer Vision | Single (one data type) | Single case study | 4 | Perception / Computer Vision |
+
+**Key evidence (AG):** Joint-detection PCD-based method for automatic construction of geometric digital twin (DS-gDT) in cable dome structures (Beijing U Civil Eng): enhanced target-recognition algorithm with novel shape-estimation model samples minimum point sets to identify structural components; joints determined by component spatial relationships for topological reconstruction of the gDT; validated on scaled cable dome PCD (component segmentation success ~51.5% higher than traditional methods; joint fitting accuracy >99%); enables joint-deviation assessment. Static geometric DT - no live data link, no learning loop.
+(full-text source: Endnote)

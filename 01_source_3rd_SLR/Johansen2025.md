@@ -13,3 +13,12 @@ Construction projects and their dynamic and yet hazardous work environments face
 | Yes | Yes | Yes | Yes | Yes | **Include** |
 
 **Note:** KG exploitation on DTs for construction safety planning usability
+
+## Step-3 Deep-Read Coding (Prompt B)
+
+| P | Q | R | U Tier | V | W | X | Z | AA | AB | AC | AD | AE | AF |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| Yes | Yes | Yes | Tier 1 - Digital Model (static, no live data) | 1 | 0 | 0 | Design for Safety (DfS) | None | Ontology / semantic | Multi (two or more data types) | Conceptual (no test) | 3 | Semantic interoperability |
+
+**Key evidence (AG):** Knowledge graph exploitation for construction safety planning (DTU): 4D BIM + automated safety analysis results → ontology + knowledge graph for cross-domain knowledge extraction; query building blocks transform natural language questions into actionable queries; case study shows cross-domain impact of decisions (e.g., crew assignment → safety). Static knowledge representation — no live data link, no actuation, no learning loop (ontology/querying is static).
+(full-text source: Endnote)

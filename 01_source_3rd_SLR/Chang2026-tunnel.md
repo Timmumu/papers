@@ -13,3 +13,11 @@ Accurately predicting ground settlement and tunnel lining deformation is essenti
 | Yes | Yes | Yes | Yes | Yes | **Include** |
 
 **Note:** DT framework for settlement/deformation prediction; safety & risk
+
+## Step-3 Deep-Read Coding (Prompt B) (full-text source: DT framework for predicting ground settlement and lining deformation of shield tunnels under adjacent excavation (NTU/Southeast U): hybrid surrogate model DF-STTN (Swin Transformer + TabTransformer) for full-field displacement prediction from spatial + non-spatial inputs; trained on high-fidelity FE data, then updated/validated on laboratory-scale tunnel excavation tests via a genetic-algorithm model-updating procedure that iteratively refines soil parameters using sparse test data (minimizing prediction error); outperforms convolution-based and single-fusion models; spatial info (3 measurement points) improves accuracy. One-way prediction with implemented GA-based model updating - no convergence criterion, no actuation.)
+
+| P | Q | R | U Tier | V | W | X | Z | AA | AB | AC | AD | AE | AF |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| Yes | Yes | Yes | Tier 2 - Digital Shadow (one-way physical to virtual) | 0 | 1 | 0 | Design for Safety (DfS) | Implemented | Transformer / Large Language Model (LLM) | Multi (two or more data types) | Single case study | 4 | Predictive analytics / decision support |
+
+**Key evidence (AG):** Endnote

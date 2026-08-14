@@ -13,3 +13,12 @@ This study presents a real-time monitoring system integrating Building Informati
 | Yes | Yes | Yes | Yes | Yes | **Include** |
 
 **Note:** BIM+DT real-time maintenance monitoring of tunnel; anomaly detection
+
+## Step-3 Deep-Read Coding (Prompt B)
+
+| P | Q | R | U Tier | V | W | X | Z | AA | AB | AC | AD | AE | AF |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| Yes | Yes | Yes | Tier 2 - Digital Shadow (one-way physical to virtual) | 0 | 0 | 1 | Design for Safety (DfS) | None | Digital Twin platform (no machine learning) | Multi (two or more data types) | Single case study | 4 | BIM-to-Digital-Twin architecture |
+
+**Key evidence (AG):** Real-time maintenance monitoring system using BIM and digital twin integration (Sungkyunkwan U): LOD 400 BIM model of solar-powered noise barrier tunnel + IoT sensors (vibration, tilt, light, air quality, water detection) synchronized via Autodesk Forge API + WebSockets; web-based dashboard for visualization; anomaly detection via two-tiered approach (device alerts + post-processed trend analysis); validated on Wansan Tunnel in South Korea. One-way monitoring→visualization→maintenance decisions; no actuation and no learning loop.
+(full-text source: Endnote)

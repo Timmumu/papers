@@ -13,3 +13,11 @@ Accurate and efficient inspection of rebar dimensions has proven to be a persist
 | Yes | Yes | Yes | Yes | Yes | **Include** |
 
 **Note:** DT generation module + CV inspection; quality defect tracking
+
+## Step-3 Deep-Read Coding (Prompt B) (full-text source: Autonomous dimensional inspection and issue tracking of rebar using semantically enriched 3D models (NTU): DT generation from GoPro images via SfM-MVS point-cloud reconstruction (AprilTag scale calibration); segmentation via Mask R-CNN + 3D clustering (DBSCAN); inspection via 2D circular Hough transform (diameter accuracy 95.5%, spacing mean relative error 0.98%); issue identification/tracking via Scan-vs-BIM registration and comparison of semantically enriched 3D models with BIM across time. Single column rebar cage experiment. One-way inspection→BIM/Digital-Twin for DQC; no live data link and no learning loop.)
+
+| P | Q | R | U Tier | V | W | X | Z | AA | AB | AC | AD | AE | AF |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| Yes | Yes | Yes | Tier 1 - Digital Model (static, no live data) | 0 | 1 | 0 | Design for Quality (DfQ) | None | Perception / Computer Vision | Multi (two or more data types) | Single case study | 4 | Perception / Computer Vision |
+
+**Key evidence (AG):** Endnote

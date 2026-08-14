@@ -1,1442 +1,1158 @@
-Exploring bridge maintenance knowledge graph by leveraging GrapshSAGE
-and text encoding
-Yan Gao
-a
-, Guanyu Xiong
-a
-, Haijiang Li
-a , *
-, Jarrod Richards
-b
-a
-BIM for Smart Engineering Centre, School of Engineering, Cardiff University, Cardiff CF24 3AA, UK
-b
-Centregreat Rail Limited, Bridgend CF31 2AD, UK
-ARTICLE INFO
-Keywords:
-Bridge maintenance knowledge graph
-Text encoding
-Graph neural networks
-Node classification
-Link prediction
-ABSTRACT
-Knowledge graphs (KGs) are crucial in documenting bridge maintenance expertise. However, existing KG
-schemas lack integration of bridge design and practical inspection insights. Meanwhile, traditional methods for
-node feature initialization, relying on meticulous manual encoding or word embeddings, are inadequate for real-
-world maintenance textual data. To address these challenges, this paper introduces a bridge maintenance-
-oriented KG (BMKG) schema and approaches for graph data mining, including node-layer classification and
-link prediction. These methods leverage large language model (LLM)-based text encoding combined with
-GraphSAGE, demonstrating excellent performance in semantic enrichment and KG completion on deficient
-BMKGs. Additionally, ablation studies reveal the superiority of the pre-trained BERT text encoder and the L2
-distance pairwise scoring calculator. Furthermore, a practical implementation framework integrating these ap-
-proaches is developed for routine bridge maintenance, which can facilitate various practical applications, such as
-maintenance planning, and has the potential to enhance the efficiency of engineers' documentation work.
+Citation: Gao, Y.; Xiong, G.; Hu, Z.;
+Chai, C.; Li, H. Bridge Digital Twin for
+Practical Bridge Operation and
+Maintenance by Integrating GIS and
+BIM. Buildings 2024, 14, 3731.
+https://doi.org/10.3390/
+buildings14123731
+Academic Editor: Fabrizio Gara
+Received: 29 October 2024
+Revised: 20 November 2024
+Accepted: 21 November 2024
+Published: 23 November 2024
+Copyright: © 2024 by the authors.
+Licensee MDPI, Basel, Switzerland.
+This article is an open access article
+distributed under the terms and
+conditions of the Creative Commons
+Attribution (CC BY) license (https://
+creativecommons.org/licenses/by/
+4.0/).
+Article
+Bridge Digital Twin for Practical Bridge Operation and
+Maintenance by Integrating GIS and BIM
+Yan Gao 1,†
+ , Guanyu Xiong 1,† , Ziyu Hu 2
+ , Chengzhang Chai 1
+ and Haijiang Li 1,*
+1 BIM for Smart Engineering Centre, School of Engineering, Cardiff University, Cardiff CF24 3AA, UK;
+gaoy74@cardiff.ac.uk (Y.G.); xiongg@cardiff.ac.uk (G.X.); chaic1@cardiff.ac.uk (C.C.)
+2 School of Electrical Engineering, Aalto University, 02150 Espoo, Finland; ziyu.hu@aalto.fi
+* Correspondence: lih@cardiff.ac.uk
+† These authors contributed equally to this work.
+Abstract: As an emerging technology, digital twin (DT) is increasingly valued in bridge management
+for its potential to optimize asset operation and maintenance (O&M). However, traditional bridge
+management systems (BMS) and existing DT applications typically rely on standalone building
+information modeling (BIM) or geographic information system (GIS) platforms, with limited inte-
+gration between BIM and GIS or consideration for their underlying graph structures. This study
+addresses these limitations by developing an integrated DT system that combines WebGIS, WebBIM,
+and graph algorithms within a three-layer architecture. The system design includes a common data
+environment (CDE) to address cross-platform compatibility, enabling real-time monitoring, drone-
+enabled inspection, maintenance planning, traffic diversion, and logistics optimization. Additionally,
+it features an adaptive data structure incorporating JSON-based bridge defect information modeling
+and triple-based roadmap graphs to streamline data management and decision-making. This com-
+prehensive approach demonstrates the potential of DTs to enhance bridge O&M efficiency, safety,
+and decision-making. Future research will focus on further improving cross-platform interoperability
+to expand DT applications in infrastructure management.
+Keywords: digital twin; bridge operation and maintenance; GIS and BIM; roadmap graph; machine
+learning; decision-making
 1. Introduction
-In recent years, the use of knowledge graphs (KGs) has emerged as a
-highly effective tool in capturing the specialized knowledge related to
-bridge maintenance. Efforts have been concentrated on automatically
-creating bridge ontologies and KGs using natural language processing
-(NLP) techniques like named entity recognition [ 1 , 2 ] and relationship
-extraction [ 3 , 4 ], but few studies focused on graph data mining after that.
-Moreover, there is rarely a KG schema that incorporates both the bridge
-design diagram and the practical inspection insights. Additionally,
-traditional methods for node feature representations in bridge KGs, such
-as manual one-hot encoding or word embeddings like word2vec, have
-limitations. The former requires meticulous design for differentiation,
-which can be labour-intensive, while the latter is ill-suited to capturing
-sentence-level context. Therefore, it is advantageous to develop a bridge
-KG schema rooted in practical maintenance, and knowledge mining
-approaches by leveraging graph neural networks (GNNs) and advanced
-text encoding techniques.
-To address these challenges, this study introduces a bridge
-maintenance-oriented KG (BMKG) schema by incorporating structural
-designs and real-world maintenance reports. It also proposes methods
-for node-layer classification and link prediction through inductive
-learning and contrastive learning, respectively, in which the text em-
-beddings derived from the pre-trained text encoders or large language
-modes (LLMs) are innovatively combined with GraphSAGE neural net-
-works for data mining on BMKGs.
-Using the proposed schema, a BMKG with 188 nodes and 263 re-
-lationships was constructed from practical semi-structured bridge in-
-spection reports. The above methods were then tested on incomplete
-BMKGs, which are generated by randomly removing a certain propor-
-tion of links from the original intact one. The experiments demonstrate
-that the proposed methodologies can achieve promising performance
-and generalizability for node-layer classification and link prediction,
-reaching an average test accuracy of 96.51% and an average test AUC of
-0.8577, respectively, through cross-validation on the target dataset.
-Furthermore, the ablation studies reveal the superiority of the pre-
-trained BERT encoder and the L2 distance-based score calculator for
-downstream graph data mining tasks on the target dataset.
-Finally, a practical implementation framework that incorporates the
-above approaches is developed for effective bridge maintenance. This
-framework cannot only mitigate the impact of pseudo-negative exam-
-ples (generated by simple random repairing) on contrastive learning in a
-* Corresponding author at: BIM for Smart Engineering Centre, School of Engineering, Cardiff University, Cardiff CF24 3AA, UK.
-E-mail address: LiH@cardiff.ac.uk (H. Li).
-Contents lists available at ScienceDirect
-Automation in Construction
-journal homep age: www.el sevier.com/l ocate/autcon
-https://doi.org/10.1016/j.autcon.2024.105634
-Received 13 August 2023; Received in revised form 15 July 2024; Accepted 15 July 2024
-Automation in Construction 166 (2024) 105634 
-Available online 25 July 2024 
-0926-5805/© 2024 The Author(s). Published by Elsevier B.V. This is an open access article under the CC BY license ( http://creativecommons.org/licenses/by/4.0/ ). 
-closed-loop system but can also facilitate various practical applications
-such as semantic enrichment, compliance checks, dependency analysis,
-and generating repair recommendations. Furthermore, it also has the
-potential to enhance the efficiency of engineers' documentation pro-
-cesses through the plugs for text prompting or automatic maintenance
-planning.
-The contribution of this study is four-fold as below:
-1) This paper introduces a hierarchical KG schema tailored for bridge
-maintenance based on real-world textual reports. The schema is
-organized into 5 layers, including main structure, components, ele-
-ments, defects, and repair actions, with node connections limited in
-adjacent layers.
-2) A node-layer classification approach by employing GraphSAGE and
-LLM-based text encoding is proposed for semantic enrichment in a
-deficient BMKG.
-3) Moreover, a link prediction approach by leveraging GraphSAGE and
-contrastive learning is proposed for graph completion in a deficient
-BMKG, which can achieve excellent performance.
-4) An implementation framework that integrates the above schema and
-approaches is designed for routine bridge maintenance, which can
-not only facilitate practical applications but also mitigate the influ-
-ence of pseudo-negative examples on contrastive learning.
-2. Literature review
-2.1. Bridge maintenance knowledge engineering
-Knowledge engineering (KE) is a field of artificial intelligence (AI)
-that creates rules by applying data to imitate the thought process of a
-human expert. It looks at the structure of a task or a decision to identify
-how a conclusion is reached [5]. In the AEC industry, KE refers to
-knowledge representation, acquisition, reasoning, decision-making, and
-application in building, operation, and maintenance. Currently, a
-knowledge graph (KG) has become one of the most effective tools for
-knowledge management and integration. For most studies in the con-
-struction fields, KGs are usually termed ontological semantic networks
-based on graphics with domain entities as nodes, and the defined entities
-relationships as edges [6].
-To represent the intricate knowledge of bridge maintenance, Ren
-et al. [7] developed an ontology for bridge maintenance (BrMontology)
-based on web ontology language (OWL), which covers bridge structure,
-damage (and causes), solutions, and big events. It can enable automatic
-rule-based maintenance planning and holistic decision-making. Liu and
-ElGohary [8] proposed a bridge ontology (BridgeOnto) based on routine
-inspection reports and maintenance manuals in the US, in which the
-bridge elements, types of bridge elements, and bridge defects are elab-
-orately decomposed. Zhang et al. [9] proposed a comprehensive bridge
-maintenance knowledge graph (BMKG) by involving expenses, which
-used semantic triples for knowledge organization and a Neo4j graph
-database for data storage. Similarly, Lee et al. [10] established a graph
-database to organize data from bridge management systems (BMS) and
-employed graph clustering for maintenance cost estimation. Wu et al.
-[11] developed an ontology for project management of bridge rehabil-
-itation, which covers restoration tasks and constraints.
-Additionally, several studies focused on the knowledge-based bridge
-management system (BMS) by leveraging bridge real-time monitoring
-and pattern recognition. For example, Li et al. [12] designed a bridge
-structure health monitoring (SHM) system based on a fine-grained
-ontology to integrate heterogenous data from various sensors. Yang
-et al. [13] developed a framework for bridge management based on a
-big-data knowledge engineering paradigm, consisting of both data
-(including sources, storage, and computing) and knowledge (including
-representation, computing, and services) layers. This framework can
-facilitate intelligent bridge maintenance by leveraging the big data
-within the entire bridge life cycle.
-Moreover, some efforts have been made for automatic ontology
-generation and KG completion, such as named entity recognition (NER)
-for target classes [1,2] (i.e., bridge element, deficiency, cause, repair
-action) and dependency parsing [3,4] (i.e., relation extraction) from
-textual reports. NLP approaches are utilized in these works to build or
-complete semantic triples (i.e., ontologies). However, subsequent data
-mining still relies on classic algorithms through simple graph structures,
-such as centrality, clustering, and pathfinding. Meanwhile, there have
-been a few studies exploring graphs based on infrastructure architec-
-ture, but they are mainly focused on modular design or generation, such
-as mass customization of precast bridge systems [14] and building
-structure layouts [15,16]. Therefore, it would be advantageous to create
-a comprehensive BMKG by integrating knowledge from both bridge
-structure design and maintenance experience gleaned from textual re-
-ports. Additionally, there is a need to investigate the application of
-emerging AI techniques, such as Graph Neural Networks (GNNs), for
-practical implementations within this knowledge framework.
-2.2. Graph neural networks and applications
-Although the classic deep neural networks (DNNs) achieve great
-success for latent embedding from Euclidean spatial data, they cannot
-perform satisfactorily in processing non-Euclidean data, such as graphs.
-Hence, graph neural networks (GNNs) are proposed to solve this issue (i.
-e., graph embedding), which are defined as an optimizable trans-
-formation on all attributes of the graph (nodes, edges, global context)
-that preserves graph symmetries (permutation invariances) [17]. Graph
-embedding is a process to generate a vector from graph features and
-attributes but tries to preserve graph information as far as possible so
-that the downstream graph analytic tasks can be achieved easily using
-the off-the-self machine learning (ML) algorithms [18]. Embedding ag-
-gregation and message passing are the primary attributes of GNNs. The
-common GNN architectures [19] include graph convolutional networks
-(GCN), graph attention networks (GAT), GraphSAGE, spatial-temporal
-graph neural networks (STGNN), etc. Most GNNs are inherently trans-
-ductive, in which the model is trained through the whole graph and can
-only generate graph embeddings for a single fixed graph, so they are not
-efficiently suitable for involving graphs and cannot learn to generalize
-across different graphs. In contrast, a few others, like GraphSAGE, are
-based on inductive learning, in which the model can only see the
-training data and is trained through a sample partial graph or a set of
-subgraphs. Thus, the generated model and graph embeddings can be
-generalized to unseen nodes.
-As GNNs function on graph data, they are typically utilized for tasks
-such as graph classification, node classification, clustering, and link
-prediction. In the AEC industry, Collins et al. [20] first applied graph
-classification through GCN to classify IFC building objects based on their
-geometry. Wang et al. [21] proposed an improved GraphSAGE algo-
-rithm (SAGE-E), by involving edge features in aggregation, for semantic
-enrichment of BIM models (i.e., identify room types) using node clas-
-sification. Additionally, link prediction is usually utilized for KG
-completion, relation prediction, and recommendation. Hence, in the
-realm of maintenance for manufacturing systems, Xia et al. [22]
-developed an approach to recommend potential solutions and explain
-the fault for oil drilling equipment by using linkage prediction through
-an attention-based compressed relational GCN (ACRGCN). Its model was
-pre-trained with word2vec embeddings as node features and the ma-
-chine components within the graph were organized as only a single
-layer.
-Nevertheless, the hierarchical bridge architecture suggests that the
-multi-layer structure is likely more suitable for constructing its KG. The
-modular bridge architecture often exhibits repetitiveness and symmetry,
-which can be observed from textural inspection reports. Meanwhile, the
-content of practical bridge maintenance reports, especially repair pro-
-posals, is unlikely to adopt straightforward phrases used in the study
-[22]. In these reports, the content tends to be more complex and
-Y. Gao et al. Automation in Construction 166 (2024) 105634 
-2 
-comprehensive and presented in sentence form. Furthermore, GNN has
-demonstrated its potential in typical NLP tasks, like computing semantic
-textual similarity and sentence completion. Hence, it would be advan-
-tageous to 1) propose a hierarchical maintenance-oriented KG schema
-based on bridge architectures and practical textural reports, and 2)
-explore different text embeddings as well as GNN algorithms for graph
-data mining on the generated KG to enhance practical applicability, e.g.,
-node classification for properties comply check or semantic enrichment,
-link prediction for maintenance recommendation.
-2.3. Word and sentence embedding
-As is known, machines have remarkable proficiency in handling
-numerical data, but they encounter challenges when processing text
-input (usually functioning less efficiently). Therefore, it is imperative to
-convert the text into a format that machines can effectively interpret.
-Various static word embedding techniques, including Bag of Words
-[ 23 ], TF-IDF [ 24 ], Word2Vec [ 25 ] and GloVe [ 26 ], have been developed
-to produce n-dimensional vectorized representations (i.e., word em-
-beddings) of individual words by looking up through the created “ ta-
-bles ” . These embeddings aim to capture the meanings and the semantic
-relations of the words, as well as the diverse contexts in which they are
-utilized, such as a classic example [ 25 ]: by removing the man attribute
-from ‘King ’ and incorporating the woman characteristic, appropriate
-word embeddings can arrive at ‘Queen ’ , i.e., King   Man + Woman =
-Queen , which encapsulates the comparison between them. They are
-supposed to maintain attributes of the individual words from the
-training set by usually projecting similar ones as neighbours in a hy-
-perspace. Word embeddings can be adopted for different downstream
-tasks, such as sentiment classification and name entity recognition
-(NER). Moreover, through transfer learning, the pre-trained word
-embedding models can be extended to a wide range of applications.
-Fig. 1. Proposed maintenance-oriented knowledge-graph schema for bridges.
-Y. Gao et al. Automation in Construction 166 (2024) 105634 
-3 
-However, word embeddings encounter challenges in dealing with a
-sentence, e.g., when manipulating multiple word embedding vectors to
-produce a vectorized representation of a sentence. Hence, it is necessary
-to develop techniques to convert the sentence to a n-dimensional vec-
-torized representation, i.e., sentence embedding.
-Word and sentence embeddings are both subsets of text embeddings.
-The ideal text embeddings (or text representations) can retain the se-
-mantic information of the text as much as possible. Texts with the same
-semantics but different expressions should be mapped to the same po-
-sition (or neighbours), while texts with different semantics should
-maintain corresponding distances in the vector space. Currently,
-numerous approaches and pre-trained models have been created for text
-embedding, e.g., fastText [ 27 ], BERT [ 28 ], T5 [ 29 ], Instructor [ 30 ], as
-well as the latest large language models (LLMs) such as ChatGPT [ 31 ]
-and Llama [ 32 , 33 ]. Most of them are based on the transformer archi-
-tecture and trained on two major objective tasks in natural language
-processing (NLP), including masked language modelling (MLM) and
-next sentence prediction (NSP).
-In practice, text embedding vectors (i.e., text representations) are
-usually derived through the following methods: 1) with the vectorized
-representation of the [CLS] token as text embedding, i.e., [CLS] token
-embedding; 2) with the vectorized representation of the [CLS] token
-after processing through multilayer perceptron (MLP) as text embed-
-ding, i.e., [CLS] + MLP embedding; 3) with all the tokens' vectorized
-representations after pooling (mean or max pooling) as text embedding,
-i.e., all the tokens + pooling embedding; 4) with all the tokens' vector-
-ized representations after pooling (mean or max pooling) and MLP
-processing as text embedding, i.e., all the tokens + pooling + MLP
-embedding. The evaluation of text embeddings is based on their per-
-formance in different downstream tasks, such as classification, clus-
-tering, pair classification, reranking, retrieval, semantic textual
-similarity (STS), summarization, and bitext mining.
+Digital twin (DT) technology is increasingly adopted across engineering fields for its
+transformative potential in managing and optimizing asset operation and maintenance
+(O&M). In civil infrastructure, DT applications have been explored to monitor and optimize
+O&M of structures such as bridges and buildings [1]. By providing a real-time, data-driven
+digital replica of the infrastructure, DT technology enables early detection of potential
+issues and facilitates proactive maintenance strategies [ 2]. For example, DTs can model
+and predict infrastructure behavior under various conditions by leveraging IoT sensor
+data and data-driven analytics, thereby reducing downtime and extending the lifespan
+of infrastructure [3]. Additionally, DTs can facilitate efficient resource allocation and sup-
+port informed decision-making, both of which are essential for managing large-scale and
+complex infrastructure systems [4]. Consequently, DT technology has become essential for
+developing more resilient and sustainable infrastructure management systems, addressing
+challenges due to aging assets and increasing maintenance demands.
+In the context of bridge management, DT facilitates a dynamic digital representa-
+tion of physical structures, continuously updated with real-time data to enable predictive
+maintenance, informed decision-making, and comprehensive lifecycle management [ 5].
+With infrastructure maintenance becoming more critical and complex, there is a growing
+demand for efficient, data-driven solutions to optimize bridge O&M. However, traditional
+Buildings 2024, 14, 3731. https://doi.org/10.3390/buildings14123731 https://www.mdpi.com/journal/buildings
+Buildings 2024, 14, 3731 2 of 19
+bridge management systems (BMS) and existing digital twin (DT) applications often rely
+on standalone platforms, such as building information modeling (BIM) or the geographic
+information system (GIS). These systems face significant limitations due to the lack of inte-
+gration between BIM and GIS, as well as the absence of graph-based data structures [6–8].
+This fragmentation limits the full potential of BIM’s detailed structural information and
+GIS’s spatial analysis capabilities, thereby hindering effective decision-making and the
+optimization of maintenance processes.
+To address the research question—how to overcome the limitations of current bridge
+management systems and existing DT applications by integrating BIM, GIS, and graph
+algorithms to create a more comprehensive, efficient, and interoperable solution for bridge
+operation and maintenance—this study develops an integrated bridge DT system. The
+proposed system combines WebGIS, WebBIM, and graph algorithms within a three-layer
+architecture, supporting routine bridge O&M practices, including real-time monitoring,
+drone-enabled inspection, intelligent traffic diversion, and maintenance planning. Mean-
+while, to bridge the gap between BIM and GIS modules, i.e., to ensure data interoperability
+and cross-platform functionality, a common data environment (CDE) is designed to ef-
+fectively achieve compatibility between WebGIS and WebBIM modules. Additionally,
+an adaptive data structure is employed, featuring JSON-based bridge defect information
+modeling and triple-based roadmap graphs, to enhance data management efficiency and
+support graph-based decision-making. This integrated approach not only facilitates seam-
+less interaction between GIS and BIM modules, but also enables advanced data analytics
+and robust decision-making for optimizing bridge O&M activities.
+The developed DT system demonstrates significant potential for practical bridge man-
+agement by enhancing operational efficiency, safety, and data-driven decision-making.
+With real-time interoperability between WebGIS and WebBIM modules, the system sup-
+ports proactive maintenance planning and immediate traffic management responses to
+structural issues. The adaptive data structure, leveraging JSON-based modeling and
+triple-based graphs, enables precise defect tracking and efficient resource allocation. This
+BIM-GIS-integrated framework serves as a foundation for advanced bridge DT applica-
+tions, providing insights that can support long-term predictive maintenance strategies and
+ultimately extend the lifespan of bridge infrastructures.
+This study makes a four-fold contribution to the field of bridge DT.
+1. The study develops a bridge DT system that integrates WebGIS, WebBIM, and graph
+algorithms within a three-layer architecture, supporting essential O&M activities,
+including real-time monitoring, drone-enabled inspection, intelligent traffic diversion,
+and maintenance planning.
+2. It explores BIM-GIS interaction within a bridge DT framework to enable essential
+collaborative functionalities. A web-oriented CDE is designed to enhance cross-
+platform compatibility, allowing seamless data exchange and combined functionality
+between WebGIS and WebBIM modules.
+3. An adaptive data structure is introduced, featuring JSON-based bridge defect infor-
+mation modeling and triple-based roadmap graphs. This structure enhances data
+management efficiency, enables graph-based decision-making, and facilitates precise
+tracking of defects and optimal resource allocation in bridge O&M.
+4. The study highlights the application of graph-based data structures and algorithms
+within a bridge DT system for various O&M activities, such as maintenance logistics
+and route optimization. This approach illustrates the effectiveness of graph theory in
+enhancing bridge O&M processes.
+This paper is organized as follows: Section 2 provides a comprehensive review of
+related works, covering existing bridge DT systems, as well as BIM and GIS applications
+in bridge management. Section 3 outlines the methodology, describing the design and
+development of the proposed DT system. Section 4 presents system validation through
+case studies. Section 5 discusses the system’s advantages and limitations. Finally, Section 6
+Buildings 2024, 14, 3731 3 of 19
+concludes the study, summarizing the main achievements and suggesting directions for
+future research.
+2. Related Works
+This section reviews the existing research on DT applications in bridge management,
+focusing on the implementation of BIM and GIS functions. The structure is organized to
+provide a comprehensive understanding of prior work in three main areas: the development
+of bridge DT systems, the application of GIS and BIM in bridge O&M, and the role of graph
+theory in digital technology integration. This structure is chosen to highlight the gaps in
+existing approaches and lay the foundation for the proposed integrated bridge DT system.
+2.1. Bridge DT
+In recent years, the concept of digital twin (DT) has become a transformative tool
+in managing and monitoring physical assets, including bridges. A bridge DT serves as
+a dynamic digital counterpart of a physical bridge, continuously updated with real-time
+data. This enables advanced analytics, informed decision-making, and predictive modeling
+to optimize operations, maintenance, and overall performance throughout the bridge’s
+lifecycle. Unlike traditional static bridge management systems (BMS), bridge DTs provide
+up-to-date insights into the bridge’s conditions, forecast performance, identify risks, and
+generate maintenance plans in near real time [9].
+In bridge engineering, a DT for operation and structural health monitoring (SHM) is a
+virtual model that not only updates dynamically with new data, but also provides feedback
+to the physical bridge. This allows for “what-if” scenario analysis to assess risks and predict
+performance [10]. For maintenance purposes, DTs are continuously updated with data
+from visual inspections, non-destructive testing (NDT), and other sources such as original
+design details, damage history, traffic, weather, and disaster data[5,6,11,12]. Furthermore,
+multiple DTs can form a network for intelligent transportation systems, often represented
+topologically on a map, supporting holistic decision-making and comprehensive main-
+tenance planning. For example, Adibfar and Costin developed a mock-up bridge DT by
+integrating weigh-in-motion (WIM) data into a bridge information model (BrIM). This
+integration enables real-time traffic data from sensors to assess how overweight commercial
+vehicles affect the bridge’s structural components. This study highlights the potential of
+combining transportation data with bridge DTs to enhance infrastructure management
+and research.
+Over the past decade, there has been growing interest in bridge DTs, leading to several
+successful prototypes and pilot projects. For example, Butler et al. [13] developed a DT for
+two railway bridges, integrating fiber Bragg grating (FBG) sensors and laser rangefinders
+to monitor parameters such as strain, acceleration, and train axle positions. Similarly,
+Dang et al. [ 14] proposed a cloud-based DT framework for SHM, combining machine
+learning, finite element modeling, and cloud computing for real-time monitoring and
+proactive maintenance. Their framework demonstrated high accuracy in detecting and
+assessing damage in both model and real bridges.
+Gao et al. [15] introduced an AIoT-informed DT communication framework that im-
+proves efficiency and resilience in bridge O&M. By leveraging an information hierarchy
+and two-way communication, their system achieves low latency, high efficiency, and fault
+tolerance, with the potential for intelligent bridge management with minimal human in-
+tervention. Additionally, several conceptual bridge DTs [16–18] have been developed by
+Shim et al. for preventive maintenance by integrating surface models, BIM, and FEM-based
+simulation models, updating structural parameters based on detected deterioration. More-
+over, many existing bridge monitoring and management approaches offer valuable insights
+for developing comprehensive bridge DT solutions. For example, Maes and Lombaert [19]
+conducted an extensive monitoring campaign on a railway bridge, providing a benchmark
+for validating vibration-based bridge SHM methods. Sajedi and Liang [ 20] developed a
+bridge SHM framework using a fully convolutional neural network (FCN), demonstrating
+Buildings 2024, 14, 3731 4 of 19
+a robust approach for near real-time damage assessment. Dong et al. [ 21] presented a
+deep learning-based structural displacement monitoring method using full-field optical
+flow techniques, achieving high accuracy through both laboratory and field experiments.
+Alexakis et al. [22] studied a railway viaduct using a multi-sensing system that integrates
+dynamic strain and acoustic emission sensors to monitor both global deformations and local
+deterioration. Meng et al. [23] developed the GeoSHM system, which employs GNSS and
+Earth observation technologies to monitor long-span bridges, providing a comprehensive
+approach for monitoring bridge deformation and environmental impacts.
+Advanced algorithms, such as knowledge graphs and graph-based techniques, have
+been incorporated into DTs to support autonomous decision-making. Yang et al. [ 11]
+utilized big data and AI for multi-source data management and knowledge sharing, while
+Gao et al. [24] developed a bridge maintenance-oriented knowledge graph (BMKG), inte-
+grating text encoding and GraphSAGE for semantic enrichment and relationship prediction.
+Given that regional bridge networks can be represented as graphs, graph algorithms hold
+great potential for coordinating decisions across multiple bridges, such as maintenance
+planning, traffic diversion, and dynamic evacuation. However, research in this area is
+still limited.
+2.2. GIS and BIM
+2.2.1. GIS and Bridge DTs
+In previous research [25], GIS has frequently been used as a platform for visualizing
+bridge locations and spatial relationships. This requires systems capable of efficiently ren-
+dering maps and bridge positions. Traditional GIS software, such as ArcGIS Desktop 10.8.2
+and QGIS 3.14.16, while powerful, may lack the flexibility and web integration needed
+for dynamic bridge DT applications. In contrast, Cesium [26], a web-based platform that
+utilizes lightweight 3D tiling technology, is more suited to these tasks. Its web-based
+capabilities enable seamless integration between the GIS module and BIM modules, allow-
+ing users to switch effortlessly between them and enhancing real-time visualization and
+interaction. Moreover, GIS can play a significant role in analyzing the relationship between
+bridge maintenance and its surrounding environment. For instance, a bridge located in
+mountainous or coastal regions, combined with long-term weather data such as tempera-
+ture and humidity, or its location in earthquake- or flood-prone areas, can greatly influence
+factors such as structural damage and material corrosion. These environmental conditions
+are critical for more comprehensive bridge health analysis within a DT framework.
+Furthermore, the interaction between multiple bridges and the regional road network
+is crucial for the coordinated O&M of bridges. This includes managing traffic loads during
+routine bridge operations, traffic diversion and logistics planning during bridge mainte-
+nance, and dynamic evacuation in the case of natural disasters such as earthquakes and
+floods. Integrating these tasks into a GIS platform allows for more holistic decision-making
+regarding bridge maintenance under traffic loads. It cannot only minimize disruptions
+to daily life, but it also improves efficiency and can even contribute to reducing carbon
+emissions during the maintenance process.
+2.2.2. BIM and Bridge DTs
+BIM has been widely adopted in bridge management, leading to the development
+of BrIM tailored for bridges. In recent research, bridge DTs and BMS often use BIM or
+BrIM as foundational technologies, benefiting from their capabilities in comprehensive
+data integration and detailed modeling. For example, Mohammadi et al. [27] developed a
+BrIM-based system using terrestrial laser scanning (TLS) to create a digital replica of bridge
+elements, integrating geometric and non-geometric data for accurate condition assessment
+and maintenance planning. This approach, validated on the Werrington Bridge in Australia,
+enhances decision-making through real-time monitoring and optimized remedial actions.
+Tita et al. explored digital twin–BIM technology for bridge management by combining
+health monitoring data with BIM for structural performance assessment. This approach
+Buildings 2024, 14, 3731 5 of 19
+enables traffic simulation, FE analysis, and landscape visualization, improving maintenance
+planning and enhancing bridge safety and reliability.
+Moreover, Li et al. [28] developed a bridge health monitoring system that integrates
+BIM with ontologies and the industry foundation classes (IFC) standard. Their approach
+uses ontologies to model relationships between bridge elements and SHM systems, enabling
+the integration of geometric and non-geometric data. By extending the IFC schema, the
+system improves data sharing and management, facilitating more structured bridge health
+analysis. This integration of BIM, IFC, and ontology enhances data interoperability and
+supports comprehensive decision-making in bridge management. Additionally, there are
+also successful examples of BIM-based bridge DTs in the industry. For instance, an open
+BIM-based bridge DT [29] was developed to enable long-term monitoring and predictive
+maintenance (PM), combining traditional inspections with digital data from structural
+diagnosis and monitoring, and integrating the derived semantic data into the BIM model.
+Although significant research explored BIM-based solutions for bridge DTs, studies
+focusing on the interaction between BIM and GIS remain relatively limited. Some works
+investigated using 3D tiling techniques to embed BIM models into GIS platforms or web
+interfaces. For instance, Zhan et al. [30] proposed a high-efficiency visualization method
+for complex BIM models on the web, utilizing 3D tiles while preserving the integrity
+of BIM’s subassemblies. Similarly, Xu et al. [ 31] developed a method to convert IFC
+models into 3D tiles for smoother WebGIS interactions, addressing the challenges of model
+simplification and efficient data transmission in BIM-GIS integration. However, such
+approaches often compromise the level of detail (LOD) in BIM models to enable faster
+rendering and visualization.
+This study seeks to improve the collaboration between GIS and BIM modules by
+maintaining the unique strengths of each. Rather than relying on simplified visualization,
+the study will utilize web technologies for seamless user interaction and fluid transitions
+between GIS and BIM functionalities. The back-end integration will enable effective coop-
+eration between the two modules, ensuring detailed, efficient, and accurate maintenance
+and decision-making processes.
+2.3. Graph-Based Applications
+Several studies demonstrated the potential of graph-based approaches in GIS ap-
+plications. For example, Abdelfattah et al. [ 32] developed a graph of charging stations
+and road networks using data from QGIS and applied K-nearest neighbor algorithms to
+compute the shortest paths between charging stations. Similarly, Daniel et al. [ 33] ana-
+lyzed the connectivity and coverage of road networks extracted from open GIS data using
+graph centrality measures. To expand the use of graph data structure to BIM domain,
+Zhu et al. [34] proposed a framework for converting IFC files to labeled property graphs
+and subsequently to a common GIS format (e.g., CityGML, shapefile, 3D tiles, etc.) to
+address the interoperability issue between BIM and GIS.
+In scenarios where managing and analyzing complex relationships between intercon-
+nected data points is crucial, the application of graph theory frequently takes the form of
+graph databases (graphDB) in practice. This is especially relevant in fields such as traffic
+infrastructure management, where the data is naturally structured as a network of related
+entities. According to Robinson et al. [35], a graphDB is any database that exposes a graph
+data model through create, read, update, and delete (CRUD) operations. The primary ad-
+vantage of graphDBs, compared to relational databases and many other NoSQL databases,
+lies in their efficiency and intuitive ability to model and manage intricate relationships.
+Unlike traditional databases, graphDBs can not only query data based on node attributes,
+but also effectively model and manage complex relationships between data points.
+Importing GIS and BIM data into a graph structure simplifies data integration by
+linking attributes from BIM and GIS directly within nodes and edges, so that graph algo-
+rithms can be operated natively on the unified data structure, for faster and more robust
+decision-making. Therefore, this study aims to explore the integration of BIM and GIS
+Buildings 2024, 14, 3731 6 of 19
+using graphDBs as an intermediate data model. Various software solutions are available
+for implementing graphDBs, such as Neo4j 5.23, ArangoDB 3.11.5, Neptune 1.3.2.1, Dgraph
+23.0.0, OrientDB 3.2.35, FlockDB #4, etc.
 3. Methodology
-3.1. Problem statement
-This research aims to develop a hierarchical Knowledge Graph (KG)
-focused on bridge maintenance, referred to as BMKG. The goal is to
-create a structured framework that incorporates information from
-bridge designs and actual textual maintenance reports. Furthermore, the
-study will explore different text embedding techniques and Graph
-Neural Network (GNN) models for efficient data mining within the
-BMKG, thus increasing its utility in real-world applications.
-The BMKG is designed to evolve by integrating ongoing inspection
-reports throughout a bridge's lifecycle. It typically functions as an
-incomplete graph, marked by the introduction of new nodes without the
-corresponding links. For example, a newly identified defect might not
-have a corresponding repair proposal, whether the defect is newly
-discovered or an existing one found in a new location. In such cases,
-experienced engineers can utilize the accumulated maintenance records
-(i.e., a knowledge base) to pinpoint similar defects and suggest appro-
-priate repair actions. This study is inspired by the above observation and
-the specific objectives of this study can be listed below:
-1. Propose a hierarchical KG schema oriented towards bridge mainte-
-nance incorporating bridge architectures and practical textual
-reports.
-2. Identify the node hierarchy (i.e., node classification) in an incom-
-plete BMKG with missing links through pre-trained text encoding
-and GNN algorithms for compliance check and semantic enrichment.
-3. Predict potential connections (i.e., link prediction) in a deficient
-BMKG by leveraging text encoding and GNN neural networks for KG
-completion.
-4. Design a practical implementation framework that incorporates the
-above strategies and approaches for effective bridge maintenance.
-3.2. BMKG schema
-Modular bridges typically display recurring patterns and symmetries
-in both their structure and defects. These patterns can be observed from
-design documents like CAD drawings or Revit models, as well as from
-textual inspection reports, through semantic textual similarities and
-consistent demonstrative relationships. For example, bridge spans of the
-same type usually have similar components (such as main girders, cross
-girders, soffits, and rail bearers) and tend to show similar types of defects
-and repair needs (e.g., stiffener cranks with medium section loss < 50%
-and remarkable section loss > 50% may require progressively extensive
-repair actions). In light of this, this study introduces a bridge
-maintenance-oriented knowledge graph (BMKG) schema, derived from
-Fig. 2. Procedures of text encoding to generate node features.
-Y. Gao et al. Automation in Construction 166 (2024) 105634 
-4 
-both bridge design and practical maintenance reports, as depicted in
-Fig. 1 . This schema consists of five distinct layers: the main structure
-layer, component layer, element (or sub-component) layer, defect (or
-fault) layer, and repair action (or proposal) layer.
-In this schema, nodes in the main structure layer are interconnected.
-However, other connections (links) are limited to adjacent layers,
-ensuring no cross-layer or intra-layer connections (except in the top
-layer). This structure allows for effective graph aggregation within a
-single BMKG. All connections between different layers are directed from
-the upper to the lower layers. Previous research has extensively focused
-on target classification (i.e., Named Entity Recognition, NER) [ 1 , 2 ] and
-dependency parsing (i.e., relation extraction) [ 3 , 4 ] in the context of
-bridge inspection reports. As a result, the necessary BMKG can be
-automatically generated from historical textual reports (whether un-
-structured or semi-structured), following the proposed KG schema.
-Furthermore, this BMKG can be dynamically expanded with regular
-inspections, to facilitate bridge maintenance activities such as infor-
-mation storage, retrieval, and clustering.
-3.3. Text encoding and GraphSAGE
-3.3.1. Text encoding
-Bridge inspection reports are usually unstructured or semi-
-structured. Previous studies have shown that these textural reports can
-be transformed into structured data through NLP techniques. This
-structured data can then be used to create a directed, hierarchical Bridge
-Maintenance Knowledge Graph (BMKG) following a specific schema. In
-this schema, textual information, such as “ Span 1 ” → “ Deck ” → “ Bearing
-stiffener web plate ” → “ Hole and pitting ” → “ Remove existing rivets
-using burning equipment and install a new steel plate to the stiffener
-web ” , serve as nodes. Traditionally, node features are represented
-through manual encoding methods like one-hot encoding or word em-
-beddings such as word2vec. The former requires meticulous design for
-differentiation, which can be labour-intensive, while the latter may not
-effectively capture sentence-level context. Therefore, using sentence
-embeddings to represent node features, especially to capture semantic
-textual similarity in bridge maintenance reports, is advantageous. These
-embeddings can be obtained from pre-trained text encoders or language
-models, like BERT. This process can be illustrated with BERT and [CLS]
-embeddings in Fig. 2 .
-Different text encoders can lead to varying performance when their
-embeddings are used as node features in GNNs. The performance dif-
-ference can be attributed to several factors below:
-1) Quality of embeddings: different text encoders may capture semantic
-information with varying levels of effectiveness. Some encoders may
-be better at context understanding or semantic relationship
-encoding, which can significantly affect the performance of the
-GNNs that use these embeddings.
-2) Pre-training data and objectives: the pre-trained text encoders are
-based on specific datasets and tasks (such as language modelling,
-sentence prediction, etc.). It can influence how well the embeddings
-meet the specific requirements of the downstream task. For example,
-an encoder trained on a dataset like the application domain may
-produce more relevant embeddings.
-3) Dimensions: different encoders may produce embeddings of different
-sizes. In principle, higher-dimensional embeddings can potentially
-capture more information but at the cost of increased computational
-complexity. Conversely, lower-dimensional embeddings are
-computationally efficient but may lack expressiveness.
-4) Model architecture: the architecture of the text encoder (e.g., LSTM,
-transformer) can affect task performance. For example, transformer-
-based models like BERT are known for capturing contextual infor-
-mation effectively, which may be beneficial for certain GNN tasks.
-5) Robustness: some encoders are more robust to variations in specific
-text, like slang and typos. The robustness of embeddings can affect
-the model's ability for generalization.
-3.3.2. GraphSAGE
-Traditional transductive GNNs, like the Graph Convolutional
-Network (GCN), are limited to creating representations through all the
-nodes for a single fixed graph [ 34 ], which is difficult to generalize for
-unseen nodes in an evolving graph with new links, as well as different
-graphs. GraphSAGE addresses these limitations by learning a dynamic
-representation method across subsets of graphs through inductive
-training, which is particularly beneficial for graphs that evolve with rich
-node attribute information [ 35 ]. Once trained, GraphSAGE can generate
-representations for new nodes or entirely different graphs, provided they
-share the attribute schema of the training data. Additionally, the learned
-node representation can change along with the neighbour relationship
-variation in an evolving graph. Therefore, in this study, GraphSAGE is
-employed to create low-dimensional vector representations (graph em-
-beddings) for nodes in the proposed BMKG. The algorithm for GraphS-
-AGE embedding is outlined in the following pseudo-code.
-Algorithm 1 . Generating node representation based on graphSAGE
-During the GraphSAGE embedding process, nodes progressively
-aggregate more information from their neighbours and extend their
-reach across the graph through iterative processes. Suppose there are K
-aggregation functions, denoted as AGGREGAT E
-k
-( ∀ k ∈ { 1 , … , K } ),
-which are used for aggregating features from node neighbours. These
-functions are associated with a set of weight matrices, denoted as W
-k
-( ∀ k ∈ { 1 , … , K } ), which are utilized for message propagation across
-different layers of the model [ 35 ]. The variable k represents the current
-Y. Gao et al. Automation in Construction 166 (2024) 105634 
-5 
-iteration step (or the search depth) and h
-k
-denotes the latent embedding
-at step k (or the hidden layer k ). Initially, k = 0, indicating the input
-node features.
-At first, each node v ∈ V aggregates its neighbourhood embeddings,
-i.e., h
-k   1
-u
-∀ u ∈ N ( v ) , into a single vector h
-k   1
-N ( v )
-. Then, GraphSAGE
-concatenate the node's embedding h
-k   1
-v
-with the aggregated neigh-
-bourhood embedding h
-k   1
-N ( v )
-, and feed the result into a fully connected
-neural network (FCN) with a nonlinear activating function σ to generate
-the representation vector (i.e., h
-k
-v
-). Finally, the representation output at
-the depth K is obtained after normalization as z
-v
-= h
-K
-v
-, ∀ v ∈ V . In
-practice, the aggregation of neighbour embeddings, i.e., AGGREGAT E
-k
-,
-can be implemented through diverse architectures [ 35 ], including
-mean, pooling, GCN, and LSTM. The mean and pooling aggregators are
-adopted in this study, as indicated in Eq. 1.
-h
-k
-v
-← σ
-(
-W ⋅ MEAN
-({
-h
-k   1
-v
-}
-∪
-{
-h
-k   1
-u
-, ∀ u ∈ N ( v )
-} )
-# (1)
-AGGREGAT E
-pool
-k
-= max
-({
-σ
-(
-W
-pool
-h
-k
-u
-i
-+ b
-)
-, ∀ u
-i
-∈ N ( v )
-} )
-# (2)
-3.4. Proposed approaches and framework
-3.4.1. Node-layer classification
-Node-Layer Classification (NLC) can be applied for compliance
-checks or semantic enrichment within a BMKG. This process typically
-begins with a Depth-First Search (DFS), a traditional method used for
-finding the shortest path between two nodes in a graph. The effective-
-ness of DFS relies on graph integrity. For example, in an ideal, complete
-BMKG, once the nodes in the top layer (i.e., the main structure layer) are
-identified, the layers of the other nodes can be determined using bidi-
-rectional depth-first search (B-DFS) according to the 5-layer schema
-configuration. However, BMKGs based on real-world inspection reports
-might be incomplete due to data gaps or inconsistencies, like missing
-entities or relationships. In such scenarios, some nodes may remain
-unclassified after B-DFS due to absent connections. To address this
-challenge in an incomplete BMKG, a method that combines pre-trained
-text encoding with GraphSAGE is proposed. This approach utilizes
-contextual information such as semantic textual similarity and parts of
-speech, along with the benefits of GNNs. The methodology for this
-process is depicted in Fig. 3 .
-In the beginning, bidirectional B-DFS is used for node-layer classi-
-fication in the incomplete BMKG with missing links. It starts from the
-given node in the top layer to the bottom layer (i.e., top-down DFS), and
-then reverses from the classified nodes in the bottom layer to the upper
-layer (i.e., down-top DFS), which aims to identify the missing nodes due
-to absent connections in the top-down DFS. Subsequently, the classified
-nodes are taken as the training set and the remaining unidentified nodes
-are adopted as the test set. After encoding through an appropriate pre-
-trained text encoder (or language model), the generated text embed-
-dings are utilized as features for each node. Finally, a model consisting of
-multiple GraphSAGE layers (for graph embedding or aggregation) and a
-Softmax layer (as the classifier) is trained through inductive learning for
-NLC.
-The loss function is based on multi-class cross-entropy (MCE), indi-
-cated in Eq. 2 .
-L =  
-1
-N
-∑
-N
-i = 1
-∑
-M
-c = 1
-y
-ic
-log ( p
-ic
-) # (3)
-Where, L is the average loss for N examples; M is the number of
-classes and c ∈ [ 1 , M ] ; y
-ic
-is a binary value (0 or 1) – if the i th example's
-true class is c , y
-ic
-= 1, and vice versa; p
-ic
-is the probability of the i th
-example belonging to the class c , which is derived from the Softmax
-function (Eq. 3).
-The performance of NLC is assessed using accuracy, indicated in Eq.
-4 .
-accuracy =
-TP + TN
-TP + TN + FP + FN
-# (4)
-Where, TP – true positive; TN – true negative; FP – false positive; FN –
-false negative.
-3.4.2. Contrastive link prediction
-In an evolving Bridge Maintenance Knowledge Graph (BMKG),
-which often resembles an incomplete graph with missing links due to
-data scarcity, determining the connections between new and existing
-nodes is a challenge of link prediction. This has various practical ap-
-plications, such as suggesting repairs and creating dependencies. This
-study proposes a method based on contrastive learning to address this
-challenge, comprising the following steps [ 36 ]:
-1) Existing and missing links in the BMKG are considered positive ex-
-amples, labelled as {1, 1, … , 1}. Existing links form the positive
-training set while missing links are used as the positive test set.
-Fig. 3. Proposed pipeline for NLC in an incomplete BMKG.
-Fig. 4. Proposed pipeline for link prediction in an incomplete BMKG.
-Y. Gao et al. Automation in Construction 166 (2024) 105634 
-6 
-2) Non-existent edges in the current BMKG, representing node pairs
-without edges, are randomly sampled as negative examples and
-labelled as {0, 0, … , 0}. Then, they are divided into training and test
-sets.
-3) All nodes in both sets are encoded using a pre-trained text encoder or
-language model. The generated text embeddings become node fea-
-tures for graph embedding.
-4) A binary classification model, designed for link prediction, is trained
-using inductive learning. This model includes graph embedding
-based on GraphSAGE architecture and a pair-wise score calculation.
-5) The score is derived using various metric-based methods like L2
-distance, dot product, cosine similarity, element-wise product (sum
-or mean), and MLP.
-6) Finally, a binary classification model based on graph embedding and
-pair-wise score calculation is trained through inductive learning for
-link prediction.
-The link prediction model is composed of two parts: 1) Graph
-embedding, which involves aggregating node information using the
-GraphSAGE architecture, and 2) Pair-wise scoring, where a scalar value
-is generated for each edge or node pair. This scoring is based on the
-features of the connected nodes after aggregation. The calculation of this
-score employs various metrics, including L2 distance (Eq. 5 ), dot product
-(Eq. 6 ), cosine similarity (Eq. 7 ), element-wise product (Eq. 8 ), and
-Multilayer Perceptron (MLP) (Eq. 9 ).
-score =
-̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅ ̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅ ̅
- 
-h
-i
-  h
-j
-)
-2
-+
- 
-h
-i
-  h
-j
-)
-2
-√
-#
-(5)
-score = h
-T
-i
-h
-j
-# (6)
-score =
-h
-T
-i
-h
-j
-‖ h
-i
-‖
-2
-⊙
-⃒
-⃒
-⃦
-⃦
-h
-j
-⃦
-⃦
-2
-# (7)
-score = SUM
- 
-h
-i
-⊙ h
-j
-)
-or MEAN
- 
-h
-i
-⊙ h
-j
-)
-# (8)
-score = W
- 
-h
-i
-⃦
-⃦
-h
-j
-)
-+ b # (9)
-Where, score is the pair-wise score of the edge between node i , j ∈ V ;
-h
-i
-, h
-j
-are graph embeddings for node i , j ∈ V .
-The comprehensive process for link prediction using contrastive
-learning is illustrated in Fig. 4 . Notably, this involves constructing two
-types of graphs: a positive graph using positive examples and a negative
-graph using negative examples. Both these graphs share the same nodes
-as the original BMKG. Consequently, this allows for the calculation of a
-scalar score for each edge or node pair, utilizing the same node repre-
-sentations post-GraphSAGE embedding. This scoring is consistent across
-various graphs, encompassing the original, incomplete BMKG as well as
-the newly created positive and negative graphs.
-It's important to note that the negative examples are generated from
-node pairs that are not connected in the current BMKG. These examples
-must be filtered by eliminating unqualified links that violate the re-
-strictions in the proposed BMKG schema, such as connections that span
-beyond adjacent layers. Moreover, due to limitations in the dataset, i.e.,
-the BMKG derived from existing inspection reports cannot cover all
-scenarios, the generated negative examples can be divided into two
-categories:
-1) Authentic negative examples, which are pairs of nodes that should
-not be linked essentially, such as non-existing components (or ele-
-ments) and inappropriate repair solutions.
-2) Pseudo-negative examples, which are pairs of nodes that might be
-connected but were not recorded in historical reports. Examples
-include components (or elements) that were not found to be defec-
-tive and defects that were not detected.
-To mitigate the impact of pseudo-negative examples in contrastive
-learning, negative examples are randomly generated in the same
-quantity as positive examples, as recommended in [ 37 ]. Then, the bi-
-nary cross-entropy (BCE), indicated in Eq. 10 , is used as the loss
-function.
-L =  
-1
-N
-∑
-N
-i = 1
-[ y
-i
-⋅ log ( p
-i
-) + ( 1   y
-i
-) ⋅ log ( 1   p
-i
-) ] # (10)
-Where L represents the average loss for N examples; y
-i
-is the label of
-the example i ; p
-i
-is the predicted probability of the example i .
-The effectiveness of the model is assessed using the ROC (Receiver
-Operating Characteristic Curve) and AUC (Area Under the ROC Curve)
-metrics. The ROC is a graphical representation that displays the classi-
-Fig. 5. Framework applying NLC and link prediction for practical implementation.
-Y. Gao et al. Automation in Construction 166 (2024) 105634 
-7 
-fication model's performance across various thresholds, with the x-axis
-indicating the False Positive Rate (FPR) (Eq. 11 ) and the y-axis showing
-the True Positive Rate (TPR) (Eq. 12 ).
-FPR =
-FP
-FP + TN
-# (11)
-TPR = Recall =
-TP
-TP + FN
-# (12)
-AUC measures the entire two-dimensional area underneath the
-entire ROC curve, which denotes the probability that the score of a
-positive example exceeds that of a negative example when both are
-randomly sampled from the data, indicated in Eq. 13 .
-AUC =
-∑  
-p
-i
-, n
-j
-)
-p
-i
-> n
-j
-P * N
-#
-(13)
-Where, P – the number of positive examples; N – the number of
-negative examples; p
-i
-– the prediction score for a positive example; n
-j
-–
-the prediction score for a negative example.
-Determining the best threshold based on known True Positive Rates
-(TPRs) and False Positive Rates (FPRs) varies according to specific goals
-or priorities. For instance, if the aim is to increase the TPR while mini-
-mizing the FPR, the ideal threshold is that which corresponds to the
-point nearest to the top left corner of the ROC plot. Conversely, if the
-goal is to achieve a balance between TPR and FPR, the preferred
-threshold is one that optimizes the Youden Index ( J ) in the ROC curve. In
-this study, the latter approach has been chosen for determining the most
-effective threshold for evaluating model performance, as indicated in
-Eq. 14 and 15 .
-J ( t ) = TPR ( t )   FPR ( t ) # (14)
-t
-*
-= argmax
-t
-J ( t ) #
-(15)
-Where, t
-*
-– optimal threshold; t – threshold.
-Additionally, precision and F1 score are also utilized to evaluate
-model performance in this work, as indicated in Eqs. 16 and 17 .
-Precision =
-TP
-TP + FP
-# (16)
-Fig. 6. Examples of inspection reports preprocessing for BMKG establishment.
-Y. Gao et al. Automation in Construction 166 (2024) 105634 
-8 
-F1 = 2 ×
-Precision × Recall
-Precision + Recall
-# (17)
-3.4.3. Implementation framework
-The proposed methods can be widely used in bridge maintenance
-knowledge engineering, covering areas like KG completion, semantic
-enrichment, node dependency analysis, and compliance checks. These
-methods can improve the efficiency of engineers in bridge maintenance
-planning, e.g., by offering automated repair suggestions. This involves
-transferring knowledge from experienced engineers to junior ones,
-enabling them to come up with viable repair suggestions using historical
-data and BMKG. This is made possible through text encoding and GNNs,
-which use semantic textual similarities, label propagation, and graph
-embedding. A framework for this implementation is illustrated in Fig. 5 ,
-integrating node-layer classification and link prediction into practical
-bridge maintenance procedures.
-Fig. 5 illustrates the framework for applying Node-Layer Classifica-
-tion (NLC) and link prediction in practical use. The framework begins
-with BMKG derived from textual reports (either unstructured or semi-
-structured), obtained either manually or through NLP. The BMKG may
-have missing links due to incomplete data or new inspection findings.
-Initially, each node's content (words, phrases, sentences) is encoded
-using a pre-trained text encoder or language model. The derived text
-embeddings serve as node features. Compared to traditional encoding
-methods like one-hot encoding, it can enhance node encoding efficiency
-within the GNNs. Node-layer classification is then achieved using B-DFS
-and GraphSAGE, aiding in semantic enrichment of the BMKG and
-compliance checks. Additionally, link prediction is accomplished using
-GraphSAGE and contrastive learning. The results of node-layer classifi-
-cation can help filter out unqualified negative examples, increasing the
-accuracy of link prediction.
-It's important to note that the context-based predicted node
-connections may not always be reliable due to data limitations in the
-textual reports. Therefore, a manual review of link prediction results is
-required. For instance, a link from a component to an element should be
-verified against the bridge design diagram. Similarly, proposed repair
-solutions, i.e., links between defect and repair action nodes, require
-manual verification as well. Verified predicted connections can be
-incorporated into maintenance planning or used as text prompts in a
-plugin, thereby improving the efficiency of engineers' documentation
-tasks. In contrast, unsatisfactory predictions can be used as new negative
-examples for further contrastive learning, enhancing the model's per-
-formance in a closed-loop system.
-4. Proof of concept
-4.1. BMKG construction
-To verify the practical effectiveness of the proposed methodologies,
-real-world maintenance reports for multiple railway truss bridges in the
-UK, which are semi-structured containing 953 records in terms of
-“ date ” , “ location ” , “ defect ” , “ query ” , and “ proposal ” , are employed to
-create the BMKG. Then, the textural reports are manually preprocessed
-(e.g., abbreviation replacement, lowercase conversion, misspelling
-correction) and manipulated into “ main structure ” , “ component ” ,
-“ element ” , “ defect ” , and “ repair action ” layers according to the pro-
-posed BMKG schema, as illustrated in Fig. 6 . Because of irregularity in
-routine inspection reports, such as blank spaces, special abbreviations,
-misspellings (or misuse of punctuation), this pre-processing step be-
-comes necessary. It is also promising to be accomplished through NLP
-techniques (e.g., NER and relations extraction) like in previous research
-[ 1 – 4 ].
-Consequently, a BMKG with 264 nodes and 451 relationships (i.e.,
-edges) is created according to the proposed schema for the following
-experiments and illustrated via Neo4j, as shown in Fig. 7 .
-4.2. Node layer classification for incomplete BMKGs
-4.2.1. Experiment preparation for NLC
-As for a complete directed BMKG, the B-DFS method can effectively
-determine the layers of every node, provided the hierarchy of at least
-one node is known. This is depicted in Fig. 8 (1). However, in the case of
-an incomplete BMKG with missing links, the B-DFS method can only
-identify the layers of partial nodes due to the absent connections, as
-illustrated in Fig. 8 (2). To address this challenge, the approach
-described in Section 3.4.1 is proposed, which integrates text embeddings
-as initial node features into GraphSAGE, leveraging both contextual
-similarities and the strengths of GNNs. The experiment is designed to
-test the proposed approach on a deficient BMKG with missing links. A
-deficient or incomplete BMKG is created from the original intact BMKG
-in Fig. 8 by randomly removing a certain proportion of its connection (e.
-g., 20%).
-The experiment is carried out on Google CodeLabs utilizing PyTorch
-and the Deep Graph Library (DGL). A GraphSAGE architecture, as
-detailed in Table 1 , is proposed for graph learning. The NLC model is
-developed by incorporating a Softmax layer as the classifier at the end of
-the proposed neural network. The experiment's objective is to identify
-the layers of unknown nodes in the deficient BMKG with absent con-
-nections, as illustrated in Fig. 8 (2), using the information and attributes
-of the recognized nodes.
-4.2.2. Ablation study for NLC
-4.2.2.1. Different text encoders for NLC. In graph neural networks
-(GNNs), the initial node features can significantly affect the model
-performance in downstream tasks. Different text encoding methods
-produce various embeddings, leanding to diverse outcomes. This
-Fig. 7. Established intact BMKG in Neo4j (264 nodes, 451 edges, and 5
-node layers).
-Y. Gao et al. Automation in Construction 166 (2024) 105634 
-9 
-ablation study aims to identify which text encoder can generate the best
-performance in the proposed BMKG (shown in Fig. 7 ) for NLC. Then, an
-experiment was conducted to compare traditional word embedding
-methods and multiple pre-trained LLMs in node feature initialization for
-NLC. Traditional word embedding methods include bag of words (BOW)
-[ 18 ], TF-IDF [ 19 ], Skip-gram [ 38 ], and GloVe [ 21 ], which are trained on
-the corpus derived from the same maintenance reports used to establish
-the BMKG. LLM-based text encoders include bart-base (BART) [ 39 ],
-bert-base-uncased (BERT) [ 40 ], CLIP text encoder [ 41 ], deberta-v3-base
-(DeBERTaV3) [ 42 ], gtr-t5-base (GTR) [ 43 ], text-embedding-ada-002
-(OpenAI) [ 44 ], sentence-t5-base (T5) [ 45 ], UAE-Large-V1(UAE) [ 46 ],
-and xlm-mlm-en-2048 (XLM) [ 47 ].
-In the experiment, the identified nodes after B-DFS and their layer
-information serve as the training set, while the remaining unknown
-nodes are treated as the test set. As illustrated in Fig. 8 , there are 5
-classes of node labels, i.e., main, component, element, defect, action.
-The experiment configuration is detailed in Table 2 .
-The experimental results are presented in Fig. 9 and 10 . As can be
-seen, multiple LLM text encoders, like BERT, DeBERTaV3, GTR, OpenAI-
-ada, UAE, overperform all the traditional word embedding methods in
-the experiment. Especially, BERT achieves the top test accuracy of
-97.73%. Hence, BERT is adopted as the text encoder to initialize node
-Fig. 8. NLC for intact and deficient BMKGs after B-DFS.
-Table 1
-GraphSAGE model architecture for NLC.
-Search
-depth
-Hidden layer
-dimension
-Aggregation Activation
-function
-Dropout Classifier
-k = 3 128 mean ReLU 0.3 Softmax
-Table 2
-Training configuration for NLC.
-Optimiser Learning rate Weight_decay AMSGrad Epochs
-AdamW 0.0001 0.001 True 3000
-Y. Gao et al. Automation in Construction 166 (2024) 105634 
-10 
-features for following NLC experiment. Additionally, most of the LLMs
-used in the experiment perform well for the NLC task (i.e., 5-class
-classification) in the target BMKG, demonstrating the effectiveness of
-proposed NCL method (see section 3.4.1) and GraphSAGE architecture
-(detailed in Table 1 ). The difference in results is most likely due to the
-different training data used for each LLM. The BERT model's superior
-performance could be attributed to its robust pre-training on a corpus
-closely related to bridge maintenance textual reports, which enhances
-its ability to generalize across this specific task.
-4.2.2.2. Varying BMKG completeness for NLC. An experiment is con-
-ducted for NLC on incomplete BMKGs across a range of missing con-
-nections from 10% to 50%, leading to 20, 44, 62, 106 and 121 unknown
-node labels after B-DFS, respectively. The experiment configuration is
-detailed in Table 2 and the initial node features are generated by text
-encoding through the pre-trained BERT model. The training and test
-accuracies are displayed in Fig. 11 .
-As can be seen in Fig. 11 , test accuracy decreases as the missing rate
-of connections increases in the BMKG, indicating that the robustness of
-the proposed NLC approach is significantly affected by the completeness
-of the BMKG. Furthermore, in the deficient BMKG with 50% missing
-links (leading to 121 unknown nodes of 234 nodes after B-DFS), test
-accuracy can achieve an accuracy of over 86%, demonstrating the
-effectiveness and robustness of the proposed NLC method and GraphS-
-AGE architecture. It is also evident that ensuring a lower rate of missing
-connections can lead to better performance in downstream tasks.
-Fig. 9. Training process based on different text encoders for NLC.
-Fig. 10. Training and test performance based on different text encoders for NLC.
-Y. Gao et al. Automation in Construction 166 (2024) 105634 
-11 
-Therefore, it is essential to consider the impact of missing links' pro-
-portions when applying the approach to the BMKG generated from the
-real-world maintenance textual reports that usually has data de-
-ficiencies and irregularities.
-4.2.3. Cross-validation for NLC
-5-fold cross-validation (i.e., removing 20% of links in each fold) is
-performed to evaluate the model's generalization capability for NLC. The
-experiment follows the configuration detailed in Table 2 . The initial
-nodes features are generated by encoding through the pre-trained BERT
-model. The results are shown in Fig. 12 , achieving an average accuracy
-of 98.94% on the test set. This demonstrates that the proposed NLC
-method and GraphSAGE with node features initialized from BERT text
-encoding cannot only achieve excellent performance in the target BMKG
-but also exhibit strong generalization capability. Hence, the approach is
-promising for significantly improving the efficiency, accuracy, and
-accessibility of knowledge engineering and documentation work in
-bridge maintenance, including tasks such as compliance checking and
-knowledge graph generation.
-Fig. 11. NLC performance based on varying BMKG completeness.
-Fig. 12. 5-fold cross-validation for NLC.
-Fig. 13. Training, validation, and test performance in a deficient BMKG
-for NLC.
-Y. Gao et al. Automation in Construction 166 (2024) 105634 
-12 
-4.2.4. Semantic enrichment
-BMKGs derived from real-world maintenance reports are usually
-deficient with absent connections due to data deficiencies and irregu-
-larities, which results in missing node layer information of many nodes
-after B-DFS. Hence, it would be beneficial to enrich such semantic in-
-formation in an incomplete BMKG using various methods. An experi-
-ment is conducted to validate the proposed approach for such NLC
-semantic enrichment tasks. The deficient BMKG is created with 10% of
-its links missing randomly, leading to 22 problematic nodes without
-layer information after B-DFS. The other nodes with known layers are
-split into the training set (i.e., 220 nodes) and validation set (22 nodes),
-respectively, while the problematic nodes are adopted as the test set (i.
-e., 20 nodes). The experiment configuration is detailed in Table. 2 with
-the number of epochs set to 10,000. Initial node features are derived by
-text encoding through the pre-trained BERT model. Finally, the model
-training process and the experiment results are shown in Fig. 13 .
-In Fig. 13 , training, validation, and test accuracies can achieve
-95.91%, 90.91%, and 95.45%, respectively. Notably, due to a limited
-number of samples, each back-propagation update during training can
-cause significant changes in accuracies, leading to the stepwise pattern
-observed. This indicates the sensitivity of the model to the data volume.
-Especially for a relatively small dataset, each data point can dispro-
-portionately affect the training process.
-Furthermore, the node-layer results of the BMKG before and after
-semantic enrichment are displayed in Fig. 14 . It demonstrates the
-effectiveness of the proposed method in semantic enrichment (i.e., node
-layer information) in a deficient BMKG with missing links by leveraging
-available textual information through GNNs. As can be seen, this
-approach is beneficial for practical applications in bridge maintenance
-documentation work, such as facilitating easier retrieval and under-
-standing of data, ensuring that all critical information is captured and
-structured, and reducing the likelihood of errors and omissions.
-4.3. Link prediction for incomplete BMKGs
-4.3.1. Experiment preparation for link prediction
-The GraphSAGE architecture for link prediction is detailed in
-Table 3 , where the Softmax layer in the NLC model is replaced with a
-function for calculating pairwise scores. The experiment is conducted on
-Google CodeLabs using PyTorch and the Deep Graph Library (DGL).
-In the experiment, a portion of links were randomly removed from
-the intact BMKG in Fig. 7 to simulate a deficient BMKG due to the data
-deficiencies or irregularities commonly found in practical maintenance
-reports. The positive and negative examples are generated using the
-method proposed in Section 3.4.2. Binary cross-entropy (BCE), as indi-
-cated in Eq. 9 , is used as the loss function.
-4.3.2. Ablation study for link prediction
-4.3.2.1. Different edge pair-scoring methods for link prediction. To iden-
-tify the most effective edge pair-scoring method for link prediction, five
-different metric-based pairwise score calculators are compared in the
-experiment, including L2 distance, dot product, cosine similarity,
-Fig. 14. Deficient BMKG before and after semantic enrichment via NLC.
-Table 3
-GraphSAGE architecture for link prediction.
-Search depth Hidden layer dimension Aggregation activation function
-k = 3 128 pool Sigmoid
-Table 4
-Training configuration for link prediction.
-Optimiser Learning rate Weight_decay StepLR Epochs
-step_size gamma
-AdamW 1 × 10
-  5
-0.01 10 0.98 2000
-Fig. 15. Training process based on different pairwise scoring methods for
-link prediction.
-Y. Gao et al. Automation in Construction 166 (2024) 105634 
-13 
-Hadamard product (both summation and average), and an MLP based on
-concatenation. The incomplete BMKG is created by randomly removing
-20% of the links from the original BMKG ( Fig. 7 ). The node features are
-initialized through a pre-trained BERT model (i.e., bert-base-uncased
-[ 40 ]). The experimental configuration is detailed in Table 4 .
-The model performance for link prediction is evaluated using the
-AUC metric (Eq. 12 ). The results are presented in Fig. 15 . As can be seen,
-the choice of edge score calculation method can significantly affect
-model performance. The L2 distance (i.e., Euclidean distance) achieves
-the highest test AUC (i.e., 0.90), showing its superior effectiveness over
-the other metric-based pairwise score calculators in capturing the un-
-derlying relationships within the proposed BMKG. Consequently, the L2
-distance method is employed in the following experiment.
-4.3.2.2. Different text encoders for link prediction. An experiment is
-conducted to compare traditional word embedding methods and mul-
-tiple pre-trained LLMs in node feature initialization for link prediction,
-including the models utilized in Section 4.2.2.1. The experiment
-configuration is detailed in Table 4 . The results are shown in Fig. 16 .
-As can be seen from Fig. 16 , most LLM text encoders overperform the
-traditional word embedding methods in the experiment for link pre-
-diction on test AUC. BERT stands out with the best AUC (i.e., 0.90) on
-the test set, as well as the minimal AUC difference between training and
-test sets, indicating its robustness and reliability. Consequently, the pre-
-trained BERT model is employed as the text encoder for node feature
-initialization in the following link prediction experiment. Additionally,
-the other LLM text encoders used in the experiment demonstrate
-excellent performance and strong generalization capabilities as well,
-which are promising to be further improved by tuning and
-regularization.
-4.3.2.3. Varying BMKG completeness for link prediction. An experiment
-is conducted for link prediction on incomplete BMKGs across a range of
-missing links from 10% to 50%, i.e., 45, 90, 135, 180, and 225 edges,
-respectively. The configuration is detailed in Table 4 . The initial node
-features are generated by text encoding through the pre-trained BERT
-model. The results are shown in Fig. 17 .
-As can be seen from Fig. 17 , it demonstrates the impact of varying
-levels of BMKG completeness on the model's performance. As the pro-
-portion of missing connections increases from 10% to 50%, a clear
-Fig. 16. Training and test performance based on different text encoders for link prediction.
-Fig. 17. Link prediction performance based on varying BMKG completeness.
-Y. Gao et al. Automation in Construction 166 (2024) 105634 
-14 
-decline can be observed from test accuracies. This trend underscores the
-sensitivity of link prediction models to the availability of complete data
-in BMKGs. Therefore, in practical applications of link prediction, it is
-crucial to consider the impact of BMKG completeness for achieving more
-robust model performance.
-4.3.3. Cross-validation for link prediction
-To evaluate the model's generalization capability for link prediction,
-a 5-fold cross-validation is performed by removing 20% of links in each
-fold, generating different training and test sets. The experiment follows
-the configuration detailed in Table 4 . The results are presented in
-Fig. 18 , achieving an average AUC of 0.88 on the test set. This demon-
-strates that the proposed contrastive link prediction method with BERT
-text embeddings and the L2 pairwise scoring method, is not only
-effective in predicting node connections for the target BMKG but also
-exhibits excellent generalization capability, which is crucial for practical
-applications.
-4.3.4. BMKG completion
-KG completion plays a crucial role in knowledge engineering and has
-various practical usages, such as enhancing search engine outcomes,
-powering recommendation systems, generating scenarios, knowledge
-discovery, data integration and interoperability [ 48 ]. To assess the
-effectiveness of the proposed link prediction method in BMKG comple-
-tion, an experiment is conducted following the configuration detailed in
-Table 4 . The Youden index ( J ), as depicted in Eqs. 13 and 14 , is
-employed as the threshold for pairwise scores to determine whether to
-accept predicted node connections. An incomplete BMKG is created by
-removing 10% connections (i.e., 45 edges) randomly for the experiment,
-and the split of train, validation, and test sets is 80%:10:10%. The
-updated BMKG after link prediction is shown in Fig. 19 .
-Moreover, because the proposed contrastive link prediction essen-
-tially performs as binary classification (with J as the threshold of pair-
-wise scores), the result confusion matrix can be displayed in Fig. 20 and
-the prediction performance can be evaluated as shown in Table 5 .
-As can be seen from Fig. 19 , a significant portion of the missing links
-in the incomplete BMKG have been accurately reestablished after link
-prediction, i.e., 42 out of 45 edges, achieving a high true positive rate.
-The performance metrics in Table 5 showcase an AUC of 0.91 and an
-optimal threshold of 0.42. The model's accuracy stands at 0.84, with a
-precision of 0.79 and an F1 score of 0.86. Notably, the recall, i.e., true
-positive rate (TPR), is 0.93, indicating the model's proficiency in iden-
-tifying positive examples. The false positive rate (FPR) is 0.24, reflecting
-the model's balance between sensitivity and specificity.
-Fig. 18. 5-fold cross-validation for link prediction.
-Fig. 19. BMKG completion via link prediction.
-Y. Gao et al. Automation in Construction 166 (2024) 105634 
-15 
-The results demonstrate the effectiveness of the proposed link pre-
-diction method in BMKG completion, which can support various prac-
-tical applications in bridge maintenance knowledge engineering, such as
-maintenance schedule and repair recommendations, data augmentation,
-and anomaly detection. By accurately predicting missing links, the
-method can help to maintain comprehensive and up-to-date BMKGs,
-ultimately enhancing decision-making in bridge maintenance. It is also
-worth noting that a few negative example edges were incorrectly iden-
-tified as positive. This is partially attributed to the presence of pseudo-
-negative examples (see Section 3.4.2), which requires further explora-
-tion in the future.
-4.4. Comparison with cutting-edge models
-4.4.1. Comparative analysis for NLC
-Multiple cutting-edge models are employed in this section to
-compare with the proposed GraphSAGE model for NLC, including GCN
-[ 45 ], GAT [ 46 ], RGCN [ 47 ], and GINconv [ 49 ]. The target deficient
-BMKG is generated by removing 20% links randomly, leading to 41
-unknown nodes after B-DFS. The experiment is conducted on Google
-CodeLabs using PyTorch and the Deep Graph Library (DGL), with the
-model architectures recommended in their respective papers. The con-
-figurations are adjusted as needed for the target BMKG, such as setting
-the number of layers to 5. The results are shown in Fig. 21 . As can be
-seen, the proposed GraphSAGE model overperforms the other SOTA
-models in test accuracy for node layer classification in BMKG, demon-
-strating the superiority of the proposed NLC approach.
-4.4.2. Comparative analysis for link prediction
-Different state-of-art models and approaches are compared with the
-proposed contrastive link prediction method based on GraphSAGE,
-including GCN [ 45 ], RGCN [ 47 ], TAGCN [ 48 ], TransE [ 50 ], and Dis-
-tMult [51]. The target deficient BMKG is created by removing 20% links
-randomly, leading to 90 missing links. The experiment is conducted on
-Google CodeLabs using PyTorch and the Deep Graph Library (DGL),
-with the cutting-edge model architectures recommended in their
-respective papers. The configurations are adjusted as needed for the
-target BMKG, such as setting the number of layers to 5. The results are
-shown in Fig. 22 .
-As can be seen, the proposed GraphSAGE link prediction model by
-leveraging contrastive learning overperforms the other cutting-edge
-models and approaches in test AUC, demonstrating the superiority of
-the proposed link prediction method in the BMKG. Additionally, nega-
-tive examples in TransE and DistMult are generated via head and tail
-embeddings' corruption, whereas negative examples in GCN, RGCN,
-TAGCN, and GraphSAGE are proposed with non-existent edges. The
-experiment results further validate the effectiveness of using non-
-existent edges for generating negative examples in downstream tasks
-within the BMKG.
+This section details the methodology employed in developing the integrated DT
+system for bridge O&M, comprising three main components: the overall design of the DT
+system, the visualization and data integration process, and the functionalities provided
+by the system. First, the architecture of the DT system is described, outlining the roles of
+the presentation, application, and platform layers that enable seamless interaction between
+WebGIS, WebBIM, and graph algorithms. Next, the visualization and data integration
+pipeline are explained, highlighting the advanced technologies used to support real-time
+monitoring and data-driven decision-making. Finally, the specific functionalities of the
+GIS and BIM modules are discussed, along with their interactions to optimize bridge
+maintenance and management.
+3.1. DT System Design
+The proposed bridge digital twin (DT) system is structured into three distinct layers:
+presentation layer, application layer, and platform layer. Each layer serves a specific role in
+the overall architecture, enabling seamless integration and interaction for practical bridge
+operation and maintenance.
+1. Presentation Layer
+The presentation layer is designed to facilitate data acquisition and visualization.
+It includes various data sources such as images, point clouds, and time-series data
+collected from the physical bridge during in situ inspections. The data are gathered
+using technologies such as drones, 3D scanners, and sensors, and are presented
+to the user via integrated BIM and GIS viewers such as CesiumJS and Xeokit. The
+interface allows users to interact with and visualize the bridge model, enabling remote
+monitoring and efficient data management.
+2. Application Layer
+The application layer contains core digital twin services that support various applica-
+tions. It is divided into three main components based on data type:
+• Image-based services: These include defect detection, segmentation, localization,
+and grading. The image data are used to assess surface conditions, identify
+defects, and evaluate structural elements.
+• Point cloud-based services: Point clouds enable geometry reconstruction, 3D
+damage detection, and spatial assessments. Additionally, this component sup-
+ports BIM and finite element (FE) model updating for accurate digital representa-
+tion of the physical bridge.
+• Time series-based services: This component is focused on time-series data from
+monitoring sensors. It enables fault diagnosis, health monitoring, early warning,
+and remaining useful life (RUL) prediction.
+Additionally, the application layer provides customized functionalities, such as few-
+shot learning for damage detection, optimization for maintenance planning, and knowledge-
+based reasoning for decision support.
+3. Platform Layer
+• The platform layer serves as the backend foundation of the web-based Digi-
+Bridge platform. It consists of three core modules:
+• Basic technologies: incorporates GIS, IFC, visualization, communication pro-
+tocols, and data interoperability tools, forming the foundational elements of
+the platform.
+• Machine learning framework: includes training, prediction, and recommendation
+engines, as well as Flask-based APIs for seamless integration and service deployment.
+Buildings 2024, 14, 3731 7 of 19
+• Big data and cloud services: supports large-scale data management and compu-
+tation, including middleware, storage, distributed computing, and common data
+environment (CDE) services.
+The integration of these modules enables the platform to process and store data
+efficiently, provide real-time analytics, and support high-level decision-making applications.
+The modular design of the platform layer ensures flexibility and scalability, allowing the
+system to adapt to different bridge types and operational contexts.
+Based on the design above, the bridge DT platform architecture is presented in Figure 1,
+highlighting the interactions and data flow between these three layers. This platform sup-
+ports a comprehensive digital twin solution for effective bridge operation and maintenance,
+providing a unified platform for data management, visualization, and analysis.
+Buildings 2024, 14, 3731  7  of  19 
+ 
+ The  platform  layer  serves  as  the  backend  foundation  of  the  web-based  Digi-
+Bridge platform. It consists of three core modules: 
+ Basic technologies: incorporates GIS, IFC, visualization, communication proto-
+cols,  and  data  interoperability  tools,  forming  the  foundational  elements  of  the 
+platform. 
+ Machine  learning  framework:  includes  training,  prediction,  and  recommenda-
+tion engines, as well as Flask-based APIs for seamless integration and service de-
+ployment. 
+ Big data and cloud services: supports large-scale data management and compu-
+tation, including middleware, storage, distributed computing, and common data 
+environment (CDE) services. 
+The integration of these modules enables the platform to process and store data eﬃ-
+ciently, provide real-time analytics, and support high-level decision-making applications. 
+The modular design of the platform layer ensures ﬂexibility and scalability, allowing the 
+system to adapt to diﬀerent bridge types and operational contexts. 
+Based on the design above, the bridge DT platform architecture is presented in Figure 
+1, highlighting the interactions and data ﬂow between these three layers. This platform 
+supports a comprehensive digital twin solution for eﬀective bridge operation and mainte-
+nance, providing a uniﬁed platform for data management, visualization, and analysis.  
+ 
+Figure 1. DT platform architecture. 
+3.2. DT Visualization and CDE 
+The bridge DT visualization and data interaction pipeline is presented in Figure 2. 
+This pipeline leverages multiple tools and platforms to achieve an integrated, interactive 
+environment for bridge monitoring and management.  
+Figure 1. DT platform architecture.
+3.2. DT Visualization and CDE
+The bridge DT visualization and data interaction pipeline is presented in Figure 2.
+This pipeline leverages multiple tools and platforms to achieve an integrated, interactive
+environment for bridge monitoring and management.
+For efficient GIS visualization, bridge models are represented using the GLTF format
+and embedded into the Cesium platform as 3D tiles. This approach allows the spatial
+positions of the bridges to be accurately visualized within their natural environment,
+highlighting their relationships with surrounding geographic features and the broader
+transportation network. By leveraging the tiling technique, the platform efficiently han-
+dles large-scale data while maintaining high rendering quality. This GIS visualization
+provides an intuitive understanding of the bridge’s spatial context, supporting tasks such
+as environmental impact analysis, traffic route planning, and infrastructure management.
+For detailed BIM visualization, high-fidelity as-built IFC models (e.g., LOD 500) are
+embedded into the platform using the Xeokit SDK, enabling precise visualization of each
+bridge component. This allows users to view and interact with detailed structural elements,
+facilitating monitoring of specific bridge entities and assessing their conditions effectively.
+The CDE integrates various data sources and frameworks, such as GLTF models, IFC
+models, 3D tiles, data from IoT sensors and embedded systems via field bus or wireless
+communication (e.g., Wi-Fi and LoRa), as well as data from external websites (e.g., Google
+Maps API and Met Office) via web crawlers. On the GIS webpage, weather conditions,
+traffic information, and bridge maintenance data can be linked to specific bridges and
+Buildings 2024, 14, 3731 8 of 19
+locations, providing users with a comprehensive view of the bridge’s surroundings and
+interactions within the transportation network.
+Buildings 2024, 14, 3731  8  of  19 
+ 
+ 
+Figure 2. Bridge DT visualization and CDE. 
+For eﬃcient GIS visualization, bridge models are represented using the GLTF format 
+and embedded into the Cesium platform as 3D tiles. This approach allows the spatial po-
+sitions of the bridges to be accurately visualized within their natural environment, high-
+lighting their relationships with surrounding geographic features and the broader trans-
+portation  network.  By  leveraging  the  tiling  technique,  the  platform  eﬃciently  handles 
+large-scale data while maintaining high rendering quality. This GIS visualization provides 
+an intuitive understanding of the bridge’s spatial context, supporting tasks such as envi-
+ronmental impact analysis, traﬃc route planning, and infrastructure management. 
+For detailed BIM visualization, high-ﬁdelity as-built IFC models (e.g., LOD 500) are 
+embedded into the platform using the Xeokit SDK, enabling precise visualization of each 
+bridge  component.  This  allows  users  to  view  and  interact  with  detailed  structural  ele-
+ments, facilitating monitoring of speciﬁc bridge entities and assessing their conditions ef-
+fectively. 
+The CDE integrates various data sources and frameworks, such as GLTF models, IFC 
+models, 3D tiles, data from IoT sensors and embedded systems via ﬁeld bus or wireless 
+communication (e.g., Wi-Fi and LoRa), as well as data from external websites (e.g., Google 
+Maps API and Met Oﬃce) via web crawlers. On the GIS webpage, weather conditions, 
+traﬃc information, and bridge maintenance data can be linked to speciﬁc bridges and lo-
+cations, providing users with a comprehensive view of the bridge’s surroundings and in-
+teractions within the transportation network. 
+On the BIM webpage, data collected from bridge surveys and health monitoring (e.g., 
+drones, LiDAR scanners, and SHM sensors) are linked to corresponding bridge elements 
+using unique entity IDs, enabling accurate reality modeling and tracking of real-time sen-
+sor readings on the dashboard. This connection allows users to view, retrieve, and evalu-
+ate bridge maintenance information directly within the BIM environment. The data are 
+dynamically updated from the IoT database and visualized using WebSocket and related 
+libraries (e.g., Apache ECharts), ensuring that real-time information is accurately reﬂected 
+in the visualization.  
+Additionally, the integration of defect data with structural elements enables remote 
+monitoring, condition assessment, and maintenance planning directly through the web-
+based platform. Users can seamlessly switch between the GIS and BIM webpages, allow-
+ing  them  to  explore  spatial  context  and  structural  details  simultaneously.  This  cross-
+Figure 2. Bridge DT visualization and CDE.
+On the BIM webpage, data collected from bridge surveys and health monitoring
+(e.g., drones, LiDAR scanners, and SHM sensors) are linked to corresponding bridge
+elements using unique entity IDs, enabling accurate reality modeling and tracking of real-
+time sensor readings on the dashboard. This connection allows users to view, retrieve,
+and evaluate bridge maintenance information directly within the BIM environment. The
+data are dynamically updated from the IoT database and visualized using WebSocket and
+related libraries (e.g., Apache ECharts), ensuring that real-time information is accurately
+reflected in the visualization.
+Additionally, the integration of defect data with structural elements enables remote
+monitoring, condition assessment, and maintenance planning directly through the web-
+based platform. Users can seamlessly switch between the GIS and BIM webpages, allowing
+them to explore spatial context and structural details simultaneously. This cross-platform
+navigation enhances the user experience, providing a holistic understanding of the bridge’s
+condition and its surrounding environment, ultimately supporting effective management
+and informed decision-making.
+3.3. DT Functionalities
+Based on the design outlined in Sections 3.1 and 3.2, the bridge digital twin (DT)
+system is organized into two core modules: the GIS module and the BIM module. The
+functionalities of the DT system are specifically designed for each of these modules while
+also addressing scenarios where interaction between the two modules is necessary.
+3.3.1. GIS-Module Services
+For the GIS module, the following functionalities are designed to leverage the specific
+strengths of GIS technology:
+Buildings 2024, 14, 3731 9 of 19
+• Spatial visualization: Accurate representation of the bridge and its surroundings using
+geographic information, allowing users to observe the bridge in relation to nearby
+geographic features such as rivers, roads, and other infrastructure. This is achieved
+by embedding the bridge’s GLTF model into the Cesium platform and utilizing 3D
+tiling technology to ensure efficient rendering of large-scale geographic data (see
+Section 3.2).
+• Environmental impact analysis: Linking environmental data (e.g., weather from Met
+Office, terrain data) to the GIS module to analyze how the bridge interacts with its
+environment, particularly for long-term planning, such as corrosion risks for bridges
+in coastal areas with high salt content. Additionally, the GIS module supports traffic
+route optimization during extreme events, such as bridge closures caused by floods or
+earthquakes, ensuring timely and effective rerouting of traffic.
+• Traffic and operational monitoring: Incorporating real-time traffic data and visualizing
+the impact of traffic flow on the bridge’s operational status. Additionally, by leveraging
+the graph generated from the road network, the module uses graph-based algorithms
+to quickly generate alternative routes when a bridge is scheduled for maintenance or
+closure. This helps avoid traffic congestion or assists in dynamic evacuation planning,
+ensuring smoother traffic flow and better operational efficiency.
+• Maintenance planning: Using the geographic context, along with the graph generated
+from the road network and corresponding graph algorithms, to optimize maintenance
+scheduling and logistics. This approach takes into account factors such as accessibility,
+nearby resources, and environmental conditions to ensure maintenance operations are
+planned efficiently and executed effectively.
+3.3.2. BIM-Module Services
+For the BIM module, the following functionalities are designed to leverage the specific
+strengths of BIM technology:
+• Detailed structural visualization and retrieval: Providing high-fidelity visualization of
+the bridge using detailed IFC models, enabling precise inspection and interaction with
+individual components (e.g., beams, piers, and decks). This is achieved by embedding
+IFC models into the Xeokit platform.
+• Structural health monitoring: Visualizing real-time data from sensors embedded in the
+bridge, allowing users to monitor key indicators such as stress, strain, and vibration
+levels for specific structural components. Sensor data are linked to specific components
+via component ID in the attribute descriptions, which helps calibrate structural models,
+train machine learning (ML) models, predict remaining useful life (RUL), and support
+condition-based decisions. For example, extreme vibrations or high strain may indicate
+structural damage, prompting actions such as closing the bridge or restricting traffic.
+• Damage detection and assessment: Utilizing data from imagery or point clouds to
+detect, localize, and evaluate structural defects, helping to inform maintenance and
+repair decisions. Machine vision techniques, along with pre-trained machine learning
+models, are used in this process, thereby automating the bridge inspection. The
+results are integrated into the BIM model, allowing engineers to query the damage
+status of specific components using their component ID and generate corresponding
+repair recommendations.
+3.3.3. GIS and BIM Interactions
+The integration of the GIS and BIM modules is critical for several scenarios:
+• Cross-platform navigation: Users can switch between GIS and BIM views seamlessly
+to explore both the spatial context and the detailed structural data of the bridge. For
+example, when inspecting a specific structural element in the BIM module, users can
+immediately assess its geographic surroundings through the GIS module.
+• Data linkage: Real-time sensor data from the BIM module can be linked to the geo-
+graphic context in the GIS module. For instance, weather conditions such as tempera-
+Buildings 2024, 14, 3731 10 of 19
+ture, humidity, or wind speed (from the GIS module) affecting the bridge’s structural
+integrity (monitored in the BIM module) can be visualized and analyzed together for
+a holistic view.
+• Maintenance decision-making: The combined insights from both BIM and GIS mod-
+ules enable more effective maintenance planning and operations. Monitoring data
+recorded in the BIM module can inform decisions such as closing the bridge, reducing
+load, or allowing one-way traffic. The GIS module can then generate appropriate traffic
+rerouting plans based on these decisions. Similarly, when repair components recorded
+in BIM need to be sourced from different locations, GIS can optimize transportation
+routes to streamline logistics and facilitate the maintenance process.
+3.3.4. GraphDB Services
+Incorporating databases is crucial for optimizing decision-making processes for bridge
+O&M within the back end of the DT system. In this study, Neo4j is chosen as the preferred
+graph database due to its native graph storage and efficient processing capabilities, which
+enable the effective modeling of complex relationships among bridge components, main-
+tenance activities, and regional traffic networks. The data are organized using a graph
+model, with nodes representing entities such as bridges, roads, inspection sites, main-
+tenance warehouses, and transportation routes. The relationships between these nodes
+are defined as edges, capturing attributes such as transportation links and dependencies
+between maintenance tasks. This graph-based structure allows for comprehensive analysis
+and real-time updates, ultimately supporting informed and efficient O&M decisions. The
+data processing and decision-making workflow facilitated by the graphDB is shown in
+Figure 3.
+Buildings 2024, 14, 3731  11  of  19 
+ 
+ 
+Figure 3. Data processing and decision-making workﬂow facilitated by graphDB. 
+4. System Validation 
+4.1. Pilot Bridge and Model Processing 
+The River Neath Swing Bridge, constructed in 1892, is selected as the pilot bridge for 
+this study. It is a Grade II listed railway bridge located downstream on the River Neath in 
+South Wales, as shown in Figure 4. The bridge has undergone signiﬁcant maintenance, 
+including  steel  structure  repairs  and  partial  reconstruction.  In  this  study,  the  bridge  is 
+treated as a road bridge to accommodate vehicle traﬃc, facilitating research.  
+ 
+Figure 4. Pilot bridge location (a) and proﬁle (b). 
+This work utilizes Revit to model the pilot bridge based on original drawings, gener-
+ating the IFC ﬁle of the bridge model. The IFC ﬁle can be directly integrated into the web-
+based Xeokit platform for BIM development. Meanwhile, using the open-source libraries 
+[36,37], the IFC ﬁle can be converted into GLTF format and embedded into the Cesium 
+platform with 3D tiling technology, enabling lightweight and eﬃcient web-based GIS de-
+velopment. The entire model processing workﬂow is illustrated in Figure 5.  
+Figure 3. Data processing and decision-making workflow facilitated by graphDB.
+4. System Validation
+4.1. Pilot Bridge and Model Processing
+The River Neath Swing Bridge, constructed in 1892, is selected as the pilot bridge for
+this study. It is a Grade II listed railway bridge located downstream on the River Neath
+in South Wales, as shown in Figure 4. The bridge has undergone significant maintenance,
+including steel structure repairs and partial reconstruction. In this study, the bridge is
+treated as a road bridge to accommodate vehicle traffic, facilitating research.
+This work utilizes Revit to model the pilot bridge based on original drawings, gen-
+erating the IFC file of the bridge model. The IFC file can be directly integrated into the
+web-based Xeokit platform for BIM development. Meanwhile, using the open-source
+libraries [36,37], the IFC file can be converted into GLTF format and embedded into the
+Buildings 2024, 14, 3731 11 of 19
+Cesium platform with 3D tiling technology, enabling lightweight and efficient web-based
+GIS development. The entire model processing workflow is illustrated in Figure 5.
+Buildings 2024, 14, 3731  11  of  19 
+ 
+ 
+Figure 3. Data processing and decision-making workﬂow facilitated by graphDB. 
+4. System Validation 
+4.1. Pilot Bridge and Model Processing 
+The River Neath Swing Bridge, constructed in 1892, is selected as the pilot bridge for 
+this study. It is a Grade II listed railway bridge located downstream on the River Neath in 
+South Wales, as shown in Figure 4. The bridge has undergone signiﬁcant maintenance, 
+including  steel  structure  repairs  and  partial  reconstruction.  In  this  study,  the  bridge  is 
+treated as a road bridge to accommodate vehicle traﬃc, facilitating research.  
+ 
+Figure 4. Pilot bridge location (a) and proﬁle (b). 
+This work utilizes Revit to model the pilot bridge based on original drawings, gener-
+ating the IFC ﬁle of the bridge model. The IFC ﬁle can be directly integrated into the web-
+based Xeokit platform for BIM development. Meanwhile, using the open-source libraries 
+[36,37], the IFC ﬁle can be converted into GLTF format and embedded into the Cesium 
+platform with 3D tiling technology, enabling lightweight and eﬃcient web-based GIS de-
+velopment. The entire model processing workﬂow is illustrated in Figure 5.  
+Figure 4. Pilot bridge location (a) and profile (b).
+Buildings 2024, 14, 3731  12  of  19 
+ 
+ 
+Figure 5. Bridge model processing workﬂow. 
+4.2. Case Study 1—Regional Bridge Operation and Monitoring 
+4.2.1. GIS and BIM Modules Visualization 
+The developed bridge DT platform leverages a web-based GIS module (i.e., Cesium) 
+to deliver accurate spatial visualization of the bridge and its surrounding environment. 
+This is accomplished by embedding the bridge’s GLTF model into the Cesium platform 
+and employing 3D tiling technology to eﬃciently render large-scale geographic data, as 
+illustrated in Figure 6, including (a) bridges and maintenance warehouses’ locations; (b) 
+the pilot bridge 3D-tiling model in Cesium; and (c) weather data, wind speed, and visibil-
+ity. This enables users to view the bridge in relation to nearby geographic features, such 
+as  rivers,  roads,  and  infrastructure,  oﬀering  a  comprehensive  understanding  of  the 
+bridge’s spatial context.  
+ 
+Figure 6. Pilot bridge visualization in GIS module. 
+Additionally, the platform integrates environmental impact analysis by linking ex-
+ternal data sources, such as weather data from the Met Oﬃce, into the GIS module, as 
+shown in Figure 7. This functionality allows for the analysis of how the bridge interacts 
+with its environment, supporting long-term maintenance planning, and ensures the safety 
+of on-site workers during repairs by monitoring factors such as temperature, wind speed, 
+and visibility.  
+Figure 5. Bridge model processing workflow.
+4.2. Case Study 1—Regional Bridge Operation and Monitoring
+4.2.1. GIS and BIM Modules Visualization
+The developed bridge DT platform leverages a web-based GIS module (i.e., Cesium)
+to deliver accurate spatial visualization of the bridge and its surrounding environment.
+This is accomplished by embedding the bridge’s GLTF model into the Cesium platform
+and employing 3D tiling technology to efficiently render large-scale geographic data, as
+illustrated in Figure 6, including (a) bridges and maintenance warehouses’ locations; (b) the
+pilot bridge 3D-tiling model in Cesium; and (c) weather data, wind speed, and visibility.
+This enables users to view the bridge in relation to nearby geographic features, such as
+rivers, roads, and infrastructure, offering a comprehensive understanding of the bridge’s
+spatial context.
+Additionally, the platform integrates environmental impact analysis by linking ex-
+ternal data sources, such as weather data from the Met Office, into the GIS module, as
+shown in Figure 7. This functionality allows for the analysis of how the bridge interacts
+Buildings 2024, 14, 3731 12 of 19
+with its environment, supporting long-term maintenance planning, and ensures the safety
+of on-site workers during repairs by monitoring factors such as temperature, wind speed,
+and visibility.
+Buildings 2024, 14, 3731  12  of  19 
+ 
+ 
+Figure 5. Bridge model processing workﬂow. 
+4.2. Case Study 1—Regional Bridge Operation and Monitoring 
+4.2.1. GIS and BIM Modules Visualization 
+The developed bridge DT platform leverages a web-based GIS module (i.e., Cesium) 
+to deliver accurate spatial visualization of the bridge and its surrounding environment. 
+This is accomplished by embedding the bridge’s GLTF model into the Cesium platform 
+and employing 3D tiling technology to eﬃciently render large-scale geographic data, as 
+illustrated in Figure 6, including (a) bridges and maintenance warehouses’ locations; (b) 
+the pilot bridge 3D-tiling model in Cesium; and (c) weather data, wind speed, and visibil-
+ity. This enables users to view the bridge in relation to nearby geographic features, such 
+as  rivers,  roads,  and  infrastructure,  oﬀering  a  comprehensive  understanding  of  the 
+bridge’s spatial context.  
+ 
+Figure 6. Pilot bridge visualization in GIS module. 
+Additionally, the platform integrates environmental impact analysis by linking ex-
+ternal data sources, such as weather data from the Met Oﬃce, into the GIS module, as 
+shown in Figure 7. This functionality allows for the analysis of how the bridge interacts 
+with its environment, supporting long-term maintenance planning, and ensures the safety 
+of on-site workers during repairs by monitoring factors such as temperature, wind speed, 
+and visibility.  
+Figure 6. Pilot bridge visualization in GIS module.
+Buildings 2024, 14, 3731  13  of  19 
+ 
+ 
+Figure 7. Pilot bridge visualization in BIM module. 
+The BIM module integrates sensor data for SHM of the bridge, as depicted in Figure 
+7. These sensors continuously collect data on the structural integrity of the bridge, includ-
+ing parameters such as strain, displacement, and vibration. When the monitored data de-
+viate from present safety thresholds, the platform triggers an alert, signaling potential op-
+erational risks for the bridge.  
+4.2.2. BIM and GIS Interaction for Real-Time Traﬃc Diversion 
+In cases where critical structural damage is detected within the BIM module, such as 
+the incident that happened to the Norway Starvo Bridge [38], the platform will issue in-
+structions  through  the  BIM  module  to  either  close  the  bridge  or  impose  weight  re-
+strictions. Additionally, it will manage traﬃc in the GIS module by rerouting vehicles to 
+alternative routes, thereby avoiding congestion and minimizing traﬃc risks. Such a work-
+ﬂow is illustrated in Figure 8.  
+ 
+Figure 8. BIM and GIS interaction workﬂow for real-time traﬃc diversion. 
+The graph-based structure provides signiﬁcant advantages for analyzing GIS maps, 
+allowing for more advanced data analysis through graph theory algorithms than raw vec-
+tor data alone. By assigning custom weights to edges, such as distance, time, or cost, the 
+graph can facilitate the computation of optimal routes. This approach also supports dy-
+namic updates, enabling real-time adjustments. In this work, roadmap data are sourced 
+from OpenStreetMap, encoded in GeoJSON format, and processed using QGIS to generate 
+the vector map, as shown in Figure 8. Then, the obtained vector map is converted into 
+triple-based graph structures in Neo4j, as shown in Figure 8, where roads are represented 
+as nodes and traﬃc connections as edges. The length of each road segment is calculated 
+and stored for further analysis with graph algorithms in Neo4j.  
+To minimize disruption caused by bridge closures due to structural damage, the GIS 
+module  applies  graph-based  algorithms  to  generate  optimized  traﬃc  diversion  routes 
+Figure 7. Pilot bridge visualization in BIM module.
+The BIM module integrates sensor data for SHM of the bridge, as depicted in Figure 7.
+These sensors continuously collect data on the structural integrity of the bridge, including
+parameters such as strain, displacement, and vibration. When the monitored data deviate
+from present safety thresholds, the platform triggers an alert, signaling potential operational
+risks for the bridge.
+4.2.2. BIM and GIS Interaction for Real-Time Traffic Diversion
+In cases where critical structural damage is detected within the BIM module, such
+as the incident that happened to the Norway Starvo Bridge [ 38], the platform will issue
+instructions through the BIM module to either close the bridge or impose weight restrictions.
+Additionally, it will manage traffic in the GIS module by rerouting vehicles to alternative
+routes, thereby avoiding congestion and minimizing traffic risks. Such a workflow is
+illustrated in Figure 8.
+The graph-based structure provides significant advantages for analyzing GIS maps,
+allowing for more advanced data analysis through graph theory algorithms than raw
+vector data alone. By assigning custom weights to edges, such as distance, time, or cost,
+the graph can facilitate the computation of optimal routes. This approach also supports
+Buildings 2024, 14, 3731 13 of 19
+dynamic updates, enabling real-time adjustments. In this work, roadmap data are sourced
+from OpenStreetMap, encoded in GeoJSON format, and processed using QGIS to generate
+the vector map, as shown in Figure 8. Then, the obtained vector map is converted into
+triple-based graph structures in Neo4j, as shown in Figure 8, where roads are represented
+as nodes and traffic connections as edges. The length of each road segment is calculated
+and stored for further analysis with graph algorithms in Neo4j.
+Buildings 2024, 14, 3731  13  of  19 
+ 
+ 
+Figure 7. Pilot bridge visualization in BIM module. 
+The BIM module integrates sensor data for SHM of the bridge, as depicted in Figure 
+7. These sensors continuously collect data on the structural integrity of the bridge, includ-
+ing parameters such as strain, displacement, and vibration. When the monitored data de-
+viate from present safety thresholds, the platform triggers an alert, signaling potential op-
+erational risks for the bridge.  
+4.2.2. BIM and GIS Interaction for Real-Time Traﬃc Diversion 
+In cases where critical structural damage is detected within the BIM module, such as 
+the incident that happened to the Norway Starvo Bridge [38], the platform will issue in-
+structions  through  the  BIM  module  to  either  close  the  bridge  or  impose  weight  re-
+strictions. Additionally, it will manage traﬃc in the GIS module by rerouting vehicles to 
+alternative routes, thereby avoiding congestion and minimizing traﬃc risks. Such a work-
+ﬂow is illustrated in Figure 8.  
+ 
+Figure 8. BIM and GIS interaction workﬂow for real-time traﬃc diversion. 
+The graph-based structure provides signiﬁcant advantages for analyzing GIS maps, 
+allowing for more advanced data analysis through graph theory algorithms than raw vec-
+tor data alone. By assigning custom weights to edges, such as distance, time, or cost, the 
+graph can facilitate the computation of optimal routes. This approach also supports dy-
+namic updates, enabling real-time adjustments. In this work, roadmap data are sourced 
+from OpenStreetMap, encoded in GeoJSON format, and processed using QGIS to generate 
+the vector map, as shown in Figure 8. Then, the obtained vector map is converted into 
+triple-based graph structures in Neo4j, as shown in Figure 8, where roads are represented 
+as nodes and traﬃc connections as edges. The length of each road segment is calculated 
+and stored for further analysis with graph algorithms in Neo4j.  
+To minimize disruption caused by bridge closures due to structural damage, the GIS 
+module  applies  graph-based  algorithms  to  generate  optimized  traﬃc  diversion  routes 
+Figure 8. BIM and GIS interaction workflow for real-time traffic diversion.
+To minimize disruption caused by bridge closures due to structural damage, the GIS
+module applies graph-based algorithms to generate optimized traffic diversion routes based
+on the regional road network. Here, highways classified as “motorways” and “primary”
+within a 45 km radius of Neath are queried using QuickOSM, with road segments as nodes
+and traffic connections as edges. When the BIM module flags a bridge as impassable due to
+SHM-detected damage, the affected edge is removed from the graph, as shown in Figure 9.
+Buildings 2024, 14, 3731  14  of  19 
+ 
+based on the regional road network. Here, highways classiﬁed as “motorways” and “pri-
+mary” within a 45 km radius of Neath are queried using QuickOSM, with road segments 
+as nodes and traﬃc connections as edges. When the BIM module ﬂags a bridge as impass-
+able due to SHM-detected damage, the aﬀected edge is removed from the graph, as shown 
+in Figure 9.  
+ 
+Figure 9. Vector map and roadmap graph surrounding Neath. 
+Afterwards,  the  system  recalculates  paths  using  shortest-path  algorithms,  such  as 
+Dijkstra’s, ranks them by segment length, and provides alternative routes, as shown in 
+Figure 10. This ensures eﬃcient rerouting of vehicles and reduces congestion in the sur-
+rounding areas. The seamless integration of BIM-based real-time monitoring with GIS-
+driven intelligent traﬃc management enhances proactive maintenance and improves the 
+operational eﬃciency of the bridge.  
+ 
+Figure 10. Top three shortest routes from A to B. 
+4.3. Case Study 2—Individual Bridge Maintenance 
+4.3.1. Integration of Drone-Enabled Bridge Inspection 
+The developed DT platform integrates drone-enabled bridge inspection in situ. When 
+GPS signals are strong, RTK enables drones to achieve centimeter-level positioning accu-
+racy. By leveraging the drone’s camera orientation, ﬁeld of view, and trigonometric cal-
+culations, the 3D coordinates of detected bridge defects can be precisely determined and 
+linked  to  the  corresponding  bridge  elements  [15].  In  cases  where  GPS  signals  are  dis-
+rupted (e.g., due to satellite obstruction), the inertial measurement unit (IMU) and visual 
+positioning systems can be used to accomplish the same task.  
+Computer vision techniques, such as k-means and Gaussian mixture model (GMM) 
+clustering, and deep learning models such as Mask R-CNN and DeepLabV3, are used to 
+identify and segment detected defects on the bridge structure. Defect images are stored in 
+an image database and visualized in the BIM module, linked to their respective element 
+Figure 9. Vector map and roadmap graph surrounding Neath.
+Afterwards, the system recalculates paths using shortest-path algorithms, such as
+Dijkstra’s, ranks them by segment length, and provides alternative routes, as shown
+in Figure 10. This ensures efficient rerouting of vehicles and reduces congestion in the
+surrounding areas. The seamless integration of BIM-based real-time monitoring with
+GIS-driven intelligent traffic management enhances proactive maintenance and improves
+the operational efficiency of the bridge.
+Buildings 2024, 14, 3731 14 of 19
+Buildings 2024, 14, 3731  14  of  19 
+ 
+based on the regional road network. Here, highways classiﬁed as “motorways” and “pri-
+mary” within a 45 km radius of Neath are queried using QuickOSM, with road segments 
+as nodes and traﬃc connections as edges. When the BIM module ﬂags a bridge as impass-
+able due to SHM-detected damage, the aﬀected edge is removed from the graph, as shown 
+in Figure 9.  
+ 
+Figure 9. Vector map and roadmap graph surrounding Neath. 
+Afterwards,  the  system  recalculates  paths  using  shortest-path  algorithms,  such  as 
+Dijkstra’s, ranks them by segment length, and provides alternative routes, as shown in 
+Figure 10. This ensures eﬃcient rerouting of vehicles and reduces congestion in the sur-
+rounding areas. The seamless integration of BIM-based real-time monitoring with GIS-
+driven intelligent traﬃc management enhances proactive maintenance and improves the 
+operational eﬃciency of the bridge.  
+ 
+Figure 10. Top three shortest routes from A to B. 
+4.3. Case Study 2—Individual Bridge Maintenance 
+4.3.1. Integration of Drone-Enabled Bridge Inspection 
+The developed DT platform integrates drone-enabled bridge inspection in situ. When 
+GPS signals are strong, RTK enables drones to achieve centimeter-level positioning accu-
+racy. By leveraging the drone’s camera orientation, ﬁeld of view, and trigonometric cal-
+culations, the 3D coordinates of detected bridge defects can be precisely determined and 
+linked  to  the  corresponding  bridge  elements  [15].  In  cases  where  GPS  signals  are  dis-
+rupted (e.g., due to satellite obstruction), the inertial measurement unit (IMU) and visual 
+positioning systems can be used to accomplish the same task.  
+Computer vision techniques, such as k-means and Gaussian mixture model (GMM) 
+clustering, and deep learning models such as Mask R-CNN and DeepLabV3, are used to 
+identify and segment detected defects on the bridge structure. Defect images are stored in 
+an image database and visualized in the BIM module, linked to their respective element 
+Figure 10. Top three shortest routes from A to B.
+4.3. Case Study 2—Individual Bridge Maintenance
+4.3.1. Integration of Drone-Enabled Bridge Inspection
+The developed DT platform integrates drone-enabled bridge inspection in situ. When
+GPS signals are strong, RTK enables drones to achieve centimeter-level positioning accuracy.
+By leveraging the drone’s camera orientation, field of view, and trigonometric calculations,
+the 3D coordinates of detected bridge defects can be precisely determined and linked to the
+corresponding bridge elements [15]. In cases where GPS signals are disrupted (e.g., due to
+satellite obstruction), the inertial measurement unit (IMU) and visual positioning systems
+can be used to accomplish the same task.
+Computer vision techniques, such as k-means and Gaussian mixture model (GMM)
+clustering, and deep learning models such as Mask R-CNN and DeepLabV3, are used to
+identify and segment detected defects on the bridge structure. Defect images are stored in
+an image database and visualized in the BIM module, linked to their respective element
+locations on the bridge model, as illustrated in Figure 11. The figure shows (a) fair and
+severe corrosion on a pier, (b) missing bolts on the cross bracing, (c) corrosion on the truss
+end plate, and (d) section loss on the lower crank. Additionally, the defect list on the top
+right provides detailed information, including data sources, inspection dates, locations,
+and defect descriptions.
+Buildings 2024, 14, 3731  15  of  19 
+ 
+locations on the bridge model, as illustrated in Figure 11. The ﬁgure shows (a) fair and 
+severe corrosion on a pier, (b) missing bolts on the cross bracing, (c) corrosion on the truss 
+end plate, and (d) section loss on the lower crank. Additionally, the defect list on the top 
+right provides detailed information, including data sources, inspection dates, locations, 
+and defect descriptions. 
+ 
+Figure 11. Observed defects and defect list shown in the BIM module. 
+For signiﬁcant damage requiring depth information, such as large cracks and spall-
+ing, the drone can approach the target area and perform scans using onboard LiDAR [39]. 
+The generated 3D data can then be processed for autonomous damage segmentation and 
+analysis, with the results linked to the relevant structural components. Simultaneously, 
+the defect geometries and updated material parameters can be synchronized within the 
+DT model, enabling ﬁnite element analysis (FEA) of the bridge structure or predicting the 
+remaining useful life (RUL) of the aﬀected components. 
+Furthermore, JSON ﬁles are created to systematically document observed bridge de-
+fects, capturing essential details such as bridge elements, defect types, dimensions, and 
+severity levels. Each defect assessment is saved as semantic information (text) within the 
+JSON  structure,  with  elementIDs  from  the  IFC  ﬁles  utilized  to  precisely  link  defects  to 
+their  corresponding  bridge  components.  This JSON-based  approach  oﬀers a structured 
+and  comprehensive  view  of  inspection  outcomes,  signiﬁcantly  enhancing  information 
+modeling and supporting informed maintenance decision-making.  
+4.3.2. BIM and GIS Integration for Maintenance Planning 
+For each defect entry generated in the JSON ﬁles, the system automatically generates 
+maintenance  recommendations  based  on  historical  repair  records,  established  mainte-
+nance  standards  (e.g.,  manuals  or  handbooks),  or  the  pre-deﬁned  bridge  maintenance 
+knowledge graph (BMKG). Simultaneously, by integrating the structural analysis results 
+and RUL predictions from the updated DT model, the system makes informed decisions, 
+such  as  prioritizing  repairs  for  critical  defects,  selecting  the  most  suitable  maintenance 
+methods, scheduling interventions to minimize disruptions, and identifying the necessary 
+spare  parts  and  resources.  The  BIM  module  then  transmits  this  information  to  the  GIS 
+module, which utilizes the graph database and associated graph algorithms to generate 
+an optimized bridge maintenance plan. This comprehensive approach ensures that bridge 
+maintenance  is  both  eﬃcient  and  eﬀective,  such  as  optimizing  resource  allocation  and 
+generating traﬃc diversion strategies (see Section 4.2.1). 
+Here, the example of spare parts retrieval and transportation, which relates to opti-
+mizing resource allocation, is used for illustration, as shown in Figure 12. The process of 
+extracting  the  vector  map  and  converting  it  into  a  roadmap  graph  follows  the  same 
+method described in Case 1 (see Section 4.2.2). 
+Figure 11. Observed defects and defect list shown in the BIM module.
+Buildings 2024, 14, 3731 15 of 19
+For significant damage requiring depth information, such as large cracks and spalling,
+the drone can approach the target area and perform scans using onboard LiDAR [ 39].
+The generated 3D data can then be processed for autonomous damage segmentation and
+analysis, with the results linked to the relevant structural components. Simultaneously,
+the defect geometries and updated material parameters can be synchronized within the
+DT model, enabling finite element analysis (FEA) of the bridge structure or predicting the
+remaining useful life (RUL) of the affected components.
+Furthermore, JSON files are created to systematically document observed bridge
+defects, capturing essential details such as bridge elements, defect types, dimensions, and
+severity levels. Each defect assessment is saved as semantic information (text) within the
+JSON structure, with elementIDs from the IFC files utilized to precisely link defects to their
+corresponding bridge components. This JSON-based approach offers a structured and
+comprehensive view of inspection outcomes, significantly enhancing information modeling
+and supporting informed maintenance decision-making.
+4.3.2. BIM and GIS Integration for Maintenance Planning
+For each defect entry generated in the JSON files, the system automatically generates
+maintenance recommendations based on historical repair records, established maintenance
+standards (e.g., manuals or handbooks), or the pre-defined bridge maintenance knowledge
+graph (BMKG). Simultaneously, by integrating the structural analysis results and RUL
+predictions from the updated DT model, the system makes informed decisions, such as
+prioritizing repairs for critical defects, selecting the most suitable maintenance methods,
+scheduling interventions to minimize disruptions, and identifying the necessary spare parts
+and resources. The BIM module then transmits this information to the GIS module, which
+utilizes the graph database and associated graph algorithms to generate an optimized
+bridge maintenance plan. This comprehensive approach ensures that bridge maintenance
+is both efficient and effective, such as optimizing resource allocation and generating traffic
+diversion strategies (see Section 4.2.1).
+Here, the example of spare parts retrieval and transportation, which relates to opti-
+mizing resource allocation, is used for illustration, as shown in Figure 12. The process of
+extracting the vector map and converting it into a roadmap graph follows the same method
+described in Case 1 (see Section 4.2.2).
+Buildings 2024, 14, 3731  16  of  19 
+ 
+ 
+Figure 12. Vector map and roadmap with warehouses. 
+Graph  algorithms  are  then  applied  to  facilitate  planning  and  decision-making  for 
+tasks  such  as  traﬃc  diversion  during  bridge  repairs  (similar  to  Case  1),  spare  parts  re-
+trieval, and transportation. Case 2 speciﬁcally focuses on spare parts query and transpor-
+tation and the workﬂow is illustrated in Figure 13.  
+ 
+Figure 13. BIM and GIS interaction workﬂow for maintenance logistics. 
+Here, warehouses are designed as nodes in the roadmap graph (shown in Figure 11) 
+and spare parts information is assigned as attributes to each inventory node. The attribute 
+values indicate the inventory of each spare part at the corresponding warehouse, e.g., 0 
+indicates  that  there  is  no  available  spare  part  at  the  warehouse.  By  using  the  WHERE 
+clause in Neo4j, the system can ﬁnd the warehouses that meet the requirements of spare 
+parts quantity for repair plan.  
+When multiple warehouses have suﬃcient spare parts, the system evaluates the dis-
+tance from each warehouse to the target bridge and selects the optimal warehouse based 
+on proximity. As illustrated in Figure 14, both Warehouses B and C satisfy the spare parts 
+requirement for the Neath bridge’s repair, but Warehouse C is closer, making it the pre-
+ferred source for dispatching spare parts to the repair site.  
+ 
+Figure 14. Shortest paths from Warehouses B and C to target bridge. 
+Similarly, if spare parts are required from multiple warehouses, the system autono-
+mously queries the inventory and coordinates transportation arrangements, ensuring an 
+Figure 12. Vector map and roadmap with warehouses.
+Graph algorithms are then applied to facilitate planning and decision-making for tasks
+such as traffic diversion during bridge repairs (similar to Case 1), spare parts retrieval, and
+transportation. Case 2 specifically focuses on spare parts query and transportation and the
+workflow is illustrated in Figure 13.
+Here, warehouses are designed as nodes in the roadmap graph (shown in Figure 11)
+and spare parts information is assigned as attributes to each inventory node. The attribute
+values indicate the inventory of each spare part at the corresponding warehouse, e.g., 0
+Buildings 2024, 14, 3731 16 of 19
+indicates that there is no available spare part at the warehouse. By using the WHERE clause
+in Neo4j, the system can find the warehouses that meet the requirements of spare parts
+quantity for repair plan.
+Buildings 2024, 14, 3731  16  of  19 
+ 
+ 
+Figure 12. Vector map and roadmap with warehouses. 
+Graph  algorithms  are  then  applied  to  facilitate  planning  and  decision-making  for 
+tasks  such  as  traﬃc  diversion  during  bridge  repairs  (similar  to  Case  1),  spare  parts  re-
+trieval, and transportation. Case 2 speciﬁcally focuses on spare parts query and transpor-
+tation and the workﬂow is illustrated in Figure 13.  
+ 
+Figure 13. BIM and GIS interaction workﬂow for maintenance logistics. 
+Here, warehouses are designed as nodes in the roadmap graph (shown in Figure 11) 
+and spare parts information is assigned as attributes to each inventory node. The attribute 
+values indicate the inventory of each spare part at the corresponding warehouse, e.g., 0 
+indicates  that  there  is  no  available  spare  part  at  the  warehouse.  By  using  the  WHERE 
+clause in Neo4j, the system can ﬁnd the warehouses that meet the requirements of spare 
+parts quantity for repair plan.  
+When multiple warehouses have suﬃcient spare parts, the system evaluates the dis-
+tance from each warehouse to the target bridge and selects the optimal warehouse based 
+on proximity. As illustrated in Figure 14, both Warehouses B and C satisfy the spare parts 
+requirement for the Neath bridge’s repair, but Warehouse C is closer, making it the pre-
+ferred source for dispatching spare parts to the repair site.  
+ 
+Figure 14. Shortest paths from Warehouses B and C to target bridge. 
+Similarly, if spare parts are required from multiple warehouses, the system autono-
+mously queries the inventory and coordinates transportation arrangements, ensuring an 
+Figure 13. BIM and GIS interaction workflow for maintenance logistics.
+When multiple warehouses have sufficient spare parts, the system evaluates the
+distance from each warehouse to the target bridge and selects the optimal warehouse
+based on proximity. As illustrated in Figure 14, both Warehouses B and C satisfy the spare
+parts requirement for the Neath bridge’s repair, but Warehouse C is closer, making it the
+preferred source for dispatching spare parts to the repair site.
+Buildings 2024, 14, 3731  16  of  19 
+ 
+ 
+Figure 12. Vector map and roadmap with warehouses. 
+Graph  algorithms  are  then  applied  to  facilitate  planning  and  decision-making  for 
+tasks  such  as  traﬃc  diversion  during  bridge  repairs  (similar  to  Case  1),  spare  parts  re-
+trieval, and transportation. Case 2 speciﬁcally focuses on spare parts query and transpor-
+tation and the workﬂow is illustrated in Figure 13.  
+ 
+Figure 13. BIM and GIS interaction workﬂow for maintenance logistics. 
+Here, warehouses are designed as nodes in the roadmap graph (shown in Figure 11) 
+and spare parts information is assigned as attributes to each inventory node. The attribute 
+values indicate the inventory of each spare part at the corresponding warehouse, e.g., 0 
+indicates  that  there  is  no  available  spare  part  at  the  warehouse.  By  using  the  WHERE 
+clause in Neo4j, the system can ﬁnd the warehouses that meet the requirements of spare 
+parts quantity for repair plan.  
+When multiple warehouses have suﬃcient spare parts, the system evaluates the dis-
+tance from each warehouse to the target bridge and selects the optimal warehouse based 
+on proximity. As illustrated in Figure 14, both Warehouses B and C satisfy the spare parts 
+requirement for the Neath bridge’s repair, but Warehouse C is closer, making it the pre-
+ferred source for dispatching spare parts to the repair site.  
+ 
+Figure 14. Shortest paths from Warehouses B and C to target bridge. 
+Similarly, if spare parts are required from multiple warehouses, the system autono-
+mously queries the inventory and coordinates transportation arrangements, ensuring an 
+Figure 14. Shortest paths from Warehouses B and C to target bridge.
+Similarly , if spare parts are required from multiple warehouses, the system autonomously
+queries the inventory and coordinates transportation arrangements, ensuring an efficient
+and well-organized delivery plan. Factors such as distance, weather, traffic conditions,
+load capacity, and fuel consumption can be encoded as properties of the relationships
+(i.e., edges) between nodes. These parameters enable advanced route planning through
+path-finding algorithms. For example, the case study 2 demonstrated distance-based
+optimization, where proximity was prioritized to identify the nearest warehouse. In time-
+critical scenarios, the algorithm’s focus can shift to optimizing routes with the shortest travel
+time. Furthermore, multi-criteria route optimization is achievable by integrating multiple
+weight parameters into an evaluation model. These priorities can be dynamically adjusted
+based on user input or real-time constraints, allowing the system to provide tailored
+solutions for specific scenarios. This approach ensures efficient logistics, contributing to a
+streamlined and well-coordinated maintenance process.
 5. Discussion
-The proposed KG schema for bridge maintenance is well-grounded in
-practical applications, because real-world bridge inspections and repairs
-rely on the step-by-step details of defect descriptions, such as locations,
-Fig. 20. Confusion matrix for link prediction.
-Table 5
-Evaluation of link prediction based on the Youden threshold.
-AUC Threshold
-( J )
-Accuracy Precision F1
-score
-TPR
-(Recall)
-FPR
-0.91 0.42 0.84 0.79 0.86 0.93 0.24
-Fig. 21. Comparative analysis for NLC.
-Y. Gao et al. Automation in Construction 166 (2024) 105634 
-16 
-types, and severity, which are typically summarized in routine textual
-reports. Hence, the textual content of these reports plays a significant
-role in knowledge engineering for bridge maintenance. For instance,
-clauses that begin with action verbs like ‘insert ’ , ‘replace ’ , ‘remove ’ ,
-‘install ’ , and ‘weld ’ often indicate repair actions. Similarly, specific
-phrases such as ‘section loss ’ , ‘bolt missing ’ , ‘corrosion ’ , ‘hole ’ , and
-‘pitting ’ are commonly used to describe defects. Additionally, the re-
-lationships between defects and repair solutions tend to follow regular
-patterns based on specific phrase pairings. These principles are also
-applicable to the components and elements of bridge structures and
-their interdependencies. However, the utility of bridge maintenance
-reports for knowledge mining is usually hindered by data gaps and
-inconsistencies.
-Moreover, traditional word embedding methods like one-hot or
-word2vec are limited in capturing the contextual relationships between
-words in a sentence. They often fail to represent the nuanced meanings
-and dependencies that arise from word order and syntax, which are
-crucial for accurately understanding and processing bridge maintenance
-textual reports. As a result, more advanced techniques, such as text
-encoding through LLMs, have been developed to address these limita-
-tions by generating contextual embeddings for node feature initializa-
-tion in the BMKG. Furthermore, the GraphSAGE-based NLC and
-contrastive link prediction approaches are proposed to overcome the
-challenges posed by data deficiencies or irregularities in practical
-maintenance reports.
-Although the GraphSAGE-based NLC and link prediction approaches
-proposed in this study has proven effective in semantic enrichment and
-completing a deficient BMKG, there remains a need for future work in
-several areas. First, the currently established BMKG is limited in scope,
-and there is a lack of bridge maintenance-oriented data in academic
-research. Therefore, it is essential to develop a comprehensive corpus
-from industrial practices to facilitate the development and validation of
-AI-assisted approaches in bridge knowledge engineering, including the
-approaches proposed in this study.
-Second, the current method of generating negative examples through
-simple random pairing leads to numerous pseudo-negative examples. In
-the study, this issue is addressed with a closed-loop framework that
-includes manual review, as shown in Section 3.4.3. However, other
-methods, such as utilizing node attributes, considering common neigh-
-bours, sampling from low-probability edges, or applying adversarial
-techniques may help to mitigate this problem and reduce overfitting in
-link prediction. Furthermore, exploring transductive learning methods
-for evolving BMKGs offers a promising direction for future research.
-6. Conclusion
-By integrating structural designs and real-world maintenance reports
-into the proposed BMKG schema, the paper addresses the need for a
-dynamic knowledge graph adapting to isolated nodes and missing con-
-nections within bridge routine inspection, which also shows superiority
-in documenting the domain expertise of bridge maintenance. Then, the
-research demonstrates that the proposed GrapshSAGE-based NLC and
-contrastive link-prediction approaches by leveraging contextual em-
-beddings through LLMs can achieve satisfactory performance and
-generalizability on the deficient BMKGs for semantic enrichment and KG
-completion. The performance is validated through ablation study and
-cross-validation.
-These approaches can improve the graph data mining in BMKG and
-facilitate many practical applications in bridge maintenance knowledge
-engineering, such as semantic enrichment, compliance checks, de-
-pendency analysis, and repair recommendations. Experimentally, it is
-also observed that the pre-trained BERT model, i.e., bert-base-uncased
-[ 40 ], outperforms many other LLMs in text encoding for NLC and link
-prediction tasks. Similarly, the pairwise scoring method via L2 distance
-(i.e., Euclidean distance) shows superior effectiveness compared to
-other metrics for link prediction. A practical implementation framework
-that integrates the proposed approaches has been designed for effective
-routine bridge maintenance. Additionally, the areas for future en-
-hancements and potential research directions are thoroughly discussed
-in the discussion section of the study.
-CRediT authorship contribution statement
-Yan Gao: Writing – review & editing, Writing – original draft,
-Visualization, Validation, Software, Methodology, Investigation,
-Conceptualization. Guanyu Xiong: Investigation, Formal analysis, Data
-curation. Haijiang Li: Supervision, Project administration, Methodol-
-ogy. Jarrod Richards: Validation, Resources, Investigation, Data
-curation.
-Declaration of competing interest
-The authors declared that they have no conflicts of interest in this
-work.
-Fig. 22. Comparative analysis for link prediction.
-Y. Gao et al. Automation in Construction 166 (2024) 105634 
-17 
-Data availability
-Data will be made available on request.
-Acknowledgement
-This work is part of the knowledge transfer partnerships (KTP)
-project – DIGIBRIDGE: BIM and Digital Twins in support of Smart Bridge
-Structural Surveying. The project receives funding from Innovate UK
-with reference number 10003208.
+This study developed an integrated digital twin system that combines BIM and GIS
+modules to guide practical bridge maintenance and operations. The system explores the
+interaction between BIM and GIS to enable various functions, such as traffic diversion,
+maintenance planning, and logistics optimization. Additionally, it investigates the integra-
+Buildings 2024, 14, 3731 17 of 19
+tion of GIS with a graph database and applies graph algorithms for bridge maintenance
+optimization and decision-making.
+However, the system has several limitations and areas for improvement. Firstly,
+although the BIM module utilizes elementIDs from IFC files as identifiers linking the defects
+to the corresponding bridge elements, the information modeling process for observed
+defects still relies on custom JSON files currently, which lacks extensibility. Future work will
+build on existing research [40] to redefine defect and damage assessment content in the IFC
+format and integrate it into the system for enhanced interoperability. Secondly, the bridge
+DT system comprises different modules and software, including Xeokit, Cesium, and Neo4j.
+As additional functionalities are developed, the system may encounter cross-platform
+compatibility issues. Addressing these challenges will be essential in future research to
+streamline integration and improve overall system efficiency. These enhancements will
+contribute to a more robust and scalable platform, strengthening the practical application
+of digital twins in bridge O&M.
+6. Conclusions
+This study successfully developed an integrated DT system for practical bridge opera-
+tion and maintenance, combining BIM and GIS modules with a graph database to establish
+a comprehensive bridge management platform. By leveraging BIM and GIS interactions,
+the DT system enables real-time monitoring, drone-enabled inspection, maintenance plan-
+ning, traffic diversion, and logistics optimization, effectively streamlining O&M processes
+and enhancing data-informed decision-making. Furthermore, the integration of GIS with
+graph-based algorithms facilitates efficient resource allocation, optimizing route planning
+and spare parts management for bridge repairs.
+In the Cesium-based WebGIS module, roadmap data sourced from OpenStreetMap
+are processed into vector maps and triple-based graphs through QGIS and Neo4j, forming
+an adaptable data architecture. This setup not only supports visualization compatible
+with Cesium, but also enables advanced graph-based data analysis and decision-making.
+Meanwhile, the Xeokit-based WebBIM module facilitates detailed monitoring of bridge
+components and effective defect management. Structural issues flagged by the SHM
+system automatically trigger alerts and initiate traffic redirection, while defects detected
+via drone-enabled inspection inform maintenance planning within the BIM module.
+These functionalities demonstrate the system’s potential to improve practical bridge
+O&M, enhance safety, support autonomous decision-making, and optimize resource alloca-
+tion through data-driven and graph-based insights. Future work will focus on enhancing
+cross-platform interoperability, refining information modeling for defects within the IFC
+format, and addressing compatibility challenges to expand scalability and support more
+advanced DT applications for bridge infrastructure.
+Author Contributions: Conceptualization, H.L. and Y.G.; methodology, H.L., Y.G. and Z.H.; software,
+Y.G. and G.X.; validation, Y.G., G.X. and C.C.; formal analysis, Y.G. and Z.H.; investigation, G.X.;
+writing—original draft preparation, Y.G.; writing—review and editing, Y.G. and G.X.; visualization,
+Y.G., G.X. and C.C.; supervision, H.L. All authors have read and agreed to the published version of
+the manuscript.
+Funding: This research received no external funding.
+Data Availability Statement: The original contributions presented in the study are included in the
+article, further inquiries can be directed to the corresponding author.
+Acknowledgments: The authors wish to thank Centregreat Ltd. for their support in this study.
+Conflicts of Interest: The authors declare no conflicts of interest.
 References
-[1] R. Li, T. Mo, J. Yang, D. Li, S. Jiang, D. Wang, Bridge inspection named entity
-recognition via BERT and lexicon augmented machine reading comprehension
-neural model, Adv. Eng. Inform. 50 (September) (2021) 101416, https://doi.org/
-10.1016/j.aei.2021.101416.
-[2] K. Liu, N. El-Gohary, Ontology-based semi-supervised conditional random fields for
-automated information extraction from bridge inspection reports, Autom. Constr.
-81 (2017) 313–327, https://doi.org/10.1016/j.autcon.2017.02.003.
-[3] K. Liu, N. El-Gohary, Semantic neural network ensemble for automated
-dependency relation extraction from bridge inspection reports, J. Comput. Civ.
-Eng. 35 (4) (2021), https://doi.org/10.1061/(asce)cp.1943-5487.0000961.
-[4] R. Li, et al., Joint extraction of entities and relations via an entity correlated
-attention neural model, Inf. Sci. 581 (2021) 179–193, https://doi.org/10.1016/j.
-ins.2021.09.028.
-[5] Knowledge Engineering: What it Means, Examples, Accessed: Aug. 09, 2023.
-[Online]. Available: https://www.investopedia.com/terms/k/knowledge-enginee
-ring.asp, 2024.
-[6] Y. Zhang, J. Liu, K. Hou, Building a knowledge base of bridge maintenance using
-knowledge graph, Adv. Civil Eng. 2023 (2023), https://doi.org/10.1155/2023/
-6047489.
-[7] G. Ren, R. Ding, H. Li, Building an ontological knowledgebase for bridge
-maintenance, Adv. Eng. Softw. 130 (July) (2019) 24–40, https://doi.org/10.1016/
-j.advengsoft.2019.02.001.
-[8] K. Liu, N. El-Gohary, Bridge deterioration knowledge ontology for supporting
-bridge document analytics, J. Constr. Eng. Manag. 148 (6) (2022) 1–14, https://
-doi.org/10.1061/(asce)co.1943-7862.0002210.
-[9] G. Lee, S. Chi, Graph-based clustering of bridge management system data for bridge
-maintenance cost estimation, in: EG-ICE 2023 Workshop on Intelligent Computing
-in Engineering, London, UK, 2023.
-[10] C. Wu, P. Wu, J. Wang, R. Jiang, M. Chen, X. Wang, Ontological knowledge base
-for concrete bridge rehabilitation project management, Autom. Constr. 121 (May)
-(2021) 103428, https://doi.org/10.1016/j.autcon.2020.103428.
-[11] R. Li, T. Mo, J. Yang, S. Jiang, T. Li, Y. Liu, Ontologies-based domain knowledge
-modeling and heterogeneous sensor data integration for bridge health monitoring
-systems, IEEE Trans. Industr. Inform. 17 (1) (2021) 321–332, https://doi.org/
-10.1109/TII.2020.2967561.
-[12] J. Yang, et al., Intelligent bridge management via big data knowledge engineering,
-Autom. Constr. 135 (January) (2022) 104118, https://doi.org/10.1016/j.
-autcon.2021.104118.
-[13] L. Kolbeck, S. Vilgertshofer, A. Borrmann, Graph-based mass customisation of
-modular precast bridge systems – Methodology for kit development and
-algorithmic design, in: EG-ICE 2023 Workshop on Intelligent Computing in
-Engineering, London, UK, 2023.
-[14] P. Zhao, W. Liao, Y. Huang, X. Lu, Intelligent design of shear wall layout based on
-graph neural networks, Adv. Eng. Inform. 55 (January) (2023) 101886, https://
-doi.org/10.1016/j.aei.2023.101886.
-[15] P. Zhao, W. Liao, Y. Huang, X. Lu, Intelligent beam layout design for frame
-structure based on graph neural networks, J. Building Eng. 63 (PA) (2023) 105499,
-https://doi.org/10.1016/j.jobe.2022.105499.
-[16] B. Sanchez-Lengeling, E. Reif, A. Pearce, A.B. Wiltschko, A gentle introduction to
-graph neural networks, Distill 6 (9) (Sep. 2021) e33, https://doi.org/10.23915/
-DISTILL.00033.
-[17] Z. Wu, S. Pan, F. Chen, G. Long, C. Zhang, P.S. Yu, A comprehensive survey on
-graph neural networks, IEEE Trans. Neural Netw. Learn. Syst. 32 (1) (2021) 4–24,
-https://doi.org/10.1109/TNNLS.2020.2978386.
-[18] J. Zhou, et al., Graph neural networks: a review of methods and applications, AI
-Open 1 (April) (2020) 57–81, https://doi.org/10.1016/j.aiopen.2021.01.001.
-[19] F.C. Collins, A. Braun, M. Ringsquandl, D.M. Hall, A. Borrmann, Assessing IFC
-classes with means of geometric deep learning on different graph encodings, in:
-Proceedings of the 2021 European Conference on Computing in Construction vol.
-2, 2021, pp. 332–341. Rhodes, Greece, on July 19–28, 10.35490/ec3.2021.168.
-[20] Z. Wang, R. Sacks, T. Yeung, Exploring graph neural networks for semantic
-enrichment: Room type classification, Autom. Constr. 134 (December) (2022)
-104039, https://doi.org/10.1016/j.autcon.2021.104039.
-[21] L. Xia, Y. Liang, P. Zheng, J. Leng, Maintenance planning recommendation of
-complex industrial equipment based on knowledge graph and graph neural
-network, Reliab. Eng. Syst. Saf. 232 (December) (2023) 109068, https://doi.org/
-10.1016/j.ress.2022.109068.
-[22] Y. Zhang, R. Jin, Z.H. Zhou, Understanding bag-of-words model: a statistical
-framework, Int. J. Mach. Learn. Cybern. 1 (1–4) (2010) 43–52, https://doi.org/
-10.1007/s13042-010-0001-0.
-[23] S. Qaiser, R. Ali, Text mining: use of TF-IDF to examine the relevance of words to
-documents, Int. J. Comput. Appl. 181 (1) (2018) 25–29, https://doi.org/10.5120/
-ijca2018917395.
-[24] K.W. Church, Emerging Trends: Word2Vec, Nat. Lang. Eng. 23 (1) (2017) 155–162,
-https://doi.org/10.1017/S1351324916000334.
-[25] J. Pennington, R. Socher, C.D. Manning, Glove: Global vectors for word
-representation, in: Proceedings of the 2014 Conference on Empirical Methods in
-Natural Language Processing (EMNLP), Doha, Qatar, 2014, pp. 1532–1543,
-https://doi.org/10.3115/v1/D14-1162.
-[26] P. Bojanowski, E. Grave, A. Joulin, T. Mikolov, Enriching word vectors with
-subword information, Trans. Assoc. Comput. Linguist. 5 (2017) 135–146, https://
-doi.org/10.1162/tacl_a_00051.
-[27] J. Devlin, M.W. Chang, K. Lee, K. Toutanova, BERT: Pre-training of deep
-bidirectional transformers for language understanding, in: NAACL HLT 2019–2019
-Conference of the North American Chapter of the Association for Computational
-Linguistics: Human Language Technologies - Proceedings of the Conference vol. 1,
-2019, pp. 4171–4186, https://doi.org/10.18653/v1/N19-1423, no. Mlm.
-[28] C. Raffel, et al., Exploring the limits of transfer learning with a unified text-to-text
-transformer, J. Mach. Learn. Res. 21 (2020) 1–67. https://dl.acm.org/doi/abs/1
-0.5555/3455716.3455856.
-[29] H. Su, et al., One embedder, any task: instruction-finetuned text embeddings, in:
-Proceedings of the Annual Meeting of the Association for Computational
-Linguistics, Toronto, Canada, 2023, pp. 1102–1121, https://doi.org/10.18653/v1/
-2023.findings-acl.71.
-[30] Introducing ChatGPT, Accessed: Jan. 13, 2024. [Online]. Available: https://open
-ai.com/blog/chatgpt, 2024.
-[31] H. Touvron, et al., Llama 2: Open Foundation and Fine-Tuned Chat Models
-[Online]. Available: http://arxiv.org/abs/2307.09288, 2023.
-[32] H. Touvron, et al., LLaMA: Open and Efficient Foundation Language Models
-[Online]. Available: http://arxiv.org/abs/2302.13971, 2023.
-[33] S. Zhang, H. Tong, J. Xu, R. Maciejewski, Graph convolutional networks: a
-comprehensive review, Comput. Soc. Netw. 6 (1) (2019), https://doi.org/10.1186/
-s40649-019-0069-y.
-[34] W.L. Hamilton, R. Ying, J. Leskovec, Inductive representation learning on large
-graphs, in: Advances in Neural Information Processing Systems vol. 2017, 2017,
-pp. 1025–1035. Decem, no. Nips.
-[35] Link Prediction using Graph Neural Networks — DGL 1.1.1 Documentation,
-Accessed: Aug. 09, 2023. [Online]. Available: https://docs.dgl.ai/tutorials/blit
-z/4_link_predict.html#sphx-glr-tutorials-blitz-4-link-predict-py, 2024.
-[36] Link Prediction Pipelines - Neo4j Graph Data Science, Accessed: Jan. 29, 2024.
-[Online]. Available: https://neo4j.com/docs/graph-data-science/current/machin
-e-learning/linkprediction-pipelines/link-prediction/, 2024.
-[37] T. Mikolov, I. Sutskever, K. Chen, G. Corrado, J. Dean, Distributed representations
-ofwords and phrases and their compositionality, in: Advances in Neural
-Information Processing Systems, 2013, pp. 1–9, https://doi.org/10.5555/
-2999792.2999959.
-[38] Facebook/bart-base⋅Hugging Face, Accessed: Jan. 13, 2024. [Online]. Available:
-https://huggingface.co/facebook/bart-base, 2024.
-[39] Bert-base-uncased⋅Hugging Face, Accessed: Jan. 13, 2024. [Online]. Available:
-https://huggingface.co/bert-base-uncased, 2024.
-[40] openai/CLIP: CLIP (Contrastive Language-Image Pretraining), Predict the most
-relevant text snippet given an image, 2024. Accessed: Jan. 13, 2024. [Online].
-Available: https://github.com/openai/CLIP.
-[41] microsoft/deberta-v3-base⋅Hugging Face, Accessed: Jan. 13, 2024. [Online].
-Available: https://huggingface.co/microsoft/deberta-v3-base, 2024.
-[42] sentence-transformers/gtr-t5-base⋅Hugging Face, Accessed: Jan. 13, 2024.
-[Online]. Available: https://huggingface.co/sentence-transformers/gtr-t5-base,
-2024.
-[43] Embeddings - OpenAI API, Accessed: Jan. 13, 2024. [Online]. Available:
-https://platform.openai.com/docs/guides/embeddings, 2024.
-[44] sentence-transformers/sentence-t5-base⋅Hugging Face, Accessed: Jan. 13, 2024.
-[Online]. Available: https://huggingface.co/sentence-transformers/sentence-t5-
-base, 2024.
-[45] WhereIsAI/UAE-Large-V1⋅Hugging Face, Accessed: Jan. 13, 2024. [Online].
-Available: https://huggingface.co/WhereIsAI/UAE-Large-V1, 2024.
-[46] xlm-mlm-en-2048⋅Hugging Face, Accessed: Jan. 13, 2024. [Online]. Available:
-https://huggingface.co/xlm-mlm-en-2048, 2024.
-[47] T. Shen, F. Zhang, J. Cheng, A comprehensive overview of knowledge graph
-completion, Knowl.-Based Syst. 255 (2022) 109597, https://doi.org/10.1016/j.
-knosys.2022.109597.
-[48] K. Xu, S. Jegelka, W. Hu, J. Leskovec, How powerful are graph neural networks, in:
-7th International Conference on Learning Representations, ICLR 2019, New
-Orleans, USA, 2019, pp. 1–17, https://doi.org/10.13140/RG.2.2.23687.70561.
-[49] A. Bordes, N. Usunier, A. Garcia-Duran, J. Weston, O. Yakhnenko, Translating
-embeddings for modeling multi-relational data, Adv. Neural Inf. Proces. Syst. 26
-(2013), in: https://proceedings.neurips.cc/paper/2013/hash/1cecc7a77928ca8
-133fa24680a88d2f9-Abstract.html.
-[50] B. Yang, W. Yih, X. He, J. Gao, L. Deng, Embedding entities and relations for
-learning and inference in knowledge bases, arXiv preprint arXiv:1412.6575, 2014.
-Y. Gao et al. Automation in Construction 166 (2024) 105634 
-18 
+1. Liu, C.; Zhang, P .; Xu, X. Literature review of digital twin technologies for civil infrastructure. J. Infrastruct. Intell. Resil.
+2023, 2, 100050. [CrossRef]
+Buildings 2024, 14, 3731 18 of 19
+2. Broo, D.G.; Bravo-Haro, M.; Schooling, J. Design and implementation of a smart infrastructure digital twin. Autom. Constr.
+2022, 136, 104171. [CrossRef]
+3. Dang, N.S.; Shim, C.S. Bridge assessment for PSC girder bridge using digital twins model.Lect. Notes Civ. Eng. 2020, 54, 1241–1246.
+[CrossRef]
+4. Peldon, D.; Banihashemi, S.; LeNguyen, K.; Derrible, S. Navigating urban complexity: The transformative role of digital twins in
+smart city development. Sustain. Cities Soc. 2024, 111, 105583. [CrossRef]
+5. Mousavi, V .; Rashidi, M.; Mohammadi, M.; Samali, B. Evolution of Digital Twin Frameworks in Bridge Management: Review and
+Future Directions. Remote Sens. 2024, 16, 1887. [CrossRef]
+6. Mangiameli, M.; Cappello, A.; Mussumeci, G. A new bridge management system based on spatial database and open source GIS.
+Environ. Syst. Decis. 2024, 44, 500–513. [CrossRef]
+7. Zhu, J.; Tan, Y.; Wang, X.; Wu, P . BIM/GIS integration for web GIS-based bridge management. Ann. GIS 2021, 27, 99–109.
+[CrossRef]
+8. Hor, A.H.; Sohn, G.; Claudio, P .; Jadidi, M.; Afnan, A. A semantic graph database for BIM-GIS integrated information model for
+an intelligent urban mobility web application. ISPRS Ann. Photogramm. Remote Sens. Spat. Inf. Sci. 2018, 4, 89–96. [CrossRef]
+9. Brighenti, F.; Caspani, V .F.; Costa, G.; Giordano, P .F.; Limongelli, M.P .; Zonta, D. Bridge Management Systems: A review on
+current practice in a digitizing world. J. Bridge Eng. 2024, 321, 118971. [CrossRef]
+10. Ye, C.; Butler, L.; Bartek, C.; Iangurazov, M.; Lu, Q.; Gregory, A.; Middleton, C. A digital twin of bridges for structural health
+monitoring. In Proceedings of the 12th International Workshop on Structural Health Monitoring 2019, Stanford, CA, USA, 10–12
+September 2019; pp. 1619–1626. [CrossRef]
+11. Yang, J.; Xiang, F.; Li, R.; Zhang, L.; Yang, X.; Jiang, S.; Liu, X. Intelligent bridge management via big data knowledge engineering.
+Autom. Constr. 2022, 135, 104118. [CrossRef]
+12. Kang, J.S.; Chung, K.; Hong, E.J. Multimedia knowledge-based bridge health monitoring using digital twin. Multimed. T ools Appl.
+2021, 80, 34609–34624. [CrossRef]
+13. Butler, L.J.; Lin, W.; Xu, J.; Gibbons, N.; Elshafie, M.Z.E.B.; Middleton, C.R. Monitoring, Modeling, and Assessment of a
+Self-Sensing Railway Bridge during Construction. J. Bridge Eng. 2018, 23, 04018076. [CrossRef]
+14. Dang, H.; Tatipamula, M.; Nguyen, H.X. Cloud-Based Digital Twinning for Structural Health Monitoring Using Deep Learning.
+IEEE T rans. Ind. Inform. 2022, 18, 3820–3830. [CrossRef]
+15. Gao, Y.; Li, H.; Xiong, G.; Song, H. AIoT-informed digital twin communication for bridge maintenance. Autom. Constr.
+2023, 150, 104835. [CrossRef]
+16. Shim, C.; Dang, N.; Lon, S.; Jeon, C. Development of a bridge maintenance system for prestressed concrete bridges using 3D
+digital twin model. Struct. Infrastruct. Eng. 2019, 15, 1319–1332. [CrossRef]
+17. Dang, N.S.; Kang, H.; Lon, S.; Shim, C.S. 3D digital twin models for bridge maintenance. In Proceedings of the 10th International
+Conference on Short and Medium Span Bridges, Quebec City, ON, Canada, 30 July–3 August 2018; pp. 1–9. Available online: https:
+//www.researchgate.net/publication/331314334_3D_DIGITAL_TWIN_MODELS_FOR_BRIDGE_MAINTENANCE (accessed on
+18 November 2024).
+18. Shim, C.S.; Kang, H.R.; Dang, N.S. Digital twin models for maintenance of cable-supported bridges. In International Conference on
+Smart Infrastructure and Construction 2019, ICSIC 2019: Driving Data-Informed Decision-Making ; ICE Publishing: London, UK, 2019;
+pp. 737–742. [CrossRef]
+19. Maes, K.; Lombaert, G. Monitoring Railway Bridge KW51 Before, During, and After Retrofitting. J. Bridge Eng. 2021, 26, 04721001.
+[CrossRef]
+20. Sajedi, S.O.; Liang, X. Vibration-based semantic damage segmentation for large-scale structural health monitoring. Comput.-Aided
+Civ. Infrastruct. Eng. 2020, 35, 579–596. [CrossRef]
+21. Dong, C.Z.; Celik, O.; Catbas, F.N.; O’Brien, E.J.; Taylor, S. Structural displacement monitoring using deep learning-based full
+field optical flow methods. Struct. Infrastruct. Eng. 2020, 16, 51–71. [CrossRef]
+22. Alexakis, H.; Franza, A.; Acikgoz, S.; Dejong, M.J. Monitoring bridge degradation using dynamic strain, acoustic emission and
+environmental data. In International Conference on Smart Infrastructure and Construction 2019, ICSIC 2019: Driving Data-Informed
+Decision-Making; ICE Publishing: London, UK, 2019; Volume 2019, pp. 523–532. [CrossRef]
+23. Meng, X.; Nguyen, D.T.; Xie, Y.; Owen, J.S.; Psimoulis, P .; Ince, S.; Bhatia, P . Design and implementation of a new system for large
+bridge monitoring—Geoshm. Sensors 2018, 18, 775. [CrossRef]
+24. Gao, Y.; Xiong, G.; Li, H.; Richards, J. Exploring bridge maintenance knowledge graph by leveraging GrapshSAGE and text
+encoding. Autom. Constr. 2024, 166, 105634. [CrossRef]
+25. Yang, Y.; Zhu, Y.; Cai, C.S. Research progress and prospect of digital twin in bridge engineering.Adv. Struct. Eng. 2024, 27, 333–352.
+[CrossRef]
+26. ‘3D Tiling–Cesium’. Available online: https://cesium.com/learn/3d-tiling/ (accessed on 22 October 2024).
+27. Mohammadi, M.; Rashidi, M.; Yu, Y.; Samali, B. Integration of TLS-derived Bridge Information Modeling (BrIM) with a Decision
+Support System (DSS) for digital twinning and asset management of bridge infrastructures. Comput. Ind. 2023, 147, 103881.
+[CrossRef]
+28. Li, R.; Mo, T.; Yang, J.; Jiang, S.; Li, T.; Liu, Y. Ontologies-Based Domain Knowledge Modeling and Heterogeneous Sensor Data
+Integration for Bridge Health Monitoring Systems. IEEE T rans. Ind. Inform. 2021, 17, 321–332. [CrossRef]
+Buildings 2024, 14, 3731 19 of 19
+29. ‘Hamburg Port Authority—smartBridge Hamburg—World Port Sustainability Program’. Available online: https://
+sustainableworldports.org/project/hamburg-port-authority-smartbridge/ (accessed on 22 October 2024).
+30. Zhan, W.; Chen, Y.; Chen, J. 3D Tiles-Based High-Efficiency Visualization Method for Complex BIM Models on the Web.ISPRS
+Int. J. Geo-Inf. 2021, 10, 476. [CrossRef]
+31. Xu, Z.; Zhang, L.; Li, H.; Lin, Y.; Yin, S. Combining IFC and 3D tiles to create 3D visualization for building information modeling.
+Autom. Constr. 2020, 109, 102995. [CrossRef]
+32. Abdelfattah, M.; Hartmann, T. ‘A Graph Neural Network approach for Vulnerability Assessment in Urban Infrastructures without
+labeled data: A Case Study on Berlin EV Charging Network’. In Proceedings of the 31st International Workshop on Intelligent
+Computing in Engineering, EG-ICE 2024, Vigo, Spain, 3–5 July 2024; pp. 544–558.
+33. Daniel, C.B.; Saravanan, S.; Mathew, S. Gis based road connectivity evaluation using graph theory. In T ransportation Research:
+Proceedings of CTRG 2017 ; Springer: Berlin/Heidelberg, Germany, 2020; pp. 213–226.
+34. Zhu, J.; Chong, H.Y.; Zhao, H.; Wu, J.; Tan, Y.; Xu, H. The Application of Graph in BIM/GIS Integration.Buildings 2022, 12, 2162.
+[CrossRef]
+35. Robinson, I.; Webber, J.; Eifrem, E.Graph Databases: New Opportunities for Connected Data ; O’Reilly Media, Inc.: Sebastopol, CA,
+USA, 2015.
+36. GitHub—Najadojo/gltf-Import-Export: Convert Between GLB and GLTF Files. Available online: https://github.com/najadojo/
+gltf-import-export (accessed on 29 October 2024).
+37. GitHub—KhronosGroup/COLLADA2GLTF: COLLADA to glTF Converter. Available online: https://github.com/
+KhronosGroup/COLLADA2GLTF (accessed on 22 October 2024).
+38. ‘NPRA Keeps Bridges Safer with SAP Technology|SAP News Center’. Available online: https://news.sap.com/2021/10/npra-
+bridge-distress-warning-iot-sensors/ (accessed on 15 October 2024).
+39. Gao, Y.; Li, H.; Fu, W.; Chai, C.; Su, T. Damage volumetric assessment and digital twin synchronization based on LiDAR point
+clouds. Autom. Constr. 2024, 157, 105168. [CrossRef]
+40. Artus, M.; Alabassy, M.S.H.; Koch, C. A BIM Based Framework for Damage Segmentation, Modeling, and Visualization Using
+IFC. Appl. Sci. 2022, 12, 2772. [CrossRef]
+Disclaimer/Publisher’s Note: The statements, opinions and data contained in all publications are solely those of the individual
+author(s) and contributor(s) and not of MDPI and/or the editor(s). MDPI and/or the editor(s) disclaim responsibility for any injury to
+people or property resulting from any ideas, methods, instructions or products referred to in the content.
