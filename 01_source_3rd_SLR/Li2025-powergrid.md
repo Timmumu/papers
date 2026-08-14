@@ -1,0 +1,15 @@
+# Li et al. (2025) — A Multi-Sensor Fusion Approach Combined with RandLA-Net for Large-Scale Point Cloud Segmentation in Power Grid Scenario
+
+- **ID:** 3610 | **Source:** Scopus | **DOI:** 10.3390/s25113350
+- **Journal:** Sensors
+- **Authors:** Li, T.; Li, S.; Xu, Z.; Alkayem, N. F.; Bao, Q.; Wang, Q.
+
+## Abstract summary
+With the continuous expansion of power grids, traditional manual inspection methods face numerous challenges, including low efficiency, high costs, and significant safety risks. As critical infrastructure in power transmission systems, power grid towers require intelligent recognition and monitoring to ensure the reliable and stable operation of power grids. However, existing methods struggle with accuracy and efficiency when processing large-scale point cloud data in complex environments. To address these challenges, this paper presents a comprehensive approach combining multi-sensor fusion and deep learning for power grid tower recognition. A data acquisition scheme that integrates LiDAR and a binocular depth camera, implementing the FAST-LIO algorithm, is proposed to achieve the spatiotemporal synchronization and fusion of sensor data. This integration enables the construction of a co…
+
+## Step-1 Screening (Prompt A)
+| G Domain AECO | H DT core | I DfS/DfQ/PtD | J Pub-type | K English | Decision |
+|---|---|---|---|---|---|
+| No | No | Yes | Yes | Yes | **Exclude** |
+
+**Note:** Power-grid tower point-cloud segmentation; not AECO

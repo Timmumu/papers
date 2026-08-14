@@ -1,0 +1,1594 @@
+LiDAR-Simulated Multimodal and Self-Supervised
+Contrastive Digital Twin Approach for Probabilistic Point
+Cloud Generation of Rail Fasteners
+Shi Qiu, Ph.D. 1; Qasim Zaheer, S.M.ASCE 2; S. Muhammad Ahmed Hassan Shah, S.M.ASCE 3;
+Syed Faizan Hussain Shah 4; Weidong Wang, Ph.D. 5; Chengbo Ai, Ph.D. 6; and Jin Wang, Ph.D. 7
+Abstract: This study presents a novel deep-learning framework designed to efficiently generate high-fidelity three-dimensional (3D) point
+clouds of rail fasteners. The proposed method overcomes limitations associated with traditional light detection and ranging (LiDAR)
+technology, including high cost and incomplete data acquisition. The framework utilizes transformers and Bayesian neural networks for
+self-supervised contrastive learning, enabling real-time 3D point cloud generation from depth and grayscale images. This approach fosters
+automation and efficiency in maintenance tasks by producing accurate geometric reconstructions of rail fasteners. Beyond 3D generation, the
+framework learns latent representations of two-dimensional (2D) data, potentially impacting downstream tasks. This research contributes
+significantly to the development of digital twins in infrastructure monitoring by providing a cost-effective and efficient pathway for real-time
+3D data generation. The proposed methodology holds promise for enhancing safety, reliability, and cost-effectiveness across a broad spectrum
+of infrastructure applications. DOI: 10.1061/JCCEE5.CPENG-6137. © 2025 American Society of Civil Engineers.
+Author keywords: Simulate light detection and ranging (LiDAR); Three-dimensional (3D) point cloud modeling; Self-supervised
+contrastive learning; Bayesian neural networks; Digital twin; Infrastructure monitoring.
+Introduction
+In recent years, the fields of deep learning and 3D reconstruction
+have seen remarkable advancements, leading to significant break-
+throughs and practical applications across various industries. One
+sector that has notably reaped the benefits of these innovations is
+civil infrastructure inspection, where regular monitoring of railway
+infrastructure is paramount for ensuring construction quality,
+safety, and maintenance ( Spencer et al. 2019 ). Central to this as-
+surance is the regular inspection of critical components, among
+which rail fasteners play a pivotal role (see Fig. 1). These fasteners
+secure rails to the base and are crucial for maintaining track gauges.
+Any failure in these components can lead to catastrophic derail-
+ments and accidents (Akbari and Cammi 2024). In this regard, light
+detection and ranging (LiDAR) technology has played a crucial
+role in this domain by providing high-accuracy 3D point clouds
+for inspection (Prieto et al. 2024). Despite its effectiveness, the high
+cost and complexity of LiDAR systems have limited their wide-
+spread use, particularly in smaller railway networks. Consequently,
+there has been growing interest in exploring alternative solutions,
+such as image-based approaches and deep-learning techniques, to
+overcome these limitations ( Chastre et al. 2023 ).
+The journey of 3D reconstruction technology began with foun-
+dational developments in computer vision and graphics, aimed at
+modeling and visualizing three-dimensional objects and environ-
+ments. This technology extends beyond mere visual representation,
+offering precise measurements, positional data, and range informa-
+tion (Kim et al. 2022 ). Such detailed information is invaluable not
+only for inspection and analysis but also for creating “digital
+twins”—highly accurate 3D models integrated with supplementary
+data ( Hoskere et al. 2022 ). These digital twins enable human in-
+teraction and even predictive analysis through simulations via
+3D replicas of the main component ( Agarwal et al. 2021 ). Histor-
+ically, techniques such as structure from motion (SfM) ( Nassar and
+Jung 2012) and multiview stereo (MVS) (Ma et al. 2023) have been
+instrumental in 3D reconstruction. These methods have continually
+improved in terms of accuracy and robustness, supported by a range
+of open-source and commercial software tools ( Hosken 2021 ;
+Kattan et al. 2022) that provide comprehensive solutions for image-
+based 3D reconstruction ( Maalek and Lichti 2021 ; Nyimbili et al.
+2016; Pepe and Costantino 2021 ; Sani et al. 2022 ; Xie et al. 2023 ).
+1Professor and Executive Director, School of Civil Engineering and
+Center for Railway Infrastructure Smart Monitoring and Management,
+Central South Univ., Changsha 410075, China. Email: sheldon.qiu@csu
+.edu.cn
+2Research Assistant and Ph.D. Candidate, School of Civil Engineering
+and Center for Railway Infrastructure Smart Monitoring and Management,
+Central South Univ., Changsha 410075, China. ORCID: https://orcid.org
+/0000-0002-8158-6837. Email: drqasimzaheer26@csu.edu.cn
+3Research Assistant and Master ’s Student, School of Civil Engineer-
+ing and Center for Railway Infrastructure Smart Monitoring and Man-
+agement, Central South Univ., Changsha 410075, China. Email:
+syedmahmedhassan321@gmail.com
+4Research Assistant and Master ’s Student, School of Civil Engineer-
+ing and Center for Railway Infrastructure Smart Monitoring and
+Management, Central South Univ., Changsha 410075, China. Email:
+faizanbukhari8815@gmail.com
+5Professor, School of Civil Engineering and Center for Railway
+Infrastructure Smart Monitoring and Management, Central South Univ.,
+Changsha 410075, China. Email: 147745@163.com
+6Associate Professor, Dept. of Civil and Environmental Engineering,
+Univ. of Massachusetts, Amherst, MA 01003. ORCID: https://orcid.org
+/0000-0002-3536-9348. Email: chengbo.ai@umass.edu
+7Assistant Professor, School of Civil Engineering and Center for
+Railway Infrastructure Smart Monitoring and Management, Central
+South Univ., Changsha 410075, China (corresponding author). Email:
+22020163@csu.edu.cn
+Note. This manuscript was submitted on April 20, 2024; approved on
+September 5, 2024; published online on January 2, 2025. Discussion period
+open until June 2, 2025; separate discussions must be submitted for indi-
+vidual papers. This paper is part of the Journal of Computing in Civil En-
+gineering, © ASCE, ISSN 0887-3801.
+© ASCE 04025001-1 J. Comput. Civ. Eng.
+ J. Comput. Civ. Eng., 2025, 39(2): 04025001 
+ Downloaded from ascelibrary.org by City University of Hong Kong on 08/09/26. 
+Copyright ASCE; all rights reserved, including rights for text and data mining and training of artificial intelligence or similar technologies. 
+The integration of convolutional neural networks (CNNs) post-
+2015 marked a significant shift, with MVSNet exemplifying the
+impact of deep learning on 3D reconstruction ( Yao et al. 2018 ).
+The integration of object detection and semantic segmentation
+within reconstruction processes promises further improvements
+in accuracy and efficiency ( Han et al. 2021 ). Challenges remain,
+including achieving high accuracy in complex scenes and scaling
+for large data sets. Real-time reconstruction for dynamic scenes,
+crucial for augmented reality and robotics, is a key research focus.
+Integration with sensor fusion (LiDAR, radar) and semantic under-
+standing is expected to expand 3D reconstruction ’s applications
+across various fields.
+Deep learning has revolutionized image-based 3D reconstruction,
+overcoming the limitations of traditional methods ( Lu et al. 2024 ).
+Early CNN-based techniques such as temporally invariant learned
+detector (TILDE) ( V erdie et al. 2015 ) and DeepDesc ( Simo-Serra
+et al. 2015 ) initially focused on feature extraction and matching
+but were limited in accuracy and efficiency. To enhance point cloud
+quality, supervised learning approaches such as PointCleanNet
+(Rakotosaona et al. 2020 ) emerged, effectively denoising point
+clouds—critical for accurate reconstructions. However, these
+methods rely on large labeled data sets, which are costly and
+time-consuming. Unsupervised alternatives such as total denoising
+(Casajus et al. 2019) offer promise but struggle to match supervised
+performance. Advances in deep learning have also improved seman-
+tic and instance segmentation through techniques such as PointNet
+(Chen et al. 2019 ) and Pix2V ox ( Xie et al. 2019 ), enhancing the
+understanding of object shapes and relationships within scenes
+for more precise 3D reconstructions. Y et, challenges remain in
+generalizing these techniques to diverse object shapes and materials,
+especially in complex environments (Xu et al. 2021). The extraction
+of 2D information from images has further strengthened
+reconstruction methods, with techniques such as 3D-R2N2 ( Leibe
+et al. 2016 ; Hong et al. 2022 ) utilizing neural networks to generate
+3D representations from 2D data. However, reconstructing occluded
+or challenging viewpoints remains difficult, prompting the need for
+better integration of geometric priors and multiview data. Implicit
+neural representations such as NeRF ( Remondino et al. 2023)s h o w
+promise for efficient, continuous geometry modeling, prioritizing
+speed, quality, and scalability, though they require substantial com-
+putational resources. Data fusion, integrating information from
+multiple sensors such as cameras and LiDAR, offers another avenue
+for enhancing 3D reconstruction accuracy and robustness ( Ma and
+Liu 2018; Li et al. 2023). While this approach compensates for indi-
+vidual sensor limitations and enriches the data, it also introduces
+complexity, requiring powerful hardware and advanced algorithms
+to resolve conflicts between sensor data ( Cabral et al. 2023 ).
+Convolutional neural networks (CNNs) have automated 3D
+reconstruction processes, significantly enhancing accuracy and
+efficiency in infrastructure inspection. Image-based 3D models en-
+able engineers to inspect bridges, buildings, and other structures
+with greater precision, detecting damage that might elude visual
+inspection ( Zhang 2020 ). Additionally, 3D reconstruction facili-
+tates construction monitoring, allowing for progress tracking,
+deviation detection, and optimization of schedules ( Son and Kim
+2010). In the aftermath of natural disasters, these models are crucial
+for rapid damage assessment, enabling swift response and recovery
+(Zhou et al. 2016 ). The integration of 3D models with sensor data
+into digital twins offers valuable insights into infrastructure health,
+supporting predictive maintenance and asset management ( Torok
+et al. 2014 ). However, challenges such as real-time generation
+speed, high costs, sensor noise, and complex parameter require-
+ments persist. To address these, continued research into data fusion
+and deep learning is essential.
+Therefore, this paper presents a novel deep-learning methodol-
+ogy for generating high-fidelity 3D point clouds of rail fasteners.
+This framework transcends the limitations of traditional LiDAR by
+effectively utilizing ubiquitous data sources —depth and grayscale
+images. This shift toward readily available data offers a significant
+cost advantage over existing methods. The core of our contribution
+lies in the synergistic application of transformers ( Islam et al. 2024;
+Martin-Gutierrez et al. 2021 ) and Bayesian neural networks
+(Lampinen and V ehtari 2001 ; Mullachery et al. 2018
+; Xue et al.
+2022). This powerful combination facilitates self-supervised con-
+trastive learning ( Jaiswal et al. 2021 ; Liu et al. 2023 ), enabling the
+network to learn robust representations directly from unlabeled
+data, a prevalent challenge in civil infrastructure inspection. This
+innovative approach empowers the framework to remarkably trans-
+form low-dimensional depth and grayscale images into real-time,
+high-resolution 3D point clouds of rail fasteners. Beyond immedi-
+ate benefits in inspection automation and efficiency, this research
+offers broader ramifications for the civil engineering computing
+community. The ability to generate accurate geometric reconstruc-
+tions paves the way for significant advancements in digital twin
+technology, a cornerstone of modern infrastructure monitoring.
+Our framework provides a cost-effective and efficient pathway
+for generating real-time 3D data, a critical component for building
+and maintaining accurate digital twins of infrastructure assets. This,
+in turn, has the potential to revolutionize infrastructure monitoring
+by enabling proactive maintenance strategies. By facilitating the
+development of digital twins, the proposed methodology holds im-
+mense potential to enhance safety, reliability, and cost-effectiveness
+across a broad spectrum of civil engineering applications.
+Beyond these core contributions, our approach offers several ad-
+ditional advantages:
+ Robustness to environmental variability: Perform effectively
+under diverse lighting and weather conditions, making it suit-
+able for real-world deployment. Contrary to Lidar, this gener-
+ated point cloud ignores the noise and focuses more on the
+main features.
+ Contributions to downstream tasks: The learned representations
+of depth and grayscale depth image information can be utilized
+for various downstream tasks, such as anomaly detection and
+predictive maintenance. This versatility expands the utility of
+our framework beyond 3D point cloud generation, simulating
+Fig. 1. High-speed railways fastener.
+© ASCE 04025001-2 J. Comput. Civ. Eng.
+ J. Comput. Civ. Eng., 2025, 39(2): 04025001 
+ Downloaded from ascelibrary.org by City University of Hong Kong on 08/09/26. 
+Copyright ASCE; all rights reserved, including rights for text and data mining and training of artificial intelligence or similar technologies. 
+the learning capabilities of advanced LiDAR systems for proac-
+tive maintenance and enhanced infrastructure management.
+The paper unfolds with an introduction, followed by a method-
+ology. The methodology details the novel multimodal architecture’s
+development. Following, the results section showcases the architec-
+ture’s efficacy in point cloud generation. The discussion contextu-
+alizes findings in civil engineering. Finally, the conclusion
+synthesizes key contributions.
+Methodology
+This paper proposes a novel deep-learning framework for generat-
+ing high-fidelity 3D point clouds of rail track fasteners, leveraging
+depth images and grayscale image data. This framework has the
+potential to revolutionize infrastructure monitoring applications
+by enabling real-time, accurate 3D data acquisition for proactive
+maintenance and informed decision-making.
+Proposed Framework
+The core of this framework as illustrated in Fig. 2 lies in a multi-
+modal architecture designed to process two data types simultane-
+ously: depth images and corresponding grayscale images. This
+combined approach allows the model to extract comprehensive in-
+formation about the fasteners, capturing both visual details and
+depth. However, a significant challenge arises in acquiring a large
+and diverse data set of fastener images. Traditional methods often
+require extensive manual labeling, which can be time-consuming
+and expensive. To overcome this limitation, we leverage a tech-
+nique known as self-supervised contrastive learning ( Falcon and
+Cho 2020 ). This approach enables the model to learn effectively
+from augmented data, where variations such as rotations and flips
+are introduced to artificially expand the data set, thereby improving
+the model ’s generalization to unseen examples. Self-supervised
+contrastive learning then directs the model to focus on recognizing
+similarities and differences between these augmented representa-
+tions, allowing it to extract meaningful features without extensive
+manual labeling. Through this enriched data set, the framework
+achieves real-time, accurate 3D point cloud generation, enhancing
+infrastructure monitoring systems. The framework ’s success is
+largely dependent on a robust data augmentation stage, where tech-
+niques such as random rotations, Gaussian noise injection, contrast
+adjustments, and color jittering are employed. These strategies en-
+rich the training data, improving the model ’s ability to generalize
+under varying real-world conditions such as lighting, noise, and
+object orientations, leading to superior performance in generating
+3D point clouds.
+This model accomplishes the generation of 3D point clouds
+solely from 2D image data by capitalizing on several advanced
+techniques, including self-supervised contrastive learning, Fourier
+transform-based neural networks ( Li et al. 2020 ), vision transform-
+ers (Khan et al. 2022 ), attention mechanisms ( Niu et al. 2021 ), and
+Bayesian distribution modeling ( Aguilera et al. 2010 ).
+Siamese Network with Enhanced Encoding
+The proposed framework employs a Siamese network architecture
+for representation learning, consisting of two key components: an
+encoder and a predictor. The encoder encodes information to gen-
+erate latent representations from grayscale and depth images, which
+are then processed by the predictor. The predictor functions
+Fig. 2. Proposed framework.
+© ASCE 04025001-3 J. Comput. Civ. Eng.
+ J. Comput. Civ. Eng., 2025, 39(2): 04025001 
+ Downloaded from ascelibrary.org by City University of Hong Kong on 08/09/26. 
+Copyright ASCE; all rights reserved, including rights for text and data mining and training of artificial intelligence or similar technologies. 
+similarly to a reconstruction algorithm, aiming to maximize the
+similarity between encoded and predicted representations, thereby
+training the encoder to produce optimal data encodings. To enhance
+the encoding process and extract more comprehensive features, the
+framework integrates a vision transformer, a Fourier network, and a
+multilevel fusion network (MFN) within the Siamese network ar-
+chitecture, collectively termed the MFN. This architecture effi-
+ciently extracts and fuses features from images and depth data,
+ensuring robust representation learning. Detailed discussions on
+the vision transformer, Fourier network, multimodal level network
+(MLN), and overall MFN architecture are provided in subsequent
+sections.
+Vision Transformer. We augment the traditional Siamese network
+(Guo et al. 2017 ; Melekhov et al. 2016 ) by integrating a vision
+transformer and a Fourier network. Vision transformers (ViTs),
+as shown in Fig. 3, are a new wave in computer vision, inspired
+by the success of transformers in natural language processing. Un-
+like traditional convolutional neural networks (CNNs) that process
+images pixel by pixel, ViTs divide images into smaller patches.
+Each patch is embedded into a higher-dimensional space and
+undergoes positional encoding to preserve its location within the
+original image. This enables the ViT to grasp the relationships be-
+tween different parts of the image. The core of the ViT is its trans-
+former encoder, which analyzes the interactions between patches,
+capturing both local details and global features. This processed in-
+formation is then utilized for tasks such as image classification or
+object detection. ViTs offer a robust alternative to CNNs, demon-
+strating impressive performance across various image analysis
+benchmarks.
+Concurrently, the Fourier network specializes in processing
+depth images, employing a Fourier transform-based approach to
+extract depth-specific features. By processing both image and depth
+data through these specialized networks, our framework achieves a
+more comprehensive understanding of rail track fasteners.
+Fourier Network. The system utilizes a module called the Fourier
+network (FN) for in-depth analysis of the point cloud data as shown
+in Fig. 4. While it shares the name with Fourier neural networks
+used in language processing, this FN focuses on extracting features
+from the depth information (3D structure) using the Fourier trans-
+form (FT). The FT helps the FN identify underlying patterns within
+the depth data. This FN acts as a feature extractor in two key ways.
+First, it utilizes various convolution techniques to pull out a rich set
+of features. These techniques involve breaking down convolutions
+for efficiency (separable), preserving data at edges (padded),
+extracting features from individual channels (depth-wise), and cap-
+turing spatial relationships (simple). Second, after feature extrac-
+tion, the FN employs an attention mechanism to filter the
+features. This mechanism assigns importance weights based on
+relevance to the task, essentially focusing on the most informative
+features and discarding less important ones. Finally, the FN uses a
+technique called “dot attention ” to combine all the extracted and
+filtered features. This creates a single, unified representation that
+captures important information from both the image and depth data
+of the point cloud.
+Following this initial feature extraction and fusion stage, the
+framework employs a multilevel fusion network (Fig. 5) to further
+refine the representation. This network performs a series of fusion
+steps using dot attention. There are three primary representations
+obtained at this point: image-based features from the transformer,
+depth-based features from the Fourier network, and the fused rep-
+resentation generated by the MFN. The multilevel fusion network
+takes all three of these representations as input and refines them
+through a series of fusion steps using dot attention. This process
+ultimately yields a single, unified global representation that cap-
+tures the most salient features from both the image and depth data.
+This global representation is then fed into the predictor, which is a
+residual network comprised of four consecutive transformations.
+The predictor’s role is to refine and reconstruct the global represen-
+tation. This process yields two sets of representations: one from the
+encoder and the other from the predictor. The objective is to min-
+imize the distance between these two representations through a loss
+function. Essentially, the predictor acts as a teacher, guiding the
+encoder to learn more effective feature representations for point
+cloud generation.
+Multimodal Level Network
+The multimodal level network (MLN) plays a critical role in
+extracting and fusing features from both image and depth data
+within the enhanced Siamese network of our proposed framework.
+This network (as shown in Fig. 6) performs two key functions: fea-
+ture extraction and fusion. Feature extraction is accomplished
+Fig. 3. Vision transformer model.
+© ASCE 04025001-4 J. Comput. Civ. Eng.
+ J. Comput. Civ. Eng., 2025, 39(2): 04025001 
+ Downloaded from ascelibrary.org by City University of Hong Kong on 08/09/26. 
+Copyright ASCE; all rights reserved, including rights for text and data mining and training of artificial intelligence or similar technologies. 
+through various convolution transforms employed by the MLN to
+capture informative features from the input images and depth maps.
+These transforms include the following:
+ Separable convolutions: This technique breaks down a standard
+convolution operation into two more efficient steps: depth-wise
+convolutions followed by a pointwise convolution.
+ Padded convolutions: Padding allows the MLN to preserve spa-
+tial information during the convolution process, particularly at
+the edges of the input data. This prevents a loss of valuable in-
+formation from the borders of the images and depth maps.
+ Depth-wise convolutions: These convolutions apply a single fil-
+ter per input channel, enabling the MLN to extract features spe-
+cific to each channel independently. This allows for a more
+granular understanding of the data.
+ Simple convolutions: Standard convolutions are also utilized
+within the MLN to capture more general feature representations
+Fig. 4. Fourier neural network.
+© ASCE 04025001-5 J. Comput. Civ. Eng.
+ J. Comput. Civ. Eng., 2025, 39(2): 04025001 
+ Downloaded from ascelibrary.org by City University of Hong Kong on 08/09/26. 
+Copyright ASCE; all rights reserved, including rights for text and data mining and training of artificial intelligence or similar technologies. 
+from the input data. These convolutions look at broader patterns
+within the data and complement the channel-specific features
+extracted by the depth-wise convolutions.
+The multilevel fusion network (MLN) utilizes a diverse set of
+convolution transforms to extract a comprehensive range of features
+from both image and depth data. These features encompass visual
+details, depth variations, and spatial relationships within the rail
+track fasteners. To create a unified representation, the MLN em-
+ploys a two-stage fusion process:
+Squeeze-and-excitation attention mechanism: This mecha-
+nism refines the extracted features by assigning importance weights
+based on their relevance to point cloud generation. It first com-
+presses spatial information into a channel-wise average, allowing
+the network to evaluate the significance of each feature channel.
+Fully connected layers then generate scale factors, which are
+applied to the original feature maps, enhancing the most informa-
+tive features while suppressing less relevant ones. This process
+focuses the MLN ’s attention on the key features necessary for ac-
+curate 3D point cloud generation.
+Dot attention: After applying the squeeze-and-excitation
+mechanism, the MLN uses dot attention to further fuse the features.
+Dot attention calculates compatibility scores between elements in
+two feature maps, combining them into a single, weighted repre-
+sentation. This fused representation integrates both visual and
+depth-related information, providing a holistic understanding of
+the rail track fasteners.
+In essence, the MLN acts as a bridge, effectively combining
+image-centric features from the transformer with depth-specific
+features from the Fourier network. Through its two-stage attention
+mechanism, the MLN generates a rich, informative fused
+Fig. 5. Multimodal level network (MLN).
+© ASCE 04025001-6 J. Comput. Civ. Eng.
+ J. Comput. Civ. Eng., 2025, 39(2): 04025001 
+ Downloaded from ascelibrary.org by City University of Hong Kong on 08/09/26. 
+Copyright ASCE; all rights reserved, including rights for text and data mining and training of artificial intelligence or similar technologies. 
+representation that is critical for producing high-fidelity 3D
+point clouds in the subsequent stages of the framework. The
+MFN is a multimodal architecture that consists of a vision
+transformer, Fourier network, and multilevel fusion network.
+The process starts with image and depth; firstly images come
+in a transformer model and the Fourier network is applied to depth
+images. Another network, called MLN, takes both image and
+depth and produces mixed feature representation. So overall this
+MLN is used to learn image representation, depth representation,
+and mixed representation, which then also fuse to make one final
+feature representation. This whole network is called a Siamese
+encoder, which we named MFN because of multimodular process-
+ing. These components including the transformer, Fourier net-
+work, and MLN are explained in the above sections. Fig. 6
+shows the working diagram of MFN. In the next section, we dis-
+cuss the predictor part. Then these two Siamese encoders (MFN)
+and predictors are used to learn contrastive representation via self-
+supervised learning.
+Siamese Predictor
+The predictor network as shown in Fig. 7 plays a critical role in the
+Siamese architecture, refining the global representation learned
+through the multilevel fusion process. This network is a residual
+network comprised of four consecutive transformation blocks.
+Each block typically consists of a convolutional layer followed
+by a batch normalization layer and a rectified linear unit (ReLU)
+activation function. These residual blocks allow the network to
+learn complex, nonlinear relationships within the data. The predic-
+tor takes the single, unified global representation generated by the
+multilevel fusion network as input. It then applies the aforemen-
+tioned transformations within each block to refine and reconstruct
+this representation. This process essentially attempts to recreate the
+original input data (both image and depth information) based on the
+learned global representation. By comparing the reconstructed rep-
+resentation with the original global representation, the framework
+can assess the effectiveness of the encoding process.
+A key objective of the predictor is to minimize the distance be-
+tween the encoded representation from the encoder (i.e., the global
+representation before entering the predictor) and the reconstructed
+representation generated by the predictor itself. This distance min-
+imization is achieved through a loss function. The loss function
+calculates the difference between the two representations and
+guides the training process by penalizing the network for signifi-
+cant discrepancies. As the training progresses, the predictor be-
+comes adept at refining the global representation, ensuring that
+it accurately captures the essential information required for point
+cloud generation. In simpler terms, the predictor acts as a “teacher”
+for the encoder within the Siamese network. By striving to recon-
+struct the global representation, the predictor guides the encoder
+toward learning more efficient and effective feature representations
+that are well-suited for the task of generating 3D point clouds from
+2D image data.
+Bayesian Neural Network for Point Cloud Generation
+The ultimate goal of the proposed framework, as shown in Fig. 8,i s
+to generate 3D point clouds of rail track fasteners based on the
+learned representations. This section delves into the intricacies
+of the Bayesian neural network employed for this crucial task.
+The core idea behind this approach lies in acknowledging the in-
+herent uncertainty associated with the point cloud generation pro-
+cess. Real-world data often exhibit variations and noise, and the
+mapping from 2D representations to a 3D point cloud is inherently
+complex and may not have a single, definitive solution. To address
+this uncertainty, we leverage a Bayesian learning framework.
+Our framework utilizes four distinct representations as input for
+the Bayesian neural network:
+Image Representation: This representation captures visual de-
+tails extracted from the image data by the transformer network.
+Depth Representation: This representation encapsulates depth-
+related information obtained from the depth maps through the
+Fourier network.
+Combined Representation (MLN): This representation inte-
+grates features from both image and depth domains, generated
+by the multilevel fusion network (MLN).
+Fig. 6. Multimodal fusion network (MFN) framework.
+Fig. 7. Predictor network.
+© ASCE 04025001-7 J. Comput. Civ. Eng.
+ J. Comput. Civ. Eng., 2025, 39(2): 04025001 
+ Downloaded from ascelibrary.org by City University of Hong Kong on 08/09/26. 
+Copyright ASCE; all rights reserved, including rights for text and data mining and training of artificial intelligence or similar technologies. 
+Fig. 8. Bayesian neural network for point cloud generation.
+© ASCE 04025001-8 J. Comput. Civ. Eng.
+ J. Comput. Civ. Eng., 2025, 39(2): 04025001 
+ Downloaded from ascelibrary.org by City University of Hong Kong on 08/09/26. 
+Copyright ASCE; all rights reserved, including rights for text and data mining and training of artificial intelligence or similar technologies. 
+Global Combined Representation: This representation is the
+culmination of the multimodal fusion process, incorporating infor-
+mation from all three aforementioned representations.
+Each of these representations offers unique knowledge about the
+rail track fasteners:
+ The image representation provides details regarding the visual
+appearance of the fasteners.
+ The depth representation captures information about the spatial
+distribution of depth values.
+ The combined representation (MLN) offers a more holistic
+understanding by combining visual and depth cues.
+ The global combined representation acts as a comprehensive
+summary, leveraging information from all available sources.
+To account for the inherent uncertainty in point cloud genera-
+tion, the framework employs a Bayesian approach. Instead of pre-
+dicting a single, deterministic point cloud, the Bayesian neural
+network learns the probability distribution underlying the point
+cloud generation process. This distribution captures the range of
+possible point clouds that could be generated based on the input
+representations.
+Bayesian Small Networks: We utilize separate small neural
+networks for each of the four input representations. These networks
+are tasked with learning the probability distribution of the point
+cloud for each representation. This allows the network to capture
+the unique contribution of each representation to the overall point
+cloud generation process.
+Distribution Fusion: The individual probability distributions
+learned from each small network are not directly used for point
+cloud generation. Instead, a complex, nonlinear fusion process
+combines these distributions to create a single, unified global dis-
+tribution that encapsulates the combined knowledge from all four
+representations. This fusion step leverages techniques such as deep
+amortization, allowing the framework to learn a more comprehen-
+sive and informative distribution for generating high-fidelity 3D
+point clouds.
+Point Cloud Sampling: Once the global distribution is estab-
+lished, the framework utilizes a sampling technique to generate a
+point cloud. This sampling process essentially draws a sample
+from the learned distribution. Since the distribution captures the
+inherent uncertainty in the data, multiple samples can be drawn,
+resulting in a set of potential poi nt clouds that are all plausible
+given the input representations . This ability to generate multiple
+point cloud samples reflects the inherent variability present in
+real-world data.
+By leveraging a Bayesian framework (as illustrated in Fig. 8)
+and sampling from the learned distribution, the proposed approach
+effectively manages uncertainty in point cloud generation. This
+probabilistic method offers a nuanced understanding of potential
+variations in the generated point clouds, providing valuable insights
+for infrastructure monitoring. Rather than producing a single “best
+guess” point cloud, the framework generates multiple potential
+point clouds that represent the range of possibilities based on
+the input data and associated uncertainties. This capability is par-
+ticularly beneficial for tasks such as anomaly detection in rail track
+maintenance. By comparing generated point clouds to a reference
+or identifying significant deviations among samples, the framework
+can reveal potential issues with rail track fasteners, facilitating pro-
+active maintenance strategies.
+Results of Simulation
+In this section, an examination of the system ’s performance on
+the rail track fasteners data set is undertaken. The discussion
+encompasses an elucidation of the data set, delineation of data
+augmentation techniques, and explication of data preprocessing
+methods. Subsequently, a comprehensive analysis of the proposed
+system is conducted, focusing on representation learning and point
+cloud generation. Following this, a complexity analysis is executed
+to assess the intricacies of the system, given its composition of
+multiple algorithms. This process is conducted for training the
+model by utilizing Google Colab with a T4 GPU, optimizing
+our model with specific hyper parameters: a batch size of 1, 30
+epochs, and a learning rate of 0.001. For the evaluation of the gen-
+erated point clouds, we employed three distinct metrics: Chamfer
+distance, Euclidean contrastive metric, and Hausdorff distance, en-
+suring a comprehensive assessment of the point cloud quality and
+alignment.
+Data Set and Preprocessing
+This research used a unique data set of rail fasteners captured on a
+high-speed railway track. The data consists of rail fasteners ’ gray-
+scale and depth images captured on a high-speed railway track. A
+Deep Vision Camera SSZN-SR5320, known for its structured light
+data acquisition capabilities, was mounted on a comprehensive
+track inspection vehicle as shown in Fig. 9. To ensure high-quality
+data, the vehicle traveled at a controlled speed of 10 km=h. Four
+strategically positioned sets of joint line-structured light cameras
+scanned the track. These cameras, mounted 500 mm above the
+track, offered a combined scanning width of 2,400 mm, effectively
+capturing the entire area of interest. The data collection focused on
+two specific track slabs, resulting in a high-density point cloud con-
+taining approximately 50 million data points per slab. These point
+clouds boast impressive resolutions of 50 μm × 50 μm horizon-
+tally and 7.5 μm vertically. Additionally, the captured 2D grayscale
+images had a resolution of 1,920 × 1,200 pixels, while the depth
+images offered the same resolution with an additional channel con-
+taining further information. This unique data collection process en-
+sured the acquisition of rich and detailed information about the rail
+fasteners, providing a valuable foundation for the deep-learning
+framework.
+To train the model efficiently, the high-resolution grayscale
+(1,920 × 1,200 pixels) and depth images ( 1,920 × 1,200 pixels
+with three channels) were resized to a standard 128 × 128 pixels.
+Additionally, pixel values were normalized using min –max scaling
+Fig. 9. Comprehensive track inspection vehicle.
+© ASCE 04025001-9 J. Comput. Civ. Eng.
+ J. Comput. Civ. Eng., 2025, 39(2): 04025001 
+ Downloaded from ascelibrary.org by City University of Hong Kong on 08/09/26. 
+Copyright ASCE; all rights reserved, including rights for text and data mining and training of artificial intelligence or similar technologies. 
+to prevent specific features from biasing the training process. Fi-
+nally, both image types were converted into a format compatible
+with the deep-learning model ’s pipeline. The evaluation process
+utilizes a custom-collected data set specifically designed for rail
+fastener analysis. While the data set (samples shown in Figs. 10
+and 11) comprises 30 corresponding depth and grayscale images
+for each fastener type, this limited quantity could potentially impact
+the model ’s performance and efficiency when trained with tradi-
+tional supervised learning methods. To overcome this challenge,
+the framework leverages self-supervised contrastive learning. This
+approach enables the model to effectively extract valuable represen-
+tations from the available data, even with a relatively small data set.
+By learning from artificially augmented versions of the existing
+data and focusing on identifying similarities and differences within
+these variations, the model can learn meaningful features without
+requiring a vast amount of manually labeled data. These prepro-
+cessing steps were crucial for ensuring successful training and
+evaluation of the point cloud generation model. Downsizing the
+high-density point clouds and normalizing the data streamlined
+the processing workflow and promoted stable training. Ultimately,
+these measures contributed to the development of a more robust and
+reliable model capable of generating highly accurate 3D represen-
+tations of rail track fasteners.
+Data Augmentation
+To enrich the training data and improve the model ’s generalizabil-
+ity, various data augmentation techniques were employed on
+data as shown in Fig. 12. These included random rotations to
+enhance object orientation invariance, Gaussian noise injection
+to increase robustness to noise, random contrast adjustments to en-
+able generalizability across diverse lighting conditions, and color
+jittering to promote robustness to variations in color distribution.
+By leveraging these techniques, the framework benefits from a
+richer and more diverse training set, leading to enhanced perfor-
+mance and improved generalizability of the generated 3D point
+clouds of rail fasteners under diverse real-world conditions.
+Performance Metrics
+Evaluating the performance of the deep-learning framework for
+point cloud generation requires a set of well-defined metrics that
+quantify various aspects of the generated point clouds and the
+associated representation learning processes. Choosing the appro-
+priate metrics allows for a comprehensive understanding of the
+framework’s strengths and weaknesses.
+Chamfer Distance
+This metric quantifies the dissimilarity between two sets of points
+in 3D space. It measures the average distance from each point in
+one set to its nearest neighbor in the other set, and vice versa. Lower
+chamfer distance values indicate a better match between the gen-
+erated point clouds and the target point clouds representing the
+actual rail track fasteners. A significant difference between the
+chamfer distance for different data augmentation approaches can
+highlight the strategies that lead to more accurate point cloud
+generation.
+The Chamfer distance (CD) between two-point clouds, P and Q
+(with P having n points and Q having m points), is defined by the
+equation
+CDðP; QÞ¼
+1
+n
+Xn
+i¼1
+minm
+j¼1
+/C13/C13
+/C13 p
+i − qj
+/C13/C13
+/C13
+2
+þ 1
+m
+Xm
+j¼1
+minn
+i¼1
+/C13/C13
+/C13 q
+j − pi
+/C13/C13
+/C13
+2
+ð1Þ
+where pi and qj = points in P and Q, respectively. The resulting
+Chamfer distance values, ranging from 0.3926 to 0.4050, indicate
+dissimilarity, with lower values being more desirable as they
+suggest a better match between the generated and target point
+clouds. Notably, noise augmentation achieves the lowest Chamfer
+distance, underscoring its contribution to more accurate point cloud
+generation.
+Hausdorff Distance
+This metric complements the Chamfer distance by measuring the
+maximum distance between two sets of points in 3D space. It iden-
+tifies the point in one set that has the greatest distance to its nearest
+neighbor in the other set. Similar to the Chamfer distance, lower
+Hausdorff distance values indicate a closer match between the
+generated and target point clouds. Analyzing the Hausdorff dis-
+tance for different augmentation strategies can provide insights into
+the overall alignment and shape fidelity of the generated point
+Fig. 10. 3D point cloud of rail track fasteners data set.
+Fig. 11. Rail tract fasteners data set (first column shows the grayscale
+images, second column shows the depth images).
+© ASCE 04025001-10 J. Comput. Civ. Eng.
+ J. Comput. Civ. Eng., 2025, 39(2): 04025001 
+ Downloaded from ascelibrary.org by City University of Hong Kong on 08/09/26. 
+Copyright ASCE; all rights reserved, including rights for text and data mining and training of artificial intelligence or similar technologies. 
+clouds. The directed Hausdorff distance ( HDðP; QÞdirected ) from
+point cloud P to point cloud Q is expressed mathematically as
+HDðP; QÞdirected ¼ maxp∈Pðminq∈Qkpi − qjkÞ ð2Þ
+This equation signifies that, for each point p in point cloud P , the
+distance to its nearest neighbor in point cloud Q is determined. The
+maximum of these minimum distances across all points in P char-
+acterizes the directed Hausdorff distance.
+To obtain the overall undirected Hausdorff distance
+(HDðP; QÞ
+undirected ) between the two point clouds, both [HD(P ,
+Q)] and [HD(Q, P)] are calculated. The undirected Hausdorff dis-
+tance is then determined as the maximum of these two values:
+HDðP; QÞundirected ¼ maxðmaxp∈Pðminq∈Qkp
+− qkÞ; maxq∈Qðminp∈Pkq − pkÞÞ ð 3Þ
+Now, considering the results, the computed Hausdorff distance
+values range from 1,063.79 to 1,140.1226. In the context of this
+evaluation, lower values are desirable as they indicate a closer
+match between the two-point clouds. The application of noise aug-
+mentation, along with contrast or color jitter, results in relatively
+lower Hausdorff distance values, suggesting improved alignment.
+The consistent effectiveness of noise augmentation across multiple
+metrics, including Chamfer distance and representation learning,
+underscores its role in achieving accurate point cloud generation
+and facilitating effective representation learning.
+Euclidean Contrastive Loss
+The Euclidean contrastive loss metric is crucial during neural net-
+work training as it serves as a loss function guiding the network to
+learn robust data representations. This metric measures the Euclid-
+ean distance between pairs of samples in the training data, aiming
+to cluster similar samples together in the embedding space while
+separating dissimilar ones. Minimizing the Euclidean contrastive
+loss encourages the network to extract features that effectively dis-
+tinguish between different types of rail track fasteners or variations
+within the same type. Lower values of this loss indicate more ef-
+fective representation learning. Analyzing this metric across vari-
+ous data augmentation techniques can identify which strategies
+enhance the model ’s ability to develop discriminative features
+for accurate point cloud generation.
+The Euclidean contrastive loss is typically formulated for a pair
+of examples ða; bÞ with a binary label indicating whether they are
+similar (y ¼ 1) or dissimilar (y ¼ 0). The loss function is expressed
+as follows:
+Lða; b; yÞ¼
+ð1 − yÞ
+2 ka − bk2 þ y
+2 maxð0; m−ka − bkÞ2 ð4Þ
+where m is a margin parameter that sets the threshold for dissimi-
+larity. The computed Euclidean contrastive loss values in this con-
+text range from 0.3142 to 0.3327. Lower values are favored as they
+signify more effective representation learning within the neural net-
+work. Notably, noise augmentation consistently yields the lowest
+Euclidean contrastive loss, indicating its positive impact on im-
+proving the quality of learned representations during the training
+process.
+To rigorously evaluate the accuracy of our reconstructed mod-
+els, we utilized three complementary metrics: Chamfer distance,
+Hausdorff distance, and Euclidean contrastive loss. Chamfer dis-
+tance provides a thorough measure of the average bidirectional
+discrepancy between the reconstructed model and the ground truth,
+highlighting local deviations and fine detail discrepancies.
+Hausdorff distance complements this by focusing on the maximum
+deviation between points in the reconstructed and ground truth
+models, identifying extreme discrepancies and outliers. Euclidean
+contrastive loss assesses the quality of learned latent representa-
+tions, ensuring that similar 3D inputs are represented by closely
+aligned latent codes. This loss function guides the model in learn-
+ing an effective feature space where objects with similar shapes are
+positioned near each other, even if their poses or viewpoints vary.
+Together, these metrics offer a comprehensive evaluation of both
+geometric accuracy and the quality of latent feature representations,
+Fig. 12. Images and depth after augmentation.
+© ASCE 04025001-11 J. Comput. Civ. Eng.
+ J. Comput. Civ. Eng., 2025, 39(2): 04025001 
+ Downloaded from ascelibrary.org by City University of Hong Kong on 08/09/26. 
+Copyright ASCE; all rights reserved, including rights for text and data mining and training of artificial intelligence or similar technologies. 
+enabling us to detect both global and local reconstruction discrep-
+ancies and ensure the model captures the essential features of the
+3D objects effectively.
+Fig. 13 visually encapsulates the quantitative outcomes of our
+experimentation, providing a comprehensive illustration of the per-
+formance of various data augmentation techniques on Chamfer dis-
+tance (CD), Euclidean contrastive loss (L), and Hausdorff distance
+for point clouds (HD). The plot serves as a graphical representation
+of the nuanced impacts of each augmentation strategy and their
+combinations on the dissimilarity metrics. Observing the trends,
+it becomes evident that noise augmentation consistently leads to
+the most favorable outcomes across CD and L metrics, aligning
+with the numeric results presented in the table. The curves associ-
+ated with noise augmentation exhibit the lowest points, emphasiz-
+ing its efficacy in achieving accurate point cloud generation and
+improving the quality of learned representations. Moreover, this
+allows for a comparative analysis of the augmentation techniques
+and their combinations. It provides insights into how the joint ap-
+plication of noise, color jitter, and contrast augmentation influences
+the dissimilarity metrics. The curves for this combined strategy,
+while demonstrating slight fluctuations, consistently showcase
+competitive performance, reinforcing the potential synergy among
+diverse augmentation methods. In essence, Fig. 8 acts as a visual
+aid to complement the tabulated results, offering a holistic view of
+the relative impacts of different augmentation strategies on the
+dissimilarity metrics and further aiding in the interpretation of
+the experimental findings.
+In our evaluation process, various data augmentation strategies
+were applied individually and in combination to assess their impact
+on the quality of point cloud generation, as shown in Table 1. The
+Chamfer distance (CD) metric, indicative of dissimilarity between
+generated and target point clouds, showcased nuanced responses to
+different augmentation techniques. Notably, the introduction of
+noise augmentation resulted in the lowest CD value at 0.3926, sug-
+gesting a more accurate match between the generated and target
+point clouds. The Euclidean contrastive loss (L), a crucial compo-
+nent in training neural networks for metric learning, exhibited a
+consistent trend. Once again, noise augmentation emerged as par-
+ticularly effective, yielding the lowest loss value at 0.3142 and em-
+phasizing its contribution to enhancing the learned representations.
+Simultaneously, the Hausdorff distance for point clouds (HD) re-
+vealed distinctive patterns in response to augmentation strategies.
+The combination of noise, color jitter, and contrast augmentation
+produced the lowest HD value at 1,063.79, indicating superior
+alignment between the point clouds. These findings underscore
+the nuanced and strategy-dependent impacts of data augmentation
+on the quality of generated point clouds and the associated repre-
+sentation learning processes.
+In Table 1, it is evident that noise-based data enhancement
+achieves the lowest Chamfer distance (0.3926) among all tested
+Fig. 13. Performance of data augmentation techniques.
+Table 1. Detailed evaluation data augmentation techniques
+No. Data augmentation (only) Chamfer distance for PC Euclidean contrastive loss Hausdorff distance for PC
+1 Noise 0.3926 0.3327 1,133.550
+2 Color jitter 0.4050 0.3232 1,140.1226
+3 Contrast 0.4010 0.3300 1,077.2986
+4 Noise + Color jitter 0.4021 0.3261 1,135.091
+5 Noise + Contrast 0.4003 0.3251 1,091.942
+6 Color jitter + Contrast 0.4003 0.3171 1,063.79
+7 Noise + Color jitter + Contrast 0.3996 0.3142 1,137.9042
+© ASCE 04025001-12 J. Comput. Civ. Eng.
+ J. Comput. Civ. Eng., 2025, 39(2): 04025001 
+ Downloaded from ascelibrary.org by City University of Hong Kong on 08/09/26. 
+Copyright ASCE; all rights reserved, including rights for text and data mining and training of artificial intelligence or similar technologies. 
+augmentation techniques. This finding highlights the unique advan-
+tages of noise enhancement in promoting more accurate point cloud
+generation. The introduction of noise during training enhances the
+model’s robustness and generalization capabilities by exposing it to
+a wider range of variability, thus preventing overfitting and improv-
+ing performance on noisy real-world data. A detailed comparison is
+provided in Fig. 14.
+To understand why noise-based data enhancement achieves
+notable improvements and its distinct advantages over other data
+augmentation methods, it is crucial to explore the nature of noise
+and its effects on model training. Noise, when applied judiciously,
+introduces variability that enhances the model ’s robustness, ena-
+bling it to better generalize to real-world data which often contains
+inherent noise. This exposure to noisy data during training helps the
+model mitigate noise effects, improving its performance and lead-
+ing to a more accurate representation of the underlying data struc-
+ture, as evidenced by reduced Chamfer distances. Unlike other
+augmentation techniques, such as color jitter and contrast adjust-
+ment, which mainly alter visual appearance without incorporating
+the same level of variability, noise augmentation encourages the
+model to learn generalized features, thereby reducing overfitting.
+Table 1 highlights that while noise augmentation alone achieves
+a significant reduction in Chamfer distance, indicating enhanced
+model robustness, it does not yield the lowest Euclidean contrastive
+loss (L) values. The optimal L values are observed with combined
+augmentation techniques, specifically noise combined with color
+jitter and contrast, achieving the lowest L index scores (0.3171
+and 0.3142, respectively). This indicates that although noise aug-
+mentation significantly improves model performance, the most
+substantial gains are realized when it is used in conjunction with
+other augmentation methods. The synergistic effect of combining
+noise with color jitter and contrast underscores the importance of a
+holistic augmentation approach to maximize model accuracy and
+robustness. Thus, while noise augmentation contributes notably
+to performance improvements, it is the integration of multiple aug-
+mentation techniques that leads to the most effective enhancement
+in model performance, demonstrating that combined augmenta-
+tions are more beneficial than any single isolation method.
+Table 1 reveals that the lowest Hausdorff distance (HD) value of
+1,063.79 is achieved with the combination of color jitter and con-
+trast augmentations, whereas the addition of noise leads to a slight
+increase in HD. It is crucial to recognize that our study aims to
+optimize multiple metrics, including Chamfer distance, Euclidean
+contrastive loss (L), and Hausdorff distance (HD), simultaneously.
+Although the combination of color jitter and contrast achieves the
+lowest HD, this does not necessarily indicate overall superiority
+in point cloud quality. Our findings demonstrate that noise augmen-
+tation significantly reduces Chamfer distance and Euclidean
+contrastive loss, which are also critical for assessing point cloud
+quality. Therefore, despite the minor increase in HD, noise aug-
+mentation substantially improves other quality measures. This
+highlights the trade-offs and synergistic effects involved in optimiz-
+ing these metrics. Noise augmentation, while slightly increasing
+HD, enhances Chamfer distance and Euclidean contrastive loss, in-
+dicating an overall improvement in point cloud generation quality
+when evaluated across multiple metrics. Additionally, a holistic
+evaluation approach, rather than focusing solely on HD, provides
+a balanced assessment of augmentation strategies. As shown in
+Table 1, noise augmentation achieves the lowest Chamfer distance
+of 0.3926 and one of the lowest Euclidean contrastive loss values at
+0.3327. Although the HD slightly rises to 1,133.550, the overall
+improvements in Chamfer distance and Euclidean contrastive
+loss justify this minor increase. Complementary to these quantita-
+tive metrics, visualization techniques can provide further insights.
+Plotting the impact of various augmentation strategies on Chamfer
+distance, Euclidean contrastive loss, and Hausdorff distance ena-
+bles a comparative analysis of the effects of each augmentation
+approach and its combinations on point cloud quality.
+Metrics with Uncertainties
+In this study, Fig. 15 serves as a comprehensive visual exploration
+of the impact of various data augmentation techniques on three dis-
+tinct metrics —Chamfer distance, Euclidean contrastive loss, and
+Hausdorff distance. The figure is organized into rows, each dedi-
+cated to a specific data augmentation method, including noise,
+color jitter, contrast, and combinations thereof.
+The left-side bar charts offer a categorical overview of metric
+values, providing a concise snapshot of the differential effects of
+each augmentation method on the metrics. Notably, noise appears
+to exert the least influence on the metrics, while combinations such
+as noise, color jitter, and contrast exhibit discernible variations.
+This categorical representation facilitates a quick assessment of
+the relative impact of different augmentation techniques. On the
+right side of the figure, line plots delve deeper into individual met-
+rics, focusing on mean values. The shaded regions surrounding
+each line convey the associated uncertainty bounds, acknowledging
+potential variations attributable to measurement uncertainties or
+other factors. Each metric is distinguished by color, enabling a clear
+differentiation of their respective contributions. This detailed
+graphical representation affords a nuanced understanding of how
+each data augmentation method influences the metrics and provides
+valuable insights into the potential uncertainties associated with
+these effects.
+This study explored various data augmentation combinations to
+understand their effects on point cloud quality comprehensively.
+Each augmentation method, whether applied individually or in
+combination, demonstrated unique impacts on metrics such as
+Chamfer distance, Euclidean contrastive loss, and Hausdorff dis-
+tance. These impacts provide valuable insights into how different
+augmentations contribute to overall point cloud quality. Following
+this, it primarily utilized the combination of noise, color jitter, and
+contrast augmentations. This combination was chosen based on its
+ability to provide a balanced improvement across all evaluated met-
+rics. While it is true that the combination of color jitter and contrast
+alone achieved the lowest Hausdorff distance, the inclusion of noise
+significantly reduced Chamfer distance and Euclidean contrastive
+loss. This holistic approach to evaluation ensured that we did not
+focus solely on optimizing a single metric but rather aimed for a
+comprehensive enhancement of point cloud quality. Therefore, for
+future research, we recommend employing the combination of
+noise, color jitter, and contrast augmentations. This approach offers
+a balanced and robust enhancement of point cloud quality, address-
+ing various aspects of the data simultaneously.
+Segmentation and Surface Reconstruction of 3D
+Point Clouds
+The ability to analyze and understand 3D structures plays a crucial
+role in various disciplines. This document delves into a methodol-
+ogy for extracting meaningful information from 3D point clouds,
+which are essentially collections of data points representing objects
+or features in space. These points, typically defined by X, Y , and Z
+coordinates, capture the spatial distribution of the elements within
+the scene. Here, we explore a two-pronged approach: segmentation
+and surface reconstruction, to unlock the hidden details within
+these point clouds.
+© ASCE 04025001-13 J. Comput. Civ. Eng.
+ J. Comput. Civ. Eng., 2025, 39(2): 04025001 
+ Downloaded from ascelibrary.org by City University of Hong Kong on 08/09/26. 
+Copyright ASCE; all rights reserved, including rights for text and data mining and training of artificial intelligence or similar technologies. 
+Fig. 14. Detailed comparison of data augmentation techniques.
+© ASCE 04025001-14 J. Comput. Civ. Eng.
+ J. Comput. Civ. Eng., 2025, 39(2): 04025001 
+ Downloaded from ascelibrary.org by City University of Hong Kong on 08/09/26. 
+Copyright ASCE; all rights reserved, including rights for text and data mining and training of artificial intelligence or similar technologies. 
+Fig. 15. Impact of data augmentation techniques.
+© ASCE 04025001-15 J. Comput. Civ. Eng.
+ J. Comput. Civ. Eng., 2025, 39(2): 04025001 
+ Downloaded from ascelibrary.org by City University of Hong Kong on 08/09/26. 
+Copyright ASCE; all rights reserved, including rights for text and data mining and training of artificial intelligence or similar technologies. 
+Segmentation
+The initial step, segmentation, focuses on isolating specific features
+of interest from the overall point cloud. Imagine a point cloud rep-
+resenting a bridge with fasteners attached. Segmentation allows us
+to separate the bridge, the main plane structure, from the individual
+fasteners such as bolts or screws. This isolation facilitates the indi-
+vidual characterization and analysis of each component. The Ran-
+dom Sample Consensus (RANSAC) algorithm serves as a powerful
+tool for achieving this segmentation objective ( Li et al. 2017 ).
+RANSAC is adept at identifying outliers within a point cloud.
+In our bridge example, the bridge itself represents the dominant
+plane. RANSAC effectively identifies points deviating from this
+dominant plane, effectively pinpointing the location of the fasten-
+ers. Fig. 16 visually depicts the segmentation process. The first col-
+umn showcases the raw point cloud encompassing both the bridge
+and the fasteners. The second column presents the isolated bridge
+region identified as an outlier by RANSAC. Finally, the third col-
+umn displays the extracted fastener, now separated from the bridge
+structure.
+Having isolated the desired features, we can delve into the sec-
+ond step: surface reconstruction. This process aims to create a more
+detailed and visually informative representation of the spatial rela-
+tionships within the point cloud. Here, cubic interpolation comes
+into play. Interpolation essentially estimates missing data points
+based on the surrounding known values. In the context of point
+clouds, this translates to estimating Z values for each point, effec-
+tively constructing a continuous surface that reflects the underlying
+3D structure.
+The X, Y , and Z coordinates of the original data points provide
+the foundation for this interpolation. By estimating missing Z val-
+ues, we create a smooth surface that bridges gaps and eliminates
+irregularities present in the raw point cloud data. The resulting sur-
+face offers a more comprehensive and visually intuitive depiction of
+the 3D scene captured by the point cloud.
+Figs. 17–19 demonstrate the surface reconstruction process.
+Each figure follows a left –right layout. On the left side resides
+the original point cloud, while the right side showcases the same
+point cloud after undergoing surface reconstruction using cubic
+Fig. 16. First columns show the overall generated point clouds, and second columns show the outlier rail track region and third column show the
+extracted fastener. (The rail track and fastener are separated using the RANSAC algorithm.)
+© ASCE 04025001-16 J. Comput. Civ. Eng.
+ J. Comput. Civ. Eng., 2025, 39(2): 04025001 
+ Downloaded from ascelibrary.org by City University of Hong Kong on 08/09/26. 
+Copyright ASCE; all rights reserved, including rights for text and data mining and training of artificial intelligence or similar technologies. 
+interpolation. The captions accompanying each figure specify
+the number of interpolated points used to generate the surface
+(e.g., 200 points or 500 points).
+A closer examination of the figures reveals the transformative
+power of interpolation. The raw point cloud often appears frag-
+mented, with gaps and inconsistencies. However, upon applying
+interpolation, these irregularities disappear. The resulting surface
+becomes smooth and continuous, offering a more accurate and vis-
+ually clear representation of the underlying 3D structure as shown
+in Fig. 20. The benefits of this methodology extend beyond mere
+visualization. The enhanced point clouds with interpolated surfaces
+become valuable tools for various applications. In the realm of geo-
+graphical mapping, these refined point clouds can contribute to the
+creation of more accurate and detailed maps, facilitating navigation
+and analysis of terrain features. Similarly, in architectural design,
+interpolated point clouds can aid in the development of precise 3D
+models of buildings and structures, enabling architects to visualize
+and refine their designs with greater clarity.
+The impact extends even further into scientific modeling. Re-
+searchers across diverse fields can leverage interpolated point
+clouds to construct intricate 3D models of objects or phenomena
+under investigation. These models offer unparalleled insights into
+the spatial relationships and configurations of the elements within
+the data, fostering a deeper understanding of the scientific princi-
+ples at play.
+Therefore, the combination of segmentation and surface
+reconstruction empowers us to unlock the hidden details within
+3D point clouds. Segmentation allows for the isolation of specific
+features of interest, while surface reconstruction creates a more
+informative and visually intuitive representation of the underlying
+3D structure. This methodology empowers various disciplines —
+from geographical mapping and architectural design to scientific
+modeling—to extract valuable insights and make well-informed de-
+cisions based on the captured 3D data. As technology continues to
+evolve, these techniques will undoubtedly play an increasingly cru-
+cial role in shaping our understanding of the world around us.
+In the whole sum, firstly we introduce our novel approach start-
+ing with self-supervised contrastive learning using a Siamese net-
+work. This method efficiently learns representations from image
+and depth data, facilitating the generation of point clouds. Our pri-
+mary contribution lies in this representation learning process. Once
+the point clouds are generated, we employ the RANSAC technique
+to accurately segment the fastener regions from the entire point
+cloud, which includes the railway area. This segmentation step
+Fig. 17. Left point cloud shows the processed point cloud, while the right point cloud shows 200 points interpolated 3D surface for better visualiza-
+tion: (a) Sample-1; and (b) Sample-2.
+© ASCE 04025001-17 J. Comput. Civ. Eng.
+ J. Comput. Civ. Eng., 2025, 39(2): 04025001 
+ Downloaded from ascelibrary.org by City University of Hong Kong on 08/09/26. 
+Copyright ASCE; all rights reserved, including rights for text and data mining and training of artificial intelligence or similar technologies. 
+is crucial as it isolates the fasteners for further analysis and inspec-
+tion. To enhance the visual clarity of the extracted fasteners, we
+utilize interpolation techniques. This approach ensures that the
+results are presented with optimal visual fidelity, aiding in the in-
+terpretation and validation of our segmentation results. Thus, after
+self-supervised learning, precise segmentation using RANSAC,
+and interpolation for visual enhancement are the postprocessing
+phases that enhanced the overall outcome.
+Applications
+The enhanced point clouds with interpolated surfaces are valuable
+tools for visualization, analysis, and decision-making in various
+fields. These fields include geographical mapping, architectural de-
+sign, and scientific modeling. The refined representation facilitates
+a more robust and insightful interpretation of the spatial informa-
+tion within the point cloud data.
+Model’s Complexity and State-of-the-Art Comparison
+This section delves into two key aspects of the proposed lidar sim-
+ulation framework: its computational complexity and its position
+within the landscape of existing solutions.
+Complexity Analysis
+Understanding the computational demands of a model is crucial for
+practical applications. Here, we meticulously analyze the various
+modules within our framework to gain insights into their parameter
+counts and, consequently, their computational burden. The corner-
+stone of many contemporary models, the transformer module, takes
+center stage. This module, responsible for processing sequential
+data, boasts a remarkably low parameter count of 28,976, indicat-
+ing a lightweight and efficient nature (Fig. 21). This aligns perfectly
+with the established reputation of transformers for handling sequen-
+tial data without significant computational overhead. In stark
+contrast, the multilayer feedforward (MLF) module exhibits a sig-
+nificantly higher parameter count, reaching a total of 850,057
+(Table 2). This substantial number, with a vast majority being train-
+able parameters (849,929), hints at a complex structure likely com-
+posed of multiple layers. This complexity allows the MLF module
+to excel at extracting intricate features and transformations from the
+data, effectively capturing nuanced patterns that might elude sim-
+pler modules.
+The Bayesian network module emerges as another focal point,
+boasting a staggering total parameter count of 4,003,314, all of
+which are trainable. This high parameter count reflects the intricate
+probabilistic modeling inherent in Bayesian networks, suggesting a
+Fig. 18. Left point cloud shows the processed point cloud, while the right point cloud shows points interpolated 3D surface for better visualization:
+(a) Sample-1 (500 points); and (b) Sample-3 (200 points).
+© ASCE 04025001-18 J. Comput. Civ. Eng.
+ J. Comput. Civ. Eng., 2025, 39(2): 04025001 
+ Downloaded from ascelibrary.org by City University of Hong Kong on 08/09/26. 
+Copyright ASCE; all rights reserved, including rights for text and data mining and training of artificial intelligence or similar technologies. 
+Fig. 19. Left point cloud shows the processed point cloud, while the right point cloud shows 500 points interpolated 3D surface for better visualiza-
+tion: (a) Sample-2; and (b) Sample-3.
+Fig. 20. Segmented fasteners after fasteners point cloud generation.
+© ASCE 04025001-19 J. Comput. Civ. Eng.
+ J. Comput. Civ. Eng., 2025, 39(2): 04025001 
+ Downloaded from ascelibrary.org by City University of Hong Kong on 08/09/26. 
+Copyright ASCE; all rights reserved, including rights for text and data mining and training of artificial intelligence or similar technologies. 
+sophisticated architecture capable of capturing complex relation-
+ships within the data. The sheer volume of parameters underscores
+its potential for capturing intricate dependencies and uncertainties,
+making it a key contributor to the overall complexity of the model.
+Moving on, both the encoder and predictor modules showcase a
+noteworthy number of parameters, indicating a substantial compu-
+tational load. The encoder module, a composite structure incorpo-
+rating the transformer, Fourier network, and MLF modules, has a
+total parameter count of 885,049, with 884,921 being trainable. The
+predictor module, on the other hand, is characterized by a total of
+2,315,520 parameters, all of which are trainable. It is important to
+note that the parameters within the encoder module represent a
+combined contribution from its constituent parts.
+The overall model parameter count reaches a significant
+7,203,883. However, it is crucial to acknowledge that the model ’s
+performance might be impacted by the relatively limited data set
+size of just 30 samples. To mitigate this potential limitation, the
+framework employs a self-supervised learning approach. This ap-
+proach allows the model to extract optimal representations from the
+available data, even with a smaller data set size. Despite the inher-
+ent challenges associated with a limited data set, the self-supervised
+learning approach is a novel and effective strategy for deriving
+meaningful insights from such data constraints.
+When assessing the model ’s performance, it is important to rec-
+ognize the difficulty of achieving exceptionally high results with a
+limited data set. However, the presented empirical results (in
+Table 2) demonstrate the model ’s efficacy across diverse data aug-
+mentation techniques. While the limited sample size necessitates
+a cautious interpretation of performance metrics, the overall
+approach’s novelty and effectiveness are evident in the obtained
+results. The model ’s intricate architecture, with each module con-
+tributing distinct functionalities, underscores its potential for
+addressing complex tasks and capturing intricate patterns within
+the data.
+Comparison with State of the Art
+This framework stands out as a pioneering solution within the lidar
+simulation landscape. It is specifically tailored for civil engineering
+tasks, offering innovative solutions to the challenges inherent in
+infrastructure monitoring. By leveraging deep-learning techniques
+such as transformers and Bayesian neural networks for self-
+supervised contrastive learning, the framework efficiently gener-
+ates real-time, high-fidelity 3D point clouds from low-dimensional
+2D data. This approach fosters automation, accuracy, and efficiency
+in civil engineering applications. Existing lidar simulators often fo-
+cus on augmented real data or computer-generated models for ap-
+plications such as autonomous driving. In contrast, this framework
+directly addresses the unique requirements of civil engineering
+tasks, such as rail fastener monitoring. Here, the emphasis lies
+on accurate geometric reconstructions and real-time insights.
+While other lidar simulation approaches, such as those dis-
+cussed in Fang et al. ( 2020) and Shan et al. ( 2020), demonstrate
+promising performance in their respective domains, they may lack
+the specificity and tailored solutions required for civil engineering
+applications. For instance, the study in Fang et al. (2020) proposes a
+simulator for autonomous driving scenarios, relying on synthetic
+obstacles augmented into real point clouds. This approach may
+Fig. 21. Parameter comparison.
+Table 2. Parameter comparison
+No. Module Trainable parameters Nontrainable parameters Total parameters
+1 Transformer 28,976 0 28,976
+2 Fourier Network 6,016 0 6,016
+3 MLF 849,929 128 850,057
+4 Bayesian Network 4,003,314 0 4,003,314
+5 Full Encoder 884,921 128 885,049
+6 Predictor 2,315,520 0 2,315,520
+Total parameters 7,203,883 (7.203883 million)
+© ASCE 04025001-20 J. Comput. Civ. Eng.
+ J. Comput. Civ. Eng., 2025, 39(2): 04025001 
+ Downloaded from ascelibrary.org by City University of Hong Kong on 08/09/26. 
+Copyright ASCE; all rights reserved, including rights for text and data mining and training of artificial intelligence or similar technologies. 
+not translate directly to the needs of infrastructure monitoring tasks.
+Similarly, the framework presented in Zhou et al. ( 2018) focuses on
+generating annotated point clouds for 3D obstacle perception in
+autonomous driving. While prioritizing realism and performance,
+it might overlook the unique challenges and requirements of civil
+engineering tasks. Therefore, this article presents a novel and com-
+prehensive solution specifically designed to meet the needs of infra-
+structure monitoring, contributing significantly to the advancement
+of the field.
+This framework offers several key advantages over existing
+solutions:
+Specificity: Tailored for civil engineering tasks, the framework
+addresses the unique needs of infrastructure monitoring, such
+as accurate geometric reconstruction of elements such as rail fas-
+teners and real-time generation of point clouds for immediate
+analysis.
+Efficiency: Leveraging self-supervised learning, the model can
+effectively extract meaningful insights even from limited data sets,
+a common challenge in civil engineering applications. This reduces
+the reliance on vast amounts of labeled data, streamlining the train-
+ing process.
+Real-time Generation: The framework facilitates the genera-
+tion of high-fidelity 3D point clouds in real-time from low-
+dimensional 2D data. This enables continuous monitoring and
+rapid decision-making during infrastructure inspections.
+Deep-Learning Techniques: By employing advanced deep-
+learning techniques such as transformers and Bayesian networks,
+the framework offers superior capabilities for feature extraction,
+pattern recognition, and uncertainty modeling within the data. This
+translates to more accurate and robust simulations.
+Overall, this lidar simulation framework presents a significant
+leap forward in the field of civil engineering. Its ability to address
+the specific needs of infrastructure monitoring tasks, coupled with
+its efficiency and real-time capabilities, positions it as a valuable
+tool for engineers and infrastructure management professionals.
+As the framework continues to be developed and refined, it has
+the potential to revolutionize the way infrastructure monitoring
+is conducted, leading to improved safety, efficiency, and cost-
+effectiveness in the civil engineering domain.
+Step toward Digital Twin
+The civil engineering landscape is undergoing a transformative
+shift with the emergence of real-time 3D point cloud generation,
+a crucial step toward realizing digital twins ( Yan et al. 2023 ;
+Zaheer 2024). This research takes center stage in this advancement
+by introducing a novel framework for the rapid and accurate gen-
+eration of 3D point clouds specifically for rail fasteners. This
+framework leverages cutting-edge technologies such as transform-
+ers and Bayesian neural networks, akin to a Lidar simulation but
+with a key distinction: it utilizes a self-supervised contrastive learn-
+ing approach. This translates to the conversion of low-dimensional
+data, consisting of images and grayscale depth maps of rail fasten-
+ers, into high-fidelity 3D point clouds in real-time. The significance
+lies not only in the precise geometric reconstructions achieved but
+also in the framework’s ability to learn latent representations, which
+benefit downstream tasks.
+The concept of a digital twin involves creating a virtual rep-
+resentation of a physical system to enhance monitoring, simula-
+tion, and optimization processes. In railway engineering, point
+cloud data are crucial for various applications such as track in-
+spection, maintenance, and infrastructure management. Tradition-
+ally, LiDAR systems are employed to collect high-resolution point
+cloud data of railway tracks and their components. However, the
+use of LiDAR systems can be both expensive and complex. To
+address these challenges, we propose a digital twin approach
+using deep-learning models to generate point cloud data from
+2D images and depth information, effectively mimicking the capa-
+bilities of a physical LiDAR system.
+In the first part of the proposed framework as shown in Fig. 22,
+illustrated on the left side of the image, a traditional LiDAR system
+used in the railway domain is depicted. This system comprises
+several key components: a laser scanner that captures precise
+3D measurements of the railway environment, a panoramic camera
+providing a wide-angle view of the track, a tablet and an inertial
+measurement unit (IMU) integrated for system control and orien-
+tation data, and a track inspection car that serves as a mobile plat-
+form equipped with various sensors, including a GNSS receiving
+antenna for accurate positioning and an odometer for distance
+measurement. This setup enables comprehensive data collection
+of railway tracks, capturing detailed point clouds essential for
+analysis and maintenance. On the right side of the image, the pro-
+posed digital twin methodology is illustrated. This approach lever-
+ages deep learning to generate point cloud data from 2D images and
+depth information. The process begins with the preparation of input
+data, which includes depth images and RGB images. Depth images
+provide distance information for each pixel, while RGB images of-
+fer visual details. Both types of images undergo data augmentation
+to improve the robustness and generalization of the model. The
+augmented depth and RGB images are processed through separate
+multimodal fusion networks (MFNs), which effectively learn to
+fuse information from both modalities. The fused data from the
+MFNs is then fed into a Bayesian neural network, which generates
+the point cloud data. This network incorporates uncertainty estima-
+tion, enhancing the reliability and accuracy of the generated point
+clouds. The model is trained using a composite loss function that
+includes terms for the outputs of the MFNs, the predictions of the
+Bayesian neural network, and an additional Bayesian term to han-
+dle uncertainty. Moving to the bottom section of the image, we sug-
+gest a digital twin methodology for future work, which involves the
+use of advanced foundation models such as depth estimation mod-
+els (e.g., MiDaS) to generate depth maps from 2D images. This
+approach would enable the extraction of depth information without
+the need for physical LiDAR equipment, significantly reducing
+costs and complexity. The generated depth maps, combined with
+RGB images, would then be processed through the described
+deep-learning pipeline to generate point cloud data. This architec-
+ture employs an online network for training and a target network for
+stabilizing the learning process, with networks being updated pro-
+gressively to ensure consistent learning. This proposed future work
+aims to utilize state-of-the-art depth estimation models to further
+improve the efficiency and accuracy of point cloud data generation.
+The applications of the generated point clouds in the context of
+railway engineering are extensive. Specifically, for railway fasten-
+ers, the generated point clouds can be used for fastener tightness
+analysis, ensuring that fasteners are properly secured by analyzing
+the point cloud data. Additionally, wear and tear detection can be
+conducted to identify signs of damage on fasteners, enabling timely
+maintenance. The generated point clouds can also be used for in-
+stallation verification, checking that fasteners are correctly installed
+according to predefined standards. Beyond fasteners, point clouds
+can be employed for alignment and leveling of tracks, rail profile
+measurement to detect wear and deformation, and erosion monitor-
+ing to prevent potential hazards near the tracks. These insights have
+the potential to enhance safety, reliability, and cost-effectiveness
+across various civil engineering applications.
+© ASCE 04025001-21 J. Comput. Civ. Eng.
+ J. Comput. Civ. Eng., 2025, 39(2): 04025001 
+ Downloaded from ascelibrary.org by City University of Hong Kong on 08/09/26. 
+Copyright ASCE; all rights reserved, including rights for text and data mining and training of artificial intelligence or similar technologies. 
+Conclusion
+The proposed framework marks a significant step forward in civil
+engineering and infrastructure monitoring. It overcomes the limi-
+tations of traditional LiDAR-based methods by introducing an in-
+novative approach to quickly generate real-time 3D point clouds
+of rail fasteners. By using advanced deep-learning techniques, spe-
+cifically transformers and Bayesian neural networks with self-
+supervised contrastive learning, it effectively converts 2D images
+and grayscale depth maps into detailed 3D models. One of the key
+strengths of this framework is its practicality and cost-efficiency. It
+uses easily accessible 2D images, bypassing the need for costly
+LiDAR equipment, and addresses common issues such as noise
+and incomplete data. Its ability to create accurate geometric recon-
+structions and understand latent data patterns not only enables
+real-time monitoring but also supports further automated tasks,
+streamlining civil engineering processes. Moving forward, it is
+essential to conduct a thorough evaluation of the framework ’s
+performance, including comparisons with traditional methods
+and a detailed analysis of the results. Additionally, incorporating
+anomaly detection algorithms to measure improvements in the
+early detection of rail fastener failures will further validate its ef-
+fectiveness. This framework has the potential to revolutionize infra-
+structure maintenance by providing real-time insights into the
+condition of critical components. This paves the way for the devel-
+opment of digital twins, significantly enhancing safety, reliability,
+and cost-efficiency across various applications. Real-time monitor-
+ing supports proactive maintenance strategies, reducing the risk of
+unexpected failures and accidents. However, there are still chal-
+lenges to address. The accuracy of the 3D point clouds depends
+on the quality of the input images and depth maps, and performance
+may vary with different types of rail fasteners and environmental
+conditions. Future research should focus on integrating additional
+data sources and refining the learning algorithms to improve ro-
+bustness and adaptability. Long-term field tests are also necessary
+to fully validate the framework’s effectiveness in diverse real-world
+scenarios.
+Data Availability Statement
+Some or all data, models, or code that support the findings of this
+study are available from the corresponding author upon reasonable
+request.
+Acknowledgments
+The research is supported by the National Natural Science Founda-
+tion of China (No. 52178442).
+References
+Agarwal, G., V . Saaran, V . Kushwaha, S. Singh, and P . Mudgal. 2021.
+“Reconstruction of 2D images into 3D. ” In Proc., 2019 12th Int. Conf.
+on Information & Communication Technology and System (ICTS) ,
+15–28. Hershey, PA: IGI Global Scientific Publishing. https://doi.org
+/10.4018/978-1-7998-3327-7.ch002.
+Aguilera, P . A., A. Fernández, F. Reche, and R. Rumí. 2010. “Hybrid
+Bayesian network classifiers: Application to species distribution
+Fig. 22. Theoretical proposed digital twin for fasteners point cloud generation and infrastructure maintenance.
+© ASCE 04025001-22 J. Comput. Civ. Eng.
+ J. Comput. Civ. Eng., 2025, 39(2): 04025001 
+ Downloaded from ascelibrary.org by City University of Hong Kong on 08/09/26. 
+Copyright ASCE; all rights reserved, including rights for text and data mining and training of artificial intelligence or similar technologies. 
+models.” Environ. Modell. Software 25 (12): 1630–1639. https://doi.org
+/10.1016/j.envsoft.2010.04.016.
+Akbari, R., and A. Cammi. 2024. “The longevity of light water-cooled
+large-scale nuclear reactors: A holistic perspective. ” Nucl. Eng. Des.
+417 (Dec): 112830. https://doi.org/10.1016/j.nucengdes.2023.112830.
+Cabral, R., R. Oliveira, D. Ribeiro, A. M. Rakoczy, R. Santos, M. Azenha,
+and J. Correia. 2023. “Railway bridge geometry assessment supported
+by cutting-edge reality capture technologies and 3D as-designed mod-
+els.” Infrastructures 8 (7): 114. https://doi.org/10.3390/infrastructures
+8070114.
+Casajus, P . H., T. Ritschel, and T. Ropinski. 2019. “Total denoising:
+Unsupervised learning of 3D point cloud cleaning. ” In Proc., IEEE
+Int. Conf. on Computer Vision ,5 2 –60. New Y ork: IEEE. https://doi
+.org/10.1109/ICCV .2019.00014.
+Chastre, C., P . Faria, J. Neves, M. Ludovico-Marques, H. Biscaia, and
+L. Nunes. 2023. “Testing durability on construction materials. ” In Ad-
+vances on testing and experimentation in civil engineering: Materials,
+structures and buildings ,2 9 –51. Cham, Switzerland: Springer. https://
+doi.org/10.1007/978-3-031-23888-8_2.
+Chen, J., Z. Kira, and Y . K. Cho. 2019. “Deep learning approach to point
+cloud scene understanding for automated scan to 3D reconstruction. ”
+J. Comput. Civ. Eng. 33 (4): 1 –10. https://doi.org/10.1061/(ASCE)CP
+.1943-5487.0000842.
+Falcon, W., and K. Cho. 2020. “A framework for contrastive self-
+supervised learning and designing a new approach.” Preprint, submitted
+August 31, 2020. http://arxiv.org/abs/2009.00104.
+Fang, J., D. Zhou, F. Yan, T. Zhao, F. Zhang, Y . Ma, L. Wang, and R. Y ang.
+2020. “Augmented LiDAR simulator for autonomous driving. ” IEEE
+Rob. Autom. Lett. 5 (2): 1931 –1938. https://doi.org/10.1109/LRA
+.2020.2969927.
+Guo, Q., W. Feng, C. Zhou, R. Huang, L. Wan, and S. Wang. 2017. “Learn-
+ing dynamic siamese network for visual object tracking.” In Proc., IEEE
+Int. Conf. on Computer Vision , 1781
+–1789. New Y ork: IEEE. https://
+doi.org/10.1109/ICCV .2017.196.
+Han, X. F., H. Laga, and M. Bennamoun. 2021. “Image-based 3d object
+reconstruction: State-of-the-art and trends in the deep learning era. ”
+IEEE Trans. Pattern Anal. Mach. Intell. 43 (5): 1578 –1604. https://doi
+.org/10.1109/TPAMI.2019.2954885.
+Hong, Z., et al. 2022. “Enhancing 3D reconstruction model by deep learn-
+ing and its application in building damage assessment after earthquake.”
+Appl. Sci. 12 (19): 9790. https://doi.org/10.3390/app12199790.
+Hosken, J. 2021. “3D reality modelling for heritage building preservation
+and reconstruction.” In Proc., APAS Webinar Series 2021 (AWS2021) .
+Bathurst, Australia: Association of Public Authority Surveyors.
+Hoskere, V ., Y . Narazaki, and B. F. Spencer. 2022.“Physics-based graphics
+models in 3D synthetic environments as autonomous vision-based
+inspection testbeds.” Sensors 22 (2): 532. https://doi.org/10.3390/s220
+20532.
+Islam, S., H. Elmekki, A. Elsebai, J. Bentahar, N. Drawel, G. Rjoub, and
+W. Pedrycz. 2024. “A comprehensive survey on applications of trans-
+formers for deep learning tasks. ” Expert Syst. Appl. 241 (Oct): 122666.
+https://doi.org/10.1016/j.eswa.2023.122666.
+Jaiswal, A., A. R. Babu, M. Z. Zadeh, D. Banerjee, and F. Makedon. 2021.
+“A survey on contrastive self-supervised learning. ” Technologies 9 (1):
+2. https://doi.org/10.3390/technologies9010002.
+Kattan, R. A., F. H. Abdulrahman, S. M. Gilyana, and Y . Y . Zaya. 2022.
+“3D modelling and visualization of large building using photogrammet-
+ric approach. ” J. Eng. Res. 10 (4): 1 –15. https://doi.org/10.36909/jer
+.12167.
+Khan, S., M. Naseer, M. Hayat, S. W. Zamir, F. S. Khan, and M. Shah.
+2022. “Transformers in vision: A survey.” ACM Comput. Surv. 54 (10):
+1–41. https://doi.org/10.1145/3505244.
+Kim, J., D. Chung, Y . Kim, and H. Kim. 2022. “Deep learning-based
+3D reconstruction of scaffolds using a robot dog. ” Autom. Constr.
+134 (Sep): 104092. https://doi.org/10.1016/j.autcon.2021.104092.
+Lampinen, J., and A. V ehtari. 2001. “Bayesian approach for neural
+networks—Review and case studies.” Neural Networks 14 (3): 257–274.
+https://doi.org/10.1016/S0893-6080(00)00098-8.
+Leibe, B., J. Matas, N. Sebe, and M. Welling. 2016. “Computer Vision –
+ECCV 2016.” In V ol. 9905 ofProc., 14th European Conf., Amsterdam,
+The Netherlands, October 11 –14, 2016, Part I . Cham, Switzerland:
+Springer. https://doi.org/10.1007/978-3-319-46448-0.
+Li, J., Y . Peng, Z. Tang, and Z. Li. 2023.“Three-dimensional reconstruction
+of railway bridges based on unmanned aerial vehicle –terrestrial laser
+scanner point cloud fusion. ” Buildings 13 (11): 2841. https://doi.org/10
+.3390/buildings13112841.
+Li, L., F. Yang, H. Zhu, D. Li, Y . Li, and L. Tang. 2017. “An improved
+RANSAC for 3D point cloud plane segmentation based on normal dis-
+tribution transformation cells. ” Remote Sens. 9 (5): 433. https://doi.org
+/10.3390/rs9050433.
+Li, S., K. Xue, B. Zhu, C. Ding, X. Gao, D. Wei, and T. Wan. 2020.
+“FalCon: A Fourier transform based approach for fast and secure con-
+volutional neural network predictions. ” In Proc., IEEE Computer Soci-
+ety Conf. on Computer Vision and Pattern Recognition , 8702 –8711.
+New Y ork: IEEE. https://doi.org/10.1109/CVPR42600.2020.00873.
+Liu, X., F. Zhang, Z. Hou, L. Mian, Z. Wang, J. Zhang, and J. Tang. 2023.
+“Self-supervised learning: Generative or contrastive. ” IEEE Trans.
+Knowl. Data Eng. 35 (1): 857 –876. https://doi.org/10.1109/TKDE
+.2021.3090866.
+Lu, Y ., S. Wang, S. Fan, J. Lu, P . Li, and P . Tang. 2024. “Image-based 3D
+reconstruction for multi-scale civil and infrastructure projects: A review
+from 2012 to 2022 with new perspective from deep learning methods. ”
+Adv. Eng. Inf. 59 (1239): 102268. https://doi.org/10.1016/j.aei.2023
+.102268.
+Ma, D., H. Fang, N. Wang, G. Pang, B. Li, J. Dong, and X. Jiang. 2023.
+“A low-cost 3D reconstruction and measurement system based on
+structure-from-motion (SFM) and multi-view stereo (MVS) for sewer
+pipelines.” Tunnelling Underground Space Technol. 141 (Jul):
+105345. https://doi.org/10.1016/j.tust.2023.105345.
+Ma, Z., and S. Liu. 2018. “A review of 3D reconstruction techniques in civil
+engineering and their applications. ” Adv. Eng. Inf. 37 (Mar): 163 –174.
+https://doi.org/10.1016/j.aei.2018.05.005.
+Maalek, R., and D. D. Lichti. 2021. “Automated calibration of smartphone
+cameras for 3D reconstruction of mechanical pipes.” Photogramm. Rec.
+36 (174): 124 –146. https://doi.org/10.1111/phor.12364.
+Martin-Gutierrez, D., G. Hernandez-Penaloza, A. B. Hernandez,
+A. Lozano-Diez, and F. Alvarez. 2021. “A deep learning approach
+for robust detection of bots in twitter using transformers. ” IEEE Access
+9 (Mar): 54591 –54601. https://doi.org/10.1109/ACCESS.2021.30
+68659.
+Melekhov, I., J. Kannala, and E. Rahtu. 2016. “Siamese network features
+for image matching.” In Proc., 2016 23rd Int. Conf. on Pattern Recog-
+nition (ICPR) , 378 –383. New Y ork: IEEE. https://doi.org/10.1109
+/ICPR.2016.7899663.
+Mullachery, V ., A. Khera, and A. Husain. 2018. “A study of Bayesian neu-
+ral networks. ” Preprint, submitted January 23, 2018. https://arxiv.org
+/abs/1801.07710.
+Nassar, K., and Y .-H. Jung. 2012. “Structure-from-motion approach to the
+reconstruction of surfaces for earthwork planning. ” J. Constr. Eng.
+Project Manage. 2 (3): 1 –7. https://doi.org/10.6106/JCEPM.2012.2.3
+.001.
+Niu, Z., G. Zhong, and H. Y u. 2021. “A review on the attention mechanism
+of deep learning.” Neurocomputing 452 (Sep): 48–62. https://doi.org/10
+.1016/j.neucom.2021.03.091.
+Nyimbili, P . H., H. Demirel, D. Z. Ş eker, and T. Erden. 2016. “Structure
+from motion (Sfm) –Approaches & applications. ” In Proc., Int. Scien-
+tific Conf. on Applied Sciences . İstanbul, Türkiye: Istanbul Technical
+Univ.
+Pepe, M., and D. Costantino. 2021. “Uav photogrammetry and 3d model-
+ling of complex architecture for maintenance purposes: The case study
+of the masonry bridge on the sele river, Italy. ” Period. Polytech. Civ.
+Eng. 65 (1): 191 –203. https://doi.org/10.3311/PPci.16398.
+Prieto, S. A., X. Xu, and B. García de Soto. 2024. “A guide for construction
+practitioners to integrate robotic systems in their construction applica-
+tions.” Front. Built Environ. 10 (Feb): 1 –24. https://doi.org/10.3389
+/fbuil.2024.1307728.
+Rakotosaona, M. J., V . La Barbera, P . Guerrero, N. J. Mitra, and M.
+Ovsjanikov. 2020. “PointCleanNet: Learning to denoise and remove
+outliers from dense point clouds. ” Comput. Graph. Forum 39 (1):
+185–203. https://doi.org/10.1111/cgf.13753.
+© ASCE 04025001-23 J. Comput. Civ. Eng.
+ J. Comput. Civ. Eng., 2025, 39(2): 04025001 
+ Downloaded from ascelibrary.org by City University of Hong Kong on 08/09/26. 
+Copyright ASCE; all rights reserved, including rights for text and data mining and training of artificial intelligence or similar technologies. 
+Remondino, F., A. Karami, Z. Y an, G. Mazzacca, S. Rigon, and R. Qin.
+2023. “A critical analysis of NeRF-based 3D reconstruction. ” Remote
+Sens. 15 (14): 3585. https://doi.org/10.3390/rs15143585.
+Sani, N. H., K. N. Tahar, G. R. Maharjan, J. C. Matos, and M. Muhammad.
+2022. “3D reconstruction of building model using uav point clouds.” Int.
+Arch. Photogramm. Remote Sens. Spatial Inf. Sci. 43 (B2-2022): 455 –
+460. https://doi.org/10.5194/isprs-archives-XLIII-B2-2022-455-2022 .
+Shan, T., J. Wang, F. Chen, P . Szenher, and B. Englot. 2020. “Simulation-
+based lidar super-resolution for ground vehicles. ” Rob. Auton. Syst.
+134 (Dec): 103647. https://doi.org/10.1016/j.robot.2020.103647.
+Simo-Serra, E., E. Trulls, L. Ferraz, I. Kokkinos, P . Fua, and F. Moreno-
+Noguer. 2015. “Discriminative learning of deep convolutional feature
+point descriptors. ” In Proc., IEEE Int. Conf. on Computer Vision ,
+118–126. New Y ork: IEEE. https://doi.org/10.1109/ICCV .2015.22.
+Son, H., and C. Kim. 2010. “3D structural component recognition and
+modeling method using color and 3D data for construction progress
+monitoring.” Autom. Constr. 19 (7): 844 –854. https://doi.org/10.1016/j
+.autcon.2010.03.003.
+Spencer, B. F., V . Hoskere, and Y . Narazaki. 2019.“Advances in computer
+vision-based civil infrastructure inspection and monitoring. ” Engineer-
+ing 5 (2): 199 –222. https://doi.org/10.1016/j.eng.2018.11.030.
+Torok, M. M., M. Golparvar-Fard, and K. B. Kochersberger. 2014. “Image-
+based automated 3D crack detection for post-disaster building assess-
+ment.” J. Comput. Civ. Eng. 28 (5): 1 –13. https://doi.org/10.1061
+/(ASCE)CP .1943-5487.0000334.
+V erdie, Y ., K. M. Yi, P . Fua, and V . Lepetit. 2015.“TILDE: A temporally
+invariant learned detector.” In Proc., IEEE Computer Society Conf. on
+Computer Vision and Pattern Recognition , 5279 –5288. New Y ork:
+IEEE. https://doi.org/10.1109/CVPR.2015.7299165.
+Xie, H., H. Yao, X. Sun, S. Zhou, and S. Zhang. 2019. “Pix2V ox: Context-
+aware 3D reconstruction from single and multi-view images. ”
+In Proc.,
+IEEE Int. Conf. on Computer Vision , 2690 –2698. New Y ork: IEEE.
+https://doi.org/10.1109/ICCV .2019.00278.
+Xie, Y ., M. X. Teo, S. Li, L. Huang, N. Liang, and Y . Cai. 2023.
+“As-built BIM reconstruction of piping systems using smartphone
+videogrammetry and terrestrial laser scanning. ” Autom. Constr.
+156 (Sep): 105120. https://doi.org/10.1016/j.autcon.2023.105120 .
+Xu, Y ., X. Tong, and U. Stilla. 2021. “V oxel-based representation of 3D
+point clouds: Methods, applications, and its potential use in the con-
+struction industry. ” Autom. Constr. 126 (Mar): 103675. https://doi
+.org/10.1016/j.autcon.2021.103675.
+Xue, B., S. Hu, J. Xu, M. Geng, X. Liu, and H. Meng. 2022. “Bayesian
+neural network language modeling for speech recognition. ” IEEE/ACM
+Trans. Audio Speech Lang. Process. 30 (Sep): 2900 –2917. https://doi
+.org/10.1109/TASLP .2022.3203891.
+Y an, B., F. Yang, S. Qiu, J. Wang, B. Cai, S. Wang, Q. Zaheer, W. Wang, Y .
+Chen, and W. Hu. 2023. “Digital twin in transportation infrastructure
+management: A systematic review.” Intell. Transp. Infrastruct. 2 (Nov):
+1–18. https://doi.org/10.1093/iti/liad024.
+Y ao, Y ., Z. Luo, S. Li, T. Fang, and L. Quan. 2018. “MVSNet: Depth in-
+ference for unstructured multi-view stereo. ” In V ol. 11212 ofComputer
+vision–ECCV 2018. ECCV 2018. Lecture notes in computer science ,
+785–801. Cham, Switzerland: Springer. https://doi.org/10.1007/978-3
+-030-01237-3_47.
+Zaheer, Q. 2024. Digital twin technologies in transportation infrastructure
+management. Singapore: Springer. https://doi.org/10.1007/978-981-99
+-5804-7.
+Zhang, C. 2020. “Surface defect detection, segmentation and quantifica-
+tion for concrete bridge assessment using deep learning and 3D
+reconstruction.” Ph.D. thesis, Dept. of Civil Engineering, Hong Kong
+Univ. of Science and Technology.
+Zhou, D., J. Fang, F. Yan, T. Zhao, F. Zhang, R. Y ang, Y . Ma, and L. Wang.
+2018. “Simulating LIDAR point cloud for autonomous driving using
+real-world scenes and traffic flows. ” Preprint, submitted November
+1, 2018. https://arxiv.org/abs/1811.07112.
+Zhou, Z., J. Gong, and M. Guo. 2016. “Image-based 3D reconstruction for
+posthurricane residential building damage assessment.” J. Comput. Civ.
+Eng. 30 (2): 04015015. https://doi.org/10.1061/(ASCE)CP .1943-5487
+.0000480.
+© ASCE 04025001-24 J. Comput. Civ. Eng.
+ J. Comput. Civ. Eng., 2025, 39(2): 04025001 
+ Downloaded from ascelibrary.org by City University of Hong Kong on 08/09/26. 
+Copyright ASCE; all rights reserved, including rights for text and data mining and training of artificial intelligence or similar technologies. 

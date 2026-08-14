@@ -1,0 +1,1477 @@
+Academic Editor: Humberto Varum
+Received: 19 May 2026
+Revised: 11 June 2026
+Accepted: 16 June 2026
+Published: 18 June 2026
+Copyright: © 2026 by the authors.
+Licensee MDPI, Basel, Switzerland.
+This article is an open access article
+distributed under the terms and
+conditions of the Creative Commons
+Attribution (CC BY) license.
+Article
+Serverless 3D Reconstruction and Spatial Anchoring for
+Cloud-Native Infrastructure Inspection
+Youssef Arhrib 1,*, Flor Alvarez-Taboada 2
+ and Hakim Boulaassal 1
+1 GéoTéCa Research Team, Research and Development Laboratory in Applied Geosciences, FST of Tangier,
+Abdelmalek Essaadi University, Tetouan 93000, Morocco; h.boulaassal@uae.ac.ma
+2 School of Agrarian and Forest Engineering, Universidad de León, 24404 Leon, Spain; flor.alvarez@unileon.es
+* Correspondence: youssef.arhrib@etu.uae.ac.ma
+Abstract
+While infrastructure asset management increasingly relies on high-resolution drone im-
+agery, existing workflows suffer from fragmented information management and depen-
+dence on costly local processing infrastructure. This paper addresses these limitations by
+using a cloud-native spatial intelligence hub that converts raw inspection imagery into
+an interactive and queryable three-dimensional information layer. The system integrates
+a timeout-resilient orchestration layer for photogrammetry pipelines, a multi-user three-
+dimensional environment for collaborative review, and a PostGIS-backed spatial database
+that stores defects as georeferenced anchors. We further introduce a spatial anchoring
+workflow mapping three-dimensional interactions to world coordinates, retrieving context-
+relevant images via frustum-based visibility scoring. Evaluated on real inspection datasets,
+the serverless architecture achieved end-to-end reconstruction in under one hour with
+sub-25 ms query latency. Results indicate that acquisition geometry, particularly oblique
+convergent viewpoints, is a stronger predictor of reconstruction complexity than image
+count. This work establishes a reproducible reference architecture, enabling a transition
+from file-centric documentation to traceable, spatially indexed evidence management for
+infrastructure Digital Twins.
+Keywords: spatial intelligence; serverless computing; infrastructure inspection; Digital
+Twins; photogrammetry; web-based 3D visualization; cloud-native architecture; semantic
+spatial anchoring
+1. Introduction
+The Architecture, Engineering, and Construction (AEC) sector has made significant
+progress in digitizing design and delivery phases, largely through Building Information
+Modeling (BIM). However, the Operation and Maintenance (O&M) phase, while constitut-
+ing approximately 60–80% of an asset’s total lifecycle cost, remains plagued by systemic
+inefficiencies rooted in data fragmentation [1–3].
+Infrastructure asset management relies heavily on inspection workflows that generate
+vast quantities of heterogeneous data, including high-resolution images, unstructured pdf
+reports, and tabular defect logs stored in isolated spreadsheets [ 4,5]. The fundamental
+problem facing facility management is not a lack of data, but a lack of context. In current
+practice, a structural engineer might identify a shear crack in a raw drone image (File A),
+log its width in an Excel spreadsheet (File B), and describe its severity in a formal report
+(File C). As illustrated in Figure 1, this fragmentation results in “dead data”: information
+Buildings 2026, 16, 2433 https://doi.org/10.3390/buildings16122433
+Buildings 2026, 16, 2433 2 of 32
+trapped in disconnected silos, severing the semantic link between a defect’s visual evidence
+and its spatial location on the asset [1,6].
+Figure 1. From disconnected inspection data to a spatially anchored intelligence hub.
+Empirical studies indicate that while Common Data Environments (CDEs) were
+intended to solve this via ISO 19650 standards [7–9], current implementations often function
+merely as “digital filing cabinets”, [10] managing files rather than granular information.
+This disconnect prevents organizations from achieving portfolio-level visibility and inhibits
+the transition from reactive repairs to predictive maintenance [11,12].
+The urgency of this transition is particularly acute in emerging markets, such as
+Morocco and the broader North African region, where rapid urbanization creates a pressing
+need to maintain both legacy and modern infrastructure. However, the adoption of high-
+fidelity Digital Twin technologies in these regions faces an upfront economic barrier: the
+Capital Expenditure (CapEx) required for local processing hardware.
+Traditional photogrammetric workflows and “Scan-to-BIM” processes are computa-
+tionally punishing. They necessitate high-end local workstations equipped with enterprise-
+grade GPUs (e.g., NVIDIA RTX series) and expensive perpetual software licenses for
+Small and Medium Enterprises (SMEs) in emerging markets; this upfront investment
+is prohibitive [ 2,13,14]. Furthermore, the workload of an inspection firm is inherently
+“bursty”; intense data processing is required immediately after a drone flight, followed by
+periods where expensive hardware sits idle, rendering the fixed-cost workstation model
+economically inefficient [15–17].
+To overcome these hardware limitations, this research posits that emerging markets have
+a unique opportunity for “Technological Leapfrogging”. Just as mobile telephony in Africa
+bypassed landlines [18,19], construction firms can bypass the “desktop software” phase entirely
+by adopting cloud-native platforms [20]. By moving from local, file-based workflows to a
+serverless cloud architecture [21], we can decouple inspection capabilities from local hardware
+constraints, converting prohibitive CapEx into flexible Operational Expenditure (OpEx).
+To enable this transition, we propose the concept of a “Spatial Intelligence Hub”. Un-
+like traditional “Level 1” Digital Twins, which often serve as passive 3D visualization[3,22],
+this architecture treats the 3D reconstruction as a “spatial organizing substrate” [ 23–25].
+In this paradigm, the distinction matters operationally. When a defect is recorded as an
+unstructured text description (“north façade, third floor, near expansion joint”), matching
+it to its physical location requires human interpretation at every subsequent access.
+https://doi.org/10.3390/buildings16122433
+Buildings 2026, 16, 2433 3 of 32
+Conversely, when the defect is recorded as a three-dimensional coordinate anchored
+to a georeferenced mesh surface, the same defect can be retrieved by any spatial query
+that includes that coordinate regardless of who wrote the original description or when.
+This approach creates a “Semantic Digital Twin” where geometry and business logic are
+integrated into a unified system [26]. Consequently, this allows for bidirectional information
+flow: users can query the model to find defects or query the database to locate them in 3D
+space [24].
+The mathematical foundations of recovering 3D structure from 2D images are well-
+established through Structure-from-Motion (SfM) [27,28], and Multi-View Stereo (MVS)
+algorithms [29]. Open-source toolkits such as COLMAP have democratized access to these
+algorithms, allowing for the generation of high-fidelity sparse and dense point clouds from
+unordered image collections. While recent advances in Neural Radiance Fields (NeRF)
+and 3D Gaussian Splatting (3DGS) offer superior visual fidelity for rendering, traditional
+SfM/MVS remains the gold standard for engineering applications requiring explicit geo-
+metric accuracy and metric measurements [30–32]. However, these tools typically operate
+as monolithic software stacks designed for vertical scaling, necessitating high-end local
+workstations equipped with enterprise-grade GPUs (e.g., NVIDIA RTX series) and signifi-
+cant RAM. This hardware dependency creates a “Digital Divide”, particularly in emerging
+markets where the high Capital Expenditure (CapEx) for such workstations is prohibitive
+for Small and Medium Enterprises (SMEs) [2]. Furthermore, because inspection workloads
+are inherently bursty, requiring intense processing immediately after a flight followed
+by idle periods, the traditional workstation model represents an economically inefficient
+allocation of resources [15,16].
+While the industry has moved toward Common Data Environments (CDEs) to comply
+with ISO 19650 standards, empirical studies indicate that current implementations often
+function merely as digital filing cabinets, managing files rather than granular information.
+This file-centric approach results in dead data, where defect logs, PDF reports, and 2D
+images remain semantically disconnected from the geometric reality of the asset.
+Although Building Information Modeling (BIM) offers semantic richness, it is funda-
+mentally design-centric, assuming data flows from design to operations. This paradigm is
+poorly suited for post-construction inspection, where as-built reality diverges from design
+intent and requires costly Scan-to-BIM manual modeling to reconcile.
+Consequently, most infrastructure Digital Twins remain at level 1 maturity serving
+as passive visual replicas that lack the spatial intelligence to support complex queries or
+automated maintenance planning [3,33].
+Cloud computing offers a potential solution to hardware constraints; however, tradi-
+tional lift-and-shift strategies migrating virtual machines to the cloud fail to address the
+cost inefficiencies of idle hardware [15]. Serverless computing (e.g., AWS Lambda, Google
+Cloud Run) offers a superior pay-for-value model but introduces significant architectural
+challenges for photogrammetry [16].
+Standard serverless containers are stateless and impose strict execution time limits
+(timeouts) [34], making them historically unsuitable for long-running SfM/MVS pipelines
+that can take hours to process. While recent work has explored serverless architectures
+for lightweight geospatial tasks like tile serving, there remains a paucity of research on
+orchestrating heavy, stateful reconstruction pipelines in a serverless environment [35–37].
+An additional gap concerns workload estimation. Existing deployments often approximate
+processing cost using simple input metadata such as image count or file size, despite pho-
+togrammetric literature demonstrating that the computational complexity of Multi-View
+Stereo is strongly influenced by acquisition geometry, particularly viewing angle diver-
+sity and baseline-to-depth ratio, rather than image count or Ground Sampling Distance
+https://doi.org/10.3390/buildings16122433
+Buildings 2026, 16, 2433 4 of 32
+alone [38–40]. To the best of our knowledge, the implications of geometry-driven recon-
+struction complexity for cloud execution planning and serverless timeout management
+have not been systematically examined.
+This paper addresses this gap by proposing an event-driven architecture using asyn-
+chronous orchestration to manage long-running photogrammetric workloads without
+persistent infrastructure (Table 1).
+Table 1. Positioning of the proposed platform with respect to common inspection solutions.
+Category Typical
+Solutions
+3D Recon-
+struction
+Pipeline
+Cloud-
+Native
+Execution
+Spatial DB
+(GIS)
+3D Defect
+Anchoring
+Multi-User
+Review
+Scalability
+& Cost
+Control
+Desktop
+photogram-
+metry
+COLMAP ,
+Metashape,
+RealityCap-
+ture
+✓ ! (man-
+ual/limited) ✗
+!
+(often
+external)
+✗
+(CapEx
++ manual
+ops)
+BIM/CDE
+platforms
+BIM
+360/ACC,
+ISO 19650
+workflows
+✗ ✓ (not
+spatial-first) ✗ ✓ ✓
+Digital
+Twin
+viewers
+Cesium-
+based
+viewers,
+web 3D
+portals
+✓
+(if
+imported)
+✓ ✗ (limited) ✓ ✓
+Defect man-
+agement
+systems
+CMMS,
+ticketing
+systems
+✗ ✓ ✗ ✗ ✓ ✓
+This work
+Spatial
+intelligence
+hub
+✓✓
+✓✓
+(serverless +
+orchestra-
+tion)
+✓✓
+(PostGIS)
+✓✓
+(spatial
+evidence
+layer)
+✓
+✓
+(OpEx-
+oriented)
+Note: Symbols indicate feature support levels: ✓✓= Full, native cloud-integrated capability; ✓= Standard or
+partial support; ! = Restricted, manual, or highly constrained functionality; ✗ = Feature not supported.
+This comparison highlights those existing solutions are typically either reconstruction-
+centric (photogrammetry tools) or documentation-centric (CDE/CMMS), but rarely unify
+3D reconstruction, spatial anchoring of defects, and queryable evidence management in a
+single cloud-native workflow.
+To ground this qualitative comparison, the following processing costs were considered:
+a 150-image project processed on a licensed desktop platform (e.g., Metashape Pro v2.1,
+with a commercial perpetual license cost of USD ~3500) incurs fixed upfront capital costs
+irrespective of project volume, versus approximately USD 0.80–1.20 per project under the
+proposed serverless model (Section 4.2). This order-of-magnitude reduction in baseline
+operational cost highlights the originality and accessibility of the serverless approach.
+Existing studies have investigated UAV-based Digital Twins for defect localization,
+GeoBIM integration, and semantic enrichment, while other works have focused on pho-
+togrammetric reconstruction accuracy and cloud-based processing platforms. However,
+comparatively limited attention has been devoted to the cloud-native operationalization of
+inspection-oriented photogrammetric reconstruction under serverless execution constraints.
+As a result, challenges related to scalability, fault tolerance, spatial information integration,
+and infrastructure cost remain insufficiently addressed in existing workflows.
+https://doi.org/10.3390/buildings16122433
+Buildings 2026, 16, 2433 5 of 32
+Many existing implementations rely on monolithic architectures or persistent virtual
+machines to handle resource-intensive Structure-from-Motion (SfM) and Multi-View Stereo
+(MVS) tasks. This centralized approach often leads to severe data fragmentation, processing
+bottlenecks, and high idle infrastructure costs, which limit the deployment of continuous
+monitoring platforms. Furthermore, the existing literature lacks comprehensive frame-
+works that seamlessly integrate stateless, serverless computational pipelines with precise
+spatial anchoring. To address these gaps, this paper proposes a fully decoupled cloud-
+native architecture that eliminates continuous infrastructure overhead while maintaining
+geometric and semantic integrity during 3D reconstruction.
+Unlike pure computer vision studies that focus narrowly on defect detection algo-
+rithms, this work addresses the broader challenge of System Architecture and Informa-
+tion Management.
+The primary contributions of this paper are:
+1. Serverless reference architecture coupling timeout-resilient photogrammetric orches-
+tration with spatial evidence management, validated on real UAV inspection datasets.
+2. Formalized spatial anchoring model that binds defect records to georeferenced 3D
+mesh coordinates via raycasting, frustum-based image retrieval, and PostGIS spa-
+tial indexing (v3, OSGeo Foundation, Beaverton, OR, USA), transforming passive
+reconstructions into queryable evidence substrates.
+3. Consumption-based economic model that converts capital-intensive photogrammetry
+infrastructure to pay-per-use Operational Expenditure, lowering the adoption barrier
+for SMEs in emerging markets.
+4. Open-source release of the complete implementation as a reproducible reference
+architecture for construction informatics research.
+5. An empirical demonstration that acquisition geometry, not image count, is the primary
+driver of MVS complexity in a serverless context, with practical implications for cloud
+job scheduling and resource allocation.
+To guide the development and evaluation of this proposed architecture, this study
+addresses three primary research questions (RQs):
+RQ1 (System Architecture and Scalability). How can resource-intensive, stateful photogram-
+metric workloads (SfM/MVS) be effectively orchestrated within a stateless, serverless cloud environ-
+ment while maintaining operational scalability and acceptable data-transfer overhead?
+RQ2 (Spatial Intelligence and Information Management). How can disconnected inspection
+artifacts (e.g., 2D imagery, PDF reports) be bidirectionally anchored to a georeferenced 3D mesh us-
+ing raycasting and frustum-based visibility analysis to ensure accurate, queryable spatial retrieval?
+RQ3 (Computational Complexity and Cloud Provisioning). To what extent does UAV
+acquisition geometry, relative to image count, influence the computational workload of dense 3D
+reconstruction, and how can this relationship inform cloud resource allocation strategies?
+The remainder of this paper is organized as follows: Section 2 presents the materials
+and methods, encompassing the State-of-the-Art in photogrammetric reconstruction, BIM-
+based inspection, and cloud-native geospatial systems, alongside the complete serverless
+system architecture, the SfM/MVS pipeline design, and the mathematical formulation
+of the spatial anchor mechanism. Section 3 reports the experimental results, including
+reconstruction fidelity, pipeline stage performance, and spatial anchoring validation across
+two real UAV inspection datasets. Section 4 discusses the findings within the broader
+construction informatics literature, addressing architectural implications, economic trans-
+ferability, and integration with existing BIM ecosystems. Section 5 draws conclusions and
+outlines future research directions toward automated defect detection and temporal change
+https://doi.org/10.3390/buildings16122433
+Buildings 2026, 16, 2433 6 of 32
+monitoring. The underlying source code, and evaluation dataset are publicly hosted as
+Supplementary Materials.
+2. Materials and Methods
+This section details the technical implementation of the spatial intelligence hub, orga-
+nized into three subsystems: the serverless reconstruction pipeline, the spatial anchoring
+mechanism, and the collaborative information management layer.
+2.1. Architectural Overview and Design Principles
+The system architecture adheres to three fundamental design principles that distin-
+guish it from traditional desktop photogrammetry workflows:
+Principle 1: Decoupling of Compute and State
+Traditional photogrammetry applications tightly couple user interface, data manage-
+ment, and computational processing within monolithic desktop executables. This coupling
+creates resource contention where heavy reconstruction tasks monopolize workstation
+resources, preventing concurrent user interaction.
+The proposed architecture strictly separates stateful components (user data, project
+metadata, camera poses) managed by lightweight web services from stateless computa-
+tional tasks (SfM processing, mesh generation) executed in ephemeral containers. This
+separation enables the user interface to remain responsive during long-running reconstruc-
+tions and allows computational resources to scale independently of user load.
+Principle 2: Event-Driven Asynchrony with Durable Execution
+Photogrammetric reconstruction inherently involves long-running processes that
+exceed typical HTTP timeout limits. Rather than maintaining persistent connections or
+implementing complex polling mechanisms, the proposed architecture employs an event-
+driven architecture where state transitions trigger asynchronous workflows.
+Crucially, we utilize durable execution semantics where workflow progress is check-
+pointed, enabling automatic recovery from transient failures without restarting entire
+reconstruction pipelines [41]. This approach transforms the traditional “keep the worksta-
+tion running overnight” workflow into “upload and receive notification when complete”.
+Principle 3: API-First Interoperability
+To combat the data fragmentation problem identified in the Introduction, the system
+exposes all functionality through documented REST APIs. Geometric data is served via
+OGC-standard 3D Tiles, defect records are queryable through GeoJSON endpoints, and
+camera poses are accessible as structured JSON. This API-first design enables integration
+with enterprise asset management systems, GIS platforms, and custom analytical tools
+without vendor lock-in.
+2.2. The Serverless Reconstruction Pipeline
+The architecture, as shown in Figure 2, decouples image ingestion, durable photogram-
+metry orchestration, containerized SfM/MVS execution, object storage persistence, web-based
+collaborative 3D review, and PostGIS-backed spatial indexing for defect traceability and
+evidence linking. This specific combination addresses several architectural requirements:
+“Next.js (v16, Vercel Inc., San Francisco, CA, USA) Server Components and Actions”
+provide a unified programming model where server-side logic can be collocated with
+client-side interface code, eliminating the need to maintain separate API server infras-
+tructure for CRUD operations. This reduces architectural complexity while maintaining
+a clear separation of concerns through React (v19, Meta Platforms Inc., Menlo Park, CA,
+https://doi.org/10.3390/buildings16122433
+Buildings 2026, 16, 2433 7 of 32
+USA) component-based architecture and the server–client execution model introduced in
+Next.js [42,43].
+Figure 2. High-level cloud-native system architecture.
+“Inngest (v3, Inngest Inc., San Francisco, CA, USA) durable execution model” solves
+the fundamental challenge of long-running photogrammetry in serverless contexts. Tra-
+ditional serverless platforms impose strict timeout limits (typically 15 min for AWS
+Lambda [44], 60 min for Cloud Run [45]). A complete SfM reconstruction of 500+ images
+may require several hours. Inngest decomposes workflows into discrete steps with explicit
+dependencies, automatically handling retries, timeouts, and state persistence. Each step
+executes within timeout bounds, while the overall workflow can span arbitrary durations.
+“Google Cloud Run (Gen 2, Google LLC, Mountain View, CA, USA)” provides server-
+less container execution with several advantages over function-based platforms. Containers
+encapsulate the complete toolchain including GDAL, PDAL, and native binaries, avoiding
+the “dependency packaging” challenges of AWS Lambda. Cloud Run’s automatic scaling
+from zero to hundreds of concurrent instances enables handling simultaneous reconstruc-
+tion requests without manual capacity planning. The pay-per-use billing model aligns costs
+directly with computational work performed [45].
+“Supabase’s (v2, Supabase Pte. Ltd., Singapore) PostGIS integration” transforms
+the PostgreSQL (v15, PostgreSQL Global Development Group, Berkeley, CA, USA)
+database into a spatial database management system capable of storing and indexing three-
+dimensional geometries. This is foundational to the spatial anchoring mechanism described
+in the spatial anchor mechanism section. Row-Level Security policies enforce multi-tenant
+data isolation at the database layer, providing defense-in-depth against application-level
+security vulnerabilities.
+The reconstruction pipeline automates the complete Structure-from-Motion and Multi-
+View Stereo workflow through six orchestrated stages as illustrated in the end-to-end
+pipeline architecture of Figure 3:
+The system ingests raw drone imagery and processes them asynchronously through
+checkpointed photogrammetry. Reconstruction outputs are published to a multi-user web
+3D environment where defects are anchored on the mesh and linked to evidence retrieved
+via frustum-based visibility scoring, with persistence and querying handled by PostGIS.
+https://doi.org/10.3390/buildings16122433
+Buildings 2026, 16, 2433 8 of 32
+Figure 3. End-to-end photogrammetry pipeline.
+Stage 1: Image Ingestion and Validation
+Users upload drone imagery through the browser interface, which performs client-
+side validation checking for GPS EXIF tags and minimum image resolution requirements.
+Images are streamed directly to S3 using pre-signed URLs, bypassing application servers to
+avoid bandwidth bottlenecks. Upon the successful upload images, the uploaded event is
+published to Inngest’s event bus.
+Stage 2: Feature Extraction
+The event triggers a Cloud Run container executing a feature extraction module. For
+each image, SIFT (Scale-Invariant Feature Transform) key points are detected and described,
+typically identifying 2000–10,000 features per image depending on scene texture [ 46].
+Features are persisted to Google Cloud Storage as serialized descriptor files. Processing
+parallelizes across images with each container handling a batch of 10–20 images, enabling
+linear scaling with dataset size.
+Stage 3: Feature Matching and Geometric Verification
+A subsequent workflow step loads all feature descriptors and performs pairwise
+matching using an approximate nearest neighbor search (FLANN) [47]. Putative matches
+undergo geometric verification through RANSAC-estimated fundamental matrices, fil-
+tering spurious correspondences caused by repetitive textures or moving objects [ 48].
+The output is a sparse graph where nodes represent images and edges represent verified
+geometric relationships with sufficient overlap for reconstruction [49].
+Stage 4: Incremental Structure-from-Motion
+The core SfM reconstruction employs incremental bundle adjustment. The algorithm
+selects an initial image pair with strong baseline separation, triangulates matched features
+to initialize a sparse 3D point cloud, then iteratively registers additional images by solving
+the Perspective-n-Point problem [27]. After each image registration, global bundle adjust-
+ment refines all camera parameters and 3D point locations simultaneously, minimizing
+https://doi.org/10.3390/buildings16122433
+Buildings 2026, 16, 2433 9 of 32
+reprojection error across the entire dataset. This stage outputs camera-intrinsic (focal length,
+principal point, distortion coefficients), camera-extrinsic (position and orientation for each
+image), and a sparse point cloud. Critically, camera extrinsic parameters are serialized to a
+JSON format and stored in S3, enabling the spatial anchoring mechanism.
+Stage 5: Multi-View Stereo Densification
+The sparse reconstruction is densified through patch-based MVS [ 50]. Depth hy-
+potheses are propagated and refined through iterative PatchMatch search, with each pixel
+storing a depth value and surface normal defining a slanted plane hypothesis. Multi-view
+photometric consistency, measured via normalized cross-correlation across neighboring
+views, drives hypothesis refinement. Depth maps are subsequently fused through geomet-
+ric consistency filtering, rejecting estimates that are not corroborated across a minimum
+number of views. The output dense point cloud typically contains 10–100 million points
+depending on image resolution and scene complexity.
+Stage 6: Mesh Generation and Web Optimization
+The dense point cloud is converted to a textured mesh through Screened Poisson
+surface reconstruction, which treats meshing as solving a spatial indicator function whose
+gradient best approximates point normal [51]. The resulting watertight mesh undergoes
+decimation targeting 500k triangles for web rendering.
+Texture generation employs view-dependent blending following the multi-view tex-
+turing approach of Waechter et al. [ 52], compositing image contributions weighted by
+viewing angle and distance. Finally, the mesh is tiled into an OGC 3D Tiles format with a
+hierarchical level-of-detail, enabling progressive streaming in CesiumJS (v1.115, Cesium
+GS, Inc., Philadelphia, PA, USA). The tileset is uploaded to S3 with public read access, and
+the project status is updated in Supabase, triggering a notification to the user.
+The event-driven architecture provides robust failure handling. If feature matching
+fails due to insufficient image overlap, the workflow automatically retries with relaxed
+matching thresholds. If bundle adjustment fails to converge (often caused by poor camera
+calibration or extreme scene geometry), the system falls back to sequential SfM with
+incremental validation. Each failure mode is logged with diagnostic information enabling
+manual intervention if automated recovery fails. The durable execution model ensures
+that successful intermediate stages (e.g., feature extraction) are not discarded, avoiding
+redundant computation upon retry.
+A recognized architectural trade-off of stateless serverless execution is the I/O over-
+head associated with persisting and reloading intermediate reconstruction artifacts, such
+as feature descriptors, sparse point clouds, and depth maps, between pipeline stages. Be-
+cause each stage executes within an ephemeral container, the intermediate state cannot be
+retained across stage boundaries and must therefore be externalized to object storage.
+Several design decisions mitigate this overhead. First, intermediate artifacts are stored in
+compact binary formats, including compressed numerical arrays, reducing storage require-
+ments compared with verbose text-based representations. Second, object storage access is
+restricted to stage boundaries, whereby each processing stage performs a single read operation
+at startup and a single write operation upon completion, avoiding repeated transfers during
+execution. Third, compute services and object storage are deployed within the same cloud
+region, minimizing network latency and eliminating cross-region transfer costs.
+Although this design introduces additional data movement relative to monolithic
+architectures, it enables fault-tolerant checkpointing, independent stage recovery, and
+elastic scaling. For the inspection-oriented workloads evaluated in this study, the resulting
+I/O overhead remained operationally acceptable and did not offset the economic and
+deployment advantages of the serverless architecture.
+https://doi.org/10.3390/buildings16122433
+Buildings 2026, 16, 2433 10 of 32
+2.3. The Spatial Anchor Mechanism
+The spatial anchor mechanism creates bidirectional linkage between database records
+(defect annotations, test reports) and geometric locations on the reconstructed 3D mesh.
+This section formalizes the coordinate transformation pipeline and database schema sup-
+porting this linkage.
+Mathematical Formulation of Raycasting
+When a user clicks location (u, v) in the browser-based 3D viewer, the system must
+determine which 3D point on the mesh surface was clicked. This is accomplished through
+raycasting combined with GPU depth buffer interrogation, following the geometric princi-
+ples illustrated in Figure 4.
+Figure 4. Geometric principles of spatial anchoring via raycasting.
+The camera model is defined by its center C ∈ R3 expressed in the object coordinate
+frame and its orientation which is represented by a rotation matrix R ∈ SO(3). The
+perspective projection is characterized by an intrinsic matrix:
+K =
+
+
+fx 0 cx
+0 fy cy
+0 0 1
+
+ (1)
+where fx, fy are focal lengths in pixel units and (c x, cy
+
+is the principal point.
+Given the click coordinate u = (u, v) in screen space (measured in pixels from top-left
+origin), we seek the corresponding surface point pw ∈ R3.
+Instead of explicit ray–triangle intersection, we recover pw directly from the GPU
+depth buffer at u using the inverse view-projection transformation. This yields a coordinate
+PECEF on the visible mesh surface, which is subsequently converted to geodetic coordinates
+(ϕ, λ, h) using the iterative Bowring method to ensure sub-millimeter precision for database
+storage [53].
+Camera Pose Storage and Frustum Culling
+The SfM reconstruction outputs camera-extrinsic parameters for each source image,
+stored as a JSON object in S3.
+https://doi.org/10.3390/buildings16122433
+Buildings 2026, 16, 2433 11 of 32
+When a user clicks a location on the 3D mesh to retrieve relevant source images, the
+system performs frustum culling to identify which cameras have that point within their
+field of view. Because the 3D mesh and the camera poses have already been co-registered
+into the same metric object space during the georeferencing stage, the scale factor is unity
+(µ = 1). Therefore, the transformation is a pure rigid body motion.
+For a candidate camerai with rotation matrix Ri and translation vector ti, we transform
+the anchor point pw into the camera coordinate system:
+pc,i = Ri pw + ti (2)
+The point is projected into Normalized Device Coordinates (NDC) using the projection
+matrix P .
+The point is considered contained within the frustum Fi if and only if:
+−1 ≤ xndc ≤ 1, −1 ≤ yndc ≤ 1, 0 ≤ zndc ≤ 1
+We rank the surviving candidates using a composite scoresi that balances incidence an-
+gle and distance, as geometrically conceptualized in Figure 5. To prioritize high-resolution
+views while penalizing grazing angles, we employ the following scoring function:
+si = α·max(0, n·vi) + (1 − α)·exp
+
+− ∥ci − pw∥
+σ
+
+(3)
+where n is the surface normal at the anchor, vi is the viewing direction, ci is the camera
+center, and α ∈ [0, 1 ] is a tunable weight factor.
+Figure 5. Geometric scoring criteria used in Algorithm 1 for image retrieval. After frustum con-
+tainment and occlusion filtering, candidate cameras are ranked using a composite score based on
+the Euclidean distance di between camera center Ci and anchor point P , and the incidence angleθi
+between the viewing direction and local surface normal N. CameraC2 achieves the highest composite
+score and is therefore selected as the optimal inspection image.
+The image with the highest score is retrieved and displayed to the user, providing
+the optimal source image for inspecting the clicked location. The complete retrieval logic,
+incorporating the geometric checks and scoring function defined above, is formalized in
+Algorithm 1.
+https://doi.org/10.3390/buildings16122433
+Buildings 2026, 16, 2433 12 of 32
+Algorithm 1. Frustum-based image retrieval for a 3D anchor point
+Input:
+Anchor point p on the 3D mesh
+Set of cameras C = {ci}, with known poses and intrinsics
+Integer k, number of images to return
+Output:
+Ranked list of top-k inspection images Ik
+Procedure:
+Initialize an empty list of candidate images S.
+For each camera ci in C:
+Project point p into the camera’s local coordinate system. If the point lies
+behind the camera or outside the 2D image boundaries, discard the
+camera and continue.
+Perform a raycast from the camera center to p. If the ray intersects the
+mesh before reaching p, discard the camera (point is occluded).
+Calculate the composite score Scomposite based on the camera’s Euclidean
+distance to p and the incidence angle against the surface normal.
+Append the camera and its score to S.
+Sort S in descending order of score.
+Return the indices of the top-k images from S as Ik.
+Database Schema for Spatial Anchoring
+Defect records and associated documentation are stored in PostGIS-enabled Post-
+greSQL tables with spatial geometry columns. Anchor coordinates are converted from the
+metric object–space coordinate frame used during raycasting to WGS84 geodetic coordi-
+nates via the iterative Bowring method prior to database insertion, enabling cross-project
+portfolio queries using standard geographic predicates.
+The GEOMETRY (POINTZ, 4326) type persists these three-dimensional coordinates
+(longitude, latitude, ellipsoidal height) referenced to the WGS84 datum (SRID 4326). The
+GIST spatial index enables efficient proximity queries, and the geography cast enables
+metric distance calculations accounting for Earth’s curvature, essential for accurate spatial
+queries across building portfolios.
+User Workflow: From Click to Annotation
+The complete user workflow integrates geometric visualization, image retrieval, and
+database persistence, as illustrated by the interface components in Figure 6:
+Inspector explores the 3D model in the browser, rotating and zooming to examine
+different building facades.
+Suspicious location identified. Upon noticing surface damage, the inspector clicks the
+location. The raycasting algorithm extracts world coordinates.
+Source image retrieval. Frustum culling identifies the optimal source image. The high-
+resolution image is fetched from S3 and displayed with the clicked location highlighted.
+Defect annotation created. The inspector completes a form specifying the defect type,
+severity, and textual description. This triggers an INSERT operation into the defects table
+with the clicked coordinates stored in the location geometry column.
+Supporting documentation attached. The inspector uploads test reports (e.g., concrete
+core analysis, ultrasonic thickness measurements) as PDF files. These documents are linked
+to the defect record and stored with the same spatial anchor.
+https://doi.org/10.3390/buildings16122433
+Buildings 2026, 16, 2433 13 of 32
+Figure 6. Spatially anchored defect annotation workflow within the proposed inspection platform:
+(A) High-resolution 3D mesh visualization of the target infrastructure; (B) Spatially anchored defect
+marker (red triangle) located directly on the structural damage; (C) Defect identification header and
+inspection status; (D) Technical data panel for managing source imagery, defect type, severity, and
+notes; (E) Color-coded defect severity legend.
+Portfolio-wide queries enabled. The defect record becomes immediately queryable
+across the entire building portfolio, supporting questions like “show all critical corrosion
+within 3 m of expansion joints in all buildings constructed before 2000.
+2.4. Multi-Tenancy and Collaborative Features
+The platform implements B2B SaaS multi-tenancy through Supabase Row-Level Se-
+curity (RLS) policies. Each organization exists as a tenant with isolated data. Role-Based
+Access Control (RBAC) distinguishes between administrators (full CRUD on all resources),
+project managers (create/update projects and defects), inspectors (create defects, upload
+documents), and viewers (read-only access). These roles are enforced through additional
+RLS policies checking user-organization-role mappings.
+Real-time collaboration leverages Supabase’s built-in WebSocket pub/sub. When one
+user creates a defect annotation, all other users currently viewing the same project receive a
+real-time notification, and their 3D viewers automatically update to display the new defect
+marker. This enables scenarios where a field inspector and remote structural engineer
+jointly review an inspection, with both seeing each other’s annotations appear in real time.
+The quantitative evaluation of the real-time collaboration layer is outside the scope
+of this study. Based on Supabase’s WebSocket pub/sub architecture, notification delivery
+latency is expected to be under 200 ms for standard LAN/4G connections, consistent with
+published benchmarks for similar WebSocket pub/sub systems, but this was not measured
+under concurrent-user load in the current evaluation. A dedicated multi-user stress test
+simulating 10–20 concurrent inspectors creating annotations simultaneously was identified
+as necessary validation before enterprise deployment, particularly to characterize conflict
+https://doi.org/10.3390/buildings16122433
+Buildings 2026, 16, 2433 14 of 32
+resolution behavior when two users anchor a defect at the same mesh location within the
+same time window.
+3. Results
+3.1. Experimental Setup
+To validate the performance and feasibility of the proposed serverless architecture,
+we conducted experiments using two distinct datasets representing typical infrastructure
+inspection scenarios.
+Dataset A comprises 167 UAV images of The Mill building in London, acquired
+using a mapping-oriented flight configuration combining predominantly nadir imagery
+with a single oblique pass. The building is characterized by a pitched roof with two
+dominant planar slopes intersecting along a ridge line. Images were captured using a
+Hasselblad L1D-20c camera (DJI, Shenzhen, China.) at approximately 21.3 m altitude with
+80% forward overlap and 80% lateral overlap, yielding a Ground Sampling Distance (GSD)
+of approximately 0.97 cm/pixel.
+This nadir-dominated viewing geometry provides strong intersection angles for hori-
+zontal roof surfaces but produces weak network configuration for vertical façade elements,
+reflecting a common limitation in urban aerial survey workflows where façades are not the
+primary acquisition target.
+Dataset B consists of 85 images of a building roof structure at EPFL (Swiss Federal
+Institute of Technology, Lausanne, Switzerland), acquired at an altitude of 30 m AGL by
+a Phantom FC330 drone (DJI, Shenzhen, China.) using a circular oblique survey pattern,
+providing a Ground Sampling Distance (GSD)of approximately 1.67 cm/px. Despite
+the coarser spatial resolution compared to Dataset A, the oblique convergent viewing
+geometry creates diverse triangulation angles and high baseline-to-depth ratios across the
+image network. The scene contains photovoltaic panels, skylights, chimneys, and service
+installations that introduce significant local depth variation and rich, non-repetitive texture.
+The selection of two geometrically distinct datasets was deliberate rather than op-
+portunistic, as illustrated in the survey flight configurations of Figure 7. Dataset A and
+Dataset B were chosen to represent opposite ends of the acquisition geometry spectrum
+encountered in practice: nadir-dominated grid surveys, which dominate commercial in-
+spection workflows due to their simplicity, and circular oblique surveys, which represent
+best-practice photogrammetric network design for complex rooftop structures. This ge-
+ometric contrast allows the evaluation to probe the system’s behavior under conditions
+where the primary driver of computational complexity as established in photogrammetric
+literature shifts from image count to network geometry [38–40]. A homogeneous sample of
+similarly acquired datasets would obscure precisely the architectural hypothesis being eval-
+uated, namely that checkpoint-based orchestration is necessary because MVS complexity is
+geometry-driven and therefore unpredictable from input metadata alone. The two-dataset
+design thus constitutes a controlled contrast rather than a statistical sample, consistent with
+the paper’s goal of demonstrating architectural feasibility and identifying the dominant
+complexity driver rather than establishing population-level performance bounds.
+This configuration generates high parallax and strong multi-view intersection geom-
+etry, making the dataset suitable for evaluating fine-scale surface reconstruction under
+optimal network conditions. Both datasets were processed without ground control points;
+camera positions were initialized from GPS EXIF metadata embedded at capture.
+The reconstruction pipeline was deployed on the Google Cloud Platform with the
+following configuration:
+• Frontend/API: Next.js application on serverless edge network.
+• Database: Supabase PostgreSQL with PostGIS.
+https://doi.org/10.3390/buildings16122433
+Buildings 2026, 16, 2433 15 of 32
+• Orchestration: Inngest serverless event bus for state management.
+• Object Storage: Amazon S3 (Standard Tier, Amazon Web Services Inc., Seattle, WA, USA).
+• Compute: Google Cloud Run (Generation 2) with dynamic instance scaling (max
+100 instances).
+• Container Spec: 4 vCPUs, 16 GB RAM per instance.
+Figure 7. Survey datasets used for experimental evaluation. (a) Dataset A: 167 images acquired at
+21.3 m AGL using a nadir-dominated grid survey with a single oblique pass (GSD ≈ 0.97 cm/px).
+(b) Dataset B: 85 images acquired at 30 m AGL using a circular oblique survey pattern
+(GSD ≈ 1.67 cm/px).
+3.2. Reconstruction Fidelity and Density
+The reconstruction results reveal a counter-intuitive relationship between acqui-
+sition parameters and output density that has direct implications for cloud resource
+provisioning. Despite having fewer images (85 vs. 167) and coarser Ground Sam-
+pling Distance ( GSD 1.67 cm/px vs. 0.97 cm/px), Dataset B produced a denser point
+cloud than Dataset A both in absolute terms (8.73 M vs. 8.33 M points) and per image
+(102,000 vs. 49,000 points/image, a 2.1× difference).
+This inversion is consistent with the established photogrammetric theory on oblique
+network geometry, it directly motivates the checkpoint-based orchestration design. As
+shown in Table 2, the serverless pipeline successfully adapted to the nature of the input data.
+Table 2. Reconstruction metrics outcomes for Datasets A and B.
+Metric Dataset A (167 Imgs) Dataset B (85 Imgs)
+Sparse Cloud 199,898 points 84,691 points
+Dense Point Cloud 8.33 million 8.73 million
+Points per Image ~49,000 ~102,000
+Peak RAM Usage 5.2 GB 5.6 GB
+The results highlight a critical architectural advantage: resource consumption corre-
+lates with point density, not just image count, as quantified across the key output metrics
+in Figure 8.
+• Dataset A (More images, lower density) required 49 min.
+• Dataset B, despite containing fewer images, generated 8.73 million points—exceeding
+the total reconstruction density of Dataset A—and required 45 min to complete the re-
+construction pipeline.This demonstrates that the “Dispatcher” architecture effectively
+https://doi.org/10.3390/buildings16122433
+Buildings 2026, 16, 2433 16 of 32
+scales resources to match the complexity of the reconstruction (Multi-View Stereo
+load), rather than linearly scaling with the number of input files.
+Figure 8. Reconstruction output metrics for both datasets: ( a) Total end-to-end processing time
+remains comparable despite differing dataset characteristics (49 min vs. 45 min), ( b) Dataset B
+generates a denser point cloud both in total (8.73 M vs. 8.33 M points) and per image (102,000 vs.
+49,000, a 2.1× increase).
+3.3. Pipeline Stage Performance
+To understand the scaling behavior of the serverless architecture, we profiled wall-
+clock execution time for each pipeline stage. Table 3 presents the complete breakdown for
+both datasets.
+Table 3. Processing time distribution by pipeline stage.
+Pipeline Stage Dataset A
+(167 Imgs) Dataset B (85 Imgs) Interpretation
+Feature Extraction
+(parallel) 5 min 25 s 3 min 00 s Linear with image
+count
+Feature Matching 3 min 00 s 1 min 35 s
+Sub-linear; GPS
+filtering reduces
+pair count
+Structure-from-
+Motion 8 min 22 s 3 min 21 s Sequential; scales
+with image count
+Dense Reconstruction
+(MVS) 18 min 05 s 25 min 05 s
+Geometry-driven
+complexity
+dominates
+Point Filtering 22 s 18 s Statistical outlier
+removal
+Meshing 6 min 36 s 3 min 42 s Poisson
+reconstruction
+Texturing 2 min 08 s 2 min 25 s View-dependent
+blending
+Georeferencing &
+Tiling 1 min 52 s 2 min 28 s Octree generation
+Total Duration 49 min 29 s 45 min 24 s Non-linear result
+Note: Total end-to-end wall-clock processing times include an additional ~3.5 min of cloud VM provisioning
+overhead not reflected in the core algorithmic stages.
+https://doi.org/10.3390/buildings16122433
+Buildings 2026, 16, 2433 17 of 32
+The most significant finding is visible in Stage 4 (Dense Reconstruction). Dataset
+B, despite containing half the images of Dataset A, required 38% more MVS time, as
+illustrated in the wall-clock execution breakdown in Figure 9. This inversion is driven by
+geometric complexity: the oblique acquisition in Dataset B produced 102,000 points per
+image compared to Dataset A’s 49,000 points per image (Table 2).
+Figure 9. Wall-clock time distribution by pipeline stage. MVS dense reconstruction dominates total
+runtime and scales with scene geometry, not image count: Dataset B (85 images) requires 38% more
+MVS time than Dataset A (167 images) despite having fewer images and coarser Ground Sampling
+Distance, driven by its oblique convergent network geometry.
+The higher parallax and denser stereo matching per pixel translated directly into MVS
+computational load, confirming that scene geometry, not file count, dictates reconstruc-
+tion runtime.
+This validates the architectural hypothesis that motivated the checkpoint-based or-
+chestration: MVS duration is unpredictable from image count alone. A naive serverless
+deployment allocating resources based on N images would under-provision Dataset B
+and over-provision Dataset A. The durable execution design avoids this failure mode
+by decomposing the pipeline at stage boundaries and allowing each stage to provision
+resources dynamically based on actual workload.
+The stage-by-stage profiling (Table 3) reveals two distinct scaling regimes. Feature extrac-
+tion and matching (Stage 1, Stage 2) exhibited the expected linear relationship to image count,
+with Dataset A requiring 08 min 25 s and Dataset B requiring 04 min 35 s. This confirms that
+SIFT feature detection at approximately 10,000 keypoints per image scales predictably with N.
+Dense reconstruction (Stage 4) inverted this relationship. Dataset B’s 25 min 05 s MVS
+runtime exceeded Dataset A’s 18 min 05 s despite containing half the images. The cause is
+visible in the output metrics: Dataset B generated 8.73 million points (102,000 points/image)
+compared to Dataset A’s 8.33 million points (49,000 points/image), as visually detailed in
+the point cloud and mesh outputs of Figure 10.
+The computational cost of PatchMatch stereo matching scales with the number of
+depth hypotheses tested per pixel, which increases with baseline-to-depth ratio and image
+overlap. Dataset B’s circular oblique geometry at 30 m AGL with convergent viewing angles
+maximized both factors despite its coarser GSD, confirming the mechanism established
+in the photogrammetric literature viewing angle diversity and network convergence, not
+image resolution, govern the computational cost of dense stereo matching, producing the
+observed 38% MVS time increase.
+https://doi.org/10.3390/buildings16122433
+Buildings 2026, 16, 2433 18 of 32
+Figure 10. Pipeline reconstruction outputs for both datasets. Top row: Stage 4 dense point cloud
+(PatchMatch MVS). Dataset B (85 images, GSD 1.67 cm/px) produces 8.73 M points versus 8.33 M
+for Dataset A (167 images, GSD 0.97 cm/px), consistent with the 2.1× per-image density advantage
+driven by the oblique convergent survey geometry. Bottom row: Stage 6 mesh after Screened Poisson
+surface reconstruction. Dataset A (303,379 triangles) shows characteristic vertical streaking artifacts
+on the brick facade from the nadir-dominated image network. Dataset B (296,647 triangles) captures
+the complex EPFL rooftop with its photovoltaic panels, skylights, chimneys, and service installations,
+reflecting the rich depth variation that the oblique circular survey was designed to resolve.
+Post-processing stages (filtering, meshing, texturing, tiling) scaled approximately with
+the final point cloud size rather than input image count. The peak memory usage of 5.6 GB
+for Dataset B and 5.2 GB for Dataset A remained well within the 16 GB container limit,
+demonstrating that CPU-only serverless instances can handle high-fidelity centimeter-scale
+inspection reconstructions without GPU acceleration.
+The observed runtime differences were consistent with the influence of acquisition
+geometry. PatchMatch-based Multi-View Stereo estimates depth by evaluating geometric
+consistency across neighboring views. In convergent oblique image networks, individual
+surface points are observed from a wider range of viewing angles and often participate
+in a larger number of geometrically meaningful view combinations. This increases the
+computational effort required to evaluate and refine depth hypotheses. By contrast, nadir-
+dominated acquisition patterns typically exhibit lower angular diversity, reducing the
+number of candidate view relationships contributing to depth estimation. The results
+observed in Dataset B are consistent with this interpretation: despite containing fewer
+images, the dataset produced higher reconstruction density and longer MVS processing
+times than Dataset A. These findings suggest that acquisition geometry may serve as a
+useful predictor of cloud reconstruction workload and should be considered alongside
+image count when estimating resource requirements.
+https://doi.org/10.3390/buildings16122433
+Buildings 2026, 16, 2433 19 of 32
+3.4. Spatial Anchoring Validation
+3.4.1. Image Retrieval Accuracy
+Manual functional evaluation was conducted across 30 randomly sampled anchor
+points distributed to ensure spatial coverage: 12 points on vertical façade surfaces, 11 points
+on roof planes, and seven points at geometrically complex zones including building corners,
+dormers, and roof-to-wall transitions. For each anchor, the top-ranked image returned by
+the frustum-based scoring mechanism was assessed against two criteria: (1) the anchor
+point must be visible within the image frame without occlusion, and (2) the viewing angle
+must be sufficient to resolve surface texture at a scale appropriate for defect inspection.
+The mechanism demonstrated correct retrieval in 28 of the 30 cases, corresponding to a
+top-1 accuracy of 93.3%. For a binomial proportion of 28 successes in 30 trials, the 95%
+Wilson confidence interval was [77.9%, 98.8%], reflecting the wide uncertainty inherent
+in a 30-sample evaluation. This interval should be interpreted as indicative rather than
+definitive; a minimum sample of 100–150 anchor points across diverse building typologies
+would be required to bound top-1 accuracy within ±5 percentage points at 95% confidence.
+The current evaluation is therefore sufficient to demonstrate functional correctness of the
+mechanism but insufficient to establish operational performance guarantees.
+The two failure cases occurred exclusively at building corners where grazing viewing
+angles caused the highest-scored image to capture the anchor point at the extreme image
+periphery, satisfying the frustum containment condition geometrically while providing
+insufficient surface resolution for inspection purposes. This failure mode is predictable
+from first principles: the composite scoring function penalizes large incidence angles via the
+normal-direction dot product term n·vi, but does not explicitly penalize high eccentricity
+within the image frame. A straightforward mitigation adding an image-plane centrality
+term to the scoring function is identified as a targeted improvement for future work.
+Critically, both failure cases were concentrated at a single geometric category (exterior
+corners) that represents a known limitation of nadir-dominated acquisition geometry
+rather than a deficiency of the retrieval mechanism itself; re-acquisition with a targeted
+oblique pass at these locations would eliminate the failure mode at the data collection stage.
+These results confirm the functional correctness of the frustum-based approach across the
+dominant surface categories encountered in building inspection.
+3.4.2. Spatial Query Performance
+We populated the defects table with 500 synthetic test records distributed across the
+reconstructed building. Spatial proximity queries using PostGIS’s ST_DWithin function
+executed in 15–25 ms with the GIST spatial index, compared to 800–1200 ms without
+indexing (sequential scan). This confirms that the spatial indexing layer supports interactive
+query response times across large defect inventories, validating the architecture’s suitability
+for portfolio-wide spatial queries within an operational inspection interface.
+To contextualize these results operationally, sub-25 ms query latency places spatial
+defect retrieval within the same response-time budget as standard database lookups in
+enterprise asset management systems, which typically target under 100 ms for interactive
+workflows [12]. The 40–50× speedup provided by GIST spatial indexing over sequential
+scan is consistent with theoretical expectations for spatial index structures on point ge-
+ometries, where query complexity reduces from O(n) to O(log n) [24]. More significantly,
+the measured latency was achieved on a dataset of 500 records distributed across a single
+building footprint. For portfolio-scale deployments spanning hundreds of buildings with
+tens of thousands of defect records, query performance will depend on the spatial distri-
+bution of anchors relative to the query geometry and the selectivity of the ST_DWithin
+radius parameter. The PostGIS geography cast used in the implementation ensures that
+https://doi.org/10.3390/buildings16122433
+Buildings 2026, 16, 2433 20 of 32
+distance calculations account for Earth’s curvature, maintaining metric accuracy for cross-
+building queries spanning geographic distances where planar approximations introduce
+unacceptable error. These characteristics establish that the spatial indexing layer is architec-
+turally appropriate for operational deployment at the building-portfolio scale targeted by
+the platform.
+The 500-record evaluation confirms interactive latency for a single-building deploy-
+ment. For portfolio-scale scenarios, 200 buildings, each with 500–1000 defect records,
+totaling 100,000–200,000 spatial records, query performance will depend on the selectivity
+of the ST_DWithin radius and the geographic extent of the portfolio. At this scale, standard
+GIST indexing on a single PostgreSQL instance is anticipated to maintain sub-100 ms
+latency for well-parameterized proximity queries, based on published PostGIS benchmarks
+for point geometry datasets of comparable size. For portfolios exceeding ~1 million records
+or spanning multiple geographic regions, partitioning strategies, either range-based par-
+titioning by building identifier or geographic partitioning by bounding box, would be
+required to prevent full-index scans. The current single-instance Supabase deployment is
+appropriate for the pilot-scale use cases targeted in this work; distributed scaling via read
+replicas or Citus-based sharding represents a natural extension for enterprise deployment.
+4. Discussion
+4.1. Architectural Contribution to Construction Informatics
+This work demonstrates that thoughtful system architecture addressing workflow
+integration can deliver substantial practical value independent of algorithmic sophistica-
+tion. While much academic attention focuses on improving defect detection accuracy or
+reconstruction fidelity, practitioners struggle with more fundamental challenges around
+data organization, multi-stakeholder collaboration, and portfolio-scale visibility. The spatial
+intelligence hub addresses these practical needs through three architectural patterns:
+Event-Driven Decomposition for Heavy Compute. The photogrammetry pipeline
+demonstrates that computationally intensive geospatial workflows can be successfully
+disaggregated into event-triggered microservices without sacrificing reliability. This pattern
+is generalizable beyond photogrammetry to other construction monitoring applications
+including BIM model synchronization, clash detection, and energy simulation.
+Geometry as Database Interface. By treating the 3D reconstruction as a spatial orga-
+nizing substrate rather than passive visualization, we enable a fundamentally different
+interaction paradigm. Users navigate spatial reality (the 3D model) rather than abstract file
+structure, and the system automatically maintains bidirectional linkage between geometric
+locations and business records. This pattern could be applied to other asset management
+domains including MEP system maintenance and historic preservation.
+While the proposed architecture relies on a traditional Structure-from-Motion (SfM)
+and Multi-View Stereo (MVS) pipeline to generate this geometric interface, a theoretical
+comparison with emerging view-synthesis paradigms, such as Neural Radiance Fields
+(NeRF) and 3D Gaussian Splatting (3DGS), highlights critical operational trade-offs. NeRF
+and 3DGS have gained significant academic attention for their ability to render highly pho-
+torealistic, continuous representations of complex scenes from sparse imagery. However,
+these implicit and explicit radiance field methods are optimized primarily for visual fidelity
+rather than discrete geometric engineering metrics. For infrastructure inspection applica-
+tions requiring explicit metric geometry, traditional MVS remains better aligned with the
+requirements of the proposed spatial anchoring workflow because it reconstructs explicit,
+geometrically verifiable polygonal meshes and point clouds with a true metric scale.
+This explicit geometry is mathematically required for raycasting-based coordinate
+extraction and PostGIS spatial indexing. Furthermore, training NeRFs or optimizing
+https://doi.org/10.3390/buildings16122433
+Buildings 2026, 16, 2433 21 of 32
+millions of 3D Gaussians introduces immense computational overhead, often requiring
+high-end, persistent GPU infrastructure that directly conflicts with the low-cost, stateless,
+CPU-friendly serverless economics demonstrated on this platform. Consequently, while
+view-synthesis methods excel at visual walkthroughs, the SfM/MVS paradigm remains
+the essential mathematical substrate for queryable, spatially anchored asset intelligence.
+Serverless Democratization of Specialized Tools. The economic analysis demonstrates
+that converting capital-intensive desktop applications into serverless cloud services can reduce
+adoption barriers by an order of magnitude. This democratization is particularly impactful
+in emerging markets where SMEs lack capital for high-end workstations but can afford
+modest per-project processing fees. This pattern represents a potential strategy for digitally
+transforming other AEC workflows that currently require expensive specialized software.
+Acquisition Geometry as a Cloud Provisioning Signal. The comparative reconstruction
+experiment surfaces an implication for serverless system design. While it is well established
+in photogrammetry that MVS complexity scales with network geometry rather than image
+count, the finding is that oblique convergent surveys produce denser, more computationally
+demanding reconstructions than nadir-dominated surveys of an equivalent or larger size.
+Future work should investigate lightweight geometric complexity estimators, derivable
+from image network topology prior to execution that would enable dynamic container
+provisioning without a pre-processing run.
+The empirical results reported in Section 3 provide concrete grounding for several
+claims that have been asserted but not previously measured in the context of serverless
+cloud deployment. Remondino et al. [39] established theoretically that dense image match-
+ing complexity scales with viewing angle diversity and baseline-to-depth ratio rather than
+image resolution, and Haala and Rothermel [38] demonstrated this effect experimentally
+in batch desktop processing. The results presented here extend these findings to a server-
+less, pay-per-use execution context where the cost implications are direct and immediate:
+Dataset B required 38% more MVS time despite containing 49% fewer images, a cost inver-
+sion that a naive image-count-based resource allocation model would mishandle in both
+directions simultaneously, over-provisioning Dataset A and under-provisioning Dataset B.
+This finding has a concrete implication for cloud cost management that has not been
+previously articulated: acquisition geometry metadata, specifically whether a survey uses
+nadir-dominated or oblique convergent flight patterns, should be treated as a first-class
+input to serverless job scheduling, not merely as a photogrammetric quality parameter. The
+checkpoint-based orchestration design adopted in this work is a pragmatic response to this
+uncertainty; future work on lightweight geometry complexity estimators, as proposed in
+Section 5, represents a path toward proactive rather than reactive resource allocation.
+4.2. Technological Leapfrogging and Economic De-Risking
+The results give some empirical grounding to the leapfrogging argument made in the
+introduction. In the traditional workstation paradigm, the requirement to purchase high-
+performance hardware creates a “sunk cost” barrier: organizations must commit capital
+ex-ante, often before securing the project contracts that would justify the investment. This
+creates a chicken-and-egg problem for Small and Medium Enterprises (SMEs), particularly
+in emerging markets like Morocco.
+For a firm in Casablanca or Fez, a high-end workstation represents a significant
+percentage of an SME’s discretionary budget, requiring executive approval and multi-year
+depreciation schedules. By transitioning to a serverless, consumption-based model, the
+proposed platform resolves this paradox. It converts a high-barrier Capital Expenditure
+(CapEx) into a scalable, low-risk Operational Expenditure (OpEx).
+https://doi.org/10.3390/buildings16122433
+Buildings 2026, 16, 2433 22 of 32
+This shift allows organizations to adopt a just-in-time infrastructure strategy. Process-
+ing capacity is provisioned only when a revenue-generating project is secured. If no projects
+are secured, the cost to the firm is zero, a level of financial agility that is impossible with
+on-premise infrastructure. This economic transformation enables organizational behaviors
+that were previously impractical:
+• Risk-Free Service Expansion: Firms can experiment with offering photogrammetry
+without facing capital risk.
+• Increased Frequency: Inspections can occur quarterly rather than biannually, as re-
+sources are no longer scarce.
+To visualize this strategic advantage, Table 4 contrasts the operational characteristics
+of the proposed architecture against standard industry solutions.
+Table 4. Strategic comparison of deployment models.
+Feature Traditional Workstation Workflow Proposed Cloud-Native SaaS Hub
+Financial Model CapEx (High Risk): Upfront hardware
+purchase required regardless of revenue.
+OpEx (Zero Risk): Pay-per-use only
+when revenue is generated.
+Barrier to Entry High: Requires specialized GPU hardware
+and software licenses.
+None: Accessible via standard web
+browser on any laptop.
+Scalability Vertical (Limited): Bottlenecked by local
+GPU/RAM. One project at a time.
+Horizontal (Infinite): Auto-scales to
+handle multiple concurrent projects.
+Collaboration Siloed: Data trapped on local disk; requires
+manual file transfer.
+Unified: Shared URL for real-time
+multi-user access.
+Data Security Local: Vulnerable to disk failure
+or local theft.
+Cloud: Redundant storage (S3) and
+encrypted access.
+To ground the economic argument in concrete terms, consider the cost structure of a
+representative small inspection project: a single building surveyed with a consumer-grade
+drone, producing approximately 150 images, processed to a defect-annotated 3D model.
+Under the traditional workstation model, the fixed costs include hardware amortization (a
+workstation with an NVIDIA RTX-class GPU depreciates at approximately USD 150–200
+per month assuming a 3-year lifespan and USD 5000–7000 purchase price), software licens-
+ing (commercial photogrammetry licenses range from USD 350 to USD 3500 per year), and
+operator time for local pipeline management.
+Under the proposed serverless model, the compute cost for the same project based on
+the measured processing times reported in Table 3 and Google Cloud Run pricing at the time
+of writing (approximately USD 0.00002400 per vCPU-second and USD 0.00000250 per GB-
+second) amounts to approximately USD 0.80–1.20 per project at the container specifications
+used in this evaluation. For an SME processing 10 projects per month, the annual serverless
+compute cost is therefore on the order of USD 100–150, compared to hardware and software
+fixed costs exceeding USD 5000 per year under the traditional model.
+While these figures are illustrative rather than exhaustive, network egress, storage,
+and orchestration costs add overhead, and desktop workflows avoid per-project compute
+fees; the order-of-magnitude cost structure difference is robust to reasonable variations
+in these parameters. Critically, the serverless model incurs zero cost during months with
+no billable projects, a property that the fixed-cost workstation model structurally cannot
+replicate and that directly addresses the project-pipeline uncertainty faced by SMEs in
+emerging markets.
+While compute costs are dynamically bound to active project execution, the accumula-
+tion of high-resolution drone imagery presents a latent long-term Operational Expenditure
+https://doi.org/10.3390/buildings16122433
+Buildings 2026, 16, 2433 23 of 32
+(OpEx) risk if not actively managed. A representative inspection project (e.g., 150 images
+at 10 MB each) generates approximately 1.5 GB of raw optical data. Under standard high-
+availability cloud storage tiers (e.g., ~USD 0.020 per GB/month), permanently hosting
+1000 historical projects would incur a recurring baseline cost of USD 30 per month. To
+mitigate this and preserve the platform’s economic agility, the architecture assumes a tiered
+data lifecycle policy. Upon project closure, the lightweight 3D mesh, defect metadata,
+and spatial anchors which are required for ongoing PostGIS spatial queries remain in
+standard, fast-access storage. Conversely, the heavy raw image datasets are automatically
+transitioned to “cold” archive storage (e.g., Google Cloud Archive at ~USD 0.0012 per
+GB/month). Under this lifecycle model, the long-term archival storage cost for the same
+1000 historical projects drops to under USD 2.00 per month, demonstrating that storage
+OpEx can be aggressively contained without sacrificing historical asset intelligence.
+4.3. Integration with Existing BIM Ecosystems
+A frequent question is how the spatial intelligence hub relates to existing Building
+Information Modeling (BIM) platforms. We emphasize that the system is complementary
+rather than competitive. BIM excels at design-phase information management where building
+geometry is authored through parametric modeling and enriched with semantic specifications.
+This design-centric information flows forward through construction for coordination.
+However, BIM platforms assume information originates during design and struggle
+with post-construction scenarios where as-built reality must be captured through sensor
+data. While scan-to-BIM workflows exist for converting point clouds to parametric models,
+these require substantial manual effort (20–40 h of modeling per building) and often
+discard high-frequency geometric detail present in photogrammetric reconstructions. The
+spatial intelligence hub addresses this gap by accepting that post-construction reality often
+diverges from design intent and therefore requires direct geometric capture rather than
+parametric reconstruction.
+The photogrammetric mesh serves as a bottom-up representation of as-built conditions
+onto which inspection data is anchored. This as-built Digital Twin complements top-down
+BIM models where they exist and provides comparable spatial organization benefits for
+buildings lacking BIM documentation, establishing the framework illustrated in Figure 11.
+Interoperability is achieved through standard data exchange formats. Defect records can
+be exported as IFC (Industry Foundation Classes) spatial elements for import into BIM
+authoring tools. 3D tiles can be overlaid with BIM models in web-based viewers for
+as-designed vs. as-built comparison.
+Figure 11. Complementary relationship between top-down BIM and bottom-up photogrammetric
+reconstruction. BIM encodes design intent and flows forward through construction; photogrammetric
+mesh captures as-built reality from drone survey. The spatial intelligence hub occupies the inter-
+section, providing a georeferenced anchor layer (X, Y, Z) that bridges both representations through
+standard exchange formats (IFC, OGC 3D Tiles).
+https://doi.org/10.3390/buildings16122433
+Buildings 2026, 16, 2433 24 of 32
+Camera poses and defect locations can be exported as COBie (Construction Operations
+Building information exchange) spreadsheets for integration with CMMS (Computerized
+Maintenance Management Systems). This API-first architecture prevents vendor lock-in
+and enables gradual adoption within existing tooling ecosystems.
+4.4. Limitations and Boundary Conditions
+Several technical limitations constrain the system’s applicability:
+Photogrammetric Reconstruction Requirements. Structure-from-Motion algorithms
+require sufficient visual texture variation for feature matching. Surfaces with uniform
+appearance (e.g., blank concrete panels, monotone metal cladding) or highly repetitive
+patterns (e.g., grid facades, brick coursing) can challenge reconstruction. Highly reflective
+or transparent materials (glass curtain walls, polished stone) violate brightness constancy
+assumptions underlying photometric stereo. These failure modes can be mitigated through
+targeted data collection strategies (e.g., adding artificial texture markers, capturing multiple
+exposures) but represent inherent constraints of vision-based reconstruction.
+Beyond complete reconstruction failure, partial data quality degradation presents a
+more common operational risk. Low-contrast or motion-blurred images reduce SIFT key
+point repeatability, increasing the proportion of images that fail geometric verification and
+are excluded from the reconstruction graph. The system’s event-driven retry logic handles
+this gracefully at the feature-matching stage by relaxing match thresholds, but does not
+currently detect or report which images were excluded, leaving the inspector unaware of
+coverage gaps. A coverage gap visualization overlaying the reconstructed mesh with a
+per-region confidence map derived from the number of contributing source images has
+been identified as a necessary addition before operational deployment.
+Network Connectivity Dependency. The cloud-native architecture assumes reliable
+internet connectivity for uploading imagery and accessing reconstructions. In remote
+locations or during field work in areas with poor cellular coverage, this dependency creates
+workflow friction. Hybrid architectures incorporating local caching or offline-capable
+mobile applications could address this limitation but would increase implementation
+complexity. For the target use case of urban infrastructure inspection in emerging markets
+with expanding 4G/5G coverage, this limitation is increasingly manageable.
+Scalability Ceilings. While the serverless architecture scales effectively for moderate
+workloads (dozens of concurrent projects), theoretical limits exist. Database query perfor-
+mance degrades for extremely large portfolios (hundreds of thousands of defect records)
+without careful index tuning and query optimization. Long-term archival storage costs for
+high-resolution imagery could become significant for organizations managing hundreds
+of buildings inspected repeatedly over decades. Intelligent data lifecycle management
+strategies (automated down-sampling of historical imagery, migration to archival storage
+tiers, aggregation of temporal data) would be necessary for enterprise-scale deployment.
+Absence of Automated Defect Detection. The current implementation requires human
+inspectors to manually create defect annotations after visually examining reconstructions
+and source imagery. While this manual workflow reflects standard practice in current
+inspection operations and was a deliberate design choice, robust spatial anchoring in-
+frastructure must precede AI integration, as a detection model is only as useful as the
+information substrate to which it writes; it represents the most consequential bottleneck for
+scaling inspection throughput. The spatially anchored defect database generated by human
+experts through this platform constitutes precisely the kind of georeferenced, evidence-
+linked ground truth dataset that supervised defect detection models require but rarely
+have access to in structured form. Existing defect detection research typically operates
+on unstructured image collections without spatial context, limiting the ability to train
+https://doi.org/10.3390/buildings16122433
+Buildings 2026, 16, 2433 25 of 32
+models that reason about defect location, progression, or spatial relationship to struc-
+tural elements [5,32]. The present system’s output defects annotated with 3D coordinates,
+severity classifications, linked source images, and supporting documentation are natively
+structured for training spatially aware detection models. This creates a self-reinforcing
+improvement cycle: human-in-the-loop annotation through the platform generates training
+data; training data enables automated pre-annotation; automated pre-annotation reduces
+inspector workload while maintaining human verification. The integration of automated
+detection is therefore identified not merely as a feature addition but as an architectural
+inevitability that the spatial information infrastructure of the present system is designed
+to support.
+Parameter Sensitivity and Hyperparameter Optimization. The current evaluation
+establishes the end-to-end functional feasibility of the architecture using baseline algorith-
+mic parameters. However, we have not yet conducted a formal sensitivity analysis on
+the hyperparameter configurations governing the spatial anchoring and reconstruction
+engines. For instance, the α parameter within the frustum-based image retrieval scoring
+function (Algorithm 1), which balances the weight of surface normal incidence against
+Euclidean distance, was empirically fixed rather than systematically optimized. Similarly,
+the PatchMatch Multi-View Stereo configuration (e.g., the number of depth hypotheses
+and propagation iterations) was held constant across both datasets to isolate the impact of
+acquisition geometry on compute time. Because modifying these variables directly affects
+both the accuracy of spatial queries and cloud resource consumption, a comprehensive
+ablation study and hyperparameter sensitivity analysis represent a critical next step to
+mathematically optimize the platform’s operational efficiency.
+4.5. Threats to Validity
+The measured end-to-end runtime depends on cloud execution conditions such as cold
+starts and multi-tenant resource contention. Although the orchestration design mitigates
+timeouts, execution time may vary across deployments.
+Construct validity: Image retrieval functional correctness is evaluated by manual
+verification across 30 sampled anchor points, which may introduce subjectivity in border-
+line cases such as corners and repetitive textures. The evaluation sample is sufficient to
+demonstrate functional correctness of the mechanism but insufficient to establish statistical
+performance bounds for operational deployment. A top-k evaluation across a larger and
+more diverse sample is identified as necessary future work to support claims of retrieval
+reliability across varying building typologies.
+External validity: To properly contextualize the empirical evaluation, the system’s
+performance bounds must be evaluated within the scope of system architecture design
+rather than a population benchmark study. Accordingly, we satisfied the validation criteria
+by clearly defining our selection method as a controlled, purposeful contrast rather than a
+statistical population sample. The two-dataset configuration was specifically engineered
+to capture opposite ends of the geometric spectrum (nadir-dominated grid vs. circular
+oblique convergent networks) to evaluate our dynamic serverless resource-provisioning
+hypotheses. However, this deliberate design choice inherently limits broad generalizability
+claims, as the system has not yet been stress-tested on asset classes characterized by
+challenging photogrammetric boundary conditions, such as glass curtain walls, open-frame
+steel structures or underground infrastructure. Validating the architecture across at least
+two additional complex building typologies, specifically a masonry heritage structure and
+a steel-frame industrial facility, has been established as an immediate follow-on roadmap
+item to systematically map external operational bounds.
+https://doi.org/10.3390/buildings16122433
+Buildings 2026, 16, 2433 26 of 32
+4.6. Generalizability to Other Construction Monitoring Applications
+The architectural patterns demonstrated in this work extend beyond building facade
+inspection to other construction monitoring scenarios requiring spatial organization of
+heterogeneous data:
+Progress-Tracking During Construction. Periodic drone surveys of active construction
+sites could be anchored to a common reference geometry, enabling automated change
+detection and schedule deviation analysis. The same frustum culling mechanism could
+retrieve source images documenting specific construction activities for verification against
+approved shop drawings.
+Cultural Heritage Documentation. Historic preservation workflows require detailed con-
+dition monitoring of irreplaceable structures. The spatial intelligence hub could organize
+multi-modal sensor data (photogrammetry , thermal imagery , ground-penetrating radar) around
+a unified 3D baseline, supporting conservation planning and disaster recovery preparation.
+Infrastructure Resilience Monitoring. Critical infrastructure (bridges, dams, tunnels)
+subjected to periodic inspections could accumulate temporal layers of spatially anchored
+condition data. Change detection across inspection campaigns would reveal degradation
+trends and inform predictive maintenance models, transitioning from reactive repairs to
+proactive intervention strategies.
+Post-Disaster Damage Assessment. Following earthquakes, floods, or other disasters,
+rapid deployment of drone surveys could populate spatial databases with damage annota-
+tions. The portfolio-scale query capabilities would enable prioritizing emergency response
+based on structural criticality and damage severity, supporting evidence-based resource
+allocation decisions.
+The common thread across these applications is the same problem this paper addresses:
+sensor data that generates observations about physical objects, where the observations
+need to be organized by their spatial relationship to those objects rather than by the file
+system structure in which they were stored.
+5. Conclusions
+This paper has presented the design, implementation, and validation of a cloud-native
+spatial intelligence hub that addresses data fragmentation in infrastructure inspection
+through serverless 3D reconstruction and context-aware information management. The
+work makes five principal contributions to construction informatics scholarship:
+First, we demonstrate that computationally intensive photogrammetry pipelines can
+be successfully decomposed into event-driven serverless workflows, eliminating the need
+for dedicated hardware infrastructure. The Inngest-orchestrated architecture handles
+the inherent timeout challenges of long-running SfM/MVS processing while providing
+robust failure recovery and cost efficiency. Processing cost per typical inspection project
+represents an order-of-magnitude reduction compared to workstation depreciation and
+operational costs.
+Second, we formalize and implement the spatial anchor mechanism that creates bidi-
+rectional linkage between database records and three-dimensional geometric locations. The
+combination of raycasting for coordinate extraction, frustum culling for image retrieval, and
+PostGIS spatial indexing for portfolio-wide queries transforms passive 3D visualizations
+into active information-management substrates. This architectural pattern is generalizable
+beyond facade inspection to other construction monitoring applications requiring spatial
+organization of heterogeneous data.
+Third, we demonstrate how cloud-native serverless architectures fundamentally
+transform the economic model of infrastructure inspection from capital-intensive to
+consumption-based deployment. By eliminating requirements for specialized hardware
+https://doi.org/10.3390/buildings16122433
+Buildings 2026, 16, 2433 27 of 32
+and perpetual software licenses, the architecture lowers barriers to entry for SMEs in
+emerging markets. This shift from upfront Capital Expenditure to pay-per-use Operational
+Expenditure represents a technological leapfrogging opportunity, enabling organizations
+to adopt advanced photogrammetry capabilities aligned with actual project revenue rather
+than speculative infrastructure investment.
+Fourth, we release the complete implementation as open-source software, providing a
+reproducible reference architecture that other researchers and practitioners can validate,
+extend, and adapt to domain-specific requirements. This contribution to open construc-
+tion informatics enables collaborative development and prevents vendor lock-in that has
+historically fragmented the AEC software ecosystem.
+Fifth, we provide an empirical characterization of acquisition geometry as the major
+driver of MVS complexity in a serverless cloud context, demonstrating that a dataset
+with fewer images and coarser Ground Sampling Distance can require significantly more
+processing time than a larger, higher-resolution dataset when oblique convergent geometry
+produces higher baseline-to-depth ratios. While this finding is consistent with established
+photogrammetric theory, its implications for cloud-native reconstruction pipelines have
+received little attention; thus, it provides empirical grounding for the checkpoint-based
+orchestration design and establishes acquisition geometry metadata as a necessary input to
+cloud resource allocation decisions.
+The spatial intelligence hub enables several organizational capabilities for resource-
+constrained engineering firms:
+Portfolio-Scale Asset Intelligence. By standardizing spatial data schemas across all
+inspected buildings, facility managers can execute analytical queries spanning entire port-
+folios. Questions like “which building cohorts exhibit similar crack propagation pat-
+terns suggesting systemic construction defects” or “where should we prioritize structural
+strengthening given limited capital budgets” become answerable through database queries
+rather than requiring manual correlation across disconnected reports.
+Evidence-Based Maintenance Planning. The persistent spatial anchoring of all inspec-
+tion findings creates an evolving historical record of asset condition. Temporal change
+detection across repeated inspection campaigns reveals deterioration rates and validates
+maintenance intervention effectiveness. This evidence base supports transitioning from
+reactive repairs (responding to visible failures) to predictive maintenance (intervening
+before failures occur based on degradation trends).
+Collaborative Multi-Stakeholder Workflows. Real-time synchronization of defect
+annotations and document attachments enables distributed teams to collaborate effectively
+without geographic collocation. Field inspectors, structural engineers, facility managers,
+and external consultants can jointly review inspection findings, annotate observations, and
+make decisions within a shared spatial interface. This reduces coordination overhead and
+eliminates information loss from handoffs between stakeholders.
+Reduced Barrier to Digital Adoption. The zero-installation browser-based interface
+and pay-per-project pricing model make advanced photogrammetry capabilities accessible
+to organizations that would never justify purchasing desktop software licenses or high-end
+workstations. This democratization is particularly impactful for SMEs in emerging markets,
+potentially catalyzing broader digital transformation of regional construction sectors.
+Several research directions emerge from this work that would extend capabilities
+while maintaining the core architectural principles:
+• Automated defect detection: The spatially anchored defect database generated by
+human inspectors provides a natural ground truth corpus for training computer vision
+models. Future work should explore integrating automated pathology detection into
+the platform, using both source imagery and 3D geometric context as inputs. Robust
+https://doi.org/10.3390/buildings16122433
+Buildings 2026, 16, 2433 28 of 32
+spatial information infrastructure must precede AI integration; the present system
+provides that foundation.
+• Temporal change detection: Anchoring repeated inspection campaigns to a common
+reference geometry would enable automated monitoring of structural deterioration
+over time. This would support a transition from reactive maintenance to predictive
+intervention, with degradation trends derived from accumulated spatial observations
+rather than periodic manual comparison of disconnected reports.
+• Advanced visualization with 3D Gaussian Splatting: While SfM meshes provide
+the geometric reliability required for spatial anchoring, 3D Gaussian Splatting offers
+superior photorealistic rendering that could improve the inspection review experience.
+A hybrid architecture using the SfM mesh as the geometric substrate for raycasting
+while rendering through a Gaussian Splatting layer would preserve spatial accuracy
+while significantly enhancing visual quality.
+• Mobile and offline capabilities: The current architecture assumes reliable internet
+connectivity, which may be limited at remote inspection sites. Offline-capable mobile
+applications that cache project data locally and synchronize when connectivity is
+restored would extend the platform’s reach to field environments where the cloud-
+native model currently creates friction.
+• Standardization and interoperability: The spatial anchor concept could inform de-
+velopment of open data exchange standards for inspection information, in collabora-
+tion with bodies such as ISO, buildingSMART, and OGC. Standardized schemas for
+spatially anchored defect records and documented API specifications would enable
+interoperability across platforms and prevent the vendor lock-in that has historically
+fragmented construction software ecosystems.
+While the current architecture establishes a foundational spatial intelligence hub,
+future work should focus on integrating three advanced capabilities into the serverless
+pipeline. First, automated defect detection should be integrated by deploying asynchronous
+AI inference containers triggered immediately following the final densification stage. The
+primary challenge here lies in managing the cold-start latency of loading heavy vision-
+model weights within stateless environments. Second, enabling temporal change monitor-
+ing will require the pipeline to automatically co-register independent, multi-temporal drone
+flights. This introduces the challenge of establishing stable 3D invariant coordinate frames
+to accurately calculate mesh deformation over time. Finally, the integration of 3D Gaussian
+Splatting (3DGS) has been proposed to enhance photorealistic visualization. Because native
+3DGS lacks the explicit polygonal geometry required for the frustum raycasting described
+in this study, the proposed integration scheme involves a hybrid rendering architecture:
+utilizing the explicit SfM mesh as an invisible structural layer for coordinate calculations,
+while overlaying a real-time rasterized 3DGS layer for user visualization.
+It is important to characterize precisely what this work demonstrates and what it
+does not. The experimental evaluation validates end-to-end feasibility of the proposed
+architecture on two real UAV inspection datasets representing geometrically contrasting
+acquisition conditions, and confirms sub-second spatial query performance and greater-
+than-90% image retrieval accuracy at the building scale. These results establish that the
+system works correctly under the tested conditions. They do not establish statistical perfor-
+mance bounds across diverse building typologies, acquisition equipment, or geographic
+conditions; claims of that nature would require a benchmark study across a substantially
+larger and more varied dataset, which is identified as the primary direction for future em-
+pirical work. The contribution of this paper is therefore best characterized as a reproducible
+reference architecture with demonstrated feasibility, empirically grounded design rationale,
+and a clearly defined evaluation roadmap. This framing is consistent with the role of
+https://doi.org/10.3390/buildings16122433
+Buildings 2026, 16, 2433 29 of 32
+system architecture papers in construction informatics, which establish the design space
+and demonstrate viability before large-scale benchmark studies become tractable [3,33].
+The fragmentation of inspection data represents a systemic risk to infrastructure
+safety and operational efficiency. While computer vision research pursues increasingly
+sophisticated detection algorithms and rendering techniques advance toward photorealistic
+virtual reality, practitioners struggle with more fundamental challenges around information
+organization, multi-stakeholder collaboration, and portfolio-scale asset intelligence.
+This work demonstrates that thoughtful system architecture addressing these work-
+flow challenges can deliver substantial practical value independent of algorithmic sophisti-
+cation. By making 3D Digital Twins accessible through serverless economics and usable
+through spatial information management, the spatial intelligence hub charts a path toward
+portfolio-scale infrastructure intelligence in emerging markets.
+As construction organizations in regions like Morocco and the broader Global South
+continue, digital transformation journeys, the choice between replicating developed-market
+software accumulation patterns and leapfrogging to integrated cloud-native platforms
+will have lasting implications. The spatial intelligence hub represents one instantiation of
+the leapfrogging strategy, and we hope this work encourages broader reflection on how
+construction informatics can evolve to serve resource-constrained contexts rather than
+merely transplanting approaches optimized for capital-rich markets. The open-source
+release accompanying this paper invites the research community to validate, critique, and
+extend this work.
+Construction informatics advances not through isolated algorithmic breakthroughs
+but through collective development of robust architectural patterns, standard protocols,
+and open implementations that enable ecosystem growth. We welcome collaboration
+toward that shared goal.
+Supplementary Materials: Source code, deployment documentation, and demonstration. datasets
+are available at https://github.com/youssef-gis/cloud-native-construction-informatics (accessed on
+18 March 2026).
+Author Contributions: Conceptualization, Y.A., F.A.-T. and H.B.; Methodology, Y.A.; Software, Y.A.;
+Validation, Y.A.; Formal Analysis, Y.A.; Investigation, Y.A.; Data Curation, Y.A.; Writing—Original
+Draft Preparation, Y.A.; Writing—Review and Editing, Y.A., F.A.-T. and H.B.; Visualization, Y.A.;
+Supervision, H.B. and F.A.-T.; Funding Acquisition, F.A.-T. All authors have read and agreed to the
+published version of the manuscript.
+Funding: This research was partially funded by the European Commission through the DIGIS3
+(Smart, Sustainable and Cohesive Digitalization) Digital Innovation Hub project, grant number
+101083898-DIGIS3 (2023–2026).
+Data Availability Statement: The original contributions presented in this study are included in the
+article. Source code and demonstration datasets are openly available at: https://github.com/youssef-
+gis/cloud-native-construction-informatics (accessed on 18 March 2026).
+Acknowledgments: The authors acknowledge the open-source communities behind OpenSfM (v0.5,
+Mapillary AB, Malmö, Sweden, accessed 12 January 2026), CesiumJS, Next.js, PostGIS, Inngest,
+and Supabase.
+Conflicts of Interest: The authors declare no conflicts of interest.
+Abbreviations
+The following abbreviations are used in this manuscript:
+AEC Architecture, Engineering, and Construction
+BIM Building Information Modeling
+https://doi.org/10.3390/buildings16122433
+Buildings 2026, 16, 2433 30 of 32
+CapEx Capital Expenditure
+CDE Common Data Environment
+GSD Ground Sampling Distance
+MVS Multi-View Stereo
+O&M Operation and Maintenance
+OpEx Operational Expenditure
+RLS Row-Level Security
+SfM Structure-from-Motion
+SME Small and Medium Enterprise
+References
+1. Chatsuwan, M.; Moriwaki, A.; Ichinose, M.; Alkhalaf, H. BIM–FM Interoperability Through Open Standards: A Critical Literature
+Review. Architecture 2025, 5, 74. [CrossRef]
+2. Vidalakis, C.; Abanda, F.H.; Oti, A.H. BIM Adoption and Implementation: Focusing on SMEs. Constr. Innov. 2020, 20, 128–147.
+[CrossRef]
+3. Boje, C.; Guerriero, A.; Kubicki, S.; Rezgui, Y. Towards a Semantic Construction Digital Twin: Directions for Future Research.
+Autom. Constr. 2020, 114, 103179. [CrossRef]
+4. Tang, S.; Shelden, D.R.; Gao, X.; Zhang, C.; Hao, J.; Guo, F.; Zhang, H. A Framework for Integrating BIM, Building Automation
+Systems, and IoT: An Application in Design and Operation Using Open Standards. J. Build. Eng. 2025, 113, 114092. [CrossRef]
+5. Cano, M.; Pastor, J.L.; Tomás, R.; Riquelme, A.; Asensio, J.L. A New Methodology for Bridge Inspections in Linear Infrastructures
+from Optical Images and HD Videos Obtained by UAV .Remote Sens. 2022, 14, 1244. [CrossRef]
+6. Gao, X.; Pishdad-Bozorgi, P . BIM-Enabled Facilities Operation and Maintenance: A Review. Adv. Eng. Inform. 2019, 39, 227–247.
+[CrossRef]
+7. Abanda, F.H.; Balu, B.; Adukpo, S.E.; Akintola, A. Decoding ISO 19650 Through Process Modelling for Information Management
+and Stakeholder Communication in BIM. Buildings 2025, 15, 431. [CrossRef]
+8. ISO 19650-1:2018; Organization and Digitization of Information about Buildings and Civil Engineering Works, Including Building
+Information Modelling (BIM) Information Management Using Building Information Modelling Part 1: Concepts and Principles.
+ISO: Geneva, Switzerland, 2018.
+9. ISO 19650-2:2018; Organization and Digitization of Information about Buildings and Civil Engineering Works, Including Building
+Information Modelling (BIM) Information Management Using Building Information Modelling Part 2: Delivery Phase of the
+Assets. ISO: Geneva, Switzerland, 2018.
+10. Rezgui, Y.; Beach, T.; Rana, O. A Governance Approach for Bim Management Across Lifecycle and Supply Chains Using
+Mixed-Modes of Information Delivery. J. Civ. Eng. Manag. 2013, 19, 239–258. [CrossRef]
+11. Bouabdallaoui, Y.; Lafhaj, Z.; Yim, P .; Ducoulombier, L.; Bennadji, B. Predictive Maintenance in Building Facilities: A Machine
+Learning-Based Approach. Sensors 2021, 21, 1044. [CrossRef] [PubMed]
+12. Lee, J.; Kao, H.-A.; Yang, S. Service Innovation and Smart Analytics for Industry 4.0 and Big Data Environment. Procedia CIRP
+2014, 16, 3–8. [CrossRef]
+13. Shahzad, M.; Shafiq, M.T.; Douglas, D.; Kassem, M. Digital Twins in Built Environments: An Investigation of the Characteristics,
+Applications, and Challenges. Buildings 2022, 12, 120. [CrossRef]
+14. Sacks, R.; Wang, Z.; Ouyang, B.; Utkucu, D.; Chen, S. Toward Artificially Intelligent Cloud-Based Building Information Modelling
+for Collaborative Multidisciplinary Design. Adv. Eng. Inform. 2022, 53, 101711. [CrossRef]
+15. Varghese, B.; Buyya, R. Next Generation Cloud Computing: New Trends and Research Directions.Future Gener. Comput. Syst.
+2018, 79, 849–861. [CrossRef]
+16. Jonas, E.; Schleier-Smith, J.; Sreekanti, V .; Tsai, C.-C.; Khandelwal, A.; Pu, Q.; Shankar, V .; Carreira, J.; Krauth, K.; Yadwadkar, N.;
+et al. Cloud Programming Simplified: A Berkeley View on Serverless Computing. arXiv 2019, arXiv:1902.03383.
+17. Wen, J.; Chen, Z.; Jin, X.; Liu, X. Rise of the Planet of Serverless Computing: A Systematic Review. ACM Trans. Softw. Eng.
+Methodol. 2023, 32, 1–61. [CrossRef]
+18. Soete, L. International Diffusion of Technology, Industrial Development and Technological Leapfrogging.World Dev. 1985, 13,
+409–422. [CrossRef]
+19. Pérez, C.; Soete, L. Catching up in Technology: Entry Barriers and Windows of Opportunity; Academic: Cambridge, MA, USA, 1988.
+20. Heeks, R. ICT4D 2.0: The Next Phase of Applying ICT for International Development. Computer 2008, 41, 26–33. [CrossRef]
+21. Bello, S.A.; Oyedele, L.O.; Akinade, O.O.; Bilal, M.; Davila Delgado, J.M.; Akanbi, L.A.; Ajayi, A.O.; Owolabi, H.A. Cloud
+Computing in Construction Industry: Use Cases, Benefits and Challenges. Autom. Constr. 2021, 122, 103441. [CrossRef]
+https://doi.org/10.3390/buildings16122433
+Buildings 2026, 16, 2433 31 of 32
+22. Fuller, A.; Fan, Z.; Day, C.; Barlow, C. Digital Twin: Enabling Technologies, Challenges and Open Research.IEEE Access 2020, 8,
+108952–108971. [CrossRef]
+23. Kumaran, T.V .; Murali, O.M.; Joseph, R. Spatial Data Analytics and the Role of Geoinformatics Technologies.J. Dev. Econ. Manag.
+Res. Stud. 2025, 12, 13–40. [CrossRef]
+24. Duckham, M.; Goodchild, M.F.; Worboys, M. (Eds.) Foundations of Geographic Information Science; CRC Press: London, UK, 2003.
+25. Jeddoub, I.; Ballouch, Z.; Hajji, R.; Billen, R. Enriched Semantic 3D Point Clouds: An Alternative to 3D City Models for Digital
+Twin for Cities? In Recent Advances in 3D Geoinformation Science. 3DGeoInfo 2023; Springer: Cham, Switzerland, 2024.
+26. Azari, P .; Li, S.; Shaker, A. An Effective Approach to Geometric and Semantic BIM/GIS Data Integration for Urban Digital Twin.
+ISPRS Int. J. Geo-Inf. 2025, 14, 478. [CrossRef]
+27. Schonberger, J.L.; Frahm, J.-M. Structure-from-Motion Revisited. In Proceedings of the 2016 IEEE Conference on Computer Vision and
+Pattern Recognition (CVPR); IEEE: Las Vegas, NV , USA, 2016; pp. 4104–4113.
+28. Zongqian, Z.; Yifei, Y.; Rui, X.; Wentian, G.; Xie, H.; Giulio, P .; Morelli, L.; Fabio, R.; Wang, X. SfM On-the-Fly: Get Better 3D from
+What You Capture. arXiv 2024, arXiv:2407.03939.
+29. Schönberger, J.L.; Zheng, E.; Frahm, J.-M.; Pollefeys, M. Pixelwise View Selection for Unstructured Multi-View Stereo. InComputer
+Vision—ECCV 2016 ; Leibe, B., Matas, J., Sebe, N., Welling, M., Eds.; Lecture Notes in Computer Science; Springer International
+Publishing: Cham, Switzerland, 2016; Volume 9907, pp. 501–518.
+30. Mildenhall, B.; Srinivasan, P .P .; Tancik, M.; Barron, J.T.; Ramamoorthi, R.; Ng, R. NeRF: Representing Scenes as Neural Radiance
+Fields for View Synthesis. In Proceedings of the Computer Vision—ECCV 2020 ; Vedaldi, A., Bischof, H., Brox, T., Frahm, J.-M., Eds.;
+Springer International Publishing: Cham, Switzerland, 2020; pp. 405–421.
+31. Kerbl, B.; Kopanas, G.; Leimkühler, T.; Drettakis, G. 3D Gaussian Splatting for Real-Time Radiance Field Rendering. arXiv 2023,
+arXiv:2308.04079.
+32. Xing, Y.; Yang, S.; Fahy, C.; Harwood, T.; Shell, J. Capturing the Past, Shaping the Future: A Scoping Review of Photogrammetry
+in Cultural Building Heritage. Electronics 2025, 14, 3666. [CrossRef]
+33. Hodavand, F.; Ramaji, I.; Sadeghi, N.; Zandi Goharrizi, S. Digital Twin-Enabled Framework for Intelligent Monitoring and
+Anomaly Detection in Multi-Zone Building Systems. Buildings 2025, 15, 4030. [CrossRef]
+34. Hellerstein, J.M.; Faleiro, J.; Gonzalez, J.E.; Schleier-Smith, J.; Sreekanti, V .; Tumanov, A.; Wu, C. Serverless Computing: One Step
+Forward, Two Steps Back. arXiv 2019, arXiv:1812.03651.
+35. Baldini, I.; Castro, P .; Chang, K.; Cheng, P .; Fink, S.; Ishakian, V .; Mitchell, N.; Muthusamy, V .; Rabbah, R.; Slominski, A.; et al.
+Serverless Computing: Current Trends and Open Problems. In Research Advances in Cloud Computing; Chaudhary, S., Somani, G.,
+Buyya, R., Eds.; Springer: Singapore, 2017; pp. 1–20.
+36. Franchi, F.; Smarra, F.; Di Fina, E.; Galassi, A. On the Performance of Geospatial Services Deployment: An Experimental
+Benchmark Analysis. J. Grid Comput. 2025, 23, 17. [CrossRef]
+37. Besozzi, V .; Della Bartola, M.; Dazzi, P .; Danelutto, M. High-Performance Serverless Computing: A Systematic Literature Review
+on Serverless for HPC, AI, and Big Data. IEEE Access 2025, 13, 195611–195656. [CrossRef]
+38. Haala, N.; Rothermel, M. Dense Multiple Stereo Matching of Highly Overlapping UAV Imagery.Int. Arch. Photogramm. Remote
+Sens. Spat. Inf. Sci. 2012, XXXIX-B1, 387–392. [CrossRef]
+39. Remondino, F.; Spera, M.G.; Nocerino, E.; Menna, F.; Nex, F. State of the Art in High Density Image Matching.Photogramm. Rec.
+2014, 29, 144–166. [CrossRef]
+40. Nex, F.; Remondino, F. UAV for 3D Mapping Applications: A Review. Appl. Geomat. 2014, 6, 1–15. [CrossRef]
+41. Burckhardt, S.; Gillum, C.; Justo, D.; Kallas, K.; McMahon, C.; Meiklejohn, C.S. Durable Functions: Semantics for Stateful
+Serverless. Proc. ACM Program. Lang. 2021, 5, 1–27. [CrossRef]
+42. Thinking in React—React. Available online: https://react.dev/learn/thinking-in-react (accessed on 5 March 2026).
+43. Getting Started: Server and Client Components|Next.Js. Available online: https://nextjs.org/docs/app/getting-started/server-
+and-client-components (accessed on 5 March 2026).
+44. Lambda Quotas—AWS Lambda. Available online: https://docs.aws.amazon.com/lambda/latest/dg/gettingstarted-limits.html
+(accessed on 5 March 2026).
+45. Contrat D’exécution du Conteneur|Cloud Run. Available online: https://docs.cloud.google.com/run/docs/container-
+contract?hl=fr (accessed on 5 March 2026).
+46. Lowe, D.G. Distinctive Image Features from Scale-Invariant Keypoints. Int. J. Comput. Vis. 2004, 60, 91–110. [CrossRef]
+47. Muja, M.; Lowe, D.G. Scalable Nearest Neighbor Algorithms for High Dimensional Data. IEEE Trans. Pattern Anal. Mach. Intell.
+2014, 36, 2227–2240. [CrossRef] [PubMed]
+48. Fischler, M.A.; Bolles, R.C. Random Sample Consensus: A Paradigm for Model Fitting with Applications to Image Analysis and
+Automated Cartography. Commun. ACM 1981, 24, 381–395. [CrossRef]
+49. Cavegn, S.; Haala, N.; Nebiker, S.; Rothermel, M.; Zwölfer, T. Evaluation of Matching Strategies for Image-Based Mobile Mapping.
+ISPRS Ann. Photogramm. Remote Sens. Spat. Inf. Sci. 2015, 2, 361–368. [CrossRef]
+https://doi.org/10.3390/buildings16122433
+Buildings 2026, 16, 2433 32 of 32
+50. Bleyer, M.; Rhemann, C.; Rother, C. PatchMatch Stereo—Stereo Matching with Slanted Support Windows. In Proceedings of the
+British Machine Vision Conference 2011; British Machine Vision Association: Dundee, UK, 2011; pp. 14.1–14.11.
+51. Kazhdan, M.; Hoppe, H. Screened Poisson Surface Reconstruction. ACM Trans. Graph. 2013, 32, 1–13. [CrossRef]
+52. Waechter, M.; Moehrle, N.; Goesele, M. Let There Be Color! Large-Scale Texturing of 3D Reconstructions. InProceedings of the
+Computer Vision—ECCV 2014 ; Fleet, D., Pajdla, T., Schiele, B., Tuytelaars, T., Eds.; Springer International Publishing: Cham,
+Switzerland, 2014; pp. 836–850.
+53. Gerdan, G.P .; Deakin, R.E. Transforming Cartesian Coordinates X, Y, Z to Geographical Coordinatesϕ, λ, h. Aust. Surv. 1999, 44,
+55–63. [CrossRef]
+Disclaimer/Publisher’s Note: The statements, opinions and data contained in all publications are solely those of the individual
+author(s) and contributor(s) and not of MDPI and/or the editor(s). MDPI and/or the editor(s) disclaim responsibility for any injury to
+people or property resulting from any ideas, methods, instructions or products referred to in the content.
+https://doi.org/10.3390/buildings16122433

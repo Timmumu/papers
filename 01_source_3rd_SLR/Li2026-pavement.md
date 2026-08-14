@@ -1,0 +1,15 @@
+# Li et al. (2026) — A lightweight and attention-enhanced framework for robust pavement defect detection
+
+- **ID:** 3767 | **Source:** Scopus | **DOI:** 10.1016/j.engappai.2025.113545
+- **Journal:** Engineering Applications of Artificial Intelligence
+- **Authors:** Li, X.; Zhang, N.; Pan, Y.; Lv, Y.; Xu, X.; Wang, Z.
+
+## Abstract summary
+Accurately detecting pavement anomalies, a critical task within structural health monitoring (SHM), is essential for infrastructure safety and automated monitoring systems. However, existing deep learning based object detectors, including state-of-the-art You Only Look Once (YOLO) variants, often struggle with defects such as elongated and low-contrast potholes due to irregular geometry and limited spatial context awareness. In this study, we propose an Efficient and CA enhanced You Only Look Once framework (EC-YOLO), an improved deep learning based object detection network designed to address these challenges. The proposed model builds upon the YOLOv11 architecture and introduces two major enhancements: (1) replacing the shallow backbone with EfficientNet-B0 for superior fine-grained feature extraction, and (2) integrating a Coordinate Attention (CA) module into the large-object detecti…
+
+## Step-1 Screening (Prompt A)
+| G Domain AECO | H DT core | I DfS/DfQ/PtD | J Pub-type | K English | Decision |
+|---|---|---|---|---|---|
+| Yes | No | Yes | Yes | Yes | **Exclude** |
+
+**Note:** Pavement defect YOLO; DT only dataset name

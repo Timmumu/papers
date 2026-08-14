@@ -1,0 +1,1111 @@
+Journal of Building Engineering 101 (2025) 111811
+Available online 7 January 2025
+2352-7102/© 2025 Elsevier Ltd. All rights are reserved, including those for text and data mining, AI training, and similar technologies.
+Nonintrusive in-situ modeling for unobserved virtual models in
+digital twin-enabled building HVAC systems: A one-year
+comparison of data-driven and physics-based approaches in a
+living laboratory
+Yuxin Li
+a
+, Jeyoon Lee
+a
+, Jiteng Li
+c
+, Peng Wang
+d
+, Sungmin Yoon
+a , b , *
+a
+BIST Lab, Department of Global Smart City, Sungkyunkwan University, Suwon, 16419, Republic of Korea
+b
+School of Civil Architectural Engineering and Landscape Architecture, Sungkyunkwan University, Suwon, 16419, Republic of Korea
+c
+College of Engineering for Built Environment Research Center, Sungkyunkwan University, Suwon 16419, Republic of Korea
+d
+School of Civil Engineering, Dalian University of Technology, Dalian, Liaoning, 116024, China
+ARTICLE INFO
+Keywords:
+Virtual modeling
+HVAC
+Nonintrusive in-situ modeling
+Building digital twins
+Living lab
+ABSTRACT
+Virtual modeling of building systems presents significant challenges due to the prolonged oper-
+ation under dynamic conditions. This study proposes a novel, nonintrusive in-situ modeling
+method to overcome the practical measurement difficulties while providing reliable long-term
+operational data. Previous research has achieved high-accuracy virtual models; however, their
+applicability was often limited to specific time periods or singular operating conditions. Building
+on these efforts, this study establishes an integrated framework that incorporates multiple virtual
+models developed through a sequence of prediction, benchmarking, and correction processes. To
+optimize model performance, data-driven and physics-based modeling approaches were
+employed for comparison. Field studies were conducted on a real heating, ventilation, and air
+conditioning system (HVAC), and long-term modeling performance was validated over a one-year
+period. The physics-based corrected model demonstrated superior performance, with the annual
+root mean squared error (RMSE) value significantly reduced from 0.592 m³/h to 0.034 m³/h, and
+the mean absolute percentage error (MAPE) decreased by 26.7 %. In summary, physics-based
+nonintrusive in-situ models offer excellent long-term applicability and facilitate optimal control
+and holistic monitoring of building system operations.
+Nomenclatures
+Abbreviations
+APE Absolute percentage error P water-source heat pump power
+BAS Building management and automation system P ( C | Y ) posterior distribution
+BIM Building information modeling P ( Y | C ) likelihood function
+DT Digital twin P ( Y ) normalizing constant
+HVAC Heating, ventilation, and air conditioning f mathematical function
+MAPE Mean absolute percentage error u unknown parameter
+( continued on next page )
+* Corresponding author. BIST Lab, Department of Global Smart City, Sungkyunkwan University, Suwon, 16419, Republic of Korea.
+E-mail address: S.Yoon@skku.edu (S. Yoon).
+Contents lists available at ScienceDirect
+Journal of Building Engineering
+journal homep age: www.el sevier.com/l ocate/jobe
+https://doi.org/10.1016/j.jobe.2025.111811
+Received 3 November 2024; Received in revised form 23 December 2024; Accepted 6 January 2025
+Journal of Building Engineering 101 (2025) 111811
+2
+( continued )
+Abbreviations
+MCMC Markov Chain Monte Carlo x input variable ( X: set of input variables)
+MLP Multi-layer perceptron x
+c
+correction parameter
+RMSE Root mean squared error y output variable ( Y: set of out put variables)
+VBM Virtual building model γ frequency ratio
+​ ​ π ( C ) prior distribution
+Symbols ​ σ s tandard deviation
+c
+w
+specific heat capacity of water ​ ​
+f
+pu
+pump frequency Subscripts ​
+Δ T temperature difference Dd data-driven
+C correction function Pp physics-based
+D ( C ) distance function b benchmark
+DP differential pressure cond condenser
+E thermal energy cor correction
+G mass flow rates eq equipment
+H pump head eva evaporator
+i value index obj objective function
+ini initial prediction r return water
+m sensor measurement s supply water
+n number of values sys system
+1. Introduction
+The global warming issues caused by the overproduction of greenhouse gases from power generation have become increasingly
+serious. With the rise in national living standards, the application of HVAC (Heating, Ventilation, and Air Conditioning) systems in the
+building sector has rapidly spread [ 1 ]. Due to the extensive use of operations, HVAC systems consume approximately 50 % of the total
+building energy to maintain the required indoor environment [ 2 ]. Additionally, unreasonable control sequences [ 3 ], inefficient set-
+points [ 4 , 5 ], and degradation of aging equipment [ 6 , 7 ] have led to various malfunctions [ 8 , 9 ], further contributing to increased
+energy consumption and the deterioration of indoor environment quality [ 10 , 11 ].
+Building digitalization technology has been introduced to improve building performance and enhance operational efficiency. Building
+digitalization can be achieved through the concepts of Building Information Modeling (BIM), cyber-physical systems, and digital twins
+(DTs) [ 12 , 13 ]. These concepts leverage advanced sensing technologies, data-driven analytics, and machine learning to enable intelligent
+operational applications, thereby actively improving the overall performance of building systems [ 14 ]. In recent years, the concept of BIM
+and digital twins has been widely adopted and applied in the building sector. Petri et al. [ 15 ] proposed a digital twin-based adaptable
+architecture for resilient infrastructure, focusing on energy efficiency, sustainability, and advanced monitoring through wireless sensors in
+industrial and construction applications. Jiang et al. [ 16 ] explored the use of digital twins and semantic web technologies for intelligent
+control of building fire protection systems in fire accidents, integrating BIM and IoT data for enhanced virtual-real interaction. Spudys et al.
+[ 17 ] addressed deficiencies in operational building assessment practices by proposing the use of digital twin technology, BIM files, and
+smart sensors to connect physical and virtual data, enabling real-time energy performance assessment and advancing digital construction
+practices with a focus on energy efficiency indicators. Targeting building HVAC systems, Xie et al. [ 18 ] presented a digital twin-based
+approach using symbolic AI to detect HVAC faults by identifying key sensory data, labeling sensors with machine-readable fault tags,
+and automating real-time fault annotation and data filtering for dynamic asset management. Hosamo et al. [ 19 ] proposed the Digital Twin
+of the HVAC system method, integrating BIM, Simulink, and multi-objective genetic algorithm to optimize HVAC systems by processing
+IoT data, validating models, and identifying optimal energy and thermal comfort solutions, with results streamed back to BIM for
+implementation. Digital twins aim to accurately reflect physical objects in a digital form, span their life cycle, and use real-time data to
+analyze behaviors and operations [ 20 ]. The original digital twin model comprises three main elements: (1) the physical entity, (2) the
+virtual model, and (3) their real-time interactions for continuous data and information flow [ 21 ]. To create a comprehensive digital twin
+environment, virtual space should integrate various types of models, such as geometry, processes, physics, behaviors, and rules for building
+operations. By employing assembly, integration, and fusion techniques, the virtual model can describe and depict physical entities from
+multi-dimensional, multi-domain, and multi-scale perspectives. Such comprehensive virtual models are essential for digital twin appli-
+cations and services, including virtual sensing [ 22 ], simulation [ 23 ], diagnosis [ 24 ], prediction [ 25 ], and optimization [ 26 ].
+Focusing on the unique inherent and operational characteristics of building, Yoon [ 27 ] introduced the concept of Virtual Building
+Models (VBM), defined as mathematical models that simulate the physical behavior of operational buildings. Unlike other models within
+BIM and DT frameworks, which primarily focus on geometry and rules, VBMs emphasize mathematical, physical, and dynamic behavior
+models. These VBMs are composed of sub-virtual models (observed, unobserved, and designed), ranging from the initial designed model
+to fully detailed in-situ operational representations. With the objective of providing deeper insights into the behavior and operational
+status of real buildings, surpassing the limitations of textual, geometrical, and static information, VBMs must rely on in-situ sensor
+measurements during the modeling process. Therefore, sufficient sensors, datasets, and building domain knowledge are crucial to
+establishing a virtual model that accurately reflects real building operations. However, in real-world building systems, practical issues
+such as sensor absence, malfunctions, low redundancy, and sparse sensor deployment often limit the sensing environment [ 28 ]. As a
+result, a new modeling approach is essential to meet the conditions necessary for digital twin-enabled intelligent operations.
+The concept of in-situ modeling methodologies [ 29 ] has been developed to establish a mathematical modeling process for building
+Y. Li et al.
+Journal of Building Engineering 101 (2025) 111811
+3
+behavioral models during real-time operations. In-situ modeling involves constructing mathematical behavioral models directly
+within the target building operations, aiming to produce more accurate models than those developed outside the target building
+environment (e.g., in different buildings, modeling environments, or time periods) [ 29 ]. This methodology accounts for the long
+operational life cycle of buildings, their large scale, on-site dynamic behaviors, and the challenges of replicating a laboratory envi-
+ronment for mathematical modeling. The in-situ modeling approach addresses uncertainties in physics-based models during their
+operational phase by applying mathematical correction techniques. Additionally, it incorporates sensor data to facilitate data-driven
+modeling, which is crucial for accurately representing real building operations. In this context, in situ modeling encompasses two main
+approaches: (1) intrusive in-situ modeling and (2) nonintrusive in-situ modeling. Intrusive in-situ modeling involves constructing
+virtual models, particularly for target models that are unobserved by sensors during building operations, by mathematically incor-
+porating additional data obtained through intrusive efforts, such as measurements collected using specialized instruments operated by
+personnel within the building. Compared to the nonintrusive in-situ modeling approach, which relies solely on operational data
+collected by building management and automation systems (BAS), Intrusive modeling is relatively straightforward and accessible for
+non-professionals to understand and apply. However, conducting intrusive measurements during real operations is often challenging
+due to practical installation constraints and high external costs. Additionally, temporary sensors may introduce measurement errors,
+thereby increasing overall modeling uncertainties. Consequently, the key research focus is the development and validation of unob-
+served virtual models through non-intrusive approaches, thereby eliminating the reliance on additional intrusive measurements.
+In the domain of building in-situ modeling, Wang et al. [ 30 ] employed an intrusive method to develop a principal components
+analysis model for the target sensor using early-stage accurate data. This approach enabled the detection and diagnosis of faults in
+temperature and pressure sensors. Xu et al. [ 31 ] diagnosed faults in temperature sensors and flow rate meters with varying amplitudes,
+using intrusive data to construct the sensor model. This method demonstrated improved performance in fault detection rate, diagnosis
+rate, and estimation accuracy. Yu et al. [ 32 ] applied an intrusive in-situ modeling technique for calibrating supply air temperature
+sensors, achieving a measurement uncertainty of 0.7
+◦
+C. Kaneko [ 33 ] demonstrated that nonintrusive thermal load monitoring could
+differentiate sub-loads generated by various heat sources (e.g., occupants, equipment, solar radiation) from the total thermal load,
+thereby allowing indirect assessment of a room ’ s thermal properties without additional sensors. Koo et al. [ 34 ] proposed a nonin-
+trusive in-situ modeling approach based on model fusion, which facilitated the calibration of the virtual return water temperature
+sensor, reducing systematic and random errors by 44.0 % and 32.9 %, respectively. Choi et al. [ 35 ] introduced a nonintrusive in-situ
+modeling method for virtual heating return water temperature sensors based on physical relationships and valve opening rates,
+resulting in a reduction of the root mean squared error (RMSE) by 0.26
+◦
+C, indicates the effectiveness of nonintrusive calibration
+methods. These recent studies have been increasingly focused on developing nonintrusive in-situ approaches due to their ability for
+automatic or autonomous modeling during building operations. To advance the nonintrusive in-situ modeling methods in building
+operations, previous studies [ 36 , 37 ] have developed virtual models for nonintrusive in-situ calibration using data-driven approaches.
+Fig. 1. Overall framework of nonintrusive in-situ modeling processes.
+Y. Li et al.
+Journal of Building Engineering 101 (2025) 111811
+4
+While data-driven corrected models have achieved reasonable accuracy, their performance remains highly sensitive to the hyper-
+parameters, and input features used during the modeling process. In this context, physics-based modeling presents significant potential
+for offering more robust and reliable performance, effectively addressing these limitations. Existing studies have demonstrated virtual
+modeling accuracy over limited operation periods (e.g., a few weeks, months, or a single season), however, as these models are
+functioned as the virtual equivalents of physical sensors without corresponding hardware, long-term reliability is crucial for the
+deployment of virtual models in real building operations. Furthermore, the developed modeling process must undergo rigorous
+evaluation to support the implementation of virtual models within digital twin environments.
+Accordingly, this study aims to propose a nonintrusive in-situ modeling framework for unobserved virtual models in digital twin-
+enabled building HVAC systems, thereby bridging the gap between virtual modeling and digital twin environments. To enhance exist-
+ing methodologies, a physics-based benchmark modeling approach is newly adopted into the nonintrusive modeling process to address the
+identified limitations in current research. this study aims to propose a nonintrusive in-situ modeling framework for. Case studies were
+conducted in a living laboratory for building HVAC systems, where data-driven and physics-based virtual models for chilled water flow
+rates were developed, refined, and validated over a one-year period. During the modeling process, BIM data played a pivotal role in
+establishing the prediction model as a robust foundation and providing reliable information for the development of benchmark models.
+The findings of this study have the potential to facilitate broader applications of virtual models, extending their use beyond traditional
+monitoring to encompass roles such as control feedback sensors or input sensors for intelligent applications in digital twin-enabled building
+operations. The rest of this paper is organized as follows: Section 2 outlines the overall framework and the three development steps for each
+modeling approach. Section 3 details the field application used for the comparative study. Section 4 presents the application results and
+discusses the model ’ s effectiveness and potential usability for real-world applications. Finally, Section 5 concludes the paper.
+2. Methodology
+2.1. Overall framework
+As shown in Fig. 1 , the modeling process using the proposed nonintrusive in-situ virtual modeling method consists of three key steps: 1)
+initial model development, 2) benchmark model development, and 3) correction model development. In the absence of physical obser-
+vations, the target variable is initially predicted using a white-box modeling approach based on physics and design information. A rela-
+tional variable R , is introduced for benchmark and nonintrusive correction modeling processes. Benchmark models are developed to define
+R , and are constructed using data-driven or physics-based approaches, with the initial model serving as a mandatory input. The resulting
+benchmarks are compared to corresponding measurements of R , enabling the formulation of distance functions that indirectly measure the
+accuracy of the initial model. Finally, correction models are built based on these formulated distance functions within the nonintrusive
+calibration method, facilitating the determination of correction parameters. Notably, target measurements obtained from real sensors are
+not used throughout the modeling process. Instead, measurements from building management and automation system (BAS) (e.g., physical
+sensors, control signals), design information (e.g., equipment specifications, test reports), and system operation knowledge (i.e., physics)
+are essential references and inputs. Detailed explanations of each step are provided in the following subsections.
+2.2. Development of initial prediction model
+As shown in Fig. 1 (a), the initial model is constructed in the first step to predict the unknown target y. In the absence of physical
+measurements, the target variable is defined using a white-box modeling approach that leverages BIM data, including building design
+information and equipment specifications, as input parameters. Standard value calculation sheets, along with mechanical, electrical,
+and plumbing plans, serve as critical references for the initial modeling process. The BIM data is extracted and derived based on the
+target variable and integrated into the corresponding operational physics equations. Rather than emphasizing prediction accuracy, the
+primary objective of the initial modeling is to capture the operational patterns of the target variable, thereby improving the perfor-
+mance of subsequent correction models. In this context, the equipment-level function ( f
+eq
+), which provides a direct mathematical
+representation of the equipment ’ s performance and characteristics, is typically utilized as the governing equation, as shown in Eq. (1) .
+It is important to note that achieving precise and accurate estimations at this stage is challenging due to the independent consideration
+of equipment and omission of various uncertainties present in system operations.
+y
+ini
+= f
+eq
+ 
+X
+eq
+)
+(1)
+here, y
+ini
+is the initial model output, f
+eq
+is the equipment-level function and X
+eq
+is the set of variables used in the equipment-level
+function.
+2.3. Development of benchmark model
+In the second step, data-driven and physics-based benchmark models are developed, as shown in Fig. 1 (b). A relational variable R is
+introduced and employed as the modeling target. The objective of benchmark modeling is to define R in terms of initial model output,
+thus enabling the formulation of the indirect distance function required in Step 3. Among the existing variables in the target system, R
+is expected to exhibit the strongest correlations with the target variable. Due to the differing development concepts of data-driven and
+physics-based models, R is selected separately based on either intended physical relationships or data similarity analyses. The
+Y. Li et al.
+Journal of Building Engineering 101 (2025) 111811
+5
+performance of the developed benchmark model is crucial to the effectiveness of the virtual modeling and correction processes.
+Modeling accuracy is expected to improve as the corrected initial model output aligns more closely with the ground truth.
+The data-driven (black-box) benchmark model is established using regression techniques, such as neural network-based machine
+learning algorithms, as shown in Fig. 1 (b-1). The model is developed through training and testing processes to identify underlying
+patterns between inputs and outputs. Input variables are selected based on data similarities and prior experience [ 34 ], while the output
+is the measurement of the relational variable. The training results depend on the quality and quantity of the input datasets, the
+designed features and complexity of the model. Inaccurate or insufficient data can lead to modeling errors, and overfitting problems
+may occur due to repeated training. To mitigate these issues, the testing process is conducted to evaluate the trained model using
+additional datasets. The model outputs are compared against the provided data to identify significant discrepancies or poor gener-
+alization, thus ensure modeling accuracy [ 40 ].
+The novel physics-based benchmark model is developed based on comprehensive building physics, as depicted in Figs. 1 (b-2). A
+system-level function, such as energy and mass balance equations, that describes the physical relationships among multiple system
+variables, is employed as the governing equation. However, uncertainties inevitably arise in the system function due to theoretical and
+practical assumptions. To enhance the reliability of the physics-based benchmark model, an unknown parameter ( u ) is designed to
+represent overall operational uncertainties and is incorporated into the formulation as part of feature extraction, as shown in Eq. (2) .
+This unknown parameter is initially defined based on research related to similar buildings or operating systems and is corrected
+simultaneously with the initial model in Step 3. Rather than directly correcting the initial model output, the use of u serves as an
+auxiliary approach to improve the performance of the physics-based virtual models during the correction processes.
+y
+Pp
+b
+= f
+sys
+ 
+Y
+ini
+, X
+sys
+, u
+)
+(2)
+where, y
+Pp
+b
+is the output of physics-based benchmark model, f
+sys
+is the system level function, X
+sys
+is the set of system variables used as
+inputs to the system-level function and u is the unknown parameter.
+2.4. Development of nonintrusive indirect correction model
+In the final step, data-driven and physics-based nonintrusive correction models are constructed to indirectly correct the initial
+model output, as shown in Fig. 1 (c). Conventional correction models for physical sensors are typically formulated using a distance
+function based on benchmark residuals, which account for the differences between benchmark values and sensor measurements.
+Building on this method, the distance function for correcting virtual models is obtained by coupling the model outputs with the
+corresponding physical observations, as shown in Eq. (3) [ 27 , 38 ].
+A correction function C is designed with correction parameters X
+c
+as shown in Eq. (4) . The objective is to determine the most
+appropriate correction parameters that correct initial model outputs to better align with the target ground truth. However, the
+formulation of distance function in Eq. (3) is challenging due to the absence of target measurements as correction benchmarks. To
+overcome this difficulty, the nonintrusive correction method, which utilizes existing datasets to indirectly correct the initial model is
+therefore proposed. The objective distance function ( D ( C )
+obj
+) is formulated using the benchmark model outputs from Step 2 and
+physical measurements of the relational variable, as shown in Eq. (5) . Data-driven and physics-based correction models are developed
+based on the corresponding benchmark models, as shown in Fig. 1 (c-1) and Fig. 1 (c-2). D ( C )
+obj
+is designed to be minimized when the
+most appropriate correction parameters are applied [ 41 ]. Finally, the initial model output is corrected by adding the correction value
+as shown in Eq. (6) .
+D ( C ) = ( Y
+b
+  Y
+m
+)
+2
+(3)
+C = g ( X , X
+c
+) (4)
+D ( C )
+obj
+= ( Y
+b
+  Y
+R
+)
+2
+(5)
+y
+cor
+ini
+= y
+ini
++ C (6)
+3. Real application
+3.1. Target HVAC system and sensing environment
+The proposed nonintrusive in-situ modeling method was applied as a virtual sensor to obtain the mass flow rate on the evaporator side
+( G
+eva
+) in a real HVAC operation system as depicted in Fig. 2 . The configuration of the living laboratory includes an office room, a meeting
+room, and a student office room. The target water-source heat pump system is centralized, two cooling water pumps (with backups) and
+two chilled water pumps (with backups) are positioned on opposite sides. Detailed system information is provided in Table 1 .
+The air-conditioning system operates in cooling, heating, or all-fresh-air modes to achieve and maintain the user-set indoor
+temperature in the experimental area. Throughout the year, the system operates in cooling mode during summer (June to September),
+heating mode during winter (November to March) and all-fresh-air mode during transition seasons (April to May). In cooling mode,
+water circulates through the evaporator to absorb heat from the Air Handling Unit and dissipates through the condenser to the cooling
+Y. Li et al.
+Journal of Building Engineering 101 (2025) 111811
+6
+tower. The process is reversed in heating mode by adjusting the direction of the four-way reversing valve, while the cooling tower is
+replaced by a heat exchanger connected to the public heating system. In all-fresh-air mode, the main system is switched off, the chilled
+water pump operates independently to supply fresh air and improve indoor air quality.
+The related system variables include supply and return temperatures on the evaporator side ( T
+s   eva ,
+T
+r   eva
+), pump frequency ( F
+pu
+),
+differential pressure value ( DP
+eva
+) and thermal energy on the condenser side ( E ). Sensor measurements were recorded using BAS at 1-
+min intervals over a one-year period (June 2022 to May 2023). Note that October 2022 was excluded due to irregular operations
+caused by extended public holidays and a lack of occupants.
+3.2. Design of initial prediction model
+The initial G
+eva
+model was developed by applying the principles of pump affinity law, as shown in Eq. (7) and Fig. 3 . The formulation
+was derived through pump characteristic curve fitting techniques, with pump frequency and differential pressure as input variables. The
+relationship between head and mass flow rate was expressed using polynomial regression, and the coefficients were calculated based on
+the reference values of head and pressure provided in the pump specifications, as detailed in Table 2 . This regression function was then
+extended to account for operational pump frequency, using the standardized frequency of 50 Hz as a reference, as shown in Eqs. (8), (9)
+and (10) . Consequently, the polynomial equation was generalized using the ratio of the measured frequency to the designed frequency, as
+illustrated in Eqs. (11) and (12) . However, several uncertainties remained due to the following factors:
+1. Lack of considerations of system operations.
+2. Practical gaps between the pump specifications and real-world operations.
+3. Unknown uncertainties beyond the formulated model.
+Fig. 2. Target building HVAC system.
+Table 1
+Detailed information about the target system.
+Basic information Component Description
+Building information
+Building function Experiment building
+Building structure Concrete shear wall and steel structure
+Architectural orientation North-South direction
+Heating mode Central air conditioning system
+Cooling mode Central air conditioning system
+Shape coefficient of building 0.60
+Window-wall ratio 0.19
+VAV system information
+Water source heat pump Heat capacity 29.5 kW, input power 4.8 kW
+Water pump Rated flow 2.7 m
+3
+/h, delivery lift 12 mH
+2
+O
+Air handling unit Nominal air flow rate 5000 m
+3
+/h, input power 1.92 kW
+VAV box 1/2/5/6 Measurement range 198 – 660 m
+3
+/h
+VAV box 3/4 Measurement range 336 – 1120 m
+3
+/h
+Air side temperature sensor   40 - 70
+◦
+C, accuracy 0.6
+◦
+C
+Water side temperature sensor Accuracy 0.04
+◦
+C
+Differential pressure sensor 0 – 400 kPa, accuracy 2 kPa
+Y. Li et al.
+Journal of Building Engineering 101 (2025) 111811
+7
+Here, N
+1 ,
+N
+2
+are the constant pump speeds under different operation conditions, G
+1
+is flow rate with pump speed N
+1
+, H
+1
+is the head/
+pressure difference with pump speed N
+1
+, G
+2
+is flow rate with pump speed N
+2
+and H
+2
+is the head/pressure difference with pump speed
+N
+2
+.
+y
+ini
+= f
+eq
+(
+h
+ 
+F
+pu
+, DP
+eva
+)
+(7)
+H
+pu , 50
+= α
+1
+G
+2
+pu , 50
++ α
+2
+G
+1
+pu , 50
++ α
+3
+(8)
+y
+G eva
+= G
+pu , 50
+×
+(
+F
+pu
+f
+50
+)
+(9)
+H
+pu
+= H
+pu , 50
+×
+(
+F
+pu
+f
+50
+)
+2
+(10)
+γ =
+(
+F
+pu
+f
+50
+)
+(11)
+H
+pu
+=
+{
+α
+1
+(
+y
+G eva
+×
+1
+γ
+)
+2
++ α
+2
+(
+y
+G eva
+×
+1
+γ
+)
++ α
+3
+}
+× γ
+2
+(12)
+3.3. Benchmark model design
+The data-driven benchmark model was developed using a multi-layer neural network, with the initial model output and related
+system variables as inputs. Pump power ( P ) was selected as the relational variable based on data similarity analyses, as suggested by
+Choi et al. [ 43 ]. A multi-layer perceptron (MLP) was trained using operational data of June 2022. To enhance modeling efficiency, data
+preprocessing techniques such as simple moving average, z-score outlier removal, and min-max normalization were applied. The MLP
+was structured with four hidden layers and activation functions. The Rectified Linear Unit (ReLU) was applied to the first three hidden
+layers, while a linear function was used for the output layer. Random shuffling and early stopping rules were implemented to mitigate
+overfitting issues [ 36 ]. Detailed information about the MLP data preprocessing, structure and hyperparameter settings is provided in
+Table 3 .
+The physics-based benchmark model was constructed using the balance equation between the evaporator and condenser sides of the
+target water-source heat pump system, as shown in Eq. (13) . Thermal energy on the condenser side ( E ) was selected as the relational
+variable based on the intended physical relationships, and G
+eva
+was substituted by the initial model output, as indicated in Eq. (14) . The
+unknown parameter u was used to represent overall energy losses during operation and was defined based on research into uncertainties
+of building operational energy balances. Li et al. [ 39 ] reported a thermal imbalance rate of approximately 11.6 % when analyzing sensor
+faults during long-term operation. Guo et al. [ 42 ] found that the confidence interval for the balance equation in a new heat pump system
+was 90 %. Based on these findings, the unknown parameter u was initially estimated as a mode value of 10 %. Consequently, the
+physics-based benchmark model was formulated by applying u as a multiplication factor and expressed as shown in Eq. (15) .
+Fig. 3. Principles of the pump affinity-law.
+Table 2
+Pump performance specifications.
+Variables Measuring points
+Mass flow rate ( G ) ( m
+3
+/ h ) 0 1.2 1.8 2.4 3 3.6 4.2 4.8 6 7.2
+Head ( H ) ( m ) 20.5 17.8 16.2 14.4 12.3 9.8 6.9 – – –
+Y. Li et al.
+Journal of Building Engineering 101 (2025) 111811
+8
+y
+Pp
+b
+= c
+w
+G
+eva
+Δ T
+eva
++ P (13)
+y
+Pp
+b
+= c
+w
+y
+ini
+Δ T
+eva
++ P (14)
+y
+Pp
+b
+= ( 1   u )( c
+w
+y
+ini
+Δ T
+eva
++ P ) (15)
+3.4. Design of nonintrusive indirect correction model
+As shown in Eqs. (16) and (17) , the distance functions for the data-driven and physics-based correction models were formulated
+using benchmark model outputs from Step 2 and the measurements of the corresponding relational variables. The correction functions
+were designed as half-degree rational functions with two correction parameters x
+c 1
+and x
+c 2
+, as expressed in Eqs. (18) and (19) .
+Additionally, an extra correction parameter, x
+u
+, was determined simultaneously with x
+c 1
+and x
+c 2
+to adjust the unknown parameter u in
+the physics-based correction process. Since u was not included in the correction function, as discussed in Section 2.3 , the corrected
+models were consistently obtained by adding the correction function to the initial prediction, as described in Eq. (20) .
+The correction parameters were estimated using Bayesian inference, as detailed in Eqs. (21) – (23) . The posterior probability (Eq.
+(21) ) was derived from the prior probability, π ( C ) , the likelihood function (Eq. (23) ), and the normalizing constant, as shown in Eq.
+(22) . Priors were assumed to follow a Gaussian distribution with a mean of 0 and a standard deviation of 0.5, reflecting the uncertainty
+in the initial model ’ s residuals. The likelihood function was defined as a conditional probability distribution with a zero-mean
+Gaussian distribution. The normalization constant, P ( Y ) , was computed using the Markov Chain Monte Carlo (MCMC) method,
+with the Metropolis-Hastings algorithm employed for sampling [ 44 , 45 ]. The parameters x
+c 1
+, x
+c 2
+and x
+u
+were obtained by minimizing
+the distance function and maximizing the posterior probability P ( C | Y ) during the inference process. A summary of the time schedules
+for both virtual modeling processes is presented in Table 4 . The correction models were developed at the beginning of the modeling
+period, and the corrected model outputs were validated and analyzed throughout the remainder.
+D ( C )
+Dd
+=
+ 
+Y
+Dd
+b
+  Y
+P
+)
+2
+(16)
+D ( C )
+Pp
+=
+ 
+Y
+Pp
+b
+  Y
+E
+)
+2
+(17)
+C = f
+cor
+( Y
+ini
+, X
+c
+) , X
+c
+= [ x
+c 1
+, x
+c 2
+] (18)
+f
+cor
+( Y
+ini
+, X
+c
+) = x
+c 1
+Y
+1 / 2
+ini
++ x
+c 2
+(19)
+Y
+cor
+ini
+= Y
+ini
++ x
+c 1
+Y
+1 / 2
+ini
++ x
+c 2
+(20)
+P ( C | Y ) =
+P ( Y | C ) × π ( C )
+P ( Y )
+(21)
+P ( Y ) =
+∫
+P ( Y | C ) π ( C ) dx (22)
+P ( Y | C ) =
+1
+σ
+̅̅̅̅̅ ̅
+2 π
+√ exp
+[
+ 
+1
+2 σ
+2
+D ( C )
+]
+(23)
+here, Y
+Dd
+b
+is the data-driven benchmark model output, Y
+P
+is the measurement of power, Y
+Pp
+b
+is the physics-based benchmark model
+output, Y
+E
+is the thermal energy on condenser side, P ( C | Y ) is the posterior distribution, P ( Y ) is the normalizing constant, π ( C ) is the
+Table 3
+MLP inputs and settings of the data-driven benchmark model.
+Category Setting/Approach
+Data preprocessing
+Noise reduction Simple moving average
+Outlier removal Z-score outlier removal
+Scale consistency Min-max normalization
+Structure and hyperparameter
+Input layer y
+ini
+, G
+cond
+, T
+r   eva ,
+T
+s   eva
+, T
+r   cond
+Hidden layers 4 layers
+Activation function ReLU (hidden layers), Linear (output layer)
+Batch size/Epochs 32/100
+Loss function Mean squared error
+Optimizer Adam
+Training/ Validation Ratio 85 %/ 15 %
+Y. Li et al.
+Journal of Building Engineering 101 (2025) 111811
+9
+prior distribution, P ( Y | C ) is the likelihood function, and σ is the standard deviation.
+4. Results and discussions
+The long-term performance of the established virtual models was evaluated over the entire validation period, from June 2022 to
+May 2023. Modeling accuracies were quantified by addressing the uncertainty relative to the target ground truth data. Root mean
+squared error (RMSE), absolute percentage error (APE), and mean absolute percentage error (MAPE) values were calculated as per-
+formance indicators to facilitate comparison and analysis, as shown in Eqs. (24) – (26) . It is important to note that the ground truth
+dataset for G
+eva
+was segregated and used exclusively for evaluation and validation purposes.
+RMSE =
+̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅ ̅̅̅̅
+∑
+n
+i
+( y
+i
+  ̂y
+i
+)
+2
+n
+√
+√
+√
+√
+√
+(24)
+APE =
+| y
+i
+  ̂y
+i
+|
+Y
+i
+(25)
+Table 4
+Virtual modeling scenarios and schedules.
+Scenarios Periods
+Physics-based Data-driven
+Prediction modeling period 06/01/2022 – 05/30/2023
+Benchmark training period / 06/01/2022-06/30/2022
+Benchmark testing period / 07/01/2022-07/04/2022
+Correc tion modeling period 06/16/2022 – 06/20/2022 07/05/2022-07/09/2022
+Validation period 06/21/2022-05/30/2023 07/10/2022-05/30/2023
+Fig. 4. Seasonal performances of the initial model.
+Y. Li et al.
+Journal of Building Engineering 101 (2025) 111811
+10
+MAPE =
+∑
+n
+i = 1
+| y
+i
+  ̂y
+i |
+Y
+i
+n
+(26)
+where, y
+i
+is the index calculation referenced value, ̂y
+i
+is the value obtained from model, i is the value index, and n is the total number of
+values.
+4.1. Performance of initial prediction model
+The comparison between the initial model outputs and the ground truth, along with RMSE calculations, is presented in Fig. 4 . G
+eva
+was generally overestimated, with notably high seasonal RMSE values throughout the year. The primary and common reason for these
+significant uncertainties is the omission of heat loss and lack of consideration for actual building conditions. In real operations, heat
+loss through water flow is unavoidable, and system configurations are often adjusted to meet specific construction and usage re-
+quirements. The seasonal RMSE values were calculated as 0.607 m³/h (summer), 0.560 m³/h (winter), and 0.609 m³/h (transition),
+indicating minimal differences across the seasons. However, substantial differences were observed in the distribution patterns of the
+data. As shown in Fig. 4 (a), the model exhibited poor performance during the summer season, characterized by the widest data
+distribution range. In contrast, the distribution range narrowed in the winter season. Notably, during the transition season, a unique
+pattern emerged, where the majority of data points were concentrated in a specific region.
+The observed performance differences can be attributed to unstable operating conditions. The valve opening rate fluctuated
+frequently between 30 % and 100 % in response to the comparison of the supply-air temperature with its setpoint. These variations
+directly resulted in significant changes in G
+eva
+, thereby increasing modeling complexity and reducing estimation accuracy. As depicted
+in Fig. 4 (b), the system exhibited the highest valve adjustment rates in summer, leading to the most unstable operational status.
+Conversely, during the winter season, the system operated more stably with reduced variations and uncertainties. During the transition
+season, when neither heating nor cooling was required, the system was turned off, and the pump operated independently. Under these
+conditions, the valve remained fully open without fluctuations, resulting in consistent system operation throughout the season.
+The inconsistent seasonal performance of the initial model underscores the challenges of achieving long-term reliability using a
+single model. These findings highlight the necessity of implementing lateral, non-intrusive correction processes to improve model
+performance and adaptability under varying operating conditions.
+4.2. Performances of data-driven benchmark and corrected models
+The training and testing results of the data-driven benchmark model were compared, as shown in Fig. 5 . As shown in Fig. 5 (a),
+significant errors were observed at the beginning of the training period, particularly with negative values occurring between 500 and
+1000 episodes. These errors can be attributed to the nature of the data-driven modeling approach, which lacks consideration of
+physical principles. Consequently, the model may produce unrealistic outputs that deviate from real-world behavior, especially under
+extreme conditions. Better performance was observed during the testing period, with RMSE values decreased from 0.43 W to 0.37 W,
+indicating the importance of the training process on data-driven modeling accuracy. However, despite these overall improvements,
+Fig. 5. Comparisons of data-driven benchmark model accuracy between training and testing period.
+Y. Li et al.
+Journal of Building Engineering 101 (2025) 111811
+11
+significant errors were still present at the upper and lower extremes of the data range, as depicted in Fig. 5 (b). This issue arises from an
+inherent limitation of data-driven approaches, where the model ’ s output is highly dependent on the data distribution in the training
+dataset. When the model is trained with limited extreme data, predictions tend to converge towards the majority range (i.e., between
+1.5 and 2.5 W), leading to overestimations at lower power values and underestimations at higher power values.
+The long-term validation results of the data-driven corrected model are presented in Fig. 6 . The RMSE and MAPE values were
+significantly reduced from 0.59 m³/h to less than 0.11 m³/h and from 30 % to within 4.2 %, respectively, demonstrating substantial
+improvement over the entire validation period. However, notable seasonal inconsistencies were observed. After training and testing
+process, the data-driven model performed best during the summer season, achieving the lowest MAPE of 2.15 %, while performance
+declined during the winter and transition seasons, with MAPE peaking at 4.17 %. These seasonal declines highlight the limitation of
+data-driven correction models, which rely on training patterns rather than physical interactions, making them unable to self-adjust to
+operational variations. Consequently, additional training and correction processes are necessary for winter and transition seasons to
+maintain long-term modeling accuracy.
+4.3. Performances of physics-based benchmark and corrected models
+The improving performance of the physics-based benchmark model is depicted in Fig. 7 . As shown in Figs. 7 (a-1) and (a-2), the
+MAPE value decreased from 6.18 % to 4.66 % after applying the manually defined unknown parameter u of 10 %. The resulting data
+distribution pattern was observed to align more closely with the ground truth. Additionally, the APE values during the correction
+period were compared, revealing an overall reduction, as shown in Figs. 7 (b-1) and (b-2). These results highlight the usefulness of
+incorporating the unknown parameter and emphasize the importance of accurately determining the appropriate u to optimize
+benchmarking accuracy.
+Through the Bayesian inference process, as illustrated in Fig. 8 , the correction parameters were determined when the posterior
+probability was maximized. The resulting values of   0.147,   0.256 for x
+c 1
+and x
+c 2
+, respectively, and 0.516 for x
+u
+. Fig. 9 demonstrates
+that the accuracy of the calculated mass flow rate from the initial prediction model was consistently and significantly improved. Unlike
+the data-driven corrected results shown in Fig. 8 , the physics-based model not only maintained high modeling accuracy across all
+seasons but also demonstrated enhanced performance during winter and transition periods. Specifically, the modeling accuracy was
+measured using RMSE and MAPE values, which were 0.041 m³/h and 1.79 %, respectively, during the summer season. These values
+decreased in the winter season and reached a minimum of 0.026 m³/h and 0.89 % during the transition season. The operational
+stability of the pump emerged as the key factor influencing uncertainty in the physics-based modeling. The best performance was
+observed during the transition season, when G
+eva
+operated predominantly at high flow rates. The sustained high modeling accuracy
+was achieved through the integrated structure of multiple white-box sub-models, with uncertainties effectively mitigated by con-
+straining the correction model using various operation physics.
+By applying x
+u
+to the manually defined u , the physics-based benchmark model was corrected, as shown in Figs. 7 (a-3) and (b-3).
+The model outputs closely aligned with the ground truth, with 89.7 % of the results achieving low uncertainties of less than 5 %, based
+on APE values. The MAPE value was minimized to 2.37 %, resulting in an overall accuracy improvement of 61.7 % to the original
+Fig. 6. Long-term validation results of the data-driven corrected target model.
+Y. Li et al.
+Journal of Building Engineering 101 (2025) 111811
+12
+benchmark model. These results demonstrate the superior capability of the physics-based nonintrusive model in accurately adjusting
+the unknown parameter while correcting the target model and highlight the potential for advanced applications involving simulta-
+neous corrections throughout system operations.
+To analyze the usefulness of u , physics-based nonintrusive correction models were constructed using the three benchmark models
+in Fig. 7 , and the accuracy of the corrected models was compared, as shown in Fig. 10 . Without applying any unknown parameter, the
+poorest correction performance was observed, with the highest RMSE and MAPE values of 0.081 m³/h and 3.37 %, respectively.
+Accuracy improvements of 30.3 % in MAPE values were achieved by incorporating the manually defined u . The best correction results
+were obtained using the benchmark model with nonintrusive modeling corrected u ( Fig. 9 ), achieving a minimum RMSE of 0.034 m³/h
+Fig. 7. Comparisons of the physics-based benchmark model accuracy with different unknown parameters.
+Fig. 8. Correction parameters of the physics-based model determined by Bayesian MCMC.
+Y. Li et al.
+Journal of Building Engineering 101 (2025) 111811
+13
+and a significant overall improvement of 60.8 % in MAPE values. These results demonstrate the effectiveness of incorporating the
+unknown parameter when modeling with physics-based approach and highlight the importance of accurately correcting u through the
+modeling processes.
+4.4. Monthly comparisons between the developed virtual models in a year
+The monthly performance and accuracy of the developed models were compared and evaluated, as depicted in Figs. 11 and 12 .
+Both data-driven and physics-based corrected models achieved significant reductions in RMSE and MAPE values. However, the data-
+driven corrected model displayed inconsistent performance, with uncertainty rates nearly doubling from November to May. As shown
+in Fig. 12 , both models exhibited a strong linear relationship with the ground truth values from June to September, closely aligning
+with the diagonal. This alignment indicates high accuracy for both corrected models during this period. In contrast, during November
+to March, a significant error trend was observed in the data-driven corrected outputs. These outputs systematically deviated from the
+ground truth, with underestimations at lower ground truth values and overestimations at higher ground truth values. Furthermore,
+underestimations by the data-driven model were evident in April and May, further highlighting the limitations of the data-driven
+approach for long-term dynamic modeling. Conversely, the physics-based corrected models maintained high correction accuracy
+Fig. 9. Long-term validation results of the physics-based corrected target model.
+Fig. 10. Correction accuracy improvements by applying the unknown parameter.
+Y. Li et al.
+Journal of Building Engineering 101 (2025) 111811
+14
+throughout the entire validation period, demonstrating their superior capability to provide reliable long-term estimates of the un-
+known target variable.
+Additionally, the physics-based approach significantly improved modeling efficiency by eliminating the need for training and
+testing processes, reducing the overall modeling duration to less than a week and enabling an extended validation period.
+The quality of the input datasets is critical to the development of physics-based models, as inaccurate or insufficient information
+may lead to poor model performance. The data-driven approach, with its capability to provide reliable outputs using limited input
+variables, can be applied to mitigate this issue and enhance the performance of physics-based models. This potential integration paves
+the way for the development of more advanced virtual models and supports intelligent applications in digital twin-enabled
+environments.
+4.5. Implementation of nonintrusive modeling using Dynamo
+The proposed virtual models were visualized in Revit as part of a digital twin environment, utilizing a workflow implemented
+through the Dynamo interface, as illustrated in Fig. 13 . Within the Dynamo, the modeling framework, including design logic and
+interactions, was organized into five components: 1) Importing sensor information. According to the requirements of the virtual model
+construction, data and information from BAS system are imported in real-time into the Dynamo interface. 2) Loading the prediction
+model. Python scripts for various needs are used in the Dynamo interface to construct the prediction model. First, the real-time im-
+ported data is preprocessed to remove outliers and singularities, and then the processed data is imported into the model construction
+script to obtain the output of the prediction model. 3) Constructing benchmark models. Different Python scripts are used to construct
+physics-driven and data-driven benchmark models as needed for this study. During the benchmark model construction process,
+outputs from the prediction model are used as inputs to achieve nonintrusive calibration. Additionally, preprocessing of other input
+Fig. 11. Monthly RMSE and MAPE values of the developed virtual models.
+Note: October was excluded due to extended public holidays and a lack of occupants.
+Fig. 12. Performance comparisons of data-driven and physics-based corrected models.
+Y. Li et al.
+Journal of Building Engineering 101 (2025) 111811
+15
+variables based on Python scripts is performed during this construction phase. 4) Processing correction models. In the Dynamo
+interface, outputs from the prediction and benchmark models are fed into the Python script to construct the required correction model.
+Otherwise, the correction model script includes the Bayesian MCMC algorithm, which allows for real-time compensation of the
+prediction model, thereby ensuring its accuracy. 5) Updating the virtual model outputs. The outputs of the correction model are
+visualized using tools within the Dynamo interface to reflect calibration results in real-time. Moreover, the model results are updated in
+the digital twin environment to ensure stable operation of the virtual model. This workflow demonstrates the integration of various
+modeling components into a cohesive framework, enabling real-time correction and visualization of virtual model outputs to support
+stable and reliable operations.
+The integration of Revit with the Dynamo interface plays a crucial role in addressing the challenges associated with achieving real-
+time updates between physical models and virtual models. This combination enables seamless data synchronization and facilitates
+dynamic interactions between the two environments, ensuring that changes in the physical model are accurately reflected in the virtual
+counterpart. By overcoming the limitations of traditional modeling approaches, this implementation enhances the reliability and
+efficiency of digital twin environments, providing a robust framework for monitoring, analysis, and decision-making in real-time
+applications.
+An example of implementing a BIM-based, digital twin-enabled environment was shown in Fig. 14 , where the properties of the
+target model were automatically updated to the Revit model through metadata management. Python scripts for the mass flow rate
+prediction model, benchmark model, and correction model are pre-written and finalized, ensuring that these scripts do not require
+modification unless the operating conditions change. During the execution of the Dynamo interface, real-time data from the BAS is
+recorded and loaded into the pre-written models. The accuracy of the correction results is then observed using visualization tools
+integrated into the interface. In this process, as long as BAS system data is transmitted without errors or missing values, the entire
+system operates autonomously without the need for human intervention, enabling seamless and automatic operation.
+In addition, the implementation relies on Python scripts executed within the Dynamo interface. A key advantage of the proposed
+method is its flexibility and adaptability; even when applied to other buildings, as long as the input and output parameters remain
+unchanged, no additional modifications to the code are required. For buildings with increased complexity, adjustments are limited to
+modifying the relevant algorithms to meet specific requirements. The overall architecture, including the construction of the prediction
+model, development of the benchmark model, processing of the correction model, and updating of the virtual model outputs, remains
+Fig. 13. Visualized modeling description through Dynamo interface.
+Fig. 14. Example of virtual model management with metadata.
+Y. Li et al.
+Journal of Building Engineering 101 (2025) 111811
+16
+intact. This modular design ensures scalability, efficiency, and ease of adaptation for diverse building scenarios without necessitating
+extensive reconfiguration of the system.
+To further enhance the integration of BIM and physical models, fostering interdisciplinary collaboration between BIM experts,
+HVAC engineers, and data scientists is essential. This can be achieved through several key steps. First, defining common goals and
+establishing effective communication channels will align objectives and ensure a shared understanding of project requirements.
+Second, standardizing data integration processes and workflows will facilitate seamless interoperability between disciplines and
+systems. Third, promoting cross-disciplinary training and workshops will build mutual expertise and foster a culture of collaboration.
+Finally, leveraging digital twins and advanced data analytics will enable real-time monitoring, simulation, and optimization, further
+bridging the gap between virtual and physical systems. These steps will collectively improve the efficiency and effectiveness of BIM
+and physical model integration in complex building systems.
+5. Conclusion
+Long-term virtual models have great importance for providing insightful data on unknown variables in dynamic, sensor-limited
+environments. This study presented a nonintrusive in-situ modeling method with broad applicability to real HVAC systems. The
+modeling process consists of three key steps of prediction, benchmarking and correction. In the absence of target physical observations,
+the relational variable R is introduced to formulate indirect distance functions and enable nonintrusive corrections. Using the proposed
+physics-based approach, benchmark model performance is enhanced by incorporating the unknown parameter u. The annual RMSE of
+the prediction model was reduced from 0.592 m³/h to 0.034 m³/h, and the MAPE decreased from 28.03 % to 1.32 % through a single
+correction process. Long-term modeling efficiency was significantly improved while minimizing costs. The strong modeling capability
+for correcting u was validated through analyses, and the modeling processes were visualized in the digital twin-enabled environment
+using Dynamo.
+Thus, for the target building or HVAC systems, the developed physics-based virtual models can be applied as virtual sensors to
+provide unobserved data, enabling holistic monitoring and advanced applications for optimal operational control. Meanwhile, the
+data-driven method, with its capability to model using limited inputs, can serve as a supportive approach to estimate missing or faulty
+input values, thereby improving the performance of the physics-based virtual models.
+In this research, a long-term reliable physics-based nonintrusive in-situ virtual model was developed through a three-step manual
+process. For future research, it is recommended to investigate advanced methodologies aimed at automating the modeling procedures.
+This can be achieved through the integration of cloud platforms and advanced data communication technologies, which would
+significantly enhance the efficiency, scalability, and applicability of the proposed virtual modeling methods. Such advancements
+would enable their deployment in more sophisticated intelligent building applications, extending their use across a wider range of
+systems and promoting the development of next-generation smart environments.
+CRediT authorship contribution statement
+Yuxin Li: Writing – original draft, Methodology, Investigation. Jeyoon Lee: Software, Methodology. Jiteng Li: Resources, Data
+curation. Peng Wang: Software, Resources, Data curation. Sungmin Yoon: Writing – review & editing, Validation, Supervision.
+Declaration of competing interest
+The authors declare that they have no known competing financial interests or personal relationships that could have appeared to
+influence the work reported in this paper.
+Acknowledgement
+This work was supported by the Korea Institute of Energy Technology Evaluation and Planning (KETEP) and the Ministry of Trade,
+Industry & Energy (MOTIE) of the Republic of Korea (No. RS-2024-00398693).
+Data availability
+The authors do not have permission to share data.
+References
+[1] Iea, Technology and Innovation Pathways for Zero-Carbon-Ready Buildings by 2030, IEA, 2022. https://www.iea.org/reports/technology-and-innovation-
+pathway.
+[2] W. Wu, H.M. Skye, P.A. Domanski, Selecting HVAC systems to achieve comfortable and cost-effective residential net-zero energy buildings, Appl. Energy 212
+(2018) 577–591. https://doi.org/10.1016/j.apenergy.2017.12.046.
+[3] H.S. Asad, R.K.K. Yuen, J. Liu, J. Wang, Adaptive modeling for reliability in optimal control of complex HVAC systems, Build. Simul. 12 (2019) 1095–1106.
+https://doi.org/10.1007/s12273-019-0558-9.
+[4] A. Rhouma, F. Bouani, B. Bouzouita, M. Ksouri, Model predictive control of fractional order systems, J. Comput. Nonlinear Dyn. 9 (2014). https://doi.org/10.
+1115/1.4026493.
+Y. Li et al.
+Journal of Building Engineering 101 (2025) 111811
+17
+[5] W. O ’ Brien, H.B. Gunay, The contextual factors contributing to occupants ’ adaptive comfort behaviors in offices - A review and proposed modeling framework,
+Build. Environ. 77 (2014) 77 – 87. https://doi.org/10.1016/j.buildenv.2014.03.024 .
+[6] G. Eleftheriadis, M. Hamdy, Impact of building envelope and mechanical component degradation on the whole building performance: A review paper, Energy
+Procedia (2017) 321 – 326. Elsevier Ltd, https://doi.org/10.1016/j.egypro.2017.09.739 .
+[7] B. Nowogo ´nska, Diagnoses in the aging process of residential buildings constructed using traditional technology, Buildings 9 (2019). https://doi.org/10.3390/
+buildings9050126 .
+[8] J.Y. Park, E. Wilson, A. Parker, Z. Nagy, The good, the bad, and the ugly: Data-driven load profile discord identification in a large building portfolio, Energy
+Build. 215 (2020). https://doi.org/10.1016/j.enbuild.2020.109892 .
+[9] C. Fan, M. Chen, R. Tang, J. Wang, A novel deep generative modeling-based data augmentation strategy for improving short-term building energy predictions,
+Build. Simul. 15 (2022) 197 – 211. https://doi.org/10.1007/s12273-021-0807-6 .
+[10] J. Li, P. Wang, J. Li, H. Xing, T. Zhao, S. Yoon, Improvement for energy efficiency and control characteristics in variable air volume system using in-situ sensor
+calibration method based on autoencoder, J. Build. Eng. 63 (2023). https://doi.org/10.1016/j.jobe.2022.105559 .
+[11] S. Yoon, Y. Yu, Hidden factors and handling strategies on virtual in-situ sensor calibration in building energy systems: Prior information and cancellation effect,
+Appl. Energy 212 (2018) 1069 – 1082. https://doi.org/10.1016/j.apenergy.2017.12.077 .
+[12] J.M. Davila Delgado, L. Oyedele, Digital Twins for the built environment: learning from conceptual and process models in manufacturing, Adv. Eng. Inf. 49
+(2021). https://doi.org/10.1016/j.aei.2021.101332 .
+[13] X. Liu, D. Jiang, B. Tao, F. Xiang, G. Jiang, Y. Sun, J. Kong, G. Li, A systematic review of digital twin about physical entities, virtual models, twin data, and
+applications, Adv. Eng. Inf. 55 (2023). https://doi.org/10.1016/j.aei.2023.101876 .
+[14] A. Rasheed, O. San, T. Kvamsdal, Digital twin: Values, challenges and enablers from a modeling perspective, IEEE Access 8 (2020) 21980 – 22012. https://doi.
+org/10.1109/ACCESS.2020.2970143 .
+[15] I. Petri, Y. Rezgui, A. Ghoroghi, A. Alzahrani, Digital twins for performance management in the built environment, J. Ind. Inf. Integr. 33 (2023). https://doi.org/
+10.1016/j.jii.2023.100445 .
+[16] L. Jiang, J. Shi, C. Wang, Z. Pan, Intelligent control of building fire protection system using digital twins and semantic web technologies, Autom. Constr. 147
+(2023). https://doi.org/10.1016/j.autcon.2022.104728 .
+[17] P. Spudys, N. Afxentiou, P.Z. Georgali, E. Klumbyte, A. Jurelionis, P. Fokaides, Classifying the operational energy performance of buildings with the use of
+digital twins, Energy Build. 290 (2023). https://doi.org/10.1016/j.enbuild.2023.113106 .
+[18] X. Xie, J. Merino, N. Moretti, P. Pauwels, J.Y. Chang, A. Parlikad, Digital twin enabled fault detection and diagnosis process for building HVAC systems, Autom.
+Constr. 146 (2023). https://doi.org/10.1016/j.autcon.2022.104695 .
+[19] H. Hosamo, M.H. Hosamo, H.K. Nielsen, P.R. Svennevig, K. Svidt, Digital Twin of HVAC system (HVACDT) for multiobjective optimization of energy
+consumption and thermal comfort based on BIM framework with ANN-MOGA, Adv. Build. Energy Res. 17 (2023) 125 – 171. https://doi.org/10.1080/17512549.
+2022.2136240 .
+[20] M. Grieves, DIKW as a General and Digital Twin Action Framework: Data, Information, Knowledge, and Wisdom, Knowledge 4 (2024) 120 – 140. https://doi.
+org/10.3390/knowledge4020007 .
+[21] M. Grieves, DIKW as a General and Digital Twin Action Framework: Data, Information, Knowledge, and Wisdom, Knowledge 4 (2024) 120 – 140. https://doi.
+org/10.3390/knowledge4020007 .
+[22] Y. Choi, S. Yoon, In-situ observation virtual sensor in building systems toward virtual sensing-enabled digital twins, Energy Build. 281 (2023). https://doi.org/
+10.1016/j.enbuild.2022.112766 .
+[23] P. de Wilde, Building performance simulation in the brave new world of artificial intelligence and digital twins: A systematic review, Energy Build. 292 (2023).
+https://doi.org/10.1016/j.enbuild.2023.113171 .
+[24] Q. Lu, X. Xie, A.K. Parlikad, J.M. Schooling, Digital twin-enabled anomaly detection for built asset monitoring in operation and maintenance, Autom. Constr.
+118 (2020). https://doi.org/10.1016/j.autcon.2020.103277 .
+[25] A. Arsiwala, F. Elghaish, M. Zoher, Digital twin with Machine learning for predictive monitoring of CO2 equivalent from existing buildings, Energy Build. 284
+(2023). https://doi.org/10.1016/j.enbuild.2023.112851 .
+[26] R. Tariq, C.E. Torres-Aguilar, J. Xam ´an, I. Zavala-Guill ´en, A. Bassam, L.J. Ricalde, O. Carvente, Digital twin models for optimization and global projection of
+building-integrated solar chimney, Build. Environ. 213 (2022). https://doi.org/10.1016/j.buildenv.2022.108807 .
+[27] S. Yoon, Virtual Building Models in built environments, Developments in the Built, Environment 18 (2024). https://doi.org/10.1016/j.dibe.2024.100453 .
+[28] Y. Yu, H. Li, Virtual in-situ calibration method in building systems, Autom. Constr. 59 (2015) 59 – 67. https://doi.org/10.1016/j.autcon.2015.08.003 .
+[29] S. Yoon, In situ modeling methodologies in building operation: A review, Build. Environ. 230 (2023). https://doi.org/10.1016/j.buildenv.2023.109982 .
+[30] S. Wang, J. Cui, Sensor-fault detection, diagnosis and estimation for centrifugal chiller systems using principal-component analysis method, Appl. Energy 82
+(2005) 197 – 213. https://doi.org/10.1016/j.apenergy.2004.11.002 .
+[31] X. Xu, F. Xiao, S. Wang, Enhanced chiller sensor fault detection, diagnosis and estimation using wavelet analysis and principal component analysis methods,
+Appl. Therm. Eng. 28 (2008) 226 – 237. https://doi.org/10.1016/j.applthermaleng.2007.03.021 .
+[32] D. Yu, H. Li, Y. Yu, J. Xiong, Virtual calibration of a supply air temperature sensor in rooftop air conditioning units, HVAC and R Research 17 (2011) 31 – 50.
+https://doi.org/10.1080/10789669.2011.543250 .
+[33] N. Kaneko, K. Okazawa, D. Zhao, H. Nishikawa, I. Taniguchi, H. Murayama, Y. Yura, M. Okamoto, F. Catthoor, T. Onoye, Non-intrusive thermal load
+disaggregation and forecasting for effective HVAC systems, Appl. Energy 367 (2024). https://doi.org/10.1016/j.apenergy.2024.123379 .
+[34] J. Koo, S. Yoon, In-situ sensor virtualization and calibration in building systems, Appl. Energy 325 (2022). https://doi.org/10.1016/j.apenergy.2022.119864 .
+[35] Y. Choi, S. Yoon, C.Y. Park, K.C. Lee, In-situ observation and calibration in building digitalization: Comparison of intrusive and nonintrusive approaches, Autom.
+Constr. 145 (2023). https://doi.org/10.1016/j.autcon.2022.104648 .
+[36] J. Koo, S. Yoon, Neural network-based nonintrusive calibration for an unobserved model in digital twin-enabled building operations, Autom. Constr. 159
+(2024). https://doi.org/10.1016/j.autcon.2023.105261 .
+[37] J. Koo, S. Yoon, Simultaneous in-situ calibration for physical and virtual sensors towards digital twin-enabled building operations, Adv. Eng. Inf. 59 (2024).
+https://doi.org/10.1016/j.aei.2023.102239 .
+[38] S. Yoon, Y. Choi, J. Koo, In situ virtual sensors in building digital twins: framework and methodology, J. Ind. Inf. Integr. 36 (2023). https://doi.org/10.1016/j.
+jii.2023.100532 .
+[39] J. Li, P. Wang, X. Han, T. Zhao, S. Yoon, Strategies for sensor virtual in-situ calibration in building energy system: Sensor evaluation and data-driven based
+methods, Energy Build. 294 (2023). https://doi.org/10.1016/j.enbuild.2023.113274 .
+[40] J. Li, P. Wang, J. Li, H. Xing, T. Zhao, S. Yoon, Improvement for energy efficiency and control characteristics in variable air volume system using in-situ sensor
+calibration method based on autoencoder, J. Build. Eng. 63 (2023). https://doi.org/10.1016/j.jobe.2022.105559 .
+[41] S. Yoon, Y. Yu, Extended virtual in-situ calibration method in building systems using Bayesian inference, Autom. Constr. 73 (2017) 20 – 30. https://doi.org/10.
+1016/j.autcon.2016.10.008 .
+[42] X. Guo, Z. Ma, L. Ma, J. Zhang, Experimental Study of the Performance of a New Developed Heat Pump Water Heater with Frozen Evaporator, Procedia Eng
+(2017) 1600 – 1605. Elsevier Ltd, https://doi.org/10.1016/j.proeng.2017.10.284 .
+[43] Y. Choi, S. Yoon, Surrogate-assisted high-accuracy observation modeling in building digital twins: In situ nonintrusive modeling without sensor observation (Y),
+Build. Environ. 242 (2023). https://doi.org/10.1016/j.buildenv.2023.110584 .
+[44] W.K. Hastings, Biometrika Trust Monte Carlo Sampling Methods Using Markov Chains and, 1970 .
+[45] N. Metropolis, A.W. Rosenbluth, M.N. Rosenbluth, A.H. Teller, E. Teller, Equation of state calculations by fast computing machines, J. Chem. Phys. 21 (1953)
+1087 – 1092. https://doi.org/10.1063/1.1699114 .
+Y. Li et al.

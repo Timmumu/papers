@@ -1,0 +1,15 @@
+# Xu et al. (2026) — Digital twin system for deepwater well construction: Enhancing operational efficiency and safety
+
+- **ID:** 3961 | **Source:** Web of Science | **DOI:** 10.1016/j.oceaneng.2026.124378
+- **Journal:** OCEAN ENGINEERING
+- **Authors:** Xu, D. S.; Yang, J.; Zheng, H. Y.; Chen, B.; Yan, D.; Fan, J. C.; Tang, Q. Y.; Zhou, Y. F.
+
+## Abstract summary
+Deepwater oil and gas resources are vital to global energy supply, yet their development often faces challenges such as prolonged construction cycles, low efficiency, high emissions, and operational failures. To tackle these challenges, this study analyzes how operational and geotechnical factors affect conductor installation time and bearing capacity, during jetting and waiting stages. The intelligent optimization algorithm integrating MT-FCNN, LSTM, and PSO was proposed. A digital twin system for deepwater well construction is established for the first time, employing a modularly coupled architecture to integrate installation and post-installation processes. Validation results show that the DWC system exhibits strong performance in predicting jetting flow rates and controlling ROP during conductor installation. The model achieved a coefficient of determination R2 above 0.95 and MAPE be…
+
+## Step-1 Screening (Prompt A)
+| G Domain AECO | H DT core | I DfS/DfQ/PtD | J Pub-type | K English | Decision |
+|---|---|---|---|---|---|
+| No | Yes | Yes | Yes | Yes | **Exclude** |
+
+**Note:** Deepwater well construction DT; O&G

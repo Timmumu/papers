@@ -1,0 +1,1268 @@
+Creation and application of a geometric digital twin
+model for construction of spatial cable structures:
+A case study
+Siwei LINa, Liping DUANa,b,c, Jiming LIUa, Ji MIAOa, Hongmei LId, Jincheng ZHAOa,b,c*
+a School of Ocean and Civil Engineering, Shanghai Jiao Tong University, Shanghai 200240, China
+b State Key Laboratory of Ocean Engineering, School of Ocean and Civil Engineering, Shanghai Jiao Tong University, Shanghai
+200240, China
+c Shanghai Key Laboratory for Digital Maintenance of Buildings and Infrastructure, Department of Civil Engineering, Shanghai
+Jiao Tong University, Shanghai 200240, China
+d Shanghai Construction Group Co., Ltd., Shanghai 200080, China
+*Corresponding author. E-mail: zhao_jcr@hotmail.com
+©  Higher Education Press 2026 
+ABSTRACT    This  paper  presents  a  dynamic  geometric  digital  twin  creation  method  for  cable-net  structures  in
+construction  which  creates  the  building  information  model  (BIM)  for  construction  process  visualization  and  finite
+element  model  (FEM)  for  cable  shape  and  force  prediction.  The  basic  dynamic  geometric  information  for  parametric
+BIMs  and  FEMs  is  extracted  from  multi-stage  laser  scanning  during  construction.  Multi-stage  BIMs  are  presented  as
+Industry Foundation Classes (IFC) format where the cables are created by approximating the curved shapes with straight
+segments. Complex components like cable clamps are imported as Revit Family and replicated at the measured locations.
+Multi-stage  FEMs  utilize  the  ABAQUS  secondary  development  technology  to  parametrize  geometric  configuration,
+loads and constraints between components based on actual connections. A continuous dynamic BIM from one stage to
+another  can  be  created  based  on  construction  progress  and  the  deformed  shapes  derived  from  synchronously  updated
+FEM  calculations.  Total  duration  for  modeling  and  computation  of  each  stage  in  construction  is  within  140  s.  The
+average  distances  between  the  multi-stage  BIMs  and  point  clouds  are  within  15–20  mm.  The  prediction  deviations  of
+cable  shapes  and  forces  between  FEM  results  and  the  measured  data  of  the  next  stage  are  1.2%  and  1.5%,  which
+considers temperature and construction progress.
+KEYWORDS    geometric digital twin, spatial cable structure, FEM, BIM, point cloud
+  1    Introduction
+Pre-stressed  cables  are  widely  utilized  in  large-span
+spatial  structures  due  to  their  lightweight,  high  strength,
+and  flexibility  [1].  During  the  construction  process,
+cables,  as  the  primary  load-bearing  components,  often
+experience significant changes in cable shapes and forces.
+Therefore,  monitoring  cable  forces  and  shapes  during
+construction  have  a  substantial  impact  on  construction
+sequencing  decisions  and  safety  [2,3].  Traditional
+structural  health  monitoring  typically  involves  placing
+contact sensors at key locations of the structure to collect
+relevant  data  [4].  Although  the  monitoring  method  can
+obtain state information from specific points, it often fails
+to  provide  insights  into  the  overall  mechanical  response
+and  geometric  shape  of  the  structure.  Additionally,
+visualizing  the  deformed  geometry  of  the  structure  after
+loading is similarly challenging.
+As  a  comprehensive  digital  technology,  digital  twin
+(DT)  technology  offers  excellent  visualization  capabi-
+lities and accurately reflects the physical state of entities,
+enabling  various  fields  to  accelerate  their  digital
+ 
+Article history: Received Jun 25, 2025; Accepted Dec 24, 2025 
+ENG. Struct. Civ. Eng. 2026, 20(5): 992–1010
+https://doi.org/10.1007/s11709-026-1301-0
+RESEARCH ARTICLE
+transformation [5,6]. In the civil engineering domain, the
+DT  of  a  structure  reflects  the  structural  behavior  in  a
+timely  manner  based  on  the  sensor  data  and  simulation
+which  improves  the  construction  quality  and  structural
+safety  throughout  the  life  cycle  of  the  structure  [7].  The
+application  of  DT  technology  during  the  construction
+phase and subsequent operational maintenance stages can
+significantly  improve  the  level  of  automation  and
+decision  management  in  the  construction  industry  [8].
+With  advancements  in  Building  Information  Modeling
+(BIM),  the  Internet  of  Things  (IoT),  and  numerical
+simulation techniques, research on the application of DT
+technology  in  the  construction  field  has  markedly
+increased,  primarily  focusing  on  the  operational  and
+maintenance  phases  [9–11].  In  cable  structures,  Wang
+et al.  [12]  created  a  DT  model  through  finite  element
+model  (FEM)  which  reflects  the  physical  structure  of  a
+cable  dome.  A  structure  damage  sample  database  is
+established using the DT model and the hierarchical deep
+learning  method  is  implemented  for  the  intelligent
+identification  of  damage  in  the  cable  dome  structure.
+Moreover, they [4] created several approximate low-order
+models  based  on  the  scaled  model  to  accelerate  the
+calculation  process  and  constructed  a  DT  platform  for
+visualization  and  interaction  through  Unreal  Engine  4.
+Liu et al. [13] and Shi et al. [14] proposed the method of
+creating  high-fidelity  FEM  as  digital  models.  The  model
+is  updated  by  parameter  optimization  to  realize  the  error
+minimization  between  FEM  results  and  mechanical
+response  of  the  structural  entity.  An  intelligent  safety
+evaluation  method  for  cable-net  structures  [15]  is  also
+proposed  by  generating  a  large  data  set  calculated  by  a
+high-fidelity  FEM  with  key  factors  adjustment  and  a
+support vector regression model. Li et al. [16] proposed a
+Prognostics  and  Health  Management  (PHM)  system  for
+FAST  cable-net  structure  based  on  DT  technology.  The
+high precision sensors and measuring equipment promote
+to  construct  the  high-fidelity  model.  The  structural
+geometry  and  environment  data  are  updated  in  the  DT
+model  periodically  and  the  fatigue  life  of  components  is
+predicted. However, the number and types of components
+will  change  during  the  construction  process  of  spatial
+cable  structures.  It  is  unrealistic  to  mimic  the  operation
+and  maintenance  phase  by  establishing  only  one
+geometric  model  for  calculations.  Additionally,  the
+deformations  of  the  cable  structures  need  to  be
+continuously updated. Traditional cable structures cannot
+record  deformations  at  every  point  like  the  FAST  cable
+net,  where  each  point  is  equipped  with  actuators  for
+monitoring  displacement.  Manually  extracting  data  from
+dozens  or  hundreds  of  cable  joints  still  remains  a  labor-
+intensive task.
+In  the  process  of  simulating  physical  systems  using
+virtual  models,  the  need  to  solve  partial  differential
+equations  (PDEs)  leads  to  a  significant  increase  in
+computational  costs  when  dealing  with  complex  operat-
+ing conditions [17]. To meet the real-time feature of DT
+models,  operator  learning  and  physics-informed  neural
+solvers are employed for real-time response prediction of
+the  models  [18].  In  this  approach,  the  objective  function
+is  supplemented  with  the  minimization  of  the  energy
+equations of PDEs for deep learning model training [19].
+This  not  only  retains  computational  accuracy  but  also
+effectively  improves  computational  performance,  while
+addressing the limitation of poor generalization in purely
+data-driven models [20]. However, in practical scenarios,
+establishing  a  high-fidelity  virtual  model  serves  as  the
+foundation for ensuring simulation accuracy and training
+accuracy. Compared with the operation and maintenance
+phase,  the  types  and  quantities  of  model  components  as
+well  as  model  boundaries  during  the  construction  phase
+often change with the construction progress. Therefore, it
+is an effective approach to realize DT technology to first
+ensure  the  efficiency  and  accuracy  of  multi-phase
+modeling,  and  then  combine  it  with  deep  learning
+methods to improve analysis efficiency.
+In  the  process  of  creating  a  DT  model,  the  acquisition
+of  a  geometric  model  that  accurately  reflects  the  real
+physical  world  often  serves  as  the  foundation  for  the
+virtual  twin  model.  Three-dimensional  laser  scanning
+technology,  with  its  high  precision,  speed,  extensive
+measurement  range,  and  high  scanning  resolution,
+produces  point  cloud  models  that  are  generally  regarded
+as virtual representations of real physical geometries [21].
+However, the raw point cloud data only carries geometric
+information  for  each  point  (such  as  coordinate  data  and
+normal vector) and color information. The information is
+not  readily  usable  by  engineers  or  administrators  and
+cannot  be  integrated  with  other  information  in  a  DT
+model  [22].  Over  the  past  few  years,  researchers  have
+focused  on  the  automatic  conversion  of  point  cloud  data
+into  geometric  representations,  BIM  models,  or  FEM
+geometries [23]. This process is known as the creation of
+geometric digital twin (gDT) models [24].
+In the field of buildings, Drobnyi et al. [25] proposed a
+method  of  digitizing  the  geometry  of  Manhattan-world
+buildings  by  segmenting  the  entire  indoor  space  through
+detecting  empty  regions  and  expanding  the  regions.  The
+volumetric  representations  of  walls,  windows  and  doors
+detected  from  indoor  space  are  reconstructed.  Mahmoud
+et al.  [26]  proposed  an  automated  BIM  generation
+workflow  for  large-scale  indoor  environment  through
+deep learning semantic segmentation and BIM parametric
+modeling.  Xue  et al.  [27]  transformed  the  BIM
+reconstruction into a multimodal optimization problem by
+registering  the  point  cloud  with  the  parametric  BIM
+family.  Considering  that  building  components  are
+typically  made  up  of  slender  members,  the  extraction  of
+component  axes  can  serve  as  the  basis  for  structural
+geometric representation [28] or BIM reconstruction [29].
+Siwei LIN et al.   Digital twin model for spatial cable structures 993
+In the field of bridge and transportation, Pan et al. [ 30]
+segmented  the  pavements  into  a  more  detailed  level
+(lanes,  hard  shoulders  and  central  reserves)  on  the  basis
+of  semantic  segmentation  of  road  surfaces.  A  graph  is
+generated based on the topology of highways to represent
+the  highway  components  and  their  relationships.  Lu  and
+Brilakis  [ 31]  proposed  an  automatic  geometric  DT
+creation  method  for  reinforced  concrete  bridges  by
+slicing-based  Industry  Foundation  Classes  (IFC)  object
+fitting,  which  improved  modeling  accuracy  and
+efficiency. Hu et al. [32] proposed several fitting methods
+to create the geometry of arch ring and other arch bridge
+components.  A  translation  strategy  is  implemented  to
+solve the issue of lacking cross -sectional parts. The gDT
+is  generated  and  visualized  in  CATIA.  Mafipour  et al.
+[33]  created  the  parametric  prototype  models  (PPMs)  to
+represent  the  bridges,  and  the  geometric  model  is
+generated  automatically  by  optimizing  the  parameters  of
+PPMs  to  fit  the  point  cloud  through  metaheuristic
+optimization.  Shu  et al.  [34]  proposed  the  BCR-Net  to
+realize  the  component  segmentation  from  bridge  point
+cloud  and  the  geometric  model  is  created  by  the
+component  geometric  feature  extraction  and  parametric
+modeling.
+In  the  field  of  cable  structures,  Zhang  et al.  [ 35]
+proposed  multimember  central  shrinkage  algorithm  and
+“3-point  normal”  cylinder  fitting  method  [36]  to  extract
+the  cable  dome  components  from  point  cloud.  The  joint
+coordinate  is  detected  through  the  intersection  of
+component axes and the node adjacency matrix is created
+for  topology  connection  relationship  representation  and
+deviation detection compared with a design model.
+In the field of industry, CLOI-NET [37] is proposed for
+the  class  segmentation  of  industrial  point  cloud  and
+CLOI-Instance  graph  connectivity  algorithm  [38]  solves
+the instance segmentation problem of the industrial point
+cloud  after  classification  which  decrease  the  cost  and
+manual  labor  for  automatically  generating  geometric  DT
+of industrial facilities.
+Although  there  has  been  progress  in  automated
+geometric extraction and modeling based on point clouds,
+several limitations still need to be addressed.
+1)  Post -loading  deformed  point  cloud  geometry  is
+unsuitable for simulation without internal force data.
+2)  Static  point  cloud  geometry  fails  to  support  BIM/
+FEM updates as physical conditions evolve.
+3) BIM and simulation models lack correspondence for
+synchronized updates.
+Building on the fact that Limitation 1 has already been
+addressed  in  our  previous  research  [ 39],  this  paper
+proposed an automated creation method of geometric DT
+model  of  cable  structures  in  the  construction  process  to
+solve  Limitation  2&3  which  is  illustrated  in  Fig. 1.  The
+method  achieves  two  unique  contributions:  1)  the
+parametric synchronization of the geometry model in IFC
+and  FEM  based  on  the  cable  geometry;  2)  the  dynamic
+calculation  and  model  update  considering  the  physical
+environment.
+This  workflow  realizes  IFC  parametric  modeling  and
+FEM  parametric  modeling  based  on  common  geometric
+data  extracted  from  the  point  cloud  (such  as  the  cable
+shape,  coordinates  of  cable  anchors  and  cable  clamps)
+and  the  construction  information  (such  as  connection
+relationship). Moreover, this study performed multi -stage
+scanning  of  the  structure  during  construction  and
+extracted  geometric  data  for  modeling.  Considering  that
+the  point  cloud  model  represents  only  a  snapshot  of  the
+structural  state,  this  method  conducts  finite  element
+calculations  based  on  construction  progress  records  and
+temperature monitoring data, synchronously updating the
+computed  deformed  geometric  data  in  the  IFC  model  to
+address  the  gaps  in  model  states  between  adjacent  scan
+stages.
+ 
+ 
+Fig. 1    The workflow of method.
+994 ENG. Struct. Civ. Eng. 2026, 20(5): 992–1010
+ 
+2    Geometric digital twin model creation
+for cable structures
+ 2.1    Industry foundation classes model creation of cable
+structures for one-stage scan
+The  information  extracted  from  point  cloud  includes  the
+point  coordinates  of  cable  shapes,  cable  clamps,  cable
+anchors and cable forces [ 39]. Based on the information,
+the IFC model can be reconstructed for each construction
+stage of the structure by using the geometric relationships
+between  cable  clamps,  connecting  members,  and  anchor
+points.
+IFC data, as a universal data format for BIM models, is
+an  open,  object-oriented  data  model  used  for  describing,
+exchanging,  and  sharing  information  in  the  architecture,
+engineering,  and  construction  (AEC)  industry  [ 40].
+Modeling  and  updating  based  on  the  initial  IFC  model
+facilitate  information  transfer  across  different  stages  and
+software. IFCOpenShell, an open-source software library,
+can  be  used  to  process  IFC  data  [ 41].  Given  that
+structures  involve  numerous  key  coordinate  points  and
+similar components, parameterized modeling of IFC data
+enables  efficient  creation  and  updating  of  BIM  model
+components.
+ 2.1.1    Basic industry foundation classes creation and single
+cable modeling
+Single cable is composed by the cable itself, cable anchor
+ends,  ear  plates  and  cable  clamps.  The  cables  have  a
+circular  cross -section  which  can  be  parametrically
+modeled  using  extrusion  operations.  However,  the  cable
+anchor  ends,  ear  plates  and  cable  clamps  are  complex
+geometric  components  that  cannot  be  easily  modeled
+using  simple  parameterization.  Therefore,  detailed
+reconstruction of the cable anchor and clamps was carried
+out in Rhino software based on CAD drawings as shown
+in  Fig. 2.  These  detailed  components  are  then  imported
+into Revit software as new families.
+During  the  import  process  of  these  new  families,  it  is
+essential  to  define  the  origin  of  the  new  family
+components.  In  subsequent  modeling,  changes  to  these
+components  involve  rotations  and  translations  around
+their  origin  points.  For  the  ear  plates  and  cable  anchor
+ends,  the  origin  is  set  at  the  center  of  the  pin  shaft.  For
+cable clamps with two parallel cables passing through as
+shown  in  Fig. 2,  the  origin  is  set  in  the  middle  of  two
+holes.  For  cable  clamps  with  only  one  cable  passing
+through,  the  origin  is  set  at  the  center  of  one  hole.  The
+schematic  diagram  of  the  origin  settings  is  shown  in
+Fig. 2. At the initial stage, the created geometries for the
+ear  plates,  anchor  points,  and  cable  clamps  are  imported
+into the Revit model and exported as the IFC4 reference
+view  [Architecture]  data  format.  Subsequent  reconstruc-
+tion  of  the  cable -net  model  can  be  performed  using
+parameterized modeling based on this basic IFC.
+lAB
+  !p1
+  !p2
+    !AB
+
+  !p1
+  !p2
+T
+M
+Based  on  the  basic  IFC,  the  cable  itself  should  be
+constructed first for the orientation confirmation of other
+components.  Considering  the  curved  shape  of  cables,
+modeling  is  performed  by  approximating  the  curved
+shape  with  straight  segments.  The  entire  cable  shape  is
+divided  into  multiple  straight  segments.  For  instance,
+considering a segment of the cable AB as shown in Fig. 3,
+a cylinder with a radius and a length of   is created with
+its starting point at [0,0,0] and oriented along [0,0,1]. The
+unified  rotate  matrix  [42]  is  defined  by  Eqs.  (1)  and  (2).
+This  paper  defines  the  coordinate  system  for  the  cable
+structure, with the  y-axis horizontally along the direction
+of  the  cables  and  the z -axis  perpendicular  to  the  ground,
+as  shown  in  Fig. 3.    is  the  origin  vector  of  the  initial
+component  which  is  [0,0,1]  in  the  cable  modeling.    is
+the target vector which is   .   is the angle between  
+and  . Translate   is from the origin (0,0,0) to point A
+which is equal to the coordinate of A. Finally, the affine
+transformation    is  assembled  by  Eq.  (3)  and  the  cable
+segment  is  transformed  by  “geometry.edit_object_place-
+ment” in IFCopenshell. All cable segments can be unified
+parameterized into a whole cable. For other components,
+all  the  parametric  transformations  can  be  similarly
+ 
+ 
+Fig. 2    Complex components and setting of the origin.
+Siwei LIN et al.   Digital twin model for spatial cable structures 995
+  !p1
+  !p2
+T
+derived by extracting the transformation variables   ,  ,
+and    based  on  the  geometric  relationship  between  the
+components and the cables.
+ 
+n =
+  !p1    !p2
+
+  !p1    !p2
+
+ ; (1)
+ 
+R =
+266666664
+n2
+x (1   cos ) + cos  nynx (1   cos )   nz sin  nznx (1   cos ) + ny sin 
+nxny (1   cos ) + nz sin  n2
+y (1   cos) + cos  nzny (1   cos )   nx sin 
+nxnz (1   cos )   ny sin  nynz (1   cos ) + nx sin  n2
+z (1   cos) + cos 
+377777775 ; (2)
+ 
+M =
+[
+R T
+0 1
+]
+: (3)
+ 2.1.2    Construction of complex components
+As mentioned in the previous section, the basic IFC stores
+the  geometry  information  of  complex  components.
+Therefore, the parametric process is to copy the complex
+component  IFC  information  and  arrange  every
+component into the corresponding location.
+For  cable  clamps,  extract  IFC  information  of  cable
+clamp  from  the  basic  IFC  and  copy  all  the  attribute
+information as shown in Fig. 4. Only the Globally Unique
+Identifier  (GUID)  of  the  new  component  should  be
+recreated. The ObjectPlacement attribute will be modified
+in the following.
+The  clamp  arrangement  is  not  only  to  translate  the
+component  into  the  measurement  position,  but  also  to
+make  the  cable  pass  entirely  through  the  clamp ’s
+predefined hole. The model of the clamp is designed with
+a  hole  aligned  along  the  [0,1,0]  as  shown  in   Fig. 3 ,
+whereas  the  cable  direction  at  different  positions  of  the
+clamp  may  not  be  parallel  to  [0,1,0].  Therefore,  the  tilt
+angle  of  the  clamp  is  required  to  define  for  different
+    !ED +     !DC
+2
+  !p1
+  !p2
+    !ED +     !DC
+2
+T
+D
+D
+positions.  Due  to  the  self-weight  of  the  clamp,  the  slope
+of  the  cables  at  both  ends  will  change.  During  the
+modeling process, the tilt angle of the clamp is defined as
+the average of these slopes, represented in the diagram as
+, which is the slope of the dashed line in  Fig. 3.
+So    is  the  origin  vector  of  initial  component  which  is
+[0,1,0].    is  the  target  vector  which  is   .
+Translate   is from the origin (0,0,0) to point    which is
+equal  to  the  coordinate  of     in  Fig. 3.  Therefore,  all
+clamp arrangement can be parametrized by Eqs. (1)–(3).
+Since the anchor points only exist at the two ends of the
+ 
+ 
+Fig. 3    Cable diagram.
+ 
+ 
+Fig. 4    IFC Element copy.
+996 ENG. Struct. Civ. Eng. 2026, 20(5): 992–1010
+  !p1
+  !p2
+T
+cable,  each  cable  requires  only  two  anchor  points.  First,
+copy  two  anchor  ends  and  rotate  their  direction  from
+[0,0,−1]  ( )  to  align  parallel  to  the  slopes  of  the  cable
+( )  at  both  ends  as  shown  in  Fig. 3.  Translate    of  the
+anchor  is  from  the  origin  to  the  respective  ends  of  the
+cables.  The  transformation  of  ear  plates  at  both  ends  of
+the cable is also the similar to the cable anchor.
+ 2.1.3    Construction of connecting members
+In  some  cable  structures,  the  connecting  members  are
+installed between adjacent cables during the construction
+phase,  resulting  in  varying  numbers  of  connecting
+members  on  different  cables.  It  is  necessary  to
+automatically  determine  the  number  of  connecting
+members  on  each  cable.  A  quantity  matrix  is  created  to
+indicate the installation status of the connecting members
+between the cables at each stage.
+l
+l
+l
+2
+The  point  cloud  of  cables  is  first  projected  into  x –y
+space  and  segmented  based  on  line  extraction  through
+Hough  transform.  Point  clouds  within  a  range    along  a
+cable  are  segmented  into  the  cable.  For  example,  in
+Fig. 5,  the  length  in  the  direction  perpendicular  to  the
+cable  will  vary  at  different  cable  clamps  due  to
+differences  in  the  number  of  installed  connecting
+members. When connecting members are installed at both
+ends  of  a  cable  clamp,  the  length  in  the  x -direction  is
+approximately  . When connecting members are installed
+at  only  one  end,  the  length  in  the  x -direction  is
+approximately  .  Using  these  criteria,  the  number  of
+connecting  members  to  be  installed  at  each  cable  clamp
+position  can  be  quickly  determined.  The  connecting
+member  quantity  matrix  at  every  position  of  each  cable
+clamp  for  the  cable  structure  in   Fig. 5   is  shown  in
+Table 1.
+Considering connecting members usually have constant
+cross  section,  extrusion  operation  is  also  utilized  for
+connecting  member  modeling.  Parametric  modeling  of
+connecting  members  is  realized  based  on  the  quantity
+matrices  and  design  parameters  at  different  stages.  The
+installation  status  of  the  connecting  members  at  the
+corresponding  cable  clamp  between  adjacent  cables  has
+been  determined  based  on  the  quantity  matrix.  The
+installed  connection  member  is  parametrically  modeled
+by  querying  the  design  parameter  at  the  corresponding
+cable clamp position.
+  !p1
+  !p2
+T
+During the modeling phase, use the connecting member
+quantity  matrix  to  determine  the  positions  for  the
+connecting member modeling. For example, to model the
+connecting member at the mid -span (13#) between cable
+8 and 9, start by creating a cross section with a direction
+vector  of  [0,0,1]  which  is    and  a  start  point  at  [0,0,0].
+The length equal to the distance from the 13# cable clamp
+origin  position  of  cable  8  to  the  13#  cable  clamp  origin
+position of cable 9. Next, the objective vector    is from
+the 13# cable clamp position of cable 8 to the 13# cable
+clamp position of cable 9. Finally, translate    is from the
+origin to the coordinate position of the 13# cable clamp of
+cable  8.  This  method  can  be  applied  to  model  other
+connecting member positions similarly.
+ 
+ 
+Fig. 5    The  segmentation  of  cables  and  installation  status
+decision.                
+ 
+Table 1    The connecting member quantity matrix
+Clamp
+number
+Cable 6 Cable 7 Cable 8 Cable 9 Cable 10 Cable 11 Cable 12
+1 0 0 0 0 0 0 0
+2 0 0 0 0 0 0 0
+3 0 0 0 0 0 0 0
+4 0 0 0 0 0 0 0
+5 0 0 0 0 0 0 0
+6 0 0 0 0 0 0 0
+7 0 0 0 0 0 0 0
+8 0 0 0 0 0 0 0
+9 0 0 0 0 0 0 0
+10 0 0 0 0 0 0 0
+11 0 0 0 0 0 0 0
+12 0 0 0 1 2 2 1
+13 0 0 1 1 1 2 1
+14 0 0 0 0 0 1 1
+15 0 0 0 0 0 0 0
+16 0 0 0 0 0 0 0
+17 0 0 0 0 0 0 0
+18 0 0 0 0 0 0 0
+19 0 0 0 0 0 0 0
+20 0 0 0 0 0 0 0
+21 0 0 0 0 0 0 0
+22 0 0 0 0 0 0 0
+23 0 0 0 0 0 0 0
+24 0 0 0 0 0 0 0
+25 0 0 0 0 0 0 0
+Siwei LIN et al.   Digital twin model for spatial cable structures 997
+ 2.1.4    Model visualization
+After the above process, the final IFC files are generated
+at  different  stages  and  the  IFC  visualization  is  shown  in
+Fig. 6.  The  visualization  platform  is  “Open  IFC  Viewer”
+developed  by  Open  Design  Alliance  (ODA).  It  can  be
+observed from the figure that the cables successfully pass
+through the predefined holes of the cable clamps, with the
+anchor end positioned tangentially to the cable end. Thus,
+the  parametric  modeling  of  the  IFC  model  for  one-stage
+scan is complete.
+ 2.2    Reconstruction of parametric finite element models for
+one-stage scan
+ 2.2.1    Overview and simplifications
+From the geometric data, a FEM of the existing cable -net
+state  can  be  reconstructed.  This  involves  using  the
+existing cable shapes for modeling, applying correspond -
+ing  external  loads  such  as  cable  self -weight  and
+connecting  member  self -weight,  and  applying  internal
+cable  forces  to  achieve  equilibrium  in  the  structure.  Due
+to  the  extensive  geometric  points  and  load  applications
+involved  in  finite  element  modeling  of  cable -net
+structures, using a secondary development approach with
+Python in ABAQUS can significantly improve modeling
+efficiency. The finite element modeling process is similar
+to  IFC  model  reconstruction,  but  some  simplifications
+and differences are as follows.
+1)  The  anchor  ends  are  simplified  to  a  constrained
+hinge point, and the weight of cable clamps are simplified
+to concentrated loads.
+2)  Unlike  IFC  models,  FEMs  need  to  consider
+constraints  at  the  endpoints  and  between  components.
+This  aspect  will  be  detailed  further  in  the  subsequent
+modeling process.
+ 2.2.2    Parametric modeling and assembly
+Some  unified  basic  information  could  be  defined  first  in
+code  to  serve  as  the  foundational  information  for
+subsequent modeling such as part geometry and material
+properties.  Only  two  kinds  of  parts  are  considered  in
+FEM  modeling:  cables  and  connecting  members  while
+the  cable  clamps  is  considered  as  concentrate  loads  and
+the  cable  anchorage  is  considered  as  boundary  con -
+straints.
+The  cables  are  modeled  similarly  to  the  IFC  model,
+using  straight  lines  to  represent  curves.  Both  cables  and
+members  can  be  modeled  using  beam  elements.  For  the
+cables,  the  material  parameters  are  as  follows:  the
+equivalent  cross -section  is  a  circular  section  with  the
+materials  of  density,  Young’s  modulus  and  the  thermal
+expansion  coefficient.  For  the  connecting  members,  the
+material parameters include the cross -section, density and
+Young’s  modulus.  Due  to  the  varying  installation  of  the
+connecting  members  at  different  locations,  the  self -
+weight of the associated components may also differ.
+The  identification  and  installation  of  the  connecting
+members  are  similar  to  the  IFC  assembly  process.  In
+ABAQUS,  “ mdb.models.rootAssembly.translate()”  and
+“mdb.models.rootAssembly.rotate()”  functions  are  provi-
+ded  for  transformation  of  every  part.  Based  on  the
+transformation  information  during  IFC  modeling,  the
+final  assembly  result  is  shown  in   Fig. 7 .  During  the
+assembly process, each instance in assembly model needs
+to  be  named  for  subsequent  parameterization,  constraint
+application, and load application, to facilitate information
+query  and  localization  as  shown  in  Fig. 7.  For  example,
+every instance of cable is named as part -cable-{i}, i is the
+cable  number  in  FEM.  Every  instance  of  member  is
+named  as  part-member-{i}-{j}, i   is  the  member  on  the
+index  of  cable  clamp  and j   represents  the  index  of  the
+cable  to  which  the  member  is  connected  at  the  starting
+end.  Continuous  naming  numbers  help  facilitate  the
+uniform  application  of  functions  through  loops  in
+subsequent processes.
+ 2.2.3    Parametric constraints and loads
+Since  the  cable  anchor  connections  and  cable  clamp
+connections  are  both  pin  connections,  rotational
+constraints in one direction are released during constraint
+ 
+ 
+Fig. 6    IFC model on November 2, 2022.
+998 ENG. Struct. Civ. Eng. 2026, 20(5): 992–1010
+definition.  For  the  case  in  Section  3,  the  coordinate
+system for the cable structure is defined as follows: the  y-
+axis along the direction of the cables, the  x-axis along the
+direction  of  the  connecting  members,  and  the  z -axis
+perpendicular  to  the  ground.  For  anchor  connections  in
+ABAQUS, the rotation constraint is released about the  x-
+axis and fixed about the y- and z-axes. For the example in
+Section 3, regarding the connections between connecting
+members  and  cable  clamps,  this  type  of  rotation
+constraint involves interactions between two components.
+Specifically,  coupling  constraints  are  applied  at  the
+interface  of  each  connecting  member  and  cable  clamp
+(defined  via  the  Intersection  Module),  with  rotation
+released  about  the y -axis  and  fixed  about  the x -  and z -
+axes.  The  geometry  of  a  cable  is  composed  of  multiple
+sequences  of  vertices.  When  applying  boundary  condi -
+tions at both ends, they can be directly applied to the first
+and last vertices. When applying the intersection between
+the  connecting  member  and  the  cable,  the  corresponding
+two  components  can  be  located  through  their  names  and
+the connecting member quantity matrix. Then, constraints
+can be applied to the vertex sequence in the cable and the
+end vertex of the connecting member.
+During the load application phase, self-weight loads are
+applied first in the entire domain. The concentrated loads
+from the cable clamps on internal vertices of every cable
+geometry.  Since  the  geometry  obtained  from  laser
+scanning  represents  the  balanced  state  after  the  external
+loads  and  internal  cable  forces.  To  achieve  the
+equilibrium  state  of  the  FEM,  internal  cable  forces  need
+to be applied to each cable. Cable forces are applied using
+the cooling method with a temperature reduction of
+ 
+T = F
+Area  E   ; (4)
+F
+Area
+E
+
+where    is  cable  force,     is  the  effective  cross -
+sectional area,   is Young ’s modulus of cables,    is the
+thermal expansion coefficient of cables.
+ 2.3    Finite element model and industry foundation classes
+model update
+As  mentioned  before,  the  geometry  obtained  from  point
+clouds  is  a  snapshot  at  a  specific  moment.  As  time
+evolves,  the  established  BIM  model  geometry  or  FEM
+model  geometry  should  be  updated  based  on  changes  in
+physical conditions such as temperature and construction
+progress.  At  first,  the  FEM  model  based  on  one -stage
+scanning  can  be  applied  the  temperature  change  load  or
+installed  connecting  member  self-gravity  load  on  every
+cables. The temperature load can be applied by modifying
+the  cable  temperature.  The  newly  installed  connecting
+member  can  be  updated  by  modifying  the  connecting
+member  quantity  matrix.  The  stress  and  deformation
+results  of  every  cable  can  be  solved  after  FEM  updated
+and  saved  in  ODB  files.  The  deformation  information  is
+queried  by  instance  name  and  added  to  the  origin  cable
+shape. The deformed cable shape and updated connecting
+member  quantity  matrix  are  used  for  updating  the  cable
+shape  and  geometric  relationship  with  other  components
+in  IFC.  The  updated  IFC  model  and  FEM  model  reflect
+the new state of the structure in the physical environment.
+The updated process is illustrated in Fig. 8.
+ 
+3    Project case
+ 3.1    Project overview
+The  case  study  in  this  paper  involves  a  single-curvature
+cable-net  structure,  which  consists  mainly  of  18  sets  of
+cables and connecting members between the cables. Each
+set  of  cables  is  composed  of  two  parallel  cables.  The
+cables are connected to the connecting members through
+cable clamps, and the connections between the cables and
+the main structure are made via pins. The cable-net region
+and two types of connections are illustrated in  Fig. 9. All
+the  circular  pipe  connecting  members  are  covered  by
+curtain  walls  to  form  a  rectangular  prism.  This  paper
+ 
+ 
+Fig. 7    Assembly of FEM.
+Siwei LIN et al.   Digital twin model for spatial cable structures 999
+defines the coordinate system for the cable structure, with
+the y -axis  along  the  direction  of  the  cables,  the  x -axis
+along the direction of the connecting members, and the  z-
+axis perpendicular to the ground, as shown in Fig. 9.
+For  the  modeling  process,  the  equipment  and
+computational  hardware  are  as  follows:  CPU  Intel(R)
+Xeon(R)  Gold  6254  CPU  @  3.10GHz,  RAM  192GB,
+Operating System Windows 10, ABAQUS 2022 (Not use
+multiple processors), Python 3.9, Cloudcompare v2.11.3,
+IFCOpenShell  v  0.7.0,  open3d  v0.16.0,  numpy  v1.26.4,
+Open IFC Viewer v25.5.0.
+ 3.2    Construction process
+The  construction  process  for  the  cables  is  as  follows:
+1)  install  the  cable  clamps  at  the  fixed  positions  of  each
+cable  set;  2)  tension  the  cables;  3)  install  the  connecting
+members  after  the  adjacent  cable  sets  have  been
+ 
+ 
+Fig. 8    FEM calculation and IFC update.
+ 
+ 
+Fig. 9    Cable structure and connection method.
+1000 ENG. Struct. Civ. Eng. 2026, 20(5): 992–1010
+tensioned.  The  progress  of  cable  tensioning  and
+connecting  member  installation  is  shown  in   Fig. 10 .
+During  construction,  two  main  control  loads  affecting
+cable  shape  are  the  self -weight  of  the  connecting
+members  and  temperature  loads.  Temperature  data,
+recorded by vibrating wire strain sensors installed on the
+steel structure, is shown in  Fig. 11. The figure illustrates
+temperature  fluctuations  over  time  from  October  30,
+2022,  to  December  25,  2022,  with  noticeable  daily
+variations  and  a  sharp  temperature  drop  around
+November 30.
+ 3.3    3-Dimension (3-D) laser scanning and processing
+During  the  construction,  we  conducted  six  3 -D  laser
+scans  of  the  structure  on  November  2,  November  4,
+November  30,  December  2,  December  5  at  the  stage  of
+construction  and  one  scan  of  the  as -built  stage.  The
+scanner equipment was the Leica P40. After scanning, the
+data was imported into Cyclone software for point cloud
+registration  and  noise  removal.  The  results  of  these
+multiple scans are shown in Fig. 12.
+According  to  the  method  proposed  in  previous  work
+[39],  the  coordinates  of  all  anchor  points  and  cable
+clamps  from  the  scanned  point  clouds  at  each  stage  are
+extracted.  Subsequently,  the  cable  shapes  and  cable
+forces  are  determined  using  the  segmented  catenary
+theory. The processing flow of every scan can be found in
+Fig. 13.  The  results  for  the  mid -span  sags  and  cable
+forces  at  each  stage  are  presented  in  Tables  A1–A6  at
+Appendix A in Electronic Supplementary Material.
+ 
+ 
+Fig. 10    Construction process.
+ 
+ 
+Fig. 11    Temperature curve.
+Siwei LIN et al.   Digital twin model for spatial cable structures 1001
+ 
+4    Model verification and application
+ 4.1    Industry foundation classes and finite element model
+from multi-stage scans
+Based  on  the  obtained  cable  shapes  and  cable  forces,  as
+well  as  the  parametric  IFC  modeling  approach,  IFC
+model  data  for  multiple  stages  can  be  generated.  The
+model  representations  are  shown  in  Fig. 14.  Since  finite
+element analysis focuses on the structural state while IFC
+models  are  concerned  with  visualization.  The  assump -
+tions for finite element modeling are as follows.
+ 
+ 
+Fig. 12    Scan  results  of  multi-stage:  (a)  scan  results  on  November  2,  2022;  (b)  scan  results  on  November  4,  2022;  (c)  scan  results  on
+November 30, 2022; (d) scan results on December 2, 2022; (e) scan results on December 5, 2022; (f) scan results at as-built stage.
+ 
+ 
+Fig. 13    Point  cloud  processing  flow:  (a)  raw  point  cloud;  (b)  curvature  filtering;  (c)  hough  transform  segmentation;  (d)  coordinate
+extraction; (e) segmented catenary theory.
+1002 ENG. Struct. Civ. Eng. 2026, 20(5): 992–1010
+1)  Two  cables  from  a  set  are  simplified  into  a  cable,
+with double cross-sectional areas of one single cable.
+2)  The  loads  of  clamps  are  simplified  as  concentrate
+loads.
+3)  The  displacements  of  anchor  ends  are  zero  during
+the construction.
+4)  The  self-weight  of  curtain  walls  and  other  ancillary
+components  are  uniformly  represented  by  increasing  the
+density of the circular pipes which is illustrated in Table
+A7 at Appendix A in Electronic Supplementary Material.
+Since  the  design  spacing  between  cables  is  8.4  m,  the
+connecting members should be modeled as circular pipes
+with a length of 8.4 m. The final FEM at each moment of
+every stage scan is shown in Fig. 15.
+This paper verified the difference between two parallel
+cables  and  a  single  cable  simplified  by  doubling  the
+cross-sectional  area.  In  the  model,  the  self-weight  of  the
+cable  clamp  was  evenly  distributed  to  the  two  cables.
+Establish a coupling constraint between the two cables at
+the  cable  clamp  position  to  keep  their  displacement
+changes  consistent.  Meanwhile,  the  original  cross -
+sectional  area  of  a  single  cable  was  adopted,  and  the
+corresponding temperature load was applied to induce the
+internal force of the cables. From the calculation results,
+it can be observed that the cable force (326.3 kN) of each
+individual  cable  is  approximately  equal  to  half  of  the
+ 
+ 
+Fig. 14    Multi-stage IFC model: (a) IFC model on November 2, 2022; (b) IFC model on November 4, 2022; (c) IFC model on November
+30, 2022; (d) IFC model on December 2, 2022; (e) IFC model on December 5, 2022; (f) IFC model at as-built stage.
+ 
+ 
+Siwei LIN et al.   Digital twin model for spatial cable structures 1003
+cable  force  of  the  simplified  single  cable  (652.7  kN)  in
+Fig. 16.  Additionally,  the  variation  in  cable  shape  is
+within  2  mm  (max  1.557  mm),  which  proves  that  the
+model  is  also  in  a  state  of  equilibrium  and  verifies  the
+rationality of the simplification.
+The  paper  also  compared  the  results  between
+distributed and concentrated clamp loads. The distributed
+load model is shown in  Fig. 17. The cable force is 652.7
+kN of distributed loads which is equal to the concentrated
+loads.  Maximum  deformation  of  distributed  loads  is
+1.64mm  which  is  basically  consistent  with  concentrated
+loads (1.40 mm).
+This  paper  conducts  a  sensitivity  analysis  on  the
+influence  of  anchor  displacement  changes  on  the  mid -
+span  sag  and  cable  force,  with  the  results  in  Table 2.  It
+can  be  seen  that  when  the  anchor  end  displacement  is
+within  10  mm,  its  impact  on  both  cable  force  and  cable
+shape is within 5%.
+ 
+ 
+Fig. 15    Multi-stage FEM modeling: (a) FEM on November 2, 2022; (b) FEM on November 4, 2022; (c) FEM on November 30, 2022;
+(d) FEM on December 2, 2022; (e) FEM on December 5, 2022; (f) FEM at as-built stage.
+ 
+ 
+Fig. 16    Comparison between parallel cables and single cable with double cross -sectional areas: (a) parallel cables; (b) single cable with
+double cross-sectional areas.
+1004 ENG. Struct. Civ. Eng. 2026, 20(5): 992–1010
+ 4.2    Industry foundation classes and finite element model
+accuracy and efficiency
+To  test  the  accuracy  of  the  established  IFC  model,  OBJ
+geometric files for multiple stages are extracted from the
+IFC.  The  OBJ  files  and  point  clouds  are  then  imported
+into CloudCompare [43] to calculate the average distance
+between  the  point  clouds  and  the  OBJ  geometric  model.
+The  modeling  accuracy  of  all  models  is  presented  in
+Table 3.  Root  Mean  Square  Error  ( RMSE),  standard
+deviation,  max/min  errors  and  number  of  vertices/ele -
+ments  of  point-to-model  distances  are  supplemented  in
+Table  A8  at  Appendix  A  in  Electronic  Supplementary
+Material. The Point-to-model distances histogram of 1102
+stage  is  supplemented  in  Fig. 18.  The  histogram  patterns
+at  other  stages  are  basically  consistent.  From  the
+histogram, the proportion of point clouds with a distance
+greater  than  0.1  m  is  basically  less  than  0.1 %,  so  the
+maximum  distance  in  the  table  is  usually  the  distance
+between noise points and the BIM model.
+As shown in Table 3, the modeling accuracy of the IFC
+is approximately 15–20 mm. The modeling time increases
+with  the  number  of  components,  with  the  fully
+constructed structure requiring the longest modeling time,
+approximately  27.59  s.  The  main  reasons  for  modeling
+errors are as follows.
+1)  In  this  study,  the  segmental  catenary  theory  is  used
+during  the  extraction  of  cable  shapes,  assuming  that  the
+cables do not undergo lateral deformation. In reality, the
+structure may still exhibit minor horizontal deformations.
+2) The impact of noise or edge drift during the scanning
+process.
+3)  The  extracted  cable  shape  represents  an  average  of
+two cables from a set of cables, and the actual shapes of
+the two cables may not be perfectly parallel.
+4) The impact of precision inaccuracy in extracting key
+coordinates.
+The  modeling  and  computation  times  for  the  FEM  are
+shown  in  Table 3.  As  construction  components  increase,
+the modeling time grows from 1.12 to 11.93 s, while the
+computation  time  increases  from  36  to  98  s.  The
+calculation result changes in cable shape and cable forces
+ 
+ 
+Fig. 17    Result comparison between distributed loads and concentrated loads for cable clamps: (a) distributed loads for cable clamps; (b)
+results.
+ 
+Table 2    Sensitivity analysis on the influence of anchor displacement
+changes
+Displacement
+(mm)
+Sag deformation
+(mm)
+Sag
+(m)
+Cable force
+(kN)
+Force change
+(kN)
+1 −7.5 2.2031 650.7 −2
+5 −33.9 2.1767 643.0 −7.7
+10 −66.9 2.1437 633.6 −19.1
+ 
+Table 3    Model accuracy and efficiency
+Date IFC model accuracy (mm) IFC modeling time (s) FEM modeling time (s) FEM calculating time (s) Total time (s)
+2022.11.02 16.7 3.93 1.12 36 41.05
+2022.11.04 18.5 5.01 1.03 30 36.04
+2022.11.30 19.9 8.03 3.01 54 65.04
+2022.12.02 20.4 10.28 3.23 56 69.51
+2022.12.05 19.7 11.94 3.95 60 75.89
+Final stage 15.3 27.59 11.93 98 137.52
+Siwei LIN et al.   Digital twin model for spatial cable structures 1005
+are  presented  in  Tables  A1 –A6  at  Appendix  A  in
+Electronic  Supplementary  Material.  Based  on  the  FEM
+calculated  for  the  cable  shape,  the  maximum  calculated
+deformation  of  the  FEM  at  each  stage  is  within  4  mm.
+The maximum deformation of the cable relative to the sag
+is  less  than  0.2%,  indicating  that  the  cable  deformation
+results are minimal. The cable force variations are within
+0.5%.  This  demonstrates  that  the  FEM  is  generally  in
+equilibrium,  suitable  for  subsequently  predicting  cable
+shape  and  forces  based  on  temperature  and  construction
+progress.
+ 4.3    Predicting cable shape and cable force considering
+temperature data and construction schedule
+During  the  construction  phase,  the  primary  loads
+affecting the cable structure are temperature loads and the
+self-weight  of  the  installed  connecting  members.
+Therefore,  after  establishing  a  FEM  at  one  scan,  finite
+element  calculations  can  be  carried  out  based  on  on-site
+temperature  data  and  the  recorded  construction  progress
+schedule.
+In  this  section,  the  FEM  established  on  November  4th
+is used as the initial calculation reference. By varying the
+temperature  load  and  applying  the  self -weight  of  the
+connecting  members,  the  finite  element  results  are
+compared  with  the  cable  shape  measurement  results  and
+cable  forces  from  November  30th.  The  FEM  is  modeled
+based  on  the  cable  shape  measurements  from  November
+4th.  The  temperature  loads  are  based  on  on -site
+temperature  data:  the  average  temperature  during  the
+scanning period from 3:15 PM to 4:16 PM on November
+4th  was  about  17  °C,  while  the  average  temperature
+during the scanning period from 5:20 PM to 9:00 PM on
+November  30th  was  about   − 0.15  °C.  Therefore,  after
+applying the cooling method to adjust the cable forces, a
+temperature  load  of  −17.15  °C  is  added  to  reflect  the
+temperature  difference.  Additionally,  the  connecting
+members  are  assembled  according  to  the  installation
+status  of  November  30th.  Since  the  4th  cable  was  not
+installed  on  November  4th,  the  connecting  members
+between  the  4th  and  5th  cables  could  not  be  assembled.
+Therefore,  half  of  the  self -weight  of  the  connecting
+members  at  different  positions  is  applied  as  a
+concentrated  load  at  the  cable  clamp  position  of  the  5th
+cable.
+ 
+ 
+Fig. 18    Quantity proportion statistics of distances from points to BIM.
+1006 ENG. Struct. Civ. Eng. 2026, 20(5): 992–1010
+The  deviations  between  the  finite  element  calculations
+and  actual  measurements  of  the  cable  shapes  in
+November 30th are shown in Table 4. It can be observed
+from the table that the prediction deviations by the finite
+element  method  are  generally  within  3  cm,  with  a
+percentage  deviation  of  less  than  1%.  The  deviation  for
+the  10th  cable  is  relatively  large,  around  3.8  cm.  This
+discrepancy may be due to deformations at the anchorage
+ends  under  temperature  load  effects,  or  inaccuracies  in
+the  self-weight  load  of  the  connecting  members.  The
+deviation  in  cable  forces  is  also  within  2%,  which
+generally meets engineering requirements. When moving
+to the next scanning phase, the FEM can be re-established
+base on new scan geometry to correct the deviations from
+the previous calculations.
+ 4.4    4-Dimension industry foundation classes visualization
+based on the calculation results from finite element model
+Based  on  the  above  method,  continuous  updating  of  the
+IFC  model  between  scanning  phases  can  be  achieved.
+The  geometric  data  are  from  the  cable  shapes  after
+deformation  according  to  the  FEM  calculations.  For
+example, starting from November 4th, Fig. 10 shows the
+positions  of  the  connecting  members  installed  daily
+between  cable  6–cable  12  from  November  5th  to
+November  10th.  Based  on  this  record,  the  finite  element
+and IFC models can be updated on a daily basis.
+Based  on  the  daily  construction  records,  the  finite
+element  modeling  process  can  be  adjusted  by  modifying
+the  connecting  member  quantity  matrix.  Finite  element
+modeling  and  calculations  should  be  conducted  in
+Subsection 2.2. Using Abaqus for secondary development
+allows  for  the  rapid  extraction  of  deformed  cable  shapes
+from  the  ODB  files.  Afterwards,  the  IFC  model  can  be
+constructed as described in Subsection 2.1 based on these
+deformed  cable  shapes,  resulting  in  an  evolution  of  the
+construction  process  on  a  daily  basis.  The  IFC  models
+from  November  5th  to  November  10th  are  shown  in
+Fig. 19.  Since  no  connecting  members  were  installed  on
+November  8th  and  there  was  minimal  shape  variation
+during scanning on the day, the IFC model for November
+8th is not displayed.
+ 
+5    Conclusions
+This paper presents a method for creating a dynamic gDT
+for  a  cable-net  structure  in  the  construction  process.
+Considering the issue of update synchronization between
+BIM and FEM, the parametric modeling of the IFC model
+and  FEM  is  achieved  based  on  the  common  geometric
+information  extracted  from  multi-stage  scans.  Conside-
+ring  the  issue  of  information  loss  between  two  scanning
+stages, the FEM of the previous stage is used as a starting
+point,  and  the  calculation  results  based  on  construction
+progress  and  temperature  data  are  integrated  to
+supplement  the  deficient  structural  geometric  informa-
+tion. The creation of a continuous dynamic IFC model is
+achieved  based  on  construction  progress  and  deformed
+cable  shapes  that  are  derived  from  finite  element
+calculations.  The  proposed  method  can  serve  for  the
+construction  simulation,  cable  force  prediction  and
+visualization of construction process of cable structures.
+Regarding  the  accuracy  of  IFC  modeling,  the  average
+distances  between  the  parametric  multi-stage  BIMs  and
+point  clouds  are  from  15  to  20  mm.  The  calculated
+deformation  of  the  FEM  at  each  stage  is  within  4  mm,
+demonstrating  that  the  established  model  is  in  a  state  of
+equilibrium.  The  total  duration  for  modeling  the  IFC
+model,  FEM,  and  computation  for  each  stage  is  within
+140  s.  The  prediction  deviations  of  cable  shapes  and
+forces  between  the  FEM  results  from  the  previous  stage
+and  measurement  results  of  the  next  stage  are  within
+1.3% and 1.5%, respectively.
+The  proposed  workflow  can  be  applied  to  larger  or
+more complex cable-net structures. The modeling process
+is  only  based  on  node  coordinates  and  connection
+relationship  determination.  Once  the  geometric  relation-
+ship  between  the  cables  and  other  components  is
+determined,  the  geometric  models  of  the  cables  can  be
+realized  by  approximating  curved  elements  with  straight
+segments,  and  other  components  can  also  be  paramet-
+rically modeled based on this relationship. The proposed
+ 
+Table 4    Deviation between FEM calculation results and measured values
+No. 11.4 mid-span
+sag (m)
+Deformation
+(m)
+FEM calculation
+sag (m)
+11.30 measurement
+sag (m)
+Cable shape
+deviation
+FEM calculation
+force (kN)
+11.30 cable
+force (kN)
+Cable force
+deviation
+5 2.1871 −0.9879 3.1750 3.1581 −0.0169 1901.133 1917.506 0.854%
+6 2.1956 −0.9735 3.1691 3.1510 −0.0181 1889.665 1911.568 1.146%
+7 2.3037 −0.8310 3.1347 3.1426 0.0079 1923.124 1921.929 −0.062%
+8 2.4780 −0.6385 3.1164 3.1272 0.0107 1951.155 1944.528 −0.341%
+9 2.5801 −0.5149 3.0950 3.0860 −0.0089 1945.403 1947.385 0.102%
+10 2.5671 −0.4816 3.0487 3.0866 0.0379 1969.858 1940.997 −1.487%
+11 2.5857 −0.4758 3.0615 3.0572 −0.0043 1953.380 1966.745 0.680%
+12 2.3922 −0.2305 2.6228 2.6109 −0.0118 1430.293 1420.214 −0.710%
+Siwei LIN et al.   Digital twin model for spatial cable structures 1007
+FEM  model  utilizes  beam  elements,  which  not  only
+significantly  reduce  computational  complexity  but  also
+keep consistency with FEM models for larger -scale cable
+structures.  The  finite  element  calculation  approach
+achieves  the  equilibrium  state  of  the  cable  net  structure
+by applying external loads and internal cable forces. It is
+also applicable to other types of cable net structures.
+There are still some limitations in the work presented in
+this  paper  that  can  be  improved  in  the  future.  For
+example,  the  current  connecting  members  are  only
+considered  as  a  rectangular  prism,  and  the  complex
+internal  components  are  not  included.  The  IFC  model
+includes  only  geometric  data  currently,  while  other
+information  such  as  material  data,  load  information,  and
+construction  information  can  be  supplemented  in  IFC
+data.  The  FEM  in  this  paper  assumes  that  the
+displacement deformation at the cable anchorage is zero,
+and  its  boundary  stiffness  can  be  adjusted  based  on
+monitoring data or other information.
+ Electronic Supplementary Material    Supplementary material is available
+in  the  online  version  of  this  article  at  https://doi.org/10.1007/s11709-026-
+1301-0 and is accessible for authorized users.
+ Acknowledgements    The  authors  would  like  to  appreciate  the  financial
+support  of  the  work  addressed  in  this  paper  from  the  Science  and
+Technology Commission of Shanghai Municipality (No. 21DZ1204600).
+ Competing  interests    The  authors  declare  that  they  have  no  competing
+interests.
+References 
+ Li  H,  Li  L,  Hu  R,  Ye  M.  Simplified  design  of  nonlinear  damper
+parameters  and  seismic  responses  for  long -span  cable -stayed
+bridges with nonlinear viscous dampers. Frontiers of Structural and
+Civil Engineering, 2024, 18(7): 1103–1116
+1.
+ Ou  T,  Zhu  W,  Lan  C,  Bai  B,  Bai  S,  Qiu  Y,  Liu  R,  Shen  Q .
+Development  and  engineering  application  of  fiber  bragg  grating
+intelligent  cable  in  large-span  hyperbolic  parabolic  spatial  cable
+network. Structures, 2024, 68: 107196
+2.
+ Li  Z,  Xiang  X,  Wu  T.  Long  short-term  memory-enhanced  semi-
+active  control  of  cable  vibrations  with  a  magnetorheological
+damper. Frontiers of Structural and Civil Engineering, 2025, 19(2):
+3.
+ 
+ 
+Fig. 19    Continuous updating of the IFC model during construction: (a) IFC on November 5, 2022; (b) IFC on November 6, 2022; (c) IFC
+on November 7, 2022; (d) IFC on November 9, 2022; (e) IFC on November 10, 2022.
+1008 ENG. Struct. Civ. Eng. 2026, 20(5): 992–1010
+163–179
+ Wang L, Liu H, Zhang F, Guo L, Chen Z. Spatial structure digital
+twins:  Application  in  intelligent  health  monitoring  of  cable  dome
+structures. Automation in Construction, 2024, 165: 105489
+4.
+ Liu J, Duan L, Lin S, Miao J, Zhao J. Concept, creation, services
+and  future  directions  of  digital  twins  in  the  construction  industry:
+A  systematic  literature  review.  Archives  of  Computational
+Methods in Engineering, 2024, 32: 319–342
+5.
+ Luo Q, Sun C, Li Y, Qi Z, Zhang G. Applications of digital twin
+technology  in  construction  safety  risk  management:  A  literature
+review. Engineering, Construction, and Architectural Management,
+2025, 32(6): 3587–3607
+6.
+ Jiang  F,  Ma  L,  Broyd  T,  Chen  K.  Digital  twin  and  its
+implementations  in  the  civil  engineering  sector.  Automation  in
+Construction, 2021, 130: 103838
+7.
+ Yoon S. Building digital twinning: Data, information, and models.
+Journal of Building Engineering, 2023, 76: 107021
+8.
+ Chiachío  M,  Megia  M,  Chiachio  J,  Fernandez  J,  Jalon  M  L.
+Structural  digital  twin  framework:  Formulation  and  technology
+integration. Automation in Construction, 2022, 140: 104333
+9.
+ Mohammadi M, Rashidi M, Yu Y, Samali B. Integration of TLS-
+derived  Bridge  Information  Modeling  (BrIM)  with  a  Decision
+Support System (DSS) for digital twinning and asset management
+of  bridge  infrastructures.  Computers  in  Industry,  2023,  147:
+103881
+10.
+ Heng  J,  Dong  Y,  Lai  L,  Zhou  Z,  Frangopol  D  M.  Digital  twins-
+boosted intelligent maintenance of ageing bridge hangers exposed
+to  coupled  corrosion–fatigue  deterioration.  Automation  in
+Construction, 2024, 167: 105697
+11.
+ Wang L, Liu H, Chen Z, Zhang F, Guo L. Combined digital twin
+and  hierarchical  deep  learning  approach  for  intelligent  damage
+identification  in  cable  dome  structure.  Engineering  Structures,
+2023, 274: 115172
+12.
+ Liu  Z,  Shi  G,  Liu  Y,  Sun  Z,  Zeng  B,  Wang  J,  Tafsirojjaman  T.
+Investigation  of  mechanical  behaviors  of  spoke-wheel  cable
+structures  through  experimental  and  numerical  analysis  driven  by
+digital-twin. Structures, 2024, 62: 106099
+13.
+ Shi  G,  Liu  Z,  Lu  D,  Zhang  Q,  Wang  Z,  Zhao  Y.  Digital  twin-
+based model updating method for mechanical behaviors analysis of
+cable  truss  structure.  Journal  of  Constructional  Steel  Research,
+2024, 221: 108917
+14.
+ Liu  Z,  Zhang  Z,  Yuan  C.  An  intelligent  evaluation  method  for
+service  safety  of  cable  net  structures  under  multiple  factors.
+Sustainability, 2023, 15(21): 15633
+15.
+ Li  Q  W,  Jiang  P,  Li  H.  Prognostics  and  health  management  of
+FAST  cable-net  structure  based  on  digital  twin  technology.
+Research in Astronomy and Astrophysics, 2020, 20(5): 067
+16.
+ Eshaghi  M  S,  Anitescu  C,  Thombre  M,  Wang  Y,  Zhuang  X,
+Rabczuk T. Variational Physics-informed Neural Operator (VINO)
+for  solving  partial  differential  equations.  Computer  Methods  in
+Applied Mechanics and Engineering, 2025, 437: 117785
+17.
+ Es-haghi M S, Anitescu C, Rabczuk T. Methods for enabling real-
+time  analysis  in  digital  twins:  A  literature  review.  Computers  &
+Structures, 2024, 297: 107342
+18.
+ Eshaghi  M  S,  Bamdad  M,  Anitescu  C,  Wang  Y,  Zhuang  X,
+Rabczuk  T.  Applications  of  scientific  machine  learning  for  the
+19.
+analysis  of  functionally  graded  porous  beams.  Neurocomputing,
+2025, 619: 129119
+ Eshaghi  M  S,  Valizadeh  N,  Anitescu  C,  Wang  Y,  Zhuang  X,
+Rabczuk  T.  Multi-head  neural  operator  for  modelling  interfacial
+dynamics. 2025, arXiv: 2507.17763
+20.
+ Gu Y, Li W, Yao X, Liu G. Research on concrete structure defect
+repair based on three-dimensional printing. Frontiers of Structural
+and Civil Engineering, 2024, 18(5): 731–742
+21.
+ Mirzaei  K,  Arashpour  M,  Asadi  E,  Masoumi  H,  Bai  Y,  Behnood
+A.  3D  point  cloud  data  processing  with  machine  learning  for
+construction  and  infrastructure  applications:  A  comprehensive
+review. Advanced Engineering Informatics, 2022, 51: 101501
+22.
+ Cui  L,  Zhou  L,  Xie  Q,  Liu  J,  Han  B,  Zhang  T,  Luo  H.  Direct
+generation  of  finite  element  mesh  using  3D  laser  point  cloud.
+Structures, 2023, 47: 1579–1594
+23.
+ Drobnyi  V,  Hu  Z,  Fathy  Y,  Brilakis  I.  Construction  and
+maintenance  of  building  geometric  digital  twins:  State  of  the  art
+review. Sensors, 2023, 23(9): 4382
+24.
+ Drobnyi V, Li S, Brilakis I. Digitization of existing buildings with
+arbitrary shaped spaces from point clouds. Journal of Computing in
+Civil Engineering, 2024, 38(5): 04024027
+25.
+ Mahmoud M, Chen W, Yang Y, Li Y. Automated BIM generation
+for  large-scale  indoor  complex  environments  based  on  deep
+learning. Automation in Construction, 2024, 162: 105376
+26.
+ Xue F, Lu W, Chen K, Zetkulic A. From semantic segmentation to
+semantic  registration:  derivative-free  optimization-based  approach
+for  automatic  generation  of  semantically  rich  as-built  building
+information models from 3D point clouds. Journal of Computing in
+Civil Engineering, 2019, 33(4): 04019024
+27.
+ Smith  A,  Sarlo  R.  Automated  extraction  of  structural  beam  lines
+and  connections  from  point  clouds  of  steel  buildings.  Computer-
+Aided Civil and Infrastructure Engineering, 2022, 37(1): 110–125
+28.
+ Yang  L,  Cheng  J  C  P,  Wang  Q.  Semi-automated  generation  of
+parametric  BIM  for  steel  structures  based  on  terrestrial  laser
+scanning data. Automation in Construction, 2020, 112: 103037
+29.
+ Pan  Y,  Wang  M,  Lu  L,  Wei  R,  Cavazzi  S,  Peck  M,  Brilakis  I.
+Scan-to-graph:  Automatic  generation  and  representation  of
+highway  geometric  digital  twins  from  point  cloud  data.
+Automation in Construction, 2024, 166: 105654
+30.
+ Lu  R,  Brilakis  I.  Digital  twinning  of  existing  reinforced  concrete
+bridges  from  labelled  point  clusters.  Automation  in  Construction,
+2019, 105: 102837
+31.
+ Hu  K,  Han  D,  Qin  G,  Zhou  Y,  Chen  L,  Ying  C,  Guo  T,  Liu  Y.
+Semi-automated  generation  of  geometric  digital  twin  for  bridge
+based  on  terrestrial  laser  scanning  data.  Advances  in  Civil
+Engineering, 2023, 2023(1): 1–13
+32.
+ Mafipour  M  S,  Vilgertshofer  S,  Borrmann  A.  Automated
+geometric digital twinning of bridges from segmented point clouds
+by  parametric  prototype  models.  Automation  in  Construction,
+2023, 156: 105101
+33.
+ Shu J, Zeng Z, Li W, Zhou S, Zhang C, Xu C, Zhang H. Automatic
+geometric  digital  twin  of  box  girder  bridge  using  a  laser-scanned
+point cloud. Automation in Construction, 2024, 168: 105781
+34.
+ Zhang  A,  Ma  H,  Zhao  X,  Zhang  Y,  Wang  J,  Su  M.  3D  laser
+scanning  for  automated  structural  modeling  and  deviation
+monitoring  of  multi-section  prefabricated  cable  domes.
+35.
+Siwei LIN et al.   Digital twin model for spatial cable structures 1009
+Automation in Construction, 2024, 165: 105573
+ Zhang  A,  Wang  J,  Zhang  Y,  Shangguan  G.  Joint  detection  PCD-
+based method for automatic construction of geometric digital twin
+in  cable  dome  structure.  Engineering  Structures,  2024,  320:
+118908
+36.
+ Agapaki E, Brilakis I. CLOI-NET: Class segmentation of industrial
+facilities’ point cloud datasets. Advanced Engineering Informatics,
+2020, 45: 101121
+37.
+ Agapaki  E,  Brilakis  I.  Instance  segmentation  of  industrial  point
+cloud  data.  Journal  of  Computing  in  Civil  Engineering,  2021,
+35(6): 04021022
+38.
+ Lin  S,  Duan  L,  Liu  J,  Xiao  X,  Miao  J,  Zhao  J.  Automated
+geometric  reconstruction  and  cable  force  inference  for  cable-net
+structures  using  3D  point  clouds.  Automation  in  Construction,
+2024, 165: 105543
+39.
+ Krijnen  T,  Beetz  J.  An  IFC  schema  extension  and  binary
+serialization  format  to  efficiently  integrate  point  cloud  data  into
+building  models.  Advanced  Engineering  Informatics,  2017,  33:
+473–490
+40.
+ Pan  Z,  Yu  Y,  Xiao  F,  Zhang  J.  Recovering  building  information
+model  from  2D  drawings  for  mechanical,  electrical  and  plumbing
+systems  of  ageing  buildings.  Automation  in  Construction,  2023,
+152: 104914
+41.
+ Enferadi  J,  Shahi  A.  On  the  position  analysis  of  a  new  spherical
+parallel  robot  with  orientation  applications.  Robotics  and
+Computer-integrated Manufacturing, 2016, 37: 151–161
+42.
+ Nagle-McNaughton  T,  Cox  R.  Measuring  change  using
+quantitative  differencing  of  repeat  structure-from-motion
+photogrammetry: The effect of storms on coastal boulder deposits.
+Remote Sensing, 2020, 12(1): 42
+43.
+1010 ENG. Struct. Civ. Eng. 2026, 20(5): 992–1010

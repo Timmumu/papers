@@ -1,0 +1,15 @@
+# Yang et al. (2021) — CAVTest: A Closed Connected and Automated Vehicles Test Field of Chang'an University in China
+
+- **ID:** 3547 | **Source:** Scopus | **DOI:** 10.4271/12-04-04-0032
+- **Journal:** SAE International Journal of Connected and Automated Vehicles
+- **Authors:** Yang, L.; Wang, R.; Zhao, X.; Xu, Z.; Yang, Y.
+
+## Abstract summary
+Closed field testing of Connected and Automated Vehicles (CAV) is an essential pillar for verifying the functionality and performance of CAV and promoting its large-scale deployment. Recently, many closed test fields in the world have been newly built or rebuilt for testing CAV such as M-City in USA and AstaZero in Sweden. However, few construction methods, standards, and specifications of closed test fields for testing CAV were reported with details. We propose the construction practice of the Closed Connected and Automated Vehicles Test Field (CAVTest) of Chang'an University in China. The CAVTest has a multilayer architecture, from down to the top, which consists of an application scenario layer, a perception and a physical communication layer, a network link layer, and a management service layer, respectively. The modularization design of CAVTest ensures the system compatibility with …
+
+## Step-1 Screening (Prompt A)
+| G Domain AECO | H DT core | I DfS/DfQ/PtD | J Pub-type | K English | Decision |
+|---|---|---|---|---|---|
+| No | Yes | Yes | Yes | Yes | **Exclude** |
+
+**Note:** CAV test field; automotive testing

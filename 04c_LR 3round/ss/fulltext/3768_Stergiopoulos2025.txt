@@ -1,0 +1,1592 @@
+Received 3 June 2025, accepted 12 June 2025, date of publication 16 June 2025, date of current version 26 June 2025.
+Digital Object Identifier 10.1 109/ACCESS.2025.3580334
+Enhancing Urban Heatwave Response Planning
+via a Graph-Based Digital Twin Approach: Spatial
+Dependency Risk Analysis in Vienna City
+GEORGE STERGIOPOULOS
+ 1, SOZON A. LEVENTOPOULOS 2,
+MICHALIS KARAMOUSADAKIS
+ 3, BENJAMIN SCHUSTER
+ 4,
+AND DIMITRIS GRITZALIS
+ 2
+1Department of Information and Communication Systems Engineering, University of the Aegean, 832 00 Samos, Greece
+2Department of Informatics, Athens University of Economics and Business (AUEB), 104 34 Athens, Greece
+3THL, 152 32 Halandri, Greece
+4Research and Innovation Centre, Johanniter Österreich Ausbildung und Forschung gem. GmbH, 1210 Vienna, Austria
+Corresponding author: George Stergiopoulos (g.stergiopoulos@aegean.gr)
+This work was supported by European Union’s Horizon Europe Program under Grant 101074008.
+ABSTRACT Urban heatwaves pose an escalating threat to cities, requiring advanced planning strategies.
+This paper presents a graph-based digital twin approach to model spatial dependencies in heatwave risk
+for urban areas. Using Vienna’s city center as a case study, we integrate (i) high-resolution spatial data
+from Google on heat hazard, (ii) spatial population distribution from Vienna Open Data and (iii) META ’s
+Vienna population datasets alongside (iv) critical road infrastructure from OpenStreetMaps, into a graph
+network model that captures cumulative risk paths that help determine the most critical city blocks needing
+intervention and the optimal allocation of resources for routing first responders to reach critical locations of
+sensitive populations. Our Spatial Dependency Risk Analysis identifies how the distribution of vulnerable
+population needing first aid in one location together with heat data may amplify risks in connected areas
+and provide a planning tool to first responders to draft optimal routes to reach all persons in need as fast
+as possible. The results show how city center junctions form interdependent high-risk clusters; notably, our
+tool managed to identify the most at-risk sub-district reaches and automatically plan ambulance routes from
+cooling spots to high risk hotspots. To our knowledge, this is the first automatic tool able to quantify these
+network routing effects during heatwave disasters, and enhance heatwave response planning by pinpointing
+critical areas where targeted interventions (e.g., cooling centers or outreach) could substantially reduce
+cascading impacts
+INDEX TERMS Risk assessment, digital twin, smart city, critical infrastructure, heatwave, first responders.
+I. INTRODUCTION
+Prolonged and intense heat waves severely affect society,
+especially urban environments ( [1], [2], [3]). Urban heat-
+waves pose a significant threat to public health, especially
+in densely populated areas where vulnerable groups are
+at increased risk. These events place unprecedented stress
+on critical services, especially healthcare services and fire
+departments. In this context, health services have been
+The associate editor coordinating the review of this manuscript and
+approving it for publication was Jiajie Fan
+.
+identified by several government agencies and authorities
+(e.g., Cybersecurity and Infrastructure Security Agency, the
+European Union with the NIS2 Directive 1) as critical enti-
+ties.2 Effective preparedness and response planning are vital
+to mitigating the impact of such extreme events.
+To address the significant risks posed by the increas-
+ing number of prolonged heat events, we build a digital
+1https://eur-lex.europa.eu/legal-content/en/TXT/?uri=CELEX%3A3
+2022L2555
+2https://www.cisa.gov/topics/critical-infrastructure-security-and-
+resilience/critical-infrastructure-sectors/healthcare-and-public-health-sector
+106590
+
+ 2025 The Authors. This work is licensed under a Creative Commons Attribution 4.0 License.
+For more information, see https://creativecommons.org/licenses/by/4.0/ VOLUME 13, 2025
+G. Stergiopoulos et al.: Enhancing Urban Heatwave Response Planning via a Graph-Based DT Approach
+twin simulation of heatwaves over an urban network of city
+blocks that is able to prioritize critical locations and automate
+resource allocation and route planning for first responders.
+A Digital Twin (DT) is formally defined in ISO 23247-
+1:2021 as a ‘‘fit for purpose digital representation of an
+observable manufacturing element with a means to enable
+convergence between the element and its digital represen-
+tation at an appropriate rate of synchronization’’ [35]. The
+methodology presented utilizes satellite data provided by the
+Google Solar API 3 for real-time heat index calculations to
+reveal areas within cities that are more exposed to extreme
+temperatures. Then, it correlates produced Heat Risk maps
+with population data, such as density and vulnerability of
+citizens (e.g., age group below 14 and above 60, as per the
+IPCC recommendations 4), to identify the most at-risk urban
+city blocks and propose routing paths and efficient station
+points that can be utilized by emergency teams and first
+responders for faster or more frequent itineraries.
+A. CONTRIBUTION
+In this work, the systematic integration of satellite-derived
+heat exposure data, demographic vulnerability metrics, and
+network dependency analytics for emergency response plan-
+ning are combined to introduce the concept of data-driven
+Spatial Dependency Risk Analysis for planning responses of
+first responders.
+The case study of Vienna’s city center demonstrates the
+method’s effectiveness in a real-world context, the method-
+ology itself is designed independently of specific location,
+ensuring its applicability to diverse urban settings or other
+extreme weather scenarios. Its generalizability is supported
+by reliance on commonly accessible data sources, standard-
+ized graph-based analyses, and reproducible AI-driven risk
+modeling approaches.
+The digital twin’s objective is to map areas of vulnerable
+population in Vienna’s city center against solar radiation data
+and combine them with graph and centrality analytics regard-
+ing road junctions in the same areas of interest. This way, first
+responders can identify paths that will cover the majority of
+high-risk locations – locations that have been identified as
+essential and where many vulnerable populations reside – or
+plan for relocation of specific points/areas or parts of facilities
+and identify the nominal road routes.
+We apply a road network analysis methodology using
+graph centrality [4] [26] [27] and dependency risk chains [26]
+and extend it to the domain of heat index analysis. We then
+used it to create a digital twin of the Vienna, Austria city cen-
+ter to identify critical urban blocks and prioritizing response
+strategies during heatwaves. This research is a significant
+contribution to the field, achieved by integrating data from
+the Google Solar API for real-time heat index calculations
+with population distribution data obtained from the Vienna
+Open Database [5]. Our main contributions are:
+3https://developers.google.com/maps/documentation/solar/overview
+4https://www.ipcc.ch/report/ar6/wg2/
+1) A smart city digital twin for first responders able to
+model the criticality and prioritization of urban blocks
+and respective road junctions as nodes, where each
+node is characterized by its heat risk index of the corre-
+sponding city blocks in the vicinity. By analyzing this
+dependency graph, we can calculate cumulative risk
+paths that help determine the most critical blocks need-
+ing intervention and the optimal allocation of resources
+for first responders. We can also detect the shortest path
+to reach locations of sensitive populations, considering
+heat exposure and population density. The aforemen-
+tioned centrlity metrics effectively capture network
+vulnerability and, even though they are widely used
+within the domain of transportation network analysis
+and thus, alone, do not represent methodological nov-
+elty, still to the best of our knowledge, these metrics
+are not used before in determining node importance for
+urban areas in conjunction with heat indexes and traffic
+analysis.
+2) The proposed method models risk, in this case, extreme
+heat events (e.g., heatwaves) and vulnerable assets
+(e.g., population and infrastructure), over a trans-
+portation network able to allocate resources such as
+ambulances and cold spots. Our model can serve as
+a risk identification and management tool by com-
+bining heat exposure data (provided by the Google
+Solar API) with demographic information, pinpointing
+the most critical areas in urban environments. In that
+view, it assists city authorities and first responders
+in planning for heat-wave scenarios more effectively,
+maximizing coverage of high-risk zones within mini-
+mum response times.
+3) Another essential contribution of our proposed method-
+ology is that it enables the merging of population
+protection with risk management theory, ensuring that
+equity is built into emergency response systems and
+processes by design and by default. Vulnerable pop-
+ulations often face higher risks not only because of
+physical exposure but also due to socio-economic fac-
+tors that limit their access to healthcare and other
+critical resources during emergencies.
+While demonstrated through the Vienna case study, these
+optimizations are applicable to other urban settings, requiring
+only localized adjustments in demographic and environ-
+mental data. The methodology is inherently adaptable to
+other cities and diverse extreme events due to its modular
+design, reliance on standardized APIs, and open data sources.
+OpenStreetMaps, Google Solar API and open government
+population data, including vulnerable populations, are all
+inherently available input and all that is necessary to setup
+the digital twin simulation for any city and provide ana-
+lytics for planning the routing of emergency vehicles, and
+strategic allocation of limited emergency resources (such as
+ambulances, cooling stations, or temporary relief centers).
+The remainder of this paper is organized as follows. The
+next section reviews existing literature relevant to urban
+VOLUME 13, 2025 106591
+G. Stergiopoulos et al.: Enhancing Urban Heatwave Response Planning via a Graph-Based DT Approach
+heatwave impacts, transportation risk modeling, and
+graph-based dependency analyses. In Methodology, we detail
+the procedures used for data acquisition, vulnerability analy-
+sis, risk assessment calculations, and graph centrality metrics
+utilized within the digital twin model. Subsequently, the
+Results section presents the outcomes from applying this
+methodology to the case study of Vienna’s city center,
+including critical nodes identification, dependency paths, and
+optimal response routes. Lastly, a dedicated Implications and
+Future Work section addresses the implications of our method
+for urban planning and references public policy alignment
+with EU regulations, and emergency preparedness and lays
+down future research directions.
+II. RELATED WORK
+A. URBAN HEATWAVE IMPACT
+In urban and highly populated areas, such as cities and
+metropolises, the heat waves are further impacted due to the
+urban heat island (UHI) effect [6], which indicates a signif-
+icantly larger temperature than the surrounding rural areas.
+Typically, the temperature difference is higher at night than
+during the day and is most apparent when the wind weakens.
+The main contributor to the UHI effect is the modification of
+the land areas to large blocks of concrete buildings, with sec-
+ondary contributions arising from several factors, such as heat
+generated by energy consumption used for air conditioning
+purposes [6]. More than half of the Earth’s population lives in
+urban areas, which occupy only 0.5% of the land surface [7].
+The heat wave magnitude index (HWMI) proposed by [8]
+led to the possibility of comparing heat waves (or extreme
+heat events) in different regions of the world with different
+climates. This approach provides a foundation for urban heat
+risk management. In [23] several tools, such as satellite data
+and GIS tools, have been used to create a comprehensive
+urban heat vulnerability map – in this case for the city of
+Vienna, Austria – which integrated factors such as exposure,
+sensitivity, and adaptive capacity.
+B. ROAD TRANSPORTATION RISK MODELS
+Transportation networks play a pivotal role during heatwave
+emergencies, particularly in urban areas or city centers where
+traffic congestion can severely affect the rapid response of
+emergency teams. Several road network simulation models
+have been introduced to mathematically model the transporta-
+tion systems, which are too complicated for simple analytical
+or numerical analysis. These models are based on the concept
+of system state, a set of variables that describe the system
+state over time [9]. System state can be either discrete or con-
+tinuous. The more recent methods utilize either the discrete
+event simulation (a discrete series of events over time) or the
+continuous-time simulation (a set of continuously changing
+variables). We can identify two distinct prediction models:
+the short-term, which should be precise in providing the
+road network characteristics in the case of an adverse event,
+and the long-term, which provides a broader road network
+picture over time but with limited accuracy in abnormal or
+atypical events. Enhancing critical road segments, especially
+in post-disaster recovery actions, can be achieved by using
+graph neural networks [28]. Furthermore, network improve-
+ments and effective management strategies can be achieved
+using several centrality metrics (such as betweenness central-
+ity) [29] to identify critical nodes in transportation networks.
+In addition, web-based decision support systems, as sug-
+gested in [30], can assist in strategically placing emergency
+facilities to support accessibility options during disasters or
+adverse situations. In heatwave scenarios, optimizing traffic
+flow becomes critical, particularly for routes connecting areas
+with high-risk populations.
+Our work demonstrates how spatial dependency risk anal-
+ysis can be used to identify optimized response paths that
+account for dependencies among urban zones that host
+vulnerable populations during extreme events. To our knowl-
+edge, there is currently no solution capable of calculating
+cumulative risk paths that help determine the most criti-
+cal areas needing intervention and the optimal allocation of
+resources for first responders and detect the shortest path to
+reach critical locations of sensitive populations, considering
+heat exposure and population density.
+The proposed digital twin methodology significantly
+extends existing GIS-based emergency response models by
+integrating real-time solar radiation data, population demo-
+graphics, and spatial dependency analyses based on network
+centrality metrics. Existing GIS methodologies primarily are
+focused on vulnerability mapping.
+We have created a comparative table that depicts vari-
+ous characteristics reported in related literature alongside
+the capabilities demonstrated in our study. For example,
+graph-based digital twins leverage integrated, real-time data
+streams (IoT sensors, dynamic climate inputs, etc.), whereas
+classical GIS models typically rely on static map layers
+mdpi.com. Our digital twin approach is inherently time-
+aware (able to simulate historic, current, and future states)
+esri.com and can model interdependencies and scenario
+dynamics iccgis2024.cartography-gis.com beyond the static
+‘‘snapshot’’ analyses of conventional methods.
+Table 1 highlights these differences in data sources, tempo-
+ral resolution, spatial granularity, and analytic functionality.
+Our approach enables predictive modeling of cascading
+impacts across interconnected urban zones, significantly
+enhancing the precision and practical applicability of emer-
+gency planning. Additional references highlighting this com-
+parison have been included in the literature review for greater
+clarity. Unlike traditional GIS-based approaches [8], [23],
+which typically generate static vulnerability assessments,
+our method dynamically evaluates cumulative dependency
+risks, providing insight for prioritization of critical areas and
+optimized routing.
+III. BACKGROUND
+The proposed methodology for building the digital twin lever-
+ages multiple previously proposed modeling techniques [4],
+106592 VOLUME 13, 2025
+G. Stergiopoulos et al.: Enhancing Urban Heatwave Response Planning via a Graph-Based DT Approach
+TABLE 1. Comparison of the proposed digital twin-based spatial risk
+analysis vs. classical GIS-based emergency models.
+[26], [27], and uses them to build an assessment model
+for determining vulnerability and routing in transportation
+infra-structures by analyzing the inherent vulnerability of
+city blocks and the dependency chains between them using
+the road networks. Junction interdependencies are modeled
+exclusively at the node level, focusing on risks associated
+with city blocks or junctions rather than traffic flow or road
+interconnections. Junction interdependencies are considered
+as roads or highways as edges that connect city junctions.
+Using a graph-based approach, high-risk dependency paths
+– routes where congestion at a single junction can have a
+cascading effect on the whole network – can be identified.
+The research emphasizes that understanding the n th-order
+dependencies between junctions is crucial for forecasting
+cascading effects in urban infrastructure systems. The pre-
+sented methodology leverages on a CI dependency analysis
+method [26], which uses statistical methods and graph theory
+to model dependencies and propose risk-based mitigation
+actions. This method was chosen since graphs are a very
+useful isomorphism to the road network. Still, many differ-
+ent approaches exist in model infrastructure, for example
+and within the context of critical infrastructure protection
+at a level like a large metropolis such as Vienna city, and
+the legal attributions of cyber operations, several interdisci-
+plinary methodologies have been introduced. For example,
+Pipyros et al. [38], proposed a novel model leveraging Mul-
+tiple Attribute Decision Making (MADM) techniques in
+conjunction to the Tallinn Manual’s criteria to evaluate the
+scale and effects of cyber operations. In this regard, our
+proposed digital twin framework complements and extends
+such approaches by enabling dynamic, real-time simulations
+of cyber-induced disruptions within complex urban infras-
+tructures.
+A. DEPENDENCY ANAL YSIS METHODOLOGY
+In discrete mathematics, a graph is a collection of objects
+that are represented by abstractions called vertices/nodes,
+and each of the related pairs is called an edge in the sense
+that some pairs of the objects are related [10]. The num-
+ber |V(G)| of its vertices is called the order of the graph.
+Graphs can be either undirected or directed. In an undirected
+graph, edges have no direction, meaning the relationship
+between two vertices is bidirectional. Dependency analy-
+sis assesses the risk of nth-order dependencies by applying
+results of organization-level risk assessments. We define
+‘‘dependency’’ as a ‘‘one-directional reliance of an asset,
+system, or collection thereof on an input, interaction or
+other requirement from other sources to function properly’’
+[11], [12].
+In our case, dependency risk is quantified at the node level,
+representing the risk associated with urban junctions or city
+blocks. The overall risk of a path is then derived as the
+cumulative aggregation of the risks of the nodes along that
+path. Each node Ni is assigned to an individual riskRNi, which
+is calculated based on its likelihood and impact factors as per
+the following formula (1):
+RNi = LNi · INi (1)
+where LNi represents the likelihood of the node experiencing
+a risk, and INi quantifies the impact at that node.
+For a path P = {N 0, N1, . . .,Nk } with N0 as the
+source node, the cumulative dependency risk for path P is
+expressed (2) as the summary of all the risks at each node
+along the route:
+CDRP =
+∑k
+i=0 RNi (2)
+In the above formula, CDRP represents the total risk of
+the path, as calculated by the aggregation of all the risks
+of the nodes that make up the path. This methodology
+provides the ability to tailor results based on path length,
+defined as the number of nodes (or city blocks) included
+in the path. In that way, we can identify the most critical
+routes for the specific path length selected. This means that,
+for a given path length k, the methodology provides a set
+of city blocks (represented as nodes) that collectively have
+the highest cumulative risk. In that view, we provide first
+responders and digital twin users with the ability to adapt the
+methodology to different emergency response strategies and
+to adjust the desired path length to create optimized paths for
+several operational objectives, such as:
+Shorter paths: where rapid response and quick access to
+a subset of critical nodes are essential.
+Longer paths: where comprehensive coverage of high-risk
+areas over an extended route is required.
+VOLUME 13, 2025 106593
+G. Stergiopoulos et al.: Enhancing Urban Heatwave Response Planning via a Graph-Based DT Approach
+B. CENTRALITY METRICS
+Within graph theory, a plethora of measures have been pro-
+posed, especially within the context of transportation [27],
+to analyze complex networks. We can identify centrality as
+a quantitative measure to assess a node’s influence, signif-
+icance, or importance within a network (graph). The term
+‘‘importance’’ can be defined and measured from different
+perspectives, depending on the context and the specific metric
+used. These metrics are based on specific criteria, such as the
+number of direct connections (degree centrality), closeness to
+all other nodes (closeness centrality), etc.
+PageRank, Betweenness and Eigenvector metrics were
+selected based on their suitability to reflect diverse dimen-
+sions of urban networks [4], [27]. Betweenness centrality
+identifies critical nodes functioning as vital connectors
+essential for maintaining emergency route accessibility [4].
+Eigenvector and PageRank metrics were selected to quan-
+tify nodes’ cascading influences and their roles network
+wide [27]. Computationally, these centrality algorithms scale
+polynomially (O(V^2) to O(V^3), where V is the num-
+ber of nodes), confirming their suitability for application to
+city-scale transportation networks.
+The aforementioned centrality metrics effectively capture
+network vulnerability and, even though they are widely used
+within the domain of transportation network analysis and
+thus, alone, do not represent methodological novelty, still to
+the best of our knowledge, these metrics are not used before in
+determining node importance for urban areas in conjunction
+with heat indexes and traffic analysis.
+Below, we provide a short analysis of each centrality
+metric:
+1) Degree centrality, conceptually the simplest centrality
+measure, measures a node’s importance based on the
+pro-portion of edges a node has to the maximum possi-
+ble number of edges in the network (graph) [13]. Nodes
+with more connections to other nodes are considered
+more central and, therefore, will be measured with a
+high degree of centrality. In a graph where N is the total
+number of nodes, the number of edges connected to a
+node v, represent the degree centrality CD(v), as per the
+following formula:
+CD(v) = degree(v)
+N − 1 (3)
+2) Betweenness centrality is first introduced as a general
+measure applicable to a wide range of network theory
+problems, such as social networks and transportation.
+For every pair of vertices in a connected graph, at least
+one shortest path exists between the vertices such that
+either the number of edges that the path passes through
+(for un-weighted graphs) or the sum of the weights
+of the edges (for weighted graphs) is minimized. The
+betweenness centrality for each vertex is the number of
+these shortest paths that pass through the vertex [14].
+In other words, betweenness centrality quantifies the
+extent to which a node acts as a bridge to other nodes,
+thus controlling the flow of information. As per Free-
+man [15], who gave the first formal definition, the
+betweenness centrality CB (i) of a node i is given by
+the expression:
+CB (i) =
+∑
+j<k
+σjk (i)
+σjk
+(4)
+where, σjk is the total number of shortest paths from
+node (j) to node (k ), and σjk (i) is the number of those
+paths that pass through (i).
+3) Closeness centrality, how close a node is to all other
+nodes in a network, is calculated as the reciprocal of
+the sum of the length of the shortest paths between the
+node and all other nodes in the graph [16]. In that view,
+nodes with high closeness centrality can quickly inter-
+act with other nodes, effectively spreading information
+throughout the network. The closeness centralityCC (i)
+of a node i is defined as the reciprocal of the sum of the
+shortest path distances from i to all other nodes [17]:
+CC (i) = 1
+∑
+j̸=i d (i, j) (5)
+Typically, the normalized version of the above formula
+is used, representing the average length of the shortest
+paths instead of their sum.
+Normalized: C ′
+C (i) = N − 1
+∑
+j̸=i d (i, j) (6)
+4) Eigenvector centrality [18] measures the influence of a
+node in a connected network based on the importance
+of its neighbors or identifies a node that is connected to
+several other influential nodes, which can amplify their
+impact. Eigenvector centrality is commonly applied
+to identify influential individuals in social networks.
+To find the eigenvector centrality, we will use the
+adjacency matrix as follows:
+Let (A) be the adjacency matrix5 of the network, where
+(Aij = 1) if there’s an edge between (i) and (j), and (0)
+otherwise. The eigenvector centrality (C E (i)) for node
+(i) is the (i)-th element of the eigenvector (v) corre-
+sponding to the largest eigenvalue λ of (A), satisfying:
+Av = λv.
+5) PageRank (named after the term web page and
+Google’s co-founder Larry Page) is a variant of eigen-
+vector centrality initially developed for ranking web
+pages. It can also measure the probability of random
+jumps between nodes. It accounts for the influence of
+a page’s direct links and the quality (or PageRank) of
+the pages that link to it. The Page-Rank theory holds
+that an imaginary web user randomly clicking on links
+will eventually stop clicking. At any step, the proba-
+bility that the person will continue following links is a
+5In graph theory and computer science, an adjacency matrix is a square
+matrix used to represent a finite graph. The elements of the matrix indicate
+whether pairs of vertices are adjacent or not in the graph.
+106594 VOLUME 13, 2025
+G. Stergiopoulos et al.: Enhancing Urban Heatwave Response Planning via a Graph-Based DT Approach
+damping factor d. The PageRank (PR(i)) for node (i) is
+given by:
+PR (i) = 1 − d
+N + d
+∑
+j∈Bi
+PR (j)
+L (j) (7)
+where d is the damping factor, N is the number of
+nodes, Bi is the set of nodes linking to i, and L(j) is
+the out-degree of node j.
+C. RISK ANAL YSIS
+In this work, we define the graph G = (N, E), where N is
+the set of nodes which represent road junctions (or urban
+blocks), and E is the set of directed edges which represent
+roads bet-ween urban blocks/junctions. Directed edges also
+depict the dependency relationship between them. Each node
+is also characterized by a heat risk indexHni, calculated based
+on population and real-time temperature data. The disruption
+transferred through this dependency can be illustrated by
+the combination of Likelihood (Li,j), which represents the
+probability of heat-related risk affecting node Nj if node Ni is
+impacted, and the Impact (I i,j), which quantifies the severity
+of the heat-related risk at Nj due to its dependency on Ni.
+IPCC (Intergovernmental Panel on Climate Change) has
+given a general definition as ‘‘the propensity or predisposi-
+tion to be adversely affected’’. According to IPCC [39], the
+majority of researchers define vulnerability as a function of
+exposure, sensitivity and adaptive capacity, where exposure
+‘‘refers to the direct danger of urban heat that affects the
+considered area, and manifests as the prevalence of very
+high temperatures’’, strength quantifies ‘‘human’s reaction
+to high temperatures, and adaptive capacity ‘‘refers to the
+ability to cope with, recover and adjust to the impacts of heat
+events’’ [22].
+1) THE ‘‘LIKELIHOOD’’ METRIC FOR EXTREME HEAT EVENTS
+The likelihood metric is used to quantify the probability of
+extreme heat exposure at each node (road junction). The
+nodes used in the graph serve as geographical points where
+solar radiation and population vulnerability data are to be
+analyzed. The roads connecting these junctions – represented
+as edges in the graph – capture other relevant factors, such as
+road length.
+The methodology presented utilizes satellite data provided
+by the Google Solar API 6 for real-time heat index calcula-
+tions to reveal areas within cities that are more exposed to
+extreme temperatures. The solar radiation data, particularly
+the highest recorded solar radiation value for each junction,
+forms the basis for estimating the likelihood of heat vulner-
+ability at each node. Higher solar radiation at a junction (an
+accumulation of solar radiation data for the surrounding area)
+indicates more significant exposure to heat, thus increasing
+the likelihood of heat-related risks. The more intense the
+solar radiation is, the more likely that node (junction) will
+be exposed to heat extremes.
+6https://developers.google.com/maps/documentation/solar/overview
+We can assign a metric, L(N ), to each node N , representing
+the probability of heat-related risks based on climatic condi-
+tions. Specifically, the likelihood L(N ) at node (junction) N
+is defined as:
+L (N ) = S (N )
+Smax
+(8)
+where:
+1) S(N ) is the highest solar radiation recorded at node N
+during the year 2023.
+2) Smax is the maximum solar radiation value across all
+nodes in the network.
+Solar radiation values are normalized between values 0 and 1,
+where 1 indicates the highest recorded exposure to heat and
+sun radiation, to ensure comparability between the nodes
+(junctions). This normalization ensures that each node’s like-
+lihood score is comparable within the network, underscoring
+the relative heat exposure across the urban area.
+Heat exposure involves considering not just vulnerable
+groups but also exposure duration and general health status.
+Mapping this into our model is easily solved for our digital
+twin by aggregating the monthly flux data from Google Solar
+API. The Google Maps Solar API provides monthly flux data,
+which ‘‘represents the sunlight exposure of a rooftop for each
+month of the year’’ and ‘‘shows the monthly yield of sunlight
+on a given surface, expressed in kWh/kW/month’’ [32]. Give
+monthly flux averages that surpass the heatwave thresholds,
+defined statistically and empirically for Vienna for temper-
+atures above 30-32 degrees Celsius, it is easy to consider
+that these durations can be marked as ‘‘high duration’’ and
+‘‘detrimental for general health’’.
+2) THE ‘‘IMPACT’’ METRIC FOR AFFECTED JUNCTIONS
+The characteristics of the vulnerable population groups rep-
+resent the impact of heat exposure vulnerability at each node.
+We can identify vulnerable population groups as those that
+include the elderly (people over 65 years of age), infants
+(people under 2 years of age), and people with pre-existing
+medical conditions (i.e., heart or lung diseases) [19]. The
+impact metric is based on the density and characteristics
+of vulnerable populations near each road junction (node).
+We will use the available demographic data to assign each
+node a population vulnerability score, I (i). This metric rep-
+resents the concentration of high-risk individuals near each
+node/junction. The impact score I (i) for each node i is com-
+puted based on the total population of vulnerable age groups
+around that node, specifically aggregating individuals under
+9 and over 60. This score is then normalized by dividing by
+Pmax, the maximum vulnerable population across all nodes,
+yielding a value between 0 and 1. The formula for calculating
+the normalized impact score I (i) for each node i is as follows:
+I (i) = P (i)
+Pmax
+(9)
+where:
+VOLUME 13, 2025 106595
+G. Stergiopoulos et al.: Enhancing Urban Heatwave Response Planning via a Graph-Based DT Approach
+1) P(i) represents the vulnerable population score for node
+i, which is determined based on the number of individ-
+uals in vulnerable groups near that junction.
+2) Pmax is the maximum population vulnerability score
+across all nodes.
+First responder forces’ deployment and emergency plan-
+ning efforts can be prioritized based on the impact of the
+metric for each node (road junction). Nodes with high impact
+scores represent locations where extreme heat could lead to
+serious health implications, making them prime areas for
+preventive actions and rapid emergency response. In that
+view, this metric allows for areas with vulnerable populations
+to receive due consideration and support equity in emergency
+health response.
+3) THE ‘‘RISK’’ METRIC FOR HEATWAVE SCORING
+A ‘heatwave risk score’ is calculated by normalizing, scaling,
+and weighting data for likelihood and impact metrics above.
+Normalization for both metrics involves dividing observed
+values by maximum observed values across all nodes.
+The final risk score for each city block and junction i
+combines these normalized scores using a geometric mean,
+defined explicitly as:
+Risk (i) =
+√
+L (i) ∗ I (i)
+The geometric mean is selected because it appropriately
+penalizes extremes in both scores, thus ensuring balanced
+consideration of both exposure and impact [33], [34]. We will
+discuss the uses and justification of the geometric mean in
+section IV) CALCULA TING CITY BLOCK RISK below.
+IV. EMERGENCY INCIDENT RESPONSE PLANNING
+DU-RING HEAT EVENTS – VIENNA CITY CENTER CASE
+To validate the effectiveness of our approach regarding the
+optimal response strategies in heat-vulnerable areas, such
+as urban regions with high elderly populations and limited
+shade cover, we examined the case of the Vienna city center.
+Bet-ween 1961 and 1990, the city of Vienna experienced an
+average of 9,6 days of extreme heat per year, with that num-
+ber rising to 15,2 per year in 2010 [20]. More importantly,
+during the heatwave of 2003, Vienna experienced an overall
+of 44 extreme heat days, resulting in 180 deaths [21]. This
+section will describe the data set used in our analysis and the
+proposed methodology.
+A. DATA SOURCE
+1) VIENNA CITY CENTER POPULATION DATA
+The data set used for the population forecast for the years
+2014 to 2024 as per the Vienna census districts, is published
+by the City of Vienna (Vienna Municipal Administration).
+It is licensed under the City of Vienna’s Open Govern-
+ment Data, which are licensed under a ‘‘Creative Commons
+Attribution 4.0 License’’ (CC BY 4.0). The City of Vienna
+(a statutory city itself) is divided into 23 named city sections
+or districts. Our focus is on district number I, with district
+code 901 and named as ‘‘Innere Stadt’’.
+Based on the information provided in the dataset, the
+Vienna City center [District number: I, district code: 901XX,
+sub-codes: 90101 to 90107] as of 01.01.2024 had a total
+population of 15.390, of which 1826 were between the age
+0 and 9 and 5055 where above the age of 60. The IPCC [Inter-
+governmental Panel on Climate Change] identifies these age
+groups as vulnerable. As per ‘‘The Urban Heat Vulnerability
+Map of Vienna,’’ [22] the (heat) vulnerability is defined as a
+function of three factors:
+1) Exposure refers to the direct hazard posed by urban heat
+affecting the designated area. Urban heat is character-
+ized by persistently high temperatures across the city,
+known as ‘‘heat islands’’ or hot spots. The intensity of
+these hot spots can vary depending on various factors
+specific to the area and its built environment’’ [22].
+2) Sensitivity refers to ‘‘human response to high temper-
+atures, which depends on individual factors such as
+age, existing health conditions, and more. Sensitivity is
+evaluated by identifying individuals – in this scenario,
+the age groups previously identified - within a specific
+area most impacted by extreme heat’’ [22].
+3) Adaptive Capacity refers to the ability to ‘‘manage,
+recover from, and adjust to the effects of heat events’’
+[22]. In simple terms, adaptive capacity is the ability
+of systems within the urban environment to adapt and
+respond to changes, such as extreme heat.
+2) VIENNA CITY CENTER ROAD NETWORK
+Fetching road data is a simple process. There are several
+ways to achieve this, such as using open data and open street
+maps. To prepare the data for graph-based analysis, we can
+use the OSMnx [23] library to transform the data into x,y (lat
+and long) coordinates. These coordinates are used by several
+other programs and platforms, including Google Maps and
+Google Earth, providing extended functionality, availability,
+and versatility.
+3) VIENNA’S URBAN DEVELOPMENT DATASET
+The ‘‘Realnutzungskartierung ab 2007 Wien’’ [31] dataset
+offers a comprehensive overview of Vienna’s land use derived
+from aerial imagery, supplemented by additional factual data.
+The dataset provides three usage categories for a total of
+32 distinct categories in housing, green spaces, and trans-
+port, including health and emergency organizations. The
+hierarchical organization of these categories into the three
+levels provides a detailed framework for analyzing urban
+land usage. The detailed analysis of this dataset can pro-
+vide insights related to the location of the emergency health
+services, their proximity of the vulnerable population to
+healthcare facilities and first responders, as well as analysis
+of the urban layouts and green spaces.
+4) GOOGLE SOLAR API
+Google Solar API [32] is part of Google’s Environmental
+Insights Explorer (EIE) is a set of tools and data to estimate
+106596 VOLUME 13, 2025
+G. Stergiopoulos et al.: Enhancing Urban Heatwave Response Planning via a Graph-Based DT Approach
+the solar potential of rooftops across various geographic
+areas, and civil authorities, organizations, and urban planners
+can use to identify areas with high solar radiation. The Google
+Solar API [32] provides solar data for hundreds of millions
+of buildings world-wide, with imagery quality varying from
+HIGH (e.g., 10cm) to LOW (e.g., 30cm or worse). ‘‘Data
+layers’’ is one of the available endpoints in the Solar API.
+Each image layer provides unique information that, when
+combined, creates a com-prehensive picture of the rooftop.
+By using the Flux imagery, the level of sunshine (solar radi-
+ation) that hits the roof can be provided on a monthly and
+yearly basis. It accepts requests for three endpoints—
+• buildingInsights, which returns insights about a build-
+ing’s location, dimensions, and solar potential;
+• dataLayers, which provides URLs for raw solar infor-
+mation datasets covering an area around a location; and
+• geoTiff, which fetches rasters with encoded solar data
+including a digital surface model, aerial imagery, annual
+and monthly flux maps, and hourly shade.
+The API defines sunniness as relative sunlight exposure
+across a roof and reports sunshineQuantiles in 11 buck-
+ets (deciles) of annual sunniness values, with intermediate
+segments receiving values accordingly. Solar information is
+encoded in GeoTIFF rasters (returned via dataLayers), each
+comprising a matrix of pixels holding discrete (thematic) or
+continuous data across one or multiple bands, with bit depth
+(e.g., 8-bit) determining the range of values.
+Flux maps (annual sunlight in kWh/kW/year) account for
+location-specific hourly irradiance grids, weather patterns
+(cloud cover), shading from obstacles, and roof orientation.
+Coverage spans hundreds of millions of buildings worldwide,
+with imagery quality classified as HIGH (0.1 m/pixel low-
+altitude aerial), MEDIUM (0.25 m/pixel high-altitude aerial),
+and BASE (0.25 m/pixel satellite, experimental).
+5) DATASET PREPROCESSING
+The preprocessing module begins by traversing the Google
+Solar API data to ingest all block-level CSVs, computing the
+‘SolarRadiation’ values per location (lat,lon); it then applies
+a linear min–max transform to rescale these maxima into a
+uniform [1, 10] range.
+Next, the digital twin standardizes the raw demographic
+data for the Vienna population, and loads the Vienna Road
+network JSON, to use its latitude and longitude to call extract
+‘‘general,’’ ‘‘children under five,’’ and ‘‘elderly 60 plus’’
+density figures. An impact metric is derived as the arith-
+metic mean of the children and elderly densities, while the
+general density values undergo the same [1, 10] min–max
+normalization.
+In the integration phase, each node’s scaled radiation and
+scaled population density values are combined via a geomet-
+ric mean to produce a ‘likelihood‘ score, and both ‘likelihood‘
+and the precomputed ‘impact‘ metric are injected back into
+the node records. Finally, the code iterates over every edge
+in the graph, computes the average of the likelihood and
+impact values of its source and destination nodes, annotates
+the edge with these averages, and writes out the enriched
+JSON network to proceed with path and risk calculation and
+analysis.
+B. METHODOLOGY
+This section details the methodology for assessing risk in
+Vienna’s city center by integrating solar radiation data with
+population vulnerability metrics. The focus is on produc-
+ing actionable risk assessments of routes towards high-risk
+areas (i.e. maximum heatwave impact and high percentage of
+vulnerable population). This, tailored to emergency response
+planning and public health initiatives, will ensure targeted
+interventions in selected urban blocks.
+1) DATA ACQUISITION AND PREPARATION
+1) Road network. Data regarding Vienna’s city center’s
+road network (roads and junctions) are transposed into
+a graph G = (V ,E), whereV is the set of road junctions,
+and E is the set of roads.
+2) Population vulnerability data: Age-based demo-
+graphic information is used to identify vulnerable
+populations in Vienna’s city center urban blocks and
+map them with the relevant junction coordinates. Infor-
+mation on several age groups is retrieved for each city
+block.
+3) Solar radiation data: Solar radiation data retrieved
+for every month of 2023 for city center’s urban blocks.
+2) CALCULATING THE VULNERABLE POPULATION PER
+COORDINATE
+We calculated the vulnerable population using the data from
+‘‘VIE-Bevölkerungsprognose 2014 bis 2024—Wiener Zähl-
+bezirke’ ’ obtained from Opendata Vienna. Based on the
+IPCC’s recommendation, the age groups 0-14 and 60+ were
+identified as the most vulnerable to extreme heat. We then
+fetched the vulnerable population data for the coordinates
+corresponding to each junction and mapped the vulnerable
+population with road junctions.
+For each set of coordinates within the city center blocks,
+we calculate the total number of vulnerable populations,
+which is the summary of the individuals per vulnerable age
+group. The population counts for the vulnerable age groups
+are summarized to give the total number of vulnerable indi-
+viduals at that location. The total vulnerable populationPvuln
+at a given coordinate is calculated as:
+Pvuln = AGE00_02 + AGE03_05
++ AGE06_09 + AGE60_74 + AGE75+ (10)
+where: AGExx_xx corresponds to the various vulnerable age
+groups.
+3) EXTRACTION OF MAX SOLAR RADIATION VALUES
+For each city block, a folder containing the relevant date
+is created, which incorporates all monthly records of solar
+VOLUME 13, 2025 106597
+G. Stergiopoulos et al.: Enhancing Urban Heatwave Response Planning via a Graph-Based DT Approach
+radiation values. The goal is to identify the maximum solar
+radiation value for the year 2023, which represents the peak
+solar radiation. In that way, we have an estimation of the heat
+vulnerability index. The maximum solar radiation SRmax is
+calculated as the maximum of all values:
+SRmax = max (SR1, SR2, . . .,SR12) (11)
+where: SR1to12, are the solar radiation values for each month
+of the year.
+To facilitate comparisons between different city blocks,
+the solar radiation values are then normalized between the
+values 0 and 1, so the block with the lowest solar radiation
+is assigned a value of 0, and the block with the highest solar
+radiation is assigned a value of 1. All other values are scaled
+accordingly between the two extremes. For each block k, the
+solar radiation value v is normalized as per the following
+formula:
+SRnorm = v − SRmin
+SRmax − SRmin
+(12)
+where:
+• v is the highest solar radiation value for a given block.
+• SRmin is the minimum solar radiation value across all
+blocks.
+• SRmax is the maximum solar radiation value across all
+blocks.
+Finally, the result is rounded to two decimal places.
+4) CALCULATING CITY BLOCK RISK
+The normalized solar radiation values and the population
+vulnerability data (i.e., the appropriate age groups) are com-
+bined to retrieve the risk posed by these two factors for each
+city block and junction. The risk R, for each city block is
+calculated using the geometric mean of these two values
+calculated in the previous steps:
+R =
+√
+SRnorm × Pvuln (13)
+We chose to use the ‘‘geometric mean’’ since we needed to
+combine different variables (in this case, radiation and pop-
+ulation) to give us a balanced view. This approach [33], [34]
+is particularly useful when values are normalized between
+0 and 1, as it scales down extreme values and prevents them
+from dominating the average. Furthermore, the usage of the
+geometric mean, allows for the combination of values that are
+by default distinct in nature and measured on different scales,
+with neither factor dominating the results. Additionally, this
+approach allows for the combination of different risk factors
+that can summarize each other’s effects, rather than a simple
+addition.
+We adopt the geometric mean (multiplicative) aggregation
+in Eq. 13 to combine the hazard, exposure, and vulnerability
+factors. This choice ensures that the overall risk index is non-
+compensatory, meaning a deficiency in any one component
+strongly diminishes the total risk score. In contrast to a simple
+sum, a geometric mean does not allow one extremely high
+factor value to fully outweigh a very low value in another
+factor [36]. This property aligns with standard risk paradigms
+where risk is conceptually the product of hazard, exposure,
+and vulnerability [37].
+Using a geometric mean means to average the log-
+transformed inherent values [33], [34]. This formulation
+preserves the interpretation of the index on the original scale
+in the context of a city scale analysis and inherently penalizes
+imbalanced contributions across factors with multiple crite-
+ria – for example, improving all factors modestly yields a
+higher risk reduction than dramatically improving just one
+factor [37]. Eq. 13 variables are assigned equal weight (i.e.,
+equal exponents in the multiplicative formula), reflecting
+an assumption that hazard, exposure, and vulnerability are
+equally important in the absence of evidence to the contrary.
+This equal-weight approach is a common, neutral baseline in
+composite indicator design [37].
+We acknowledge that different weighting schemes could
+be employed if justified; for instance, planners might weight
+vulnerability higher if social factors are deemed paramount
+in a given city. Our framework is flexible in this regard.
+In this study, however, sensitivity tests showed that moderate
+weight adjustments did not substantially change the ranked
+risk outcomes, so we retain equal weights for clarity and to
+minimize bias.
+This approach ensures a balanced risk metric where the
+overall risk is not dominated or influenced at disproportional
+levels by either factor. The results are then incorporated into
+the city’s road network data, and each node is associated with
+the relevant cartesian coordinates (latitude and longitude).
+We will use this data to calculate the cumulative dependency
+risk for each node. The overall methodology is described in
+the following algorithm.
+V alidation of the metric is done by comparing Risk results
+with predicted emergency response locations and interven-
+tion points from recorded historical responses by experts,
+specifically during Vienna’s extreme heat events. First results
+demonstrate consistency with historical knowledge.
+5) REAL-TIME NODAL RISK UPDATES
+Up until this point, the methodology integrates static demo-
+graphic (vienna opengov.data) and solar radiation data
+(Google Solar API) within the graph model of the city to
+identify critical urban junctions and city blocks and optimize
+response routes for extreme heat events.
+However, to effectively capture the inherent complexity
+and dynamism of urban road networks, a digital twin must
+also include explicit mechanisms to dynamically update node
+risk profiles and adjust routing recommendations are nec-
+essary. The PANTHEON model iterations can incorporate
+real-time traffic and congestion data from google maps per
+road request, obtainable through the google maps API. This
+enables the ability for continuous recalculations of nodal risks
+and optimal paths as traffic conditions evolve, should a need
+for a real-time update is required.
+Specifically, PANTHEON adapts the graph analytics algo-
+rithms by automatically adjusting node vulnerability scores
+106598 VOLUME 13, 2025
+G. Stergiopoulos et al.: Enhancing Urban Heatwave Response Planning via a Graph-Based DT Approach
+Algorithm Process_Vulnerability_Data
+1. INITIALIZEbase_directory,input_json_path,output_json_path.
+2. LOAD the road network data from input_json_path.
+3. FIND the highest SolarRadiation value for each folder
+(representing city blocks over different months):
+a. FOR EACH folder in base_directory:
+i. SET (highest_value = −∞).
+ii. FOR EACH CSV file in the folder:
+Read the SolarRadiation column.
+FIND the maximum value in the file:
+[max_value = max (SolarRadiation)]
+UPDATE (highest_value) if:
+[max_value > highest_value]
+iii. STORE (highest_value) for the folder.
+4. NORMALIZE SolarRadiation values:
+a. FIND (max_radiation) and (min_radiation) across all
+folders:
+[max_radiation = max (highest_values) , min_radiation
+= min (highest_values)]
+b. FOR EACH folder:
+i. CALCULATE the normalized SolarRadiation value E(i):
+[E (i) = highest_value (i) −min_radiation
+max_radiation − min_radiation ]
+ii. STORE E(i) for each folder.
+5. PROCESS the road network data:
+a. FOR EACH node in the road network:
+i. FETCH vulnerable population data for the node
+coordinates using find_vuln_ppl(coordinates).
+ii. CALCULATE the total population risk P(i) by summing
+the values of all vulnerable age groups:
+[P (i) = AGE_00_02 + AGE_03_05 + . . . + AGE_75+]
+iii. CALCULATE the normalized impact value I (i) :
+[I (i) = P (i)
+Pmax
+]
+iii. CHECK if the node’s folder name exists in the
+normalized SolarRadiation data:
+IF EXISTS, calculate the likelihood L(i) using the geo-
+metric mean:
+[L (i) = √E (i) × P (i)]
+UPDA TE the node’s likelihood value in the JSON
+structure with L(i).
+iv. IF NOT EXISTS, PRINT an error message and exit.
+6. SA VEthe updated road network data:
+a. WRITE the updated JSON structure to output_json_path.
+7. END ALGORITHM.
+based on google maps API value changes in traffic patterns
+to enable accuracy and reliability in real-world emergency
+response scenarios. Although this ability exists, the following
+results from scenario executions do not use real-time traffic
+since tangible scenarios would require an existing heatwave
+to incorporate; something that is considered both infeasible
+at the time period of writing this paper as well as out of scope
+for the goals of the involved first responders.
+V. RESULTS
+This section presents the results of implementing our
+approach into a real-world case scenario. In this approach,
+we applied a dependency-based risk analysis approach
+aiming to support and enhance emergency response and
+first-responding planning in case of an extreme heat event
+occurring in Vienna’s city center. For this, we have incorpo-
+rated dependency risk assessment methodologies – focusing
+on interconnected systems – in interconnected systems, inte-
+grating solar radiation data (as provided by the Google
+Solar PAI), population vulnerability metrics (i.e., vulnerable
+age groups), and network centrality measures. As a result,
+we managed to identify critical road junctions (nodes) and
+optimal paths (edges) which can assist city planners and first
+responders to prioritize emergency response efforts. These
+insights can result in targeted interventions that align with
+areas of highest exposure and cumulative risk, particularly
+around crucial infrastructure nodes such as health services.
+A. HEAT AND VULNERABLE POPULATION DISTRIBUTION
+PER ROAD JUNCTION
+At this step, the digital twin models heat distribution across
+the city by combining solar radiation data and population
+vulnerability metrics and normalized as described in the
+methodology. The results highlight areas with the highest risk
+of heat exposure and vulnerable populations. By combining
+the retrieved data on solar radiation (as derived from the
+Google Solar API) and information on vulnerable popula-
+tions based on the recommendations and findings of the [22],
+we calculate the risk score for each road junction based on its
+tangent city blocks. Our method involves determining a heat
+exposure score based on solar radiation intensity balanced
+across blocks to allow for comparison. For each node we
+identified the vulnerable groups - groups under 2 years old
+and over 60 -, and superimposed to each road junction.
+Figure 2 presents a color-coded visualizations that depicts
+the intensity of risks (vulnerability levels and heat exposure)
+across urban zones in Vienna center. This output is given
+to first responders to facilitate quicker interpretation and
+decision-making by emergency responders and planners.
+As demonstrated in other studies, such as [24] on walka-
+bility scores, integrating multiple environmental and demo-
+graphic factors into a spatial risk framework helps pinpoint
+areas needing enhanced planning for public health and emer-
+gency response.
+For each node, a vulnerability score is calculated and then
+visualized, as depicted in Fig.1, which indicates which sur-
+rounding areas are more susceptible to effects resulting from
+extreme heat events. The current resolution was sufficient to
+identify major risk clusters, as those tend to cover multiple
+blocks and thus emerge even in coarse data. We have observed
+that densely populated areas, where elevated numbers of vul-
+nerable populations are correlated with high solar exposure,
+created high-risk clusters.
+B. JUNCTION CRITICALITY BASED ON BLOCK RISK
+We assessed the criticality of each node by overlaying the
+impact and likelihood factors to prioritize nodes in emergency
+planning.
+VOLUME 13, 2025 106599
+G. Stergiopoulos et al.: Enhancing Urban Heatwave Response Planning via a Graph-Based DT Approach
+FIGURE 1. An overview of road junctions with nodes depicting their
+dependency risk. Risk value < 29 = ‘lightblue’ , 30<= p_value < 49 =
+‘lightcoral’ , 50<= p_value < 79 = ‘orange’ , 80<= p_value < 100 = ‘red’ .
+This step identifies critical junctions within the road net-
+work by evaluating block-level risks derived from normalized
+heat and population data. These results prioritize areas requir-
+ing intervention based on cumulative risk measures. We have
+exploited several centrality metrics to identify critical junc-
+tions within the road network. More specifically, to underline
+the influence and reach of each junction (node), we used
+the PageRank and Eigenvector, which are based on the
+node’s connections to highly connected neighboring nodes.
+The importance of the node acting as a bridge between
+other nodes was particularly valuable in determining network
+vulnerability points. To measure this, we have identified
+high betweenness scores. This approach uses the method
+by [4] for assessing congestion in transportation networks,
+where dependency paths among road junctions were calcu-
+lated to prioritize infrastructure improvements and improve
+resilience.
+By analyzing relevant results, we identify nodes that are
+both highly connected and strategically located within the
+network. Identifying these critical nodes enables the effective
+and efficient allocation of emergency response resources,
+thus enhancing their effectiveness across the network. Our
+research shows that, to allow a prioritized emergency
+response in adverse conditions and areas with heightened
+risk and critical infrastructure presence, a centrality-based
+approach best fits for analyzing node connectivity and signifi-
+cance within a complex network. Table2 presents an example
+of calculated importance scores for city junctions located at
+the given coordinates. These metrics quantify the importance
+of each node based on its position and connectivity within
+Vienna’s city road network, as calculated in the road network
+graph. The centrality scores reflect the relative significance
+of each node (which represents a city block) in the overall
+network.
+The geodetic coordinates (lat, long) have been calcu-
+lated for each road junction (node) and are depicted here in
+parentheses.
+TABLE 2. Extract from the centrality results.
+From the evaluation of the relevant results, we can identify
+road junctions that are not only subjectable to heat risks but
+also are important for the urban network. For example:
+1) High betweenness centrality means that the node serves
+as a bridge between key areas (other nodes) and is vital
+for the effective flow of emergency resources and first
+responders.
+2) Eigenvector centrality means that the road junction acts
+as a highly influential node within the network, due to
+its connection to other important nodes. This measure
+is critical when determining the cascading effects on
+surrounding nodes and areas.
+C. CUMULATIVE DEPENDENCY RISK FOR EACH NODE
+This step calculates the cumulative dependency risk for
+each node by aggregating risks along interconnected paths,
+as explained in the dependency risk model. The results pro-
+vide insights into potential cascading effects across the urban
+network. The cumulative dependency risk is calculated for
+each node from the combination of the likelihood of heat
+exposure, as calculated from Google Solar API, with the
+impact this exposure may have, as expressed in the vulnerable
+population density. Our methodology addresses issues aris-
+ing from risk assessment calculations across multiple paths,
+identifying routes with higher dependency risks because of
+the node’s connections. Key observations are:
+1) High-risk Dependency Paths: Routes and their depen-
+dent road junctions, in which a single disruption can
+impact multiple critical areas.
+2) Scalable Risk Analysis: By scaling our model across
+nodes, we were able to create a risk mapping that identi-
+fies risks related to specific junctions and the possibility
+of cascading effects across the network.
+Furthermore, we evaluated our methodology by examining
+a specific node, namely node 687, as our focal point. This
+node represents a point where emergency health services
+are provided and where first responders may initiate their
+patrols. The choice of Node 687 was because it can effec-
+tively demonstrate our methodology’s capability to reveal
+cascading risks. In this example, the dependency risk between
+106600 VOLUME 13, 2025
+G. Stergiopoulos et al.: Enhancing Urban Heatwave Response Planning via a Graph-Based DT Approach
+nodes is calculated through a weighted sum of individual risks
+along connected nodes. In that way, it is possible to identify
+potential cascading effects in areas with high heat exposure
+and large numbers of vulnerable populations. Cumulative risk
+associated with every path is measured by aggregating the
+likelihood of heat exposure with the vulnerability metrics at
+each node. The paths originating from Node 683 illustrate
+how high dependency risks can propagate through multiple
+junctions, affecting broader areas if not mitigated. Using the
+dependency risk equation (2) we calculated the cumulative
+risks for paths originating from Node 683 as follows:
+Dependency Risk (DR) =
+∑n
+i=1 (Li · Ii) (14)
+where:
+1) Li: is the likelihood of heat-related risk for node i.
+2) Ii: is the impact based on the vulnerable population at
+node i.
+Node 683 is identified as a critical ‘‘cold spot’’, a strategic
+location for ambulances and first responders to provide shade
+and support during heatwaves. Node 683 is identified as a
+critical junction, prioritized for emergency planning during
+heatwaves. Table 3 provides an example of risk paths cal-
+culated by aggregating the risk scores of junctions along
+possible routes. Each node risk is determined by integrat-
+ing solar radiation and population data, representing a city
+block’s combined vulnerability.
+This approach provides emergency response planners and
+first responders with the flexibility to adapt their interven-
+tion plans according to the operational requirements. Rapid
+response can be ensured through the selection of the short-
+est paths, while longer paths allow for the comprehensive
+coverage of a large number of high-risk areas. In that way,
+emergency resources (limited by default) are effectively and
+efficiently allocated to address the increased impact via the
+most valuable locations within the urban network.
+D. OPTIMAL PATHS FOR EMERGENCY RESPONSE
+At this step, the digital twin identifies optimal paths for
+emergency response by integrating node-level risks and
+dependency chains. The results propose prioritized paths
+based on user-defined criteria, such as path length or risk cov-
+erage. Using the calculated dependency risk data, we can then
+identify optimal paths for first responders and emergency
+planning, that address exposure to high-risk zones, and at the
+same time maximize the coverage of vulnerable populations.
+We have identified the following cases:
+1) Paths that connect multiple high-risk nodes [please
+refer to Use case#1 below]
+2) Routes that provide the shortest high-risk paths allow-
+ing for rapid access to specific critical points. [please
+refer to Use case#2 below]
+By identifying these two use cases, we introduce the ability
+for first responders to utilize extensive coverage of vulnera-
+ble populations while minimizing costs associated with the
+chosen path. This approach improves coverage and reduces
+TABLE 3. Cumulative dependency risks when Node 683 is the source
+node.
+emergency response time, enabling the effective protection
+of vulnerable populations. Focusing on high cumulative
+dependency risk nodes helps strategically position relevant
+resources and incorporate proactive measures to efficiently
+and comprehensively address urban heat vulnerabilities.
+Quantitative performance metrics, including measurable
+reductions in emergency response times and improvements
+in the coverage of vulnerable populations, cannot be added
+explicitly without extended historical reference points where
+the simulation is run in parallel to real-world emergencies.
+To this end and to validate results, first responder experts
+compare between predicted response patterns generated by
+our model and historically recorded emergency responses
+and check for discrepancies. Results demonstrate tangible
+benefits, such as reduced response times in planning and more
+efficient resource allocation.
+The use of first responder expertise contributes to explicitly
+distinguishing between methodological advancements—such
+VOLUME 13, 2025 106601
+G. Stergiopoulos et al.: Enhancing Urban Heatwave Response Planning via a Graph-Based DT Approach
+FIGURE 2. Use case scenario #1. The longest risk path, originating from
+Node 683 connecting nodes with highest risk.
+FIGURE 3. The graphical representation of the highest and longest risk
+path calculated for Node.683 acting as source node.
+as integrating spatial dependency analytics with real-time
+environmental data—and applied insights from expert knowl-
+edge. Given that first responders validate the methodology
+through data and output review, this underscores the technical
+innovation of our model and its practical impact for enhanc-
+ing urban resilience.
+Use case #1 – Highest and Longest Risk Path
+The results of the relevant calculations are depicted in
+Fig.2 below, while the graphical representation is depicted
+in Fig. 3. Results represent risk paths originating from Node
+683, calculated by aggregating risk scores of individual
+nodes along each route. Results identify junctions that
+serve as critical hubs in the network, either due to their
+connectivity, influence on surrounding areas, or importance
+in mitigating cascading risks. City planners and emergency
+responders can use these insights for prioritizing infrastruc-
+ture improvements and resource allocation. By doing that,
+they can achieve max network resilience.
+Use case #2 – Shortest and Highest Risk Path
+The results of the relevant calculations are depicted in Fig.4
+below, while the graphical representation is shown in Fig.5.
+As shown in these results, the cumulative risk coverage and
+path length constraints can be balanced in such a way as
+to provide optimal paths for emergency responders. These
+paths that connect multiple high-risk nodes ensure efficient
+coverage of critical areas in minimum response times. This
+analysis supports strategic planning for emergency scenarios
+during extreme weather events (such as heatwaves).
+FIGURE 4. Use case scenario #2. The shortest risk path, originating from
+Node 683 connecting nodes with highest risk.
+FIGURE 5. The graphical representation of the highest and shortest risk
+path calculated for Node.683 acting as source node.
+TABLE 4. Global node-level correlation analysis (Spearman’s P).
+E. SENSITIVITY ANAL YSIS
+To examine the robustness of the risk assessment, we per-
+formed a sensitivity analysis on the heat hazard input. In our
+base scenario, the peak daytime heat index was [1-35 ◦C];
+here we varied within the entire range, studying each value
+with a margin of ±5% (approximately ±2 ◦C) and computed
+the relevant dependency risk indices for Global node-level
+correlation analysis of sensitivity for each variable tuple used
+in these experiments (u,d,) where u indicates an output met-
+ric, and d indicates the respective input analyzed against.
+Results depicted in Table 4 demonstrate that the resulting
+risk maps remain highly correlated with the environmental
+and spatial inputs (Overall Spearman’s ρ ≈ 0.8), confirm-
+ing that the digital twin’s risk estimations faithfully reflect
+underlying heatwave hazard and demographic vulnerabil-
+ity drivers. This strong monotonic relationship indicates
+that the model reliably identifies high-risk city blocks even
+under minor variations in heatwave intensity, ensuring robust
+sensitivity to environmental perturbations.
+106602 VOLUME 13, 2025
+G. Stergiopoulos et al.: Enhancing Urban Heatwave Response Planning via a Graph-Based DT Approach
+Likelihood (the geometric mean of radiation and den-
+sity) shows strong alignment with both inputs, while
+Impact (average of vulnerable-group densities) is perfectly
+rank-correlated with overall population density (ρ = 1.000),
+which is obvious since every node’s impact ranking is iden-
+tical to its general density ranking. Again, Impact shows
+no meaningful association with SolarRadiation (ρ ≈ 0.07),
+as expected since radiation does not enter the impact calcu-
+lation. Averaging across edges yields very similar patterns:
+likelihood remains strongly tied to both inputs (slightly more
+to density this time), and impact is again perfectly aligned
+with population density, but uncorrelated with radiation.
+Likewise, Vulnerable-group densities are scaling pro-
+portionally to general densities across all nodes. In other
+words, areas with higher overall population density also have
+proportionally higher densities of the considered vulnerable
+groups, with no reordering.
+Since likelihood = √(scaled_radiation × scaled_density),
+likelihood’s ordering naturally lies between the two inputs.
+The fact that ρ ≈ 0.76 vs. radiation and 0.66 vs. density con-
+firms that both factors contribute meaningfully—and neither
+completely dominates.
+This sensitivity analysis confirms that our digital twin
+framework can effectively calculate and discriminate risk
+levels for urban blocks in the context of heatwave scenarios
+and meaningfully correlate data to map risk both between
+locations and in clusters.
+VI. CONCLUSION
+This study presents a novel methodology for enhancing heat-
+wave response planning in urban centers using a digital twin
+model that integrates solar radiation data, population vulner-
+ability metrics, and graph-based network analysis. We aim
+to identify high-risk urban blocks by focusing on node-level
+risks. In that view, we can use efficient resource allocation
+and rapid access to high-risk areas by providing optimized
+response paths to first responders.
+This study provides tangible benefits from the practical
+application of the findings into risk prioritization and route
+optimizations for the optimized urban heatwave response
+preparedness and planning. First responders (e.g., an ambu-
+lance) can utilize the proposed methodology to identify paths
+that maximize risk coverage while adhering to operational
+or other limitations, such as ensuring that the patrol route
+does not exceed a duration of 15 minutes, by – for exam-
+ple – focusing on paths with a depth of 4 to 7 nodes.
+Furthermore, this methodology allows for strategically plac-
+ing appropriate resources at nodes within the critical paths
+allowing for rapidly reaching any point within their patrol
+area. The dual focus of this methodology ensures that emer-
+gency resources are both targeted toward the most vulnerable
+areas and readily available for rapid deployment in case of
+emergencies.
+The results demonstrate the effectiveness of this frame-
+work in prioritizing emergency planning. Key findings
+include the identification of critical junctions with high
+cumulative dependency risks and the generation of optimal
+paths tailored to user-defined constraints, such as path
+length and coverage of vulnerable populations. For example,
+we identified node 683 as a critical ‘‘cold spot.’’ Our model
+can guide first responders and city planners to strategically
+place the appropriate resources and, at the same time, suggest
+appropriate intervention strategies during extreme weather
+events, such as heat waves. City planners and public health
+authorities can benefit from this framework with the introduc-
+tion of targeted interventions and minimizing health impacts
+on vulnerable populations.
+The proposed approach is transferable to other urban set-
+tings, provided it is calibrated to local conditions. We antic-
+ipate that with appropriate Solar API data, city’s specific
+data availability, infrastructure, and road characteristics, the
+framework could be adapted to improve heatwave planning
+in other cities.
+Incorporating real-time data (such as environmental and
+demographic) and additional factors (such as transportation
+network disruptions) further expands the predictive capabili-
+ties of our model. The extension and expansion of our model
+can be achieved through its application to other cities or
+by simulating other extreme events (such as flooding). As a
+result, this methodology provides a robust foundation for
+urban resilience against heat waves and other climate-induced
+emergencies.
+VII. IMPLICATIONS AND FUTURE WORK
+Future work should explicitly address the implications of our
+findings within the context of European Union regulations
+and directives, particularly the EU Strategy on Adaptation to
+Climate Change (COM(2021) 82) and the revised Network
+and Information Security Directive (NIS2 Directive).
+According to NIS2., which mandates comprehensive
+risk-based approaches to protecting essential entities, mem-
+ber states must ensure resilience of essential services such
+as healthcare and emergency infrastructure; our findings
+directly support these obligations by pinpointing critical
+urban nodes where targeted interventions during heat-
+waves would substantially improve emergency response
+effectiveness.
+In terms of databases used, the Google API solar irra-
+diance data, scale resolution and grid layers are already
+too detailed for the purposes of a block-level heat map-
+ping. Uncertainty in data is of low risk due to the inherent
+high-analysis data provided by Google for the purposes of
+this project. Per-structure analysis and variance between
+daily values-per-build, are way more detailed than what is
+needed per day, city-level block mapping of a heatwave.
+This work could incorporate downscaled or locally measured
+solar radiation data for urban areas to minimize process-
+ing time. We suggest that integrating lower-resolution data
+while performing a location-specific calibration (e.g. using
+ground sensors), would be a useful next step to reduce
+overhead in calculations while keeping uncertainty too low
+levels.
+VOLUME 13, 2025 106603
+G. Stergiopoulos et al.: Enhancing Urban Heatwave Response Planning via a Graph-Based DT Approach
+Future research directions should also specifically aim
+at integrating real-time data streams from EU-supported
+environmental monitoring platforms (such as the Coperni-
+cus Earth Observation Programme) to enhance predictive
+accuracy for real-time emergency management decisions.
+Furthermore, a critical direction would be to expand the
+methodology’s applicability to also include modeling com-
+pound events, as emphasized by the EU Adaptation Strategy
+(COM(2021) 82), to address scenarios where heatwaves
+intersect with other infrastructural disruptions such as power
+outages, transport disruptions, or water shortages, thus ensur-
+ing robust compliance with EU resilience and climate
+adaptation policies.
+REFERENCES
+[1] R. García-Herrera, J. Díaz, R. M. Trigo, J. Luterbacher, and
+E. M. Fischer, ‘‘A review of the European summer heat wave of
+2003,’’ Crit. Rev. Environ. Sci. Technol., vol. 40, no. 4, pp. 267–306,
+Apr. 2010.
+[2] G. A. Meehl and C. Tebaldi, ‘‘More intense, more frequent, and longer
+lasting heat waves in the 21st century,’’ Science, vol. 305, no. 5686,
+pp. 994–997, Aug. 2004.
+[3] C. Schär, P . L. Vidale, D. Lüthi, C. Frei, C. Häberli, M. A. Liniger,
+and C. Appenzeller, ‘‘The role of increasing temperature variability in
+European summer heatwaves,’’ Nature, vol. 427, no. 6972, pp. 332–336,
+Jan. 2004.
+[4] A. Kazerani and S. Winter, ‘‘Can betweenness centrality explain traffic
+flow?’’ in Proc. 12th AGILE Int. Conf. Geographic Inf. Sci., Jan. 2009,
+pp. 1–9.
+[5] Bevölkerungsprognose 2014 Bis 2024—Zählbezirke (2) Wien (no Date)
+Dataset. Accessed: Nov. 10, 2024. [Online]. Available: https://www.
+data.gv.at/katalog/en/dataset/stadt-wien_viebevlkerungsprognose2014bis
+2024wienerzhlbezirke2
+[6] P . E. Phelan, K. Kaloush, M. Miner, J. Golden, B. Phelan, H. Silva III, and
+R. A. Taylor, ‘‘Urban heat island: Mechanisms, implications, and possi-
+ble remedies,’’ Annu. Rev. Environ. Resour ., vol. 40, no. 1, pp. 285–307,
+Nov. 2015, doi: 10.1146/annurev-environ-102014-021155.
+[7] 2018 Revision of World Urbanization Prospects (no Date)
+United Nations. Accessed: Nov. 10, 2024. [Online]. Available:
+https://www.un.org/en/desa/2018-revision-world-urbanization-prospects
+[8] S. Russo, J. Sillmann, and E. M. Fischer, ‘‘Top ten European heatwaves
+since 1950 and their occurrence in the coming decades,’’ Environ. Res.
+Lett., vol. 10, no. 12, Dec. 2015, Art. no. 124003, doi: 10.1088/1748-
+9326/10/12/124003.
+[9] J. A. Sokolowski, ‘‘Simulation: Models that vary over time,’’ in Principles
+of Modeling and Simulation: A Multidisciplinary Approach, Apr. 2008,
+pp. 47–69, doi: 10.1002/9780470403563.ch3.
+[10] R. J. Trudeau, Introduction to Graph Theory. New Y ork, NY , USA: Dover,
+2015.
+[11] Nipp 2013: Partnering for Critical Infrastructure Security and
+Resilience. USA Homeland Security. Accessed: Nov. 10, 2024. [Online].
+Available: https://www.cisa.gov/sites/default/files/publications/national-
+infrastructure-protection-plan-2013-508.pdf
+[12] O. Heino, A. Takala, P . Jukarainen, J. Kalalahti, T. Kekki, and
+P . V erho, ‘‘Critical infrastructures: The operational environment in
+cases of severe disruption,’’ Sustainability, vol. 11, no. 3, p. 838,
+Feb. 2019.
+[13] R. Diestel, Graph Theory, 3rd ed., Berlin, Germany: Springer, 2005, p. 5.
+[14] A. Guha and C. One, ‘‘Organization network analysis community detection
+of graphs,’’ Int. J. Eng. Res., vol. 8, no. 8, p. 213, Sep. 2019.
+[15] L. C. Freeman, ‘‘A set of measures of centrality based on betweenness,’’
+Sociometry, vol. 40, no. 1, p. 35, Mar. 1977, doi: 10.2307/3033543.
+[16] T. A. Central. (2024). Team Analytics Central, AI Central . Accessed:
+Nov. 10, 2024. [Online]. Available: https://www.aicentral.in/2024/02/17/
+unlocking-the-power-of-connections-a-deep-dive-into-graph-analytics/
+[17] A. Bavelas, ‘‘Communication patterns in task-oriented groups,’’
+J. Acoust. Soc. Amer ., vol. 22, no. 6, pp. 725–730, Nov. 1950, doi:
+10.1121/1.1906679.
+[18] M. J. Zaki and W. Meira, Data Mining and Analysis: Funda-Mental
+Concepts and Algorithms. Cambridge, U.K.: Cambridge Univ. Press, 2017.
+[19] I. M. Otto, D. Reckien, C. P . O. Reyer, R. Marcus, V . Le Masson, L. Jones,
+A. Norton, and O. Serdeczny, ‘‘Social vulnerability to climate change:
+A review of concepts and evidence,’’ Regional Environ. Change, vol. 17,
+no. 6, pp. 1651–1662, Aug. 2017, doi: 10.1007/s10113-017-1105-9.
+[20] D. Damyanovic, F. Reinwald, C. Brandenburg, B. Allex, B. Gantner,
+U. Morawetz, and J. Preiss, ‘‘Pilot action city of Vienna—UHI-STRA T
+Vienna,’’ inCounteracting Urban Heat Island Effects in a Global Climate
+Change Scenario. Cham, Switzerland: Springer, 2016, pp. 257–280.
+[21] L. M. R. Brooks, ‘‘Musical toothbrush with adjustable neck and mirror,’’
+Patent D 326 189, May, 19, 1992.
+[22] S. Bhattacharjee. (Jul. 2019). Vienna Heat Vulnerability Maps . ECO-
+TEN, Vienna, Austria. [Online]. Available: https://urban-comfort.eu/wp-
+content/uploads/2019/11/Booklet_UHVM_Vienna.pdf
+[23] G. Boeing. (2024). Modeling and Analyzing Urban Networks and
+Amenities With OSMnx. [Online]. Available: https://geoffboeing.
+com/publications/osmnx-paper/
+[24] E. Cubukcu, B. Hepguzel, Z. Onder, and B. Tumer, ‘‘Active living for
+sustainable future: A model to measure ‘walk scores,’’’Proc.-Social Behav.
+Sci., vol. 168, pp. 229–237, Jan. 2015, doi: 10.1016/j.sbspro.2014.10.228.
+[25] A. Akbarzadeh and S. K. Katsikas, ‘‘Dependency-based security risk
+assessment for cyber-physical systems,’’ Int. J. Inf. Secur ., vol. 22, no. 3,
+pp. 563–578, Jun. 2023.
+[26] P . Kotzanikolaou, M. Theoharidou, and D. Gritzalis, ‘‘Assessing n-order
+dependencies between critical infrastructures,’’Int. J. Crit. Infrastructures,
+vol. 9, no. 1, p. 93, 2013.
+[27] S. Derrible, ‘‘Network centrality of metro systems,’’ PLoS ONE, vol. 7,
+no. 7, Jul. 2012, Art. no. e40575.
+[28] D. Jana, S. Malama, S. Narasimhan, and E. Taciroglu, ‘‘Edge-based
+graph neural network for ranking critical road segments in a network,’’
+PLoS ONE, vol. 18, no. 12, Dec. 2023, Art. no. e0296045, doi: 10.1371/
+journal.pone.0296045.
+[29] Y .-Y . Cheng, R. K.-W. Lee, E.-P . Lim, and F. Zhu, ‘‘Measuring cen-
+tralities for transportation networks beyond structures,’’ Applications of
+Social Media and Social Network Analysis (School of Computing and
+Information Systems at Institutional Knowledge ). Singapore Management
+University, 2015, pp. 23–39. Accessed: Dec. 05, 2024. [Online]. Avail-
+able: https://ink.library.smu.edu.sg/sis_research/3640
+[30] Y . Alabbad, J. Mount, A. M. Campbell, and I. Demir, ‘‘A web-based
+decision support framework for optimizing road network accessibil-
+ity and emergency facility allocation during flooding,’’ Urban Infor-
+mat., vol. 3, no. 1, pp. 1–17, Mar. 2024, doi: 10.1007/s44212-024-
+00040-0.
+[31] Realnutzungskartierung AB 2007 Wien (no Date) Datensatz.
+Accessed: Dec. 5, 2024. [Online]. Available: https://www.data.gv.at/
+katalog/dataset/2f5baa1f-208c-42c2-8d04-9ea74aa1b229#additional-info
+[32] Google Maps Platform Documentation | Solar API | Google
+for Developers. Accessed: Dec. 5, 2024. [Online]. Available:
+https://developers.google.com/maps/documentation/solar
+[33] L. V . Rozovsky, ‘‘Comparison of arithmetic, geometric, and harmonic
+means,’’ Mathematical Notes , vol. 110, pp. 118–125, Aug. 2001, doi:
+10.1134/S0001434621070129.
+[34] D. A. Bini and B. Iannazzo, ‘‘Computational aspects of the geometric
+mean of two matrices: A survey,’’ Acta Scientiarum Mathematicarum,
+vol. 90, nos. 3–4, pp. 349–389, Dec. 2024, doi: 10.1007/s44146-024-
+00155-5.
+[35] Automation Systems and Integration—Digital Twin Framework for
+Manufacturing—Part 1: Overview and General Principles, document ISO
+23247-1:2021, ISO, Geneva, Switzerland, 2021.
+[36] (Mar. 2015). UNDP Human Development Report Office, Training Material
+for Producing National Human Development Reports. [Online]. Available:
+https://hdr.undp.org/system/files/documents/hditraining.pdf#:~:text=
+Note%20that%20the%20geometric%20mean,This%20is%20important%
+20when%20comparing
+[37] J. Wu, X. Chen, and J. Lu, ‘‘Assessment of long and short-term flood risk
+using the multi-criteria analysis model with the AHP-entropy method in
+Poyang lake basin,’’ Int. J. Disaster Risk Reduction, vol. 75, Jun. 2022,
+Art. no. 102968.
+[38] K. Pipyros, C. Thraskias, L. Mitrou, D. Gritzalis, and T. Apostolopoulos,
+‘‘A new strategy for improving cyber-attacks evaluation in the context of
+Tallinn Manual,’’ Comput. Secur ., vol. 74, pp. 371–383, May 2018, doi:
+10.1016/j.cose.2017.04.007.
+106604 VOLUME 13, 2025
+G. Stergiopoulos et al.: Enhancing Urban Heatwave Response Planning via a Graph-Based DT Approach
+[39] C. B. Field, V . R. Barros, M. D. Mastrandrea, K. J. Mach,
+M. A. K. Abdrabo, W. N. Adger, and Y . A. Anokhin, ‘‘Summary for
+policymakers,’’ in Climate Change 2014: Impacts, Adaptation, and
+Vulnerability. Part A: Global and Sectoral Aspects. Contribution of
+Working Group II to the Fifth Assessment Report of the Intergovernmental
+Panel on Climate Change. Cambridge, U.K.: Cambridge Univ. Press,
+2014, pp. 1–32.
+GEORGE STERGIOPOULOS received the B.Sc.
+degree in informatics from the University of
+Piraeus, Greece, and the M.Sc. degree in infor-
+mation systems and the Ph.D. degree in critical
+infrastructure protection at software and informa-
+tion interdependency levels from Athens Univer-
+sity of Economics and Business (AUEB), Greece.
+He is currently an Assistant Professor of informa-
+tion and communication systems security with the
+Department of Information and Communication
+Systems Engineering, University of the Aegean, Samos, Greece. He has
+published more than 50 articles and has been a principal investigator of many
+funded research projects in the areas of critical infrastructure protection,
+cybersecurity, and industrial systems security.
+SOZON A. LEVENTOPOULOS received the
+degree in radio frequency engineering from the
+Higher Military Academy, in 1995, and the M.Sc.
+degree in cybersecurity and digital infrastructure
+protection from Athens University of Economics
+and Business, where he is currently pursuing the
+Ph.D. degree in cybersecurity and cyberdefense.
+From 1995 to 2021, he was a member of the
+Hellenic Armed Forces, serving in several posts
+in Greece. He was also with NA TO and EU.
+He resigned from the Armed Forces, in 2021, to pursue a career in the private
+sector, working as a Cybersecurity Senior Expert and a Subject Matter Expert
+in several projects, including Greek private sector and EU institutes. He is a
+Researcher with the InfoSec Laboratory, Athens University of Economics
+and Business. He holds several cybersecurity certifications, such as CISSP ,
+C|CISO, C|EH, and CASP+; and a member of several organizations, such
+as the ISC2 Hellenic chapter, where he volunteers on several cybersecurity
+projects. He has co-authored two books and published articles and journals
+in cyber defense, international law, and critical infrastructure protection.
+MICHALIS KARAMOUSADAKIS received the
+M.Eng. degree in electrical and computer engi-
+neering (major in robotics) from the National
+Technical University of Athens (NTUA), in 2019.
+He has published an article in International
+Journal of Information Security titled: ‘‘Enhanc-
+ing Attack Resilience of Cyber-Physical Sys-
+tems Through State Dependency Graph Models.’’
+His research interests include software systems,
+artificial intelligence, robotics, and digital twins.
+BENJAMIN SCHUSTER has been a Medico-
+Scientific Lecturer focusing on physiology and
+pathophysiology for the last ten years starting as
+a student with the Medical University of Vienna
+and continuing on in the private sector. During his
+studies, he collected international experience with
+Canadian Embassy’s Trade Delegation in Vienna
+with his responsibilities mainly in the environ-
+mental industries. In 2018, he has founded an IT
+consulting firm and came to work with JOAFG,
+in 2022, combining medical and technological areas of expertise. For the
+PANTHEON project, he is providing insights from the end-user perspective
+through his experience as a Researcher and a Paramedic with experience
+in over 20 national and international projects mainly focusing on security
+research.
+DIMITRIS GRITZALIS received the B.Sc. degree
+in mathematics from the University of Patras,
+Greece, the M.Sc. degree in computer science from
+the City University of New Y ork, USA, and the
+Ph.D. degree in information systems security from
+the University of the Aegean, Greece. He is a
+Professor of cybersecurity with the Department
+of Informatics, Athens University of Economics
+and Business (AUEB), Greece, where he is also
+the Director of the M.Sc. Program in Information
+Systems Security. He was an Associate Rector for Research with AUEB,
+the President of the Greek Computer Society (GCS), and an Associate Data
+Protection Commissioner of Greece. His current research interests include
+cybersecurity, critical infrastructure protection, risk assessment, malware,
+access control, and security education. He is an Academic Editor of Comput-
+ers and Security (Elsevier) and the Scientific Editor of International Journal
+of Critical Infrastructure Protection (Elsevier).
+VOLUME 13, 2025 106605

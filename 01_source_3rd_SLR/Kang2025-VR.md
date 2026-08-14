@@ -1,0 +1,23 @@
+# Kang et al. (2025) — Effective Underground Facilities Management in Virtual Reality by Applying a Cybersickness Reduction Technique Based on a Four-Degree-of-Freedom Motion Simulator
+
+- **ID:** 3792 | **Source:** Scopus | **DOI:** 10.1109/ACCESS.2025.3532597
+- **Journal:** IEEE Access
+- **Authors:** Kang, N.; Seo, S. W.; Jung, W. S.; Lee, J.; Lee, Y. T.
+
+## Abstract summary
+Managing underground utility tunnels (UUT) poses challenges such as safety risks, limited accessibility, and high training costs. To address these, we developed an effective VR-based UUT management training simulator, integrating digital twins with a multi-degree-of-freedom (DoF) motion platform to provide an immersive, cybersickness-reducing experience. Advances in actuator and computer graphics technology have increased the research and development of virtual reality (VR)-based training simulators that use multi-DoF motion platforms. In this study, the proposed system provides precisely synchronized visual feedback through a head-mounted display and kinematic feedback via four-DoF motor-based actuators, realistically simulating UUT conditions, including momentum shifts such as falls and micro-swaying. To mitigate cybersickness, visual and kinematic acceleration control techniques are e…
+
+## Step-1 Screening (Prompt A)
+| G Domain AECO | H DT core | I DfS/DfQ/PtD | J Pub-type | K English | Decision |
+|---|---|---|---|---|---|
+| Yes | Yes | Yes | Yes | Yes | **Include** |
+
+**Note:** VR+DT training simulator for underground utility tunnel management safety
+
+## Step-3 Deep-Read Coding (Prompt B) — full text verified via Endnote library (front-matter DOI/title match, coverage re-scan 2026-08-12)
+
+| P | Q | R | U Tier | V | W | X | Z | AA | AB | AC | AD | AE | AF |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| Yes | Yes | Yes | Tier 1 - Digital Model | 0 | 0 | 1 | Design for Safety (DfS) | None | Digital Twin platform (no machine learning) | Single (one data type) | Single case study | 3 | Design for Safety |
+
+**Key evidence (AG):** VR-based UUT management training simulator (Korea ETRI): digital twin of an underground utility tunnel modeled once from high-precision LiDAR scans, integrated with a 4-DoF motor motion platform; visual (HMD) + kinematic (fall, micro-vibration) feedback with cybersickness-reduction acceleration control; scenario content (facility installation, inspection, device repair); evaluated with 17 participants for cybersickness vs existing VR. Static reconstructed training replica — no live data link from a real asset and no learning loop; worker-safety training motivation.

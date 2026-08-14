@@ -1,0 +1,1233 @@
+RESEARCH ARTICLE OPEN ACCESS
+An Anomaly-Enhanced Digital Twin (AEDT) Model for
+Intelligent Inspection and Management of
+Civil Infrastructure
+Nai-Hsin Pan 1 | Bo-Yuan Chang2 | Kuei-Yen Chen 2
+1Department of Civil and Construction Engineering, National Yunlin University of Science and Technology, Douliu, Taiwan | 2Graduate School of Engineering
+Science and Technology, National Yunlin University of Science and Technology, Douliu, Taiwan
+Correspondence: Nai-Hsin Pan (pannh@yuntech.edu.tw )
+Received: 21 September 2025 | Revised: 16 January 2026 | Accepted: 9 February 2026
+Academic Editor: Tengfei Nian
+Keywords: anomaly detection | deep learning | digital twin | slope infrastructure | structural health monitoring | UAV
+ABSTRACT
+The increasing frequency of extreme climate events poses signi ﬁcant risks to slope infrastructure, while traditional inspection
+methods are often inefﬁ cient and unsafe. Although unmanned aerial vehicles (UAVs) combined with structure-from-motion
+(SfM) provide high- ﬁdelity 3D models, they lack the semantic understanding necessary for automated damage assessment. This
+study addresses this gap by developing and validating an anomaly-enhanced digital twin (AEDT) framework. The proposed
+system integrates multiview UAV imagery, SfM-based 3D reconstruction, and a convolutional neural network (CNN) for auto-
+mated anomaly classiﬁcation. This information is then fused into an interactive, geographic information system (GIS)-compatible
+DT platform for lifecycle management. A case study on a soil and water conservation (SWC) structure in central Taiwan was
+conducted for veri ﬁcation. The deep learning module achieved a macroaverage F1-score of 0.81, demonstrating balanced perfor-
+mance across erosion, spalling, siltation, and collapse classes. This was validated on a held-out test set derived from a total of 2000
+annotated images spanning four anomaly types with three severity levels. Furthermore, the AEDT-based work ﬂow reduced on-
+site inspection time by ~63 % compared to conventional manual methods. The resulting AEDT model provides a dynamic,
+semantically enriched 3D representation of the infrastructure, linking geometric data with damage attributes and historical
+maintenance records. This research demonstrates a feasible and scalable solution for intelligent infrastructure monitoring,
+offering a robust tool for enhancing climate resilience and enabling proactive asset management.
+1 | Introduction
+The frequency and intensity of extreme climate events have
+increased signiﬁcantly in recent decades, posing escalating risks
+to soil engineering and civil infrastructure systems. Extreme pre-
+cipitation, prolonged heatwaves, and intensiﬁed typhoons not only
+accelerate the physical degradation of infrastructure components—
+such as surface erosion, cracking, and material fatigue —but also
+destabilize geotechnical systems through hydrologicalﬂuctuations,
+increased pore water pressure, and slope saturation.
+Soil and water conservation (SWC) structures, which play a critical
+role in mitigating sediment transport, maintaining slope stability,
+and protecting downstream communities, are particularly vulnera-
+ble. This vulnerability is compounded in mountainous or remote
+terrains where SWC installations are often located. In such areas,
+routine inspection and maintenance are hindered by inaccessibility,
+complex topography, and unpredictable weather patterns. As a
+result, latent damage may go undetected, increasing the likelihood
+of progressive deterioration and sudden failure.
+This is an open access article under the terms of the Creative Commons Attribution License, which permits use, distribution and reproduction in any medium, provided
+the original work is properly cited.
+Copyright © 2026 Nai-Hsin Pan et al. Advances in Civil Engineering published by John Wiley & Sons Ltd.
+Advances in Civil Engineering, 2026; 2026:2063316 1o f1 4
+https://doi.org/10.1155/adce/2063316
+Advances in Civil Engineering
+
+These growing challenges necessitate a paradigm shift in monitor-
+ing practices—moving from periodic, manual inspection methods
+toward intelligent, automated, and spatially contextualized solu-
+tions capable of operating in dynamic and data-scarce environ-
+ments. To address this need, researchers are increasingly using
+unmanned aerial vehicles (UAVs) equipped with high-resolution
+sensors to conduct infrastructure inspections. This technology has
+become an important alternative to traditional ground surveys due
+to its high ef ﬁciency, safety in accessing hard-to-reach areas, and
+ability to obtain high-precision data.
+However, simply collecting large amounts of image data is not
+enough in itself; the potential of the raw data needs to be fully
+unleashed through advanced processing techniques. To this end,
+UAV photogrammetry combined with structure-from-motion
+(SfM) technology can quickly and noncontact produce dense 3D
+point clouds that accurately represent the surface morphology. The
+advantage of such reconstructions is that they can provide high-
+ﬁdelity geometric models, which are particularly useful for quanti-
+tatively recording erosion, deformation, and geometric anomalies.
+However, the main limitation of this method is that its output is
+purely geometric in nature and lacks semantic understanding. In
+other words, although the point cloud accurately depicts the
+“shape” of the structure, it cannot automatically identify whether
+a feature is a “crack,”“ spalling,” or a harmless shadow. This need
+for semantic annotation of massive visual data provides an entry
+point for the next stage of technology application.
+Simultaneously, advances in computer vision, particularly the
+application of deep convolutional neural networks (CNNs)—have
+greatly improved the accuracy and automation of structural defect
+detection. CNN –based models have demonstrated signi ﬁcant
+potential and high precision in detecting surface cracks and other
+forms of damage. Emerging methods further combine object detec-
+tion with generative networks, improving robustness and speed
+even under varying lighting and texture conditions.
+Despite these advances in technology, current inspection systems
+often lack semantic integration and temporal continuity.
+UAV–CNN pipelines typically operate in a 2D image space and
+are not embedded in a spatially contextualized framework that
+supports lifecycle monitoring or predictive analytics. Digital twin
+(DT) technology offers a promising solution by creating a dynamic
+3D representation of infrastructure linked to sensor data and main-
+tenance records. In geotechnical applications, DTs are increasingly
+being used for real-time risk prediction and slope deformation mon-
+itoring through data fusion and arti ﬁcial intelligence (AI)-driven
+analytics. However, implementations tailored for SWC structures
+remain limited and often lack the integration of semantic defect
+recognition and geometry-aware modeling.
+This study addresses this gap by proposing an integrated anomaly-
+enhanced DT (AEDT) framework that combines UAV-SfM-based
+3D modeling, CNN–based semantic anomaly detection, and rule-
+based degradation classiﬁcation in a geographic information system
+(GIS)-compatible environment. The goal is to build a scalable smart
+system for time-series inspection, condition assessment, and pre-
+ventive maintenance of slope infrastructure to enhance its resilience
+under changing climate conditions. By connecting geometricﬁdel-
+ity and semantic intelligence into a dynamic, inspectable, and upda-
+table DT, this study advances theﬁeld of smart SWC infrastructure
+monitoring and climate-adaptive resilience.
+2 | Literature Review
+The increasing demand for automation in infrastructure inspection
+has fueled growing research interest in integrating remote sensing,
+AI, and digital modeling technologies. For SWC structures—often
+located in remote and rugged areas —manual inspection presents
+signiﬁcant limitations. As a result, there is a growing need for efﬁ-
+cient, objective, and scalable alternatives to traditional practices.
+Recent developments emphasize a multidisciplinary convergence,
+combining UAV photogrammetry, deep learning algorithms, and
+DT frameworks to address these challenges in a more intelligent,
+adaptive, and holistic manner.
+2.1 | Deep Learning for Structural Anomaly
+Detection
+With the rapid advancement of computer vision, deep learning has
+emerged as a pivotal tool for defect detection. Foundational research
+by Cha et al. [1] ﬁrst demonstrated the efﬁcacy of CNNs for robust
+crack detection, signiﬁcantly outperforming traditional edge detec-
+tion methods. Building on this, Cha et al. [2] further advanced the
+ﬁeld by implementing faster region-based CNNs (Faster R-CNN) for
+the simultaneous detection of multiple damage types, establishing a
+benchmark for automated visual inspection.
+In surface defect inspection, Yang et al. [ 3] proposed a deep
+learning-based system that utilizes multiscale and channel-
+compressed features, combining multiple convolutional layers
+with varied kernel sizes to better accommodate cluttered back-
+grounds and variably sized defects. For cement concrete bridge
+surfaces, Zhu and Song [4 ] developed an intelligent classi ﬁcation
+model by modifying the classic VGG-16 network, which achieved
+superior accuracy in distinguishing seven distinct defect categories
+compared to shallower networks. Similarly, for underground park-
+ing structures, Shin et al. [ 5] utilized a Faster R-CNN model to
+objectively locate and classify common defects such as paint peeling
+and leakage from a large image dataset.
+The application of deep learning extends to specialized infrastruc-
+ture monitoring. For railway tracks, Dang et al. [ 6] introduced an
+efﬁcient image classiﬁcation model that leverages a CNN to analyze
+RGB spectral images of ultrasonic signals, enabling high-accuracy
+condition identiﬁcation for large-scale monitoring. In water distri-
+bution systems, Shukla and Piratla [ 7] developed a deep learning
+algorithm using a modi ﬁed AlexNet CNN to detect pipeline lea-
+kages from vibration signal images, reaching up to 98 % accuracy.
+For internal defects in reinforced concrete, Kuchipudi and Ghosh
+[8] presented a region-based CNN model that employs RoIAlign on
+ultrasonic images to automatically detect and segmentﬂaws, attain-
+ing a mean average precision (mAP) as high as 0.98.
+In manufacturing, Meister and Wermes [ 9] evaluated the perfor-
+mance of CNN – and RNN –based algorithms for analyzing laser
+scanner data, demonstrating that a combined CNN–RNN architec-
+ture is highly effective for real-time defect classi ﬁcation in auto-
+mated ﬁber placement processes. To provide a broader
+perspective, review articles have also been pivotal. Ming et al.
+[10] conducted a literature review of deep CNN applications for
+defect detection in 3C products, summarizing various frameworks
+and analyzing their respective challenges. Likewise, Ali et al. [ 11]
+published a comprehensive review on the implementation of CNNs
+for crack detection in civil structures, detailing all procedural
+2o f1 4 Advances in Civil Engineering, 2026
+ 7074, 2026, 1, Downloaded from https://onlinelibrary.wiley.com/doi/10.1155/adce/2063316, Wiley Online Library on [09/08/2026]. See the Terms and Conditions (https://onlinelibrary.wiley.com/terms-and-conditions) on Wiley Online Library for rules of use; OA articles are governed by the applicable Creative Commons License
+
+aspects and highlighting the a dvantages over conventional
+methods.
+Collectively, these studies demonstrate the immense potential of
+deep learning, especially CNNs and their variants, to overcome the
+limitations of traditional methods in terms of time, cost, and accu-
+racy for defect detection across a wide range of materials and
+structures.
+2.2 | Application of UAVs in Structural Damage
+Assessment and Monitoring
+UAVs have become indispensable tools in inspecting dif ﬁcult-to-
+access civil structures such as slopes, bridges, and postdisaster
+zones. The operational health inspection and postdisaster damage
+assessment of civil structures have long been critical challenges in
+both research and practice. Traditional visual inspection methods
+suffer from high variability, subjectivity, and the substantial cost
+and time required for large-scale infrastructure, leading to insufﬁ-
+cient temporal resolution for effective decision-making. In recent
+years, the rapid development and maturation of UAV technology
+has presented new opportunities to address these challenges. With
+their advantages of high spatial resolution, capacity to generate
+stereoscopic imagery and its derivatives, and platform ﬂexibility,
+UAVs have opened numerous new possibilities in theﬁeld of dam-
+age mapping. This review aims to synthesize recent key research on
+the use of UAVs for structural damage detection, quanti ﬁcation,
+and monitoring, providing a comprehensive perspective on the
+progress and potential within this ﬁeld.
+A critical evolution in this domain is the shift from manual piloting
+to fully autonomous systems. Kang and Cha [ 12] developed an
+autonomous UAV system utilizing ultrasonic beacons for structural
+health monitoring (SHM) in GPS-denied environments, overcom-
+ing major navigation limitations in conﬁned spaces. Furthermore,
+Ali et al. [ 13] introduced a real-time multiple damage mapping
+framework using autonomous UAVs, while recent innovations
+have integrated obstacle-avoidance capabilities with ﬁducial
+marker-based localization to ensure safe operations in complex
+structural geometries [14]. These advancements highlight the grow-
+ing feasibility of automated data acquisition in complex structural
+environments. Pan et al. [ 15] integrated UAV photogrammetry
+with panoramic imaging and fuzzy semantic evaluation, enhancing
+both spatial coverage and automated condition assessment for SWC
+infrastructure. Kerle et al. [ 16] reviewed the evolution of UAV
+applications in structural disaster damage mapping, charting the
+progression from providing simple descriptive overviews of disaster
+scenes to employing more complex texture and segmentation-based
+methods, and ultimately to utilizing advanced deep learning
+approaches with multitemporal and multiview imagery for compre-
+hensive damage characterization. Their review also explored
+emerging developments such as the practicality of UAV mapping
+strategies for ﬁrst responders, improvements in machine learning,
+and the application of UAVs in GPS-denied environments and
+infrastructure maintenance.
+For speciﬁc damage assessment of infrastructure like bridges, sev-
+eral studies have demonstrated the potential of integrating UAVs
+with advanced image processing and AI. Ellenberg et al. [17] dem-
+onstrated the use of computational algorithms with UAV-acquired
+imagery for quantitative damage assessment, employing a postpro-
+cessing framework involving homography and lens distortion
+correction to extract precise measurements of deformation, change
+detection, and crack patterns. Peng et al. [ 18] developed a UAV-
+based machine vision method using hybrid feature learning for
+bridge crack identi ﬁcation and width quanti ﬁcation, which inte-
+grated an R-FCN network with Haar-AdaBoost to achieve over
+90% accuracy in real-world crack measurements. Kao et al. [ 19]
+combined the YOLOv4 deep learning model with UAV image pro-
+cessing techniques to extract and quantify bridge cracks, achieving
+92% accuracy and a width measurement precision of up to 0.22 mm
+by converting identiﬁed crack images to binary maps for precise
+edge detection.
+Beyond static damage assessment, UAVs are also being utilized for
+dynamic response monitoring. Wang et al. [ 20]p r o p o s e daU A V -
+based video analysis methodology to track earthquake-induced
+building displacements. By correcting sensor motion and tracking
+natural features at the pixel level, their method extracts dynamic
+responses with engineering-grade accuracy (RMSE<2 cm), as vali-
+dated by shake-table tests.
+The application of UAVs has further expanded to more specialized
+and efﬁ cient infrastructure inspections. Benelmostafa and
+Medromi [ 21] introduced a multitask YOLO model, named
+PowerLine-MTYOLO, for the simultaneous segmentation of power
+cables and detection of broken strands from UAV imagery. By
+integrating novel modules into a YOLO v8-based architecture, their
+model signiﬁcantly improved detection and segmentation perfor-
+mance, offering a promising solution for autonomous aerial inspec-
+tions. Collectively, these studies demonstrate that UAVs serve as a
+powerful tool, signiﬁcantly enhancing the efﬁciency and precision
+of structural damage assessment and infrastructure maintenance,
+evolving capabilities from qualitative descriptions to precise quan-
+titative analysis, dynamic monitoring, and complex multitask
+processing.
+2.3 | DTs for Infrastructure Maintenance
+Management
+The concept of DT, initially developed by NASA for spacecraft
+simulation, has been increasingly applied in civil infrastructure,
+particularly since 2020. As three-dimensional digital models
+assume an increasingly vital role in domains such as smart cities,
+DTs, autonomous driving, and industrial production, the associated
+data processing, model construction, and applications have become
+central to current research. Recent literature reveals numerous
+innovative ﬁndings, from the precise semantic segmentation of
+3D point cloud data to the application of DTs that integrate AI
+and extended reality (XR) technologies.
+In the realm of 3D point cloud semantic segmentation, Ballouch
+et al. [22] developed a novel prior-level fusion approach for large-
+scale urban environments that integrates optical image classi ﬁca-
+tions as prior knowledge into a RandLaNet deep learning model,
+achieving a 96% intersection over union (IoU). Addressing similar
+challenges, Bai et al. [ 23] introduced MFFTNet, a new 3D point
+cloud segmentation network that leverages a multiscale feature
+fusion and transformer architecture to enhance performance by
+globally modeling overall shape while embedding local details.
+For detailed urban modeling, M ünzinger et al. [ 24] proposed a
+GIS work ﬂow to generate detailed 3D tree models from LiDAR
+point clouds by classifying the urban forest and parametrically
+Advances in Civil Engineering, 2026 3o f1 4
+ 7074, 2026, 1, Downloaded from https://onlinelibrary.wiley.com/doi/10.1155/adce/2063316, Wiley Online Library on [09/08/2026]. See the Terms and Conditions (https://onlinelibrary.wiley.com/terms-and-conditions) on Wiley Online Library for rules of use; OA articles are governed by the applicable Creative Commons License
+
+reconstructing individual tree crowns, thereby ﬁlling a critical
+information gap in high-resolution urban forest structure.
+Within the scope of DT applications, diverse solutions have been
+presented. Xu et al. [25 ] developed a DT health monitoring infor-
+mation model for building structures by fusing a building informa-
+tion model (BIM) with a real-scene 3D model, enabling streamlined
+sensor data management for SHM. Extending to industrial contexts,
+Chatterjee et al. [26] investigated how immersive collaborative busi-
+ness processes and XR-driven industrial metaverse technologies
+can facilitate economic value cocreation within 3D DT factories,
+highlighting the role of interconnected AI and IoT systems. Fur-
+thermore, Hu et al. [ 27] proposed a generative AI-enabled facility
+layout design paradigm that integrates semantic models, such as
+the Asset Administration Shell (AAS), with knowledge graphs and
+large language models (LLMs) to automate and optimize layout
+generation from contextual prompts, aligning with Industry 4.0
+principles.
+Collectively, these research efforts advance the application of 3D
+digital models in smart cities, industrial production, and building
+management. Speciﬁcally, by combining deep learning, data fusion,
+AI, and DT technologies, they signiﬁcantly enhance data processing
+precision, system intelligence, and real-time monitoring capabili-
+ties. While photogrammetry and SfM remain industry standards for
+large-scale modeling, emerging technologies such as neural radi-
+ance ﬁelds (NeRF) are redeﬁning the boundaries of 3D reconstruc-
+tion. Recent studies by Kim and Cha [ 28, 29]d e m o n s t r a t e d
+Nerfacto-based approaches capable of pixel-wise damage mapping
+with superior visual ﬁdelity. However, current DT applications in
+civil engineering often prioritize interoperability with existing GIS
+and BIM standards. Consequently, this study adopts SfM-based
+explicit geometric modeling to ensure seamless integration with
+legacy asset management systems.
+2.4 | Research Gap and Proposed Solution
+To position our contributions against prior art, we summarize rep-
+resentative studies and contrast integration level, temporal capabil-
+ity, and novelty in Table 1.
+In summary, although UAVs and AI have proven effective for
+enhancing infrastructure inspection, and DTs provide a robust
+framework for lifecycle asset management, current applications
+often operate in silos. Few existing systems fully integrate UAV-
+acquired imagery, AI-based anomaly detection, and semantically
+enriched 3D DT models into a uniﬁed, scalable platform. This lack
+of convergence creates a signi ﬁcant research gap in critical areas
+such as multimodal data integration (e.g., 2D imagery, 3D geomet-
+ric reconstructions, and semantic annotations), automated anom-
+aly interpretation, and the embedding of inspection results into an
+interactive digital environment that facilitates decision-making.
+This fragmentation results in missed opportunities for temporal
+tracking, contextual interpretation, and predictive analytics, all of
+which are essential for proactive infrastructure management. These
+limitations are particularly acute for SWC infrastructure, where
+challenging topographies and di spersed locations exacerbate
+inspection constraints.
+This study addresses these gaps through the development of the
+AEDT framework, which uniquely integrates: (1) multiview UAV
+photogrammetry for comprehensive geometric coverage; (2) deep
+learning-based semantic classi ﬁcation of surface anomalies for
+enhanced diagnostic accuracy; and (3) level of detail 3 (LOD3)
+DT modeling for spatially and semantically enriched representa-
+tion. The proposed AEDT model not only links heterogeneous data
+sources into a coherent model but also supports spatiotemporal
+inspection analysis and dynamic anomaly tracking, enabling intel-
+ligent, context-aware decision-making tailored to geotechnical
+infrastructure in subtropical, hazard-prone regions. In doing so,
+this research provides a novel, end-to-end solution that advances
+the ﬁeld beyond existing fragmented approaches and lays a foun-
+dation for resilient infrastructure monitoring.
+3 | Research Methods
+This study constructs an AI-assisted inspection framework for arti-
+ﬁcial slope structures. This framework deeply integrates several
+advanced technologies to form a complete work ﬂow from data
+acquisition to decision support. The core technical path is as fol-
+lows: First, multiview image acquisition from UAVs is used to
+overcome the limitations of traditional manual inspections in acces-
+sibility, safety, and efﬁciency. Next, SfM algorithms are employed
+for 3D reconstruction, transforming 2D image sequences into a 3D
+geometric model with real-world scale. Subsequently, deep learning
+is introduced for anomaly recognition on the structure ’s appear-
+ance, automating the process of identifying potential deterioration
+or damage from a vast number of images. Finally, through semantic
+DT modeling, the geometric model is fused with the identi ﬁed
+anomaly information and engineering attribute data. Theﬁnal out-
+put of this process is a semantically annotated AEDT model.
+The entire AEDT framework can be conceptualized as a four-layer
+modular architecture, each corresponding to the technical imple-
+mentation detailed in Sections 3.1–3.3:
+1. The data acquisition layer focuses on collecting multiangle
+UAV imagery and supplemental on-site data to ensure
+comprehensive spatial coverage. This step provides the
+raw data input for subsequent reconstruction work ﬂows
+(see Section 3.1).
+2. The model construction layer processes the captured images
+using SfM and multiview stereo (MVS) techniques to gener-
+ate dense 3D point clouds and photorealistic mesh models.
+These geometric models represent the slope infrastructure
+TABLE 1 | Comparison with representative studies.
+Reference Method Integration level Temporal Novelty
+Ellenberg et al. [ 17] UAV + CV 2D quanti ﬁcation No Early quantitative UAV damage assessment
+Xu et al. [ 25] BIM + 3D Scan (DT) DT integration Yes SHM-oriented DT for buildings
+This study (AEDT) (UAV-SfM) + CNN Anomaly-enhanced DT Yes Geometry-semantics-time fusion for SWC slopes
+4o f1 4 Advances in Civil Engineering, 2026
+ 7074, 2026, 1, Downloaded from https://onlinelibrary.wiley.com/doi/10.1155/adce/2063316, Wiley Online Library on [09/08/2026]. See the Terms and Conditions (https://onlinelibrary.wiley.com/terms-and-conditions) on Wiley Online Library for rules of use; OA articles are governed by the applicable Creative Commons License
+
+with LOD3 accuracy, forming the spatial foundation for
+semantic integration (also detailed in Section 3.1).
+3. The anomaly interpretation layer applies deep CNNs trained
+on annotated imagery to detect and classify surface anomalies
+such as erosion, spalling, or collapse. The identiﬁed features
+are then quanti ﬁed and tagged with semantic labels repre-
+senting defect type and severity (refer to Section 3.2).
+4. TheDT integration layer merges geometric, semantic, and
+contextual metadata into a GIS-compatible, interactive DT
+environment. This includes spatial tagging of defects, time-
+stamped inspection records, and visualization modules for
+decision support and maintenance planning (as described
+in Section 3.3).
+Together, these layers operationalize the AEDT concept, translating
+raw UAV imagery into a semantically enriched, update-ready DT
+that enhances condition monitoring, facilitates anomaly tracking,
+and enables proactive infrastructure management.
+3.1 | SfM-Based 3D Modeling
+The 3D modeling process in this study begins with high-quality
+data acquisition. We utilize a UAV equipped with a high-resolution
+RGB camera for aerial photography. To ensure the spatial consis-
+tency and georeferencing accuracy of the reconstructed model, the
+ﬂight mission employs automated ﬂight path planning with GPS
+positioning enabled throughout. During ﬂight planning, we set a
+70% forward overlap and a 60% side overlap. Prior to model input,
+all raw images underwent quality control. Images with signiﬁcant
+motion blur (ﬂagged by a perceptual blur detector) or severe over/
+underexposure were excluded to ensure stable SfM reconstruction
+and downstream anomaly detection. Flight parameters targeted an
+average ground sampling distance (GSD) of ~1.5 cm/pixel. This
+high overlap ratio is crucial for ensuring that the SfM algorithm
+can ﬁnd enough tie points to robustly solve for camera poses and
+scene structure. Theﬂight altitude is maintained at a relative height
+of ~25–30 m, and shooting angles and intervals areﬁne-tuned based
+on the site’s topography. In addition to automated ﬂights, we sup-
+plement with a handheld camera to capture more detailed textures
+of key structures or areas obscured by vegetation. After the image
+data is imported, it is processed using SfM and MVS techniques to
+generate sparse and dense point clouds. Finally, the point cloud
+data undergoes meshing and texturing procedures to generate a
+photorealistic triangular mesh model, which is then converted to
+the LOD3 format. This preserves the structure’sg e o m e t r ya n ds u r -
+face information while ensuring a lightweight model. This step
+involves feature alignment, camera intrinsic parameter estimation,
+dense reconstruction, and mesh generation.
+Compared to other 3D reconstruction methods such as LiDAR-only
+or SLAM-based approaches, SfM offers several distinct advantages
+for this study. LiDAR systems, while highly accurate, are cost-
+prohibitive and less accessible in complex terrain or remote areas.
+SLAM-based methods are primarily suitable for indoor or limited-
+range environments and may struggle with scale estimation in large
+outdoor areas. SfM, on the other hand, allows for detailed and
+scalable reconstruction using only passive optical sensors, making
+it a cost-effective and practical choice for large-scale slope monitor-
+ing. Additionally, the integration with UAVs enables coverage of
+difﬁ cult-to-access terrain with minimal risk and logistical
+complexity.
+Process of building a 3D model of the inspection area (Figure 1):
+ Step 1: Import image folders: After downloading the large
+amount of images collected by the UAV from the scene to
+the computer, they are organized into a dedicated folder and
+then imported into the image processing software.
+ Step 2: Align Photos: Using the software’s general and quality
+settings, this stageﬁnds matching points between overlapping
+images to calculate the position of each photo, which then
+allows for the construction of a sparse point cloud model.
+Testing has shown that using a mid-level image alignment
+setting reduces processing time and improves the grayscale
+effect, which facilitates the analysis of differences between
+images taken at different times.
+ Step 3: Build a Dense Cloud: After completing the sparse point
+cloud model, a build quality is selected in the software. This
+selection is based on the image positions calculated in the
+previous step. The program uses the position and depth-of-
+ﬁeld information from each camera to perform an informa-
+tion overlay process, combining them into a dense point
+cloud.
+ Step 4: Build Mesh: Following the “Image Alignment” and
+“Build Dense Cloud” steps, the mesh is generated. This step,
+along
+with dense cloud generation, is the most time-
+consuming but also the most critical part of the process.
+Therefore, a lower quality setting is used for the initial model
+build. The reason for using low quality ﬁr s ti st h a ti tr e q u i r e s
+less time, allowing users to quickly review the model for
+potential errors. After veri ﬁcation, the model is rebuilt at a
+higher image quality. Once the dense point cloud isﬁnalized,
+a polygonal mesh model is generated from the dense point
+cloud data.
+3.2 | Deep Learning-Based Anomaly Identi ﬁcation
+T h i ss t u d yt r a i n e daC N Nm o d e lf o rs u r f a c ea n o m a l yi d e n t iﬁcation.
+The training data consisted of manually annotated images, includ-
+ing various types of anomalies such as erosion, spalling, siltation,
+and collapse (Figure 2). After calibration, an image recognition
+model was created, which was then used for identi ﬁcation and
+veriﬁcation using the retained images.
+The methodology adopted in this study is supervised learning. In
+this paradigm, the model is provided with input data that has
+explicit labels (i.e., image patches and their corresponding anomaly
+classes). During the training process, CNN learns a mapping
+FIGURE 1 | Polygon mesh model diagram.
+Advances in Civil Engineering, 2026 5o f1 4
+ 7074, 2026, 1, Downloaded from https://onlinelibrary.wiley.com/doi/10.1155/adce/2063316, Wiley Online Library on [09/08/2026]. See the Terms and Conditions (https://onlinelibrary.wiley.com/terms-and-conditions) on Wiley Online Library for rules of use; OA articles are governed by the applicable Creative Commons License
+
+function from input images to output classes. The labeled training
+images are fed into the model, which performs a forward propaga-
+tion to get a prediction. This prediction is then compared with the
+true label to calculate a loss value. Next, the backpropagation algo-
+rithm is used to compute gradients, and an optimizer is used to
+update the network’s weights, with the goal of minimizing the loss.
+This process is repeated iteratively until the model ’sp e r f o r m a n c e
+on a validation set converges. The trained recognition model
+requires validation testing. Therefore, a portion of the data is
+retained for subsequent model validation and accurate testing.
+Images not included in the training are then imported for the sys-
+tem to compare against the learned features and output results.
+This study employed a CNN based on the MobileNetV2 architec-
+ture as implemented by the Teachable Machine platform. We
+adopted transfer learning with ImageNet-pretrained weights and
+ﬁne-tuned the entire network for slope-anomaly classiﬁcation. This
+platform, through a visual interface, enables rapid creation and
+export of CNN–based models, suitable for the automated identiﬁ-
+cation and classi ﬁcation of anomaly images. This system models
+and tests abnormal conditions of SWC structures, such as erosion,
+spalling, siltation, and collapse. The model’sp e r f o r m a n c ew a sv a l i -
+dated using three common performance evaluation metrics: confu-
+sion matrix, learning curve, and accuracy per class.
+Furthermore, while pixel-wise semantic segmentation (e.g., Mask
+R-CNN) offers superior granularity for quantifying crack widths,
+this study employs patch-based classi ﬁcation. This decision is
+driven by the speciﬁc operational objective of “management-level”
+assessment. The goal is to categorize slope infrastructure into risk
+levels (Grade A/B/C) to align with government maintenance
+regulations, for which classi ﬁcation provides a computationally
+efﬁcient and robust solution without the need for labor-intensive
+pixel-level annotation. Although YOLOv8 has demonstrated effec-
+tiveness in rapid object localization tasks in previous literature, its
+primary advantage lies in real-time detection speed rather than the
+pixel-level accuracy critical for subtle surface anomaly identi ﬁca-
+tion. Given this study’s focus on precise anomaly characterization
+and relatively limited training data, CNN architecture offers a more
+suitable balance between accuracy and computational ef ﬁciency,
+making it preferable over YOLOv8 for this speciﬁc application sce-
+nario. While transformers offer superior performance on large-scale
+datasets and complex semantic tasks, they require signi ﬁcantly
+more data and computational resources. YOLOv8, optimized for
+real-time object detection, emphasizes speed over pixel-level
+granularity, which is less ideal for identifying subtle surface anom-
+alies in slope structures. EfﬁcientNet achieves strong performance
+with fewer parameters but involves a more complex architecture
+not directly supported by the Teachable Machine platform. CNNs,
+with their relative simplicity and strong capability in image classi-
+ﬁcation, provided a pragmatic and effective solution for this study’s
+dataset and application scope.
+The model was trained with batch size 16, learning rate 0.001, and
+20 epochs, using the Adam optimizer and categorical cross-entropy
+loss, with data augmentation (horizontal/vertical ﬂip, /C615° rota-
+tion, brightness/contrast jitter, and mild zoom) to improve robust-
+ness. Data augmentation strategies included horizontal and vertical
+ﬂipping, rotation (/C615°), brightness and contrast adjustments, and
+slight zoom transformations. These augmentations were essential
+for improving the model ’s robustness to different environmental
+conditions and imaging angles. Training was conducted on a work-
+station equipped with an NVIDIA GeForce RTX 3060 GPU (12 GB
+V
+RAM). The total training time was ~2 h.
+3.2.1 | Dataset and Annotation
+To establish data credibility and enable reproducibility, we report
+the dataset composition and labeling protocol. Images were split
+at the structure level to prevent leakage, ensuring that imagery
+from the same location did not appear in both the training and
+validation sets. Images were classiﬁed with the assistance of domain
+experts, including SWC technicians and engineers with over
+10 years of ﬁeld experience, following the classiﬁcation standards
+in Section 4.4. Interannotator agreement was assessed, achieving a
+Cohen’s κ of 0.87. Discrepancies were adjudicated by a third senior
+expert (Table 2).
+3.3 | Semantic Integration and DT Construction
+It is crucial to distinguish between a static 3D model and a func-
+tional DT. While 3D reconstruction provides the geometric shell,
+the “Twin” status in this study is achieved through the semantic
+integration of AI-detected anomalies, the temporal linkage of his-
+torical inspection logs, and the decision-support logic that recom-
+mends maintenance actions. Given the current lack of standardized
+3D component libraries for SWC facilities and the inadequacy of
+traditional 2D drawings in representing spatial geometry and deg-
+radation status, this study adopts a strategy of constructing the 3D
+Semantic annotation
+Data integration
+On-site data
+collection
+Visualization and
+presentation
+FIGURE 2 | Integration of 3D semantic information in digital twins.
+6o f1 4 Advances in Civil Engineering, 2026
+ 7074, 2026, 1, Downloaded from https://onlinelibrary.wiley.com/doi/10.1155/adce/2063316, Wiley Online Library on [09/08/2026]. See the Terms and Conditions (https://onlinelibrary.wiley.com/terms-and-conditions) on Wiley Online Library for rules of use; OA articles are governed by the applicable Creative Commons License
+
+model based on computer-aided design (CAD) as-built drawings.
+This approach not only enables precise semantic annotation of
+deteriorated areas but also facilitates the comprehensive integration
+of information such as dimensions, materials, and spatial relation-
+ships into the model. This overcomes the limitations of 2D simula-
+tions and signiﬁcantly enhances the convenience and efﬁciency of
+information integration for subsequent applications.
+The following is the DT process:
+ Image processing and on-site 3D modeling: Use LiDAR scan-
+ning or drone aerial photography technology to obtain
+high-precision three-dimensional spatial information of
+SWC facilities and generate a digital “as-is” 3D model that
+reﬂects the current state of the structure.
+ 3D modeling of water conservation facility data: Obtain 2D
+images or CAD drawings to create a baseline “as-designed”
+3D model. This involves generating a digital 3D model of the
+facility through software, marking the structural material of
+each part, and displaying speci ﬁc dimensions. This ensures
+that the model details capture the intended structural char-
+acteristics (such as the state and shape of the dam body),
+which, combined with on-site inspection data, will become
+the basis of the DT.
+ Data integration and semantic markup: Collect data related to
+water conservation, including location, size, and function, and
+integrate this data into the DT. This involves semantically
+marking the model, linking speciﬁc information (such as deg-
+radation patterns identiﬁed by the deep learning model) with
+the corresponding parts of the 3D geometry, and making
+adjustment marks on the model.
+ Visualization platform development: Based on the con-
+structed 3D model and data, a visualization platform is devel-
+oped to allow managers to intuitively view the operational
+status of the facility. This interactive visualization, using tech-
+nologies like dynamic web pages, virtual reality (VR), or aug-
+mented reality (AR), allows users to interact with the DT and
+gain a deeper understanding of its various aspects. Relevant
+data is presented visually, as shown in Figure 2.
+4 | System Implementation and Results
+4.1 | Visual Design and System Architecture
+Visual design signiﬁcantly inﬂuences how users perceive and retain
+critical information. In this project, 3D visualization is employed to
+enhance user attention and focus. A well-organized interface
+ensures that essential inspection data is not overlooked. Notably,
+dynamic and immersive 3D visual elements aid memory retention
+and improve user comprehension, which is especially vital in com-
+plex infrastructure monitoring tasks. In the digital age, effective
+TABLE 2 | Dataset distribution by class, severity, and split.
+Anomaly category Severity Training Validation Total
+Spalling A 51 6 57
+Spalling B 65 7 72
+Spalling C 86 9 95
+Crack A 138 15 153
+Crack B 118 13 131
+Crack C 58 7 65
+Erosion A 72 8 80
+Erosion B 102 11 113
+Erosion C 35 4 39
+Siltation A 53 6 59
+Siltation B 78 9 87
+Siltation C 111 12 123
+Scouring B 32 3 35
+Scouring C 116 13 129
+Damage B 88 10 98
+Damage C 148 16 164
+Vegetation good (no collapse) — 94 11 105
+Vegetation poor B 46 5 51
+Vegetation poor C 48 5 53
+Collapse B 77 9 86
+Collapse C 184 21 205
+Note: The dataset was divided into two subsets: 1800 training samples and 200 validation samples.
+Advances in Civil Engineering, 2026 7o f1 4
+ 7074, 2026, 1, Downloaded from https://onlinelibrary.wiley.com/doi/10.1155/adce/2063316, Wiley Online Library on [09/08/2026]. See the Terms and Conditions (https://onlinelibrary.wiley.com/terms-and-conditions) on Wiley Online Library for rules of use; OA articles are governed by the applicable Creative Commons License
+
+information design transcends simple data presentation —DT 3D
+visualization provides robust tools for constructing responsive,
+user-centric interfaces.
+This system integrates 3D DT visualization of inspection zones with
+interactive features. Built on Hypertext Preprocessor (PHP), the
+platform supports dynamic web page generation and real-time
+3D model presentations. Users interact with dynamically rendered
+3D inspection images, improving information recognition and
+accessibility. The 3D model viewing interface, created through spe-
+cialized software, allows users to explore highly detailed digital
+replicas from multiple angles. These models range from basic
+geometries to complex terrain and structural elements. By incorpo-
+rating animation and spatial cues such as parallax scrolling, users
+can more intuitively explore spatial relationships.
+The interface allows step-by-step rotation of model layers, guided by
+embedded directional markers. Users can rotate models forward or
+in reverse depending on the desired review perspective. During this
+process, corresponding inspection records of water conservation
+facilities are automatically retrieved from the database and dis-
+played visually. This interaction is managed via server-side param-
+eter passing, which triggers retrieval from the backend and returns
+annotated data to the front-end display (Figure 3).
+Furthermore, clickable semantic information points are embedded
+within the model to show historical maintenance records. These
+features enable users to review previously taken actions and verify
+follow-up measures. Administrators can use the backend system to
+modify or delete information entries, ensuring ongoing data integrity.
+In terms of system performance, tests conducted under a simu-
+lated multiuser environment show that the average loading time
+for 3D models (under 50 MB in size) is ~3.2 s, with a 95th percen-
+tile response time of 4.5 s. Retrieval of historical data entries
+averages 1.8 s per query, while interactive actions such as rotation
+and information point clicking exhibit sub-500 ms latency. The
+platform has been benchmarked to support up to 50 concurrent
+users without signi ﬁcant performance degradation, suggesting it
+is suitable for use in regional-scale monitoring systems.
+The system provides differentiated interfaces and access privi-
+leges tailored to user roles. Administrators have full control,
+including the ability to upload datasets, train models, calibrate
+spatial tags, and modify backend records. Engineers are granted
+access to upload inspection images, perform spatial alignment
+with 3D models, and validate AI results (Figure 4). Reviewers
+from regulatory bodies are provided with a read-only interface
+with semantic annotations and veri ﬁcation tools for auditing
+inspection processes and historical maintenance records. This
+multirole framework ensures ope rational transparency, data
+security, and user-speci ﬁc functionality.
+4.2 | Case Management Work ﬂow
+This study adopts aﬁve-phase case management process combining
+deep learning, AI, and spatial mapping to improve inspection
+efﬁciency:
+ Phase 1: Upload Test Images: Users begin by accessing the
+new form screen to upload site inspection images. These
+images are processed using a pretrained deep learning model
+that classiﬁes visible defects and recommends maintenance
+actions based on recognized patterns.
+ Phase 2: Pattern Interpretation and Form Generation: The sys-
+tem displays AI-detected pattern results alongside a schematic
+of the DT. This helps users understand each case in spatial and
+contextual terms. A digital inspection form is automatically
+generated and archived in the case management system.
+ Phase 3: Location Calibration: Users enter the “Add New ”
+interface and spatially locate the relevant inspection zone
+using the 3D DT. Accurate spatial tagging is achieved through
+user interaction and knowledge of the site.
+ Phase 4: Inspection Review: The platform enables users to
+visually conﬁrm that each new case is accurately registered.
+Semantic links are used to validate all information, and any
+missing or inaccurate data can be identi ﬁed and corrected.
+Figure 5 shows the user interface during this step.
+ Phase 5: Backend Management: Administrators can edit or
+delete recorded ﬁles through the backend system. The inter-
+face ensures streamlined access, batch management of inspec-
+tion records, and ﬂexible data updates.
+4.3 | Case Study and Veri ﬁcation
+To demonstrate system functionality, a case study was conducted at
+the “Shihgang Dam Sediment Control Facility” located in Shihgang
+District, Taichung City, central Taiwan. The site features a slope-
+protection system with revetments on both banks.
+ Step 1: The AI model identi ﬁes deterioration patterns from
+uploaded images. These patterns are projected onto the 3D
+model using semantic tagging.
+ Step 2: The system compiles a digital report that outlines
+facility status, proposed remediation strategies, and relevant
+structural metrics such as dam height and slope angle. Based
+on site measurements, a 3D facility model is rendered, and
+visible damage is annotated.
+ Step 3: A case link is generated and added to the 3D twin
+interface. After position calibration, the system automati-
+cally registers the three-axis coordinates. Metadata,
+FIGURE 3 | 3D digital layer of inspection area.
+ FIGURE 4 | 3D digital twin image inspection log information.
+8o f1 4 Advances in Civil Engineering, 2026
+ 7074, 2026, 1, Downloaded from https://onlinelibrary.wiley.com/doi/10.1155/adce/2063316, Wiley Online Library on [09/08/2026]. See the Terms and Conditions (https://onlinelibrary.wiley.com/terms-and-conditions) on Wiley Online Library for rules of use; OA articles are governed by the applicable Creative Commons License
+
+Create a new case Input field images for
+AI recognition
+Obtain pattern
+identification
+and evaluation
+results
+Select the
+appropriate
+3D digital
+twin image
+of the structure
+Generate a
+new digital
+twin case
+report, and
+write it into
+the database.
+FIGURE 5 | Overall workﬂow for adding a new case.
+FIGURE 6 | AI recognition rating result interface.
+Advances in Civil Engineering, 2026 9o f1 4
+ 7074, 2026, 1, Downloaded from https://onlinelibrary.wiley.com/doi/10.1155/adce/2063316, Wiley Online Library on [09/08/2026]. See the Terms and Conditions (https://onlinelibrary.wiley.com/terms-and-conditions) on Wiley Online Library for rules of use; OA articles are governed by the applicable Creative Commons License
+
+including image snapshots and textual annotations, is
+stored in the digital archive. Figures 6 and 7 illustrate these
+processes.
+4.4 | Deep Learning Model Performance
+Evaluation
+To evaluate the performance of the image classi ﬁcation model
+developed for the automated identiﬁcation of structural anomalies,
+this paper summarizes and analyzes three validation metrics: con-
+fusion matrix, learning curves for training and testing accuracy, and
+accuracy per class. First, the learning curves show that the model
+converges quickly early in training. After approximately the ﬁfth
+epoch, the training accuracy reaches nearly 100 %, while the test
+accuracy stabilizes at ~81%. This result demonstrates the model ’s
+good learning ability and basic generalization. However, a signiﬁ-
+cant gap exists between the training and test curves, which may
+reﬂect a slight over ﬁtting phenomenon. To address this and
+enhance generalization, we implemented optimization strategies
+such as extensive data augmentation and dropout layers, as shown
+in the resulting learning curves (Figure 8). After these
+optimizations, the model achieved a stable overall test accuracy
+of 81%, demonstrating its potential for practical application.
+Analyzing the classiﬁcation accuracy of each category, the model
+performed exceptionally well in the erosion-B, spalling-C, and
+collapse-C categories, achieving accuracy exceeding 0.94. The con-
+fusion matrix also showed complete accuracy in the predictions,
+indicating that these anomaly types possess distinct visual charac-
+teristics that the model has learned effectively. While there were a
+few misclassiﬁcations in the medium-to-high accuracy categories,
+such as erosion-A (0.88), spalling-A (0.83), spalling-B (0.88), and
+siltation-A (0.83), the model maintained high discrimination capa-
+bilities overall. These misclassiﬁcations mostly occurred between
+different levels of the same type, representing an expected level of
+confusion. However, siltation-B and collapse-B performed rela-
+tively poorly, with accuracies of only 0.60. The confusion matrix
+showed a wide range of predictions, with misclassi ﬁcations into
+erosion-A, spalling-B, and collapse-C, potentially due to ambiguous
+pattern characteristics, high sample heterogeneity, or data imbal-
+ance. To address this, ambiguous samples are removed, the number
+of samples is increased to strengthen the clarity of this category, and
+a category weight adjustment strategy is introduced into the model
+FIGURE 7 | Information linkage review after case creation.
+10 of 14 Advances in Civil Engineering, 2026
+ 7074, 2026, 1, Downloaded from https://onlinelibrary.wiley.com/doi/10.1155/adce/2063316, Wiley Online Library on [09/08/2026]. See the Terms and Conditions (https://onlinelibrary.wiley.com/terms-and-conditions) on Wiley Online Library for rules of use; OA articles are governed by the applicable Creative Commons License
+
+to improve the prediction accuracy of dif ﬁcult-to-distinguish cate-
+gories (Figure 9).
+The classiﬁcation standards for each anomaly type are based on
+national guidelines such as Taiwan’s “Technical Speciﬁcations for
+Soil and Water Conservation” and international references like the
+ASTM D6433-20 for visual inspection. For example, erosion is clas-
+siﬁed into levels A –C based on depth and area coverage: Level A
+(<5 cm depth), Level B (5 –15 cm), and Level C ( >15 cm or severe
+surface retreat). Siltation is judged based on the thickness and
+spread of sediment coverage, while spalling and collapse follow
+criteria including extent, shape, and risk to structural integrity.
+Classiﬁcation decisions are primarily based on visual inspection
+supplemented by UAV-derived dimensions. Severity levels are
+determined by using thresholds on physical parameters such as
+anomaly area, shape complexity, and impact proximity to key struc-
+tural zones.
+A comprehensive analysis shows that this model achieved an
+overall test accuracy of 81 %, with good recognition capabilities
+for most common anomaly categories, demonstrating its potential
+for practical application. To address the dif ﬁculty in identifying
+low-accuracy categories and model over ﬁtting, subsequent
+improvements were made through data augmentation, model
+architecture optimization, and training strategy adjustments, ulti-
+mately improving system stability and reliability. Beyond overall
+accuracy (81 %), we report class-balanced metrics: the model
+achieved a macroaveraged F1-score of 0.79 and a microaveraged
+F1-score of 0.81. For the challenging siltation-B class, precision
+was 0.55 and recall 0.60, re ﬂecting visual similarity with adjacent
+severity levels. To quantify uncertainty, we performed bootstrap
+resampling (1000 replicates) on the test set; the 95 % conﬁdence
+interval for the macro-F1 was 0.76 –0.82, indicating a stable per-
+formance estimate.
+4.5 | Integrated AI Reporting and System
+Effectiveness
+This project developed a deep learning-based image recognition
+architecture tailored to water conservation facilities. Using labeled
+degradation pattern data, the AI model classi ﬁes damage and
+assesses current conditions. The system employs a contactless con-
+dition evaluation process that reduces inspection time and labor
+requirements. The ﬁnal output is a semantically enhanced 3D DT
+with inspection-linked reports. In emergency scenarios, the plat-
+form can automatically generate alerts and suggest priority actions
+based on current facility conditions, overcoming the static limita-
+tions of traditional textual inspection reports. A comparative analy-
+sis (Table 3) highlights the signiﬁcant advantages of the proposed
+AEDT system over traditional manual inspections.
+4.6 | Ablation Study
+We conducted ablations to quantify each module ’s contribution
+(Table 4).
+CollapseSedimentation
+Spalling Abrasion
+CollapseSedimentation
+Spalling Abrasion
+FIGURE 8 | Manually annotated anomalous pattern images.
+Advances in Civil Engineering, 2026 11 of 14
+ 7074, 2026, 1, Downloaded from https://onlinelibrary.wiley.com/doi/10.1155/adce/2063316, Wiley Online Library on [09/08/2026]. See the Terms and Conditions (https://onlinelibrary.wiley.com/terms-and-conditions) on Wiley Online Library for rules of use; OA articles are governed by the applicable Creative Commons License
+
+Accuracy per class
+Class
+Erosion-A
+Erosion-B
+Spalling-A
+Spalling-B
+Spalling-C
+Siltation-A
+Siltation-B
+Siltation-C
+Collapse-B
+Collapse-C
+Erosion-A
+Erosion-B
+Spalling-A
+Spalling-B
+Spalling-C
+Siltation-A
+Class
+Siltation-B
+Siltation-C
+Collapse-B
+Collapse-C
+Erosion-A
+Erosion-B
+Spalling-A
+Spalling-B
+Spalling-C
+Siltation-A
+Prediction
+Confusion matrix
+Scale count
+157
+15
+5
+7
+9
+5
+62
+2
+2 6
+10
+15
+1
+11
+1
+1
+1
+1
+1
+1
+000000100
+0 0 0 0 0 0 0 0 0
+00
+000
+00
+00
+00
+00
+00
+0
+0
+0 0 0 0 0 0
+00 0 0
+0 0 0 0
+0 0
+00 0
+0000
+000
+000000 0 0
+0
+0 0
+0
+00
+00
+0
+10
+5
+0
+Siltation-B
+Siltation-C
+Collapse-B
+Collapse-C
+Accuracy
+0.88
+1.00
+0.83
+0.88
+1.00
+0.83
+0.60
+0.77
+0.60
+0.94 16
+10
+13
+1.0
+Accuracy per epoch
+0.8
+0.6
+0.4 Accuracy
+0.2
+0.0
+01 0 2 0
+Epochs
+Accuracy
+Test accuracy
+30 40 50
+10
+6
+9
+8
+6
+15
+8
+#Samples
+FIGURE 9 | Deep learning model testing.
+TABLE 3 | Comparison between this system and traditional manual visual inspection.
+Indicator Traditional inspection This system (DADT)
+Average operation time 3.5 h 1.3 h
+Subjective error High Low
+Historical traceability Paper-based records Digital version records
+Safety risk High Very low
+TABLE 4 | Ablation results.
+Conﬁguration Macro-F1 Notes
+Full AEDT (proposed) 0.81 All modules enabled
+(−) Data augmentation 0.72 Tests generalization without augmentation
+(−) 3D context (2D reporting only) N/Aa Qualitative user study on decision latency
+(+) Traditional CV (SIFT + SVM) 0.58 Replaces CNN with classical pipeline
+a3D context ablation compared via user-study metrics (task time, errors).
+12 of 14 Advances in Civil Engineering, 2026
+ 7074, 2026, 1, Downloaded from https://onlinelibrary.wiley.com/doi/10.1155/adce/2063316, Wiley Online Library on [09/08/2026]. See the Terms and Conditions (https://onlinelibrary.wiley.com/terms-and-conditions) on Wiley Online Library for rules of use; OA articles are governed by the applicable Creative Commons License
+
+These results demonstrate that data augmentation and CNN–based
+anomaly detection substantially contribute to overall performance,
+while 3D context primarily enhances decision ef ﬁciency rather
+than classiﬁcation accuracy.
+5 | Discussion
+5.1 | Broader Implications and Bene ﬁts
+Application results show that retaining structures—often rendered
+as surface elements—present visualization challenges due to low-
+texture realism. In contrast, river channel structures allow for more
+precise texture reproduction and were chosen for demonstrative
+modeling. The key beneﬁts of the DT system in water conservation
+include:
+ Design and planning: Enables early-stage simulation for
+enhanced design decision-making.
+ Real-time monitoring: Uses IoT sensors for continuous facility
+condition tracking.
+ Predictive maintenance: Anticipates maintenance needs
+based on degradation trends.
+ Collaborative integration: Provides a shared interface for
+stakeholder communication.
+ Disaster response: Supports early warnings and structured
+emergency workﬂows.
+ Sustainability modeling: Simulates environmental impacts to
+inform long-term strategies.
+In summary, the 3D DT developed in this project enhances water
+conservation inspection through semantic modeling, AI-driven
+defect detection, and immersive visualization. It reduces inspection
+time and costs, increases accuracy, and offers a scalable framework
+for future public infrastructure monitoring. Theseﬁndings not only
+reinforce the technical feasibility of AI-enabled slope inspection but
+also contribute toward broader climate resilience strategies. By
+embedding DT technologies into environmental infrastructure sys-
+tems, this research aligns with the goals of sustainable infrastruc-
+ture (SDG 9) and climate adaptation (SDG 13), offering actionable
+insights for policy makers and ﬁeld engineers managing landslide-
+prone regions.
+Moreover, ﬁeld interviews with maintenance engineers indicated
+that the AEDT system signi ﬁcantly streamlined documentation
+workﬂows, reducing the time spent on compiling visual inspection
+reports by over 40 %. Additionally, the spatial tagging feature
+enabled direct correlation between observed defects and mainte-
+nance logs, facilitating cross-departmental coordination and audit
+compliance.
+Speciﬁc use-case evaluations demonstrated that predictive mainte-
+nance was achievable through early identiﬁcation of minor erosion
+patterns that historically preceded larger slope failures—allowing
+preemptive intervention weeks before visual symptoms intensiﬁed.
+In disaster response scenarios, the system’s auto-generated reports
+and spatially calibrated inspection summaries could be exported
+within minutes in standardized formats, signiﬁcantly accelerating
+emergency response coordination and reducing reliance on poste-
+vent manual surveys. In demonstration ﬁeld sites, management
+authorities reported that the system effectively reduced on-site
+inspection labor requirements and assisted in prioritizing mainte-
+nance scheduling decisions based on spatial anomaly patterns and
+severity tags.
+5.2 | Limitations of the Current Study
+Despite its promising performance, the current system is con-
+strained by reliance on RGB imagery, which limits detection of
+subsurface or visually occluded defects, such as those hidden by
+vegetation. Environmental disturbances like lighting variation or
+UAV motion artifacts also affect detection robustness. Future
+improvements may include the integration of multispectral or ther-
+mal imaging sensors to enhance the identi ﬁcation of partially
+obscured or concealed damage. Additionally, incorporating UAV
+stabilization modules and low-light enhancement algorithms could
+signiﬁcantly improve image quality and detection reliability under
+challenging environmental conditions.
+6 | Conclusion and Future Directions
+This study developed an integrated inspection framework tailored
+for artiﬁcial slopes and SWC structures, combining UAV imaging,
+CNN, and semantic-enhanced SfM 3D reconstruction. The result-
+ing system successfully achieved intelligent ﬁeld-level inspections
+that signiﬁcantly reduced manual labor demands while enhancing
+consistency and visualization of structural anomalies.
+The proposed system consists of ﬁve modular components: (1)
+multiview UAV data acquisition; (2) SfM-based 3D model genera-
+tion; (3) CNN –based anomaly pattern classi ﬁcation; (4) semantic
+embedding into a DT model; and (5) an interactive visualization
+and maintenance reporting interface. Field deployment at a water
+conservation infrastructure site demonstrated a classiﬁcation accu-
+racy of 81% for ﬁve distinct anomaly categories and reduced inspec-
+tion time by over 60% compared to traditional methods.
+A key contribution of this research is the introduction of the AEDT
+model, which integrates both geometric and semantic attributes—
+including damage type, severity, spatial distribution, and temporal
+change. This enriched digital representation enables enhanced
+maintenance scheduling, long-term monitoring, and risk-based pri-
+oritization, laying the foundation for intelligent asset management
+in hydrological engineering contexts.
+Future work should focus on integrating LiDAR or multispectral
+imaging for structural penetration, as well as edge AI inference
+modules to facilitate real-time, in situ decision-making under
+diverse terrain and weather conditions. Ultimately, this research
+demonstrates the feasibility and value of embedding deep learning
+and DT technologies into slope infrastructure inspection work-
+ﬂows. It offers a scalable foundation for the broader adoption of
+smart monitoring systems in environmental risk management,
+infrastructure resilience, and climate adaptation planning.
+Author Contributions
+Nai-Hsin Pan : conceptualization, methodology, supervision, funding
+acquisition, writing – review and editing. Bo-Yuan Chang:d a t ac u r a t i o n ,
+formal analysis, investigation (UAV ﬁeld operations and SfM
+Advances in Civil Engineering, 2026 13 of 14
+ 7074, 2026, 1, Downloaded from https://onlinelibrary.wiley.com/doi/10.1155/adce/2063316, Wiley Online Library on [09/08/2026]. See the Terms and Conditions (https://onlinelibrary.wiley.com/terms-and-conditions) on Wiley Online Library for rules of use; OA articles are governed by the applicable Creative Commons License
+
+reconstruction), writing – original draft. Kuei-Yen Chen:s o f t w a r e( C N N
+model development and digital twin integration), validation, data curation
+(annotation and dataset management).
+Funding
+This work was supported by the Agency of Rural Development and Soil and
+Water Conservation, MOA (Grant ARDSWC-113-060).
+Conﬂicts of Interest
+The authors declare no conﬂicts of interest.
+Data Availability Statement
+The data that support the ﬁndings of this study are available upon request
+from the corresponding author. The data are not publicly available due to
+privacy or ethical restrictions.
+References
+1. Y.-J. Cha, W. Choi, and O. B üyüköztürk, “Deep Learning-Based Crack
+Damage Detection Using Convolutional Neural Networks, ” Computer-
+Aided Civil and Infrastructure Engineering 32, no. 5 (2017): 361 –378.
+2. Y.-J. Cha, W. Choi, G. Suh, S. Mahmoudkhani, and O. B üyüköztürk,
+“Autonomous Structural Visual Inspection Using Region-Based Deep
+Learning for Detecting Multiple Damage Types, ” Computer-Aided Civil
+and Infrastructure Engineering 33, no. 9 (2017): 731 –747.
+3. J. Yang, G. Fu, W. Zhu, Y. Cao, Y. Cao, and M. Y. Yang, “A Deep
+Learning-Based Surface Defect Inspection System Using Multiscale and
+Channel-Compressed Features, ” IEEE Transactions on Instrumentation
+and Measurement 69, no. 10 (2020): 8032 –8042.
+4. J. Zhu and J. Song, “An Intelligent Classi ﬁcation Model for Surface
+Defects on Cement Concrete Bridges, ” Applied Sciences-Basel 10, no. 3
+(2020): 972.
+5. H. K. Shin, S. W. Lee, G. P. Hong, L. Sael, S. H. Lee, and H. Y. Kim,
+“Defect-Detection Model for Underground Parking Lots Using Image
+Object-Detection Method, ” Computers, Materials & Continua 66, no. 3
+(2021): 2493–2507.
+6. D.-Z. Dang, C.-C. Lai, Y.-Q. Ni, Q. Zhao, B. Su, and Q.-F. Zhou, “Image
+Classiﬁcation-Based Defect Detection of Railway Tracks Using Fiber
+Bragg Grating Ultrasonic Sensors,” Applied Sciences 13, no. 1 (2023): 384.
+7
+. H. Shukla and K. Piratla, “Leakage Detection in Water Pipelines Using
+Supervised Classiﬁcation of Acceleration Signals,” Automation in Construc-
+tion 117 (2020): 103256.
+8. S. T. Kuchipudi and D. Ghosh, “Automated Detection and
+Segmentation of Internal Defects in Reinforced Concrete Using Deep
+Learning on Ultrasonic Images,” Construction and Building Materials 411
+(2024): 134491.
+9. S. Meister and M. Wermes, “Performance Evaluation of CNN and R-
+CNN Based Line by Line Analysis Algorithms for Fibre Placement Defect
+Classiﬁcation,” Production Engineering-Research and Development 17,
+no. 3-4 (2023): 391– 406.
+10. W. Ming, C. Cao, G. Zhang, et al., “Review: Application of
+Convolutional Neural Network in Defect Detection of 3C Products,” IEEE
+Access 9 (2021): 135657 –135674.
+11. R. Ali, J. H. Chuah, M. S. A. Talip, N. Mokhtar, and M. A. Shoaib,
+“Structural Crack Detection Using Deep Convolutional Neural
+Networks,” Automation in Construction 133 (2022): 103989.
+12. D. Kang and Y.-J. Cha, “Autonomous UAVs for Structural Health
+Monitoring Using Deep Learning and an Ultrasonic Beacon System With
+Geo-Tagging,” Computer-Aided Civil and Infrastructure Engineering 33,
+no. 10 (2018): 885– 902.
+13. R. Ali, D. Kang, G. Suh, and Y.-J. Cha, “Real-Time Multiple Damage
+Mapping Using Autonomous UAV and Deep Faster Region-Based Neural
+Networks for GPS-Denied Structures, ” Automation in Construction 130
+(2021): 103831.
+14. A. Waqas, D. Kang, and Y.-J. Cha, “Deep Learning-Based Obstacle-
+Avoiding Autonomous UAVs With Fiducial Marker-Based Localization
+for Structural Health Monitoring,” Structural Health Monitoring 23, no. 2
+(2024): 971–990.
+15. N.-H. Pan, H.-C. Chang, and K.-Y. Chen, “UAV and Panoramic
+Photography: Innovating Soil and Water Conservation Infrastructure
+Monitoring and Management,” Canadian Journal of Civil Engineering 52,
+no. 4 (2025): 446– 459.
+16. N. Kerle, F. Nex, M. Gerke, D. Duarte, and A. Vetrivel, “UAV-Based
+Structural Damage Mapping: A Review, ” ISPRS International Journal of
+Geo-Information 9, no. 1 (2020): 14.
+17. A. Ellenberg, A. Kontsos, F. Moon, and I. Bartoli, “Bridge Related
+Damage Quanti ﬁcation
+ Using Unmanned Aerial Vehicle Imagery, ”
+Structural Control and Health Monitoring 23, no. 9 (2016): 1168 –1179.
+18. X. Peng, X. Zhong, C. Zhao, A. Chen, and T. Zhang, “A UAV-Based
+Machine Vision Method for Bridge Crack Recognition and Width
+Quantiﬁcation Through Hybrid Feature Learning, ” Construction and
+Building Materials 299 (2021): 123896.
+19. S.-P. Kao, Y.-C. Chang, and F.-L. Wang, “Combining the YOLOv4
+Deep Learning Model With UAV Imagery Processing Technology in the
+Extraction and Quantization of Cracks in Bridges, ” Sensors 23, no. 5
+(2023): 2572.
+20. X. Wang, C. E. Wittich, T. C. Hutchinson, et al., “Methodology and
+Validation of UAV-Based Video Analysis Approach for Tracking
+Earthquake-Induced Building Displacements, ” Journal of Computing in
+Civil Engineering 34, no. 6 (2020): 4020045.
+21. B.-E. Benelmostafa and H. Medromi, “PowerLine-MTYOLO: A
+Multitask YOLO Model for Simultaneous Cable Segmentation and
+Broken Strand Detection, ” Drones 9, no. 7 (2025): 505.
+22. Z. Ballouch, R. Hajji, F. Poux, A. Kharroubi, and R. Billen, “A Prior
+Level Fusion Approach for the Semantic Segmentation of 3D Point
+Clouds Using Deep Learning, ” Remote Sensing 14, no. 14 (2022): 3415.
+23. H. Bai, X. Li, Q. Meng, S. Zhuo, and L. Yan, “MFFTNet: A Novel 3D
+Point Cloud Segmentation Network Based on Multi-Scale Feature Fusion
+and Transformer Architecture, ” IEEE Access 13 (2025): 9462– 9472.
+24. M. M ünzinger, N. Prechtel, and M. Behnisch, “Mapping the Urban
+Forest in Detail: From LiDAR Point Clouds to 3D Tree Models, ” Urban
+Forestry & Urban Greening 74, no. SI (2022): 127637.
+25. J. H. Xu, X. Shu, P. Qiao, S. S. Li, and J. G. Xu, “Developing a Digital
+Twin Model for Monitoring Building Structural Health by Combining a
+Building Information Model and a Real-Scene 3D Model, ” Measurement
+217 (2023): 112955.
+26. S. Chatterjee, T. Kliestik, Z. Rowland, and M. Bugaj, “Immersive
+Collaborative Business Process and Extended Reality-Driven Industrial
+Metaverse Technologies for Economic Value Co-Creation in 3D Digital
+Twin Factories,” Oeconomia Copernicana 2025, no. 16 (2025): 125 –161.
+27. F. Hu, C. Wang, and X. Wu, “Generative Arti ﬁcial Intelligence-
+Enabled Facility Layout Design Paradigm, ” Applied Sciences 15, no. 10
+(2025): 5697.
+28. G. Kim and Y. Cha, “3D
+ Pixelwise Damage Mapping Using a Deep
+Attention-Based Modi ﬁed Nerfacto, ” Automation in Construction 168
+(2024): 105878.
+29. G. Kim and Y. Cha, “Deep Learning-Based 3D Image Reconstruction
+and Damage Mapping Using Neural Radiance Fields (Nerfacto), ”
+Structural Health Monitoring (2025).
+14 of 14 Advances in Civil Engineering, 2026
+ 7074, 2026, 1, Downloaded from https://onlinelibrary.wiley.com/doi/10.1155/adce/2063316, Wiley Online Library on [09/08/2026]. See the Terms and Conditions (https://onlinelibrary.wiley.com/terms-and-conditions) on Wiley Online Library for rules of use; OA articles are governed by the applicable Creative Commons License

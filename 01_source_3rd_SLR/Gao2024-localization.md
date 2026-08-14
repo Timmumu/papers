@@ -1,0 +1,15 @@
+# Gao et al. (2024) — Cooperative Localization in Transportation 5.0
+
+- **ID:** 3826 | **Source:** Scopus | **DOI:** 10.1109/TIV.2024.3377163
+- **Journal:** IEEE Transactions on Intelligent Vehicles
+- **Authors:** Gao, L.; Xia, X.; Zheng, Z.; Xiang, H.; Meng, Z.; Han, X.; Zhou, Z.; He, Y.; Wang, Y.; Li, Z.; Zhang, Y.; Ma, J.
+
+## Abstract summary
+In the era of future mobility within Transportation 5.0, autonomy and cooperation across all road users and smart infrastructure stand as the key features to enhance transportation safety, efficiency, and sustainability, supported by cooperative perception, decision-making and planning, and control. An accurate and robust localization system plays a vital role in enabling these modules for future mobility and is constrained by environmental uncertainties and sensing limitations. To achieve precise and resilient localization in this new era, this letter introduces emerging technologies including edge computing, hybrid data-driven and physical model approaches, foundation models as well as parallel intelligence, that are beneficial for next-generation localization systems. On top of these key technologies, by integrating real-world testing and digital twin technology, we further put forwar…
+
+## Step-1 Screening (Prompt A)
+| G Domain AECO | H DT core | I DfS/DfQ/PtD | J Pub-type | K English | Decision |
+|---|---|---|---|---|---|
+| No | No | No | Yes | Yes | **Exclude** |
+
+**Note:** Vehicle localization framework; not AECO

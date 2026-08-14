@@ -1,0 +1,15 @@
+# Wu et al. (2026) — Research on Management Efficiency and Public Participation in Smart City Construction Based on BIM-CIM Technology
+
+- **ID:** 3806 | **Source:** Scopus | **DOI:** 10.1061/JUPDDM.UPENG-5843
+- **Journal:** Journal of Urban Planning and Development
+- **Authors:** Wu, L.; Leng, J.
+
+## Abstract summary
+To enhance participatory e-planning and smart city, the integration of building information modeling (BIM) and city information modeling (CIM) technologies was investigated in this research, focusing on Shenzhen's, China, pioneering smart city initiatives. The impact of BIM-CIM integration on design accuracy, construction efficiency, public engagement, and information transparency were employed through mixed-methods empirical analysis - including data mining, descriptive statistics, regression analysis, and content analysis - to evaluate. The synergistic use of BIM's three-dimensional modeling and CIM's macroscale data fusion significantly reduces design errors (12 pipeline collisions resolved in the case), construction changes (reduced by 75%), and rework costs (30%-50% savings), while compressing project timelines by 15%-25%. Life cycle costs decreased by 12.2% via predictive maintenan…
+
+## Step-1 Screening (Prompt A)
+| G Domain AECO | H DT core | I DfS/DfQ/PtD | J Pub-type | K English | Decision |
+|---|---|---|---|---|---|
+| Yes | No | No | Yes | Yes | **Exclude** |
+
+**Note:** BIM-CIM smart city governance; DT not core

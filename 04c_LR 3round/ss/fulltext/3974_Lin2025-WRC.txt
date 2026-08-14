@@ -1,0 +1,1972 @@
+Digital twin-enabled safety monitoring system for seamless worker-robot 
+collaboration in construction
+Xiao Lin , Ziyang Guo , Xinxiang Jin , Hongling Guo
+*
+Department of Construction Management, Tsinghua University, Beijing, China
+ARTICLE INFO
+Keywords:
+Worker-robot collaboration
+Digital twin
+Safety monitoring
+Construction robot
+ABSTRACT
+Worker-robot collaboration (WRC) has emerged as a transformative approach to augmenting the productivity of 
+the construction industry. However, the development of a safety monitoring method or system for stopping robot 
+operations in emergency is imperative, especially for seamless WRC on site. This paper presents a digital twin- 
+enabled safety monitoring system for seamless WRC on site, characterized by its comprehensive perception of 
+dynamic entities and dynamic calculation of protective separation distances during seamless WRC. The effec -
+tiveness of the proposed system is substantiated through a series of experiments, the result demonstrates its 
+proficiency in mitigating collisions during robot operation in both static and dynamic WRC scenarios. The system 
+achieves an average monitoring rate of 9.8 frames per second, an average reaction latency of 0.177 s, and a 
+positional perception error of 0.09 m. It not only provides a practical tool for the implementation of seamless 
+WRC on site, but also offers valuable insights for future WRC research.
+1. Introduction
+The construction industry has shown a keen interest in robotic 
+technology to address issues such as labour shortage, low productivity, 
+and poor working condition. Various automated construction robot 
+systems have been developed [ 1 ], however, challenges arise when these 
+systems are deployed in a highly dynamic and complex construction 
+environment, leading to reduced precision and efficiency. Worker-robot 
+collaboration (WRC) has been recognized as a promising method by 
+leveraging the complementary skills of humans and machines to 
+enhance the on-site usability of construction robots [ 2 ].
+The predominant form of WRC in construction currently relies on 
+remote control methods [ 3 ]. However, closer collaboration, both 
+spatially and temporally, can transform the role of human workers from 
+robot operators to teammates, enhancing the productivity and flexibility 
+of on-site WRC [ 4 ]. Despite these benefits, safety concerns remain a 
+significant barrier to seamless WRC in construction [ 5 ]. Since workers 
+and construction robots share a same operational space in seamless 
+WRC, physical risks arise due to planned or unexpected contact caused 
+by the movement of either party [ 6 ]. When workers need to collaborate 
+closely with robots to complete tasks, physical risks in WRC can further 
+increase [ 7 ]. Therefore, an effective safety monitoring system is essen -
+tial for achieving seamless WRC in construction.
+Despite its critical importance, implementing a safety monitoring 
+system on construction sites presents significant challenges. The un -
+structured and dynamic nature of construction scenarios may decrease 
+the efficiency and precision of the safety monitoring system [ 8 ]. 
+Traditional safety monitoring methods in industrial WRC, such as using 
+physical or virtual fences to spatially separate robots and workers, are 
+impractical. These methods tend to fragment a continuous workspace, 
+reduce operational efficiency, and fail to adapt to rapidly changing 
+construction environment. Therefore, there is a need for an advanced 
+safety monitoring system with fine-grained monitoring capabilities and 
+spatial flexibility that can be easily integrated into construction robots to 
+support safe and seamless WRC on site.
+This research proposes a digital twin-enabled safety monitoring 
+system (SMS) for seamless WRC on construction sites. The contributions 
+of this research are two-fold. First, it introduces a digital twin (DT)- 
+based system capable of comprehensively perceiving and integrating the 
+spatial information of workers, construction robots and construction 
+materials during WRC, and establishing their approximate geometric 
+occupation representations for spatial collision monitoring. Second, it 
+proposes a rapid separation distance (SD) and a dynamic protective 
+separation distance (PSD) calculation method for real-time safety 
+monitoring in seamless WRC. The rest of this paper is organized as fol -
+lows. Section 2 reviews related research on WRC in construction and 
+* Corresponding author.
+E-mail address: hlguo@tsinghua.edu.cn (H. Guo). 
+Contents lists available at ScienceDirect
+Automation in Construction
+journal homep age: www.el sevier.com/l ocate/autcon
+https://doi.org/10.1016/j.autcon.2025.106147
+Received 26 September 2024; Received in revised form 16 March 2025; Accepted 20 March 2025  
+Automation in Construction 174 (2025) 106147 
+Available online 25 March 2025 
+0926-5805/© 2025 Elsevier B.V. All rights are reserved, including those for text and data mining, AI training, and similar technologies. 
+safety monitoring methods for WRC. Section 3 introduces the research 
+methodology. Section 4 details the proposed SMS. Section 5 presents the 
+experiments to validate the system. Section 6 makes a conclusion and 
+clarifies the limitations of this research.
+2. Literature review
+2.1. WRC in construction
+Combining the hierarchical structure of construction works proposed 
+by Bernold [ 9 ], with the Level of Robotic Automation (LoRA) defined by 
+Beer et al. [ 10 ], it establishes a robust theoretical foundation for cate -
+gorizing WRC in construction. Based on the work hierarchy at which 
+WRC occurs, the collaborative system can be classified into three types: 
+Division Collaboration (DC), Sequence Collaboration (SC), and Task 
+Collaboration (TC) ( Table 1 ). Each collaboration approach involves 
+construction robots with different activity capabilities and correspond -
+ing LoRA that align with their designated collaboration roles.
+DC focuses on appropriate labour division between workers and ro -
+bots, such as task allocation [ 11 , 12 ] and scheduling planning [ 13 , 14 ]. 
+Construction robots in DC are usually assumed to have a high LoRA 
+(Levels 7–10) and can autonomously execute assigned tasks consisting of 
+complex processes similar to workers. Through adequate labour divi -
+sion, workers and robots perform tasks independently in terms of time or 
+space, resulting in clear temporal and spatial boundaries regarding their 
+operation space [ 8 ]. Correspondingly, safety risks are minimized 
+because there is minimal shared workspace between humans and robots, 
+as well as physical risks.
+SC involves a series of subtasks executed in a predetermined process 
+to achieve the collaboration objective, with each subtask requiring 
+specific skills from either workers or robots [ 15 ]. In SC, human workers 
+typically handle the more fragile and dynamic subtasks, while robots 
+undertake those with high physical demands. Related research focuses 
+on designing optimal processes to maximize the full potential of human- 
+robot collaboration. For example, MitterBerger et al. [ 2 ] developed a 
+wood framework construction method, where robots hold and position 
+wooden beams and workers then tie them together with ropes. Con -
+struction activities involving the installation and delivery of construc -
+tion materials are a key focus of SC research [ 16 ]. For instance, Wu et al. 
+[ 17 ] analyzed the efficiency of bricklaying teams, where robots lay 
+bricks supplied by workers. In SC, robots’ actions may need to be 
+planned or authorized by human workers [ 18 ], but be executed auton -
+omously by robots, demonstrating a middle LoRA in Levels 4–6. 
+Nevertheless, the autonomy of robots and complex spatial interaction 
+increases physical risks in WRC.
+In TC, human workers and construction robots jointly complete a 
+single challenging task, which involves the highest level of human-robot 
+interaction (HRI). The task is typically characterized by the high de -
+mand of both physical and cognitive efforts, exceeding the sense and 
+plan capabilities of current construction robots as well as the physical 
+ability of human workers. Therefore, human workers usually act as 
+operators and control construction robots manually or remotely through 
+HRI devices, such as augmented reality (AR), virtual reality (VR) and 
+force interaction devices [ 19 ]. For example, Chen et al. [ 20 ] presented a 
+WRC approach for the sorting of construction wastes, where workers use 
+AR devices to guide a robot based on their judgement of potential waste 
+materials. Given the low LoRA (Levels 1–3) of construction robots in TC, 
+physical risks are inherently controlled as robots are under human 
+supervision.
+In practical applications, WRC is usually based on hybrid configu -
+rations. For instance, a robot only possessing motion capability might 
+initially collaborate with a worker to form a human-robot team for TC, 
+thus engaging with another worker in process-level SC. Such hybrid 
+WRC strategies become particularly prevalent when construction ro -
+bots’ LoRA remains insufficient to support their independent partici -
+pation in higher-level collaborative activities. The operational 
+compromise enables robotic systems to contribute to advanced con -
+struction operations while compensating for current technological lim -
+itations. However, the hybridity inevitably introduces systemic safety 
+concerns across robotic applications - irrespective of their designated 
+roles in WRC or attained LoRA levels. This further underscores the 
+critical need for developing adaptive safety monitoring systems in WRC.
+2.2. Safety monitoring method for WRC
+Safety monitoring methods are pivotal in enhancing robotic safety 
+[ 16 ]. Unlike industrial robots that are typically mounted on static bases, 
+construction robots are usually mobile, comprising mobile platforms, 
+kinematic structure, task-specific end-effectors, and integrated sensors 
+[ 1 ]. The foundational architecture, first established by Shimizu Site 
+Robot [ 21 ], remains fundamentally retained by modern construction 
+robots. While dedicated safety standards for construction robots remain 
+under development, ANSI/RIA R15.08 [ 22 ] provides critical normative 
+guidance as the first safety standard for industrial mobile robots (IMR). 
+Particularly, its classification of Type C IMR, defined as “mobile plat -
+forms integrated with manipulator attachments”, is a configuration 
+structurally analogous to modern construction robots. The standard 
+mandates that manipulators mounted on mobile platforms comply with 
+ISO 10218 [ 23 ] requirements, which specifies four principal collabo -
+rative methodologies: Safety-Related Monitoring Stop (SRMS), Hand 
+Guidance (HG), Speed and Separation Monitoring (SSM), and Power and 
+Force Limiting (PFL). The subsequent publication of ISO 15066 [ 24 ] 
+significantly advances WRC safety frameworks by providing detailed 
+design guidelines for safe WRC methods. Therefore, different safety 
+monitoring methods can be designed based on WRC methods adapted in 
+production.
+SRMS demands that robotic operations are conducted at a pre -
+determined distance from human workers, commonly achieved through 
+the implementation of physical or virtual barriers to demarcate zones 
+separating humans and robots. While effective and widely used in in -
+dustrial environments, the method has been criticized for creating 
+spatial segmentation and may potentially undermine on-site produc -
+tivity [ 8 ]. The HG method facilitates teaching and programming robots 
+through direct physical interaction [ 25 ], however, SRMS must be the 
+prerequisite for HG. SSM defines separation distance (SD) and protective 
+separation distance (PSD) based on the speed of humans and robots, 
+dictating that robotic actions are permissible when SD exceeds PSD. 
+Since SSM requires simultaneous detection of the spatial position and 
+speed of both humans and robots, the corresponding safety monitoring 
+method requires higher sensing resources. PFL safeguards human 
+workers from physical harm by limiting the force output of robots during 
+contact [ 26 ]. However, PFL serves as a post-contact protective measure 
+and is not applicable when robots possess surface dangers, such as 
+Table 1 
+WRC category based on construction works structure.
+Collaboration 
+approach
+Collaboration level Robot 
+activity level
+Required LoRA
+Division 
+Collaboration 
+(DC)
+Activity 
+(e.g., foundation 
+construction)
+Process 
+(e.g., 
+welding)
+10: Full Autonomy 
+9: Supervisory 
+Control 
+8: Executive Control 
+7: Shared Control 
+with Robot Initiative
+Sequence 
+Collaboration 
+(SC)
+Process 
+(e.g., welding)
+Work task 
+(e.g., placing 
+anchor)
+6: Shared Control 
+with Human 
+Initiative 
+5: Decision Support 
+4: Batch Processing
+Task 
+Collaboration 
+(TC)
+Work task 
+(e.g., placing 
+anchor)
+Motion/ 
+move 
+(e.g., 
+grabbing)
+3: Assisted 
+Teleoperation 
+2: Tele-Operation 
+1: Manual
+X. Lin et al.                                                                                                                                                                                                                                      Automation in Construction 174 (2025) 106147 
+2 
+holding drills or welding torches in their end effectors. Therefore, SSM 
+stands out as the most appropriate and adaptable method for ensuring 
+safe WRC on site. With the development of sensing technologies, SSM is 
+becoming increasingly cost-effective and feasible.
+The key of SSM is to calculate SD and PSD according to the spatial 
+motion information of both robots and collaborating workers, which 
+requires advanced robot intelligence. For monitoring human bodies 
+within collaborative workspace, sensors with three-dimensional 
+perception capabilities, such as light detection and ranging (LiDAR) 
+[ 27 ] and depth cameras [ 28 ], are commonly employed. For seamless 
+WRC, limb-level monitoring becomes imperative for accurate SD 
+sensing. The effectiveness of SD sensing is heavily influenced by how 
+obstacles are represented. For instance, Lucci et al. [ 26 ] utilized depth 
+cameras for the limb-level detection of human workers, but the collision 
+representation relied on point clouds, which are less versatile than 
+surface-based representations like triangle meshes. Similarly, Rose -
+nstrauch et al. [ 29 ] used Kinect V2 for human body detection, with a 
+simplified representation consisting of joint keypoints without collision 
+volumes. Li et al. [ 30 ] also adopted joint keypoints for SD calculations. 
+However, in close WRC scenarios, keypoints may not always represent 
+the closest points on a worker ’ s body relative to a robot, potentially 
+leading to inaccurate estimation for SD. Surface-based representations 
+for both workers and robots can provide more accurate SD measure -
+ments. Nevertheless, overly complex representations, such as the Skin -
+ned Multi-Person Linear (SMPL) model [ 25 ], need substantial 
+computing resources, thus hindering real-time performance. Simplified 
+geometric representations, including spheres, boxes, and capsules 
+[ 31 , 32 ], offer a viable alternative, but the level of detail (LoD) must be 
+carefully designed to strike a balance between computational efficiency 
+and representation accuracy.
+While ISO 15066 provides calculation methods for PSD, obtaining 
+necessary value for calculation, particularly the speed of workers and 
+robots, renders it challenging. A common approach is to set a constant 
+value for workers ’ speed to estimate PSD [ 33 – 35 ], where a maximum 
+speed assumption for workers is often established for safety. However, 
+the assumption also constrains robots ’ workspace, potentially reducing 
+the efficiency and flexibility of WRC [ 36 ]. Besides, current research for 
+safety monitoring concentrates on WRC in manufacturing, where robots 
+usually operate on a tabletop scale, using stationary arms to handle 
+small objects. However, in construction sites, components and objects 
+such as drywall panels manipulated by robots may have a large size and 
+should not be overlooked [ 18 ]. In summary, although SSM is the most 
+suitable collaboration method for WRC in construction, there is still a 
+lack of an appropriate safety monitoring system with capabilities of 1) 
+balancing the computational accuracy and efficiency of SD, 2) dynam -
+ically calculating PSD, and 3) monitoring objects held by robots to 
+support safe WRC in construction.
+3. Methodology
+This research employs a constructive research approach [ 37 ], 
+encompassing three phases: problem identification, method develop -
+ment, and validation. The challenges identified in current safety moni -
+toring methods or systems for WRC on site include a lack of efficient and 
+dynamic sensing methods for SD and PSD, as well as integrating 
+detection for manipulated materials by construction robots during 
+monitoring. To address the gap, this research introduces a digital twin- 
+enabled SMS for WRC. The conceptual framework of the proposed sys -
+tem is depicted in Fig. 1 .
+Digital twin fundamentally comprises three core components: 
+physical assets in operational environment, their synchronized virtual 
+replica in cyberspace, and bidirectional data pipelines enabling data and 
+information exchange between the two domains [ 38 ]. Through the 
+integration of multimodal sensors, heterogeneous data and computa -
+tional intelligence, digital twin establishes a bridge between physical 
+and virtual environments. The intrinsic demand for DT-enabled safety 
+monitoring stems from the inherent complexity of construction robots. 
+Beyond safety monitoring, construction robots require basic capabilities 
+in path planning and motion control to execute tasks. Maintaining 
+functional decoupling while achieving resource reuse across subsystems 
+becomes critical in such complex architectures. In the proposed system, 
+safety monitoring functions as an upper-layer application are built upon 
+the foundational digital twin infrastructure, thereby achieving systemic 
+decoupling from other operational functions. It is crucial that the virtual 
+representation of physical assets, as a digital avatar, can be simulta -
+neously leveraged for diverse operational requirements - from real-time 
+path planning to high-level situational awareness - beyond its primary 
+safety monitoring purpose.
+In the SMS, the perception of physical assets, including robots, 
+workers, and materials, is achieved through sensors integrated with 
+robots. The sensors collect environmental data, from which algorithms 
+extract the spatial poses, geometric representations, and velocities of 
+physical assets. The information is then represented as virtual assets or 
+values within the digital twin system. The virtual assets or values pro -
+vide essential information for calculating SD and PSD according to the 
+SSM method outlined in ISO 15066 [ 24 ]. SD and PSD are compared 
+circularly to assess the real-time safety of WRC. If PSD is exceeded by SD, 
+the system accesses the physical actuators of robots to stop it, thereby 
+Fig. 1. Framework of the proposed SMS.
+X. Lin et al.                                                                                                                                                                                                                                      Automation in Construction 174 (2025) 106147 
+3 
+safeguarding workers from potential physical hazards.
+4. Safety monitoring method
+The proposed SMS mainly comprises two components: the percep -
+tion of physical assets, which provides basic information for detecting 
+safety states, and safety monitoring based on SSM, which offers the 
+criteria for assessing safety states.
+4.1. Perception of physical assets in the digital twin system
+Physical assets for WRC in construction include construction robots, 
+construction workers, and construction materials. Due to the heteroge -
+neity of their movement patterns and physical characteristics, it is 
+necessary to adopt different approaches to perceive their spatial poses 
+and occupancy so as to construct their virtual representations in the 
+digital twin system.
+4.1.1. Construction robot
+The construction robot prototype used in this research ( Fig. 2 a) 
+consists of 1) a four-wheel omnidirectional mobile chassis, 2) a 7-de -
+gree-of-freedom (DoF) Kinova Jaco 2 robotic arm with a maximum 
+payload of 2.6 kg, 3) a two-finger gripper as the end-effector, and 4) an 
+attached depth camera for environmental perception. The configuration 
+of this robot mirrors that of the previously described general construc -
+tion robot configuration. As a prototype, it can perform general WRC 
+tasks including material transportation (e.g., handling materials for 
+workers) and cooperative operations (e.g., workpiece stabilization 
+during work machining tasks).
+To establish a digital twin representation of construction robots in 
+virtual environments, it needs to sense the spatial poses of their moving 
+components (represented via coordinate systems) and model their 
+spatial occupancy. The mobile base of construction robots is the primary 
+reference as the base coordinate system. The X-axis of the base coordi -
+nate system is aligned with the positive direction of robots ’ movement, 
+while the Z -axis is aligned with the upward vertical direction and the Y- 
+axis is determined by right-hand rules ( Fig. 2 a). The spatial occupancy 
+representation of mobile bases in the virtual environment is based on a 
+simplified cuboid model that approximates their physical dimensions.
+The kinematic structure of construction robots, such as robotic arms, 
+can be modelled as the assembly of multiple rigid bodies interconnected 
+through rotational and translational joints. The pose of kinematic 
+structure can be comprehensively represented using individual coordi -
+nate systems of its joints. The Denavit-Hartenberg (DH) method provides 
+a parameterized approach to describe the transformations among the 
+coordinate systems using four parameters, including α , d , a , and θ . 
+Taking the 7-DoF robotic arm adopted by the prototype as an example, 
+α , d , and a are constants related to the inherent dimensions of the links. 
+The joint angles θ of its rotational joints are the sole variables and can be 
+measured through the integration of rotary encoders within the joints. 
+The Unified Robot Description Format (URDF) is utilized to describe and 
+store the constant DH parameters of construction robots, complemented 
+by the real-time sensing of joint angles to reconstruct the pose of kine -
+matic structure. Given that the links of robotic arm are generally cy -
+lindrical in shape, it is suggested to use capsules to represent their spatial 
+occupancy in the virtual environment ( Fig. 2 c).
+Vision sensors are critical for construction robots to collect external 
+information in a dynamic environment. Accurately determining the pose 
+of sensors within the base coordinate system is crucial for robots to 
+precisely perceive the pose of other external objects in the environment. 
+Eye-in-hand calibration is utilized to obtain the precise pose of sensors 
+relative to the base coordinate system, denoted as T
+0
+c
+. However, the 
+geometric representation of sensors are commonly unnecessary, as they 
+are typically fixed to mobile bases and remain stationary. Therefore, its 
+spatial occupancy is generally integrated into mobile bases. The 
+perceiving and representing results of construction robots are shown in 
+Fig. 2 .
+4.1.2. Human worker
+To accurately perceive workers ’ poses, this research employs a 3D 
+human pose estimation algorithm to derive a skeletal model from RGB- 
+depth (RGBD) images captured by depth cameras. Commonly-employed 
+skeletal models for human pose estimation include the 17-point model 
+delineated by Common Objects in Context (COCO) [ 39 ] and the 32-point 
+model defined by Azure Kinect body tracking (AKBT) [ 40 ]. The AKBT 
+software development kit is utilized for pose estimation, which has 
+demonstrated superior real-time performance and accuracy in human 
+factors and safety applications [ 41 ]. The pose estimation process in -
+volves initially segmenting human masks from images using a neural 
+network and estimating the position of individual ’ s joints. Then, depth 
+values are assigned to each pixel of human masks based on depth data, 
+and each pose of joint is determined via random forest voting. As a 
+result, AKBT outputs a 32-point skeletal model, as depicted in Fig. 3 b. 
+Denoting the pose of a particular joint to the depth camera sensor co -
+ordinate system as T
+c
+j
+, then its relative pose to the base coordinate sys -
+tem can be calculated as T
+0
+j
+= T
+0
+c
+T
+c
+j
+.
+A skeletal model serves as a reference for the virtual representation 
+Fig. 2. Perceiving and representing results of construction robots.
+X. Lin et al.                                                                                                                                                                                                                                      Automation in Construction 174 (2025) 106147 
+4 
+of a human body. Capsules are ideal geometric representations due to 
+their resemblance to the shape of human limbs with minimal parame -
+ters. Given a limb with its two-joint positions j
+1
+= [ x
+1
+, y
+1
+, z
+1
+] and j
+2
+=
+[ x
+2
+, y
+2
+, z
+2
+] , the capsule representation of its spatial occupancy can be 
+defined by seven parameters (Eq. (1) ). 
+capsule = { x
+1
+, y
+1
+, z
+1
+, x
+2
+, y
+2
+, z
+2
+, r } (1) 
+where, r represents the radius of capsule.
+The radius values are defined according to the standard “ GB/T 
+10000-2023 Human dimensions of Chinese adults ” [ 42 ] based on the 
+50th percentile of static anthropometric dimensions for adult males aged 
+18 – 70 in various body parts. For instance, the 50th percentile head 
+circumference is 570 mm, thus the radius r
+1 
+of capsule representing 
+head occupancy is 570 / 2 π approximately 91 mm. For the palm, since its 
+cross-section is not approximately circular, the palm width (100 mm) is 
+used as the reference for calculating radius r
+7
+, that is, 50 mm. According 
+to the simplified skeletal model, a worker ’ s spatial occupancy repre -
+sentation is composed of 14 capsules ( Fig. 3 c), with each capsule ’ s 
+radius detailed in Table 2 .
+4.1.3. Material
+Due to the diverse forms of construction materials, it is essential to 
+establish a consistent standard to define their coordinate systems to 
+unambiguously describe their poses. According to their approximate 
+geometric forms, common materials can be categorized into volumetric, 
+planar, and linear types. Their coordinate systems can be defined as 
+follows.
+4.1.3.1. Volumetric material. Materials possessing comparable di -
+mensions in three dimensional space, such as prefabricated beams, slabs, 
+masonry blocks, and I-beams, are considered volumetric. The Z -axis of 
+the volumetric material ’ s coordinate system should be vertically upward 
+and aligned with one of its edges, while the X-axis aligns with the longer 
+side of the remaining two ones, and the Y-axis aligns with the shorter 
+one ( Fig. 4 a).
+4.1.3.2. Planar material. Materials with comparable dimensions in 
+length and width but exhibiting minimal thickness, such as tiles, ceil -
+ings, curtain wall panels, doors, and windows, are classified as planar. 
+Planar materials often exhibit surface anisotropy. For instance, tiles 
+have distinct glazed and rough surfaces. The Z -axis of the planar mate -
+rial ’ s coordinate system is defined to point toward the “ external ” side 
+after installation if materials exhibit surface anisotropy (relative to the 
+side contacting the working surface), while the X-axis aligns with the 
+longer side of the remaining two ones, and the Y-axis aligns with the 
+shorter one ( Fig. 4 b).
+4.1.3.3. Linear material. Materials with significant length but relatively 
+small dimensions in the other two dimensions, such as rebar, rods, and 
+pipes, are considered linear. Linear materials are typically geometrically 
+symmetrical about the central axis, such as scaffolding pipes, drainage 
+pipes, and rebar, with circular cross-sections. For linear materials, the X- 
+axis of their coordinate system should align with the longitudinal axis of 
+materials. If linear materials are rotationally symmetric about the X- 
+axis, the Y and Z axes can be arbitrarily oriented; otherwise, they should 
+follow the same definitions as volumetric or planar materials ( Fig. 4 c).
+Fig. 4 shows the geometric representation of materials in the virtual 
+environment, designed to closely resemble their actual shapes. Volu -
+metric and planar materials are typically represented by cuboids, while 
+linear materials are represented by capsules.
+Given the large size of many materials and the difficulty in fully 
+perceiving their shapes, this research employs an ArUco tag-based 
+method for the perception of material pose and virtual representation 
+reconstruction. ArUco tags are square markers with a black border and a 
+binary matrix. The black border facilitates tag detection in images, while 
+the internal binary code is used for tag identification and error correc -
+tion. ArUco tags are known for their rapid deployment and robust 
+recognition, making them widely used in augmented reality and mixed 
+Fig. 3. Perceiving and representing results of human workers.
+Table 2 
+Spatial occupancy representation parameters for human body parts.
+Body part 
+( Fig. 3 c)
+Joints Capsule 
+Radius 
+(mm)
+Standard reference 
+(mm)
+Head (1) Neck-Forehead 91 570 (Head circumference)
+Upper arm 
+(5,8)
+Shoulder-Elbow 47
+295 (Upper arm 
+circumference)
+Forearm (6, 9) Elbow-Wrist 42.5
+267 (Forearm 
+circumference)
+Hand (7, 10) Wrist-Finger tip 50 100 (Palm width)
+Torso (2, 3, 4)
+Shoulder-Hip (3 ， 
+4) 
+Neck-Pelvis(2)
+101.5 203 (Chest depth)
+Thigh (11,12) Hip-Knee 85.5 537 (Thigh circumference)
+Calf (13, 14) Knee-Ankle 57.5 361 (Calf circumference)
+X. Lin et al.                                                                                                                                                                                                                                      Automation in Construction 174 (2025) 106147 
+5 
+reality applications requiring pose estimation. ArUco tags are attached 
+to materials to be perceived ( Fig. 5 a). Given camera ’ s intrinsic param -
+eters and the size of ArUco markers, the pose of ArUco tag relative to the 
+camera coordinate system can be estimated, denoted by a trans -
+formation matrix T
+c
+a
+. To determine the position of materials relative to 
+camera sensors, the pose of the ArUco tags relative to the material co -
+ordinate system must also be obtained through pre-measurement, 
+denoted as T
+a
+m
+. Then, the pose of materials related to the base coordi -
+nate system can be calculated as T
+0
+m
+= T
+0
+c
+T
+c
+a
+T
+a
+m
+.
+To completely perceive the pose and shapes of materials, T
+a
+m 
+and 
+material shapes are stored and transmitted using the Industrial Foun -
+dation Classes (IFC) data. Since ArUco tags can only store limited in -
+formation, this research combines quick response (QR) codes with 
+ArUco tags for comprehensive perception, as shown in Fig. 5 a. In the 
+process of perceiving, ArUco tags are first detected to obtain T
+c
+a
+, 
+simultaneously narrowing the detection range for QR codes. Reading QR 
+codes yields the GlobalID of materials, consisting of a 22-digit alpha -
+numeric sequence. Based on the GlobalID , the system searches the stored 
+IFC data for corresponding ifcRelDefinesByProperties parameter, which 
+includes the images of ArUco tags ( ifcLabel ) and T
+a
+m
+, to construct the pose 
+of materials ( Fig. 5 b). Materials ’ shape information is parsed from ifc -
+ShapeRepresentation . The hierarchical structure of properties stored in 
+IFC data, which can be easily constructed by IFC-supported modelling 
+software, is shown in Fig. 6 . In the end, the pose and representation of 
+materials are reconstructed in the virtual environment ( Fig. 5 c).
+4.2. Safety monitoring based on SSM
+The key to SSM-based safety monitoring lies in comparing SD with 
+PSD as a threshold. SD is an objective physical quantity, and its rapid 
+calculation is crucial to meet the real-time requirements of safety 
+monitoring. Meanwhile, the calculation method for PSD should be 
+designed to account for dynamic collision risks in WRC.
+4.2.1. Separation distance calculation
+Based on the pose and geometric representations of physical assets 
+perceived by the digital twin system, SD is expressed as the minimum 
+distance between the geometric representations of a human worker and 
+a construction robot (including both the robot and material it handles). 
+To calculate SD, it must consider all possible configurations of workers ’ 
+limbs relative to the components of robots. Human workers ’ represen -
+tations are a capsule set C
+h
+, and robots ’ representations include a 
+capsule set C
+r 
+and a box set B
+r
+. Given that all entities ’ representations 
+are designed as the combinations of capsules or boxes, the calculation of 
+SD needs to determine the spatial distances of 1) capsule-to-capsule, and 
+2) capsule-to-box.
+4.2.1.1. Capsule-to-capsule distance. For two capsules denoted as c
+1
+=
+{
+x
+1
+1
+, y
+1
+1
+, z
+1
+1
+, x
+2
+1
+, y
+2
+1
+, z
+2
+1
+, r
+1
+}
+and c
+2
+=
+{
+x
+1
+2
+, y
+1
+2
+, z
+1
+2
+, x
+2
+2
+, y
+2
+2
+, z
+2
+2
+, r
+2
+}
+, their distance 
+s is defined by Eq. (2) . 
+s ( c
+1
+, c
+2
+) = d ( P
+1
+P
+2
+, Q
+1
+Q
+2
+)   r
+1
+  r
+2
+(2) 
+where, P
+1
+=
+ 
+x
+1
+1
+, y
+1
+1
+, z
+1
+1
+)
+; P
+2
+=
+ 
+x
+2
+1
+, y
+2
+1
+, z
+2
+1
+)
+; Q
+1
+=
+ 
+x
+1
+2
+, y
+1
+2
+, z
+1
+2
+)
+; Q
+2
+=
+ 
+x
+2
+2
+, y
+2
+2
+, z
+2
+2
+)
+; d ( P
+1
+P
+2
+, Q
+1
+Q
+2
+) is the shortest distance between P
+1
+P
+2 
+and Q
+1
+Q
+2
+.
+Let s
+1
+= P
+2
+  P
+1
+, s
+2
+= Q
+2
+  Q
+1
+, a shortest line segment PQ between 
+P
+1
+P
+2 
+and Q
+1
+Q
+2 
+exists, the length of which is expressed by Eqs. (3) – (5) . 
+P ( λ
+1
+) = P
+1
++ λ
+1
+s
+1
+(3) 
+Q ( λ
+2
+) = Q
+1
++ λ
+2
+s
+2
+(4) 
+d ( P
+1
+P
+2
+, Q
+1
+Q
+2
+) = | PQ | = ‖( P
+1
++ λ
+1
+s
+1
+)   ( Q
+1
++ λ
+2
+s
+2
+) ‖ (5) 
+To minimize | PQ | , let 
+∂ || PQ ||
+∂ λ
+1
+= 0 ,
+∂ || PQ ||
+∂ λ
+2
+= 0, thus: 
+Fig. 4. Coordinate system definition and geometric representation for materials.
+Fig. 5. Perceiving and representing results of materials.
+X. Lin et al.                                                                                                                                                                                                                                      Automation in Construction 174 (2025) 106147 
+6 
+⎧
+⎪
+⎪
+⎪
+⎪
+⎪
+⎪
+⎪
+⎨
+⎪
+⎪
+⎪
+⎪
+⎪
+⎪
+⎪
+⎩
+λ
+1
+=
+( s
+1
+⋅ s
+2
+)
+(
+P
+1
+Q
+1
+̅̅ ̅ →
+⋅ s
+2
+)
+  ‖ s
+2
+‖
+2
+(
+P
+1
+Q
+1
+̅̅ ̅ →
+⋅ s
+1
+)
+‖ s
+1
+‖
+2
+‖ s
+2
+‖
+2
+  ( s
+1
+⋅ s
+2
+)
+2
+λ
+2
+=
+  ( s
+1
+⋅ s
+2
+)
+(
+P
+1
+Q
+1
+̅̅ ̅ →
+⋅ s
+1
+)
+  ‖ s
+1
+‖
+2
+(
+P
+1
+Q
+1
+̅̅ ̅ →
+⋅ s
+2
+)
+‖ s
+1
+‖
+2
+‖ s
+2
+‖
+2
+  ( s
+1
+⋅ s
+2
+)
+2
+(6) 
+Values of λ
+1
+, and λ
+2 
+between 0 and 1 indicate that P lies on P
+1
+P
+2 
+and Q 
+lies on Q
+1
+Q
+2
+, in which case, d ( P
+1
+P
+2
+, Q
+1
+Q
+2
+) is calculated based on Eq. (5) . 
+Otherwise, the shortest distances from P
+1
+, P
+2 
+to Q
+1
+Q
+2
+, and Q
+1
+, Q
+2 
+to P
+1
+P
+2 
+must be calculated separately to determine d ( P
+1
+P
+2
+, Q
+1
+Q
+2
+) , as expressed 
+by Eqs. (7) – (10) (exemplified by the distance from P
+1 
+to Q
+1
+Q
+2
+). 
+f ( P
+1
+, Q
+1
+Q
+2
+) = ‖ P
+1
+  ( Q
+1
++ g ( λ
+2
+) s
+2
+) ‖ (7) 
+λ
+2
+=
+( s
+1
+⋅ s
+2
+)[( P
+1
+  Q
+1
+) ⋅ s
+2
+]   ‖ s
+2
+‖
+2
+[( P
+1
+  Q
+1
+) ⋅ s
+1
+]
+‖ s
+1
+‖
+2
+‖ s
+2
+‖
+2
+  ( s
+1
+⋅ s
+2
+)
+2
+(8) 
+g ( λ ) =
+⎧
+⎪
+⎪
+⎨
+⎪
+⎪
+⎩
+0 , λ < 0
+λ , 1 < λ < 0
+1 , λ > 1
+(9) 
+d ( P
+1
+P
+2
+, Q
+1
+Q
+2
+) = min { f ( P
+1
+, Q
+1
+Q
+2
+) , f ( P
+2
+, Q
+1
+Q
+2
+) , f ( Q
+1
+, P
+1
+P
+2
+) , f ( Q
+2
+, P
+1
+P
+2
+) }
+(10) 
+In the end, the capsule-to-capsule distance s ( c
+1
+, c
+2
+) is obtained by 
+substituting Eq. (10) or Eq. (5) into Eq. (2) .
+4.2.1.2. Capsule-to-box distance. To rapidly calculate the minimum 
+distance between a capsule and a box, the 3D space is divided into 27 
+Voronoi cells according to the six faces of the box, as shown in Fig. 7 . 
+Each vertex, edge, and face of the box defines a unique Voronoi domain. 
+It can be proven that, for any point within a domain, the closest distance 
+from the point to the box always lies on the domain ’ s corresponding 
+geometric element. For instance, if a point resides within a vertex 
+domain, then the corresponding vertex is guaranteed to be the nearest 
+point on the box to that point. This principle also applies to lines within 
+the domain, which could greatly simplify the calculation.
+For capsule c =
+{
+x
+1
+, y
+1
+, z
+1
+, x
+2
+, y
+2
+, z
+2
+, r
+}
+and P
+1
+=
+ 
+x
+1
+, y
+1
+, z
+1
+)
+, P
+2
+=
+ 
+x
+2
+, y
+2
+, z
+2
+)
+, defining v
+i
+( P
+1
+P
+2
+) as the shortest distance from P
+1
+P
+2 
+to the 
+box within domain V
+i 
+and P
+1
+ʹ P
+2
+ʹ as the segmentation of P
+1
+P
+2 
+in domain 
+V
+i
+, v
+i
+( P
+1
+P
+2
+) is calculated as follows. 
+1) If V
+i 
+is a vertex domain, v
+i
+( P
+1
+P
+2
+) equals the shortest distance from 
+the vertex to P
+1
+ʹ P
+2
+ʹ , which can be referred to Eqs. (7) – (10) ;
+2) If V
+i 
+is an edge domain, v
+i
+( P
+1
+P
+2
+) equals the shortest distance from 
+the edge to P
+1
+ʹ P
+2
+ʹ , which can be calculated using Eqs. (3) – (6) ;
+3) If V
+i 
+is a face domain, v
+i
+( P
+1
+P
+2
+) equals the shortest distance from P
+1
+ʹ 
+or P
+2
+ʹ 
+to the face.
+Finally, the capsule-to-box distance is calculated as Eq. (11) . With 
+the capsule-to-capsule and capsule-to-box distance calculating methods, 
+SD can be calculated as Eq. (12) . 
+s ( c , b ) = d ( P
+1
+P
+2
+, b )   r = min { v
+i
+( P
+1
+P
+2
+) }   r (11) 
+Fig. 6. Hierarchical structure of material properties stored in IFC data.
+Fig. 7. Divided Voronoi regions for a spatial box, along with the illustration of 
+the shortest distance from lines to the box within domains.
+X. Lin et al.                                                                                                                                                                                                                                      Automation in Construction 174 (2025) 106147 
+7 
+SD = min
+{
+min
+c
+h
+∈ C
+h
+, c r ∈ C r
+( s ( c
+h
+, c
+r
+) ) , min
+c
+h
+∈ C
+h
+, b r ∈ B r
+( s ( c
+h
+, b
+r
+) )
+}
+(12) 
+4.2.2. Protective separation distance calculation
+The design of PSD should be universally applicable to all types of 
+construction robots, irrespective of their size, shape, or functionality. 
+Achieving the universality necessitates a focus on the intrinsic safety of 
+human-robot collaboration. Fundamentally, the risk of human-robot 
+collisions stems from kinetic energy possessed by construction robots 
+and their components. The core principle of PSD is to halt robots before 
+such collisions occur, or at the very least, to ensure that robots dissipate 
+their kinetic energy upon impact. To apply the principle across various 
+robotic platforms, PSD design must account for the differing stopping 
+times required by different robots and the performance capabilities of 
+their sensing systems. The ISO 15066 standard defines the general 
+equation for calculating PSD as Eq. (13) . 
+S
+p
+( t
+0
+) = S
+h
++ S
+r
++ S
+s
++ C + Z
+d
++ Z
+r
+(13) 
+where, S
+p
+( t
+0
+) is PSD at the time t
+0
+; C is the intrusion distance that a 
+part of human body can intrude into the sensing field before it is 
+detected (ISO 13855 [ 43 ]); Z
+d 
+and Z
+r 
+are the position uncertainty of 
+human workers and robots respectively, caused by perception errors. 
+Eqs. (14) – (16) further express S
+h
+, S
+r
+, and S
+s
+, respectively. 
+S
+h
+=
+∫
+t
+0
++ T r + T s
+t
+0
+v
+h
+( t ) dt (14) 
+S
+r
+=
+∫
+t
+0
++ T r
+t
+0
+v
+r
+( t ) dt (15) 
+S
+s
+=
+∫
+t
+0
++ T r + T s
+t
+0
++ T r
+v
+s
+( t ) dt (16) 
+where, T
+r 
+is the reaction time of robots, including time for percep -
+tion, processing and activation of a robot stop triggering; T
+s 
+is the 
+stopping time of robots, including time for stop signal transmission and 
+braking; v
+h 
+is the approaching speed of workers relative to robots; v
+r 
+is 
+the approaching speed of robots relative to workers during reaction; v
+s 
+is 
+the approaching speed of robots relative to workers during stopping.
+By combining Eqs. (13) – (16) , Eq. (17) is formed to indicate that PSD 
+consists of the relative distance decreased between workers and robots 
+during reaction time and stopping time, plus constant term. Triggering 
+stop when SD exceeds PSD ensures that robots will stop running before 
+any possible collision happen between workers and robots ( Fig. 8 ), 
+thereby guarding safety in WRC. 
+S
+p
+( t
+0
+) =
+∫
+t
+0
++ T r
+t
+0
+( v
+h
+( t ) + v
+r
+( t ) ) dt +
+∫
+t
+0
++ T r + T s
+t
+0
++ T r
+( v
+h
+( t ) + v
+s
+( t ) ) dt + C + Z
+d
++ Z
+r
+(17) 
+To estimate dynamic PSD with sufficient margin for safety, certain 
+approximations and simplifications need to be applied. This research 
+makes three assumptions: 1) workers maintain a constant approaching 
+speed after t
+0
+; 2) construction robots maintain a constant approaching 
+speed during T
+r
+, and decrease their speed linearly to zero during T
+s
+; and 
+3) the speed directions of workers and robots are along their shortest 
+distance. According to these assumptions, Eq. (17) is simplified as Eq. 
+(18) . 
+S
+p
+( t
+0
+) = v
+h
+( t
+0
+)( T
+r
++ T
+s
+) + v
+r
+( t
+0
+) T
+r
++
+1
+2
+v
+2
+r
+( t
+0
+) T
+s
++ C + Z
+d
++ Z
+r
+(18) 
+Further, according to the current and historical poses of workers and 
+robots, v
+h
+( t
+0
+) and v
+r
+( t
+0
+) can be calculated as Eqs. (19) – (20) . 
+v
+h
+( t
+0
+) =
+Δ S
+h
+( t
+0
+)
+Δ t
+=
+S ( p
+h
+( t
+0
+) , p
+r
+( t
+0
+  Δ t ) )   S ( p
+h
+( t
+0
+) , p
+r
+( t
+0
+) )
+Δ t
+(19) 
+v
+r
+( t
+0
+) =
+Δ S
+r
+( t
+0
+)
+Δ t
+=
+S ( p
+h
+( t
+0
+  Δ t ) , p
+r
+( t
+0
+) )   S ( p
+h
+( t
+0
+) , p
+r
+( t
+0
+) )
+Δ t
+(20) 
+where, p
+h
+( t
+0
+) is the position of worker ’ s body part at t
+0
+; p
+r
+( t
+0
+) is the 
+position of robot at t
+0
+; Δ t is the sampling intervals of SMS for worker ’ s 
+and robot ’ s poses.
+Substituting Eqs. (19) – (20) into Eq. (18) enables the dynamic 
+calculation of PSD at t
+0
+. Ultimately, a safety state monitor is deployed to 
+monitor current SD and dynamic PSD in WRC, so as to control the 
+actuator of construction robots to stop when SD is less than PSD.
+5. Experiment and result
+To evaluate the feasibility and performance of the proposed SMS, a 
+series of experiments were designed and conducted in an construction 
+setting. The system was comprehensively tested across non-conflict, 
+static-conflict, and dynamic-conflict scenarios.
+5.1. Experiment setting
+The construction robot used in the experiment is identical to the 
+prototype in Fig. 2 a. The depth camera utilized by the robot is Obbrec 
+Femto Bolt, providing a relative depth accuracy of 0.15 % at 1 m. The 
+safety monitoring system was tested on an Ubuntu 20.04 platform with 
+hardware specifications of an Intel i7 – 11,730 CPU and an NVIDIA RTX 
+3070 graphics card. Three scenarios were designed to comprehensively 
+test the performance of the system, as shown in Fig. 9 . 
+1) In the non-conflict scenario, the robot repeatedly moved its end- 
+effector along a fixed route while gripping a pipe, with the worker 
+positioning outside the robot ’ s workspace and remaining stationary. 
+This experiment aimed to evaluate the SMS ’ s feasibility and its la -
+tency and accuracy in perceiving SD.
+Fig. 8. Relationship between SD and PSD over time.
+X. Lin et al.                                                                                                                                                                                                                                      Automation in Construction 174 (2025) 106147 
+8 
+2) In the static-conflict scenario, the worker placed their hand in the 
+robot ’ s path to receive the material but remained stationary. This 
+simulated a static human-robot conflict scenario, where a robot 
+needs to stop before a collision occurs.
+3) In the dynamic-conflict scenario, the worker initially stayed outside 
+the human-robot conflict area but intervened by placing their hand 
+in the robot ’ s path after it had started moving. This introduced a 
+more dynamic conflict scenario, which more closely mimicked WRC 
+in reality, requiring the robot to quickly respond to the worker ’ s 
+actions and halt before a collision occurs.
+Three participants were invited in the experiment, with their heights 
+being 167 cm, 175 cm, and 181 cm, corresponding to the 50th (P50), 
+80th (P80), and 95th (P95) percentiles of adult static anthropometric 
+dimensions respectively. For safety considerations, all participants were 
+asked to wear appropriate protective equipment in the static-conflict 
+and dynamic-conflict scenarios to prevent injuries from potential 
+safety monitoring failures. The construction robot was supervised by an 
+operator who ensured that the robot could be manually halted in case 
+the SMS failed.
+5.2. Result analysis
+Utilizing the DT system, virtual assets and values, including spatial 
+data related to construction robots, workers, and materials, as well as SD 
+and PSD, were recorded and stored as datasets. The performance of the 
+proposed SMS was analyzed using the datasets from each scenario.
+5.2.1. Non-conflict scenario
+In the non-conflict scenario, the primary focus of analysis was on the 
+system ’ s accuracy and efficiency under various WRC situations. The 
+participants were instructed to assume various postures throughout the 
+experiment, including standing facing forward, standing sideways, and 
+squatting, to validate the system ’ s effectiveness across a range of 
+simulated WRC situations. Fig. 10 illustrates the visualization of 
+perception and SD calculation for a worker and robot across different 
+poses. Under stable relative postures, the perceived SD was recorded, 
+and the actual minimum human-robot distance was measured using a 
+tape measure. Contributions from the three participants yielded 21 sets 
+of perception-measurement data, as plotted in Fig. 11 . Special attention 
+was given to errors where the actual measurements were less than the 
+perceived SD, as these discrepancies could lead to overly optimistic 
+collision assessments. The results show that the maximum SD error, 
+where the actual measurement is less than the perceived value, is 9 cm. 
+It means that the proposed digital twin system can accurately perceive 
+the poses of all entities and precisely calculate SD under various 
+postures.
+To evaluate the reaction time, the construction robot executed a 
+reciprocating horizontal motion in the X-axis direction of the base co -
+ordinate system, while the worker maintained a relatively stationary 
+position. The robotic arm ’ s self-position perception measurement was 
+Fig. 9. Test scenarios for the experiment.
+Fig. 10. Digital twin representation for different poses of worker and robot.
+X. Lin et al.                                                                                                                                                                                                                                      Automation in Construction 174 (2025) 106147 
+9 
+used as the time reference since it stems directly from the built-in en -
+coders, offering the minimum computation time and closely approxi -
+mating real-time synchronization to the physical world. The reaction 
+time of the SMS could be quantified by comparing the time difference 
+between the robot ’ s self-position and the perceived SD reaching their 
+extremum, respectively ( Fig. 12 ). However, the slight swaying of 
+workers ’ bodies and perception errors caused by sensors and algorithms 
+create disturbances, which may affect the perceived SD value and the 
+timing of SD reaching its extremum. Instead of calculating latency 
+directly from single measurement data, the correlation coefficient be -
+tween the robot ’ s position and SD during its cyclic motion was calcu -
+lated, then the average system reaction time was obtained by calculating 
+their phase difference. The findings show that the SMS achieves a 
+perception frame rate of approximately 9.8 frames per second (FPS) in 
+SD perception and an average reaction time of 0.177 s. The reaction time 
+consists of the time required for the system to perceive and integrate the 
+poses of entities and the computation time for constructing geometric 
+representations and calculating SD and PSD.
+5.2.2. Static-conflict scenario
+With the results of the non-conflict scenario experiment, the pa -
+rameters for calculating PSD are presented in Table 3 .
+Each participant was asked to perform three static-conflict tests 
+under distinct robot speeds ( v
+r
+= 0.08 m/s, 0.10 m/s, 0.12 m/s). The 
+robot speed was defined as the linear velocity of end effector during 
+motion execution. In all tests, the SMS reliably initiated full braking 
+sequences across all tested velocities, achieving zero human-robot con -
+tact incidents. Fig. 13 shows the experiment result of the first partici -
+pant. It can be found that the dynamic interplay among SD, PSD, and the 
+end-effector ’ s positional trajectory exhibits velocity-dependent scaling 
+behavior. At different robot speeds, the average PSD values are 0.116 m, 
+0.125 m, and 0.145 m, respectively, which are scaled proportionally 
+with velocity. This velocity-dependent PSD amplification aligns funda -
+mentally with SSM principles, where higher operational velocities 
+necessitate larger buffer zones to compensate for fixed system latency 
+constraints.
+The fluctuations in PSD primarily stem from variations in the SMS ’ s 
+perception of relative speed between robots and workers. Given that the 
+workers remained relatively stationary during the robot ’ s movement, 
+and its end effector moved at a constant linear velocity relative to the 
+workers, PSD remained relatively stable with limited fluctuation due to 
+the absence of significant changes in the risk of human-robot conflict, 
+resulting in a consistently stable PSD under the static-conflict scenario.
+5.2.3. Dynamic-conflict scenario experiment
+Each participant was asked to perform three independent tests in the 
+Fig. 11. Perceived errors of SD in the non-conflict scenario.
+Fig. 12. Phase difference between cyclic SD and robot position over time.
+Table 3 
+Parameters for calculating PSD.
+Parameter Value Explanation
+T
+r
+0.177 
+s
+Reaction time, including perception and computing time.
+T
+s
+0.22 s Stopping time, including the transmission time of the stop 
+signal, and the braking time defined by the performance and 
+the speed of the robot. 0.22 s is the average stopping time for 
+the robot ’ s maximum speed.
+C 0 mm Intrusion distance, C is zero since the worker body is 
+guaranteed to be detected once it enters the sensor field.
+Z
+d
++ Z
+r
+90 mm Position estimation error for the worker and the robot, 
+equaling the maximum perception error of SD.
+X. Lin et al.                                                                                                                                                                                                                                      Automation in Construction 174 (2025) 106147 
+10 
+dynamic-conflict scenario. Table 4 enumerates the experiment results, 
+encompassing SD at stop triggering ( t
+0
+), PSD at stop triggering, and SD at 
+robot stopping ( t
+1
+). The results affirm that the proposed SMS can 
+dynamically adjust PSD to stop the robot prior to any human-robot 
+collision when the workers intercede. Further examination of the SMS 
+operation is provided based on the sixth experiment, wherein SD, PSD, 
+and robot position are illustrated in Fig. 14 . Owing to the worker ’ s dy -
+namic intervention, SD exhibits a nonlinear and swift decrease between 
+the fifth and sixth second. A marked escalation in PSD is observed, 
+enabling the robot to stop at a greater SD. The SMS ’ s performance aligns 
+with expectations that in dynamic-conflict scenarios, the worker-to- 
+robot position is less predictable, leading to a larger zone of potential 
+conflict, where a greater PSD can mitigate collision risks by stopping 
+robots at a greater SD.
+5.2.4. Comparison with other SSM methods
+To further illustrate the sophistication of the proposed SMS, quan -
+titative and qualitative comparisons were made with other similar 
+methods based on SSM, detailed in Table 5 . Firstly, the proposed SMS 
+monitors the entire human body and uses geometric shapes to represent 
+the collision regions of entities, which provides a more accurate repre -
+sentation of entities ’ spatial occupancy. Therefore, it offers refined SD 
+perception compared to methods that rely on single point or keypoints 
+for entity representation in human-robot distance calculation. The more 
+precise SD perception allows for closer WRC while ensuring safety, 
+which is essential for achieving seamless WRC on site.
+Secondly, the proposed SMS considers the manipulated materials by 
+construction robots during safety monitoring, offering a more compre -
+hensive assessment of on-site WRC risks. Meanwhile, the dynamic PSD 
+calculation method facilitates a more flexible WRC organization, 
+allowing workers to operate closer to robots at low speed and maintain a 
+greater safe distance at fast speed, manifested by an automatically 
+adjusted PSD.
+Lastly, the detection speed of the SMS is 9.8 FPS, achieving finer SD 
+perception and dynamic PSD calculation without significantly compro -
+mising computational speed, manifesting its capability for real-time 
+safety monitoring in WRC on site.
+Fig. 13. SD, PSD, and robot position under different robot speeds in the static-conflict scenario.
+Table 4 
+PSD and SD at robot stop triggering and stopping.
+Experiment number SD at t
+0 
+(m) PSD at t
+0 
+(m) SD at t
+1 
+(m)
+1 0.215 0.417 0.117
+2 0.288 0.332 0.183
+3 0.321 0.326 0.205
+4 0.327 0.339 0.201
+5 0.163 0.243 0.094
+6 0.342 0.78 0.019
+7 0.594 1.3 0.103
+8 0.351 0.852 0.087
+9 0.412 0.667 0.216
+Fig. 14. SD, PSD, and robot position in the dynamic-conflict scenario.
+X. Lin et al.                                                                                                                                                                                                                                      Automation in Construction 174 (2025) 106147 
+11 
+6. Conclusion
+Seamless WRC has considerable potential for enhancing productivity 
+in construction but must be supported by adequate safety monitoring 
+methods or systems. Although SSM is deemed suitable for WRC on site, 
+the practicality of existing methods is limited due to that they are 
+designed especially for industrial WRC that is less dynamic and complex. 
+To bridge the gap, this paper introduced a digital twin-enabled safety 
+monitoring system. The proposed SMS offers the following contribu -
+tions: 1) a comprehensive perception method for WRC entities, 
+including construction workers, robots, and materials; 2) a geometric 
+solid-based virtual representation method for WRC entities that balances 
+sensing accuracy and efficiency; 3) a rapid calculation method for SD, 
+and 4) a dynamic calculation method for PSD. The above-mentioned 
+physical entities, their virtual twins, and relevant functions are inte -
+grated within a digital twin system. Experiments have shown that the 
+proposed SMS achieves an average monitoring rate of 9.8 FPS, an 
+average reaction latency of 0.177 s, and an SD perceiving error of 0.09 
+m. This system has been validated in both static and dynamic-conflict 
+scenarios, demonstrating its safety-guarding capabilities.
+The future directions for further enhancing the proposed SMS are 
+discussed as follows. First, this system will be validated on a broader 
+range of construction robots beyond the mobile manipulator configu -
+ration, such as humanoid robots. Second, it will continuously benefit 
+from more advanced perception methods for human workers and con -
+struction materials with less latency and higher accuracy. Finally, the 
+incorporation of predictive methods for workers ’ and robots ’ motion 
+will further enhance the performance of PSD calculation, empowering a 
+more robust and flexible WRC on site.
+CRediT authorship contribution statement
+Xiao Lin: Writing – review & editing, Writing – original draft, 
+Visualization, Validation, Software, Methodology, Investigation, Formal 
+analysis, Conceptualization. Ziyang Guo: Writing – review & editing, 
+Writing – original draft, Methodology. Xinxiang Jin: Software, Formal 
+analysis, Conceptualization. Hongling Guo: Writing – review & editing, 
+Supervision, Resources, Project administration, Methodology, Funding 
+acquisition, Conceptualization.
+Declaration of competing interest
+The authors declare that they have no known competing financial 
+interests or personal relationships that could have appeared to influence 
+the work reported in this paper.
+Acknowledgment
+We would like to thank the National Natural Science Foundation of 
+China (Grant No. 52278310) for supporting this research.
+Data availability
+No data was used for the research described in the article.
+References
+[1] T. Bock, T. Linner, Construction Robots: Elementary Technologies and Single-Task 
+Construction Robots, 1st ed, Cambridge University Press, 2016, https://doi.org/ 
+10.1017/CBO9781139872041 (ISBN: 1107075998).
+[2] D. Mitterberger, L. Atanasova, K. D ¨orfler, F. Gramazio, M. Kohler, Tie a knot: 
+human – robot cooperative workflow for assembling wooden structures using rope 
+joints, Constr. Robot. 6 (2022) 277 – 292, https://doi.org/10.1007/s41693-022- 
+00083-2 .
+[3] M. Zhang, R. Xu, H. Wu, J. Pan, X. Luo, Human – robot collaboration for on-site 
+construction, Autom. Constr. 150 (2023) 104812, https://doi.org/10.1016/j. 
+autcon.2023.104812 .
+[4] H. Yu, V.R. Kamat, C.C. Menassa, W. McGee, Y. Guo, H. Lee, Mutual physical state- 
+aware object handover in full-contact collaborative human-robot construction 
+work, Autom. Constr. 150 (2023) 104829, https://doi.org/10.1016/j. 
+autcon.2023.104829 .
+[5] I. Okpala, C. Nnaji, J. Gambatese, Assessment tool for human – robot interaction 
+safety risks during construction operations, J. Constr. Eng. Manag. 149 (2023) 
+04022145, https://doi.org/10.1061/(ASCE)CO.1943-7862.0002432 .
+[6] J. Bessler, G.B. Prange-Lasonder, L. Schaake, J.F. Saenz, C. Bidard, I. Fassi, 
+M. Valori, A.B. Lassen, J.H. Buurke, Safety assessment of rehabilitation robots: a 
+review identifying safety skills and current knowledge gaps, Front. Robot. AI 8 
+(2021), https://doi.org/10.3389/frobt.2021.602878 .
+[7] Z. Cong, A. Honglei, C. Wu, L. Lang, Q. Wei, M. Hongxu, Contact force estimation 
+method of legged-robot and its application in impedance control, IEEE Access 8 
+(2020) 161175 – 161187, https://doi.org/10.1109/ACCESS.2020.3021080 .
+[8] Y. Liu, M. Habibnezhad, H. Jebelli, Brainwave-driven human-robot collaboration 
+in construction, Autom. Constr. 124 (2021) 103556, https://doi.org/10.1016/j. 
+autcon.2021.103556 .
+[9] L. Bernold, Automation and robotics in construction: a challenge and a chance for 
+an industry in transition, Int. J. Proj. Manag. 5 (1987) 155 – 160, https://doi.org/ 
+10.1016/0263-7863(87)90020-2 .
+[10] J.M. Beer, A.D. Fisk, W.A. Rogers, Toward a framework for levels of robot 
+autonomy in human-robot interaction, J. Human Robot Interact. 3 (2014) 74 – 99, 
+https://doi.org/10.5898/JHRI.3.2.Beer .
+[11] S. Alirezazadeh, L.A. Alexandre, Dynamic task scheduling for human-robot 
+collaboration, IEEE Robot. Autom. Lett. 7 (2022) 8699 – 8704, https://doi.org/ 
+10.1109/LRA.2022.3188906 .
+[12] D. Lee, S. Lee, N. Masoud, M.S. Krishnan, V.C. Li, Digital twin-driven deep 
+reinforcement learning for adaptive task allocation in robotic construction, Adv. 
+Eng. Inform. 53 (2022) 101710, https://doi.org/10.1016/j.aei.2022.101710 .
+[13] Y.Y. Liau, K. Ryu, Genetic algorithm-based task allocation in multiple modes of 
+human – robot collaboration systems with two cobots, Int. J. Adv. Manuf. Technol. 
+119 (2022) 7291 – 7309, https://doi.org/10.1007/s00170-022-08670-x .
+[14] W.S. Yoo, H.-J. Lee, D.-I. Kim, K.-I. Kang, H. Cho, Genetic algorithm-based steel 
+erection planning model for a construction automation system, Autom. Constr. 24 
+(2012) 30 – 39, https://doi.org/10.1016/j.autcon.2012.02.007 .
+[15] X. Yang, F. Amtsberg, M. Sedlmair, A. Menges, Challenges and potential for 
+human – robot collaboration in timber prefabrication, Autom. Constr. 160 (2024) 
+105333, https://doi.org/10.1016/j.autcon.2024.105333 .
+[16] Y. Sun, I. Jeelani, M. Gheisari, Safe human-robot collaboration in construction: a 
+conceptual perspective, J. Saf. Res. 86 (2023) 39 – 51, https://doi.org/10.1016/j. 
+jsr.2023.06.006 .
+[17] M. Wu, J.-R. Lin, X.-H. Zhang, How human-robot collaboration impacts 
+construction productivity: an agent-based multi-fidelity modeling approach, Adv. 
+Eng. Inform. 52 (2022) 101589, https://doi.org/10.1016/j.aei.2022.101589 .
+[18] X. Wang, C.-J. Liang, C.C. Menassa, V.R. Kamat, Interactive and immersive process- 
+level digital twin for collaborative human – robot construction work, J. Comput. 
+Civ. Eng. 35 (2021), https://doi.org/10.1061/(ASCE)CP.1943-5487.0000988 .
+[19] M.S. Gil, M.S. Kang, S.H. Lee, D. Kim, B. Kim, C.S. Han, Proposal of Installation 
+Method of Heavy Duty Glass Using Intuitive Manipulation Device, in: Seoul, Korea, 
+2011, https://doi.org/10.22260/ISARC2011/0012 .
+[20] J. Chen, Y. Fu, W. Lu, Y. Pan, Augmented reality-enabled human-robot 
+collaboration to balance construction waste sorting efficiency and occupational 
+safety and health, J. Environ. Manag. 348 (2023) 119341, https://doi.org/ 
+10.1016/j.jenvman.2023.119341 .
+[21] R. Kangari, T. Yoshida, Automation in construction, Robot. Auton. Syst. 6 (1990) 
+327 – 335, https://doi.org/10.1016/S0921-8890(05)80014-4 .
+[22] American National Standards Institute, Robotic Industries Association, Industrial 
+Mobile Robots - Safety Requirements - Part 1: Requirements for the Industrial 
+Mobile Robot. https://webstore.ansi.org/standards/ria/ansiriar15082020 , 2020 
+(accessed February 3, 2025).
+Table 5 
+Comparison of the proposed SMS and other SSM-based methods.
+Method Worker body LoD Collision representation Manipulated object monitoring Dynamic PSD Monitoring rate (FPS)
+Rosenstrauch et al. [ 29 ] Whole limbs Keypoint No No Not reported
+Kim et al. [ 33 ] Hands Keypoint No Yes Not reported
+Karagiannis et al. [ 44 ] None Single point No No Not reported
+Secil et al. [ 32 ] Upper-limbs Geometric solid No No 11.6
+Park et al. [ 45 ] Whole limbs Keypoint No No Not reported
+The proposed SMS Whole limbs Geometric solid Yes Yes 9.8
+X. Lin et al.                                                                                                                                                                                                                                      Automation in Construction 174 (2025) 106147 
+12 
+[23] International Organization for Standardization, Robots and robotic devices — 
+Safety requirements for industrial robots — Part 1: Robots. https://www.iso.org/ 
+standard/51330.html , 2016 (accessed November 1, 2023).
+[24] International Organization for Standardization, Robots and robotic devices — 
+Collaborative robots. https://www.iso.org/standard/62996.html , 2016 (accessed 
+November 1, 2023).
+[25] S. Lee, M. Gil, K. Lee, S. Lee, C. Han, Design of a ceiling glass installation robot, in: 
+ISARC Proceedings, IAARC, Kochi, India, 2007, pp. 247 – 252, in: https://www.iaar 
+c.org/publications/proceedings_of_the_24th_isarc/design_of_a_ceiling_glass_insta 
+llation_robot.html (accessed April 29, 2023).
+[26] N. Lucci, B. Lacevic, A.M. Zanchettin, P. Rocco, Combining speed and separation 
+monitoring with power and force limiting for safe collaborative robotics 
+applications, IEEE Robot. Autom. Lett. 5 (2020) 6121 – 6128, https://doi.org/ 
+10.1109/LRA.2020.3010211 .
+[27] D. Podgorelec, S. Uran, A. Nerat, B. Bratina, S. Pe ˇcnik, M. Dimec, F. 
+ˇ
+Zaberl, 
+B. 
+ˇ
+Zalik, R. 
+ˇ
+Safari ˇc, LiDAR-based maintenance of a safe distance between a human 
+and a robot arm, Sensors 23 (2023) 4305, https://doi.org/10.3390/s23094305 .
+[28] A. Mohammed, B. Schmidt, L. Wang, Active collision avoidance for human – robot 
+collaboration driven by vision sensors, Int. J. Comput. Integr. Manuf. (2017), 
+https://doi.org/10.1080/0951192X.2016.1268269 .
+[29] M.J. Rosenstrauch, T.J. Pannen, J. Krüger, Human robot collaboration - using 
+kinect v2 for ISO/TS 15066 speed and separation monitoring, Procedia CIRP 76 
+(2018) 183 – 186, https://doi.org/10.1016/j.procir.2018.01.026 .
+[30] H. Li, W. Ma, H. Wang, G. Liu, X. Wen, Y. Zhang, M. Yang, G. Luo, G. Xie, C. Sun, 
+A framework and method for human-robot cooperative safe control based on 
+digital twin, Adv. Eng. Inform. 53 (2022) 101701, https://doi.org/10.1016/j. 
+aei.2022.101701 .
+[31] K. Merckaert, B. Convens, M.M. Nicotra, B. Vanderborght, Real-time constraint- 
+based planning and control of robotic manipulators for safe human – robot 
+collaboration, Robot. Comput. Integr. Manuf. 87 (2024) 102711, https://doi.org/ 
+10.1016/j.rcim.2023.102711 .
+[32] Sezgin Secil, Metin Ozkan, Minimum distance calculation using skeletal tracking 
+for safe human-robot interaction, Robot. Comput. Integr. Manuf. 73 (2022) 
+102253, https://doi.org/10.1016/j.rcim.2021.102253 .
+[33] Eugene Kim, Robin Kirschner, Yoji Yamada, Shogo Okamoto, Estimating 
+probability of human hand intrusion for speed and separation monitoring using 
+interference theory, Robot. Comput. Integr. Manuf. 61 (2020) 101819, https://doi. 
+org/10.1016/j.rcim.2019.101819 .
+[34] U.B. Himmelsbach, T.M. Wendt, M. Lai, Towards safe speed and separation 
+monitoring in human-robot collaboration with 3D-time-of-flight cameras, in: 2018 
+Second IEEE International Conference on Robotic Computing (IRC), 2018, 
+pp. 197 – 200, https://doi.org/10.1109/IRC.2018.00042 .
+[35] A.M. Zanchettin, Human tracking from quantised sensors: an application to safe 
+human-robot collaboration, Control. Eng. Pract. 141 (2023) 105727, https://doi. 
+org/10.1016/j.conengprac.2023.105727 .
+[36] L. Scalera, C. Nainer, A. Giusti, A. Gasparetto, Robust safety zones for manipulators 
+with uncertain dynamics in collaborative robotics, Int. J. Comput. Integr. Manuf. 
+37 (2024) 887 – 899, https://doi.org/10.1080/0951192X.2023.2258111 .
+[37] M.B. Pasian, Designs, Methods and Practices for Research of Project Management, 
+Gower Publishing, Ltd, 2015. ISBN: 9781315270197 .
+[38] M. Grieves, J. Vickers, Digital twin: Mitigating unpredictable, undesirable 
+emergent behavior in complex systems, in: F.-J. Kahlen, S. Flumerfelt, A. Alves 
+(Eds.), Transdisciplinary Perspectives on Complex Systems: New Findings and 
+Approaches, Springer International Publishing, Cham, 2017, pp. 85 – 113, https:// 
+doi.org/10.1007/978-3-319-38756-7_4 .
+[39] Common Objects in Context, COCO-Pose Dataset. https://cocodataset.org/#keypo 
+ints-2020 , 2020 (accessed July 31, 2024).
+[40] Microsoft, Azure Kinect Body Tracking Joints. https://learn.microsoft.com/en-u 
+s/azure/kinect-dk/body-joints , 2022 (accessed July 31, 2024).
+[41] Y. Yu, W. Umer, X. Yang, M.F. Antwi-Afari, Posture-related data collection methods 
+for construction workers: a review, Autom. Constr. 124 (2021) 103538, https:// 
+doi.org/10.1016/j.autcon.2020.103538 .
+[42] Standardization Administration of China, Human Dimensions of Chinese Adults. 
+https://www.codeofchina.com/standard/GBT10000-2023.html , 2023 (accessed 
+July 31, 2024).
+[43] International Organization for Standardization, Safety of machinery — Positioning 
+of safeguards with respect to the approach speeds of parts of the human body, 
+2010. https://www.iso.org/standard/42845.html (accessed November 1, 2023).
+[44] P. Karagiannis, N. Kousi, G. Michalos, K. Dimoulas, K. Mparis, 
+D. Dimosthenopoulos, 
+¨
+O. Tokçalar, T. Guasch, G.P. Gerio, S. Makris, Adaptive 
+speed and separation monitoring based on switching of safety zones for effective 
+human robot collaboration, Robot. Comput. Integr. Manuf. 77 (2022) 102361, 
+https://doi.org/10.1016/j.rcim.2022.102361 .
+[45] J. Park, L. Car ø e S ø rensen, S. Faarvang Mathiesen, C. Schlette, A digital twin-based 
+workspace monitoring system for safe human-robot collaboration, in:  (Eds.), 10th 
+International Conference on Control, Mechatronics and Automation, 2022, p. 24, 
+https://doi.org/10.1109/ICCMA56665.2022.10011622 .
+X. Lin et al.                                                                                                                                                                                                                                      Automation in Construction 174 (2025) 106147 
+13 
