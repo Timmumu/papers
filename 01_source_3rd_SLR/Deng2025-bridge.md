@@ -21,3 +21,4 @@ Bridges are susceptible to severe damage from natural disasters, heavy traffic l
 | Yes | Yes | Yes | Tier 1 - Digital Model (static, no live data) | 0 | 0 | 1 | Design for Safety (DfS) | None | Digital Twin platform (no machine learning) | Multi (two or more data types) | Conceptual (no test) | 3 | BIM-to-Digital-Twin architecture |
 
 **Key evidence (AG):** Systematic review (146 articles) of bridge disaster management + proposed Real-time Bridge Disaster Management (RtBDM) framework: dynamic adaptation + digitalisation (BIM/DT integration for full-lifecycle data management and automated decision-making) + disaster cycle (pre-warning, real-time response, post-disaster recovery); addresses interoperability, delayed response, and coordination gaps. Framework only - no DT built or validated; no live data link and no learning loop.
+(full-text source: Endnote)
