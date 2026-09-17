@@ -1,0 +1,976 @@
+Automated procedural modeling for tunnel inspection and digital 
+twin development
+Lucas Bellini Machado
+a , *
+, Bernardo Lopes Poncetti
+a
+, Leandro Silva de Assis
+a
+, 
+Marcos Massao Futai
+b
+a
+Escola Polit ´ecnica da Universidade de S ˜ao Paulo, Programa de P ´os-graduaç ˜ao em Engenharia Civil, S ˜ao Paulo, Brazil
+b
+Escola Polit ´ecnica da Universidade de S ˜ao Paulo, Departamento de Engenharia de Estruturas e Geot ´ecnica, S ˜ao Paulo, Brazil
+ARTICLE INFO
+Keywords:
+Digital twin
+Infrastructure management
+Modeling
+Tunnel lifecycle
+Inspection
+ABSTRACT
+The creation of structured informational models improves understanding of tunnel behavior throughout its 
+service life and enables faster detection of defects, which is critical for hazard assessment and infrastructure 
+safety. Recent studies highlight the importance of automation and 3D reconstruction in overcoming the limi -
+tations of manual tunnel inspection and data management. Technologies such as Point Cloud Data (PCD) and 
+advanced modeling techniques have enhanced inspection processes and model generation. However, significant 
+challenges persist in the development of Digital Twins (DT), particularly in the integration of heterogeneous data 
+sources. This paper presents a methodology that combines parametric modeling technics with field data to 
+develop an automated procedural modeling framework for tunnel inspection Digital Twins that integrates het -
+erogeneous data and optimizes lifecycle management. To support this goal, the framework also aims to: (i) 
+automate modeling workflows; (ii) enable the creation of a structured databank; (iii) improve inspection accu -
+racy; and (iv) introduce a new index, the Mesh Decimation Quality (MDQ), to evaluate mesh quality during the 
+decimation and digitization process. The approach was validated through a case study of the Coastal Tunnel in 
+Brazil, for which an automated digital twin was created using PCD from the Faro Focus 3D X330 laser scanner. 
+The MDQ index was applied to evaluate mesh resolution, ensuring model accuracy and controlling computa -
+tional costs. Metadata from the physical asset was integrated using procedural code scripts. A proposed digital 
+inspection approach, utilizing a procedural inspection grid, successfully identified defects and classified areas, 
+demonstrating the method efficiency and accuracy. This framework highlights the feasibility of digitalizing 
+tunnel inspections and integrating real-world data for improved infrastructure management, with potential for 
+future expansion.
+1. Introduction
+Tunnels undergo structural degradation over time due environ -
+mental conditions, aging, lining excessive loads, and uncertainties in 
+geotechnical properties ( Baji et al., 2017; Huang et al., 2017; Montero 
+et al., 2015 ). Deterioration in the tunnel lining undermines its integrity 
+and may increase the risk of tunnel lining to eventually collapse ( Jiang 
+et al., 2019 ). The inspection of these structures is a crucial process to 
+comprehend how the impact of these factors impairs the structure and to 
+manage maintenance.
+Conventional inspection methodologies exhibit known disadvan -
+tages, including lower time efficiency and challenges in precisely 
+quantifying and locate defects ( Koch et al., 2015; Xue et al., 2022 ). To 
+improve the inspection practice, several manuals and standards have a 
+specific classification system which classifies the tunnel condition with 
+different approaches and level of deterioration ( Poncetti et al., 2025 ) 
+(Table A.1).
+In general, the inspection practices and the condition classification of 
+tunnels rely on visual inspections, with the documentation done in 
+spreadsheets in the field, creating high subjectivity and dependency on 
+the inspector ’ s experience and attention during the defect and condition 
+documentation. Although there are some advances by the creation of 
+manuals and the standardization of the tunnel inspection practice, some 
+improvements are still necessary, specially by adopting the 
+* Corresponding author.
+E-mail addresses: lucasbmachado@usp.br (L.B. Machado), bernardoponcetti@usp.br (B.L. Poncetti), leandroassis@usp.br (L.S. de Assis), futai@usp.br
+(M.M. Futai). 
+Contents lists available at ScienceDirect
+Tunnelling and Underground Space Technology 
+incorporating Trenchless Technology Research
+journal homepag e: www.else vier.com/loc ate/tust
+https://doi.org/10.1016/j.tust.2025.106929
+Received 7 April 2025; Received in revised form 13 May 2025; Accepted 19 July 2025 
+Tunnelling and Underground Space Technology 165 (2025) 106929 
+Available online 21 July 2025 
+0886-7798/© 2025 Elsevier Ltd. All rights are reserved, including those for text and data mining, AI training, and similar technologies. 
+technological advances for a better condition assessment, more safety 
+during the inspections and better documentation systems.
+Tunnels are critical infrastructures that significantly contribute to 
+the economic and social well-being of populations and play a vital role in 
+the development of transportation networks ( Petroutsatou et al., 2021 ). 
+Regular inspections are essential to monitor the progression of structural 
+pathologies over time, enabling the evaluation of both structural 
+integrity and serviceability ( Sandroni & Labiouse, 2011 ). If left unde -
+tected, such deteriorations may lead to severe structural degradation, 
+potentially shortening the tunnel service life, disrupting traffic flow, and 
+compromising user safety. These failures often result in economic losses 
+and require costly remediation measures, while also increasing the risk 
+of failure ( McKibbins et al., 2009 ).
+To reduce the problems in the current tunnel inspection procedures, 
+some researches intend to improve the practices by suggesting novel 
+methods for structural condition evaluation ( Ai & Yuan, 2018 ), opti -
+mizing the inspection frequency ( Ai et al., 2020 ), or applying technology 
+to the inspection practices, such as using Non-destructive methods 
+( Llanca et al., 2017 ) and robots ( Menendez et al., 2018 ) to improve the 
+data acquisition, and using Digital Twins (DT) for a better documenta -
+tion and visualization of the inspection activity.
+A DT can be defined as a continuously evolving digital representation 
+of the historical and real-time behavior of a physical asset or process 
+( Dan et al., 2022; Glaessgen & Stargel, 2012 ). Constructed using real 
+measurements and layers of field data acquisition, digital twins offer 
+significant potential for infrastructure management ( Parrott and War -
+shaw, 2017 ). However, realizing this potential entails challenges, 
+particularly in managing data heterogeneity. Integrating and synchro -
+nizing data from diverse sources is a complex and time-intensive task, 
+which, as noted by Q. Lu et al. (2020) increases the risk of the digital 
+twin becoming outdated. Additionally, while continuous inspection and 
+monitoring practices generate larger datasets that enhance accuracy, 
+they also demand more advanced data management systems. In the 
+context of tunnel inspection, monitoring, and evaluation, digital twins 
+can significantly improve inspection practices and overall infrastructure 
+management.
+An iterative virtual model for generating a tunnel DT able to interact 
+with inspection and monitoring database enhances the tunnel evalua -
+tion and documentation. This interactive Digital Twin is possible by 
+integrating Point Cloud Data (PCD), parametric modeling, and proce -
+dural modeling techniques. PCD enables precise tridimensional repre -
+sentations, as demonstrated in studies such as Zhang et al. (2014) and R. 
+Lu & Brilakis (2019) . Furthermore, Sun (2011) presents image acquisi -
+tion for detecting deformations and defects in circular shield tunnels 
+using mobile laser scanning, focusing on automated DT creation with 
+high detailed geometry and damage integration. To evaluate the 
+geometrical and structural integrity of tunnels, Loprencipe et al. (2018)
+combined laser scanning, thermographic imaging, and ground- 
+penetrating radar (GPR) with implementation scripts developed specif -
+ically for clearance verification. Parametric modeling provides a robust 
+approach for generating flexible geometric models, emphasizing the 
+sequence of mathematical operations and the model construction pro -
+cess, focusing on associative construction rather than on the final 
+outcome ( Mafipour et al., 2023; Schultz et al., 2017 ).
+While current inspection practices using laser scanning, photo -
+grammetry, and manual reporting provide valuable data, they often 
+suffer from fragmented workflows, limited automation, and high 
+subjectivity in defect interpretation and quantification ( Insa-Iglesias 
+et al., 2021; Stentoumis et al., 2015; Xue et al., 2021 ). Additionally, 
+these approaches frequently lack seamless integration between data 
+acquisition and model generation, hindering updates and reuse of 
+models throughout the asset lifecycle. This disconnect significantly 
+limits the implementation of Digital Twin methodologies, which depend 
+on continuous synchronization between physical infrastructure and its 
+digital counterpart, particularly in complex environments such as the 
+irregular geometry of the Coastal Tunnel.
+Understanding that three-dimensional reconstruction and the auto -
+mation of structural defect identification and quantification are essential 
+for enhancing inspection quality and meeting infrastructure needs, this 
+paper focuses on implementing parametric modeling and field data 
+extraction to automate modeling processes, improve inspection accu -
+racy, and create a structured databank for the lifecycle management of 
+tunnel digital twins. The objective of this study is to develop an auto -
+mated procedural modeling framework for tunnel inspection DT, aiming 
+to integrate heterogeneous data sources and support lifecycle manage -
+ment through improved digital inspection and classification capabilities.
+The workflow integrates field data obtained from detailed inspection 
+reports and structural scans as inputs for a Grasshopper 1.0.0007 script. 
+It involves surface creation, adaptive subdivision into an inspection grid, 
+and automated classification of areas based on digital inspection data. 
+Metadata containing relevant information is then assigned to areas of 
+interest.
+The methodology was validated through a real-world application in 
+the Coastal Tunnel in Brazil. This approach enabled virtual inspections 
+and established a virtualization environment that seamlessly integrates 
+real data with detailed modeling. It allows the full execution of the in -
+spection and classification campaign digitally within the scanned area, 
+enabling updates and refinements based on acquired data and developed 
+programming. By reducing subjectivity and incorporating Industry 4.0 
+methodologies, this work represents a significant advancement in tunnel 
+management practices.
+2. Parametric/procedural modeling fundamentals
+The main requirement to create a DT is the direct connection be -
+tween the model and the infrastructure. Automation, a detailed geom -
+etry and metadata insertion are essential for bridging the real and digital 
+environments. In this context, the parametric and procedural modeling 
+allows creating a realistic 3D model able to adapt to the data input and 
+visualization to being adaptable to different applications of the DT in the 
+Fig. 1. A procedural script implementation in procedural/parametrical modeling.
+L.B. Machado et al. Tunnelling and Underground Space Technology incorporating Trenchless Technology Research 165 (2025) 106929 
+2 
+tunnel management activities.
+Parametric modeling can be an important tool for integration and for 
+creating a virtualization environment for the structure. For example, 
+Sung et al. (2020) utilize visual programming and parametric modeling 
+to quickly calculate the layout of a construction project in the field of 
+civil engineering. Erharter et al. (2023) use this tool for parametric 
+modeling and BIM model generation for the geology of Tunnel Angath. 
+Utilizing advanced modeling techniques in the case study, such as 
+parametric programming, allowed visualizing the irregular excavation 
+geometry due to the modeling flexibility, meeting the demand for 
+updating current methodologies for representing such structures.
+The process uses mathematical standardizations with adjustable 
+parameters to create geometry, which can be modified to enhance the 
+accuracy or suitability of the model to field data or design adjustments 
+( Fig. 1 ). The Grasshopper 1.0.0007 parametric modeling tool operates as 
+a graphical interface for algorithm editing. It is a plug-in for the three- 
+dimensional modeling software Rhinoceros 7 3D, enabling to create 
+parametric 3D models and to generate complex geometries iteratively 
+and flexibly. The visual algorithms consist of interconnected compo -
+nents; each one performing a specific transformation or operation to 
+adjust the components and modify the resulting geometry in an auto -
+mated and flexible manner.
+Fig. 1 illustrates the process of parametric modeling using graphical 
+algorithms in the Grasshopper language. This approach is based on the 
+interconnection of input data through a series of modeling operators. In 
+the provided example, the parametric graphical operators are associated 
+in parallel; the scale of the grid structure on the tunnel surface is 
+increased by 20 % from the designated point and the division is also 
+increased. The resulting new mesh, after implementing this process 
+change, is made available at two different outputs, enabling a sequence 
+of programming modifications and operator associations.
+Thus, with minor adjustments, the entire model can be updated. This 
+type of programming demands significant processing power, as more 
+complex modeling structures require a complete recompilation of the 
+framework when changes are made to the initial systems. Consequently, 
+programming optimization becomes essential. Optimization adjust -
+ments can be implemented without the need for an extensive series of 
+associations. While this may result in some loss of control over the 
+structure properties, it can significantly reduce computational costs.
+3. Methodology
+The proposed methodology is divided into two parts. First, it explains 
+the inspection procedure, which serves as the input for generating the 
+data input for digital twin. Second, it details the proposed parametric 
+implementation in Grasshopper code, clarifying each step involved in 
+constructing the automation process. This is crucial because each 
+parameter and stage can be adapted flexibly to meet specific demands.
+3.1. Inspection data generation
+The standardization of inspection practices has a global scope, with 
+various companies responsible for infrastructure while administrative 
+associations pursue an ideal methodology ( ADIF, 2021; CeTU, 2015; 
+FHWA, 2015; Yuan et al., 2012 ). Commonly applied practice involves 
+categorizing areas within the structure using defect-sensitive classifi -
+cation. Response data plays a crucial role in guiding and enhancing the 
+decision-making system. Machado & Futai (2024) present a methodol -
+ogy to create a virtual representation for the inspection data ( Fig. 2 ).
+The inspection process involves creating a grid that divides the 
+tunnel surface into zones: the roof, the right wall, and the left wall. These 
+zones are further divided into three longitudinal areas, each spanning 
+10 m in the transversal direction. This grid is used to locate structural 
+defects and classify them into four service states, in which State I rep -
+resents an intact condition and State IV indicates severe damage. Met -
+adata information is then inserted into specific zones based on field data 
+(see Machado & Futai (2024) for more details). However, some chal -
+lenges are associated with this methodology. Tunnels often have irreg -
+ular geometries, making it difficult to define specific locations and 
+accurately register field inspection notes. To address this, Machado & 
+Futai (2024) proposed using a zone of influence for classification: if a 
+State I defect is located between two State II zones, it will be registered 
+as State II, since the low level of detail in the model prevents the precise 
+localization of pathologies. Although this approach does not fully solve 
+the problem, it enhances safety by adopting a conservative approxima -
+tion. The advanced modernization brought by Industry 4.0 can help 
+overcome these challenges by enabling digital inspections, refining the 
+inspection grid, creating more detailed models, and automatically 
+inserting metadata and classifications.
+The modernization of inspection practices in tunnel infrastructures is 
+based on generating more detailed data about the structure, thus 
+creating a database to optimize the decision-making process, and man -
+aging the structure lifecycle. The methodological framework was based 
+on infrastructure inspection, laser scanning of underground in -
+frastructures, and modeling associated with this data. These foundations 
+aim to meet the requirements for the virtual twinning of the tunnel.
+3.2. Tunnel automated implementation
+Fig. 3 presents the proposed framework for automated generation 
+implementation of the inspection layer and lifecycle management for 
+creating a Tunnel Inspection DT. The methodology uses Point Cloud 
+Data (PCD) generated by Terrestrial Laser Scanning (TLS) and sensitivity 
+inspection results as input. In the initial stage, the point cloud undergoes 
+a cleaning and decimation process to remove redundant and excessive 
+points, resulting in a more manageable and workable dataset. The next 
+step involves mesh generation and auxiliary cutting and fitting 
+Fig. 2. Inspection methodology model.
+L.B. Machado et al. Tunnelling and Underground Space Technology incorporating Trenchless Technology Research 165 (2025) 106929 
+3 
+geometries. Subsequently, the mesh is used for constructing guide arcs 
+and creating the three-dimensional grid. The selection of the generation 
+arcs is used as a cross-section of the surface. Consequently, classification 
+data of the areas are introduced, categorizing the grid areas into four 
+degradation states by layer and color. In the final step, the EleFront 5.1.8 
+application is employed to assign metadata derived from sensitive in -
+spections to the necessary grid areas, including inspection notes, photos 
+from online databases, and information relevant in the implementation 
+environment to associate with the automated Inspection Digital Twin.
+Fig. 3 presents the data inputs, results, and graphical programming 
+clusters used for each phase of the methodology. Each specific step will 
+be described and explained in detail in the case study to demonstrate the 
+development of the methodology. Within the programming, there are 
+variable values that can be adapted and adjusted to meet specific cases 
+and demands. Examples include the inclination of the horizontal cutting 
+plane, adjustments for mesh creation to enhance the quality of the PCD, 
+and the range of guide arcs for surface generation, among others. These 
+aspects are further discussed in the case study, emphasizing the flexi -
+bility and adaptability of the approach to accommodate varying de -
+mands and field data quality. This adaptability is one of the most 
+significant advantages of using a parametric approach.
+Between the mesh split and the construction of guide cross arcs, the 
+Fig. 3. Automated Inspection Tunnel DT procedural implementation framework.
+L.B. Machado et al. Tunnelling and Underground Space Technology incorporating Trenchless Technology Research 165 (2025) 106929 
+4 
+mesh can optionally be converted into a surface for minor adjustments 
+( Fig. 4 ). This implementation transforms the unitary mesh into multiple 
+surfaces generated by connecting points. The conversion facilitates 
+localized mesh cutting and can be adapted for features that require 
+surface input. However, it is a computationally expensive process and 
+may not be necessary for small adjustments. As a result, surface con -
+version can be considered an optional step, although it may enhance the 
+methodology in certain cases.
+To construct the mesh from the PCD and generate a surface, the 
+open-source extension Cockroach 0.01 ( Vestartas & Settimi, 2020 ) for 
+Grasshopper was utilized. This extension employs Poisson Surface 
+Reconstruction (Eq. (1) ) to reconstruct the surface. The “ CloudMesh ” 
+operator is used to apply the Poisson equation, solving a target mesh 
+with known topology and vertex coordinates. To determine the vertex 
+coordinates, the Poisson equation requires a discrete guidance vector 
+field for each of the three coordinates, whose divergence is computed at 
+the vertices of the parameterization mesh ( Yu et al., 2024 ). 
+∇
+2
+χ = ∇ . V
+→
+(1) 
+where χ is the scalar function that represent the surface, V
+→
+is the 
+guidance vector field, ∇
+2 
+is the Laplacian operator (Eq. (2) ), and ∇ . V
+→
+is 
+the divergence of V
+→
+= ( V
+x
+, V
+y
+, V
+z
+) (Eq. (3) ). 
+∇
+2
+=
+∂
+2
+∂ x
+2
++
+∂
+2
+∂ y
+2
++
+∂
+2
+∂ z
+2
+(2) 
+∇ . V
+→
+=
+∂ V
+x
+∂ x
++
+∂ V
+y
+∂ y
++
+∂ V
+z
+∂ z
+(3) 
+Mesh decimation is a technique used to optimize and simplify the 
+underlying shapes of a model by reducing the number of vertices, edges, 
+and, consequently, surfaces that compose the polygons. In modeling, 
+mesh decimation involves simplifying the level of detail/development 
+(LoD) of a mesh without substantially altering its overall shape. This 
+process reduces the size of model files and decreases computational 
+demands, making it a valuable tool for optimizing.
+4. Results and discussion
+This section is devided into two main subsections. The first focuses 
+on the validation process for the methodology, whereby a generic rail -
+way tunnel PCD was used to test the developed parametric model script 
+and to calibrate its parameters. The second subsection involves applying 
+the full methodology, including the inspection campaign data and the 
+Grasshopper framework, to a real highway tunnel in Brazil.
+4.1. Validation process
+The validation process develops the proposed methodology and 
+calibrates the parameters for tunnel field data infrastructure. The pro -
+cess involves conducting tests and adjustments in the graphical code 
+programming using a railway tunnel point cloud. The implementation of 
+procedural modeling to automate the reconstruction of tunnel models is 
+infrequently addressed in the literature. Therefore, the proposed 
+framework and tests provide valuable insights into the application of 
+this approach to such infrastructure.
+4.1.1. PCD processing and optimization
+Point cloud cleaning and segmentation are crucial steps in the result 
+processing of laser scanning or other 3D mapping technologies data. 
+These steps aim to eliminate inconsistencies, noise, and unwanted re -
+gions from the point cloud, resulting in more precise and usable data. 
+Filtering based on density, distance, duplicates, and outlier removal are 
+common techniques employed for this purpose ( Oytun & Atasoy, 2022 ).
+Distance filtering with outlier elimination was performed by defining 
+the Region of Interest (ROI), and external points were removed using the 
+Crop function facilitated by the Crockroach plugin, which allows point 
+information editing without the need of conversion into editable ele -
+ments. Given the complexity of directly editing point files, the point 
+cloud was trimmed using editing tools within Rhinoceros 7 without 
+requiring conversion into editable elements.
+Mesh decimation was performed to improve manageability by 
+applying density filtering to the raw acquired point cloud file using the 
+PC reduce function, implemented by the open-source Point Cloud 
+Components (PCC) 1.0 plugin. A new quality index, Mesh Decimation 
+Quality (MDQ), is proposed to evaluate mesh quality after the decima -
+Fig. 4. Convert mesh to individual surfaces to trim and adjust the generated geometry.
+L.B. Machado et al. Tunnelling and Underground Space Technology incorporating Trenchless Technology Research 165 (2025) 106929 
+5 
+tion process (Eq. (4) ). 
+MDQ =
+OAR
+AD × ( 1   PCDr )
+α
+(4) 
+where OAR represents the overlayed area relation, quantifying the 
+relationship between the reduced mesh area and the raw mesh area; AD 
+denotes the average distance between the vertices of the decimated 
+mesh and the closest point in the raw point cloud data (PCD); and PCDr 
+refers to the reduced PCD. To minimize the influence of PCDr on the 
+index, an exponent α was calibrated for this purpose ( Fig. 5 ). The value 
+of α = 0.2 was adopted to calculate the MDQ without distorting the 
+results due to the PCDr factor. The index was designed to prioritize point 
+reduction while preserving mesh quality, as measured by the Overlayed 
+Area and Average Distance ( Fig. 5 ).
+Different metrics for mesh decimation were compared to evaluate 
+and validate the applicability of the MDQ approach ( Table 1 and Fig. 6 ). 
+The Hausdorff Distance is a commonly used metric that measures the 
+maximum of the minimum distances between two sets of points (e.g., a 
+mesh and a point cloud, or an original and a decimated mesh), but it is 
+highly sensitive to outliers ( Kobbelt et al., 1998 ). Root Mean Square 
+Error (RMSE) represents the quadratic mean of the positional differences 
+between corresponding vertices in the decimated and original meshes; 
+because it squares the errors before averaging, RMSE tends to amplify 
+larger deviations. Face Normal Deviation (FND) quantifies the angular 
+difference between the normals of corresponding faces in the original 
+and decimated meshes. This metric is used to assess distortions in shape 
+and surface curvature introduced by decimation; however, it requires 
+accurate face-to-face correspondence, which is typically evaluated using 
+the Overlayed Area Relation (OAR).
+To compare the behavior of the MDQ with other commonly used 
+Fig. 5. MDQ exponent α calibration to minimize the PCD reduction influence.
+Table 1 
+Decimation quality metrics analysis.
+PCD 
+Reduction 
+[%]
+Avg. Dist 
+[mm]
+Hausdorff 
+Dist. [mm]
+RMSE 
+[mm]
+Avg. 
+FND 
+[rad]
+MDQ 
+[mm
+  1
+]
+20 % 6.533 508.680 25.037 1.240 9.703
+40 % 7.798 513.118 26.026 1.440 10.173
+60 % 16.760 519.110 34.213 1.314 11.224
+Fig. 6. Quality mesh indices variation with PCD reduction.
+L.B. Machado et al. Tunnelling and Underground Space Technology incorporating Trenchless Technology Research 165 (2025) 106929 
+6 
+decimation indices, a tunnel point cloud (PCD) sample was selected, and 
+three consecutive decimations were applied in 20 % reduction steps to 
+generate the meshes and compute the metrics. Table 1 presents the 
+metric values for each reduction level, while Fig. 7 illustrates their 
+variation across the steps. The Hausdorff Distance shows relatively high 
+values, as it reflects the maximum point-to-point distance and is strongly 
+influenced by outliers. This effect becomes clearer when compared to 
+the Avg. Distance, which provides a stabler representation. Similarly, 
+RMSE values are elevated due to the squaring of errors, which amplifies 
+larger deviations.
+For the Average Face Normal Deviation (Avg. FND), the angular 
+difference decreases in the final reduction step. This metric is highly 
+sensitive to mesh restructuring and, in some cases, the orientation of 
+face normal in the decimated mesh becomes more aligned with the 
+original, reducing the deviation. While standard decimation quality 
+indices show higher values as the difference between the raw and 
+decimated meshes increases, the proposed MDQ shows the opposite 
+trend: higher values indicate a better match between the meshes. These 
+contrasting behaviors support the MDQ approach, which takes into ac -
+count both spatial distance and mesh adjustment, with reduced sensi -
+tivity to outliers, in contrast to RMSE, as shown in Fig. 6 .
+The MDQ equation incorporates the OAR to capture face-to-face 
+correspondence and the AD to account for vertex spacing. Between 40 
+% and 60 % decimation, the OAR increases by approximately 0.025, 
+reflecting greater mesh alignment and confirming the MDQ sensitivity to 
+structural adjustments, similarly to the trend observed in Avg. FND. 
+Meanwhile, the AD continues to increase, indicating a growing spatial 
+gap between corresponding points.
+Using the MDQ, Fig. 7 .a shows that AD and AOR are similar in both 
+the maximum test reduction and the raw data. Additionally, the number 
+of elements composing the density remains very similar, even though 
+the points are reduced from over 1 million to around 12 thousand, and 
+Fig. 7. Decimation tests for tunnel PCD: (a) mesh shape and density parameters; (b) MDQ factor.
+L.B. Machado et al. Tunnelling and Underground Space Technology incorporating Trenchless Technology Research 165 (2025) 106929 
+7 
+the file size drops to under MB unity. This suggests that it is possible to 
+drastically reduce the number of points without significantly compro -
+mising mesh quality. Furthermore, the MDQ increases with the reduc -
+tion because, within the evaluated range, the shape quality is 
+maintained as shown in Fig. 7 .b.
+4.1.2. Mesh generation
+The mesh generation process primarily depends on a PCD suitable for 
+the developed methodology. Regions with redundant points or high 
+density significantly increase processing time, as described in the pre -
+vious section. However, improper cleaning, particularly concerning 
+outliers, can result in incorrect or inadequate meshes in terms of LoD. To 
+improve the adaptation of the process to the specific characteristics of 
+the real tunnel case, a railway unlined simple tunnel point cloud was 
+tested ( Fig. 8 ).
+Fig. 8 illustrates the application of the methodology to a railway 
+tunnel during validation tests prior to practical implementation. The 
+mesh construction, guided by the point cloud, is achieved using Poisson 
+Surface Reconstruction through the open-source plugin Cockroach 0.01, 
+which provides point cloud commands and post-processing capabilities 
+within the Grasshopper graphical programming environment. The 
+connection between the Normals and CloudMesh functions generates 
+the surface from the field data information ( Fig. 3 ).
+The absence of guide points at the connection between the walls and 
+the floor of the structure presents challenges for mesh generation in 
+these specific areas ( Fig. 8 .a). However, it is possible to minimize errors 
+by adjusting the properties of the parametric model, reducing decima -
+tion, and using raw data or modifying mesh generation parameters, 
+although these processes increase computational cost. Areas with low 
+point cloud density or missing data due occlusion effect, but without 
+significant changes in directional continuity are filled by approximation, 
+representing a substantial gain in the methodology ( Fig. 8 .b).
+The trimming process for the mesh differs between longitudinal and 
+transverse cuts ( Fig. 9 .a). Longitudinal cuts use an adjustable cutting 
+plane, with its extensions and inclination relative to the axis defined as 
+critical for the structure inclination. The script generates a median line 
+from the point cloud and extends it to create a cutting plane. The lateral 
+extension, height, and angle of this plane can be calibrated. Transverse 
+cuts are defined in the next stage using arcs from the inspection grid, 
+generated based on the mesh. Only arcs delimiting the walls are selected 
+for trimming, while the first and last arcs serve solely as boundaries 
+reference for the procedure.
+The trim longitudinal code is presented and adjusted using scrolls in 
+the Grasshopper programming environment ( Fig. 9 .b). These adjust -
+ments are made to ensure effective intersection between the point cloud 
+and the created surface. The longitudinal mesh trim involves creating a 
+horizontal plane, which uses point cloud data to define the components 
+for adjusting the cutting process, including plane inclination and the 
+length of the cutting tool. The transverse trim ( Fig. 9 .c) involves three 
+stages: The first step creates the arcs using the generated mesh, with the 
+user defining the extension and boundary of the set of arcs limits. The 
+second step closes the arcs and generates the loft connecting them.
+Procedural modeling provides adjustable tools to meet specific 
+modeling preferences or requirements. The transverse and longitudinal 
+cutting algorithms adjust automatically, generating a model with min -
+imal manual tuning. The loft creation function connects the transverse 
+arches, producing separate meshes defined by the arches to generate the 
+grid areas. A significant advantage of this approach lies in the flexibility 
+to create the layers that compose the process. Fig. 10 illustrates this 
+adaptability in the subsequent process of splitting areas for the inspec -
+tion grid, allowing it to adjust to different patterns and methodologies 
+used by companies conducting integrity analyses.
+4.1.3. Metadata information attribution for model database
+In the final stage of the automated creation of the digital twin, the 
+process of inserting metadata into the generated three-dimensional grid 
+is divided into two steps. First, data from the structure inspection 
+identify structural defects such as leaks, cracks, peeling, and others, and 
+classify the grid areas ( Fig. 2 ). Next, a.csv file is created, containing 
+numbers corresponding to each classified area of the grid. This file is 
+then integrated into the algorithm, which separates the state of each 
+area into layers and automatically applies colors ( Fig. 11 ).
+Fig. 11 illustrates the sequence of area classification insertions into 
+the model from the generated.csv file. The simplified file format enables 
+easy integration with new technologies. This methodology ensures 
+flexibility in inspection input, once state classifications are assigned and 
+a sorted data file is generated, the data-driven digital twin can be created 
+automatically.
+The open-source EleFront 5.1.8 plugin was used for metadata 
+insertion into geometry in Rhinoceros 7 and Grasshopper 1.0.0007 via 
+object attribute functions ( Fig. 12 ). Metadata, stored as attributes, are 
+integrated into the Digital Twin using a standardized programming 
+dictionary, enabling queries, sorting, and filtering. This facilitates the 
+organization of large models and creates a key-value-based NoSQL 
+database. The methodology also links to online image repositories, 
+allowing the inclusion of inspection photos, maintenance records, re -
+ports, geometric data, and other relevant information.
+Fig. 8. Implementation test and validation in railway tunnel: (a) Floor-wall connection; (b) Approximation in areas with low point cloud density.
+L.B. Machado et al. Tunnelling and Underground Space Technology incorporating Trenchless Technology Research 165 (2025) 106929 
+8 
+4.2. Coastal tunnel application
+The automated construction for inspection digital twin for the 
+structure was implemented in a real highway tunnel (Coastal Tunnel). 
+The tunnel awaits subsequent road connection works before it can begin 
+operations ( Fig. 13 ). Located near the shore coastline in the southeastern 
+region of Brazil, the Coastal Tunnel plays crucial economic and social 
+roles, respectively by facilitating the transportation of materials and for 
+connecting important tourist destinations in the country.
+The decision about the specific tunnel for the framework application 
+is primarily due to the irregular geometry resulting from the shotcrete 
+lining of the design. The conventional virtualization process would rely 
+on numerous approximations, neglecting potential construction issues 
+or overbreak zones. Using PCD to feed the procedural programming 
+results in a more detailed indoor mapping and can connect structural 
+information to the model, creating a metadata-connected replica and 
+database for the infrastructure.
+The proposed data acquisition strategy and modeling framework are 
+designed to be adaptable and may require minor adjustments for 
+application in tunnels with different geometries or environmental con -
+ditions, particularly in cases where point cloud coverage is limited or 
+occlusion areas are more prominent. Tunnel surface geometry is often 
+influenced by the type of lining material. Based on the list of common 
+tunnel linings provided by FHWA (2015) , it can be inferred that mate -
+rials such as steel, precast concrete, or masonry tend to produce regular 
+surfaces, while shotcrete, unlined, or timber-lined tunnels result in more 
+irregular geometries and occlusion issues. Procedural modeling tech -
+niques ( Fig. 8 .b) help address gaps in PCD coverage; however, scanning 
+Fig. 9. Mesh delimitation adjustment for parametric modeling: (a) Representation of the tunnel model in Rhinoceros 7; (b) Implementation for longitudinal planes; 
+c) Arcs for transverse trim, loft generation and wall extraction.
+L.B. Machado et al. Tunnelling and Underground Space Technology incorporating Trenchless Technology Research 165 (2025) 106929 
+9 
+strategies may need to be refined by reducing scan intervals or 
+increasing resolution in complex environments.
+In scenarios where TLS is impractical, such as in hazardous or hard- 
+to-reach environments like active mines or submerged hydraulic tun -
+nels, alternative acquisition methods using LiDAR-equipped unmanned 
+aerial vehicles (UAVs) or remotely operated vehicles (ROVs) can serve as 
+effective replace ( Kang et al., 2025; Wang et al., 2025 ).
+4.2.1. Field data acquisition (Sensitive inspection and Scanning)
+The PCD acquisition was performed using the Faro Focus 3D X330 
+laser scanning equipment in setup configuration resolution 1/5 and 
+quality 4x, for its long-distance measurement capabilities ( Fig. 14 ). The 
+scanning was conducted at approximately 15 m from the portal, 
+covering a sweep of about 60 m in a single reading. The wait time for 
+acquiring the scan data and capturing colors through images is 
+approximately 10 min, of which 6 min are allocated for creating the 
+point cloud and 4 min for color capture. This acquisition process results 
+in a point cloud density of approximately 26.5 million points.
+The laser scanner captures point data with varying densities 
+depending on the distance from the object and the angle of incidence. As 
+the distance increases, both resolution and precision tend to decrease, 
+which may affect the quality and accuracy of the field data acquisition. 
+Another source of bias involves occlusion areas, where the scanner 
+cannot capture data due to physical obstacles or complex geometries, 
+resulting in gaps in the point cloud, as illustrated in Fig. 8 .b.
+The Faro Focus 3D X330 scanner has been previously validated in 
+unlined tunnel environments for modeling purposes ( Cacciari and Futai, 
+2017 ). This validation supports the reliability of the acquired data in this 
+study, despite the natural limitations of the scanner, such as resolution 
+variability and occlusion effects.
+A sensitive inspection was conducted using a generic three- 
+dimensional model created in Rhinoceros 7 for classification and 
+direct acquisition of digital data. A tablet was employed to access the 
+main hardware via internet and to acquire data directly into the main 
+storage ( Fig. 15 ). The data on the geometry was directly recorded using 
+the Rhinoceros 7 3D user text attribute function. The data was 
+conventionally recorded in a 2D grid for a certain level of redundancy in 
+the tunnel inspection process. The limitations of internet connectivity in 
+a tunnel can be mitigated by combining Low Earth Orbit (LEO) satellite 
+internet and Long Range (LoRa) technologies.
+Fig. 10. Grid division process and analysis area creation.
+Fig. 11. Inspection script classification and metadata assignment.
+L.B. Machado et al. Tunnelling and Underground Space Technology incorporating Trenchless Technology Research 165 (2025) 106929 
+10 
+Fig. 12. Inspection classification and metadata input in script code.
+Fig. 13. Coastal Tunnel case study for framework application.
+L.B. Machado et al. Tunnelling and Underground Space Technology incorporating Trenchless Technology Research 165 (2025) 106929 
+11 
+4.2.2. Parametric modeling with field data for the Coastal Tunnel
+A single tunnel scan was employed as a systematic sampling 
+approach. This decision aimed to evaluate the extent of mesh generation 
+from a single scan and to calibrate the resolution of the data acquisition 
+process. The selected PCD was collected near the tunnel portal, a region 
+characterized by significant brightness variation to test color capture. 
+Additionally, this area benefits from a stable internet connection and 
+contains the highest concentration of diverse defect types (e.g., cracking, 
+spalling, leakage, and construction-related issues).
+The PCD was compiled and exported to Rhinoceros 7. The process of 
+removing outliers and cleaning from the defined ROI is carried out by 
+cutting using the Volvox 0.3.0.0 Grasshopper plugin. The point cloud 
+enters as a set of points, and separates these points in individual value 
+results in high processing demand; each of the millions of points has its 
+coordinates. Therefore, for removing the region of interest from RAW 
+data, the use of specific PCD cutting tools is recommended. In subse -
+quent steps, localized geometry adjustments can be made using the 
+surface conversion methodology presented in Fig. 4 .
+The filter process started with a dataset of over 26 million points 
+acquired from raw TLS field data. The reduction methodology was 
+applied to optimize modeling while ensuring no loss of resolution during 
+surface creation, as shown in Fig. 7 . Therefore, automatic reconstruction 
+programming was applied to the treated point cloud, constructing the 
+structure with procedural modeling. In a subsequent process, the 
+transverse cutting arcs were selected for transversal trim.
+Fig. 16 shows the properties of the final adopted mesh after the 
+decimation process. In Fig. 16 .a, the significant reduction in mesh res -
+olution is evident, aimed at improving workability and at reducing 
+computational costs. Fig. 16 .b displays the final mesh and the calculated 
+indexes for the process. The MDQ increased, while the AD decreased 
+significantly, and the OAR remained relatively stable. The mesh fits well 
+for creating the inspection digital grid, validating the proposed MDQ 
+index.
+4.2.3. Digital inspection and parametrical implementation
+A key aspect of digital twin construction is the Fit Line (Fline) 
+function ( Fig. 8 .b), which generates a guide axis based on point cloud 
+averages. This function depends on PCD point density, and on the 
+experimental design, Fline required three-dimensional position adjust -
+ments using the 3D Rotate function. The same adjustment was applied to 
+plane cut inclination for longitudinal cutting and to guide arc creation, 
+which defines grid classification areas. In the Coastal Tunnel, TLS- 
+generated point clouds ensure uniform data distribution, enabling 
+Fline to construct an accurate axis for the methodology.
+The methodology developed combines procedural modeling pro -
+gramming with colored point cloud data to classify structure degrada -
+tion levels virtually. It utilizes the ROI of the point cloud extracted by 
+scanning and generates grid areas based on it, facilitating accurate 
+classification according to company standards ( Fig. 17 ). The process 
+greatly relies on the structure luminosity since the TLS captures data 
+from images.
+Fig. 17 presents a result from the next phase of programming, which 
+involves extracting the tunnel assessment grid curve. This methodology 
+enables the full execution of the inspection and classification campaign 
+digitally within the scanned area, allowing updates and refinements 
+based on acquired data and developed programming ( Fig. 17 .b). 
+Notably, excess brightness near the portals prevents accurate color 
+extraction from the PCD acquisition. In this case, an on-site inspection is 
+Fig. 14. Overlay scanning and collected data in the Coastal Tunnel.
+Fig. 15. Inspection data acquisition for generate the DT.
+L.B. Machado et al. Tunnelling and Underground Space Technology incorporating Trenchless Technology Research 165 (2025) 106929 
+12 
+essential to obtain precise information for the process ( Fig. 15 ).
+Overexposure near the tunnel portal can result in washed-out colors 
+or missing color information. To address this, several strategies can be 
+employed: (i) pre-acquisition planning, such as scanning during periods 
+of lower solar incidence (e.g., early morning or late afternoon) or using 
+temporary shading structures to reduce glare; (ii) post-processing tech -
+niques, including color normalization and histogram equalization, 
+although these require region-specific segmentation due to the high 
+spatial variability in brightness; and (iii) the use of HDR-enabled scan -
+ners. In darker environments, although color capture may be limited, the 
+scanner can still support defect identification through grayscale in -
+tensity values. When appropriately calibrated using a specific scale 
+factor, these intensity readings can help detect features such as water 
+leakage, surface cracking.
+The inspection is conducted using surfaces generated overlaying the 
+point cloud, with classification based on scanning information ( Fig. 18 ). 
+The TLS resolution level is a crucial parameter for the process feasibility, 
+particularly in predominantly dark environments, where leak detection 
+can be complex.
+To test the digital inspection method, a 25-meter tunnel section was 
+analyzed using both traditional visual inspection, performed by expe -
+rienced infrastructure maintenance inspectors, and the proposed digital 
+approach. The main objective was to validate and compare the limita -
+tions and improvements introduced by the procedural modeling process 
+in tunnel inspection. For the degradation classification, the tunnel was 
+divided into zones, allowing for a more detailed assessment of each 
+method efficiency in detecting defects and accurately identifying their 
+locations ( Fig. 19 ).
+The digital inspection produced results similar to those of the 
+traditional visual (sensitive) approach. On the left wall, the visual in -
+spection failed to detect and locate a leakage zone, likely due to the 
+subjectivity of field interpretation and grid referencing. In contrast, the 
+digital method provided a precise localization of the defect. The roof 
+area, typically challenging for defect detection, also posed difficulties for 
+the visual approach, which did not identify a constructive problem (C. 
+P.). The analysis of the left wall highlighted an inefficiency in the pro -
+posed method regarding crack detection: while visual inspection suc -
+cessfully identified very fine shrinkage cracks, the digital method only 
+detected larger cracks. However, this limitation is not critical, as the 
+undetected cracks were small and not indicative of serious structural 
+issues. Table 2 presents the defects and their locations identified by each 
+approach.
+The time consumption was evaluated ( Fig. 20 ). The average duration 
+of the traditional visual inspection was 46 min, while the digital in -
+spection was divided into two stages: scanning time, used to capture 
+geometry and images for generating the point cloud (approximately 10 
+min), and digital detection time (around 8 min), which included grid 
+adjustment, mesh generation, and defect analysis. Overall, the digital 
+inspection required less than half the time of the traditional method, 
+while offering improved accuracy in defect identification and 
+localization.
+The Image inspection data is used to create a virtual image bank, 
+Fig. 16. Coastal tunnel procedural modeling application: (a) Decimate mesh properties; (b) mesh quality indexes and MDQ.
+L.B. Machado et al. Tunnelling and Underground Space Technology incorporating Trenchless Technology Research 165 (2025) 106929 
+13 
+with classification performed to generate the.csv file and inspection 
+notes incorporated into metadata as key-value pairs for automatic as -
+sembly of the inspection grid information. The integration of this data 
+and the inspection grid was achieved using EleFront 5.1.8, enabling the 
+creation of a digital twin with automated structure reconstruction and 
+real asset information connection, as shown in Fig. 21 . The figure il -
+lustrates both common inspection campaign results and the procedural 
+inspection DT approach. The results of defects recognition by digital 
+inspection are presented in Table 3 .
+Table 3 shows the main defects identified using the framework for a 
+750-meter tunnel section. The results indicate significant leakage on the 
+right wall and constructive problems (CP) in the roof, associated with 
+shotcrete detachment. As a new infrastructure, this underscores the 
+importance of conducting an initial inspection to identify susceptible 
+zones for defects and potential deterioration areas. The results were 
+compiled and are presented in an overview section.
+4.2.4. Results overview
+The programming development results span multiple stages, from 
+the initial methodology design and validation using test tunnel PCD data 
+to the creation of the digital twin and its application to the real Coastal 
+Tunnel ( Fig. 22 ). This research aims to establish a new inspection and 
+data integration framework, connecting field assets with Industry 4.0 
+advancements for tunnel assessment.
+Fig. 22 provides an overview of the development of each part of the 
+programming and the main results of the digital twin at each stage in the 
+construction environment. The main input data for the process are the 
+point cloud data from the tunnel scanning and the inspection data from 
+the sensitive inspection. Although the whole sensitive inspection is 
+performed by standard digital modeling of the structure and the data is 
+stored directly in the main server to mitigate errors in digital inspection, 
+the result from dividing the surface using the grid and the point cloud 
+data can serve as the validation of field acquisition data.
+The inspection results from the proposed framework are summarized 
+in Fig. 23 . Fig. 23 .a shows the grid inspection classification, presenting 
+Fig. 17. Digital inspection development: a) Adaptable inspection grid built from the PCD; b) Digital inspection process and grid surface extraction.
+L.B. Machado et al. Tunnelling and Underground Space Technology incorporating Trenchless Technology Research 165 (2025) 106929 
+14 
+the service states of the structure. This inspection process, representing 
+the cadastral or initial inspection, reveals a high number of cells in State 
+I and none in State IV. This aligns with the initial defect identification, 
+highlighting susceptible zones and optimizing the decision-making 
+process. It also helps identify specific tunnel defects, improving the 
+overall structure knowledge. Fig. 23 .b shows that the main defects are 
+leakage and CP, with a few points exhibiting cracking and one spalling 
+area in the tunnel portal.
+Fig. 18. Inspection digital classification process in the Coastal Tunnel.
+Fig. 19. Degradation state classification based on digital and sensitive inspections conducted during the validation test.
+L.B. Machado et al. Tunnelling and Underground Space Technology incorporating Trenchless Technology Research 165 (2025) 106929 
+15 
+Table 2 
+Defects detection for each inspection approach.
+Tunnel position [m] Digital Sensitive
+Leakage Cracking Spalling C.P. Leakage Cracking Spalling C.P.
+2.5 1 0 1 0 1 1 1 0
+7.5 0 0 0 1 0 0 0 0
+12.5 0 0 0 2 0 0 0 0
+17.5 2 0 0 1 1 0 0 1
+22.5 0 0 0 0 0 0 0 0
+Fig. 20. Inspection validation: a) sensitive inspection; b) time consumption analyses.
+Fig. 21. Inspection digital twin for coastal tunnel.
+L.B. Machado et al. Tunnelling and Underground Space Technology incorporating Trenchless Technology Research 165 (2025) 106929 
+16 
+The construction virtualization, combined with structural inspection 
+information, represents a valuable resource for the management com -
+pany, offering the possibility to enhance its decision-making regarding 
+maintenance investments or more detailed inspection campaigns in 
+areas of greater relevance. This process can be automated and contin -
+uously updated, integrating database files into online platforms, such as 
+inspection classifications in.csv format, notes and information about the 
+structure, and photographic images in online databases. The result of 
+this process is the creation of a layer of information over time, which is 
+adaptable to heterogeneous data from inspection campaigns for these 
+types of structures.
+4.2.5. Advancements beyond existing methods
+The proposed framework introduces significant innovations 
+compared to conventional inspection practices and previously reported 
+Digital Twin (DT) approaches. It applies procedural modeling for the 
+first time to tunnel DT lifecycle management, allowing flexible and 
+parametric generation of inspection models and grids that adapt to 
+diverse tunnel geometries. This enhances reconstruction accuracy, re -
+duces occlusion effects, and significantly decreases processing time, 
+supporting consistent updates throughout the asset lifespan.
+A key contribution is the introduction of the Mesh Decimation 
+Table 3 
+Digital inspection tunnel defects.
+Tunnel Inspection Defect
+Leakage Cracking Spalling Constructive Problems (C.P.)
+Right wall 17 3 0 1
+Roof 4 2 0 9
+Left wall 3 1 1 3
+Fig. 22. Framework development and key results for each phase in the Coastal Tunnel.
+L.B. Machado et al. Tunnelling and Underground Space Technology incorporating Trenchless Technology Research 165 (2025) 106929 
+17 
+Quality (MDQ) index, a metric specifically designed for tunnel inspec -
+tion applications. Unlike general-purpose mesh quality measures, MDQ 
+integrates the Overlayed Area Ratio (OAR) and the Average Distance 
+(AD) between vertices to capture both geometric fidelity and practical 
+mesh usability (PCDr). This ensures that the resulting mesh remains 
+computationally efficient while preserving the spatial precision needed 
+for reliable inspection and modeling tasks.
+Another distinguishing feature of the framework is the fully auto -
+mated generation of inspection grids and metadata integration. In 
+contrast to previous approaches that typically depend on semi- 
+automated workflows or manual data handling, the proposed method 
+directly embeds defect type, location, classification, and supplementary 
+data into the digital model ( Figs. 11 and 12 ). This tight connection 
+between the physical tunnel and its virtual representation reinforces the 
+digitalization twinning concept and enhances scalability and consis -
+tency, particularly in long-term monitoring and asset management 
+scenarios.
+5. Conclusion
+The methodology developed for constructing a digital twin in tun -
+nels, using parametric and procedural modeling, has proven effective in 
+advancing the storage of virtualized information for managing and 
+optimizing decision-making in infrastructure. The integration of new 
+technologies and Industry 4.0 developments into assets of significant 
+economic and social importance helps mitigate economic losses while 
+Fig. 23. Coastal tunnel digital inspection results: a) inspection grid classification; b) identified defects.
+L.B. Machado et al. Tunnelling and Underground Space Technology incorporating Trenchless Technology Research 165 (2025) 106929 
+18 
+enhancing safety and longevity.
+However, the methodology has limitations dependent on external 
+factors or requiring adjustments during pre-processing. For instance, 
+internet access is necessary to connect the inspection process to the main 
+server. Point cloud density depends on scanning equipment and site 
+characteristics, which can affect accuracy. Additionally, three- 
+dimensional rotation adjustments may be required during pre- 
+processing in the Fline feature, although these are relatively simple 
+due to the flexibility of procedural modeling.
+The MDQ index is introduced to ensure mesh workability and qual -
+ity. This parameter is practical for guiding the meshing process: an 
+’ acceptable ’ MDQ range indicates that the mesh resolution is sufficient 
+to generate the tunnel mesh and grid without losing critical geometric 
+information, while also optimizing computational cost. In contrast, a 
+’ poor ’ MDQ may lead to inaccuracies in the model, potentially distorting 
+the spatial allocation of inspection locations. These thresholds are 
+crucial in ensuring that mesh quality meets the precision requirements 
+necessary for reliable decision-making in digital tunnel inspection and 
+modeling scenarios.
+A digital twin demands a highly detailed model based on precise data 
+from the real structure to minimize approximations. It is crucial for the 
+twin to be linked to real asset information, which should be processed 
+and integrated into the model efficiently. The digital replication of the 
+Coastal Tunnel was performed using point cloud data from the Faro 
+Focus 3D X330 TLS, and the proposed MDQ index proved effective for 
+creating the mesh grid. Mesh construction was handled using Cockroach 
+programming, leveraging the flexibility of procedural modeling to 
+ensure a high LOD. Metadata integration from the real structure was 
+automated using EleFront 5.1.8, and Grasshopper 1.0.0007 scripts with 
+complementary open-source plugins facilitated efficient automation, 
+detailing, and connection between real and virtual assets.
+The framework developed for the Coastal Tunnel provides a digital 
+inspection with a databank integrated into the tunnel model. The results 
+meet digital twin requirements, delivering a virtualized, automated 
+model connected to the asset for efficient management, identifying 
+specific defects, improving the overall structure knowledge and main -
+tenance plan optimization. There is potential for expanding the twin 
+with additional layers of information, which will be explored in future 
+research.
+The results demonstrate the creation of automated geometric models 
+from PCD data, virtualization of the inspection process, and metadata 
+integration into the digital twin model. The framework offers flexibility 
+and adaptability for various infrastructures and demands, enhancing 
+tunnel lifecycle management and decision-making using Industry 4.0 
+technologies.
+CRediT authorship contribution statement
+Lucas Bellini Machado: Writing – review & editing, Writing – 
+original draft, Visualization, Validation, Software, Methodology, 
+Investigation, Formal analysis, Data curation, Conceptualization. Ber -
+nardo Lopes Poncetti: Writing – review & editing, Writing – original 
+draft, Validation. Leandro Silva de Assis: Writing – review & editing, 
+Validation. Marcos Massao Futai: Writing – review & editing, Super -
+vision, Resources, Project administration, Funding acquisition.
+Declaration of competing interest
+The authors declare that they have no known competing financial 
+interests or personal relationships that could have appeared to influence 
+the work reported in this paper.
+Acknowledgements
+The authors would like to express their gratitude to FAPESP (grant 
+#2023/03684-0 and #2024/05478-0, S ˜ao Paulo Research Foundation), 
+CNPq (#306379/2021-0), CAPES (#88887.839293/2023-00 and 
+#88887.816776/2023-00) and the Tunnel 4.0 project in VALE Catedra 
+Under Rail for their financial support in developing this paper and EGTC 
+Infra for allowing experimental tests in the field. We appreciate Mel -
+quiades Sahuinco, from GeoInfraUSP, for his assistance in grasshopper 
+programming. The opinions and conclusions presented in this paper are 
+solely those of the authors and do not necessarily reflect the views of the 
+sponsoring organizations.

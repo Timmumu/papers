@@ -21,3 +21,16 @@ The integrated use of building information modeling (BIM) and geographic informa
 | Yes | Yes | Yes | Tier 1 - Digital Model | 0 | 0 | 1 | Design for Safety (DfS) | Mentioned only | Digital Twin platform (no machine learning) | Multi (two or more data types) | Cross-project (multiple real projects) | 3 | BIM-to-Digital-Twin architecture |
 
 **Key evidence (AG):** BIM-GIS-based asset management system (AMS app) for the diffused University of Turin campus (two demonstrator buildings): web platform with interactive 3D map + analytical dashboards for real-time visualization of the asset stock from a centralized database integrating spatial/functional data; crowd simulations (Pathfinder-style) assess fire-emergency safety and evacuation time as a benchmark; cognitive digital twins are framed as the long-term future objective — no live sensor/IoT data flow yet (sensor deployment and ML-based automated analysis are future work). Static visualisation platform toward future CDTs; one-way, no learning loop.
+
+**Strength & gap filled (AH):** Addresses fragmented document-based management of a diffused university asset: a BIM-GIS web platform integrates spatial and functional data from several directorates into a centralized relational database with a tailor-made space encoding, feeding an interactive 3D map with analytical dashboards for two University of Turin demonstrator buildings, plus crowd simulation to assess fire evacuation safety levels.
+
+**Deficiencies & future work (AI):** No IoT sensors or live data feed the app yet, formats remain authoring-based rather than open standards, and no AI or ML processing exists, so the cognitive digital twin is aspirational; future work includes IoT networks, AI and AR/VR integration, whole-asset fire risk mapping and active wayfinding for evacuation.
+
+**Fusion depth (AC1):** Aligned
+
+**Fusion evidence (AC2):**
+- **Data streams:** BIM spatial data + GIS/functional data from several directorates (two University of Turin demonstrators).
+- **Integration mechanism:** the centralised relational database with space encoding provides the shared frame for the 3D map and dashboards; Pathfinder-style crowd simulation assesses evacuation safety separately.
+- **Why this code:** data types share one spatial frame with per-type services, so Aligned.
+
+**Confidence (AC3):** High - the centralised DB integration is explicit.

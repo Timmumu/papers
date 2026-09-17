@@ -21,3 +21,16 @@ In recent years, there have been many serious problems with air pollution (such 
 | Yes | Yes | Yes | Tier 2 - Digital Shadow | 0 | 0 | 1 | Design for Safety (DfS) | None | Digital Twin platform (no machine learning) | Multi (two or more data types) | Single case study | 3 | Semantic interoperability |
 
 **Key evidence (AG):** WSN/BIM environmental monitoring & control system for underground parking garage (Taipei case): WSN nodes (coordinator/sensor/router/control) collect CO, temperature, humidity in real time; data transferred over self-constituted WSN and dynamically displayed on corresponding spatial components of a 3D BIM model, making the BIM a real-time DT; actuation (ventilator + flashing alarm on high CO) is performed by the WSN control node directly (sensor→control-node safety loop), not through the virtual twin; reaction ~1-2 s. BIM/DT is a one-way monitoring/visualisation layer; no ML and no learning loop.
+
+**Strength & gap filled (AH):** Fills the planning gap for WSN and BIM integration in garage environmental monitoring: a working digital twin system with Zigbee mesh nodes (MQ-7 CO and DHT-11 temperature and humidity) that react to simulated hazardous gas within 1 to 2 s, automatically switching on ventilator and flashing alarm, with 250 m direct and over 450 m relayed communication, color-coded BIM visualization via Navisworks API, and roughly 40 percent cost saving versus handheld detectors.
+
+**Deficiencies & future work (AI):** Validation used only three sensor locations in one Taipei garage with simulated gas, standard-gas calibration is recommended for quantitative readings, and battery capacity limits node operation to about one week. Future work includes adopting more IoT technologies and integrating BIM with AI for smarter environment management in smart cities.
+
+**Fusion depth (AC1):** Aligned
+
+**Fusion evidence (AC2):**
+- **Data streams:** Zigbee WSN nodes (MQ-7 CO, DHT-11 temperature/humidity) in a Taipei parking garage.
+- **Integration mechanism:** readings map onto matching BIM components for real-time colour display; the safety loop (ventilator + alarm, 1-2 s) is executed directly by the WSN control node, bypassing the twin.
+- **Why this code:** sensor channels share the BIM asset frame but inference/actuation stays per stream, so Aligned.
+
+**Confidence (AC3):** High - the BIM component mapping is explicit.

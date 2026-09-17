@@ -21,3 +21,16 @@ This paper describes the implementation of a digital twin for buildings to enhan
 | Yes | Yes | Yes | Tier 2 - Digital Shadow | 0 | 0 | 1 | Design for Safety (DfS) | None | Other / Mixed | Multi (two or more data types) | Single case study | 4 | Design for Safety |
 
 **Key evidence (AG):** GUIDE2FR emergency-monitoring DT of a firefighter training tower (Alcorcón): Wi-Fi/LoRa beacon network (temp, humidity, CO2, TVOC) + RTSP video synchronised in a Grafana plugin; offline-trained ML forecasting pipeline (SVR/RF/Huber/GPR, forward-chaining CV, tested on 4 beacons at Fire Station 9) visualised in the DT; one-way data flow to human decision-makers, no actuation and no online learning loop.
+
+**Strength & gap filled (AH):** Fills the gap between fire-safety DT research and operational emergency response: a functioning building DT (GUIDE2FR) fusing Wi-Fi/LoRa environmental beacons with live RTSP video in a Grafana plugin, plus an offline-trained ML forecasting pipeline (SVR, Huber, Random Forest, Gaussian Process, forward-chaining CV, adaptive ensemble) tested on data from four beacons during firefighter training exercises at Fire Station 9 in Madrid.
+
+**Deficiencies & future work (AI):** No actuation or bidirectional link to building systems: forecasting models are offline-trained and never updated online. The platform relies on proprietary ArcGIS, assumes a reliable wireless network, and sensor accuracy under extreme conditions is unverified; future work targets open-source visualization and integration with more real assets for active response and evacuation mechanisms.
+
+**Fusion depth (AC1):** Aligned
+
+**Fusion evidence (AC2):**
+- **Data streams:** Wi-Fi/LoRa beacon time series (temperature, humidity, CO2, TVOC) + RTSP surveillance video on a firefighter training tower.
+- **Integration mechanism:** each video segment is timestamped and stored by the Video Management Module, and the custom Grafana plugin cross-references RTSP streams with MySQL sensor time series, giving both a shared temporal frame; the ML forecasting pipeline (SVR/RF/Huber/GPR) runs on sensor series only.
+- **Why this code:** the two data types are linked by a shared timestamp frame while inference stays per type, so Aligned.
+
+**Confidence (AC3):** High - the timestamped video-to-MySQL synchronisation is described verbatim in the full text.

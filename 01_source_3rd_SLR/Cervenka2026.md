@@ -13,3 +13,26 @@ Artificial Intelligence (AI), with particular emphasis on Artificial Neural Netw
 | Yes | Yes | Yes | Yes | Yes | **Include** |
 
 **Note:** ANN surrogate within DT for bridge SHM, safety info, life-cycle
+
+## Step-3 Deep-Read Coding (Prompt B)
+
+| P | Q | R | U Tier | V | W | X | Z | AA | AB | AC | AD | AE | AF |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| Yes | Yes | Yes | Tier 1 - Digital Model (static, no live data) | 0 | 0 | 1 | Design for Safety (DfS) | None | Other / Mixed | Single (one data type) | Simulation | 3 | Design for Safety |
+
+**Key evidence (AG):** AI-based ANN surrogate model for DTs in SHM of reinforced concrete bridges (Cervenka Consulting/CTU, RILEM SSCS 2025): ANN has two roles - calibrating the virtual twin to physical structure behavior, then deployment as fast-response surrogate providing safety information for ongoing SHM; physically informed deep learning trained from nonlinear FEM (ATENA) sensitivity analyses; demonstrated on Leonhardt shear-beam numerical example (100/400/1000-sample datasets) identifying material parameters (fc, ft, E, GF) from load-displacement diagrams. Numerical example only - no live data link to a real bridge, no actuation, no learning loop.
+
+
+
+**Strength & gap filled (AH):** Assigns ANNs two roles in a DT for SHM of reinforced concrete bridges: first, physically informed deep learning calibrates the virtual twin by identifying material parameters (E, fc, ft, fracture energy) from ATENA nonlinear finite element sensitivity analyses, demonstrated on a Leonhardt shear beam with datasets of 100, 400, and 1000 samples; second, the trained ANN serves as a fast-response surrogate for real-time engineering interpretation of monitoring data.
+
+**Deficiencies & future work (AI):** A short conference-stage contribution: only parameter identification on a numerical shear beam example is demonstrated, with no deployed structure, no live sensor data, and no quantitative surrogate accuracy reported; the conclusion and future work sections remain essentially undeveloped, so the real-time SHM surrogate role is proposed rather than validated.
+**Fusion depth (AC1):** SINGLE
+
+**Fusion evidence (AC2):**
+- **Data streams:** numerical load-displacement (F-u) curves from ATENA nonlinear FE sensitivity analyses (100/400/1000-sample datasets).
+- **Integration mechanism:** none exists - the ANN is trained and demonstrated on a Leonhardt shear-beam numerical example only, with no live sensor link to a real bridge.
+- **Why this code:** only one data type is used, so SINGLE applies (AC=Single).
+
+**Confidence (AC3):** High - the numerical-only scope is explicit in the full text.
+(full-text source: Endnote)

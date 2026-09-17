@@ -1,0 +1,1130 @@
+Digital twin-enabled synchronous jacking control of an aerial building 
+machine using a scale model
+Limao Zhang
+a , b
+, Xupu Zhang
+a
+, Ke Chen
+a , b
+, Jiaqi Wang
+a , *
+, Lieyun Ding
+a , b
+a
+School of Civil and Hydraulic Engineering, Huazhong University of Science and Technology, 1037 Luoyu Road, Hongshan District, Wuhan, Hubei 430074, China
+b
+National Center of Technology Innovation for Digital Construction, Huazhong University of Science and Technology, 1037 Luoyu Road, Hongshan District, Wuhan, 
+Hubei 430074, China
+ARTICLE INFO
+Keywords:
+ABM
+Scale model
+Synchronous control
+Transfer learning
+Deep learning
+ABSTRACT
+The aerial building machine (ABM) provides an integrated solution for high-rise construction through its ability 
+to hoist construction platforms, materials, and equipment to elevations of several hundred meters while main -
+taining high operational adaptability. The jacking process of the ABM depends on coordinated extension and 
+retraction of multiple cylinders. However, high-altitude wind loads and non-uniform stacking loads on the 
+construction platform introduce significant uncertainties that may compromise structural safety. This paper 
+presents the development of an intelligent synchronous control system based on a scaled experimental platform, 
+employing a deep neural network for dynamic error compensation, together with a digital twin framework to 
+improve operational efficiency and human – machine collaboration. Reinforcement learning tuned control pa -
+rameters, and transfer learning migrated DNN-PID controller to the scale model. Jacking tests showed 0.407 mm 
+synchronization error, a maximum error below 0.46 mm across ten conditions, and a 29% maximum synchro -
+nization error reduction with fewer iterations.
+1. Introduction
+The number and average height of super tall buildings in the world 
+have continued to increase steadily in recent years, showing a sustained 
+growth trend. As of February 2025, China has a total of 3465 super high- 
+rise buildings over 150 m in height and 122 super high-rise buildings 
+over 300 m in height [1] , ranking first globally in both categories. Super 
+tall buildings inherently have the characteristics of maximizing land 
+resource utilization, and can meet the demands of functional use and 
+urban aesthetics [2] . However, compared with low-rise buildings, the 
+construction of high-rise buildings has the characteristics of high con -
+struction difficulty, high safety risk, and complex processes [3] . Most 
+notably, the deformation, collapse, and overturning of the scaffolding 
+system have resulted in severe production safety accidents and sub -
+stantial losses [4] . Additionally, the traditional scaffolding construction 
+mode cannot efficiently integrate material transportation, concrete 
+pouring, and steel reinforcement trapping. Construction equipment such 
+as tower cranes and fabric machines is not able to quickly climb with the 
+construction of the building core, leading to low construction efficiency 
+and difficulties in cost control during the construction cycle of high-rise 
+buildings. To solve the problems of high-altitude operations, the aerial 
+building machine (ABM) was developed [5] .
+ABM is a self-jacking scaffolding system with a steel platform, which 
+has a complete sensing and control system. Its main subsystems include 
+the power system, support system, and formwork system [6] , which is 
+characterized by high load capacity, strong adaptability, easy operation, 
+intelligent control, and comfortable environment [7 – 9] . In order to 
+achieve its switching under various working conditions and complete 
+self-climbing for the construction of high-rise buildings, its support and 
+power systems need to smoothly complete the jacking of the steel plat -
+form [10] . The ABM integrates multiple functions, and its complex 
+structure and diverse working conditions impose stringent requirements 
+on the stability of the power system and control equipment. Any 
+instance of asynchronous jacking necessitates an immediate construc -
+tion halt for troubleshooting and can lead to severe consequences such 
+as structural damage [10,11] . Therefore, millimeter-level synchroniza -
+tion accuracy is important in the control process, and high-performance 
+control algorithms are required to drive the synchronous jacking process 
+of multiple oil cylinders and effectively correct asynchronous climbing 
+in real time, thereby ensuring the precise levelness of the steel platform. 
+* Corresponding author.
+E-mail addresses: zlm@hust.edu.cn (L. Zhang), xpzhang@hust.edu.cn (X. Zhang), chenkecm@hust.edu.cn (K. Chen), jiaqi_wang@hust.edu.cn (J. Wang), dly@ 
+hust.edu.cn (L. Ding). 
+Contents lists available at ScienceDirect
+Automation in Construction
+journal homep age: www.el sevier.com/l ocate/autcon
+https://doi.org/10.1016/j.autcon.2026.107076
+Received 15 September 2025; Received in revised form 28 May 2026; Accepted 1 June 2026 
+Automation in Construction 190 (2026) 107076 
+Available online 15 June 2026 
+0926-5805/© 2026 Published by Elsevier B.V. 
+These engineering challenges place strict requirements on the reliability 
+and synchronization performance of the jacking control system, moti -
+vating the development of more advanced synchronous control strate -
+gies for ABM platforms [12] .
+Traditional synchronous jacking control methods used in ABM sys -
+tems still exhibit limitations such as insufficient control accuracy, slow 
+response speed, and insufficient real-time monitoring feedback under 
+complex working conditions, and in some cases still rely on manual 
+observation of platform levelness for safety management. In current 
+research and engineering practice, multi-cylinder synchronous control 
+methods enhance their control performance mainly through improve -
+ments in target tracking accuracy and advanced coupling strategies 
+[13] . These synchronous jacking control methods are primarily based on 
+parallel [14] or master-slave [15] approaches, which often exhibit poor 
+anti-interference capability [16] . Coupling structures [17,18] have 
+improved this aspect. In applications where operating conditions are 
+relatively stable and system parameters can be accurately modeled, 
+closed-loop control methods have evolved toward adaptive, robust, and 
+intelligent approaches. Representative examples include fuzzy adaptive 
+control [19] , sliding mode control [20] , neural-network-based control -
+lers such as DNN-PID [21] , generalized predictive control (GPC) [22] , as 
+well as synchronization strategies based on deviation-coupling struc -
+tures [23] and FPGA-based digital synchronization [24] . Although 
+existing methods have improved multi-cylinder synchronization accu -
+racy, they typically rely on accurate system modeling and relatively 
+stable operating conditions. In practical ABM jacking scenarios, varying 
+loads and inconsistencies in actuator hydraulic circuits make accurate 
+system parameterization difficult, which limits the applicability of 
+model-based control approaches. Precisely because of these modeling 
+challenges, engineering practice often continues to rely on traditional 
+PID-based synchronization strategies, which may become insufficient 
+under complex operating conditions [25] .
+The application of the jacking control method in actual operations is 
+the most effective way to validate its effectiveness. In practice, field 
+observations provide valuable data for safety management and iterative 
+improvement of control strategies. However, setting up multiple oper -
+ating conditions and conducting comparative experiments with different 
+algorithms is difficult to achieve in actual construction processes. Due to 
+the high risks involved in high-rise building construction and the high 
+costs of experiments, algorithms are difficult to directly deploy in ABM 
+equipment, and control parameters and attitude feedback during asyn -
+chronous jacking are also challenging to obtain. To address these issues, 
+current mainstream solutions include combined simulation of hydraulic 
+and control circuits [12] . Simulation systems generally struggle to 
+accurately replicate real-world operational states due to factors such as 
+the inability to account for random fluctuations in hardware and cir -
+cuits, as well as numerous constraints. Multi-domain research has pro -
+posed using scale models to simulate system motion states [26] . This 
+paper employs a scale model to reconstruct the main structure and 
+power system of the ABM and applies it to a jacking test execution 
+platform. This provides a pathway for the research and experimental 
+validation of synchronous control methods.
+Although the methods mentioned can achieve acceptable perfor -
+mance, they often involve high training or tuning costs and slow 
+convergence, especially under varying operating conditions. These limit 
+their practicality in real ABM applications. Moreover, closed-loop digital 
+twin control frameworks validated through physical experimentation in 
+ABM systems remain largely absent. To address this issue, transfer 
+learning is introduced to bridge simulation-based optimization and 
+physical deployment. By leveraging prior control experience from 
+simulation, the controller can be initialized in the physical system with 
+reduced manual tuning, improving convergence efficiency and robust -
+ness under asymmetric and dynamic loads. To support systematic vali -
+dation and management of control strategies, a digital twin framework 
+is introduced as a system-level support layer. Through bidirectional 
+interaction with the scaled model, it enables structured testing, real-time 
+monitoring, and traceable evaluation. This design is intended to support 
+future deployment and system integration, rather than implying direct 
+applicability to full-scale ABM systems at this stage.
+In summary, this paper addresses the following three key issues: (1) 
+How to design the ABM scale model platform for synchronous jacking 
+validation; (2) How to develop an online-learning adaptive controller 
+capable of maintaining multi-cylinder synchronization under non- 
+stationary load conditions; (3) How to drive the intelligent control and 
+management of synchronous jacking control with digital twins, and 
+provide a structured experimental basis for future investigation of con -
+trol strategies in ABM systems. To solve the above problems, this paper 
+proposes a synchronous control framework based on the scale model, 
+transfer learning, and digital twins, which realizes adaptive intelligent 
+synchronous control of multiple motors under uneven loads. The con -
+tributions of this research lie in: (a) A scaled ABM experimental platform 
+is developed to enable safe and repeatable validation of synchronous 
+jacking control strategies under diverse loading conditions; (b) A 
+transfer learning–based DNN-PID control strategy is proposed to bridge 
+simulation and physical deployment, improving convergence efficiency 
+and synchronization performance under non-stationary conditions; (c) A 
+digital twin–supported framework is established to coordinate control 
+execution, data logging, and experimental management, providing a 
+structured basis for future investigation and potential deployment in 
+real ABM systems.
+The three main objectives of this paper are listed below: (1) Scaled- 
+Model Design: A scaled-down experimental platform was designed and 
+developed, integrating a sensor suite and an embedded control system to 
+address the practical challenge of validating algorithmic feasibility 
+under real-world conditions, where direct experimentation is often 
+infeasible. (2) Intelligent Synchronization Control: A transfer lear -
+ning–driven DNN-PID control strategy is proposed, leveraging prior 
+knowledge acquired from simulation to achieve high-precision motor 
+synchronization under asymmetric load conditions in physical envi -
+ronments of scale model. (3) Digital Twin–Enabled Management and 
+Control System: A full-lifecycle digital twin framework is established, 
+enabling integrated closed-loop management and control through data 
+mapping and visualization, thereby laying the foundation for the 
+deployment of the proposed methods in real-world engineering systems. 
+Together, these three components form a closed-loop research frame -
+work. Transfer learning bridges simulation-based controller develop -
+ment and physical experimentation on the scale model, while the digital 
+twin enables system-level coordination and monitoring of the experi -
+mental process, thereby linking algorithm adaptation, physical valida -
+tion, and system-level management within a unified environment.
+The remaining research contents of this study are organized as fol -
+lows. Section 2 provides the related studies on synchronous control. 
+Section 3 introduces the details of the intelligent control algorithm. 
+Next, in Section 4 , the intelligent control algorithm is employed in a 
+scale model of ABM to validate its effectiveness and practicability. 
+Section 5 demonstrates the superiority and key links of intelligent al -
+gorithms. In the last section, the conclusions and future works are 
+presented.
+2. Related studies on synchronous jacking control
+This paper focuses on the synchronous control of the ABM jacking 
+process under varying construction conditions. In this scenario, control 
+performance is jointly influenced by the adaptability of the control al -
+gorithm, the sim-to-real transferability of the control strategy, and the 
+integration level and systemic completeness of the control framework. 
+Accordingly, the integration of intelligent algorithms, simulation-to- 
+scale transfer learning, and digital twin–driven control constitutes a 
+comprehensive control framework that addresses complex challenges 
+from complementary perspectives. Numerous studies have investigated 
+the application of intelligent algorithms, transfer learning, and digital 
+twin technology in engineering. The relevant research can be 
+L. Zhang et al. Automation in Construction 190 (2026) 107076 
+2 
+summarized as follows: 
+(1) Intelligent algorithms in synchronous control . Intelligent synchro -
+nization control algorithms are providing robust solutions for 
+networked systems under topology uncertainty, random pertur -
+bations, and resource-constrained scenarios through adaptive, 
+event-triggered, neural network, and hybrid strategies. Wang 
+et al. [27] use the artificial bee colony (ABC) algorithm to opti -
+mize the Relative coupling control (RCC) structure for a multi- 
+motor synchronous control system and improve its coupling 
+performance. Xie et al. [28] proposed a generalized model of a 
+dual parallel motion system to solve the problem of large differ -
+ences in control objectives and mechanical structures in parallel 
+control systems. Shouran et al. [29] proposed a controller 
+combining fuzzy PIDF with fractional order proportional differ -
+entiation (FOPD) to minimize the ITAE objective function by 
+particle swarm optimization (PSO) and sand cat swarm optimi -
+zation (SCSO) algorithms to improve the disturbance resistance 
+by 40%. Xu et al. [30] proposed a multilevel fuzzy-PID control 
+strategy to solve the problems of synchronization speed deviation 
+and positioning error caused by time-varying and nonlinearities 
+in the jacking synchronization control system. Chen et al. [31]
+proposed a recursive Chebyshev fuzzy neural network (RCFNN) – 
+based current angle controller for synchronous reluctance mo -
+tors, capable of searching for the maximum power factor point 
+and improving efficiency across varying operating conditions. 
+Their practical implementation relies on iterative offline debug -
+ging and precise system modeling. In certain scenarios, they even 
+sacrifice other performance metrics to optimize for specific task 
+objectives. In ABM jacking applications, challenges persist in 
+directly deploying such algorithms due to continuously varying 
+load distributions, fluctuating actuator performance across con -
+struction phases, and extremely limited on-site debugging 
+opportunities.
+(2) Transfer learning of control strategies. Transfer learning (TL) aims 
+to enhance the performance of target learners in the target 
+domain by transferring knowledge from different but related 
+source domains, thereby addressing challenges such as data 
+scarcity and distribution shifts in engineering applications [32] . 
+Kuang et al. [33] proposed an unbalanced adversarial transfer 
+learning network for industrial fault diagnosis, addressing data 
+scarcity under fault conditions and extending the applicability of 
+transfer learning. In additive manufacturing, Pashmforoush et al. 
+[34] used TL to predict mechanical properties of selective-laser- 
+melted materials by transferring simulated data to physical ex -
+periments, slashing data needs by 50% with < 5% error, and to 
+guide the optimization of control strategies for this process. Wang 
+et al. [35] transferred the knowledge learned by the transient 
+stability assessor (TSA) established by the graph convolutional 
+neural network (GCNN) to the entropy-enhanced twin delay deep 
+deterministic policy gradient (DRL) model to improve the 
+learning efficiency and performance of transient stability pre -
+ventive control (TSPC). Yin et al. [36] proposed a deep transfer 
+reinforcement learning method based on QMIX that accelerates 
+convergence through policy transfer and enables multi-UAV task 
+allocation. Gadiraju et al. [37] used a method that utilizes the 
+transferability of CNN networks to obtain pre-trained weights 
+from a crack image dataset, thereby completing crack identifi -
+cation and detection using drones and improving the perfor -
+mance of crack identification and localization. Existing research 
+on transfer learning primarily focuses on perception, diagnosis, 
+or high-level decision-making tasks, while its functional role as a 
+controller remains underdeveloped. Ideally, such methods should 
+be integrated with system dynamics to serve as an integral part of 
+the closed-loop control. Consequently, its applicability to real- 
+time synchronous control of multi-actuator systems remains 
+limited.
+(3) Digital twin-driven control . Driven by data and models, digital twin 
+(DT) promotes interaction and integration between the physical 
+world and the information world [38] and can perform functions 
+such as monitoring, simulation, prediction, and optimization 
+[39] . Some scholars have pointed out that DT-enhanced parallel 
+computing can accelerate the execution of real-time optimization 
+algorithms in closed-loop control systems, guiding the applica -
+tion of digital twin methods in the field of control [40] . DT ar -
+chitecture has practical applications in the research of 
+engineering equipment such as tunnel boring machines (TBM) 
+and tower cranes. Jiang et al. [26] developed a scale mod -
+el – based digital twin framework to simulate tower crane jacking 
+behavior and analyze its dynamic effects, providing experimental 
+insights for monitoring unsafe jacking operations. Zhang et al. 
+[41] established a digital twin model of a TBM integrated with 
+deep learning and online multi-objective optimization to deter -
+mine optimal control parameters, and validated its effectiveness 
+using real metro construction data. Existing digital twin appli -
+cations play different roles across construction equipment. For 
+tower cranes, control remains largely operator-driven, and digital 
+twins mainly support monitoring and safety assistance rather 
+than real-time control. ABM jacking, by contrast, requires a high 
+degree of automation, where operators specify target states and 
+synchronous control is executed by the control system itself. 
+Although this makes ABM superficially similar to TBM systems, 
+TBMs typically rely on dense sensory information for environ -
+mental perception and decision support. ABM jacking must 
+instead maintain reliable multi-actuator synchronization under 
+uneven and time-varying loads with limited environmental 
+sensing, and load information is rarely directly incorporated into 
+the control loop. This difference limits the direct transferability of 
+existing DT frameworks and highlights the need for a control- 
+oriented digital twin tailored to ABM systems.
+The research in the field of multi-cylinder synchronous control 
+technology has developed a relatively mature technical route from 
+theory to implementation, among which the PID control strategy opti -
+mized by intelligent optimization algorithms and deep neural networks 
+has shown strong performance and stability. However, most existing 
+studies implicitly assume stable operating conditions, accurately mod -
+elable system parameters, and high actuator consistency, which limits 
+their direct applicability in complex construction scenarios. As a large- 
+scale civil engineering equipment that has emerged in recent years, 
+the control and safety management system of the ABM in engineering 
+practice is still in the process of construction and improvement. The 
+safety of the jacking process of some ABM used in super high-rise 
+building construction projects still relies on ground observation and 
+manual control by operators. At present, systematic research focusing on 
+digital twin-driven jacking modes and safety risk mitigation for ABM 
+systems remains limited. Furthermore, the data links in existing Digital 
+Twin (DT) research remain insufficiently defined. Most studies are either 
+based on simulations or rely on a unidirectional data flow from physical 
+engineering equipment to DT systems. Under the constraints of real- 
+world conditions, there is a lack of a physical entity capable of estab -
+lishing bidirectional data links within the DT closed loop. Consequently, 
+research using scaled models to fulfill this role and provide closed-loop 
+feedback remains limited. By integrating transfer learning for control 
+adaptation, scale-model-based validation, and digital twin – based 
+system-level coordination, this paper aims to bridge the gap between 
+algorithmic advances and practical ABM jacking control systems, 
+thereby promoting the automation and intelligent development of large- 
+scale construction equipment.
+L. Zhang et al. Automation in Construction 190 (2026) 107076 
+3 
+3. Methodology
+This paper investigates synchronous jacking control of ABM using an 
+experimental scale model. For the asynchronous jacking problems that 
+may occur in the jacking process, a set of monitoring, analysis, control, 
+and early warning programs is designed to reduce the safety risk and 
+extend the service life of the equipment. Firstly, key structural compo -
+nents are replicated according to similarity principles to complete the 
+design, manufacture, and assembly of the scale model together with the 
+corresponding digital model, and then the multi-objective optimization 
+reinforcement learning algorithm is adopted to optimize the dynamic 
+control parameters of the scaled model, together with a DNN-PID – based 
+synchronous control strategy for the multi-motor system. Subsequently, 
+the single-motor and multi-motor tracking simulation models are con -
+structed in MATLAB/Simulink. The DNN is trained in the simulation and 
+adapted to the physical environment by transfer learning. Finally, the 
+synchronization performance is evaluated through jacking experiments 
+using maximum steady-state error (MSSE), maximum synchronization 
+error (MSE), average synchronization error (ASE), and other indexes, 
+and a twin system integrating data interaction, safety warning, and 
+remote control is constructed. The framework is shown in Fig. 1 .
+3.1. System architecture and scale model
+This section introduces the system architecture of the proposed 
+experimental platform for synchronous jacking control of the ABM. The 
+system integrates a physical jacking platform, an embedded control 
+system, and a digital twin interface to support control execution and 
+data interaction. The design of the platform is described from three as -
+pects: the overall system architecture, the scaled ABM model and the 
+modeling of the jacking scenario, and the embedded control system.
+3.1.1. Physical system configuration
+The study of the synchronous jacking control algorithm was con -
+ducted on a self-developed scaled experimental platform. From the 
+perspective of system architecture, the platform consists of three parts: a 
+physical jacking system, an embedded hardware control system, and a 
+data communication interface reserved for digital twin integration. The 
+physical jacking system includes the structural components of the scaled 
+model, electric linear actuators used to execute the jacking motion, and 
+sensors for state acquisition. The actuators are responsible for realizing 
+the lifting motion of the steel platform, while the sensors are used to 
+obtain the operating state information of each actuator. The embedded 
+control system is built on an STM32 series microcontroller. It is used to 
+perform sensor signal acquisition, control computation, and actuator 
+driving. Each actuator motor is equipped with an encoder to provide 
+displacement and speed feedback signals, which are collected and pro -
+cessed through the timer interfaces of the controller.
+During each control cycle, the controller drives the motor driver 
+boards through PWM signals, thereby regulating the motion state of the 
+actuators and enabling coordinated jacking control among the four ac -
+tuators. In addition, the system is configured with a serial communica -
+tion interface to enable bidirectional data exchange between the 
+embedded controller and the upper-level service system. Through this 
+interface, the upper-level system can transmit control targets and com -
+mands to the embedded controller, while the controller returns the 
+motor operating states and displacement data in real time, providing 
+support for system monitoring, log recording, and visualization in the 
+digital twin platform. Through the coordinated operation of the physical 
+system, the embedded control system, and the communication interface, 
+an experimental platform architecture is established for synchronous 
+jacking control experiments and data interaction. To clarify the physical 
+process represented by the experimental platform, the jacking mecha -
+nism of the ABM system is briefly introduced below. The scale model 
+Fig. 1. Framework of ABM synchronized jacking control.
+L. Zhang et al. Automation in Construction 190 (2026) 107076 
+4 
+used in this study reconstructs the key structural components and mo -
+tion stages of the ABM supporting and power system.
+The supporting and power system of ABM consists primarily of steel 
+columns, supporting equipment, cylinders, and supporting frames. 
+Specifically, the steel columns are held in place with a steel platform 
+above. The supporting frame is connected to the steel column by hy -
+draulic cylinders. The steel platform is extended and retracted syn -
+chronously by several hydraulic cylinders, thus enabling the 
+construction of high-rise buildings. The workflow of the protrusion 
+operation begins with the cylinders extending to raise the steel columns 
+and the steel platform, which are then secured by the equipment sup -
+porting the new position. Subsequently, the cylinder retracts and moves 
+to a higher position on the support frame. This sequence of extension 
+and retraction of the cylinder is repeated continuously throughout the 
+jacking process. Under normal circumstances, the hydraulic cylinder is 
+extended and retracted multiple times to raise the platform to a height 
+corresponding to one floor of the building. The complete jacking process 
+generally consists of five jacking stages of 700 mm, 700 mm, 700 mm, 
+800 mm, and 800 mm. Fig. 2 illustrates the complete jacking process, 
+from the first extension of the hydraulic cylinder to the completion of the 
+climbing frame's retrieval. In this study, the climbing phase is omitted 
+since it does not involve synchronization, automation, or structural 
+safety concerns. The scale model is constructed based on the extension 
+and retraction stages that constitute the core synchronous control task.
+3.1.2. ABM scale model
+The scale model represents the physical entity dimension of the DT 
+five-dimensional model [42] and serves as the experimental platform for 
+synchronous jacking control research, as well as for verifying the reli -
+ability and robustness of the proposed control strategies. Similarity 
+theory guides the development of the scale model in multiple aspects, 
+such as size and shape structure [43] . In the ABM construction system, 
+the components that most significantly influence the motion state and 
+mechanical characteristics of the main structure are the support system, 
+power system, and steel platform. Therefore, the establishment of the 
+scale model focuses on these key structural components, with a simi -
+larity coefficient of 1:25, which is reflected in the dimensional scaling of 
+the steel platform and the support system. This paper focuses on the 
+levelness of the structure during the jacking process. The steel platform 
+mainly serves to bear the load, and its static characteristics have limited 
+influence on jacking levelness, therefore, PLA material is used for its 
+fabrication. The power system of the actual ABM consists of 12 hydraulic 
+cylinders, which are simplified to 4 motor-driven actuators in the scale 
+model to achieve the jacking of the steel platform. As shown in Fig. 3 (a), 
+numerous components were constructed for assembling the scale model, 
+in which modules ① - ③ are the connectors, module ④ is the bailey truss, 
+module ⑤ is the supporting column, module ⑥ is the motor, and module 
+⑦ is the steel platform. Fig. 3 (b) shows the ABM scale model used for the 
+jacking test.
+3.2. Control algorithm design and training
+This section describes the design and training process of the pro -
+posed synchronous jacking control method. The control framework is 
+built on an improved deviation coupling structure to achieve coordi -
+nated control among multiple actuators. In the virtual environment, the 
+PPO algorithm is first employed to perform multi-objective parameter 
+optimization, obtaining a set of control parameters used to initialize the 
+DNN. Subsequently, the DNN-PID controller is trained in the simulation 
+environment and then transferred to the physical scaled experimental 
+platform for validation. Multiple synchronization performance metrics 
+are used to evaluate the control performance in the physical 
+experiments.
+3.2.1. PID parameter optimization based on PPO
+PID parameter tuning is a type of multi-objective optimization task 
+that requires finding a balanced optimal solution among multiple in -
+dicators. Reinforcement learning based on the PPO algorithm is used to 
+Fig. 2. ABM jacking process: (a) Ready, (b) First jacking, (c) First self-climbing, (d) Last jacking, (e) Last self-climbing, and (f) Climbing boots recycling.
+L. Zhang et al. Automation in Construction 190 (2026) 107076 
+5 
+seek robust control schemes through the simulation of the ABM model's 
+dynamic system. In each iteration of PPO, the agent interacts with the 
+environment using the current policy to collect data. It assesses the di -
+rection of policy improvement by calculating the probability ratio of 
+actions generated by the new and old policies (importance sampling 
+ratio), and strictly limits the magnitude of policy updates by using a 
+clipped objective function to enhance smoothness. The core approach 
+driving this process is to have the agent (representing the optimizer) 
+make numerous attempts in the simulated system environment. Through 
+repeated simulated interactions, PPO explores the PID parameter space 
+and converges to gain values that achieve stable multi-motor synchro -
+nization under specified conditions. These optimized parameters pro -
+vide a high-quality initialization for the subsequent DNN-PID controller, 
+reducing exploration cost and improving convergence efficiency. Unlike 
+direct deployment on physical systems, offline PPO training enables the 
+acquisition of prior knowledge by capturing fundamental control be -
+haviors from simulation.
+The following formulas summarize the primary content of the PPO 
+algorithm: (1) is the ratio of the probability of taking action under the 
+current strategy to that under the old strategy in a given state, referred to 
+as the importance weight. (2) is the pruning strategy objective function, 
+which uses the min( ⋅ ) operation to encourage beneficial updates while 
+suppressing excessive updates that may cause training instability. (3) 
+Value function loss, which minimizes the prediction error of the value 
+network, improves the accuracy of state value estimation, and provides a 
+stable baseline for policy updates. (4) PPO overall objective function, 
+which balances policy loss and prevents local convergence. (5) Gener -
+alized advantage estimation, which generates advantage estimates with 
+balanced bias and variance, improves the stability of policy updates. 
+r
+t
+( θ ) =
+π
+θ
+( a
+t
+| s
+t
+)
+π
+θ old
+( a
+t
+| s
+t
+)
+(1) 
+L
+CLIP
+( θ ) =
+̂
+E
+t
+[ min ( r
+t
+( θ )
+̂
+A
+t
+clip ( r
+t
+( θ ) , 1   ε , 1 + ε )
+̂
+A
+t
+) ]
+(2) 
+L
+VF
+( ϕ ) =
+̂
+E
+t
+[
+ 
+V
+ϕ
+( s
+t
+)   V
+target
+t
+)
+2
+]
+(3) 
+L
+PPO
+( θ , ϕ ) = L
+CLIP
+( θ )   c
+1
+L
+VF
+( ϕ ) + c
+2
+̂
+E
+t
+[ S ( π
+θ
+( . | s
+t
+) ) ]
+(4) 
+̂
+A
+t
+GAE ( γ , λ )
+=
+∑
+T   t   1
+l = 0
+( γ λ )
+l
+δ
+t + l
+(5) 
+Fig. 3. ABM scale model: (a) Components of ABM scale model, and (b) ABM scale jacking test platform.
+L. Zhang et al. Automation in Construction 190 (2026) 107076 
+6 
+3.2.2. Multi-motor coordination based on deviation coupling
+The jacking power system of ABM is a kind of multi-cylinder syn -
+chronous control scenario that is highly sensitive to inter-actuator po -
+sition consistency, and it also requires speed regulation to satisfy the set 
+jacking velocity requirements. Conventional position-synchronization 
+schemes typically employ a dual-loop PID architecture, wherein an 
+outer position loop generates the control reference for an inner velocity 
+loop. Although effective for stable tracking tasks, this structure focuses 
+solely on position-tracking performance. Under synchronization tasks 
+involving varying loads, the control reference for the velocity loop can 
+exhibit significant fluctuations, which adversely affect the ABM steel 
+platform, the equipment, and materials mounted on it. In this paper, 
+deviation coupling combined with an improved incremental PID scheme 
+is adopted to coordinate the motion of multiple power motors, as 
+illustrated in Fig. 4 . In the deviation coupling mechanism, the 
+displacement deviation between each actuator and the group mean is 
+used as the compensation term, which is then fed into the speed regu -
+lation loop through a coupling gain. In this process, the deviation 
+compensation quantity is strictly limited to ensure that the speed fluc -
+tuates within a certain range from the set value. The adjustment of the 
+compensation gain parameter is to find a balance between the position 
+synchronization control accuracy and the stability of the speed control. 
+This parameter can be adjusted within a certain range according to the 
+needs of equipment use in the actual application process, and the ra -
+tionality of this adjustment range will be given through the multi- 
+objective optimization of the control effect.
+3.2.3. Transfer learning based on DNN-PID controller
+This paper utilizes MATLAB/Simulink to construct a multi-motor 
+simulation system and trains the neural network to obtain the initial 
+Fig. 4. Advanced control framework of deviation-coupled drive.
+Fig. 5. Transfer learning framework.
+L. Zhang et al. Automation in Construction 190 (2026) 107076 
+7 
+neural network weights. Specifically, a second-order transfer function is 
+employed to approximate the actuator behavior. In practice, even 
+though the scale model in this study uses motors of the same model, 
+there are still differences in physical quantities such as rotational inertia 
+and damping coefficients [44] . Therefore, the motor transfer function in 
+the virtual environment was adjusted based on the physical parameters 
+of the reference motor to account for individual differences, aiming to 
+develop a more adaptive control method. The proposed transfer learning 
+strategy assumes consistency in system structure and control interfaces 
+between simulation and the scaled physical platform, while tolerating 
+discrepancies in parameters, disturbances, and unmodeled dynamics.
+Fig. 5 details the components of transfer learning, where the module 
+① describes the primary function of the DNN: real-time tuning of PID 
+control parameters, and the module ② details the training of the DNN- 
+PID in a simulation environment. Then, module ③ illustrates the 
+deployment of the control strategy within the physical environment. The 
+network underwent 500 iterative training sessions using identical input- 
+output structures within the virtual environment (trained for 5 s at an 
+update frequency of 100 Hz). Trained under complete constraints, the 
+DNN demonstrated excellent control performance, laying the founda -
+tion for its transfer. Relevant details are shown in Table 1 .
+This paper is based on the STM32 platform to realize the embedded 
+program development of a synchronous jacking control system. It 
+realizes the four-motor cooperative jacking driven by a DNN-PID control 
+algorithm in the scale model. Timers, serial ports, and the general- 
+purpose input/output (GPIO) are used to implement specific functions. 
+The primary functions of the proportional model control system, in 
+accordance with its execution logic sequence, are as follows: 
+(1) Timer reads the encoder pulses of the four actuator motors to 
+obtain the speed and stroke information;
+(2) Execute the DNN-PID controller operation module, input the 
+current error, and output the motor speed control signal.
+(3) Regulate the PWM duty cycle based on the control signal and 
+connect the driver board to control the motor speed.
+(4) Realize cyclic control by timing interrupt, complete the operation 
+of sensor data capture, execute PID operation, output direction, 
+and PWM control signal with a fixed cycle.
+(5) The communication module completes the data exchange be -
+tween the STM32 chip and the host computer, utilizing serial 
+communication to realize the control target setting, real-time 
+feedback of the control effect, and the operation of virtual 
+model driving.
+In this process, the elements that have a large impact on the control 
+effect include the gradient tailoring of the DNN and the limitation of the 
+control output. In the initial stage of control, due to the difference in 
+response performance between each power pusher, it is challenging to 
+avoid the scenario of increasing error. The gradient explosion caused by 
+the large error will ultimately lead to the DNN failing. The reasonable 
+gradient trimming used in the initial stage reduces the sensitivity of the 
+network so that it can continuously output the control parameters. In 
+scenarios with large errors, DNN may experience gradient explosion. 
+Additionally, the PI elements of PID controllers may output extremely 
+large control signals under certain control conditions. Therefore, an 
+output limiting strategy is employed to optimize control performance. 
+For the DNN-PID network structure used in this paper, the neural 
+network weights from the input layer to the hidden layer and from the 
+hidden layer to the output layer are first obtained through several 
+simulation trainings. These trained weights are migrated to the 
+embedded environment. During deployment, the weights from the input 
+layer to the hidden layer are fixed, while the weight update logic from 
+the hidden layer to the output layer is increased. Triggering thresholds 
+based on control bias inputs are introduced so that weight updates are 
+activated when large control errors occur, thereby improving the 
+adaptability of the neural network. In the transfer learning process, the 
+trained network parameters obtained in the simulation environment are 
+Table 1 
+DNN hyperparameter configurations and definitions.
+Item Value Description
+Number of 
+layers
+3 Input-hidden-output
+Input features r
+t
+, u
+t-1
+, e
+t 
++ bias Reference target, control output (t-1), error, 
+input bias
+Hidden neurons 5
+Output 
+variables
+K
+p
+, K
+i
+, K
+d
+PID gain parameters
+W
+ih 
+size 5 × 4
+W
+ho 
+size 3 × 5
+Hidden 
+activation
+tanh
+Output 
+activation
+1 + tanh(.) Range [0,2]
+Optimizer / Manually defined optimizer
+Learning rate 0.01
+Update trigger et > 15.0 Error threshold for weight update
+Gradient 
+clipping
+Δ ϵ [   1 ， 1 ]
+Increment 
+clamp
+Δ u ϵ [   50 ， 50 ] Prevent control oscillations
+Output limiting u ϵ [ 45 ， 100 ] Adapt to the PWM output range
+L. Zhang et al. Automation in Construction 190 (2026) 107076 
+8 
+migrated to the STM32-based embedded controller deployed on the 
+scale-model platform. The network architecture and input – output in -
+terfaces remain consistent between the simulation and physical systems, 
+enabling the controller trained in MATLAB/Simulink to be directly 
+initialized in the embedded environment. During physical experiments, 
+the hidden-to-output layer weights are further updated online according 
+to real-time control errors, allowing the controller to compensate for 
+parameter discrepancies, disturbances, and unmodeled dynamics that 
+exist in the physical system but are not captured in the simulation 
+model.
+3.2.4. Training and model evaluation
+The construction of the synchronous jacking control system is 
+completed through multiple stages, including model building, simula -
+tion, and hardware migration. According to the actual application sce -
+narios of ABM, certain indicators are established to evaluate the 
+performance of the synchronous jacking control. This process particu -
+larly focuses on the impact of the control results on the structural safety 
+of ABM. On this basis, some process parameters in the model develop -
+ment and iteration stages are taken into account to achieve efficient 
+optimization iterations. The foundation of the indicator system is the 
+MSSE and the MSE of ABM jacking. MSSE reflects the accuracy and 
+stability when controlling the fixed height of jacking, calculated as 
+shown in Eq. (6) , determined by the maximum error between multiple 
+motors and the control target; MSE reflects the synchronization per -
+formance of multiple motors, directly affecting the structural safety of 
+ABM, calculated as shown in Eq. (7) , by the range of the control results 
+of multiple motors. All the above indicators are instantaneous values at 
+time points. The ASE is calculated to reflect the control effect of the 
+jacking process, as shown in Eq. (8) , by averaging all the MSE values at 
+the sampling. 
+MSSE = max [| G   r
+i
+( t ) | ] , i = 1 , 2 , ⋯ , n (6) 
+MSE = max r
+i
+( t )   min r
+i
+( t ) , i = 1 , 2 , ⋯ , n (7) 
+ASE =
+1
+N
+∑
+N
+i = 1
+MSE ( i ) (8) 
+where G is the control target of the route, r
+i
+( t ) is the final route of each 
+motor, n is the count of motors, and N is the count of steps of time.
+The architecture of the PID control model is based on the Proximal 
+Policy Optimization (PPO) reinforcement learning algorithm imple -
+mented in Python, which is specifically designed for multi-objective 
+optimization and is used to optimize PID parameters in a multi- 
+dimensional continuous space. The PPO agent interacts with the simu -
+lated jacking environment to evaluate the utility of different control 
+strategies multiple times and learn the best control strategy. The rein -
+forcement learning method's reward function is set up to be more 
+adaptable to multi-objective optimization problems than traditional 
+methods.
+The reward function is designed as the weighted sum of multiple 
+indicators, integrating three key performance indicators crucial for 
+synchronous hydraulic jacking: cumulative synchronization error, cu -
+mulative tracking error, and cumulative control energy consumption 
+(reflecting the stability of the control process). The calculation items of 
+the reward function are shown in Eqs. (9), (10), and (11) . Reward 
+weights are used to balance these competing objectives, and the factors 
+influencing the weight setting include the importance of the indicators 
+and the order of magnitude of the calculation. The reward function 
+drives the PPO model to optimize the control strategy with the core 
+focus on synchronization error control. Reward is used to guide the 
+modification and improvement of reinforcement learning methods. 
+Meanwhile, its convergence trend and speed can be utilized to evaluate 
+the advantages and disadvantages of different reinforcement learning 
+methods. The convergence ability of reinforcement learning methods in 
+different scenarios is influenced by many factors. 
+f
+1
+( x ) =
+1
+T
+∫
+T
+0
+t | MSSE ( t ) | dt (9) 
+f
+2
+( x ) =
+1
+T
+∫
+T
+0
+t | MSE ( t ) | dt (10) 
+f
+3
+( x ) =
+∑
+4
+i = 1
+u
+2
+i
+(11) 
+where u
+2
+i 
+is the energy cost of each control process.
+Based on the control strategy obtained from the multi-objective 
+optimization of the PPO algorithm, the DNN-PID compensation con -
+trol network was developed. As an adaptive closed-loop controller, the 
+training and verification of the DNN-PID network were carried out in 
+MATLAB simulation. This DNN is used with multiple sampled reference 
+values, deviations, and control outputs as network inputs, and the 
+output sets the PID parameters. The backpropagation of errors in the 
+DNN network is replaced by the backpropagation of control deviations, 
+that is, the input-output coupling of the network is improved for this 
+task. At the same time, the synchronization error simulating the jacking 
+process is used to evaluate the effectiveness of the network. 
+τ =
+v
+nominal
+  v
+actual
+t
+response
+(12) 
+where v
+nominal 
+is the motor speed under normal conditions, v
+actual 
+is the 
+motor speed under load, and t
+response 
+is the response time constant.
+The priority is to monitor the actual synchronization error curve of 
+the entire jacking process during operation. This encompasses analyzing 
+transient responses under step commands and performance tracking 
+within coordinated trajectories. It further includes adaptability to non- 
+uniform loads or simulated component failures, along with overall sta -
+bility and robustness demonstrated across the entire operating range. 
+Consequently, the core evaluation metric centers on the accuracy of 
+synchronization errors within hardware systems deploying the DNN-PID 
+approach.
+3.3. Digital twin implementation and interface
+To facilitate the necessary data exchange and provide the required 
+interfaces for future extensions of this research, this paper proposes a 
+digital twin system architecture designed for ABM synchronous jacking 
+experiments as illustrated in Fig. 6 . The architecture primarily consists 
+of a physical entity layer, a data communication layer, a digital model 
+layer, and an application service layer. As shown in the figure, the 
+physical entity layer comprises a scaled ABM experimental platform and 
+its sensor system, which are used to collect the dynamic state of the 
+physical model. The data communication layer handles the upload of 
+sensor data and the transmission of control commands, through the 
+embedded communication interface described in Section 3.1 , which is 
+implemented based on serial communication between the STM32 
+controller and the host computer. The digital model layer performs 
+mapping and visualization, while the application service layer provides 
+functions such as experiment monitoring, logging, and control com -
+mand management, thereby forming a digital twin system framework 
+that supports experimental operation management and data analysis. 
+The ABM virtual model is used to display the real-time status of the 
+jacking process and support safety risk analysis and control. Its estab -
+lishment is based on the structure of the scale model entity and the 
+analysis of the jacking motion state. The virtual model is completed by 
+SolidWorks to model and assemble complex components, and it also 
+serves as a blueprint for the fabrication of the scale model components. 
+The difference between the virtual model and the three-dimensional 
+design drawing lies in the integration of components without relative 
+L. Zhang et al. Automation in Construction 190 (2026) 107076 
+9 
+Fig. 6. Digital-twin feedback loop process.
+Fig. 7. Components of the virtual model, motion module, and loading and jacking illustration.
+L. Zhang et al. Automation in Construction 190 (2026) 107076 
+10 
+displacement during the jacking process. Components such as the Bailey 
+truss, connectors, supporting columns, motors, and extension sections 
+are reflected in the virtual model by two major structures: the steel 
+platform and the supporting and power system.
+The utility demonstration of the data-driven digital twin system is 
+shown in Fig. 7 . During the jacking process of the scale model of ABM, 
+the main motion mode is the extension process of four motors used as the 
+power system. Each set of digital twin data includes the speed, stroke, 
+and timestamp of the four motors, enabling synchronous visualization 
+and real-time monitoring of the operating posture. In addition, the 
+digital twin issues target displacement commands and start – stop in -
+structions to the scale model, forming a supervisory closed loop that 
+coordinates experiment execution while maintaining data consistency 
+between virtual and physical domains. Furthermore, during the future 
+deployment of this control strategy onto real ABM systems, the DT will 
+be more comprehensively integrated into the control loop, encompass -
+ing both real-time monitoring and online learning capabilities.
+4. Experimental study
+To demonstrate the effectiveness of the control strategy employed in 
+this study, empirical analysis is conducted using relevant data from an 
+ABM project in China. The high-rise building project is located in 
+Wuhan, China. The building has 119 floors above the ground with a 
+height of 380 m. More details of the data, implementation details, and 
+the analysis of the test results are illustrated in Sections 4.1, 4.2, and 4.3 , 
+respectively.
+4.1. Data and resources
+The real-life case corresponding to the scale model of the ABM in this 
+paper is located in Wuhan, China. The project consists of an 80-storey 
+tower above the ground and a 4-storey tower below the ground. The 
+height of the concrete structure of the tower is 380 m, and the standard 
+floor height is 4.4/4.5 m. The construction adopts the fourth-generation 
+aerial building machine - lightweight integrated platform system. It 
+optimizes the construction process of this building through the key 
+technological advantages, including standardized design, industrialized 
+production, integrated assembly construction, and intelligent equip -
+ment integration. As a result, the system enables the cyclic construction 
+of one standard floor every four days and the climbing of one structural 
+floor in 60 min. The construction process is optimized through stan -
+dardized design, industrial production environment, integrated assem -
+bly construction technology, intelligent equipment integration, and 
+other key technical advantages, realizing the cyclic construction of one 
+standard floor in four days and the overall climbing of one structural 
+floor in 60 min, which reduces the number of construction personnel by 
+50% and improves the working efficiency by 30% compared with that of 
+the mold-climbing platform. The upper platform of this ABM has an area 
+of about 800 m
+2
+, equipped with two tower cranes and two fabrication 
+machines. It includes three operating layers: the reinforcement binding 
+layer, the concrete pouring layer, and the concrete curing layer, 
+enabling “ assembly line ” construction operation. The top layout and 
+jacking control system of ABM are shown in Fig. 8 .
+This ABM entity has 12 cylinders as its jacking power system, and the 
+steel platform is supported by 12 sets of support systems containing 
+these cylinders. To study the synchronous jacking control of this type of 
+ABM system, develop adaptable cooperative control algorithms, and be 
+able to verify the validity and superiority of the algorithms practically, 
+this paper simplifies the number of power and support systems to 4 sets 
+employing scale-down modeling and considering the research needs and 
+actual conditions, and designs and establishes a scale model of a 1:25 
+ABM as shown in Fig. 9 , and deploys an intelligent algorithm for syn -
+chronous jacking control on the model, which is used as the power 
+Fig. 8. ABM for the Wuhan Yangtze River Center: (a) Overall view of ABM, (b) ABM construction platform and its unevenly distributed loads above, and (c) Jacking 
+control system.
+L. Zhang et al. Automation in Construction 190 (2026) 107076 
+11 
+system of this aerial building machine. Deploy the intelligent algorithm 
+of synchronized jacking control, and execute the jacking test with the 
+scale model.
+4.2. Implementation details
+In this paper, the ABM synchronized jacking control system was built 
+in three stages, as shown in Fig. 10 : equation simulation, electrical 
+simulation, and physical deployment for multi-objective driven opti -
+mization of the PID control parameters, iterative updating of the weights 
+of the DNN network, and migration and deployment of the control 
+network, respectively. Different objective functions are used to guide the 
+optimization of the parameters in the three phases. The parameter 
+transfer for establishing a closed-loop control system can be described as 
+Fig. 9. Using the principle of similarity to construct a geometric similarity scale model for the jacking test platform based on the ABM employed in the actual 
+construction project.
+Fig. 10. Establishment and deployment of control method.
+L. Zhang et al. Automation in Construction 190 (2026) 107076 
+12 
+follows. The optimal PID parameters obtained from the PPO are used to 
+establish the DNN-PID. Subsequently, the optimal network parameters 
+obtained through multiple iterations of the DNN are transferred to the 
+physical system. Then, the operational feedback from the physical sys -
+tem is used to optimize the control strategy, forming a closed-loop 
+system.
+The PPO algorithm is implemented in python platform and the multi- 
+motor system is simulated using Euler equations; Simulink is used to 
+build the multi-motor coupled system containing DNN-PID control 
+method and the function of the DNN network is realized based on its S- 
+function; in the physical system, the operation of the DNN-PID network, 
+including its numerical computation and the required data and signal 
+generation, is based on the embedded devices, encoders, driver boards, 
+and other hardware implementation. The establishment process of the 
+ABM synchronous jacking control system includes: the PPO algorithm 
+performs multiple optimization searches to obtain the PID control 
+parameter used for the multi-motor system. The hyperparameter con -
+figurations for the PPO algorithm are summarized in Table 2 . Table 3
+presents the environmental setups used for PPO optimization. The pa -
+rameters obtained from PPO are used for the initial value of the control 
+parameter of the DNN-PID simulation network. It is updated by multiple 
+iterations of the weights of the DNN, and then deployed to the physical 
+system through the transfer learning method, so that the control system 
+is deployed, and the adaptive updating of the network can be continued 
+during the control process. Table 1 presents the architecture and 
+hyperparameters of the DNN. Specifically, parameters such as output 
+limits, update thresholds, and increment clamps are designed to enhance 
+system stability. These parameters are determined through simple grid 
+searches or based on the practical constraints of the physical environ -
+ment. The PPO with Simulink model is deployed on a standard PC with 
+11th Gen Intel(R) Core (TM) i7 – 11,700 CPUs, NVIDIA GeForce RTX 
+3050 GPU cards, and 16 GB RAM for training and simulation. Fig. 11
+shows the training process and test results of the PPO algorithm. In the 
+simulation environment, the DNN was trained for 5 s at an update fre -
+quency of 100 Hz, resulting in a total of 500 iterations.
+The deployment of the control method in the scale model is based on 
+a complex hardware architecture. As shown in Table 4 , the most central 
+master control device is the STM32F103C8T6. Hardware resources such 
+as timers, serial ports, GPIO ports, etc., are used for the implementation 
+of the control functions, and the standard library functions provided by 
+STM are implemented to manipulate the registers in order to control the 
+corresponding hardware. The implementation of parallel control 
+Table 2 
+PPO hyperparameter configurations.
+PPO Hyperparameter Symbol Value
+Discount factor γ 0.99
+GAE parameter λ 0.95
+Learning rate α 3.0 × 10 ⁻
+4
+Clipping parameter ε
+clip
+0.2
+Epochs per update / 10
+Batch size / 128
+Rollout steps / 2048
+Entropy coefficient c
+ent
+0.01
+Value loss coefficient c
+v
+0.5
+Max gradient norm / 0.5
+Exploration mechanism / Stochastic policy with 
+entropy regularization (ent_coef = 0.01)
+Policy network architecture / 2 hidden layers (64, 64)
+Value network architecture / 2 hidden layers (64, 64)
+Total training timesteps / 120,000
+Table 3 
+Environmental configurations for PPO optimization.
+Item Symbol Value/ Description
+Number of actuators N 4
+Control cycle dt 0.01 s
+Episode duration T 5.0 s
+Action variables / PID gains [Kp, Ki, Kd]
+Action bounds / Kp ∈ [0.01, 0.5], Ki ∈ [0.001, 0.1], Kd ∈ [0.001, 
+0.1]
+Observation 
+dimension
+/ 20
+Synchronization K
+sync
+0.01
+Reward weights / ω
+v 
+= 0.3, ω
+sync 
+= 0.7, ω
+u 
+= 0.001
+Fig. 11. PPO training process and test results: (a) Reward and (b) Test results.
+Table 4 
+Hardware specifications of scaled ABM experimental platform.
+Component Type Key specification Function
+Microcontroller STM32F103C8T6 72 MHz, 64 KB 
+Flash
+Main control unit
+Motor Mini electric 
+actuator 
+Brushed DC motor
+Stroke: 100 mm Drives jacking 
+motionSpeed: 4 mm/s
+Max thrust: 120 N
+Encoder Resolution: 7 PPR Displacement 
+feedback
+Control cycle Loop interruption Period: 300 ms Controller sample
+Note: the maximum thrust of this motor model varies with speed: at 4 mm/s, the 
+maximum thrust is 120 N; at 6 mm/s, it is 80 N; and at 15 mm/s, it is 40 N.
+L. Zhang et al. Automation in Construction 190 (2026) 107076 
+13 
+functions, including DNN, incremental PID calculation, data acquisition 
+processing, and packetization for sending, is written in the C language. A 
+master-slave architecture is designed to solve the bottleneck of timer 
+resources. The master carries out data acquisition, processing, and 
+communication with the host computer and DNN-PID calculation; the 
+slave carries out PWM signal generation and cyclic control, and serial 
+communication is used to transfer the control data between the master 
+and the slave. In the physical system, the execution period of the control 
+loop is 300 ms. The DNN initially obtained through simulation was 
+adaptively and iteratively updated during the jacking tests of the 
+physical system for a total of 52 epochs. Specifically, the encoder reso -
+lution is seven lines, meaning that the motor outputs seven pulses per 
+revolution. Within the context of this study, the displacement mapping 
+relationship is established as 0.00074 mm per pulse.
+For each operating condition and control strategy, five independent 
+jacking experiments were conducted to ensure repeatability and statis -
+tical reliability. In each trial, the termination condition of the jacking 
+process was defined by a preset target stroke. As the measured stroke 
+approached the target value, a decelera

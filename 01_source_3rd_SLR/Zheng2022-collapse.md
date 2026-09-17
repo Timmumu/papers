@@ -21,4 +21,17 @@ The collapse of engineering structures can cause significant casualties and have
 | Yes | Yes | Yes | Tier 2 - Digital Shadow (one-way physical to virtual) | 0 | 0 | 1 | Design for Safety (DfS) | None | Finite Element Method / physics-based | Multi (two or more data types) | Single case study | 4 | Design for Safety |
 
 **Key evidence (AG):** Digital twin-based investigation of a building collapse accident (Tsinghua U): virtual digital building models (BIM, FE model, physics-engine model) built from real-world info; real-world data mapped into virtual space to construct highly realistic multistage models before and after the collapse, synchronized; investigators integrate/update/check models to reveal collapse mechanism; validated on a real collapse accident (columns exceeded critical buckling stress from welding-induced local buckling/plastic deformation). One-way data->model->cause diagnosis; no actuation, no learning loop.
+
+
+**Strength & gap filled (AH):** Fills the gap between out-of-sync site investigation and simulation in collapse forensics: a digital twin built from BIM, finite element and physics engine models reconstructs the multistage life cycle of a seven-story hotel retrofitted from a four-story steel frame, reproduces the collapse and matches simulated wreckage with actual debris, showing welding-induced column buckling and plastic deformation caused the failure rather than local buckling alone.
+
+**Deficiencies & future work (AI):** A retrospective forensic tool: the accident has already occurred and caused heavy losses, and the twin is built from drawings and records rather than live sensor data. Future research will establish digital twin models for important buildings in advance to perform multihazard simulations and continuously monitor key component mechanical states to prevent disasters.
+**Fusion depth (AC1):** Aligned
+
+**Fusion evidence (AC2):**
+- **Data streams:** design drawings, site records and debris evidence mapped into BIM + FE + physics-engine models (seven-story hotel collapse).
+- **Integration mechanism:** the multistage models are built from and cross-checked against the mapped real-world data in one building frame, revealing welding-induced column buckling; analyses run per model stage.
+- **Why this code:** sources share the building-model frame with per-stage inference, so Aligned.
+
+**Confidence (AC3):** Medium - the forensic mapping is explicit; joint computation across models is not described.
 (full-text source: Endnote)

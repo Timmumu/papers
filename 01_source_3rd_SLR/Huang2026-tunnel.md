@@ -21,4 +21,17 @@ There are high-risk problems, such as peripheral rock instability and palm face 
 | Yes | Yes | Yes | Tier 2 - Digital Shadow (one-way physical to virtual) | 0 | 1 | 0 | Design for Safety (DfS) | None | Digital Twin platform (no machine learning) | Multi (two or more data types) | Single case study | 4 | Design for Safety |
 
 **Key evidence (AG):** IoT+Digital Twin intelligent monitoring system for tunnel construction (Zhejiang Songyang): multi-source sensor network (environment, equipment, surrounding rock) + BIM dynamic modeling + risk intelligent analysis using improved D-S evidence theory (multi-source risk assessment with effectiveness factor and conflict weakening strategy); 100% monitoring coverage and 100% warning accuracy; captures palm face collapse and enclosing rock deformation time-sequence. One-way monitoring→risk assessment→early warning; no actuation and no learning loop (D-S evidence theory is rule-based fusion, not learning).
+
+
+**Strength & gap filled (AH):** Targets sparse and lagging manual tunnel monitoring with an IoT plus digital twin system on a shield tunnel beneath the Jinan High-Speed Train Depot: multi-source fusion of personnel, pipe-sheet, shield and environmental data into BIM dynamic modeling, improved D-S evidence theory with conflict weakening and a validity factor cutting belief interval length 0.37 to 0.14, capturing a palm face collapse; prediction errors under 1.9 MN thrust and 5.44 mm settlement.
+
+**Deficiencies & future work (AI):** Sensing equipment is exposed to humidity, dust and vibration, so measurements can drift and regular calibration is required, and future validation will quantify mean-time-to-failure and accuracy decline in real tunnel conditions; the authors also plan to optimize the fusion and prediction algorithms and extend the system to mine tunneling and urban underground space.
+**Fusion depth (AC1):** Fused
+
+**Fusion evidence (AC2):**
+- **Data streams:** personnel, pipe-sheet, shield and environmental sensor data in BIM dynamic modelling (Jinan High-Speed Train Depot tunnel).
+- **Integration mechanism:** improved D-S evidence theory fuses the streams, cutting belief-interval length from 0.37 to 0.14, capturing a palm-face collapse with 100% warning accuracy and prediction errors under 1.9 MN / 5.44 mm.
+- **Why this code:** an explicit fusion algorithm whose output depends on multiple sources simultaneously, so Fused.
+
+**Confidence (AC3):** High - the D-S fusion procedure is the paper core mechanism.
 (full-text source: Endnote)

@@ -21,3 +21,16 @@ Comprehensive evaluation of dams in a dynamic and proactive way is accepted as a
 | Yes | Yes | Yes | Tier 2 - Digital Shadow | 0 | 0 | 1 | Design for Safety (DfS) | None | Statistical / change-point | Multi (two or more data types) | Single case study | 4 | Predictive analytics / decision support |
 
 **Key evidence (AG):** Dam digital twin (Jiangya dam, 131 m gravity dam) for automated continuous safety evaluation: extended IFC data schema (IfcDSMSystem/IfcMonitoringItem/IfcSensorAssembly) integrates DSM monitoring information (deformation, seepage, stress, environment); HST statistical models set baselines; multi-rule cloud-reasoning model evaluates monitoring points, multi-dimensional cloud model + improved CRITIC (no-human weights) aggregate to five-grade dam safety status. Case: continuous evaluation Jan–Sep 2019 → "basically normal". One-way monitoring→automated evaluation→human decisions (preventive maintenance); statistical models are regression fits, no self-improvement loop.
+
+**Strength & gap filled (AH):** Extends the IFC schema with IfcDSMSystem, IfcMonitoringItem, and IfcSensorAssembly entities to integrate dam safety monitoring information into a dam digital twin, then automates continuous safety evaluation with multi-rule cloud reasoning, a multi-dimensional cloud model, and an improved CRITIC weighting method, demonstrated on the 131 m Jiangya gravity dam from January to September 2019.
+
+**Deficiencies & future work (AI):** Evaluation baselines rely only on historical monitoring-data statistical models, without FEM simulation results, and the IFC schema still lacks dam-specific entities such as IfcDam and IfcDamFoundation; evaluation remains one-way with no actuation. Future work is integrating simulation results into the dam DT and combining both information sources.
+
+**Fusion depth (AC1):** Fused
+
+**Fusion evidence (AC2):**
+- **Data streams:** deformation, seepage, stress and environment monitoring of the 131 m Jiangya dam, integrated via extended IFC entities (IfcDSMSystem/IfcMonitoringItem/IfcSensorAssembly).
+- **Integration mechanism:** multi-rule cloud reasoning evaluates monitoring points and the multi-dimensional cloud model with improved CRITIC aggregates them into a five-grade safety status (January-September 2019 continuous evaluation).
+- **Why this code:** the aggregated status depends on all monitoring types simultaneously, so Fused.
+
+**Confidence (AC3):** High - the cloud-model aggregation is explicit.

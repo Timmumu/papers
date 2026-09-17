@@ -1,0 +1,1059 @@
+ SPECIAL ISSUE 
+RESEARCH ARTICLE OPEN ACCESS
+A Digital Twin With Material Characterisation and LLM as
+High-Level Orchestrator via Few-Shot In-Context
+Learning for Closed-Loop Control in Robotic Adaptive 3DCP
+Giancarlo Di Marco
+Department of Architecture, Xi’an Jiaotong–Liverpool University, Suzhou, China
+Correspondence:Giancarlo Di Marco (giancarlo.dimarco@xjtlu.edu.cn)
+Received:10 December 2025 |Revised:22 May 2026 |Accepted:6 July 2026
+Guest Editor:Yafeng Wang
+Keywords:3DPC performance predictive model | adaptive 3D concrete printing | closed-loop control | cyberphysical production systems | digital
+twin | embodied AI | few-shot in-context learning | industry 4.0 | large language model | prompt engineering
+ABSTRACT
+Theindustrialisationof3Dconcreteprinting(3DCP)isimpededbythelackofuniversalstandards,asituationexacerbatedbythe
+process’ssensitivitytomultipleinterdependentparametersandenvironmentalconditions,whichcanintroducestructuraldefects
+and performance inconsistencies. Starting from the defnition of 3DCP as a cyberphysical production system (CPPS), this ex-
+ploratorystudyproposesadoptingahybridstandardisationmethodthatoptimisesstructuralperformance,orconcretegrade.By
+followingtheDSR/ASTMV&Vresearchframeworkandbasedonthepreliminarycharacterisationofmaterials,acomputational
+digitaltwinisimplemented,includingacompressivestrengthpredictivemodelconnectedtothesimulationoftheadaptive3DCP
+process.Accountingfortheanisotropicbehaviourof3D-printedconcrete(3DPC),thepredictivemodeldeterminesthe3DPCgrade
+based on preliminary materialcharacterisation results and considering diferent process factorsthat determine the mechanical
+performance: By optimising process parameters, the model maximises parallel compression strength, prioritising safety. Un-
+certaintypropagationisembeddedinthecomputationalmodel,enablingstatisticalvalidationthroughextensivevirtualtesting.
+Theoptimisedconfgurationofprocessparameterswillserveasabenchmarkfortheadaptive3DCPprocess,inwhichapretrained
+large language model acts as a high-level orchestrator for closed-loop control via few-shot in-context learning. The proposed
+architecture relies on the performance predictive model, sensor readings, and an LLM that interprets the process status and
+suggestscorrectiveactions.Theprimarynovelcontributionofthisworkisacomputationalperformancepredictivemodelwith
+uncertaintypropagation; the adaptive3DCPis describedas completingthe digital twin defnitionanddemonstrating its usein
+aproductionsetting.Startingfrompreliminarymaterialscharacterisationandconsideringthespecifcitiesofourroboticcelland
+environmentalconditions,theperformancepredictivemodelreducedthevarianceinparallelstructuralstrengthby25%,ensuring
+a 90% confdence level in achieving the M20 grade, with a signifcant reduction in anisotropic behaviour. Additionally, while
+maximising3DPCperformance,thedigitaltwinenablesbenchmarkingofproductionparametersacrossanyproductionsetting,
+makingitavalidtoolforstandardisingthetechnology.Thisresearchproposesacriticaltransitionfromdeterministictofexible
+standardisation,andfromtraining-for-controltoamoreversatileprompting-for-controlAImethodology,oferingaviable,data-
+efcient pathway towards standardised, reliable, and industrial-scale 3DCP.
+ThisisanopenaccessarticleunderthetermsoftheCreativeCommonsAttributionLicense,whichpermitsuse,distributionandreproductioninanymedium,providedthe
+original work is properly cited.
+Copyright © 2026 Giancarlo Di Marco.Structural Control and Health Monitoringpublished by John Wiley & Sons Ltd.
+Structural Control and Health Monitoring, 2026; 2026:8514242 1 of 25
+https://doi.org/10.1155/stc/8514242
+Integrated Computational Methods for Design,
+Control, and Optimization of Adaptive Structural Systems
+ Structural Control and Health Monitoring 
+
+1 | Introduction
+The construction industry is transitioning from fragmented,
+craft-based methodologies to integrated cyberphysical pro-
+duction systems (CPPS) [1]. This transformation is driven by
+digital fabrication, which serves as a critical physical in-
+stantiation of the CPPS framework, providing an essential link
+betweendigitaldesigndataandphysicaloutput[2].Thecoreof
+this paradigm is the closed-loop cyberphysical process, where
+robotic systems, governed by digital instructions, are enhanced
+by integrated sensors that provide real-time feedback, enabling
+instantaneous in-process corrections [3,4]. This data exchange
+enables fabrication to transition from a static operation to an
+adaptiveproductionprocess[5].CPPSarecharacterisedbyhigh
+complexity, driven by many interconnected parameters that
+ultimately afect the quality of the fnal product; traditional
+automationbasedonpresetrulesfailsundercomplex,nonlinear,
+andunpredictableconditions.Inthesecases,integratingartifcial
+intelligence (AI) is a compelling solution. The adoption of spe-
+cialised, ‘expert’ AI models—convolutional neural networks
+(CNNs) for perception, long short-term memory networks
+(LSTMs) for sequence prediction, and reinforcement learning
+(RL) for control—trained on large, curated, and annotated
+datasets of defects, has proven to be efective for simple tasks;
+however,thisapproachisconstrainedbyhardwarerequirements
+and the cost of data acquisition and model training, creating
+a formidable barrier to entry [6]. Furthermore, any shift in the
+operational environment or a requirement for a new capability
+often mandates a complete retraining pipeline with newly col-
+lected data: This inherent narrowness limits generalisability
+across diferent setups and defect types [7].
+Atransformativealternativeemergeswithlargelanguagemodels
+(LLMs) and multimodal LLMs (mLLMs). These foundation
+models,builtonthetransformerarchitecture,arepretrainedon
+vast, diverse corpora and exhibit remarkable general-purpose
+reasoningcapabilities[8,9].Thetransformer’scoremechanism,
+theattention model, enables it to contextually weigh the rele-
+vance of all elements in a sequence—whether words in a sen-
+tence or patches in an image—allowing for a holistic
+understanding that mirrors the interconnected nature of com-
+plex systems [10].
+TheprofoundreasoningandplanningcapabilitiesofLLMsand
+mLLMsareincreasinglybeingleveragedtotacklelong-standing
+challenges in embodied AI. Rather than directly controlling
+actuators,thesemodelsoftenactashigh-levelreasoningengines.
+Aprominentapplicationisintaskplanning,whereahigh-level
+natural language instruction is decomposed by an LLM into
+a sequence of executable subtasks. Furthermore, LLMs have
+shown promise in code generation, where a natural-language
+command is translated directly into executable code for robot
+control [11]. The integration of LLMs enables robots to reason
+abouttheirphysicalenvironmentthroughvisualinput,acritical
+step towards generalisable autonomy.
+Governed by a considerable number of interdependent design,
+environmental, and production parameters, and extremely
+sensitive to any variation in these parameters, 3D concrete
+printing (3DCP) exemplifes a complex CPPS in the modern
+construction industry. In 3DCP, a robotic system precisely
+controlsthedepositionofmaterial,translatingdigitalgeometries
+into physical structures layer by layer [12], and allowing the
+sustainable production of bespoke, structurally optimised ele-
+ments with a high degree of geometric freedom [13]. Beyond
+3DCP,roboticfabricationforconstructionspansawidespectrum
+of applications, including automated bricklaying and, more
+generally, prefabricated component assembly, as well as sub-
+tractive machining of building elements, all unifed by the
+principle of direct digital-to-physical translation [14].
+Themainissuewith 3DCPas acomplex systemisdetermining
+standardised processes to systematically obtain the required
+mechanicalperformance(grade)of3D-printedconcrete(3DPC)
+independently of the specifc materials and hardware/software
+setup. Thematerialis,in fact,anisotropic andcontingentupon
+precise control of design, production and environmental pa-
+rameters [15], with diferent failure modes and typologies [16].
+Traditional automation, based on preset rules, fails under the
+complex, nonlinear and unpredictable conditions characteristic
+of both indoor and outdoor fabrication settings [17]. In this
+context, the principles of high-level planning and multimodal
+reasoningdemonstratedbyLLMsinroboticsapplicationsshare
+a conceptual synergy with advanced automation, as shown re-
+centlywiththeproposeddecentralised,AI-drivenworkfowsfor
+standardisingandoptimising3DCP[18–20]:Inbothcontexts,the
+LLM serves as an intelligent intermediary that translates high-
+level goals into a structured, executable robotic process.
+This paper posits that general-purpose LLMs, conditioned not
+through training or fne-tuning but through advanced prompt
+engineering, can act as high-level orchestrators for adaptive
+3DCP (A3DCP). The proposed framework utilises an mLLM/
+LLMpairtoperformfew-shotin-contextreasoningonreal-time
+sensordata,diagnosingprocesshealthandsuggestingcorrective
+actions. This approach bypasses the need for specialised AI
+agents,insteadleveragingthebroadinterdisciplinaryknowledge
+and reasoning capabilities of foundational models to tackle the
+3DCP CPPS (Figure1).
+Due to health and safety concerns and the inherent risks of
+robotic fabrication, amplifed by AI-driven automatic adjust-
+ments, this seminal work was conducted by implementing
+adigitaltwinoftheA3DCPprocess.Thestructureofthedigital
+twin,describedindepthinthemethodologysection,comprises
+materialcharacterisation,optimisation,uncertaintypropagation,
+statistical analysis and an AI-enabled simulated production
+process. In the absence of test-bed experimental data, ensuring
+thecredibilityofthedigitaltwinisessential;therefore,arigorous
+approach was adopted, thoroughly described in the research
+framework section.
+1.1 | Clarifcation of Terminology
+Inthiswork,theterms‘zero-shot’and‘few-shot’referexclusively
+to prompt-based in-context learning for LLMs. ‘Few-shot’ de-
+scribes the practice of providing a small number of illustrative
+examples within the model’s context window to specify a task,
+without updating the model’s internal weights. This is distinct
+fromthestrictmachinelearningparadigmof‘few-shotlearning’,
+which involves meta-training a model to adapt its parameters
+from a few examples. Our approach leverages the LLM’s
+emergent ability to infer patterns from context [10]. Corre-
+spondingly, ‘zero-shot reasoning’ refers to providing the model
+with only a task description or instruction, without any exam-
+ples.Thedesignoftheseprompts—encompassingbothzero-shot
+2 of 25 Structural Control and Health Monitoring, 2026
+ schm, 2026, 1, Downloaded from https://onlinelibrary.wiley.com/doi/10.1155/stc/8514242, Wiley Online Library on [16/09/2026]. See the Terms and Conditions (https://onlinelibrary.wiley.com/terms-and-conditions) on Wiley Online Library for rules of use; OA articles are governed by the applicable Creative Commons License
+
+and few-shot strategies—falls under the broader practice of
+prompt engineering.
+2 | Background Research
+Thecoreprobleminadopting3DCPintheconstructionindustry
+isobtainingtherequiredfnalgradeofthehardenedmaterialin
+accordance with the intended destination of the construct.
+Traditional cast concrete ofers a clear solution based on the
+concretemixrecipe,whereaspecifcingredientratioissufcient
+toachievethedesiredfnalgrade.With3DCP,ontheotherhand,
+the combination of new engineered materials, materials’ fresh
+anddryrheology,andadvancedrobotictechnologies,makesthe
+standardisationoftheprocessandthedeterministicpredictionof
+the fnal grade challenging.
+Inthissection,weintroduceandanalysetheelementsthatdefne
+A3DCP, including standardisation models, the defnition of
+CPPS, the characterisation of 3DCP as a CPPS, the diferences
+between specialised AI models and LLMs and the few-shot in-
+contextlearningtechniqueenabledbypromptengineering.The
+literature review demonstrates that the inherent complexity of
+3DCPrenderstraditionalautomationandspecialisedAImodels
+insufcient,therebycreatingacompellingrationaleforadopting
+general-purpose LLMs as high-level orchestrators for adaptive
+control.
+2.1 | The Hybrid Standardisation Model
+The scientifc management of industrial production requires
+a robust approach to standardisation, which can be funda-
+mentallycharacterisedbytwodistinctphilosophicalparadigms:
+the prescriptive and the fexible.
+Theprescriptiveapproachisrootedintheprinciplesofscientifc
+managementandstatisticalcontrol[21].Thisparadigmseeksto
+achieve uniformity, interchangeability and repeatability by
+specifying exact dimensions, values, tolerances and processes,
+operating on the premise that variation is a primary source of
+quality defects. Its core objective is to eliminate deviation and
+ensure perfect conformity to a predefned specifcation. This is
+embodied in models such as technical specifcations, which
+provide formal, detailed descriptions of requirements [22], and
+geometrical product specifcations (GPS), a system of in-
+ternationalstandardsthatcodifestheunambiguousdefnitionof
+geometrical features like form, position and size on technical
+drawings [23,24]. Similarly, the concept of standardised work
+within lean production systems, which prescribes the precise
+sequence of tasks, cycle time and in-process inventory for an
+operator, establishes a controlled baseline that is essential for
+quality and efciency [25].
+Incontrast,thesecondparadigmisafexibleapproach,informed
+bysystemstheoryandtheneedforstrategicadaptability[26,27].
+This approach establishes goals, performance criteria or in-
+terfaces, while granting signifcant autonomy in the methods
+usedtoachievethem.Theobjectiveistoensureinteroperability
+and goal congruence across diverse and dynamic production
+settings without jeopardising innovation. Key models include
+performance-basedstandards,whichspecifyrequiredfunctional
+outcomes without mandating the technical solution, thereby
+fostering innovation in design and materials [28]. Another
+powerful model is modular design or platform strategy, which
+standardiseskeyinterfacesandcorecomponents(theplatform)
+while allowing variation in peripheral modules, enabling mass
+customisation and product variety [29]. Furthermore, meta-
+standards, such as ISO 9001, standardise processes for manag-
+ing an organisation (e.g., quality management systems) rather
+than prescribing specifc products or outcomes, requiring or-
+ganisationstoadapttheprinciplestotheir uniquecontext[30].
+Table1showsacomparativeanalysisofprescriptiveandfexible
+standardisation features.
+Prescriptive standards are typically employed for critical, high-
+volume orsafety-criticalcomponentstoensure baselinequality
+andinterchangeability.Flexiblestandardsgovernthesystemand
+architecturallevel,enablingproductvariety,processinnovation
+andresiliencetochange.Thishybridapproach,whichleverages
+thecontrolofprescriptivemodelsandtheadaptabilityoffexible
+Computer vision AI model 1
+AI model 3 Natur
+al language
+processing
+AI model 2Data
+Speech/text
+Data classification
+Image recognition
+Indoor/Outdoor
+Location Temp. hum. sensor
+3D Scan/LiDar Computer vision
+Wind sensor Vibration sensor
+Sense
+Sense
+3D printer
+G-code
+Act
+Act
+Pressure
+sensor
+Act
+CNC mixer
+CNC pump
+Extruder
+Thermostat
+Ink Water Admixture
+LLM/mLLM
+AutomaticIndustrial IoT
+FIGURE 1 | AI architecture based on specialised models (left) and LLM as orchestrator (right).
+Structural Control and Health Monitoring, 2026 3 of 25
+ schm, 2026, 1, Downloaded from https://onlinelibrary.wiley.com/doi/10.1155/stc/8514242, Wiley Online Library on [16/09/2026]. See the Terms and Conditions (https://onlinelibrary.wiley.com/terms-and-conditions) on Wiley Online Library for rules of use; OA articles are governed by the applicable Creative Commons License
+
+models, is a hallmark of robust, competitive industrial
+operations [27].
+2.2 | CPPS
+The profound transformation of the construction industry is
+driving a decisive shift away from its traditional reliance on
+fragmented,craft-basedmethodologiestowardintegrated,data-
+centricframeworksofCPPS,acoremanifestationofIndustry4.0
+principles in the built environment [1]. To fully comprehend
+CPPSs,onemustfrstunderstandtheirconceptualfoundationin
+cyberphysical systems (CPS). Fundamentally, a CPS is an en-
+gineeringdisciplinefocusedonthedeep,organicintegrationof
+computation, networking and physical processes, in which
+embedded computers and networks monitor and control phys-
+icalentities,withfeedbackloopsthatallowphysicalprocessesto
+afect computations and vice versa [31]. The theoretical un-
+derpinningsofCPSaredeeplyrootedincybernetics,whichfrst
+formalised the concepts of communication and control in
+complex,adaptivesystemsthroughthefundamentalmechanism
+of feedback loops [32]. In a modern context, CPS are charac-
+terised by the tight conjoining and coordination between the
+system’scomputationalcore—the‘cyber’part—anditsphysical
+processes, which are monitored and controlled by sensors and
+actuators through a closed, feedback-driven loop, creating
+asymbioticrelationshipbetweenthedigitalandphysicalworlds
+[33]. A CPPS, therefore, represents the application of this
+foundational CPS theory specifcally to production and
+manufacturing environments, creating smart, autonomous
+systemsthatcandynamicallyrespondtochangingconditionsin
+the fabrication lab or construction site. This evolution in con-
+structioniscriticallyenabledbydigitalfabrication,withrobotic
+fabrication serving as the ultimate physical embodiment of the
+CPPS framework, a robust bridge between digital design data
+andtangiblephysicaloutput[2,34].Theoperationalcoreofthis
+advancedparadigmistheimplementationofaclosed-loopcyber-
+physical process, a direct realisation of cybernetic feedback,
+where automated robotic systems, governed by digital in-
+structions,arepairedwithadensenetworkofsensors—suchas
+laser scanners, force-torque sensors and computer vision sys-
+tems—providingacontinuousstreamofreal-timedatarelatedto
+the fabrication process, enabling instantaneous in-process cor-
+rectionsandadjustmentsthataccountforreal-worldvariability
+[35].Thebidirectionaldataexchangebetweenthecomputational
+model and the physical actuator transforms fabrication from
+a static, predetermined operation into a highly adaptive and
+responsive production process, capable of accommodating ma-
+terial inconsistencies, geometric deviations and on-site un-
+certainties[5].However,deployingaCPPSintroducessignifcant
+challengesduetoitsinherentsystemiccomplexity.Infact,when
+CPPS are characterised by a high degree of complexity due to
+many interconnected and nonlinear parameters, traditional
+automation, which relies on rigid, preset rules, becomes in-
+adequate. This fundamental limitation of conventional control
+strategies highlights the need for more intelligent, self-
+organising and resilient control paradigms, rooted in CPS the-
+oryandafexiblestandardsapproach,tomanagetheemergent
+and complex behaviours of robotic construction, ensuring pre-
+cision and robustness of the processes as well as in the built
+outcomebyprovidingtheproductionsystemitselfwithadaptive
+capabilities.
+TABLE 1 | Comparative analysis of prescriptive and fexible standardisation paradigms.
+Feature Prescriptive standardisation Flexible standardisation
+Philosophical basis Scientifc management, control theory Systems theory, modularity
+Primary focus Means & methods (the “how”) Ends & interfaces (the “what” and “why”)
+Core objective Minimise deviation, ensure conformity Enable alignment and goal achievement while permitting adaptation
+Typical models Technicalspecifcations,geometricalproductspecifcations,standardisedwork Performance-based standards, modular platforms, meta-standards (e.g., ISO
+9001)
+Optimalapplication High-volume, repetitive, safety-critical, and interchangeable components. Innovative, complex, or variable production environments requiring
+customisation.
+Primary risk Stifes innovation; processes can be brittle in the face of change. Potential for misalignment if goals are unclear; requires greater skill to
+implement efectively.
+4 of 25 Structural Control and Health Monitoring, 2026
+ schm, 2026, 1, Downloaded from https://onlinelibrary.wiley.com/doi/10.1155/stc/8514242, Wiley Online Library on [16/09/2026]. See the Terms and Conditions (https://onlinelibrary.wiley.com/terms-and-conditions) on Wiley Online Library for rules of use; OA articles are governed by the applicable Creative Commons License
+
+2.3 | 3DCP as a Complex CPPS
+TheArchitecture,Engineering,andConstruction(AEC)industry
+is increasingly embracing digital fabrication technologies, with
+3DCP representing an advanced manifestation of this trend.
+3DCPofersunprecedentedgeometricdesignfreedom,enabling
+the creation of complex, optimised structures that were pre-
+viously economically or technically unfeasible [36]. This capa-
+bility is intrinsically linked to signifcant gains in material
+efciency,astheadditive,layer-wisedepositionprocessenables
+material placement only where structurally needed, thereby
+reducing waste and promoting sustainable construction prac-
+tices. However, this promise is counterbalanced by the tech-
+nology’s fundamental nature as a complex CPPS, in which
+performanceisnotdeterminedbyasinglematerialpropertybut
+by the intricate interplay of multiple parameters. The inherent
+complexity of 3DCP arises from the interdependencies among
+the fresh-state rheology of the cementitious material, environ-
+mental conditions during printing and curing, and the precise
+control of the robotic deposition process [37]. Moreover, the
+rheological properties, which must simultaneously ensure ex-
+trudability, shape retention and interlayer adhesion, are highly
+sensitive to ambient factors such as temperature and humidity.
+Concurrently, the robotic system’s parameters—including
+printing speed, nozzle geometry and layer deposition strat-
+egy—directly infuence the structural layered morphology and
+the resulting mechanical properties. Even the curing environ-
+ment and conditions can afect the fnal grade of 3DPC. This
+interconnectedness of parameters leads directly to anisotropic
+behaviour and performance variability in the hardened state,
+a critical challenge for structural reliability. The mechanical
+performance,particularlyinthedirectionparalleltothelayers,is
+governed by the strength of the interlayer bond, or ‘cold joint’,
+which becomes a plane of weakness [38]. Consequently, the
+ultimate properties of a 3DPC element are not isotropic or
+perfectlypredictableasincast-in-placeconcretebutareadirect
+function of the specifc printing process and environmental
+conditions.
+Thisinherentvariabilitypresentsafundamentalstandardisation
+problem, as current prescriptive-basedcodes are nottailored to
+the performance-based, process-dependent nature of 3DCP as
+aCPPS.Recentresearchisnowaddressingthisgapbyproposing
+novel frameworks for standardisation, moving towards decen-
+tralised workfows that can reliably link specifc printing pa-
+rameters to fnal mechanical performance and material grades,
+which is a critical step for the broader industrialisation of the
+technology [18,19].
+2.4 | Specialised AI Models
+ThecontrolofcomplexCPPSpresentsformidablechallengesthat
+expose the profound inadequacy of traditional computational
+paradigms. Deterministic automation, in fact, which relies on
+preprogrammed logic and linear cause-and-efect relationships,
+isfundamentallyunsuitedtomanagingthenonlinear,stochastic
+and high-dimensional nature of processes like 3DCP. Such
+processes run under unpredictable conditions in which dry
+material properties, wet material rheology, environmental fac-
+torsandhardwaredynamicsinteractincomplexways,leadingto
+emergent failure modes thatcannot beindividually foreseen or
+addressed.
+In these cases, integrating AI is a compelling solution. The
+adoptionofspecialised,expertAImodels—CNNsforperception,
+LSTMsforsequencepredictionandtoolpathdeviations,andRL
+forclosed-loopcontrol—trainedonlarge,curatedandannotated
+datasetsof3DCPdefects,hasproventobeefective;however,this
+approachisconstrainedbythecostofdataacquisitionandmodel
+training,creatingaformidablebarriertoentry[6].Furthermore,
+any shift in the operational environment or additional re-
+quirements for new capabilities often necessitates specifc
+retraining using newly collected annotated data; this inherent
+narrowness limits generalisability across diferent printing
+setups and defect types [7].
+Whilerepresentinganadvancementoverdeterministicmethods,
+theadoptionofspecialisedAIcreatesafragmentedlandscapeof
+isolated expert models that lack the holistic understanding, ro-
+bustreasoningandfexibleadaptationrequiredfortheintegrated
+structural control and health monitoring of truly
+autonomous CPPS.
+2.5 | Foundational AI Models
+A transformative alternative to specialised AI models emerges
+withLLMs.Thesefoundationalmodels,builtonthetransformer
+architecture, are pretrained on vast, diverse datasets and are
+characterised by remarkable general-purpose reasoning capa-
+bilities [8,9]. The transformer’s core mechanism, the attention
+model, enables it to weigh the relevance of all elements in
+a sequence—whether words in a sentence or patches in an
+image—allowingforacontextualunderstandingthatmirrorsthe
+interconnected nature of complex systems [10]. The reasoning
+and planning capabilities of LLMs are increasingly being lev-
+eragedtotacklechallengesinroboticsandembodiedAI.Rather
+than directly controlling actuators, these models often act as
+high-level reasoning engines. A prominent application in ro-
+botics is task planning, where a high-level natural-language
+instruction can be decomposed by an LLM into a sequence of
+executable subtasks, accounting for object properties and
+physical constraints [39]. Furthermore, LLMs have shown
+promise in robotics code generation, where a natural-language
+command is translated directly into executable code for robot
+control[40].TheintegrationofmLLMsenablesrobotstoreason
+abouttheirphysicalenvironmentthroughvisualinput,acritical
+step towards generalisable autonomy.
+2.6 | Closed-Loop Control
+The pursuit of robust, real-time control for 3DCP constitutes
+a critical frontier in construction robotics, driven by the im-
+perative to ensure geometric fdelity and the corresponding
+structural integrity in printed constructs [17]. The process is
+challengedbythetime-dependentrheologyoffreshconcreteand
+stochastic material deposition, both of which afect the precise
+executionofpredefnedtoolpathsand,inturn,thecorresponding
+structural performance [41]. While research has progressed to-
+wardssensor-basedfeedbacksystems,contemporaryclosed-loop
+approaches are typically designed to tackle limited sets of pre-
+identifed errors [17]. This specialisationreveals a fundamental
+lackofgeneralisability,leavingsystemsunabletoadapttonovel
+defects or to signifcant parametric shifts [41]. This limitation
+highlights an important research gap: the need for a control
+paradigm capable of zero-shot in-context reasoning, enabling
+Structural Control and Health Monitoring, 2026 5 of 25
+ schm, 2026, 1, Downloaded from https://onlinelibrary.wiley.com/doi/10.1155/stc/8514242, Wiley Online Library on [16/09/2026]. See the Terms and Conditions (https://onlinelibrary.wiley.com/terms-and-conditions) on Wiley Online Library for rules of use; OA articles are governed by the applicable Creative Commons License
+
+a system to interpret and act on unforeseen scenarios without
+priorexplicittraining[42,43].Aconceptualfoundationforsuch
+a paradigm may be found in recent, transformative advances
+withinartifcialintelligence.Specifcally,theemergenceoflarge-
+scale generative pretrained transformer (GPT) models has
+demonstrated profound capabilities in multimodal un-
+derstanding and generalisable reasoning, establishing a new
+technological baseline for adaptive, knowledge-driven systems
+[42].Theintegrationofsuchfoundationalmodelsintophysical
+controlloopsrepresentsanascentbuthighlypromisingresearch
+frontier [10].
+2.6.1 | Reasoning Quality
+WhilethegeneraladvantagesofLLMsoversmallorspecialised
+models have been described, adopting LLMs as actuator con-
+trollers remains a spearhead research topic, posing challenges
+that must be addressed before LLM-controlled systems can be
+deployedinindustrialproductionsettings.Theongoingresearch
+is promising, and there are many studies on LLM reasoning
+capabilities across diverse industrial areas [44,45], demon-
+strating that LLMs adopting reasoning-optimised architectures
+(Table2) implement extended CoT mechanisms with internal
+verifcation loops that improve multistep physical reasoning.
+Given the requirement for multimodal understanding,
+reasoning-optimised LLMs are the best candidates for 3DCP
+applications.
+2.6.2 | Reproducibility
+This property determines LLMs’ usability in contexts where
+safety and compliance are paramount, such as automated con-
+struction systems, and is related to the nondeterministic, sto-
+chastic responses typical of these AI models. Features like the
+temperature parameter allow for reducing this behaviour: Low
+temperature increases determinism and reduces solution di-
+versity,whichinthecaseofcontrolsystemsishighlydesirable.It
+is important to highlight that near-absolute reproducibility is
+unachievable by any LLM without an external validation layer.
+2.6.3 | Latency
+Real-time corrections are a prerequisite for deploying LLMs as
+controllers in automated processes, especially when standards
+compliance and safety are involved. The latency of LLMs, typ-
+icallyaround100milliseconds,posesasignifcantconstraintfor
+structural control applications that require real-time feedback.
+Thisdelayisprohibitiveforsystemssubjecttostringentprecision
+and tolerance specifcations or where direct safety implications
+arepresent.Conversely,forstructuralprocessescharacterisedby
+slowdynamics,permissibletolerances,orwhereprimarysafety
+assurances are managed by dedicated systems, a latency of
+100milliseconds may be considered acceptable.
+Translating LLMs’ potential to the specifc and demanding do-
+mainof3DCPremainsentirelyunexplored[41].Itisthiscritical
+gap between the zero-shot in-context reasoning capabilities of
+advancedAImodelsandthepressingneedforadaptivecontrolin
+additiveconstructionthatthepresentresearchseekstoaddress,
+proposing a novel methodology to realise a generalised in-
+telligent control framework for 3DCP.
+2.7 | Prompt Engineering Techniques
+Prompt engineering has emerged as a pivotal discipline for ef-
+fectively harnessing LLM capabilities in complex, data-driven
+domains such as structural health monitoring and adaptive
+control systems. Rather than retraining model parameters,
+prompt engineering focuses on the strategic design of input
+queries to guide pretrained models towards domain-specifc
+reasoning and task execution.
+Foundational techniques include zero-shot and few-shot in-
+context learning (ICL), where the LLM is guided towards the
+expected outputs by providing one or a few examples of
+input–outputcorrelationwithintheprompt,therebyadaptingits
+vast knowledge to niche applications without preliminary fne-
+tuning[42].Thisiscomplementedbythechain-of-thought(CoT)
+mechanisms [46], which allow the model to articulate its rea-
+soning step-by-step (a feature that has recently become more
+evident with the ‘deep think’ option in several GPTs), thereby
+providing more accurate, logically coherent and verifable re-
+sponses.Theapplicationofsuchstructuredreasoningiscritical
+in domains requiring precise analysis, such as real-time defect
+detection in additive manufacturing, where understanding the
+causal chain of a failure is paramount [17]. In multimodal
+contexts involving visual data from sensors or cameras, image
+segmentation (IS) is a crucial preprocessing step that enables
+mLLMs to systematically analyse images by dividing them into
+2Dsegments.Thispiecewiseanalysis,asdemonstratedindefect
+detectionfor3DCP,hasproventoenhancetheaccuracyofvisual
+reasoningtasks[17,47,48].BuildinguponCoT,thereasonþact
+(ReAct) framework synergises reasoning with action. ReAct
+prompts an LLM to alternate verbal reasoning traces with ac-
+tionablesteps:The‘reason’stepallowsthemodeltotrackitsplan
+and internal state, while the ‘act’ step interacts with external
+systems to gather new information. This create-plan-act cycle
+enables the model to handle dynamic environments where
+TABLE 2 | Comparative analysis of LLMs’ reasoning quality, reproducibility and latency.
+Model Reasoning quality Reproducibility (%) Latency (ms)
+OpenAI o1-mini Good—handles 2–3 sensor constraints 92.1 180–420
+OpenAI o3-mini Excellent—solves 5þconstraint optimisation 91.3 210–2300
+DeepSeek-R1-Zero Very good—strong constraint propagation; rarely hallucinates95.3 110–140
+DeepSeek-R1 Excellent—fags uncertainty, does not issue wrong commands 94.8 115–145
+Qwen QwQ-32B Very good—strong physical constraint grounding 93.7 120–180
+GLM-Z1-32B-0414 Good—handles 3–4 sensor constraints 94.1 95–130
+GLM-4.5V Very good—strong multimodal reasoning 89.7 150–1800
+6 of 25 Structural Control and Health Monitoring, 2026
+ schm, 2026, 1, Downloaded from https://onlinelibrary.wiley.com/doi/10.1155/stc/8514242, Wiley Online Library on [16/09/2026]. See the Terms and Conditions (https://onlinelibrary.wiley.com/terms-and-conditions) on Wiley Online Library for rules of use; OA articles are governed by the applicable Creative Commons License
+
+preloaded knowledge is insufcient. The ReAct paradigm is
+acornerstonefordevelopingautonomous,multistepworkfows,
+suchasthoseproposedfordecentralisedscientifcprocessesand
+adaptive manufacturing systems, where an LLM must reason
+aboutsensordataandthenactbyadjustingprintingparameters
+[17,41] or querying a material database.
+Thesynthesisofthesemethodsenablesaformof‘conversational’
+interaction with AI, where carefully engineered prompts allow
+modelstofunctionasproactivepartnersinanalysingsensordata,
+diagnosinganomaliesandevensuggestingcorrectiveactionsin
+CPPS [17,49]. This evolving paradigm, which moves systems
+from being merely reactive to becoming suggestive, holds sig-
+nifcantpromiseforcreatingmore intelligent,autonomousand
+reliable monitoring and control frameworks.
+2.8 | Formal Grammars
+The industrial automation of processes such as A3DCP in-
+creasingly relies on LLMs’ interpretative and suggestive capa-
+bilitiesforreal-timequalityassessmentandprocessadjustment.
+These models can analyse multimodal sensor data and use
+natural language to suggest high-level corrective actions. How-
+ever, a critical challenge lies in the semantic gap between the
+LLM’s high-level output and the deterministic, low-level ma-
+chine commands required for robotic control and actuation of
+industrial internet of things (IIoT) equipment [39,50].
+The application of formal grammars presents a practical solution,
+drawing upon long-established principles in robotics and formal
+methods[51].Aformalgrammardefnesasetofsyntacticrulesthat
+are provided to the AI through prompt engineering and ICL,
+constrainingtheLLM’soutputtoastandardised,machine-readable
+vocabularyandefectivelytranslatinghigh-levelprocessadjustment
+suggestions—suchas‘increasematerialfow’—intounambiguous,
+formattedcommands[41].Withaneyetotrustworthinessandtothe
+eventualindustrialadoptionofAI-orchestratedfabricationsystems,
+this approach provides a solid base for standardising adaptive
+control loops, ofering a clear, auditable trail from the AI’s sug-
+gestive analysis to the physical actuator’s response.
+3 | Research Gaps, Aims and Objectives
+Fromthebackgroundresearch,twomaingapsareidentifed:the
+lack of a fexible standardisation paradigm for 3DCP, and the
+needforanefectiveclosed-loopcontrolsystemfor3DCPcapable
+of assessing, interpreting and controlling the interconnected
+dimensionsoftheprocess.Ourgeneralaimistodesignafexible
+standardisationframeworkbasedonanovelcomputationaland
+AI-enabled architecture with:
+- Defnition of performance-based material characterisation.
+- LLM-orchestrated A3DCP.
+This work focuses on the design of a rigorous digital twin, in-
+cludingascalableperformancepredictivemodelforcompression
+strength tailored to materials, technological infrastructure and
+existing codes and regulations.
+To complete the digital twin, an LLM-orchestrated A3DCP
+processisoutlined,providingbidirectionalinformationtransfer
+betweenthedigitaltwinandthephysicalmodeland,atthesame
+time, constituting a frst attempt to use reasoning-optimised
+models instead of specialised AI models for 3DCP control.
+3.1 | Research Framework
+Toensurethehighqualityofthedigitaltwindesign,simulation
+and results, we adopted the frameworks illustrated in Table3.
+Theuncertaintyquantifcation(UQ)andproof-of-concept(PoC)
+areexplicitlyincludedintheadoptedworkfow.Theoverarching
+structure, core methodology and evaluation, which are funda-
+mental for a digital twin-based study without experimental
+validation, are based on the engineering-focused digital twin
+credibility assessment, which blends design science research
+(DSR)witharigorousverifcation&validation(V&V)framework
+for computational models.
+BasedontheDSR/V&Vresearchframework,thegoalistoensure
+that the digital twin is rigorously constructed and constitutes
+a credible artefact for exploring the research objective, and to
+defne its applicability boundaries. The DSR frames the digital
+twin as an engineered artefact; the American Society of Me-
+chanicsEngineers(ASME)Verifcation&Validation(V&V)10-
+2019,‘StandardforVerifcationandValidationinComputational
+Solid Mechanics’, provides a rigorous, recognised engineering
+framework. While focused on solid mechanics, the V&V prin-
+ciples are directly applicable to the structural and material as-
+pects of 3DCP. The DSR/V&V combined framework
+systematicallyaddressesthepredictivecredibilityoftheA3DCP
+digital twin for supporting specifc engineering decisions.
+3.2 | Methodology
+In compliance with the newly developed A3DCP for stand-
+ardisation protocol [52], which aims to defne a general stand-
+ardisation framework for 3DCP, a digital twin is created via
+a computational design workfow in Rhino/Grasshopper using
+Python.
+Inlinewiththebackgroundresearchanalysisandinthespiritof
+fostering hybrid standardisation for 3DCP, the proposed digital
+twinembodiesthecriteriaofperformance-basedstandardisation,
+a model of fexible standardisation that optimises required
+functional outcomes without mandating specifc technical so-
+lutions or materials. In fact, the preliminary materials’ charac-
+terisation informs the digital twin yet remains disconnected
+from it.
+The goals of the digital twin are as follows:
+1. Create a rigorous performance predictive model for com-
+pression strength based on experimental data from the
+preliminary materials’ characterisation.
+2. Use uncertainty propagation methods to obtain statistical
+and engineering validation by simulating large numbers
+of tests.
+3. Realise a PoC experiment to test the efcacy of LLMs in
+interpreting 3DCP multimodal data, including the output
+from the performance predictive model, and provide tar-
+getedadjustmentsuggestionstomaintain3DPCqualityand
+ensure its fnal grade.
+A Grasshopper Python script, which includes the predictive
+model equations and the uncertainty propagation, allows for
+Structural Control and Health Monitoring, 2026 7 of 25
+ schm, 2026, 1, Downloaded from https://onlinelibrary.wiley.com/doi/10.1155/stc/8514242, Wiley Online Library on [16/09/2026]. See the Terms and Conditions (https://onlinelibrary.wiley.com/terms-and-conditions) on Wiley Online Library for rules of use; OA articles are governed by the applicable Creative Commons License
+
+optimising process parameters and maximising 3DPC grade,
+while the AI-enabled A3DCP simulation uses the optimisation
+results as a benchmark for process adjustments.
+All the work has been conducted in our robotic workshop,
+equipped with a 3DCP robotic cell featuring a KUKA
+KR300 R2700-2 industrial robotic arm.
+PromptengineeringwithLLMsforhigh-levelorchestrationand
+control of CPPS is a spearhead research area that is receiving
+asignifcantboostfromthelatestreleaseofreasoning-optimised
+models. As mentioned in the background research, relying on
+specialisedAImodelsisacommonapproach,witheachprocess
+task assigned to a diferent model. The drawbacks in terms of
+implementation costs have been presented, which defne the
+opportunity for the LLM-based approach.
+3.3 | Characterisation of Materials
+The implementation of the digital twin starts with the pre-
+liminary characterisation of the cementitious material, with
+uniaxial compression tests always conducted at room tempera-
+tureafter28daysofcuring.Table4showsthecompositionofthe
+adopted commercial ink, a ready-to-use formulation which in-
+cludes all the necessary elements for 3DCP.
+Sixty cubic specimens have been 3D-printed, and their com-
+pression strength tested in our lab (Figure2). A unique ID has
+beenassignedtoeachspecimen,andrelevantprocessparameters
+have been rigorously monitored and recorded throughout all
+phases,frommaterialpreparationtomechanicaltesting.Inthis
+way,itwaspossibletoestablishcorrelationsbetweentheprocess
+parametersandthefnalcompressionstrengthand3DPCgrade
+(Table5).
+The results show that parallel strength is generally lower than
+perpendicular strength, with an average M15 grade and a pop-
+ulation variance of 35, indicating high dispersion. Under these
+conditions, the anisotropic behaviour together with the low
+parallel strength poses major structural design and overall per-
+formance issues.
+3.4 | Digital Twin Model Defnition
+Adigitaltwinmodel(Figure3)oftheA3DCPprocessiscreated
+according to the DSR/V&V framework as described hereafter.
+3.4.1 | Problem Identifcation and Motivation
+The proposed digital twin must implement a real-time closed-
+loopcontrolsystemforA3DCPandensurescalability.Thedigital
+twinandtheentireA3DCPmodelmustadapttovariousprocess
+parameters and setups, thereby promoting standardisation and
+industrialisation.Adoptingadigitaltwinavoidsthedevelopment
+costs of a physical system and the safety issues arising from
+deploying a self-correcting system with industrial equipment’s
+autonomous behaviour, which can cause damage to the equip-
+ment and life-threatening situations for operators.
+3.4.2 | Objectives
+The digital twin must provide a rigorous model for A3DCP by
+enabling accurate prediction of material performance, inter-
+preting multimodal data to detect defects or failure modes and
+suggesting corrective actions in the form of process parameter
+TABLE 3 | Adopted research frameworks.
+Framework Role in this study Key question addressed
+Design science research Overarching structure Howdowesystematicallycreateandevaluateanovelartefact(thedigitaltwin)
+to solve a problem?
+Verifcation and validation Core methodology/evaluation How do we build confdence that the digital twin is built correctly and is
+a credible representation of reality?
+Uncertainty quantifcation Critical technique within V&V Giventhelackofvalidation,howcanwehonestlyandquantitativelyexpressthe
+confdence in our predictions?
+Case study/proof-of-concept Research contribution Whatnewinsightsordesignsolutionscanwedemonstrateusingthisrigorously
+built digital twin?
+8 of 25 Structural Control and Health Monitoring, 2026
+ schm, 2026, 1, Downloaded from https://onlinelibrary.wiley.com/doi/10.1155/stc/8514242, Wiley Online Library on [16/09/2026]. See the Terms and Conditions (https://onlinelibrary.wiley.com/terms-and-conditions) on Wiley Online Library for rules of use; OA articles are governed by the applicable Creative Commons License
+
+adjustments, actionable equipment commands and corrective/
+compensatory G-code for manipulators.
+3.4.3 | Theoretical Foundations
+The digital twin must account for the anisotropic behaviour of
+3DPC—caused by interlayer adhesion and the presence of weak
+planesthatafectparallelcompressionstrength,yieldingdiferent
+parallelandperpendicularstrengths—and,byoptimisingprocess
+parameterstomaximiseparallelstrength,mustprioritisestructural
+safety.Basedontheoptimisedprocessparameters,theAIwillact
+as a high-level orchestrator in the simulated A3DCP process,
+detectingdefectsandanomalies,alongwiththeirpossiblecauses,
+and suggesting real-time adjustments. The bidirectional fow of
+information between the digital twin and the physical model is
+completed by incorporating new experimental data into the per-
+formance predictive model samples to refne its quality.
+3.4.4 | Input Data
+Thedigitaltwinmodelmustbeconstructedandoptimisedbased
+onexperimentaldataandstatisticalrigour.Duetotheinherent
+variabilityofthematerial,anuncertainty-propagationmethodis
+adopted to simulate extensive testing and obtain a statistical
+distribution of mechanical performance. Based on the pre-
+liminarymaterialscharacterisation,itwaspossibletoidentifythe
+relevantprocessparametersanddefnethecorrespondingrange
+ofvariation.Table6showstheparametersincludedinthedigital
+twin model.
+3.4.5 | Model Architecture
+The digital twin is implemented in the Rhino/Grasshopper
+parametric environment, utilising Python coding. The model
+equationsaredescribedinthenextsectionandembeddedinthe
+parametric workfow, enabling the optimisation of process pa-
+rameters to maximise mechanical strength. The Monte Carlo
+uncertainty propagation method, also part of the parametric
+workfow, is then used to simulate controlled variations in
+process parametersand determine the statistical distribution of
+mechanical performance.
+3.4.6 | Validation
+Thevalidationofthedigitaltwin,crucialforbuildingcredibility
+intheabsenceoffull-scaleexperimentalcorrelation,isstructured
+inapyramidapproach,fromsimpleelementstosystemiclevels.
+The material model is directly validated against experimental
+rheologicaldata,providingaphysicallygroundedfoundationfor
+the concrete’s fow behaviour. The robotic kinematics are con-
+sideredvalidatedthroughthehigh-fdelityKuka|PRCsimulation
+environment, reproducing our robotic fabrication setup. A no-
+table limitation of using synthetic sensor readings is that it
+produces idealised, noise-free data that diverges from the sto-
+chastic nature of physical sensor readings. Validation of the
+model’s correct formulation is achieved indirectly by ensuring
+the model accurately simulates the primary governing param-
+eters, such as layer geometry, deposition time and hydration
+model,whichareestablishedintheliteratureasdirectproxiesfor
+bond quality and structural stability. At the system level, vali-
+dation of the digital twin will be completed after comparative
+physical testing is conducted: This is part of the future
+developments.
+TABLE 4 | Ink formulation per 100kg.
+Component Mass (kg) % Of dry powder Function rationale
+Portland cement (OPC) 29.25 29.25% Long-term strength backbone.
+Sulphoaluminate cement (CSA) 15.75 15.75% Critical:Rapidsetting&earlystrength.Higher%counterslowwater/PCEdelay.
+Sand (0–2mm, well-graded) 52.50 52.50% Aggregate. Optimised packing reduces water demand. Must be dry & low
+absorption.
+Powdered PCE superplasticizer 1.125 1.125% Critical: Enables fow at ultra-low water. High-efciency spray-dried grade.
+Powdered cellulose ether (HPMC) 0.035 0.035% Water retention & cohesion. Use low-viscosity, easily dispersible grade.
+Powdered thixotropic agent 0.225 0.225% Critical:Rapidyield-stressrebuild.Syntheticsilicaororganicsrecommended.
+PP fbre (6mm, treated) 0.100 0.100% Plastic shrinkage control. Must be hydrophilic coated to prevent clumping.
+Structural Control and Health Monitoring, 2026 9 of 25
+ schm, 2026, 1, Downloaded from https://onlinelibrary.wiley.com/doi/10.1155/stc/8514242, Wiley Online Library on [16/09/2026]. See the Terms and Conditions (https://onlinelibrary.wiley.com/terms-and-conditions) on Wiley Online Library for rules of use; OA articles are governed by the applicable Creative Commons License
+
+3.4.7 | Compressive Strength Prediction Model
+Equations
+Based on the knowledge and data obtained from the experi-
+mental phase, a compressive strength prediction model was
+developed, incorporating realistic process-induced variability
+(e.g., interlayer adhesion, hydration model, curing and envi-
+ronmental conditions), and accounting for 3DPC anisotropy by
+simulating strength as a bivariate output:
+- f
+c,⊥: 3DPC strength with load perpendicular to the layers
+- fc,∥: 3DPC strength with load parallel to the layers
+The highest mechanical strength during the preliminary char-
+acterisation corresponded to a w/i in the range 0.14�0.15,
+yielding characteristic strength values of 19.8MPa for parallel
+load and 30.6MPa for perpendicular load. We defned the op-
+erational range starting from the average value 0.145�0.01
+(0.135–0.155):Inthisnarrowrange,thestrengthwasmodelledas
+a decreasing function of w/i (higher water content⟶ lower
+strength),compatiblywithcementitiousmaterialsbehaviour[50]
+and material characterisation data.
+f
+c = fc,ref· 1 −k·w
+i − w
+iref
+( )[ ](Strength as a function of w/i),
+(1)
+where
+• w/iref = 0.145, midpoint of 0.135÷0.155
+•  fc,ref,∥ = 19.8 MPa experimental characteristic parallel
+strength
+•  fc,ref,⊥ = 30.6 MPa experimental characteristic perpendic-
+ular strength
+• k ≈ 20, empirical sensitivity:∼20% strength loss per 0.01
+increase in w/i
+These values are experimental data derived from the material
+characterisation: By adapting them to the specifc properties of
+theadoptedinkandconcretemix,itispossibletoscalethedigital
+twin to other production setups.
+Theperpendicularandparallelcompressivestrengthprediction
+models are defned as follows:
+FIGURE 2 | 3DPC specimen—from 3D printing to compression test.
+TABLE 5 | Process parameters and grade of 3DPC specimens (excerpt).
+Specimen ID 250612-004 250612-0048 250612-0049 250612-001 250612-005 250612-007
+Temperature (°C) 23.9
+Humidity (%RH) 82.8
+Concrete (kg) 99.5 99.5 82.3 99.5 99.5 82.3
+Water (L) 14.9 14.9 12.35 14.9 14.9 12.35
+Added water (L) 0
+w/i 0.15
+Load orientation Parallel Parallel Parallel Perpendicular Perpendicular Perpendicular
+Strength (MPa) 15.7 15.4 16.4 37.0 36.0 30.4
+Grade M15 M15 M15 M35 M35 M30
+10 of 25 Structural Control and Health Monitoring, 2026
+ schm, 2026, 1, Downloaded from https://onlinelibrary.wiley.com/doi/10.1155/stc/8514242, Wiley Online Library on [16/09/2026]. See the Terms and Conditions (https://onlinelibrary.wiley.com/terms-and-conditions) on Wiley Online Library for rules of use; OA articles are governed by the applicable Creative Commons License
+
+fc,⊥ =fc,ref,⊥·Sw/i·Scement·Sprint,⊥·Senv·Scure·ε ⊥ (Perpendicular compressive strength), (2)
+fc,∥ =fc,ref,∥·Sw/i·Scement·Sprint,∥·Senv·Scure·ε ∥(Parallel compressive strength) (3)
+- Water-to-ink sensitivity is as follows:
+Sw/i=1 −kw
+w
+i −0.145( ) ,  kw =20(Water to ink sensitivity),
+(4)
+- Cement reactivity factor is as follows:
+Scement =1 +kCSA fCSA −0.1575( ),  kCSA =2.0(Cement reactivity factor), (5)
+(i.e.,þ1% CSA ⟶ þ2% strength)
+- Printing factors are as follows:
+Sprint,⊥= 12
+h( )
+b1
+· P
+140( )
+b2
+·exp −b3 (v−150)2( )(Perpendicular printing factor), b1 =0.15,b2 =0.15,b3 =1.0×10−5 . (6)
+The parallel factor is based on interlayer bond quality and is
+infuenced by
+- Layercompaction:betterwithlowerlayerheight(h),higher
+extrusion power (P)
+- Printspeed:toofast⟶ poorbonding;tooslow⟶ sagging
+Sprint,∥= 12
+h( )
+a1
+· P
+140( )
+a2
+·exp −a3 (v−150)2( )(Parallel printing factor), a1 =0.3,a2 =0.2,a3 =1.5 ×10−5 , (7)
+- Environmental factor is as follows: Highertemperatureandhumidityimproveearlyhydration(but
+too high RH reduces drying, too low increases evaporation):
+Senv = 1 +kT (T −22.5)( )·1 −kRH (RH −60)2( )(Environmental factor), kT =0.01 per °C, (1% per °C),
+kRH =2.5 ×10−5  per °C, (%RH) −2,Senv = (1 +0.01(T−22.5))·1 −2.5 ×10−5 (RH −60)2( ),
+(8)
+Materials
+charact
+erisation
+Predictive
+model
+Calibration
+propagation
+Prompt
+template
+Optimisation
+Robustness
+propagation
+Statistic
+distribution
+Sensors
+readings
+LLM-enabled
+A3DCP
+Validation
+Corrective
+suggestions
+FIGURE 3 | Diagram of the digital twin model.
+Structural Control and Health Monitoring, 2026 11 of 25
+ schm, 2026, 1, Downloaded from https://onlinelibrary.wiley.com/doi/10.1155/stc/8514242, Wiley Online Library on [16/09/2026]. See the Terms and Conditions (https://onlinelibrary.wiley.com/terms-and-conditions) on Wiley Online Library for rules of use; OA articles are governed by the applicable Creative Commons License
+
+- Curing factor is as follows:
+Asimplifedhydrationmodelisadoptedtoprioritisereal-time
+optimisation:Thischoiceissupportedbytheconsiderationof
+fxed-age testing at 28days, making a refned, dynamic hy-
+dration model redundant.
+Generalised hydration model is as follows [53]:
+f(t) =f
+∞ 1 −e−βtα
+( ) . (9)
+○ f(t)Compressive strength at curing time t
+○ f∞ Theoretical maximum strength at full hydration
+(t⟶ ∞)
+○ β Rate constant
+Controls the speed of strength development:
+• Higher β =faster early strength
+• Depends on cement fneness, CSA content, and
+temperature
+○ α Avrami exponent [54]
+Controls reaction mechanism shape:
+• α =1: 1D growth (needle-like ettringite)
+• α =1.2–1.5: Typical for blended cements
+• α =2: 2D plate growth
+• α =3–4: 3D spherical growth
+Normalised to nominal time:
+Scure = 1 −e−βtα
+1 −e−βtα
+nom
+(Curing factor). (10)
+○ ScureNormalised strength gain scales strength relative to
+a reference curing time
+○ tnom Referencecuringtime,baselineagefornormalisation
+(e.g., 168h=7days)
+- Residual noise
+○ ε ⊥: 8%
+Lowervariabilitybecauseperpendicularstrengthis governed
+by bulk material properties with less sensitivity to printing
+defects.
+○ ε
+∥: 9%–11%
+Higher variability due to the stochastic nature of interlayer
+bonding (microvoids, incomplete hydration).
+Acomprehensivedescriptionofthecoefcientsandmagnitudes
+defnedintheequationsofthepredictivemodelispresentedin
+Table7.
+Thisisacomprehensive,production-readyprobabilisticmaterial
+model for the robotic 3DCP digital twin, enabling traceability,
+statistical rigour and interoperability. The model is based on
+material-specifc coefcients and reference values, making it
+scalable across diferent materials after preliminary material
+characterisation.
+TABLE 6 | List of parameters used in the digital twin.
+Category Parameter Description Nominal Range Notes
+Material and mix design
+w/i Nominal water-to-ink ratio 0.145 0.135–0.150 Critical for strength; >0.15 causes sharp drop in strength
+csa_nominal Nominal cement specifc surface area (m2/g) 15% 10–20 Higher=fner cement=faster reaction
+f_ref_perp Reference perpendicular strength (MPa) 30.6MPa 20–40 Measured at 28days
+f_ref_parallel Reference parallel strength (MPa) 19.8MPa 8–25 Always lower due to interlayer weakness
+3D printing
+h Nominal layer height (mm) 12mm 8–14 Thinner layers⟶ better bonding
+v Nominal print speed (mm/s) 150mm/s 80–220 Too fast⟶ poor interlayer fusion
+P Nominal extrusion power/pressure (W) 140 110–170 Afects compaction and layer adhesion
+D n Nominal nozzle diameter (mm) 30 Fixed Infuences fow and layer geometry
+T_nominal Ambient temperature (°C) 22.5°C 18–28 Afects hydration kinetics
+RH_nominal Relative humidity (%) 60% 45–75 Low RH ⟶ surface drying⟶ weak interface
+t_cure_nominal Curing time (hours) 678 Fixed Strength measured at 28days
+hydration_alpha Hydration curve shape parameter 0.5 0.2–1.0 Controls early vs late strength gain
+hydration_beta Hydration rate parameter 0.8 0.1–2.0 Higher=faster reaction
+12 of 25 Structural Control and Health Monitoring, 2026
+ schm, 2026, 1, Downloaded from https://onlinelibrary.wiley.com/doi/10.1155/stc/8514242, Wiley Online Library on [16/09/2026]. See the Terms and Conditions (https://onlinelibrary.wiley.com/terms-and-conditions) on Wiley Online Library for rules of use; OA articles are governed by the applicable Creative Commons License
+
+TABLE 7 | List of coefcients and magnitudes defned in the predictive model.
+Symbol Parameter Value Units Range Direction Rationale
+kw w/i sensitivity coefcient 20 % per 0.01 w/i — — For cementitious systems, compressive strength typically follows an inverse
+relationship with water content. A 0.01 increase in w/c ratio reduces 28-day
+strength by 15%–25% in conventional concrete [55].
+In printable mortars with low w/b ratio, sensitivity is amplifed due to:
+- Critical impact on yield stress and buildability
+- Efect on interlayer hydration [56]
+Material characterisation showed strength drop from baseline (w/i≈0.16) to
+optimised (w/i≈0.14): the corresponding strength increase of∼15% aligns with
+k
+w ≈20.
+kT Temperature sensitivity 0.01 % per °C — — Hydrationrateapproximatelydoublesper10°Crise(Arrheniusbehaviour).1%per
+°Cisaconservativeestimateforearly-agestrengthdevelopmentinfrst24h[57].
+Lab temperature range (20°C–25°C) yields�2.5% strength variation.
+k
+RH Humidity curvature 2.5×10�5 (%RH) �2 — — Modelshowrelativehumidity(RH)afects3D-printedconcretestrengtharoundan
+optimal value. Optimal RH≈60% for 3DPC:
+- <50%: Surface drying⟶ weak interlayer transition zone
+- >70%: Delayed stifening⟶ reduced buildability
+Quadratic [58] penalty centred at 60% matches experimental observations.
+Tref Reference temperature 22.5 °C 20 �25 — Average temperature in the controlled lab range (20°C–25°C)
+RHref Reference humidity 60 % 50�70 — Average humidity in the controlled lab range (50%–70% RH)
+kCSA CSA sensitivity 2.0 %strengthper1%CSA — — Sulphoaluminate cement (CSA) accelerates early-age strength development via
+rapid ettringite formation (within 1–4h) [59].
+�1% increase in CSA typically yields 1.5%–2.5% increase in 1-day strength [60].
+- Efect diminishes after 7days but critical for interlayer bonding in 3DPC where
+layers are deposited within hours.
+a1 Sensitivity of interlayer strength to layer
+height
+0.30 — — Parallel Layer height is a critical parameter for interlayer bonding [61]. Thinner layers
+increasecontactareaandpenetrationdepthbetweenlayers.Doublinglayerheight
+(9⟶ 18mm) typically reduces parallel strength.
+b1 Sensitivity of bulk strength to layer height 0.15— — Perpendicular Perpendicular strength depends more on bulk material properties than interlayer
+bonding.
+a2 Interlayer penetration sensitivity 0.20 — — Parallel Higher extrusion pressure forces fresh layer into previous layer, improving
+mechanical interlock. Critical for bond strength [62].
+b2 Compaction sensitivity 0.15 — — Perpendicular Higher extrusion pressure improves particle packing, but bulk strength is less
+sensitive than interlayer bonding.
+a3 Bonding time sensitivity (speed decay
+constant)
+1.5×10�5 — — Parallel Narroweroptimum(∼130–170mm/s).Toofast ⟶ insufcienttimeforinterlayer
+hydration; too slow⟶ sagging and loss of green strength [56].
+b3 Optimalspeedwindow(speeddecayconstant) 1.0×10�5 — — Perpendicular Broader optimum (∼120–180mm/s) because bulk strength is less sensitive to
+deposition dynamics.
+Structural Control and Health Monitoring, 2026 13 of 25
+ schm, 2026, 1, Downloaded from https://onlinelibrary.wiley.com/doi/10.1155/stc/8514242, Wiley Online Library on [16/09/2026]. See the Terms and Conditions (https://onlinelibrary.wiley.com/terms-and-conditions) on Wiley Online Library for rules of use; OA articles are governed by the applicable Creative Commons License
+
+3.5 | Uncertainty Propagation via Monte Carlo
+Simulation
+A Monte Carlo Simulation is used to simulate thousands of
+experiments, extracting the mean performance and the 5th
+percentile (5%ile). Considering the 5%ile means designing for
+safety [63–65], and applying existing reliability frameworks to
+3DPC [66]. The choice to use the 5%ile is as follows:
+• Codifed in international standards (Eurocode, ISO, fb);
+• Rooted in structural reliability theory;
+• Essential for safe, compliant design of 3DPC;
+• The industry benchmark for material characterisation.
+By including uncertainty propagation in the parametric work-
+fow, it was possible to optimise the process parameters and
+maximise the parallel strength,achieving valuesabove 20MPa,
+indicatingthatthe3DPCgradewouldbeM20independentlyof
+the load direction, thus partially addressing the material’s in-
+herent anisotropic structural behaviour.
+4 | Results
+A Grasshopper parametric workfow based on process param-
+eters, compressive strength prediction model equations and
+Monte Carlo uncertainty propagation has been implemented.
+The calibration propagation has been conducted with 1000
+Monte Carlo samples to ensure relatively fast computational
+iterations.

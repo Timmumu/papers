@@ -1,0 +1,954 @@
+RESEARCH Open Access
+Discover Applied SciencesSu Discover Applied Sciences (2026) 8:769 
+https://doi.org/10.1007/s42452-026-08789-6
+A dual-loop collaborative framework for smart 
+construction sites
+Pengzhi Su1*
+ * C o r r e s p o n d e n c e : 
+Pengzhi Su
+Suzhipeng37@outlook.com
+1International College of 
+Engineering, Changsha University 
+of Science and Technology, 
+Changsha 410000, China
+© The Author(s) 2026. Open Access This article is licensed under a Creative Commons Attribution-NonCommercial-NoDerivatives 4.0 International 
+License, which permits any non-commercial use, sharing, distribution and reproduction in any medium or format, as long as you give appropriate 
+credit to the original author(s) and the source, provide a link to the Creative Commons licence, and indicate if you modified the licensed material. 
+You do not have permission under this licence to share adapted material derived from this article or parts of it. The images or other third party 
+material in this article are included in the article’s Creative Commons licence, unless indicated otherwise in a credit line to the material. If material 
+is not included in the article’s Creative Commons licence and your intended use is not permitted by statutory regulation or exceeds the permitted 
+use, you will need to obtain permission directly from the copyright holder. To view a copy of this licence, visit h t t p : / / c r e a t i v e c o m m o n s . o r g / l i c e n s 
+e s / b y - n c - n d / 4 . 0 / . 
+Abstract
+This study addresses the challenges of real-time response and closed-loop decision-
+making in smart construction. We propose a dual-loop collaborative framework 
+integrating Building Information Modeling (BIM), the Internet of Things (IoT), and 
+LSTM-Attention networks, validated via a 261-sensor deployment in the Taipei Bridge 
+and Tunnel Joint Project. The architecture achieves sub-second synchronization and 
+enables multi-objective optimization using NSGA-II. Experimental results demonstrate 
+statistically significant improvements ( p < 0.001): a 46.2% reduction in system latency, 
+a 41.4% decrease in safety incidents, an 18.5% reduction in direct costs, and an 
+11.1% decline in CO₂ emissions, while maintaining a 99.1% safety compliance rate. 
+The framework successfully bridges the gap between digital models and physical 
+realization, providing a scalable solution for adaptive and sustainable construction 
+management.
+Keywords Smart construction, Digital twin, BIM-IoT, LSTM-attention, Multi-objective 
+optimization
+ 1 Introduction
+Intelligent construction is undergoing a key transformation from “endpoint perception” 
+to “overall collaboration” [ 1]. This transformation is critically important for the con -
+struction industry, which not only contributes about 40% of the global carbon emissions 
+[2], but also faces severe challenges such as high energy consumption, low efficiency and 
+frequent safety accidents [ 3, 4]. Although the deep integration of building information 
+modeling (BIM), Internet of Things and artificial intelligence is regarded as the core path 
+to improve the transparency of construction and the agility of decision-making [ 5], and 
+promotes the evolution from “one-way monitoring” to “digital twin collaboration” [ 1], 
+practical problems such as sensor noise, model heterogeneity and decision-making delay 
+remain prominent.
+Taking the Taipei Bridge and Tunnel Joint Project in 2024 as an example, although 
+more than 260 sensors were deployed on site, the average delay of BIM updating and 
+real-time decision-making exceeded 13 s [ 3]. Moreover, the manual recheck during the 
+peak hours of crane operation will increase the delay by 5 to 7  s, which will seriously 
+endanger the “golden window period” of safety intervention [6], highlighting the defects 
+Page 2 of 19
+Su Discover Applied Sciences (2026) 8:769 
+of one-way data flow in fast-paced construction [ 1, 7]. Existing research has several core 
+limitations, including a lack of real-time capability, limited attention to end-to-end delay, 
+packet loss compensation, and prediction algorithms [ 3, 8]. At the same time, there 
+are issues such as insufficient closed-loop integrity, with control strategies mostly rely -
+ing on manual scheduling or static rules, and a lack of adaptive “prediction-execution-
+feedback” mechanisms [5, 9]. In addition, cost, schedule and safety objectives are often 
+optimized in isolation, lacking unified indicators and dynamic trade-off analysis, which 
+makes it difficult to achieve multi-objective coordination [ 10, 11]. The disconnection 
+between the digital model and the physical realization seriously restricts the sub-second 
+response ability required by the high-density construction environment.
+Based on the above findings, a new dual-loop collaborative framework is designed and 
+verified in this study. The architecture realizes real-time synchronization through the 
+data loop of sensor → gateway → MQTT → BIM, and realizes closed-loop control with 
+the help of time series prediction [ 12]. This mechanism not only shortens the round-
+trip time of information between physical domain and digital domain, but also uses deep 
+attention network to predict the construction progress, equipment health and environ -
+mental safety in real time, thus realizing multi-objective parallel optimization [ 13, 14]. It 
+is worth noting that the dual-loop architecture we designed is scalable, allowing sensor 
+nodes to be added and enabling additional business rules to be integrated into decision-
+making processes [15, 16].
+This study aims to clarify the semantic interoperability mechanism of dual-loop archi -
+tecture, and define the field mapping and timestamp synchronization strategy between 
+edge gateway, MQTT proxy and IFC entity. Secondly, the collaborative advantages of 
+the framework in delay convergence, risk identification and economic benefits are veri -
+fied by experimental data. Finally, the quantitative relationship between interface delay, 
+packet loss rate and security events can be summarized, which provides practical guid -
+ance for the implementation of large-scale intelligent construction sites [17, 18].
+2 Literature review
+2.1 Technological foundations and persistent gaps in enabling components
+The intelligent transformation of the construction industry is driven by the integration 
+of dual carbon targets and core digital technologies. The integration of BIM and Internet 
+of Things (IoT) is the key to create digital twins, with research progressing from seman -
+tic mapping [ 19] to practical synchronization protocol [ 5] and spatial integration [ 3]. 
+At the same time, deep learning models (such as LSTM network to enhance attention 
+mechanism) have also made breakthroughs in equipment and process risk prediction 
+[20, 21], and multi-objective optimization algorithms (such as NSGA-II and MOEA) 
+have evolved to include sustainable development goals such as carbon emissions [ 22, 
+23].
+However, there are still significant gaps in these components. BIM-IOT integration 
+usually lacks real-time, and the reporting delay exceeds the critical threshold [ 3], pre-
+venting the full incorporation of environmental data. Predictive models usually analyze 
+a single risk factor independently, ignoring the coupling between equipment operation 
+and environmental conditions. Optimization algorithms mainly rely on static data, and 
+rarely achieve integrated dynamic optimization of safety, cost, schedule and environ -
+mental impact within a unified framework.
+Page 3 of 19
+Su Discover Applied Sciences (2026) 8:769 
+2.2 Systemic architectural challenges: from cloud-edge deployment to closed-loop 
+integration
+In addition to individual technology, agile computing architecture is needed to realize 
+real-time closed-loop system. Edge computing provides a low-latency basis for respon -
+sive decision-making [ 15, 16]. However, the current mainstream system architecture 
+usually limits the function of edge devices to data preprocessing. This not only fails 
+to fully tap the potential of localized intelligent processing but also fails to establish a 
+robust and fault-tolerant cloud-edge collaborative mechanism to achieve uninterrupted 
+control. This reveals a key systemic gap: although various component technologies (such 
+as BIM, Internet of Things, and edge computing) are constantly improving, the overall 
+architecture framework that can seamlessly integrate and operate together is still lack -
+ing. Specifically, the lack of real-time semantic synchronization, the lack of dynamic 
+closed-loop control, and the limitations of extensible cloud-side cooperation mechanism 
+all constitute the bottleneck of the core architecture layer. These shortcomings hinder 
+the fundamental transformation of intelligent building systems from isolated techni -
+cal applications to collaborative network physical systems that can coherently complete 
+“perception-analysis-decision-execution” .
+2.3 Evolution of multi-objective optimization research: from economic scheduling to 
+sustainability synergy
+Facing the challenge of multi-objective decision-making in construction management, 
+multi-objective optimization algorithm provides an effective solution tool. Many stud -
+ies, such as Nusen et al. [ 17], combine genetic algorithm with BIM to schedule renova -
+tion projects, while Alothaimeen et al. use non-dominated sorting genetic algorithm II 
+(NSGA-II) to optimize the cost and sustainability scores of green building projects [ 23]. 
+Besides the classic NSGA-II, advanced optimization algorithms such as multi-objective 
+ant colony optimizer (MOALO) and multi-objective equilibrium optimizer (MOEO) 
+show excellent convergence and coverage in solving complex engineering problems. 
+These provide additional algorithm options for dealing with nonlinear multi-modal opti-
+mization objectives in buildings [ 11, 24]. In addition, recent research attempts to com -
+bine more advanced algorithms such as NSGA-III with BIM to solve the optimization 
+problem of sustainable design involving more objectives [ 25], showing the potential of 
+algorithm evolution in solving complex collaborative challenges. Recently, the research 
+scope has been expanded to include the environmental aspect. For example, Weigert et 
+al. established a method to calculate carbon emissions during construction [ 2], while 
+Zhao et al. simultaneously optimized the project duration, cost and carbon emissions 
+in highway construction progress [22]. These studies have proved the potential of multi-
+objective optimization in promoting low-carbon construction and sustainable resource 
+allocation [ 26– 28]. This change marks a change from pure economic efficiency to 
+broader value pursuit including environmental responsibility. However, a common limi -
+tation still exists: most optimization models rely on static or historical data and cannot 
+be deeply integrated with real-time BIM Internet of Things data stream to respond to 
+dynamic changes. In addition, safety objectives are often dealt with separately or sim -
+ply combined, lacking systematic trade-offs within the same optimization framework 
+as cost, schedule and carbon emissions. With regard to scheduling methods, besides 
+genetic algorithm, new meta-heuristic algorithms, such as Sine-Cosine Algorithm 
+Page 4 of 19
+Su Discover Applied Sciences (2026) 8:769 
+(SCA), are explored, and the construction sequence is generated by BIM, which shows 
+the potential to meet the space-time constraints [ 29]. This research directly solves this 
+challenge. We built a five-dimensional evaluation system at the decision-making rules 
+level, including direct cost, safety indicators, project duration, carbon emissions and 
+return on investment (ROI). The system adopts NSGA-II algorithm for real-time multi-
+objective optimization, and automatically identifies the Pareto optimal balance among 
+economic efficiency, safety and environmental performance in dynamic construction 
+environment. This represents a leap from single-objective or double-objective optimiza -
+tion to multi-dimensional collaborative decision-making.
+2.4 Synthesis and positioning of the proposed framework
+In short, the literature reveals an obvious disconnect: although enabling technologies 
+have made progress, integrating them into a unified, adaptable, versatile, and real-time 
+operating system remains an unsolved challenge. These limitations are not only technical 
+but also architectural. Clearly, an overall system design that can seamlessly connect data, 
+models, and decisions is needed. In this study, a dual-loop (data-control) collaborative 
+architecture is proposed to solve this systematic gap identified above. The framework 
+aims to fill the gaps in real-time synchronization, closed-loop optimization, semantic 
+interoperability and elastic cloud-edge execution, and is positioned as a comprehensive 
+solution for the next generation of intelligent construction sites. Accordingly, to further 
+clarify the academic positioning of the proposed dual-loop collaborative framework, we 
+systematically articulate its novelty by comparing it with existing BIM-IoT and digital 
+twin architectures, with a particular focus on the fundamental innovations at the archi -
+tectural level that distinguish it from traditional designs.
+2.5 Novelty of the proposed dual-loop architecture
+To clarify the framework’s novelty and state-of-the-art position, this subsection com -
+pares it with typical BIM-IoT/digital twin architectures and elaborates on core innova -
+tions (Table 1). Most existing architectures use single-loop synchronization or separate 
+modules, leading to real-time/adaptability trade-offs. In contrast, the framework has 
+three key innovations: data-control loop decoupling/dynamic coupling (real-time syn -
+chronization + intelligent decision-making), elastic cloud-edge collaboration with fault-
+tolerant rollback (distributed computing), and real-time ifcXML/SensorML semantic 
+alignment (resolving inconsistency), distinguishing it from traditional architectures and 
+offering unique academic and technical value.
+3 Materials and methods
+3.1 Dual-loop collaborative framework
+In the dynamic and high-noise environment of construction site, data undergoes multi-
+layer protocol conversion and semantic mapping in the round-trip process from sensors 
+to decision nodes. Any delay may amplify the security risk. To overcome this bottleneck, 
+we present the design of a parallel architecture that integrates a Data Loop and a Con -
+trol Loop. The design is driven by the principle of separation of concerns, where the 
+Data Loop ensures reliable state synchronization and the Control Loop handles intel -
+ligent analysis. As shown in Fig.  1, Data_Loop establishes millisecond-level flow chan -
+nel through edge gateway and MQTT Broker. BIM server creates a one-to-one mapping 
+Page 5 of 19
+Su Discover Applied Sciences (2026) 8:769 
+between sensor tags and IfcGUID, forming a complete “perception model” closed loop. 
+On the control end, the analysis engine uses LSTM attention network to process time 
+characteristics. The decision rule triggers the actuator according to the prediction and 
+feeds back the state to the engine for secondary calibration. The double loop is coupled 
+through two channels: synchronization and update. The former ensures the seman -
+tic consistency between the model and the physical state, while the latter dynamically 
+adjusts the weight of the algorithm in real time to realize the adaptive evolution ability.
+The analysis engine adopts a “double window” training mechanism: the short window 
+(30 s) captures the impact load, while the long window (15 min) captures the environ -
+mental trend. When the root mean square error (RMSE) of three consecutive instances 
+exceeds the dynamic threshold of 0.12, the system will automatically trigger incremental 
+fine-tuning and solidify the weight during off-peak hours at night. At the same time, the 
+decision rule contains a multi-objective penalty function J = α∆t+ βC + γS, where 
+Table 1 Comparison of the proposed dual-loop framework with representative architectures
+Architecture Architecture type Data flow Decision-mak-
+ing mode
+Latency control Optimi-
+zation 
+objectives
+Proposed dual-
+loop framework
+Dual-loop (data-
+control) collab-
+orative; cloud-edge 
+fault-tolerant
+Sensor → 
+gateway → 
+BIM + analysis 
+→ decision 
+→ executor; 
+semantic 
+alignment
+Algorithm-
+driven automatic 
+control; closed-
+loop feedback
+Edge prepro-
+cessing + MQTT; 
+sub-second 
+response
+Cost, safety, 
+duration, 
+carbon 
+emissions, 
+ROI (five-
+dimensional 
+integration)
+Skibniewski [1] Construction 4.0/5.0; 
+BIM + IoT+robotics + AI
+Multi-source 
+data → cloud 
+→ application
+AI-assisted 
+scheduling; 
+human-robot 
+collaboration
+IoT real-time 
+transmission; 
+no sub-second 
+design
+Efficiency, 
+safety, envi-
+ronmental 
+sustainabil-
+ity, disaster 
+resilience
+Hong and Guo 
+[5]
+BIM-IoT lifecycle 
+integration; modular 
+sensor network
+Sensor data → 
+standardized 
+transmission 
+→ BIM
+Threshold-based 
+early warning; 
+manual key 
+decisions
+Network stability 
+optimization; 
+no sub-second 
+guarantee
+Efficiency, 
+qual-
+ity, resource 
+optimiza-
+tion, safety 
+mitigation
+Edirisinghe [30] “Digital skin” three-
+layer; context-aware 
+pervasive
+Sensor/wear-
+able → wireless 
+transmission → 
+cloud/edge
+Rule-based 
+safety alert; 
+manual on-site 
+decisions
+Wireless tech 
+optimization; 
+no low-latency 
+design
+Safety, real-
+time moni-
+toring, labor 
+productivity
+Li et al. [31] Two-stream con-
+volution (Faster 
+R-CNN + TS-LSTM)
+Video frames → 
+feature fusion 
+→ behavior 
+classification
+Unsafe be-
+havior binary 
+classification
+Sliding window 
+optimiza-
+tion; real-time 
+detection 
+(unquantified)
+99.99% 
+behavior 
+recognition 
+accu-
+racy; false 
+detection 
+reduction
+Singh et al. [32] UAV RGB/multispec-
+tral; MAnet semantic 
+segmentation
+UAV imagery → 
+pixel annota-
+tion → clas-
+sification/cover 
+estimation
+Multi-species 
+vegetation 
+classification; 
+no closed-loop 
+control
+Offline batch 
+processing; 
+no real-time 
+optimization
+mIoU = 0.90; 
+R²=0.996 
+(cover 
+prediction)
+Kazaz et al. [33] UAS + VGG16-SSD 
+object detection
+UAS imagery 
+→ photogram-
+metry → facility 
+localization
+Stormwater 
+practice detec-
+tion; compliance 
+verification
+Offline detec-
+tion; no real-
+time design
+MAP = 100%; 
+inspection 
+efficiency; 
+regulatory 
+compliance
+Page 6 of 19
+Su Discover Applied Sciences (2026) 8:769 
+∆t represents the delay, C represents the incremental cost, and S represents the safety 
+risk coefficient. Gradient descent method is used to update α, β, and γ in real time. 
+In the 14-day rolling test, the self-evolution model reduces the comprehensive penalty 
+value from 0.78 to 0.43, showing strong online learning ability.
+The advantages of this framework are embodied in threefold: first, time compression. 
+Edge gateway embeds a sliding window filter to eliminate outliers locally and reduce 
+cloud load. Second, semantic alignment. The bidirectional mapping between IFC XML 
+and SensorML relates the “Component Conditional Risk” relationship to the BIM attri -
+bute set. Third, fault-tolerant rollback. When the packet loss rate exceeds 0.8% for 5 s, 
+the system is degraded to a static rule, and the network is automatically restored to the 
+depth model after recovery. The field test shows that the alarm trigger delay is reduced 
+from 13 s to 7 s, and the accuracy of high-risk state identification is improved to 92%.
+3.2 Core variable system and data sources
+In order to verify the dual-loop architecture, 261 sensing nodes in 28 categories were 
+deployed in the southbound elevated section of Taipei. Structural monitoring tracks 
+beam displacement and steel bar strain; Equipment monitoring tracking crane load and 
+vibration spectrum; Environmental monitoring tracks PM2.5, temperature/humidity 
+and wind speed. All raw data are time-stamped with SHA-256 signatures before entering 
+Fig. 1 Dual-loop data-control synergy framework flowchart
+ 
+Page 7 of 19
+Su Discover Applied Sciences (2026) 8:769 
+the edge gateway, and then written into unified fields: subject, data ID, IfcGUID, time -
+stamp and quality of service (QoS). BIM server uses this data for 3D shadow monitoring.
+In order to improve the reliability of data, this project adopts three-layer data manage-
+ment strategy: ① “edge verification”-the gateway regularly compares the internal calibra-
+tion coefficients of sensors; If the drift exceeds 2%, an automatic report will be triggered. 
+② “Cloud Reconciliation”-The daily reconciliation between BIM server log and MQTT 
+message queue at 03:00 will generate a gap report. ③ “Normative Surveying and Map -
+ping”—according to Article 384 of the Occupational Safety and Health Facilities Regu -
+lations of Taiwan Province, the risk level of aerial work is recorded in the IfcSafetyRisk 
+field to ensure the traceability of compliance. In addition, all personal location data 
+will be anonymous before being stored in the database to balance privacy and research 
+needs.
+To ensure the interoperability of the collected multi-source monitoring data with 
+the BIM system, we clarify the semantic connection between building information 
+(expressed by ifcXML) and sensor monitoring data (expressed by SensorML). The formal 
+definition of the semantic mapping between these two entities is presented in a refined 
+table for clarity and intuitiveness, as shown in Table 2.
+The correspondence between variables and their sources is shown in Table 3. To ensure 
+horizontal comparability, two-scale normalization is adopted: min-max normalization is 
+used for environmental measurements ≤ 5 Hz, while a rolling average is used for equip -
+ment signals > 5 Hz, followed by Z-score standardization. Outliers are removed using the 
+3σ rule, and the results are recorded in the “Clean Mark” field for review and reproduc -
+ibility. After 12 weeks of operation, 4965 abnormal samples were cleared, accounting for 
+1.2% of the total number of samples, and no catastrophic data loss occurred.
+Table 2 Formal definition of semantic mapping between ifcXML and SensorML entities
+Mapping aspect Detailed description
+Core definition A rule-based semantic alignment mechanism establishing unambiguous correspon-
+dence between ifcXML (for building information modeling) and SensorML (for sensor 
+data description), aiming to achieve semantic consistency and data interoperability
+Mapping principle Adhere to “semantic consistency priority” to accurately map core attributes of ifcXML 
+entities (e.g., IfcBuildingElement, IfcPropertySet) to corresponding SensorML entities 
+without distortion
+Key entity 
+correspondence
+(1) IfcBuildingElement → FeatureOfInterest; (2) IfcPropertySet → DataRecord; (3) 
+IfcProperty → Field (core entity mapping between the two standards)
+Semantic consistency 
+guarantee
+Adopt unified ontological terms to align attribute names, data types and value 
+ranges, avoiding ambiguity and ensuring data interpretability and reusability
+Table 3 Core variable and field mapping
+Variable ID Variable name Sampling 
+frequency 
+(Hz)
+Unit BIM field mapping Notes
+V01 Beam segment 
+displacement
+10 mm IfcDisplacement Structural safety
+V02 Rebar strain 50 µε IfcStrain Structural safety
+V03 Tower crane load 1 kN IfcLoad Equipment health
+V04 Vibration acceleration 100 m/s² IfcAccel Equipment health
+V05 PM2.5 0.2 µg/m³ IfcAirQuality Environmental risk
+V06 Wind speed 1 m/s IfcWindSpeed Environmental risk
+V07 Temperature 0.5 °C IfcTemperature Environmental risk
+Page 8 of 19
+Su Discover Applied Sciences (2026) 8:769 
+3.3 LSTM-attention model configuration and training details
+3.3.1 Input feature engineering and dimensionality
+The model input was a 3-dimensional tensor (batch_size, sequence_length, input_fea -
+ture_dim). It included 8 continuous features and 4 categorical features (construction 
+procedures), with a final input feature dimension of 12.
+3.3.2 Sequence construction and length setting
+Time-series samples were constructed with a sliding window, and the sequence length 
+was set to 6. The next time step served as the label, with a sliding step of 1 to ensure suf -
+ficient samples.
+3.3.3 Model architecture and loss function specification
+For the latency prediction task (regression), Mean Squared Error (MSE) loss was 
+employed:
+ 
+LMSE = 1
+N
+N∑
+i=1
+(yi− ˆyi)2
+ (1)
+For binary safety risk prediction, weighted Binary Cross-Entropy (BCE) loss was used:
+ 
+LBCE = − 1
+N
+N∑
+i=1
+[w1yilog (ˆyi)+w 0 (1 − yi) log (1− ˆyi)] (2)
+3.3.4 Hyperparameter tuning strategy and final configuration
+Bayesian optimization was used for hyperparameter tuning, guided by 5-fold cross-vali -
+dation. Final hyperparameters are summarized in Table 4.
+3.4 Multi-objective optimization with NSGA-II constraints
+In order to comprehensively evaluate the performance of the proposed dual-loop frame-
+work, this study uses NSGA-II algorithm to combine real-time risk prediction with 
+multi-objective optimization. Three objectives are optimized at the same time: safety 
+(minimizing risk score), cost (minimizing direct cost) and schedule (minimizing proj -
+ect duration). Security is enforced as a hard constraint (RiskScore < 0.30), so that all 
+solutions that violate this threshold are discarded during non-dominated sorting, thus 
+Table 4 Parameters and validation metrics of the deep prediction models
+Hyperparameter 
+category
+Hyperparameter description Search range Final 
+opti-
+mal 
+value
+Model structure 
+parameters
+Number of LSTM layers 1, 2, 3 2
+Number of hidden units per LSTM layer 32, 64, 128 64
+Number of multi-head attention heads 1, 2, 4 2
+Dropout rate 0.2, 0.3, 0.5 0.3
+Training optimization 
+parameters
+Initial learning rate 1e−4, 5e−4, 1e−3, 5e−3 5e−4
+L2 regularization weight decay coefficient 1e−5, 1e−4, 1e−3 1e−4
+Batch size 16, 32, 64 32
+Maximum training epochs 50, 100, 200 100
+All hyperparameters were tuned using Bayesian optimization and 5-fold cross-validation
+Page 9 of 19
+Su Discover Applied Sciences (2026) 8:769 
+ensuring feasibility-based constraint processing. For the final solution selection, weight -
+ing and priority are adopted, with safety weight of 0.6, cost weight of 0.3 and progress 
+weight of 0.1, which reflects the consensus of 20 construction managers surveyed during 
+the project period (safety is the priority). The algorithm iterates for as many as 200 gen -
+erations, or terminates when the improved δ is stable below 0.01, and the convergence is 
+observed uniformly after 150 + generations.
+NSGA-II Optimization operates on the input from the LSTM attention prediction 
+engine, which predicts short-term equipment and environmental risks. This integration 
+allows the framework to actively adjust scheduling and operation parameters, and bal -
+ance safety, economic efficiency and construction duration in real time.
+3.5 Experimental design and control conditions
+To rigorously assess the improvements brought by the dual-loop framework, the base -
+line system corresponds to the traditional BIM-IoT management deployed on the same 
+project during January–March 2024. Key characteristics of the baseline include identical 
+sensor deployment (261 nodes, 28 categories), same sampling frequencies, data clean -
+ing procedures (3σ rule and two-scale normalization), and static threshold-based alerts 
+without real-time prediction or multi-objective optimization.
+Strict control conditions were applied to minimize confounding factors between the 
+baseline and experimental periods (April–June 2024), including:
+1. Matching construction processes, personnel, and equipment, with quantitative 
+constraints ensuring personnel turnover rate < 5% and equipment parameter 
+fluctuation < 3%.
+2. Ensuring sensor node operation stability with a failure rate < 1%.
+3. Aligning environmental conditions (PM2.5, wind speed, temperature, humidity) and 
+construction stage (concrete pouring and crane operation peaks), including matched 
+extreme weather days.
+4. Maintaining identical occupational safety regulations and cost accounting standards.
+3.6 Statistical validation methods
+In order to strictly verify the performance improvement of the proposed dual-cycle 
+framework, a comprehensive statistical verification workflow is established, and the 
+pre-specified significance level of all tests is α = 0.05, ensuring consistency with standard 
+engineering research practices. The normality of all quantitative indicators was evalu -
+ated by Shapiro–wilk test, and the data were processed to remove abnormal values to 
+ensure the consistency between the experimental period and the baseline period.
+3.6.1 Hypotheses for key metrics
+For the core claims of latency reduction and safety improvement, a targeted two-dimen -
+sional validation protocol was pre-defined, consistent with the overall statistical frame -
+work above. The following statistical hypotheses were established prior to analysis:
+1. Null hypothesis (H₀): No significant difference exists in system latency, safety incident 
+frequency, or safety compliance rate between the proposed dual-loop framework 
+(experimental group, April–June 2024, n = 90 days) and the conventional BIM-IoT 
+Page 10 of 19
+Su Discover Applied Sciences (2026) 8:769 
+system (baseline group, January–March 2024, n = 90 days), meaning the relative 
+improvement rate of all indicators resulting from the dual-loop framework is 0.
+2. Alternative hypothesis (H₁): The experimental group has statistically significant 
+advantages over the baseline group in the above core performance indicators, i.e., the 
+system latency and safety incident frequency of the experimental group are significantly 
+lower, the safety compliance rate is significantly higher, and the relative improvement 
+rate of all indicators is greater than 0.
+3.6.2 Hypothesis testing methods
+Indicator-specific hypothesis testing was conducted according to the type and dis -
+tribution of the data. Continuous system latency measurements were analyzed using 
+independent samples t-tests when normally distributed, or Mann-Whitney U tests 
+for non-normal distributions. Paired count-type safety incidents were evaluated with 
+the Wilcoxon signed-rank test, while the safety compliance rate, a binary variable, was 
+assessed using two-proportion Z-tests or logistic regression where appropriate. Effect 
+sizes were calculated for each comparison to quantify practical significance, using 
+Cohen’s d for t-tests, r values for non-parametric tests, and odds ratios or risk ratios for 
+count and binary data.
+3.6.3 Confidence intervals and robustness
+In order to ensure the robustness of the reported improvement, 95% confidence inter -
+vals of all indicators are calculated. The improvement in system delay and safety inci -
+dents is evaluated by the bootstrap percentile method, with 1000 resampling iterations 
+to account for potential time-series autocorrelation. At the same time, Wilson scoring 
+interval method is used to calculate the security compliance difference. The 95% con -
+fidence interval with a lower limit greater than zero is considered as evidence of stable 
+and non-random improvement. For the indexes evaluated at the same time, Bonferroni 
+correction is applied to control the family error rate to avoid exaggerating the signifi -
+cance level.
+The repeatability of the results was confirmed by three independent experiments last -
+ing for 4 weeks. The intra-class correlation coefficient (ICC > 0.8) of all key indicators is 
+calculated, which proves that the retest reliability is high. This comprehensive workflow 
+integrates normality evaluation, index specific hypothesis test, effect size quantification, 
+confidence interval estimation with autocorrelation adjustment and multiple compari -
+son correction. In a word, these programs ensure that all the observed improvements 
+(system delay reduction, safety accidents reduction and compliance improvement) are 
+statistically significant, repeatable and robust, and provide a strict and transparent basis 
+for evaluating the performance of the dual-loop framework.
+4 Results
+4.1 Interface performance testing and interoperability results
+Interface delay and packet loss rate directly determine the timeliness of data cycle and 
+affect the accuracy of control loop prediction. This paper records the 30-min perfor -
+mance data of three network scenarios (5G, Wi-Fi 6, LTE backup link). As can be seen 
+from Table 5, the average end-to-end delay of 5G scenario is 92ms, and the delay of Wi-Fi 
+6 is increased to 127ms due to multipath interference. The LTE fallback link reaches the 
+Page 11 of 19
+Su Discover Applied Sciences (2026) 8:769 
+peak of 340 milliseconds at night, but the timely alarm is maintained by redundant deg -
+radation strategy.
+In order to further test the robustness of the framework, the team conducted a stress 
+injection experiment during the suspension of operation: 1000 msg/s background flow 
+was manually injected into MQTT agent to simulate the simultaneous activation of 
+cranes. The results show that when the depth of the proxy queue reaches 4000 messages, 
+the delay from the edge to BIM is kept below 180 milliseconds. When the packet loss 
+rate increases by 10%, the decision rules will automatically reduce the Trisk threshold 
+from 0.75 to 0.68 to improve the risk sensitivity. Economic analysis shows that each 
+remote degradation mode trigger can prevent an average of 7 min of downtime, which is 
+equivalent to a loss of NT 23,000, saving about NT 580,000 per year.
+In terms of interoperability, 12 mandatory mapping items between ifcXML and Sen -
+sorML achieve 100% coverage. The missing values of traditional sensors are completed 
+by Lagrange interpolation, and the delay of single interpolation is less than 300 milli -
+seconds. Interface performance and scene distribution are shown in Table  5. The sys -
+tem indicator is integrated in Prometheus, and the Grafana dashboard is displayed in 
+the command center. When the packet loss rate temporarily exceeds 2%, the confidence 
+of the model will be reduced by about 6%, which will trigger the analysis engine to stop 
+adapting and return to the last stable weight to ensure the consistency of the prediction 
+output.
+The coupling relationship between delay and risk is analyzed. The results show that 
+the average absolute error (MAE) of prediction will increase by 0.6% every 50 millisec -
+onds of interface delay. For every 0.5% increase in packet loss rate, the delay of high-
+risk alarm is extended by 1.1 s on average. On this basis, this paper realizes the dynamic 
+QoS threshold in the control loop: when the LTE link is triggered and the delay exceeds 
+300 ms, the system switches to local reasoning and static rules. Once the 5G or Wi-Fi 
+connection is restored, it will return to deep mode to ensure continuous and reliable 
+monitoring.
+4.2 Design and validation of deep time-series prediction models
+The LSTM attention model shows superior performance in security risk prediction. As 
+shown in Table  6, the average absolute error (MAE) is 0.054 and R² is 0.912, which is 
+better than Bi-LSTM, GRU and random forest baseline. The model successfully pre -
+dicted the risk score 3 min in advance (that is, at t time for the risk of t + 180 s). In order 
+to ensure the reliability of network delay, a lightweight distillation “student” model 
+is deployed at the edge gateway. In the first month of operation, when the cloud delay 
+Table 5 Interface performance test results for three network scenarios
+Network type Average la-
+tency (ms)
+Latency 95% 
+CI (ms)
+Packet loss 
+rate (%)
+Notes
+5G Standalone (SA) 92 85–98 0.4 High load during day shift
+Wi-Fi 6 (80 MHz) 127 118–135 0.7 Interference in the rebar 
+tying area
+LTE Backup Link 340 320–365 1.9 Degradation triggered by 
+night-time handover
+95% confidence intervals (CIs) for average latency were calculated using the bootstrap percentile method (1000 resampling 
+iterations). Packet loss rates were validated by three repeated 4-week field tests, with intra-class correlation coefficient 
+(ICC) = 0.91 (high reliability, ICC > 0.8)
+Page 12 of 19
+Su Discover Applied Sciences (2026) 8:769 
+exceeded 300 ms, the system performed nine seamless transitions to edge inference, and 
+each transition was completed within 90 s.
+The deployment location of the model is shown in Fig.  2. After injecting 1.15 times 
+the rated pulse into the load channel of the crane, the LSTM attention model increases 
+its R 2 to 0.82 within 4  s, which is 6  s faster than the Bi-lTM baseline. Interpretability 
+analysis using Integrated Gradients SHAP (IG-SHAP) shows that the tower crane load 
+(V03, contribution rate: 0.37), vibration acceleration (V04, 0.24) and PM2.5 concentra -
+tion (V05, 0.21) are the main driving factors of short-term risks.
+Table 6 Comparison of deep prediction model performance
+Model Name Hidden Units Training Duration (min) MAE R² Notes
+LSTM-attention 128 38 0.054 0.912 Proposed method
+Bi-LSTM 256 42 0.071 0.867 Baseline
+GRU 128 35 0.079 0.845 Baseline
+Random forest – 22 0.094 0.801 Traditional
+The statistical significance was verified by one-way ANOVA (F = 89.76, P < 0.001) followed by LSD post-hoc test, with α = 0.05. 
+All baseline models showed significant differences compared with the proposed LSTM-Attention model. For the LSTM-
+Attention model, MAE (0.054) and R² (0.912) were validated by paired t-tests ( p < 0.001), with 95% CI 0.048–0.060 for MAE 
+and 0.886–0.938 for R², and Cohen’s d = 2.63 (large effect size)
+Fig. 2 Construction lifecycle state machine integrated with Gantt chart
+ 
+Page 13 of 19
+Su Discover Applied Sciences (2026) 8:769 
+4.3 Risk heatmap analysis and threshold adaptive optimization
+After the dual-loop system runs stably, the team makes a spatio-temporal prediction on 
+the 48-h continuous sampling data of the 5G main chain, and generates a four-layer risk 
+heat map as shown in Fig.  3. The north elevation is a continuous high-risk area (average 
+r = 0.86), which is related to the overlap of concrete pouring belt and crane path. Statis -
+tical analysis shows that under the conditions of PM 2.5 > 85 µg/m³ and instantaneous 
+wind speed>9 m/s, the number of high-risk grid cells increases from 7% to 18%. Granger 
+causality test confirmed that PM2.5 (F = 6.41, p = 0.011) and wind speed (F = 5.97, 
+p = 0.015) had significant predictive effects on risk score. In extreme weather (such as 
+continuous wind speed>12 m/s), the system shows its adaptive ability by automatically 
+reducing the risk threshold (θ risk) from 0.75 to 0.68. On the night of typhoon, 14 speed 
+limit instructions were triggered, and the peak load of tower crane was successfully con -
+trolled below 82% of rated load.
+The comparative data of 3 weeks shows that the coverage of ultra-high risk grid cells 
+has decreased by 43%, and the coverage of medium and low risk grid cells has increased 
+to 79%. The number of accident reports decreased from 5.8 to 3.6 every 100 working 
+days, and financial claims decreased by 740,000 yuan. In order to deeply analyze the spa-
+tio-temporal clustering effect, spatio-temporal DBSCAN (ε = 15 m, δ t=10 min) identi -
+fied 23 high-risk clusters with an average duration of 28 min, of which 71% overlapped 
+with the concrete pouring time window. This provides accurate positioning for the coor-
+dination of the fog gun with plasticizer in subsequent operations.
+4.4 Economic-safety synergistic optimization and multi-objective evaluation
+In this study, five dimensions of execution parameter U are constructed at the level of 
+decision rules: direct cost, comprehensive safety index, project duration, CO 2 emis -
+sion and ROI. NSGA-II algorithm with population size of 60 and 100 iterations is used 
+Fig. 3 Four-level risk heatmap of construction site
+ 
+Page 14 of 19
+Su Discover Applied Sciences (2026) 8:769 
+to search Pareto frontier. After clustering and eliminating redundancy, there are three 
+representative strategies: baseline, proposed, and optimized, as illustrated in Fig.  4. All 
+axes in the radar chart were standardized, and longer axis lengths indicate better overall 
+performance. The optimized strategy achieved a near-circular equilibrium across safety, 
+ROI, and cooperative efficiency, reflecting balanced multi-objective improvements.
+As shown in Table 7, the optimized dual-loop framework achieved significant improve-
+ments across multiple dimensions. Compared with the baseline, system delay decreased 
+Table 7 Comparison of economic-safety performance of three scheduling strategies
+Metric Baseline Proposed Optimized Improve-
+ment Op-
+timized 
+(%)
+95% CI 
+(Optimized)
+p-value Effect 
+size
+System delay (s) 13.0 9.5 7.0 46.2 12.0–14.0 < 0.001 d = 3.9
+Safety incidents 
+(/100 work-days)
+5.8 4.2 3.4 41.4 3.0–5.5 < 0.001 d = 0.72
+HIGH-RISK STATE 
+Recognition accu-
+racy (%)
+85.0 90.5 92.0 8.2 88.5–94.0 < 0.001 d = 2.1
+Direct cost (10,000 
+CNY)
+715 624 583 18.5 16.2–20.8% < 0.001 d = 5.0
+ROI 0.60 0.78 0.84 + 40.0 0.75–0.86 < 0.001 d = 3.5
+Safety compliance 
+rate (%)
+93.5 97.8 99.1 + 6.0 4.8–6.4% < 0.001 d = 2.8
+Project duration 
+(months)
+16.2 15.4 15.0 7.4 0.9–1.5 
+months
+< 0.001 d = 2.5
+CO₂ emissions (t) 1248 1120 1110 11.1 8.7–13.3% < 0.001 d = 2.2
+Improvement (%)=(Baseline – Current) / Baseline × 100 for metrics where lower is better; ROI improvement is calculated 
+as (Current – Baseline) / Baseline × 100. 95% CI for continuous metrics computed using bootstrap percentile method (1000 
+iterations). p-values derived from paired t-tests (α = 0.05). Effect size indicated as Cohen’s d for continuous metrics; odds 
+ratio (OR) for ROI as binary/effect interpretation. Direct cost includes sensors and cloud resources; safety compliance is 
+defined as RiskScore < 0.30; CO₂ emissions are converted from on-site fuel consumption
+Fig. 4 Radar chart of multi-objective collaborative optimization performance
+ 
+Page 15 of 19
+Su Discover Applied Sciences (2026) 8:769 
+by 46.2% (from 13.0 to 7.0 s), safety incidents fell by 41.4%, high-risk state recognition 
+accuracy increased to 92%, direct cost was reduced by 18.5%, project duration shortened 
+by 7.4%, CO₂ emissions decreased by 11.1%, and safety compliance improved to 99.1%. 
+ROI also increased substantially from 0.60 to 0.84, representing a 40% improvement.
+All percentage improvements were statistically validated using paired t-tests (α = 0.05, 
+p < 0.001) with large effect sizes (Cohen’s d > 0.8). Continuous metrics report 95% confi -
+dence intervals computed via bootstrap percentile method (1000 iterations). Direct cost 
+includes sensors and cloud resources; safety compliance is defined as RiskScore < 0.30; 
+CO₂ emissions were converted from on-site fuel consumption.
+Monte Carlo sensitivity analysis with 1000 iterations confirmed the robustness of the 
+optimized strategy, showing a median ROI of 0.81 (5th–95th percentile: 0.75–0.86), sig -
+nificantly higher than the baseline median of 0.52. Additionally, increasing the local car -
+bon emission fee from 300 NTD/ton to 500 NTD/ton yields an additional 62,000 NTD 
+in savings, further expanding the net present value (NPV) gap to 2.15 million NTD over 
+the project life cycle.
+5 Discussion
+5.1 Key findings and innovations
+Taipei project field verification confirms that the designed dual-loop collaborative 
+framework effectively resolves the poor coordination between real-time response and 
+closed-loop decision-making in smart construction, achieving a 46.2% reduction in sys -
+tem latency, 41.4% drop in safety incidents, 92% high-risk state recognition accuracy and 
+99.1% safety compliance rate. It realizes sub-second perception-execution closed loop, 
+driving construction management from manual lagged passive response to data-driven 
+active intervention, and overcoming delay and data fragmentation in complex construc -
+tion environments via the separation and dynamic coupling of data synchronization and 
+intelligent control.
+The core innovation lies in the systematic architecture-algorithm collaborative design, 
+which resolves inherent contradictions in BIM-IoT-AI integration. An elastic cloud-
+edge collaboration mechanism with fault-tolerant rollback is adopted for the real-
+time-reliability conflict: lightweight edge models seamlessly take over prediction tasks 
+when network deteriorates, ensuring monitoring continuity and system robustness. For 
+the balance between safety control and economic efficiency, the framework integrates 
+dynamic risk perception and five-dimensional multi-objective optimization (cost, safety, 
+duration, carbon emissions, ROI), with safety as a hard constraint. It adaptively adjusts 
+risk thresholds based on real-time environmental data and embeds the LSTM-Attention 
+prediction engine into the NSGA-II algorithm, realizing synergistic optimization of mul-
+tiple objectives—while raising safety compliance to 99.1%, it cuts direct costs by 18.5% 
+and carbon emissions by 11.1%, verifying the feasibility of coordinated optimization of 
+safety, economic and environmental goals through integrated system design.
+5.2 Theoretical contributions
+When placed in a wider academic context, this study provides a reproducible system par-
+adigm and quantitative evidence, and push the intelligent building site from “conceptual 
+framework” to “closed-loop operation” . Unlike most projects reviewed by Skibniewski 
+[1], which are still limited to one-way monitoring, this paper achieves a complete closed 
+Page 16 of 19
+Su Discover Applied Sciences (2026) 8:769 
+loop of “perception-prediction-decision-execution-feedback” . Fundamentally, as elabo-
+rated in the “Novelty of the Proposed Dual-Loop Architecture” subsection, the innova -
+tions of our framework at the architectural level lie in the decoupling-coupling design 
+of the data-control dual-loop, which breaks through the limitations of traditional one-
+way monitoring architectures and enriches the theoretical system of BIM-IoT integra -
+tion in intelligent construction. This integrated architectural design not only realizes the 
+real-time synchronization between physical construction sites and digital twins but also 
+supports the closed-loop intelligent control of construction safety and multi-objective 
+optimization, advancing the development of intelligent construction from fragmented 
+monitoring to integrated management.
+The framework of Hong and Guo [ 5] realizes sub-second data synchronization, but 
+ultimately depends on manual decision-making. Unlike this, this study adopts an algo -
+rithm model to automatically generate control commands, which significantly simplifies 
+the decision-making chain. In addition, unlike previous studies on single-dimensional 
+optimization (such as schedule, cost or indoor environment), this paper establishes 
+the first unified quantitative framework of construction collaborative management. It 
+dynamically balances economic, safety and environmental performance in the shared 
+optimization space, and provides a new method for comprehensive efficiency evaluation 
+of intelligent building sites. In fact, the research results show that when the decision-
+making process of the system is transparent and the feedback is timely, the acceptance 
+and satisfaction of front-line personnel (such as foremen) to automatic scheduling 
+instructions are significantly improved. This highlights an important insight: the success 
+of intelligent construction site systems depends not only on the technical maturity, but 
+also on their ability to build transparent and credible man-machine cooperation inter -
+faces, which enhance rather than weaken workers’ sense of control over the site.
+5.3 Research limitations and reflections
+However, this study clearly recognizes its boundaries and limitations, and points out 
+the direction for future exploration. First of all, the current design validation focuses on 
+viaducts, mainly involving the pouring and hoisting process. The generalizability of the 
+architectural model across different project types and universality of the frame requires 
+further cross-project deployment and design adaptation. Moreover, the scalability of the 
+proposed framework needs to be further explored; the current system is tailored to the 
+specific regulatory context of the research area, and potential integration barriers may 
+arise when applied to different international construction contexts with diverse regula -
+tory requirements, which has not been fully verified in this study. Second, the autono -
+mous evolution ability of the edge model is constrained. The current lightweight edge 
+model relies on periodic knowledge extraction and weight update of the cloud-based 
+main model. Under the extreme conditions of prolonged network isolation, this method 
+has the risk of model performance degradation. Future research should explore more 
+powerful marginal autonomous learning and federal renewal mechanisms. Third, data 
+privacy governance has not been thoroughly addressed; although personal location 
+data is anonymized during storage, the study lacks a systematic privacy governance 
+framework to adapt to different regional data protection regulations (e.g., GDPR, local 
+data security laws), which may limit the application of the system in cross-border con -
+struction projects. Finally, the dimension of multi-objective optimization model has 
+Page 17 of 19
+Su Discover Applied Sciences (2026) 8:769 
+expansion space. In addition to the direct cost and carbon emissions currently consid -
+ered, the increasingly important indirect cost factors in high-risk large-scale projects, 
+such as dynamic insurance premium, social reputation gains/losses and the far-reaching 
+social impact of security incidents, have not been included in the model. Solving these 
+problems is very important for achieving wider “sustainable” cooperation.
+5.4 Future research directions
+Looking forward to the future, the path pioneered by this study can be deepened in 
+many directions. Technically, exploring the weight tracking mechanism of blockchain 
+integration model can enhance the trust-based cooperation between distributed nodes. 
+Developing a scene playback and simulation platform integrating high-fidelity digi -
+tal twinning and VR/AR technology will be helpful for solution pre-test and personnel 
+training. In terms of optimization algorithm, future research can explore the integra -
+tion of recently improved multi-objective evolutionary strategies (for example, Zhang 
+et al. and Liu et al.) [ 34, 35], in order to improve the convergence efficiency and solution 
+set distribution when solving high-dimensional nonlinear structural coordination prob -
+lems. At the application level, it is urgent to carry out reproducible construction and 
+comparative research across various typical engineering scenes (such as underground 
+projects and coastal high humidity areas) to verify and improve the universality of the 
+framework. Theoretically, the future multi-objective collaborative model should con -
+sider a wider range of socio-economic factors and establish a more inclusive “engineer -
+ing value” evaluation system. This will eventually promote the intelligent building site 
+from a tool to improve the efficiency of a single project to an infrastructure to promote 
+the overall green and intelligent transformation of the construction industry.
+6 Conclusion
+This study proposes and empirically investigates a novel dual-loop (data-control) archi -
+tectural framework for smart construction sites. The framework is designed to bridge 
+the systemic disconnects between data, models, and decisions by establishing a sub-sec -
+ond closed loop from real-time sensing to automated execution. The empirical results 
+indicate a potential for co-optimization, with the framework associated with reductions 
+in system delay (46.2%), safety incidents (41.4%), direct cost (18.5%), and carbon emis -
+sions (11.1%), while maintaining a high safety compliance rate (99.1%). These findings 
+lend support to the possibility that safety, economic, and environmental objectives may 
+be synergistically addressed through integrated system design. Beyond a specific project 
+application, this work offers a potentially scalable architectural blueprint and a quantifi -
+able decision-making model. It thereby contributes to advancing the field of intelligent 
+construction from fragmented monitoring toward more adaptive, collaborative, and sus-
+tainable project management practices.
+Acknowledgements
+The author would like to show gratitude to those technicians who have contributed to this research.
+Author contributions
+This study was independently completed by Pengzhi Su, including research design, data collection and analysis, 
+literature review, interpretation of results, and the writing and revision of the paper.
+Funding
+This work was not supported by any funds.
+Data availability
+The figures and tables used to support the findings of this study are included in the article.
+Page 18 of 19
+Su Discover Applied Sciences (2026) 8:769 
+Declarations
+Ethics approval and consent to participate
+This study is an engineering empirical research on the dual-loop collaborative framework for smart construction 
+sites, involving only the collection and analysis of construction site sensor monitoring data and public engineering 
+information. No human subjects, animal or biomedical research were included, so ethical approval is not required. All 
+study data are from real-time sensing of the Taipei Bridge and Tunnel Joint Project and open engineering documents. No 
+research participants or third parties are involved, and consent to participate is not applicable.
+Consent for publication
+The author confirms that all data, results and content of this manuscript are independently obtained, analyzed and 
+written, with no third-party copyright restrictions or legal obstacles to publication. The author unconditionally consents 
+to the publication of this manuscript, as well as its subsequent dissemination and citation.
+Competing interests
+The authors declare no competing interests.
+Received: 20 January 2026 / Accepted: 30 April 2026
+References
+1. Skibniewski MJ. The present and future of smart construction technologies. Engineering. 2025;44:21–3. h t t p s : / / d o i . o r g / 1 0 . 
+1 0 1 6 / j . e n g . 2 0 2 4 . 1 2 . 0 2 4 . 
+2. Weigert M, Melnyk O, Winkler L, Raab J. Carbon emissions of construction processes on urban construction Sites. Sustain-
+ability. 2022;14:12947. https://doi.org/10.3390/su141912947.
+3. Liu X, Antwi-Afari M, Li J, Zhang Y, Manu P . BIM, IoT, and GIS integration in construction resource monitoring. Autom Con-
+str. 2025;174:106149. https://doi.org/10.1016/j.autcon.2025.106149.
+4. Albertini F, Gomes LP , Grondona AEB, Caetano MO. Assessment of environmental performance in building construction 
+sites: data envelopment analysis and Tobit model approach. J Build Eng. 2021;44:102994. h t t p s : / / d o i . o r g / 1 0 . 1 0 1 6 / j . j o b e . 2 0 
+2 1 . 1 0 2 9 9 4 . 
+5. Hong Y, Guo F. A framework of BIM-IoT application in construction projects through multiple case study approach. J Build 
+Des Environ. 2025;3:202438–202438. https://doi.org/10.70401/jbde.2025.0004.
+6. Iqbal F, Mirzabeigi S Digital twin-enabled building information modeling–internet of things (BIM-IoT) framework for 
+optimizing indoor thermal comfort using machine learning. Buildings. 2025. . https://doi.org/10.3390/buildings15101584.
+7. Fang Z, Shaw S-L, Yang B, Santi P , Tu W. Integrated environmental and human observations for smart cities. Environ Plan B 
+Urban Anal City Sci. 2021;48:1375–9. https://doi.org/10.1177/23998083211023296.
+8. Lim B, Zohren S. Time-series forecasting with deep learning: a survey. Philos Trans R Soc Math Phys Eng Sci. 
+2021;379:20200209. https://doi.org/10.1098/rsta.2020.0209.
+9. Crowley D, Curry E, Breslin JG. Citizen actuation for smart environments: evaluating how humans can play a part in smart 
+environments. IEEE Consum Electron Mag. 2016;5:90–4. https://doi.org/10.1109/mce.2016.2556918.
+10. Essam N, Khodeir L, Fathy F. Approaches for BIM-based multi-objective optimization in construction scheduling. Ain 
+Shams Eng J. 2023;14:102114. https://doi.org/10.1016/j.asej.2023.102114.
+11. Mirjalili S, Jangir P , Saremi S. Multi-objective ant lion optimizer: a multi-objective optimization algorithm for solving engi-
+neering problems. Appl Intell. 2017;46:79–95. https://doi.org/10.1007/s10489-016-0825-8.
+12. Tricomi G, Giacobbe M, Ficili I, Peditto N, Puliafito A. Smart city as cooperating smart areas: on the way of symbiotic cyber–
+physical systems environment. Sensors. 2024;24:3108. https://doi.org/10.3390/s24103108.
+13. Zhang K, Chen M, Xu X, Yen GG. Multi-objective evolution strategy for multimodal multi-objective optimization. Appl Soft 
+Comput. 2021;101:107004. https://doi.org/10.1016/j.asoc.2020.107004.
+14. Chen X, Yang L, Liao X, Zhao H, Wang S. Groundwater level prediction and earthquake precursor anomaly analysis based 
+on TCN-LSTM-attention network. In: IEEE Access, IEEE; 2024.
+15. Wang S, Zhao Y, Xu J, Yuan J, Hsu C-H. Edge server placement in mobile edge computing. J Parallel Distrib Comput. 
+2019;127:160–8. https://doi.org/10.1016/j.jpdc.2018.06.008.
+16. Li B, Hou P , Wu H, Qian R, Ding H. Placement of edge server based on task overhead in mobile edge computing environ-
+ment. Trans Emerg Telecommun Technol. 2021;32:e4196. https://doi.org/10.1002/ett.4196.
+17. Nusen P , Boonyung W, Nusen S, Panuwatwanich K, Champrasert P , Kaewmoracharoen M. Construction planning and 
+scheduling of a renovation project using BIM-based multi-objective genetic algorithm. Appl Sci. 2021;11:4716. h t t p s : / / d o i . 
+o r g / 1 0 . 3 3 9 0 / a p p 1 1 1 1 4 7 1 6 . 
+18. Wan R, Tian C, Zhang W, Deng W, Yang F. A multivariate temporal convolutional attention network for time-series forecast-
+ing. Electronics. 2022;11:1516. https://doi.org/10.3390/electronics11101516.
+19. Dave B, Buda A, Nurminen A, Främling K. A framework for integrating BIM and IoT through open standards. Autom Constr. 
+2018;95:35–45. https://doi.org/10.1016/j.autcon.2018.07.022.
+20. Kang Q, Chen EJ, Li Z-C, Luo H-B, Liu Y. Attention-based LSTM predictive model for the attitude and position of shield 
+machine in tunneling. Undergr Space. 2023;13:335–50. https://doi.org/10.1016/j.undsp.2023.05.006.
+21. Wang Q, Han J, Chen F, Zhang X, Yun C, Dou Z, Yan T, Yang G. Real-time risk prediction of chemical processes based on 
+attention-based Bi-LSTM. Chin J Chem Eng. 2024;75:131–41. https://doi.org/10.1016/j.cjche.2024.06.026.
+22. Zhao N, Zhang J, Ding C, Zhang J. Multi-objective optimization of low-carbon highway construction scheduling using 
+ACEMO-TOPSIS algorithm. J Clean Prod. 2025;522:146371. https://doi .org/10.101 6/j.jclepro .2025.14 6371.
+23. Alothaimeen I, Arditi D, Türkakın OH. Multi-objective optimization for LEED - new construction using BIM and genetic 
+algorithms. Autom Constr. 2023;149:104807. https://doi.org/10.1016/j.autcon.2023.104807.
+Page 19 of 19
+Su Discover Applied Sciences (2026) 8:769 
+24. Premkumar M, Jangir P , Sowmya R, Alhelou HH, Mirjalili S, Kumar BS. Multi-objective equilibrium optimizer: framework and 
+development for solving multi-objective optimization problems. J Comput Des Eng. 2021;9:24–50. h t t p s : / / d o i . o r g / 1 0 . 1 0 9 3 
+/ j c d e / q w a b 0 6 5 . 
+25. Kumar H, Padala NSPS. A BIM-integrated multi objective optimization model for sustainable building construction man-
+agement. Constr Innov. 2024;25:1727–51. https://doi.org/10.1108/CI-09-2023-0223.
+26. Zavari M, Shahhosseini V, Ardeshir A, Sebt MH. Multi-objective optimization of dynamic construction site layout using BIM 
+and GIS. J Build Eng. 2022;52:104518. https://doi.org/10.1016/j.jobe.2022.104518.
+27. Rahman M, Han SH. Linear scheduling method-based multi-objective optimization for off-site construction manufactur-
+ing. Autom Constr. 2024;167:105712. https://doi.org/10.1016/j.autcon.2024.105712.
+28. Maatar O, Trost R, De Bruyne I, Van D

@@ -21,3 +21,16 @@ Digital twins (DTs) are one of the latest technology trends in all industries. H
 | Yes | Yes | Yes | Unclear | 1 | 1 | 1 | Both | None | Digital Twin platform (no ML) | Multi | Conceptual (no test) | 3 | BIM-to-Digital-Twin architecture |
 
 **Key evidence (AG):** Systematic review of 229 publications on DTs in the AEC industry, finding a lack of standardisation; then proposes a conceptual framework for DT development for construction assets built on ISO 19650 information-management specifications (CDE-centric). No implementation or experiment; DfS/DfQ appear as application potential. Useful as the ISO 19650 anchoring reference for the review.
+
+**Strength & gap filled (AH):** Diagnoses the standardization gap in AEC digital twins through a systematic review of 229 publications (2016 to 2021) from four databases, showing DTs remain application-driven and vendor-dependent, then proposes a conceptual DT development framework built on the ISO 19650 series: PIM and AIM information containers federated in a CDE, IoT and WSN monitoring, and machine learning for decisions and actuator actions.
+
+**Deficiencies & future work (AI):** Conceptual only, with no implementation or validation; the framework is a recommendation that still awaits application, and the authors state it must be proven through multiple case studies with diverse asset uses and complexities, recommending energy efficiency and indoor environmental quality as neglected test fields.
+
+**Fusion depth (AC1):** Unclear
+
+**Fusion evidence (AC2):**
+- **Data streams:** framework components only (ISO 19650 information containers, CDE, IoT/WSN monitoring, ML decisions) from a 229-publication review.
+- **Integration mechanism:** none - the framework is a recommendation awaiting application.
+- **Why this code:** Unclear (rule 2).
+
+**Confidence (AC3):** High.

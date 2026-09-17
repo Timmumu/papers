@@ -21,4 +21,17 @@ Timely risk information acquisition and diagnosis during foundation pit excavati
 | Yes | Yes | Yes | Tier 3 - Digital Twin (bidirectional, two-way) | 0 | 1 | 0 | Design for Safety (DfS) | None | Finite Element Method / physics-based | Multi (two or more data types) | Single case study | 4 | Design for Safety |
 
 **Key evidence (AG):** Intelligent risk prognosis and control of foundation pit excavation (FPE) based on DT (Beijing U Tech): physical space (RFID + sensors capture components, environment, personnel) + virtual space (high-fidelity physics-based model); data fusion from physical and virtual space; FE model (FLAC3D) updated with real-time parameters; geometric model updated via point data; risk prognosis and control measures established based on safety state; validated on Wuhan Metro Line. Bidirectional — virtual model updated from physical, control measures from virtual → Tier 3; no learning loop (model updating is manual).
+
+
+**Strength & gap filled (AH):** Fills the spatiotemporal risk-prognosis gap in foundation pit excavation: a five-component digital twin (physical space, FLAC3D virtual model, twin data, service, connections) fuses RFID, displacement, soil-pressure and environmental sensing to update an 850141-cell finite element model after each step, with Markov-chain risk prediction and a bow-tie model selecting control measures, validated on the Wuhan Metro Line 7 air-shaft pit with 15.2 mm maximum settlement.
+
+**Deficiencies & future work (AI):** The method depends on dense, costly sensor arrays; several displacements are still measured manually with inclinometers, soil is idealized as homogeneous and isotropic, and consolidation over time and groundwater seepage are ignored; future work targets real-time sensing with AI-driven risk prediction, better sensor placement, and seepage and time-dependent effects.
+**Fusion depth (AC1):** Fused
+
+**Fusion evidence (AC2):**
+- **Data streams:** RFID, displacement, soil-pressure and environmental sensors (Wuhan Metro Line 7 air shaft, 15.2 mm max settlement).
+- **Integration mechanism:** the multi-source sensing updates the FE model after each step, and Markov-chain prediction plus the bow-tie model compute risk states and control measures on the updated model.
+- **Why this code:** risk prognosis depends on several sensing types and the updated model simultaneously, so Fused.
+
+**Confidence (AC3):** High - the sensor-to-model updating chain is explicit.
 (full-text source: Endnote)

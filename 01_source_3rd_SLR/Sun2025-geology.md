@@ -21,4 +21,17 @@ Geological uncertainty ahead of the tunnel face presents significant challenges 
 | Yes | Yes | Yes | Tier 3 - Digital Twin (bidirectional, two-way) | 0 | 1 | 0 | Design for Safety (DfS) | None | Other / Mixed | Multi (two or more data types) | Single case study | 4 | Predictive analytics / decision support |
 
 **Key evidence (AG):** Digital twin for advanced geological conditions in rock tunnel construction (Tongji U): multi-source geological data (water content, lithology, integrity) → multi-dimensional virtual models (geometric, attribute, behavior); fuzzy cloud probability model quantifies uncertainty for intelligent rock classification (92.95% accuracy); iS3 platform implements closed-loop data-model-decision; validated on five rock tunnel projects. Closed-loop data→model→decision→feedback → Tier 3; no learning loop (fuzzy cloud is probabilistic, not learning).
+
+
+**Strength & gap filled (AH):** Closes the data-model-decision loop for geological uncertainty ahead of tunnel faces: TEM, GPR and borehole data become point-cloud models of water content, lithology and integrity via KNN interpolation, and a fuzzy cloud probability model quantifies uncertainty to classify surrounding rock per meter within a 30 m range, achieving 92.95 percent accuracy across 539 exposed-rock records of five tunnels on the Tongji iS3 platform.
+
+**Deficiencies & future work (AI):** Decision factors cover only water content, lithology and integrity; GPR captures a single cross-section so longitudinal integrity variation is missing, databases are unevenly sized, and per-cycle computation of 10-60 s grows to 2-5 minutes for concurrent tunnels; the authors propose GPU and KD-tree acceleration plus extension to soft-soil and underwater tunnels.
+**Fusion depth (AC1):** Fused
+
+**Fusion evidence (AC2):**
+- **Data streams:** TEM, GPR and borehole geological data (five rock-tunnel projects, 539 exposed-rock records).
+- **Integration mechanism:** KNN interpolation builds per-attribute point clouds, and the fuzzy cloud probability model jointly quantifies uncertainty to classify rock per metre within 30 m (92.95% accuracy) on the iS3 platform.
+- **Why this code:** the classification output depends on three geological data types simultaneously, so Fused.
+
+**Confidence (AC3):** High - the fuzzy cloud fusion is explicit.
 (full-text source: Endnote)

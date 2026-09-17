@@ -21,3 +21,16 @@ In recent years, technological developments have rapidly increased the number of
 | Yes | Yes | Yes | Tier 2 - Digital Shadow | 0 | 0 | 1 | Design for Safety (DfS) | Mentioned only | Finite Element Method / physics-based | Single (one data type) | Simulation | 4 | Predictive analytics / decision support |
 
 **Key evidence (AG):** Real-time DT of a piping system (MECOS-benchmark pipe on shaking table) for PHM: FE model updated via random-vibration FRF matching (Nelder-Mead stiffness/damping calibration), then Craig-Bampton ROM reduces 7,428 to 62 DOFs (~1%, ~450x faster) for Newmark-β real-time estimation of unmeasured-point responses and seismic+arbitrary loads; validated vs FE model/sensors (RMSE 0.0103/0.0266). Model updating is a one-time calibration step during DT construction, not an ongoing self-improvement loop; one-way sensing→estimation, no actuation.
+
+**Strength & gap filled (AH):** Fills the gap for structures under simultaneous seismic and arbitrary loads: a 3D-printed MECOS benchmark pipe on a shaking table with an actuator, an updated ANSYS finite element model, and a Craig-Bampton reduced order model (62 DOFs, about one percent of the 7,428-DOF model) yield about 450 times faster calculation, enabling real-time estimation of unmeasured responses and loads with RMSE 0.0103 and 0.0266 versus sensors.
+
+**Deficiencies & future work (AI):** Validated only on a small laboratory-scale 3D-printed pipe, with verification against the finite element model rather than in-service plant data; sensor noise, measurement uncertainty, and scale effects are not addressed, and no explicit future work is stated beyond the expectation that continuous development will transfer the system to ports, shipbuilding, power generation, and manufacturing.
+
+**Fusion depth (AC1):** SINGLE
+
+**Fusion evidence (AC2):**
+- **Data streams:** FRF/vibration measurements from the MECOS benchmark pipe on a shaking table.
+- **Integration mechanism:** none - Nelder-Mead updating calibrates the FE model, and the Craig-Bampton ROM (62 DOFs, about 450x faster) estimates responses; RMSE 0.0103/0.0266 versus sensors.
+- **Why this code:** SINGLE (AC=Single).
+
+**Confidence (AC3):** High.

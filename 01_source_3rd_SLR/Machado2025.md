@@ -21,4 +21,17 @@ The creation of structured informational models improves understanding of tunnel
 | Yes | Yes | Yes | Tier 1 - Digital Model (static, no live data) | 0 | 0 | 1 | Design for Safety (DfS) | None | Other / Mixed | Multi (two or more data types) | Single case study | 4 | Perception / Computer Vision |
 
 **Key evidence (AG):** Automated procedural modeling for tunnel inspection and digital twin development (USP): parametric modeling + field data → automated procedural modeling framework for tunnel inspection DT; PCD from Faro Focus 3D X330 laser scanner; Mesh Decimation Quality (MDQ) index evaluates mesh quality during decimation; procedural inspection grid identifies defects and classifies areas; Coastal Tunnel (Brazil) case study. Static DT for inspection — no live data link, no actuation, no learning loop.
+
+
+**Strength & gap filled (AH):** Automates tunnel inspection digital twin creation from heterogeneous field data: point clouds from a Faro Focus 3D X330 scan of the Coastal Tunnel are cleaned and decimated, meshed by Poisson reconstruction in Grasshopper, with the new MDQ index guiding mesh quality, and metadata attached via EleFront; digital inspection took about 18 minutes versus 46 minutes manual and located a leakage the visual survey missed.
+
+**Deficiencies & future work (AI):** The model is static with no real-time synchronization, digital inspection missed fine shrinkage cracks, portal overexposure prevents accurate color extraction, internet access is required for server connection, and point cloud density depends on scanning equipment; the authors plan additional information layers and UAV or ROV LiDAR acquisition for hard-to-reach tunnels.
+**Fusion depth (AC1):** SINGLE
+
+**Fusion evidence (AC2):**
+- **Data streams:** laser-scanned point clouds (Faro Focus 3D X330, Coastal Tunnel) with photographic colour only as texture.
+- **Integration mechanism:** none across data types - cleaning, decimation, Poisson reconstruction, MDQ-indexed meshing and the procedural inspection grid all operate on the point cloud.
+- **Why this code:** one measured data type, so SINGLE. Note: column AC lists Multi because modelling stages were counted; under the fusion-depth rules model-generation steps are not distinct data types.
+
+**Confidence (AC3):** High - the single PCD source is explicit in the full text.
 (full-text source: Endnote)

@@ -1,0 +1,1058 @@
+ 
+Contents lists available at ScienceDirect
+Engineering Applications of Artificial Intelligence
+journal homepage: www.elsevier.com/locate/engappai 
+Research paper
+Safety monitoring digital twin-based centralized model consolidation 
+mechanism using dynamic node selection for multi-worker safety prediction
+Sa Jim Soe Moe a
+ , Atif Rizwan d, Anam Nawaz Khan a,b, Rongxu Xu c, Do Hyeun Kim a,b,e,∗
+a Department of Computer Engineering, Jeju National University, Jejusi 63243, Jeju Special Self-Governing Province, Republic of Korea
+b Bigdata Research Center, Jeju National University, Jeju 63243, Republic of Korea
+c Department of Artificial Intelligence, Sejong University, Seoul 05006, Republic of Korea
+d Department of Electronic Engineering, Kyung Hee University, Yongin 02447, Republic of Korea
+e Department of Computer Engineering (and Advanced Technology Research Institute), Jeju National University, Jejusi 63243, Republic of Korea
+A R T I C L E I N F O
+Keywords:
+On-site worker safety
+Digital twin
+Federated learning
+Construction safety management
+Artificial Intelligence of Things
+Internet of Things
+ A B S T R A C T
+The construction industry remains one of the most hazardous sectors, requiring innovative solutions to 
+safeguard workers, especially in complex, dynamic outdoor environments. Digital Twin (DT) technology offers 
+promising capabilities for real-time safety monitoring through virtual replicas of physical systems. However, 
+existing DT frameworks rarely integrate comprehensive safety monitoring via a centralized model consolidation 
+mechanism, such as Federated Learning (FL), which is explicitly tailored for multi-worker scenarios. Addressing 
+this challenge, this paper proposes a FL-based Safety Monitoring Digital Twin (SMDT) framework designed to 
+enhance multi-worker safety in resource-constrained settings. This enables real-time safety monitoring and 
+control by representing on-site workers as virtual objects within a synchronized DT environment. A dynamic 
+node selection mechanism based on client performance is employed to optimize global model convergence in 
+FL. To validate the proposed approach, an edge computing-based experimental testbed using actual Raspberry 
+Pi devices was implemented, using real-world construction safety data including worker status, weather 
+conditions, and building structural parameters. Experimental results demonstrate the effectiveness of the 
+proposed framework in significantly improving safety predictions and real-time monitoring efficiency. This 
+research establishes a foundational work towards safer construction sites through intelligent, synchronized 
+safety monitoring systems.
+1. Introduction
+The construction industry is one of the most hazardous sectors, 
+characterized by dynamic and transient work environments where tasks 
+and hazards constantly evolve. Non-fatal injury rates in construction 
+surpass those in other industries by 71%, underscoring the critical need 
+for innovative and effective safety solutions (Li et al., 2019). This sector 
+presents a unique opportunity for technology-driven interventions due 
+to its reliance on diverse processes, personnel, and equipment, coupled 
+with the increasing availability of sensor-generated data. By leveraging 
+data-driven management of physical systems, significant advancements 
+in operational efficiency and safety can be achieved. DT technology, 
+first introduced by Michael Grieves at a 2002 conference in Troy, 
+Michigan Grieves (2019), has emerged as a transformative concept for 
+creating digital replicas of physical systems, referred to as physical 
+∗ Corresponding author at: Department of Computer Engineering (and Advanced Technology Research Institute), Jeju National University, Jejusi 63243, 
+Republic of Korea.
+E-mail address: kimdh@jejunu.ac.kr (D.H. Kim).
+twins. These digital replicas enable the synchronization of data between 
+physical and digital entities, allowing for optimization, simulation, and 
+real-time monitoring of physical systems (Batty, 2021). With advance-
+ments in IoT, DT technology has been increasingly integrated into 
+various phases of construction projects, including design, operation, 
+and maintenance (Lo et al., 2021). During the construction phase, DT 
+has demonstrated potential for real-time control and management of 
+processes, equipment, materials, workers, and safety (Boje et al., 2020; 
+Pan and Zhang, 2021).
+In the context of safety, DT applications have shown promising 
+results. For instance, DT-based systems have been developed to detect 
+anomalies in the operational condition of assets, improving operational 
+precision and reducing hazards (Lu et al., 2020b). Similarly, sensor-
+based safety management systems have been implemented to monitor 
+https://doi.org/10.1016/j.engappai.2025.112186
+Received 4 December 2024; Received in revised form 6 July 2025; Accepted 1 September 2025
+Engineering Applications of Artiϧcial Intelligence 161 (2025) 112186 
+Available online 11 September 2025 
+0952-1976/© 2025 The Authors. Published by Elsevier Ltd. This is an open access article under the CC BY license ( http://creativecommons.org/licenses/by/4.0/ ). 
+i An update to this article is included at the end
+S.J.S. Moe et al.
+ Nomenclature
+ ML Machine Learning 
+ DT Digital Twin 
+ CL Centralized Learning 
+ FL Federated Learning 
+ DNN Deep Neural Network 
+ DNNR Deep Neural Network Regression 
+ IID Independent and Identically Distributed 
+ Non-IID Non-Independent and Identically Distributed 
+ IoT Internet of Things 
+ AI Artificial Intelligence 
+ AIoT Artificial Internet of Things 
+ DL Deep Learning 
+ MSE Mean Squared Error 
+ MAE Mean Absolute Error 
+ RMSE Root Mean Squared Error 
+ R2 Coefficient of Determination 
+ LAN Local Area Network 
+ HTTP Hypertext Transfer Protocol 
+ TCP Transmission Control Protocol 
+and track construction machinery operations within Cyber–Physical 
+Systems (CPS), enhancing safety and situational awareness (Hasan 
+et al., 2022). Despite these advancements, DT technology has not 
+yet been fully realized in the construction industry for addressing 
+worker safety challenges. Hou et al. (2020) highlighted that the lack 
+of real-world implementation and the absence of a unified frame-
+work integrating diverse sensor data, processing technologies, and 
+decision-making systems have limited the potential of DT. This frag-
+mentation leads to inefficiencies in safety monitoring and operational 
+decision-making (Teizer et al., 2022).
+To bridge these gaps, this study introduces a novel framework 
+that integrates FL with DT to enhance safety monitoring in multi-
+worker outdoor construction environments. FL offers a decentralized 
+machine learning approach, enabling devices to collaboratively train 
+models while preserving the privacy of locally stored data (McMahan 
+et al., 2017). Unlike centralized learning, where data is aggregated at a 
+central server, FL transmits only model updates from individual clients, 
+significantly reducing communication overhead and addressing data 
+privacy concerns (Li et al., 2021). This is particularly advantageous for 
+resource-constrained IoT devices that generate continuous streams of 
+time-series data, where constant data transmission to a central entity 
+would be impractical (Wang et al., 2022).
+In this study, a decentralized learning paradigm, FL, is employed 
+to consolidate knowledge and form a global model through the collab-
+orative training of multiple clients, which represent the multi-worker 
+scenario, especially in outdoor occupational settings. Without needing 
+to share the raw data, FL enables the construction of an optimal 
+model that is used to monitor the safety of the workers. Moreover, a 
+performance-oriented device selection method is employed to ensure 
+the optimal performance of the learning model aggregation in every 
+round. To do this, DT serves as a virtualization platform, where multi-
+ple devices can be dynamically registered and created as virtual entities 
+to mirror the characteristics of their physical counterparts (Gao et al., 
+2023). This virtualization ensures synchronization between physical 
+and virtual objects, enabling efficient participation in the FL process 
+and facilitating real-time monitoring for worker safety. Fig. 1 illustrates 
+the DT architecture, where the first layer comprises virtual twins of 
+physical devices to establish a synchronized connection. The DT envi-
+ronment facilitates visualization of FL training processes, safety metrics, 
+and performance predictions through an interactive web interface. 
+Furthermore, the integration of DT enables monitoring and control to 
+be conducted through HTTP, while model updates are transmitted via 
+TCP (Pinyoanuntapong et al., 2022). To operationalize the framework, 
+an edge computing system based on prior studies (Xu et al., 2022) is 
+employed to communicate with sensor-based IoT devices and stream-
+line data collection. A DNN (Liu et al., 2017) is collaboratively trained 
+across FL clients and then deployed for inference.
+The paper makes the following key contributions:
+1. Proposes a novel federated learning-based safety monitoring 
+digital twin (SMDT) framework that addresses current gaps in 
+integrated safety monitoring systems and improves the safety 
+of multiple workers in dynamic, outdoor construction environ-
+ments.
+2. Develops an integrated system that enables real-time safety mon-
+itoring and control while maintaining synchronization between 
+physical and virtual devices, representing resource-constrained 
+AIoT devices as virtual objects within a DT environment.
+3. Introduces a dynamic node selection mechanism based on nor-
+mal distribution to improve the convergence efficiency of global 
+federated learning models, ensuring optimal client participation 
+in each collaborative learning round.
+4. Implements and experimentally validates the proposed frame-
+work on a physical testbed, using real Raspberry Pi edge de-
+vices and IoT sensors to collect and manage live construction 
+safety data, demonstrating practical feasibility and performance 
+in realistic settings.
+The remainder of the paper is organized as follows: Section 2 
+presents a summary of related studies. The suggested FL-based SMDT 
+for the construction worker safety inference system is presented in 
+Section 3. Experimental and performance outcomes are described in 
+detail in Section 4. Section 5 concludes the paper with a discussion of 
+potential directions for future research.
+2. Related work and background
+The following subsections review the broad applications of DT 
+technology, its utilization in construction safety, the integration of FL 
+with DTs, and the use of advanced machine learning-based monitoring 
+in industrial systems, which together form the conceptual foundation 
+of our proposed SMDT framework.
+2.1. General applications of digital twin technology
+Digital Twin technologies have gained increasing attention across 
+various industrial domains due to their ability to provide real-time 
+synchronization between physical and digital entities. In structural 
+engineering, DTs have been employed for assessing the seismic collapse 
+resistance of infrastructure such as long-span cable-stayed bridges, 
+helping to identify vulnerable components (Lin et al., 2021). In man-
+ufacturing, DT-driven integration frameworks have been developed to 
+optimize performance evaluation in smart manufacturing enterprises, 
+including the evaluation of green performance metrics (Li et al., 2022). 
+Beyond engineering, DT concepts have expanded into the healthcare 
+domain (Hassani et al., 2022), where human-centered digital twins 
+are used to enhance personalized healthcare and wellness services. 
+Recent research also explores Human Digital Twin (HDT) frameworks 
+in Industry 5.0 environments, aiming to empower individuals and fos-
+ter adaptive learning within cyber–physical–social ecosystems (Wang 
+et al., 2024). Across all these sectors, the ability of DTs to integrate real-
+time sensing, virtual modeling, and predictive analytics has opened new 
+frontiers for intelligent monitoring and control. Within the construction 
+industry, DT adoption is accelerating (Jiang et al., 2021), yet compre-
+hensive frameworks for real-time safety management remain relatively 
+underexplored.
+Engineering Applications of Artiϧcial Intelligence 161 (2025) 112186 
+2 
+S.J.S. Moe et al.
+Fig. 1. Control characteristics of the virtual objects in digital twin.
+2.2. Digital twin applications in construction worker health and safety
+The construction sector, with its dynamic, hazardous work environ-
+ments, presents a prime opportunity for applying DT-based solutions 
+to improve worker health and safety. Several innovative systems have 
+emerged in this space. For instance, IoT-integrated DT frameworks 
+have been used for monitoring worker status and location in real-time 
+using RFID and Bluetooth technologies (Zhao et al., 2021). Wearable 
+sensor-based DT systems have also been designed to capture worker 
+posture and motion through Inertial Measurement Units (IMUs), with 
+real-time feedback enabled through AR (Akanmu et al., 2021). DT-
+based behavioral simulations have been developed to model worker 
+responses to various safety interventions (Fang et al., 2023), providing 
+valuable insights into optimizing safety training and protocols. Closed-
+loop DT systems for proactive safety control have also been demon-
+strated, using machine learning and case-based reasoning to guide 
+safety decisions in ongoing projects (Sacks et al., 2020). Additionally, 
+DT-based risk prediction models have been applied to specific con-
+struction tasks such as hoisting operations, where they help visualize 
+and predict spatiotemporal safety risks in real-time (Liu et al., 2022). 
+While these efforts demonstrate the potential of DTs for enhancing 
+safety management, many current approaches are limited to single-
+use cases or small-scale implementations, lacking broader integration 
+across multi-worker, outdoor environments.
+2.3. Federated learning and digital twin integration
+Recent years have seen growing interest in combining Federated 
+Learning (FL) with DT to support privacy-preserving, distributed in-
+telligence across diverse systems. Pioneering frameworks have been 
+proposed to enable collaborative FL among city-level DTs for public 
+health applications such as pandemic response (Pang et al., 2021). 
+In industrial IoT environments, adaptive DT architectures have been 
+designed to enhance FL by enabling device-specific modeling while 
+reducing communication costs (Sun et al., 2020). Drone-based DT-FL 
+frameworks have been introduced for privacy-aware data aggregation 
+and storage in blockchain networks (Islam and Shin, 2023). Health-
+care applications have benefited from hierarchical FL-DT models for 
+anomaly detection with improved resilience to data poisoning and 
+communication delays (Gupta et al., 2021). Other studies integrate 
+FL with DT and mobile edge computing (MEC) to overcome latency 
+and scalability challenges in heterogeneous network environments (He 
+et al., 2022; Alhartomi et al., 2023; Lu et al., 2020a; AbdulRahman 
+et al., 2023). Despite these advancements, existing works often focus on 
+static or semi-static environments (smart cities, healthcare, IIoT), with 
+limited attention to highly dynamic, mobile, multi-agent environments 
+such as outdoor construction sites. Furthermore, many studies remain 
+at the simulation stage, without extensive validation using real-world 
+edge hardware.
+2.4. Advanced machine learning-based monitoring in industrial systems
+Advanced machine learning-based monitoring has become a cen-
+tral focus in the development of intelligent industrial systems, where 
+real-time fault detection, anomaly recognition, and process optimiza-
+tion are critical. For instance, wavelet-entropy aided ML approaches 
+have improved multiscale monitoring accuracy in chemical process 
+industries (Ali et al., 2023). Integrated ML frameworks for physico-
+chemical process monitoring have shown strong performance in han-
+dling dynamic system behavior (Ali et al., 2024a). Distributed Canon-
+ical Correlation Analysis (CCA) with low-frequency control charts has 
+enhanced statistical fault detection capabilities in complex industrial 
+processes (Ali et al., 2024b). Likewise, dynamic ICA-distributed CCA 
+methods (Ali et al., 2024c) and explainable fusion-based monitor-
+ing techniques (Ali et al., 2025) have contributed to improved inter-
+pretability and robustness in safety-critical applications. These trends 
+highlight the increasing demand for intelligent, scalable, and inter-
+pretable monitoring frameworks across industrial domains. Our pro-
+posed SMDT framework draws on these concepts, applying federated 
+learning, dynamic node selection, and DT-based explainable monitor-
+ing to the multi-worker construction domain — an area where such 
+integrated approaches remain underdeveloped.
+3. Proposed methodology
+3.1. Dataset and model
+A list of the sensor devices used for collecting environmental, struc-
+tural, and worker-related data is shown in Table 1. The dataset includes 
+Engineering Applications of Artiϧcial Intelligence 161 (2025) 112186 
+3 
+S.J.S. Moe et al.
+Fig. 2. DNN model architecture used for learning and prediction.
+Table 1
+Detailed experimental sensors descriptions for collecting construction environ-
+ment data.
+ Sensing device Feature Description with units 
+ Anemometer Wind Wind velocity (m/s) 
+ Pluviometer Precipitation Rainfall height (mm) 
+ DHT22 Temperature Temperature at outdoor (°C) 
+ Load Cell Load Force of pulling (kN) 
+ Strain gauge Strain Variation in Length (μm/m) 
+ Inclinometer Inclinometer Object’s slope (◦) 
+ Heart rate sensor Heart Rate Heartbeat of human (𝐵𝑃 𝑀) 
+ Handheld GPS Location Distance to the danger zone (m) 
+50,000 instances with eight features, normalized per node to accommo-
+date sensor variability.
+1. Weather condition: The weather on the construction site is an 
+important consideration. Wind speed, precipitation, and extreme 
+temperatures can all affect the safety of workers as well as the 
+tools and materials used in construction (Karthick et al., 2023).
+2. Building conditions: It is crucial to measure the load, strain, 
+and inclination accurately into account to affirm the integrity of 
+the structural and building’s stability in an outdoor construction 
+environment (Kang et al., 2023).
+3. Worker status: To ensure the well-being of construction workers, 
+it is essential to protect their safety and health. By tracking the 
+heart rates of the workers, it is possible to learn about how their 
+bodies are reacting to their workplace. Also, knowing where 
+they are, especially in relation to the danger zone, is vital to 
+guaranteeing their safety (Patel et al., 2022).
+The provided Fig. 2 illustrates a DNNR model designed for training 
+and predicting worker safety. This multilayered neural network is made 
+up of an input layer, two hidden layers having 64 and 32 neurons 
+each, and an output layer. It was built using a supervised learning 
+methodology. The model utilizes various input parameters, including 
+wind, temperature, precipitation, load, strain, inclinometer, heart rate, 
+and location. The output of the model is the safety index, and it involves 
+a total of 2689 parameters.
+3.2. FL-based safety monitoring digital twin system
+We developed an integrated framework combining DT and FL mech-
+anisms to enhance the safety of construction workers. Fig. 3 illustrates 
+the architecture of the proposed DT-based worker safety prediction 
+system. The process begins with leveraging the core capabilities of the 
+DT framework, including virtualization, synchronization, and visualiza-
+tion. Each AIoT device, representing an individual construction worker, 
+is virtualized on the DT platform as a digital twin. This virtualization 
+mirrors the physical device’s characteristics to enable real-time moni-
+toring and safety assurance. For this integration, physical devices must 
+register with the DT platform by providing their port number and IP 
+address to establish a connection.
+In our proposed system, each worker’s digital twin is constructed by 
+combining multiple attributes captured in real time from edge devices. 
+These include: (1) Worker Status — heart rate (biometric signal) and lo-
+cation relative to danger zones (via GPS); (2) Environmental Conditions 
+— wind velocity, temperature, and precipitation; and (3) Structural 
+Conditions — load, strain, and inclination of structural elements. To-
+gether, these attributes enable the dynamic representation of each 
+worker’s physical state and environment within the DT, supporting 
+individualized safety monitoring and predictive analysis.
+The FL mechanism is incorporated into the framework to collabora-
+tively construct a globally optimal model while preserving the privacy 
+of sensitive worker data. The FL server, embedded within the DT 
+platform, facilitates both the initialization and aggregation of models. 
+The initial model, constructed and tested on the DT platform, serves as 
+the baseline, while the final model is obtained through iterative global 
+aggregation of locally trained models across multiple devices. A DNN 
+model is employed as the primary predictive model for assimilating 
+worker safety information in outdoor construction environments. To 
+expedite model convergence and improve performance, a dynamic de-
+vice selection mechanism (explained in SubSection 3.4.1) is integrated 
+during the FL server’s aggregation process. This mechanism ensures 
+efficient participation of devices in collaborative training.
+The proposed framework utilizes communication protocols such 
+as HTTP for real-time monitoring and control and TCP for secure 
+model sharing. These protocols are implemented using lightweight 
+web servers, with Flask managing monitoring commands and Django 
+handling model update transfers. These technologies ensure efficient 
+and scalable communication between the DT platform and the FL 
+clients. Each client device is equipped with a DT assistance application, 
+installed locally, which responds to control and monitoring commands 
+from the DT platform. This application operates on the client’s local IP 
+address and registered port, maintaining synchronization with the DT 
+platform. Additionally, the data across clients is assumed to be both 
+Engineering Applications of Artiϧcial Intelligence 161 (2025) 112186 
+4 
+S.J.S. Moe et al.
+Fig. 3. Proposed federated learning-based safety monitoring digital twin for multi-worker safety prediction architecture.
+IID and non-IID, ensuring that each client trains its model on data 
+that is more closely aligned with the real-world scenario. The federated 
+server shares the initial model architecture to enforce uniformity in the 
+extracted feature matrix across all clients. This consistency in feature 
+matrix dimensions ensures seamless aggregation of locally trained mod-
+els into a single global model, thereby enhancing both the scalability 
+and efficiency of the safety monitoring system.
+The steps taken by the federated server and its clients are depicted 
+in Algorithm 1, along with the node selection procedure and the model 
+aggregation process that follows the receipt of updated models from 
+each client.
+Fig. 4 presents an integrated, four-tier architecture that underpins 
+our SMDT, integrating with FL. At the base is the Construction Site 
+Environment, where heterogeneous sensors capture real-time worker 
+status (heart rate and GPS location), environmental conditions (wind, 
+temperature, and precipitation), and structural parameters (load, strain, 
+and inclination). These raw data feed upward into each AIoT Device, 
+functioning as an edge node. Within each device, EdgeX microservices 
+handle data acquisition and management, while control and monitoring 
+services manage communication with the DT platform. The AI Module 
+on each device adopts the global model architecture, fine-tunes it on the 
+local data, and then extracts and sends updated model weights back to 
+the federated server.
+Above the AIoT layer, the Federated Server coordinates the FL cycle 
+by preparing and broadcasting the initial model, receiving client up-
+dates, and aggregating them based on performance before redeploying 
+a refined global model. At the top, the Digital Twin Layer provides three 
+core functional spaces — Model Management (metadata collection, 
+model creation, and layer setup), Monitoring Space (device registra-
+tion, status monitoring, and metadata retrieval), and Control Space 
+(parameter setting, device activation/deactivation, model broadcast, 
+and inference control) — all supported by a central repository that 
+stores device metadata and model performance. Communication uses 
+HTTP for control and monitoring and TCP with JSON for model syn-
+chronization, enabling a seamless, secure, and transparent dashboard 
+for visualization and system management.
+3.3. Implementation of digital twin
+The DT platform is implemented as a lightweight web-based in-
+terface accessible through any modern web browser (e.g., Chrome, 
+Edge, Firefox), enabling wide accessibility for site managers, safety 
+engineers, and IT staff without requiring dedicated client software. The 
+system supports responsive real-time visualization of training progress, 
+inference results, and worker safety indices with an update rate of 
+approximately 1 s. Visualization efficiency is ensured through asyn-
+chronous REST APIs combined with WebSocket-based live updates, 
+even when operating on resource-constrained devices such as Rasp-
+berry Pi clients. The platform also provides intuitive customization 
+options, allowing users to dynamically register devices, configure FL 
+training parameters (epochs, rounds), select models, and control which 
+Engineering Applications of Artiϧcial Intelligence 161 (2025) 112186 
+5 
+S.J.S. Moe et al.
+Fig. 4. Block diagram of the proposed SMDT system.
+AIoT nodes and results are visualized. The modular UI structure sup-
+ports future extensions for role-based access and stakeholder-specific 
+dashboards.
+3.3.1. Synchronization and management of data and model on DT
+Fig. 5 depicts the conceptual diagram for data and model synchro-
+nization and management between the FL-based SMDT and its AIoT de-
+vices. These devices are created on the platform as virtual objects (VO) 
+after registration. Model management system encompasses core func-
+tionalities: Model Visualization, which offers a graphical inspection of 
+model architectures or metrics; Model Synchronization, ensuring align-
+ment of various model versions across devices; Model Creation, the ini-
+tial phase of defining new models; Model Update, which deals with re-
+fining existing models; and Model Deletion, eliminating obsolete mod-
+els; Model Preparation, which indicates preliminary processes such as 
+model initialization that takes user input to construct the model on DT.
+The data in this study refer to the performance of the local update 
+model in each round of collaborative training, as well as the features 
+and data distribution of the sensitive local data. While local model per-
+formance is used in node selection for aggregation, local data features 
+and their data distribution are considered when constructing the initial 
+global model. Model Aggregation, central to FL, involves merging 
+model parameters from diverse sources, as denoted by the formula 
+𝐺𝑀 = ∑(𝐿𝑀1 + 𝐿𝑀2 + 𝐿𝑀3...𝐿𝑀𝑛), which consolidates the weights 
+of individual local models to create a global model. Model Weight 
+Aggregation further emphasizes the specific focus on weights. Model 
+Broadcasting distributes the finalized initial model or updated model 
+parameters to individual nodes. At the base, local (LM1, LM2, LM3) 
+and global model (GM) instances are depicted. The neural structures 
+symbolize the architecture of individual local models, underlining their 
+standalone nature in the federated framework.
+The FedAVG is used for model aggregation at the server by assigning 
+weights to the models based on their performance. Moreover, the 
+performance of the received models is first analyzed; if the performance 
+is below the threshold, the model will be excluded from the aggrega-
+tion process for that specific iteration. In cases where the virtual and 
+physical objects need to be synchronized, the synchronization property 
+is crucial. Monitoring and controlling the FL training process is possible 
+through DT, and the interactive web application of DT displays the 
+prediction outcomes and performance metrics. TCP is mainly used for 
+model synchronization, while HTTP is used for control and monitoring.
+To facilitate the management, configuration, and monitoring of 
+AIoT devices, the DT platform offers a web-based user interface (Fig. 6) 
+that provides real-time visualization of safety indices, model training, 
+and inference progress, while supporting device registration, model 
+customization, and parameter tuning for various users and stakeholder 
+needs. Each registered device is represented as an individual entity 
+within the DT framework. The primary objective of this interface is 
+to allow for the efficient monitoring and control of these devices 
+in accordance with their designated functionalities. Users of the DT 
+platform may initiate their experience by selecting the ‘‘Environment’’ 
+option located at the top of the sidebar panel. Upon doing so, the system 
+will present a list of registered devices along with their corresponding 
+metadata, provided that the devices have already been registered. To 
+configure the platform, DT users must first access the ‘‘Device Registra-
+tion’’ section, which enables the registration of devices by entering their 
+IP addresses and port numbers. Additionally, the ‘‘Model Management’’ 
+feature plays a crucial role in configuring the learning model used in the 
+FL process. The ‘‘Preparing Platform’’ function is designed to oversee 
+registered devices that have successfully established a connection to the 
+server following the initial registration phase.
+On the DT platform, a node can dynamically register to participate 
+in the collaborative training using FL. The following Fig. 7 depicts the 
+Engineering Applications of Artiϧcial Intelligence 161 (2025) 112186 
+6 
+S.J.S. Moe et al.
+Fig. 5. Data and model synchronization and management on DT.
+Fig. 6. Web-based UI of the DT platform, showing configurable options for device registration, training control, inference control, and real-time visualization of 
+safety monitoring results.
+registration interface on the DT platform’s UI, followed by examples of 
+registered devices’ IPs and port information.
+This (Fig. 8) interface on the DT platform provides configuration 
+attributes for collaborative training in FL. The federated server house 
+within the SMDT platform generates the configuration for every client. 
+As seen in Fig. 8, the DT will create several JSON configuration files 
+for the aggregator and nodes based on the user’s configurations. The 
+configuration comprises the name of the dataset, port, and IP of the 
+server, local epochs, training rounds, name of the model, and the 
+designated node’s unique ID. To prevent collisions, the port of the 
+aggregator — the federated server in FL — is dynamically assigned to 
+each node. The aggregator identifies open ports and assigns one to each 
+client based on their IP address and registered ports, before sending the 
+configuration file to each client. Moreover, the FL parameter set by the 
+DT user is also created as a JSON file to distribute to all registered 
+clients.
+The registration interface will appear when the user selects the 
+device registration button in the DT sidebar. The device’s IP address 
+and port number are necessary for registration. The node with the 
+specified IP address must be within the same network. In our testing 
+environment, six devices are involved in collaborative training, and 
+their respective IP addresses and port numbers are also presented for 
+Engineering Applications of Artiϧcial Intelligence 161 (2025) 112186 
+7 
+S.J.S. Moe et al.
+Algorithm 1 Federated Learning with Nodes Selection
+1: Input: Local dataset 𝐸1, 𝐸2, … , 𝐸𝑚 on 𝑚 client nodes, local model 
+parameters { 𝜃𝑖
+} 𝑀
+𝑖=1, the number of training rounds 𝑀, the number 
+of local epochs 𝑁
+2: Output: Updated parameters 𝜃
+3: Procedure Client Node Executes:
+4: for each node 𝑖 = 1, 2, … 𝑚 in parallel do
+5: Initialization
+6: current_round ← 1
+7: while current_round ≤ 𝑀 do
+8: Update parameter 𝜃𝑖 with dataset 𝐸𝑖 in 𝑁 epochs
+9: Send training info to Digital Twin
+10: Get a list of selected nodes 𝑆𝑡 from Digital Twin
+11: if 𝑖 ∈ 𝑆𝑡 do
+12: Send 𝜃𝑖 to federated server
+13: end if
+14: Receive 𝜃 from federated server after aggregation
+15: 𝜃𝑖 ← 𝜃
+16: current_round ← current_round +1
+17: end while
+18: end for
+19: end procedure
+20: Procedure Federated Server Executes:
+21: current_round ← 1
+22: while current_round ≤ 𝑀 do
+23: Receive a list of selected nodes 𝑆𝑡 from Digital Twin
+24: Receive all weights { 𝜃𝑘
+} from selected nodes
+25: 𝜃 ← aggregateWeights ({ 𝜃𝑘
+})
+26: Send 𝜃 to all client nodes
+27: current_round ← current_round +1
+28: end while
+29: end procedure
+Fig. 7. Device registration interface on DT.
+the convenience of DT users. The following Fig. 9 comes into sight when 
+the DT user clicks on the ‘‘Model Management’’ button on the sidebar of 
+the DT user interface. Preparing a model for FL clients is a key step that 
+entails customizing the model’s configuration through a user-friendly 
+interface, as depicted in the figure.
+Users can define various model attributes to fit their specific learn-
+ing tasks and system requirements. These attributes include the model’s 
+name, loss function, activation function, architecture (number of hid-
+den layers), optimizer, and input/output shapes. After configuring these 
+parameters, users click the ‘‘Model Preparation’’ button to set up a 
+fine-tuned model FL. This model is then distributed to client devices, 
+allowing them to collaboratively train and enhance a global model 
+while ensuring data privacy and decentralization. The interface for this 
+process appears when a DT user clicks the ‘‘Model Preparation’’ button, 
+as shown in Fig. 10. Here’s a summary of the process:
+Fig. 8. Configuration interface on DT.
+Fig. 9. Model architecture preparation.
+• Model Definition: Users name their model (e.g., ‘DNN’) and spec-
+ify its type.
+• Loss Function: Mean squared error (‘mse’) is selected to evaluate 
+model fit.
+Engineering Applications of Artiϧcial Intelligence 161 (2025) 112186 
+8 
+S.J.S. Moe et al.
+Fig. 10. Model preparation result on DT.
+• Activation Function: ‘ReLU’ (Rectified Linear Unit) is chosen for 
+non-linearity.
+• Hidden Layers: Four hidden layers are defined for capturing 
+complex data patterns.
+• Optimizer Choice: ‘Adam’ is used for its adaptive learning rate.
+• Input and Output Shape: The input shape is set to ‘8’ and the 
+output shape to ‘1’.
+• Model Preparation: The user initiates ‘Model Preparation’ to cre-
+ate a custom model for FL clients, which they then train locally, 
+preserving privacy.
+When the DT user clicks the ‘‘Train Model’’ button, the interface 
+shown in Fig. 11 appears, facilitating model training on the DT platform 
+for distribution in the FL framework. The server computes performance 
+metrics, which are displayed in a table, including ‘loss,’ ‘mse’ (Mean 
+Squared Error), ‘mae’ (Mean Absolute Error), ‘val_loss,’ ‘val_mse,’ and 
+‘val_mae.’ This table distinguishes between training and validation met-
+rics, enabling users to monitor the model’s progress and performance 
+and make informed adjustments.
+The presented Fig. 12 becomes visible when the DT user selects the 
+‘Preparation Platform’ button on the DT user interface sidebar during 
+configuration setup for the FL process. Upon registration of a device 
+on the DT platform, related metadata like IP address, port number, 
+hardware specifications, etc., is stored in the repository. Depending 
+on the configuration set by the DT user, the devices are showcased 
+to illustrate the communication topology within the network. In the 
+displayed diagram, three devices are linked to the federated server 
+but not directly to each other, exemplifying the collaborative training 
+mechanism of FL.
+Fig. 13 provides an overview of the control buttons for learning 
+operations, inference, and virtual replicas of AIoT devices on the SMDT 
+platform. Here are the key functionalities of these buttons:
+Fig. 11. Evaluation interface of the prepared model.
+Fig. 12. Visualization of communication network for FL-based SMDT.
+• Device Activation: This feature allows users to activate or deacti-
+vate individual nodes, which are AIoT devices. Activation estab-
+lishes communication between the aggregator and its associated 
+nodes.
+• Training Control:
+– Start Server: DT users can initiate the training process by 
+clicking this button. The process begins after the DT user 
+configures the FL parameters.
+– Get Training Result: This button provides real-time access 
+to training progress and results. Users can monitor various 
+metrics, view graphs, and access statistics related to the 
+training process.
+Engineering Applications of Artiϧcial Intelligence 161 (2025) 112186 
+9 
+S.J.S. Moe et al.
+Fig. 13. Virtual replica of a registered device on DT.
+• Inference Control:
+– Start Inference: Users can trigger inference processes on 
+specific edge devices. Inference involves using trained ML 
+models to make predictions or decisions.
+– Get Inference Result: The results of inference processes are 
+displayed on the DT user interface, offering real-time access 
+to prediction outcomes for worker safety.
+• Data Visualization: The DT user interface displays data (metadata) 
+collected from AIoT devices using charts, graphs, or maps. It 
+also shows the results of training and inference processes. These 
+visualizations provide a clear and informative way to understand 
+and interpret the data and outcomes.
+The results of the assessment of the model performance for workers 
+1, 2, and 3 — represented by AIoT devices 1, 2, and 3 — are shown in 
+the following Fig. 14. For the convenience of DT users, the performance 
+of the learning model on each node can be visually evaluated. This is 
+achieved by having each participant in collaborative machine learning 
+send their model performance results in CSV format to the DT platform, 
+which is then compressed into JSON format. On the DT platform’s 
+user interface, the training model results from the AIoT devices are 
+displayed. These metrics provide valuable insights into the performance 
+of the learning models, aiding in assessment and decision-making.
+3.4. Implementation of federated learning
+3.4.1. Dynamic node selection algorithm for enhanced model consolidation
+Improving the global model’s overall performance depends critically 
+on the convergence of the local models. We use FedAVG as the server-
+side aggregation method in our approach. First, clients carry out local 
+Fig. 14. Visualized model evaluation result of the AIoT devices.
+updates after the FL server distributes the initial model containing 
+randomly initialized weights. (𝐿𝑈 ≥ 1)
+𝑤𝑘
+𝑡+𝑖+1 = 𝑤𝑘
+𝑡+𝑖 − 𝛼𝑡+𝑖
+𝜕𝑒𝑟𝑟𝑜𝑟
+𝜕𝑤𝑘
+𝑡+𝑖
+, 𝑖 = 0, 1, … , 𝐿𝑈 = 6, (1)
+𝑤ℎ𝑒𝑟𝑒 𝑘 represents the number of clients and 𝑡 denotes the cumula-
+tive count of local updates completed in earlier rounds of communica-
+tion.
+If 𝑘 (FL’s client) comprises local data instances: 𝑥𝑘,1, 𝑥𝑘,2, … , 𝑥𝑘,𝑛𝑘 , 
+subsequently, the regional loss of a specific client is described as: 
+𝑃𝑘 =
+𝑛𝑘∑
+𝑗=1
+𝑙(𝑤𝑘
+𝑡+𝑖+1; 𝑥𝑘,𝑗 ) (2)
+𝑤ℎ𝑒𝑟𝑒 𝑙 (.; .) represents a user-defined loss function, which is used to 
+assess the client’s performance 𝑘. Weights forwarded by clients 𝑤𝑘
+𝑡+𝐿𝑈
+to the server, and these weights are aggregated by the server to create 
+an updated global model 𝑤1
+𝑡+𝐿𝑈 , … , 𝑤𝑛
+𝑡+𝐿𝑈 . When it comes to client 
+participation, the server primarily conducts two types of aggregation:
+1. Full Node participation. All registered clients’ weights are 
+combined in this mode of aggregation, and the performance of 
+individual clients is ignored. 
+𝑤𝑡+𝐿𝑈 = 1
+𝑁
+𝑁∑
+𝑘=1
+𝑤𝑘
+𝑡+𝐿𝑈 (3)
+Unfortunately, all device participation has a major impact on 
+the global model. For example, in a twelve-client FL network, 
+the global model could be adversely affected by any two clients 
+participating if their performance is poor.
+2. Dynamic Node Selection. Clients selected on the basis of var-
+ious performance metrics are involved in the dynamic node 
+selection scenario. Choosing the optimal models for aggregation 
+Engineering Applications of Artiϧcial Intelligence 161 (2025) 112186 
+10 
+S.J.S. Moe et al.
+Fig. 15. Performance of the clients based on normal distribution.
+makes this approach more realistic. By combining the weights of 
+the chosen clients, the global model is produced. 
+𝑤𝑡+𝐿𝑈 = 1
+𝑐𝑜𝑢𝑛𝑡(𝑆𝑡)
+∑
+𝑘∈𝑆𝑡
+𝑤𝑘
+𝑡+𝐿𝑈 (4)
+𝑤ℎ𝑒𝑟𝑒, for 𝑡th server round, 𝑆𝑡 represents the set of the clients 
+that are selected.
+In this study, a node selection mechanism based on a normal 
+distribution (Fig. 15) is employed. 
+𝑓 (𝑝𝑘) = 1
+𝜎
+√
+2𝜋
+𝑒− 1
+2 ( 𝑝𝑘−𝜇
+𝜎 )2
+(5)
+𝑤ℎ𝑒𝑟𝑒,
+𝜇 = 1
+𝑁
+∑𝑁
+𝑘=1 𝑝𝑘 the mean of every client’s performance.
+𝜎 =
+√ ∑(𝑝𝑘−𝜇)
+𝑁 the standard deviation of each client’s performance.
+As shown in (Fig. 15) and stated in the following Eq. (6), the 
+performance (loss) distribution is computed for each server round, and 
+clients are selected if their loss falls below a predetermined level. 
+𝑆𝑡 =
+{ select if 𝑝𝑘 ∈ [ 𝑄1, 𝑄2, 𝑄3
+]
+ discard otherwise (6)
+Aggregation is carried out after the node selection procedure, and 
+the global model that is produced is subsequently shared with each and 
+every registered client.
+3.4.2. FL-based collaborative training
+Fig. 16 shows the collaborative learning process based on the FL 
+mechanism. In our experiment, six devices (Raspberry Pi 4B) are em-
+ployed to evaluate this approach. Additionally, two types of experi-
+ments are conducted, such as full device participation and the dynamic 
+node selection method. On each device, local data collected from the 
+respective emulator is stored in CSV format. The following are the steps 
+in each training round of the FL process.
+1. Initialization: In the first round, the federated server distributes 
+the global model weights as the starting point.
+2. Local Training: For subsequent rounds, the federated server 
+sends the current global model weights to the participant nodes. 
+These nodes then perform local training using their own data, 
+which has been preprocessed and transformed for compatibility 
+with the learning model.
+3. Parameter Aggregation: After local training, each node sends its 
+updated model parameters to the server. Since each node uses 
+different data, these parameters will vary.
+Table 2
+Comprehensive overview of FL-based safety monitoring digital twin testing 
+environment.
+ Entity Hardware Softwares 
+ Digital 
+twin/Federated 
+server
+PC, Windows 10 Pro Python 3.9, HTML 5, CSS 3, 
+JavaScript, Keras 2.6, TensorFlow 
+2.6, Flask 2.2.2, Django 4.2.7, 
+MySQL Workbench 8.0 
+ 
+ AIoT device Raspberry Pi 4B, 
+Ubuntu 20.04 
+Server
+Python 3.8, Keras 2.6, 
+TensorFlow 2.6, Flask 2.2.2 
+ 
+ Emulator Raspberry Pi 4B, 
+Ubuntu 20.04 
+Server
+Go 1.18.5, Docker 20.10.21, 
+Docker-compose 1.25.0, EdgeX 
+(Ireland)
+ 
+4. Model Update: The federated server aggregates these param-
+eters, using FedAVG as the primary approach, to create an 
+improved global model.
+5. Convergence: This process repeats from step 1 until the model 
+converges.
+6. Deployment: The trained global model is sent to every edge node 
+that participated, once it has converged.
+The current system was implemented and evaluated on a physical 
+testbed of Raspberry Pi 4B devices, simulating multi-worker conditions, 
+using real-world construction safety data provided by a Korean research 
+institute. Field deployment at active construction sites is planned for 
+future stages of this research.
+4. Experiment and results
+The proposed SMDT framework was implemented and validated 
+on a physical testbed consisting of Raspberry Pi 4B devices as AIoT 
+clients, connected to a DT platform and FL server running on a high-
+performance PC. Real-world construction safety data provided by a 
+Korean research institute was used for model training and valida-
+tion. This section presents experimental results demonstrating model 
+accuracy, convergence, inference latency, and system performance.
+4.1. Experimental environment
+To evaluate the proposed SMDT framework and the centralized 
+model consolidation mechanism based on FL, we conducted extensive 
+experiments using a practically implemented testbed (Fig. 17) consist-
+ing of both physical devices and edge computing components. Table 
+2 provides a detailed overview of the hardware and software environ-
+ments used for the DT/FL server, AIoT devices, and IoT emulators.
+In this testbed, the Federated Learning process is performed across 
+multiple Raspberry Pi devices, which act as FL clients representing 
+on-site workers and resource-constrained AIoT devices. These devices 
+are deployed to collect real-world construction safety data, including 
+worker status, environmental conditions, and structural parameters, to 
+train a DNN model for effective safety inference in outdoor construction 
+environments. The goal is to develop an optimal model capable of 
+providing real-time safety monitoring and risk predictions for workers. 
+Unlike purely simulated environments, this experimental setup inte-
+grates actual Raspberry Pi hardware with edge-based data collection, 
+enabling us to validate both the practicality and reliability of the 
+proposed system in a dynamic, realistic context. The DT platform and 
+FL server run on a high-performance desktop computer to manage 
+model aggregation, coordination, and visualization tasks.
+Fig. 18 illustrates the overall architecture of the experimental en-
+vironment used to test the SMDT framework for multi-worker safety 
+monitoring in outdoor construction settings. The FL server and DT 
+platform run on a desktop PC with Windows 10 Pro, powered by an 
+Intel Core i7 processor (2.5 GHz), 64 GB of memory, and 1 TB of 
+Engineering Applications of Artiϧcial Intelligence 161 (2025) 112186 
+11 
+S.J.S. Moe et al.
+Fig. 16. Collaborative training process based on FL.
+Fig. 17. Physical testbed of Raspberry Pi 4B devices used as FL client nodes.
+storage. The AIoT devices and emulator nodes are based on Raspberry 
+Pi 4B boards (quad-core 1.5 GHz 64-bit CPU, 4 GB memory, 32 GB 
+storage) running Ubuntu 20.04 server OS. All devices in the testbed are 
+connected through a dedicated LAN, with the server connected via Eth-
+ernet and Raspberry Pi devices connected via Wi-Fi through a router. 
+This architecture simulates the communication and computation con-
+straints of actual construction site deployments and supports practical 
+validation of model training, synchronization, and safety inference.
+Although the testbed uses real-world data from actual construction 
+environments (provided by a Korean research institute), the current 
+Engineering Applications of Artiϧcial Intelligence 161 (2025) 112186 
+12 
+S.J.S. Moe et al.
+Fig. 18. Overall experimental environment architecture.
+experiments were conducted in a controlled testbed environment using 
+Raspberry Pi devices to emulate on-site conditions. Field deployment 
+at an operational construction site is planned as future work.
+4.2. Worker safety prediction
+Fig. 19 illustrates the inference process deployed on the edge nodes 
+to perform real-time worker safety prediction. In this system, sensor 
+data from the outdoor construction environment is collected every 
+15 s by an emulator simulating field conditions. The data stream, 
+including structural (strain, load, inclinometer), environmental (wind, 
+temperature, precipitation), and worker-specific (heart rate, GPS loca-
+tion) attributes, is transmitted via EdgeX microservices and stored in 
+the local repository. After preprocessing, using the same normalization 
+applied during model training, the test data is passed through the 
+deployed inference model on each edge device. The model outputs 
+a Safety Index, representing the predicted safety level of the corre-
+sponding worker in near real-time. This process enables continuous 
+monitoring and prediction of worker safety with low latency at the 
+edge, without requiring centralized computation, making it suitable for 
+dynamic outdoor construction sites.
+4.2.1. Inference results and real-time performance
+Furthermore, Fig. 20 displays the relationship between the target 
+and predicted indexes of worker safety for six nodes using the best-
+predicted model obtained from the collaboratively trained model. It 
+makes sense to gather data points for forecasting every fifteen seconds, 
+with 100 data observations in dangerous settings like outdoor spaces 
+where construction takes place. To increase worker safety, it is advis-
+able to take into account shorter prediction time intervals. This figure 
+shows a close match between the predicted and actual worker safety 
+values 25 min ahead in an outdoor construction site.
+Fig. 21 presents the average delay time observed by all nodes when 
+predicting worker safety indices using real-time data streamed from the 
+emulator. Since FL deploys the trained model on nodes after training 
+completion. Consequently, the prediction process becomes significantly 
+faster compared to conventional prediction techniques commonly em-
+ployed in centralized machine learning architectures. After running the 
+test 20 times, we were able to get an average time of 0.551 s. In the 
+experiment, the shortest and longest delay times are 0.529 and 0.580 
+s, respectively. Every process in our system has a fast time delay that 
+is fully functional in real-world scenarios.
+4.3. Performance analysis
+This section evaluates the system’s performance in terms of training 
+time, latency, and model accuracy under both IID and non-IID data 
+distributions.
+4.3.1. Training time and latency
+Fig. 22(a) compares the total training time (in seconds) per com-
+munication round between full FL and dynamic node selection FL. 
+The experiment was conducted using six Raspberry Pi 4B devices with 
+limited resources. As shown in the figure, FL-dynamic requires slightly 
+more time per communication round at later rounds due to the addi-
+tional step of evaluating client model performance for node selection, 
+while FL-full incurs a greater aggregation overhead from processing 
+updates from all clients. Despite these differences, the overall training 
+delay between the two approaches remains practically negligible, indi-
+cating that the node selection mechanism does not introduce significant 
+latency or system bottlenecks.
+Fig. 22(b) shows the average per-client training time across 30 
+communication rounds, along with the number of training samples per 
+node. It is evident that clients with larger data volumes require longer 
+local training times, and since the FL server must wait for all partic-
+ipating nodes to complete training before aggregation, slower nodes 
+can contribute to overall delay. This further supports the rationale for 
+dynamic node selection: by adapting to client performance, it can help 
+mitigate potential bottlenecks caused by slower or unbalanced nodes.
+We used a number of statistical evaluation metrics (Rainio et al., 
+2024), including MAE, RMSE (Hodson, 2022), and R2 (Steyerberg et al., 
+2010), to evaluate the performance of our model in this work.
+• MAE: A popular evaluation metric that measures the difference 
+between a variable’s actual and predicted values. It is computed 
+Engineering Applications of Artiϧcial Intelligence 161 (2025) 112186 
+13 
+S.J.S. Moe et al.
+Fig. 19. Worker safety prediction process on the node.
+Fig. 20. Worker safety index: Actual versus predicted on all nodes.
+Engineering Applications of Artiϧcial Intelligence 161 (2025) 112186 
+14 
+S.J.S. Moe et al.
+Fig. 21. Average delay time of all nodes for 20 inference times.
+Fig. 22. Training time and latency analysis: (a) FL-full vs. FL-dynamic across rounds, (b) per-client training time based on data volume.
+as the absolute distinction between the target and predicted 
+values. The Equation for it is in (7): 
+𝑀𝐴𝐸 =
+∑𝑛
+𝑖=1
+|||𝑌𝑖 − ̂𝑌𝑖
+|||
+𝑛 (7)
+• RMSE: This measure is employed to assess the error rate of the 
+regression model and verify that the error values closely match 
+the objectives. The equation that follows is used to calculate the 
+Mean Square Error (MSE) square root (8): 
+𝑅𝑀𝑆𝐸 =
+√√√√ ∑𝑛
+𝑖=1
+( 𝑌𝑖 − ̂𝑌𝑖
+) |||
+2
+𝑛 (8)
+• R2: A statistical measure that signifies the proportion of variability 
+in the dependent variable that can be accounted for by one or 
+more independent variables. The equation for R2 is (9): 
+𝑅2 = 1 − 𝑆𝑆res 
+𝑆𝑆tot 
+(9)
+We evaluate our six-client FL setup on a 50,000-sample worker 
+safety dataset with 8 covariates and one continuous target variable 
+under both IID and non-IID data partitioning strategies. For the IID 
+split, we shuffle the entire dataset and assign an equal number of 
+10,000 samples to each client by ensuring that the distribution of the 
+target variable is nearly identical across all clients. This is visually 
+confirmed in Fig. 23, where the kernel density estimates (KDEs) of 
+the target variable for all six clients almost perfectly overlap, which 
+indicates a uniform distribution.
+To create a more realistic non-IID scenario, we discretize the con-
+tinuous target into ten quantile-based bins and, for each bin, sample a 
+probability vector p from a Dirichlet distribution (𝛼 = 0.5) to induce 
+moderate heterogeneity. Within each bin, samples are allocated to 
+Fig. 23. IID distribution per client.
+the six clients according to p, resulting in each client receiving a 
+distinct proportion of the overall target distribution. As illustrated in 
+Fig. 24, this Dirichlet-based partitioning results in highly heterogeneous 
+and skewed local data distributions among clients, closely mimicking 
+the non-IID data heterogeneity typically observed in actual federated 
+learning deployments. Despite the diversity at the client level, the 
+global data statistics are preserved.
+4.3.2. IID setting
+Fig. 25(a) and (b) illustrate the per-node validation loss over 30 
+communication rounds for both the FL-dynamic (dynamic node se-
+lection) and FL-full (full node participation) strategies using private 
+worker safety data under an IID setting. Each curve represents the 
+loss trajectory for a separate client node. Both approaches demonstrate 
+rapid convergence within the initial rounds, with all nodes achieving 
+Engineering Applications of Artiϧcial Intelligence 161 (2025) 112186 
+15 
+S.J.S. Moe et al.
+Fig. 24. nonIID distribution per client.
+Table 3
+Model performance and training time under IID setting.
+ Method MAE RMSE R2 Score Training time (s) 
+ CL 0.0451 0.0627 0.9748 198.2 
+ FL-full 0.0548 0.0708 0.969 222.4 
+ FL-dynamic 0.0478 0.0582 0.978 224.9 
+low and stable loss values after approximately five rounds. However, 
+the FL-dynamic approach generally yields slightly lower loss values 
+across nodes compared to FL-full, suggesting that performance-based 
+node selection can enhance convergence speed and model generaliza-
+tion, even under IID data conditions.
+Fig. 26 presents a comparison of three evaluation metrics, MAE, 
+RMSE, and R2 score, for FL with full participation and FL with dynamic 
+node selection across multiple communication rounds. As shown in 
+Fig. 26(a), the MAE decreases progressively as the number of rounds 
+increases, with dynamic node selection consistently achieving lower 
+error rates and faster convergence. A similar trend is observed in RMSE 
+26(b), where dynamic node selection outperforms full participation by 
+enabling more stable and efficient learning.
+Finally, the R2 scores (Fig. 26(c)) further confirm this pattern: while 
+both methods improve over time, dynamic node selection achieves 
+consistently higher R2 values, indicating better model generalization. 
+These results demonstrate that performance-aware node selection can 
+enhance learning efficiency and prevent global model degradation that 
+may occur when poorly performing nodes are included indiscriminately 
+in each aggregation round.
+Table 3 presents the performance of the proposed safety prediction 
+framework under IID data settings. The dynamic node selection ap-
+proach outperforms FL-full in all evaluation metrics, achieving lower 
+MAE and RMSE, as well as a higher R2 score. Compared to centralized 
+learning (CL), FL-dynamic offers a privacy-preserving alternative with 
+competitive accuracy. The additional training latency introduced by the 
+node selection mechanism is minimal (only +2.5 s compared to FL-
+full), confirming that the performance benefits are achieved without 
+a significant time overhead.
+4.3.3. Non-IID setting
+Fig. 27(a) and (b) illustrate the per-node learning curves under 
+non-IID data settings for FL with full participation and FL with dy-
+namic node selection, respectively. Similar to the IID case, both ap-
+proaches exhibit rapid convergence within the first few communication 
+rounds. However, in the non-IID scenario, the impact of node selection 
+is more pronounced: dynamic node selection (Fig. 27(b)) achieves 
+slightly faster convergence and more consistent loss reduction across 
+all nodes. In contrast, FL with full participation (Fig. 27(a)) shows 
+slightly more fluctuation in later rounds. These results suggest that 
+performance-aware node selection is particularly beneficial in hetero-
+geneous data environments, where variations in local data distributions 
+can otherwise slow down global model convergence.
+Table 4
+Model performance and training time under non-IID setting.
+ Method MAE RMSE R2 score Training time (s) 
+ FL-full 0.0603 0.934 0.9264 221.3 
+ FL-dynamic 0.0578 0.0820 0.9650 224.9 
+Fig. 28 shows the comparative evaluation of FL with full participa-
+tion versus dynamic node selection under non-IID data settings, using 
+three key metrics: MAE, RMSE, and R2 score. As seen in Fig. 28(a), the 
+MAE values for all nodes are consistently lower when using dynamic 
+node selection, indicating more accurate local model performance. 
+Similarly, RMSE results in Fig. 28(b) demonstrate that dynamic node se-
+lection yields lower root-mean-square error across nodes, highlighting 
+better generalization of the global model.
+Finally, the R2 scores plotted in Fig. 28(c) show that dynamic node 
+selection leads to faster improvement and higher final R2 values as com-
+munication rounds increase, confirming enhanced learning efficiency in 
+non-IID scenarios. These findings reinforce that performance-aware dy-
+namic selection helps mitigate the challenges posed by heterogeneous 
+data distributions, leading to more robust global model convergence.
+Table 4 summarizes the model performance under non-IID settings, 
+where data distributions across nodes vary. CL is excluded in this 
+setting, as centralized aggregation is not applicable when data re-
+mains distributed across clients. Even in this more challenging scenario, 
+FL-dynamic maintains superior performance across all metrics. Specifi-
+cally, it lowers MAE and RMSE while improving R2 compared to FL-full. 
+Despite the added complexity of client selection, the training time for 
+FL-dynamic remains nearly identical to FL-full (224.9 vs. 221.3 s), 
+further validating its robustness and practicality.
+5. Conclusions
+Safety issues have long plagued the construction industry, partic-
+ularly in dynamic and high-risk outdoor environments. This paper 
+proposed a novel approach for multi-worker safety prediction by in-
+tegrating Federated Learning (FL) and Digital Twin (DT) technologies. 
+The study utilized real-world construction safety data collected from 
+edge devices and IoT sensors at outdoor sites. To practically validate 
+the framework, we implemented a physical testbed using Raspberry Pi 
+devices as FL clients

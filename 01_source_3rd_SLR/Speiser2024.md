@@ -13,3 +13,7 @@ The construction industry faces persistent safety challenges resulting in far to
 | Yes | Yes | Yes | Yes | Yes | **Include** |
 
 **Note:** DTCS auto-generated VR safety training; BIM+schedule+hazard data
+
+## Step-3 Deep-Read Coding — PENDING
+
+Full text not available (ICE paywall; only the Speiser-2026 paper is in the library, this 2024 paper is not). Step-3 coding pending.

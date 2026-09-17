@@ -21,3 +21,16 @@ Urban excavation is an indispensable process for many construction activities su
 | Yes | Yes | Yes | Tier 2 - Digital Shadow | 0 | 1 | 0 | Design for Safety (DfS) | None | Statistical / change-point | Multi (two or more data types) | Single case study | 4 | Design for Safety |
 
 **Key evidence (AG):** Multisensory + BIM-integrated digital twin for urban excavation safety (Tianjin U, Shandong case): physical excavator equipped with multi-sensors, 3D pose estimated via kinematic model + social spider algorithm (SSA) (bucket-tip error 24.61 mm, translation accuracy +4.0 cm); BIM of buried utilities + 3D excavator model form a dynamic virtual model mirroring the excavation; physical-virtual coupled DT enables real-time safety control - dynamic collision-risk assessment with 3D visual guidance and safety warning (pipe model turns red when bucket enters risk area, operator stops) to avoid pipe-collision accidents; system prototype field-tested in two case studies, 0.05 s sampling. One-way monitoring to guidance/warning to the human operator; no automated actuation and no learning loop.
+
+**Strength & gap filled (AH):** Equips an excavator with four IMU sensors and two GNSS receivers, estimates its 3D pose via an Euler-based kinematic model refined by social spider algorithm optimization, cutting bucket tip mean error from 64.59 mm to 24.61 mm, and couples it with a BIM of buried pipes in Unity for real-time collision risk assessment with 30 cm and 50 cm warning zones, applied to a 1760 m Shandong pipe project.
+
+**Deficiencies & future work (AI):** Safety warning distances are set from experience rather than from the uncertainty of the pipe BIM, and the excavator case is validated in one project; hardware random errors are ignored. Future work will derive reasonable warning distances through field tests and extend the pose estimation method to other heavy machinery.
+
+**Fusion depth (AC1):** Fused
+
+**Fusion evidence (AC2):**
+- **Data streams:** four IMUs + two GNSS receivers on an excavator (bucket-tip error cut from 64.59 to 24.61 mm) + BIM of buried utilities.
+- **Integration mechanism:** the kinematic model fuses IMU and GNSS into one 3D pose estimate, and the pose plus utility BIM compute collision risk with 30/50 cm warning zones in Unity (1760 m Shandong pipe project, 0.05 s sampling).
+- **Why this code:** pose output depends on two fused sensor types and then joins BIM geometry for risk decisions, so Fused.
+
+**Confidence (AC3):** High - the IMU+GNSS fusion and BIM coupling are explicit.

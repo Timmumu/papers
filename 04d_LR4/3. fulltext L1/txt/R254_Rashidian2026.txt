@@ -1,0 +1,1051 @@
+Full length article
+An IFC-based framework for semantic integration of BIM and mobile crowd 
+sensing in real-time evacuation routing
+Mohsen Rashidian
+*
+, Mohammad Reza Malek
+Ubiquitous & Mobile GIS Research Lab, Faculty of Geodesy & Geomatics Engineering, K. N. Toosi University of Technology, Tehran, Iran
+ARTICLE INFO
+Keywords:
+Building Information Modeling (BIM)
+Mobile Crowd Sensing (MCS)
+IFC
+Semantic interoperability
+Indoor evacuation modeling
+Adaptive evacuation routing
+Digital twin
+ABSTRACT
+Emergency evacuation in complex buildings benefits from tight coupling between digital building representa -
+tions and real-time operational data. While Building Information Modeling (BIM) provides semantically rich 
+indoor descriptions, many evacuation systems still treat sensing technologies and BIM as isolated components, 
+resulting in static or weakly adaptive routing behavior. This paper proposes an IFC-based integration framework 
+that establishes semantic interoperability between BIM entities and mobile crowd sensing (MCS) data to enable 
+real-time, context-aware evacuation routing. IFC models are transformed into a dynamic decision graph in which 
+spaces, exits, and sensors are continuously annotated with live crowd-sensed information. Occupant positions are 
+estimated using Wi-Fi – based indoor localization supported by a two-stage crowdsensing strategy that accounts 
+for both active and silent users. Evacuation routing is formulated as a multi-criteria shortest-path problem using 
+an extended Dijkstra algorithm with dynamically updated weights reflecting distance to hazards, travel time, exit 
+availability, and a route safety index derived from environmental conditions and crowd density. Weight prior -
+itization is formalized using the Analytic Hierarchy Process and examined through sensitivity analysis. The 
+proposed framework is implemented and evaluated in a four-story academic building under three emergency 
+scenarios. Experimental results demonstrate improved evacuation effectiveness, reflected by higher in-time 
+evacuation rates and reduced evacuation times under scenario-specific time constraints. In addition, evacua -
+tion times exhibit lower variability under constrained conditions, indicating stable routing behavior when egress 
+options are limited. Overall, the findings confirm that semantic coupling of BIM and mobile crowd sensing 
+enables digital-twin – like behavior for real-time emergency management and illustrates how engineering infor -
+matics can transform static building models into operational decision-support systems.
+1. Introduction
+Real-time decision-making in safety – critical buildings increasingly 
+relies on the integration of semantically rich digital building models 
+with volatile, heterogeneous sensing data. From an engineering infor -
+matics perspective, a core challenge is achieving semantic interopera -
+bility between Building Information Modeling (BIM) representations 
+and real-time sensing streams so that computational models and routing 
+algorithms can adapt continuously to evolving indoor conditions. 
+Emergency evacuation provides a particularly demanding context: route 
+feasibility depends jointly on building topology, hazard dynamics, and 
+crowd behavior, and must be recomputed under strict temporal 
+constraints.
+Mobile Crowd Sensing (MCS) has emerged as a scalable paradigm for 
+collecting occupant-level information during emergencies. By exploiting 
+the sensing and communication capabilities of smartphones and wear -
+able devices, MCS enables decentralized acquisition of location and 
+contextual data and supports dynamic situational awareness [1 – 4] . 
+Existing work has shown that MCS can reveal population flows, identify 
+bottlenecks, and improve responsiveness in evacuation scenarios. 
+Nevertheless, MCS data streams are heterogeneous, noisy, and largely 
+decoupled from the architectural context in which occupants move, 
+limiting their utility for enforcing building-aware route feasibility. In 
+parallel, BIM has become a dominant paradigm for representing the 
+physical and functional characteristics of buildings [5] . It enables 
+information-rich modeling of indoor spaces and supports advanced 
+analysis for design, construction, and facility operations. In emergency 
+contexts, BIM can represent critical components such as rooms, 
+* Corresponding author at: Geodesy and Geomatics Engineering, K.N.Toosi University of Technology, Valiasr, Mirdamad Blv. Cross, Post Code, P. O. Box 15875- 
+4416, 19967-15433 Tehran, Iran.
+E-mail address: m.rashidian@email.kntu.ac.ir (M. Rashidian). 
+Contents lists available at ScienceDirect
+Advanced Engineering Informatics
+journal homepag e: www.else vier.com/loc ate/aei
+https://doi.org/10.1016/j.aei.2026.104500
+Received 7 December 2025; Received in revised form 21 January 2026; Accepted 19 February 2026 
+Advanced Engineering Informatics 72 (2026) 104500 
+Available online 3 March 2026 
+1474-0346/© 2026 Elsevier Ltd. All rights are reserved, including those for text and data mining, AI training, and similar technologies. 
+corridors, exits, staircases, and fixed sensors, and can support simula -
+tion, visualization, and spatial reasoning [6–9] . The Industry Founda -
+tion Classes (IFC) schema has emerged as an open standard for encoding 
+BIM semantics, providing object-level access to entities such as IfcSpace, 
+IfcDoor, IfcBuildingStorey, and IfcSensor. While IFC enables semantic 
+modeling, its integration with real-time occupant-level sensing remains 
+technically challenging due to differences in data structure, update 
+frequency, and representation granularity.
+Recent research has addressed aspects of BIM–sensor integration 
+from multiple perspectives. Sensor-enabled BIM frameworks using 
+CCTV, BLE beacons, and environmental monitoring devices have been 
+proposed, but are typically evaluated in controlled or simulation-based 
+environments and lack full semantic alignment between IFC entities and 
+sensing stream [10–13] . Studies on IFC extensions and semantic 
+modeling have advanced data representation and ontology design 
+[14–18] , but often focus on static scenarios rather than operational real- 
+time response. Agent-based evacuation models and VR/AR-assisted 
+evaluations of underground and transit environments provide insight 
+into behavioral dynamics [19] , yet remain largely offline. BIM–IoT and 
+BIM–GIS integration has been explored mainly within facility manage -
+ment contexts rather than time-critical evacuation [20–23] .
+Recent semantic IoT–BIM routing models offer dynamic path plan -
+ning capabilities [17,18,24] , but most rely on pre-modeled conditions 
+and do not incorporate live crowd sensing or field-level validation.
+Overall, the literature reveals three persistent gaps. First, there is a 
+semantic gap between IFC-based building representations and hetero -
+geneous crowd-sensed data streams. Second, many BIM-based evacua -
+tion systems exhibit a temporal gap, remaining static or simulation- 
+driven without real-time adaptation. Third, there is an operational 
+gap, as empirical validations in functioning buildings remain limited. 
+Consequently, there is a need for engineering informatics methodologies 
+that explicitly address semantic interoperability, integrate live sensing 
+into routing logic, and demonstrate performance in operational 
+environments.
+This study addresses these gaps by proposing an integrated BIM–MCS 
+framework for real-time adaptive evacuation routing. The framework 
+resolves interoperability between IFC-based semantics and live 
+occupant-level sensing and exploits this integration to support multi- 
+criteria, context-aware route computation. Unlike existing BIM-based 
+evacuation models that remain largely simulation-driven, and crowd -
+sensing systems that operate independently of architectural semantics, 
+this study establishes a semantic-level operational integration between 
+IFC-based BIM and live mobile crowd sensing (MCS). The proposed 
+framework transforms BIM entities into a continuously updated decision 
+graph whose geometry, semantics and weights are governed by real- 
+time occupant behavior and environmental sensing. This results in a 
+digital-twin-like system that performs real-time computational 
+reasoning over buildings, rather than static analysis or offline simula -
+tion. To the authors’ knowledge, this is the first study to demonstrate a 
+field-validated evacuation system in which IFC semantics, mobile 
+sensing, and multi-criteria routing are unified within a single opera -
+tional framework.
+Building on these contributions, this study further advances the field 
+of Engineering Informatics by showing how IFC-based BIM models can 
+be transformed from static digital representations into operational 
+computational systems for real-time decision support. The proposed 
+framework converts IFC entities into a dynamic decision graph in which 
+building semantics, spatial structure, and functional constraints are 
+continuously updated using live mobile crowd sensing data.
+Rather than treating BIM and sensing as separate components, this 
+work establishes semantic interoperability at the data-model level, 
+allowing occupant behavior, hazard indicators, and exit availability to 
+directly influence routing logic. This enables real-time, multi-criteria 
+computational reasoning within the building model rather than offline 
+simulation.
+From a digital twin perspective, the framework demonstrates how 
+BIM can be operationalized through continuous state synchronization 
+between physical spaces and their digital counterparts. This integration 
+advances BIM-centered digital twins from passive representations to -
+ward active decision-support systems.
+The remainder of this paper is organized as follows. Section 2 re -
+views related work on BIM-enhanced evacuation systems, mobile crowd 
+sensing, and integrated BIM–MCS approaches. Section 3 presents the 
+proposed framework, including system architecture, IFC-based graph 
+construction, sensing integration, and the routing algorithm. Section 4
+reports the results from a three-scenario case study. Section 5 discusses 
+implications for engineering informatics, digital twins, and emergency 
+management, as well as limitations and future directions. Section 6
+concludes the paper.
+2. Background
+Emergency evacuation systems are essential for safeguarding human 
+life during crises such as fires, structural failures, and natural disasters. 
+However, conventional evacuation strategies are predominantly static 
+and exhibit limited responsiveness to real-time conditions. They often 
+fail to accommodate evolving hazards or human behavior, which can 
+result in congestion, confusion, and delayed evacuations [25] . Inade -
+quate situational awareness, stemming from insufficient real-time data 
+further, hampers the ability of emergency managers to make informed 
+decisions [26,27] . Although numerous technological interventions have 
+been explored, a significant disconnect remains between research efforts 
+and their application in operational building environments [28,29] . This 
+section reviews the current body of literature in three main areas: BIM- 
+enhanced emergency evacuation systems, mobile crowd sensing and 
+crowdsourced systems, and integrated BIM–MCS approaches.
+2.1. Bim-enhanced emergency evacuation systems
+BIM has emerged as a vital tool in emergency management due to its 
+ability to provide semantically rich and geometrically accurate digital 
+models of the built environment [30] . Numerous studies have applied 
+BIM for evacuation route simulation, victim localization, and perfor -
+mance visualization. For instance, Li et al. [31] proposed a BIM-centered 
+indoor localization algorithm to support building fire emergency 
+response operations, while Yoon et al. [32] developed a victim locali -
+zation system to aid first responders. Chen and Chu [33] presented an 
+API-based system combining BIM and in-building rescue routing. Simi -
+larly, a study on BIM-enabled Facility Management in nursing homes 
+highlights how BIM models integrate with digital twins and building 
+sensors to support systemized operations and emergency preparedness 
+in real-world settings [34] .
+Recent work also explores BIM integration with emerging technol -
+ogies such as Bluetooth [12] , VR/AR [35–39] , and digital twins [6,7] , 
+demonstrating its potential for improving evacuation awareness and 
+interactivity. Kanangkaew et al. [40] developed a real-time BIM–AR fire 
+evacuation system, while Ahn et al. [38] demonstrated AR navigation 
+for indoor emergencies. However, BIM models are often static and lack 
+real-time adaptability unless enhanced by external sensing mechanisms. 
+Kazado et al. [21] highlighted this limitation and advocated for the 
+integration of sensor technologies with BIM to support facility opera -
+tions during emergencies.
+Research on extending the Industry Foundation Classes (IFC) data 
+model has also gained momentum. Studies have focused on extracting 
+geospatial and evacuation-related features [41,42] , enabling path 
+planning in 3D indoor environments [43,44] , incorporating sensor and 
+occupant data [19,22] , and supporting pedestrian simulations [45] . 
+Despite these efforts, the integration of BIM with live sensor data re -
+mains a technical and practical challenge in real-world emergency 
+settings.
+M. Rashidian and M.R. Malek Advanced Engineering Informatics 72 (2026) 104500 
+2 
+2.2. Mobile crowd sensing and crowdsourced systems
+Mobile Crowd Sensing (MCS) utilizes the sensing capabilities of 
+smartphones and other personal devices to collect real-time data on user 
+movement, environment conditions, and disaster events. This approach 
+is highly scalable and supports decentralized data collection, enabling 
+dynamic and distributed situational awareness during emergencies. 
+Tripathi and Singh [46] proposed a heterogeneous data fusion model 
+using participatory sensing, while Nguyen et al. [47] designed a mobile 
+app for crowdsourced disaster risk data validation. Cicek and Kantarci 
+[27] categorized MCS applications into eight functional areas, including 
+evacuation mapping, danger detection, and situational awareness. 
+Several systems employ location data from smartphones to support post- 
+disaster navigation. Bhattacharjee et al. [48] developed a crowdsensed 
+digital pedestrian mapping tool, and Fajardo and Oppus [49] proposed a 
+mobile logistics app for disaster relief routing. Wan et al. [50] utilized 
+crowdsourced Wi-Fi signal data to enable multi-floor indoor positioning, 
+while Kitazato et al. [51] estimated pedestrian flow using Bluetooth 
+signals. Asiminidis et al. [52] applied BLE sniffing in tunnel evacuations, 
+and Pascacio et al. [53] provided a BLE dataset to support indoor range 
+estimation. Advanced sensing methods such as gyroscope and camera- 
+based input have also been used for 3D mapping. Sadhu et al. [37]
+introduced Argus, which uses smartphone sensors to generate a 3D 
+reconstruction of disaster zones, and Piscitello et al. [54] presented a 
+Danger System integrating microphone and pedometer data to detect 
+hazards. Leitch et al. [55] developed a crowd sensing system that sys -
+tematically examines multi-sensor fusion strategies using Wi–Fi, Blue -
+tooth, ultra-wideband, and inertial measurement units on smartphones. 
+Nonetheless, several limitations persist, including short-range sensor 
+constraints, dependency on battery life, app pre-installation assump -
+tions, and privacy concerns in location tracking [56,57] . While these 
+tools offer high responsiveness, they typically lack integration with 
+architectural context or spatial intelligence provided by BIM.
+2.3. Combined BIM–MCS approaches
+Despite the complementary strengths of Building Information 
+Modeling (BIM) and Mobile Crowd Sensing (MCS), their full integration 
+in evacuation planning systems remains limited. Early efforts explored 
+partial coupling between building models and mobile technologies. For 
+example, Chen and Chu [33] proposed a BIM–smartphone API frame -
+work, while Pishdad-Bozorgi et al. [23] examined GIS–IoT–BIM inte -
+gration for facility-level coordination. More recent studies have 
+incorporated Bluetooth Low Energy data into BIM-based evacuation 
+models, often combined with crowd simulation techniques [12] .
+Beyond data-level integration, several ontology- and semantics- 
+driven approaches have been proposed to improve interoperability. 
+Deng et al. [18] introduced a BIM-integrated ontology for fire evacua -
+tion, while Pang et al. [17] developed a semantic IoT–BIM framework 
+for dynamic path planning. Related works have also explored BIM–GIS 
+and BIM–IoT combinations for hazard-aware evacuation [15,16] . 
+However, these approaches are typically evaluated in experimental or 
+simulation-based settings and lack validation in operational building 
+environments. Similarly, studies incorporating crowd behavior and 
+congestion modeling, such as those by Ji et al. [11] and Deng et al. [10] , 
+primarily rely on offline or simulated scenarios. Other frameworks 
+demonstrate BIM-based automation or agent-based evacuation planning 
+[14,58,59] , but do not integrate real-time user-level sensing data. 
+Likewise, BIM–IoT solutions focusing on facility management [20] are 
+not designed for time-critical evacuation contexts. Recent semantic IoT- 
+based routing models [17,18,24,60] offer indoor and underground 
+navigation capabilities, yet often depend on pre-modeled conditions and 
+lack real-time feedback from occupants. Blockchain-based crowd- 
+sensing systems have also been proposed for trust management and post- 
+disaster mapping [61] , but remain largely conceptual. Overall, existing 
+research tends to fall into two broad categories: BIM-based evacuation 
+models that remain largely static or simulation-driven, and MCS-based 
+systems that provide responsiveness but lack architectural and seman -
+tic contextualization. Full semantic interoperability between IFC-based 
+BIM models and live crowd-sensed data streams remains rare, and 
+empirical validation in functioning buildings is still limited. These gaps 
+highlight the need for integrated BIM–MCS frameworks that support 
+real-time, context-aware evacuation routing under operational condi -
+tions. In response, this study proposes an IFC-based BIM–MCS frame -
+work that tightly couples semantic building representations with live 
+occupant sensing to enable adaptive, multi-criteria evacuation routing 
+in real-world environments.
+3. Methods
+This section describes the methodological workflow developed for 
+integrating BIM semantics with real-time crowd-sensed information. 
+The overall process follows common structures used in BIM–IoT systems 
+but extends them to support continuous data fusion and adaptive 
+evacuation routing. The method comprises five components: system 
+architecture, BIM–IFC processing, mobile crowd sensing, indoor locali -
+zation, and multi-weighted route computation.
+3.1. System architecture
+The system architecture defines how sensing data, building infor -
+mation, and routing computations interact within the proposed 
+BIM–MCS evacuation framework. It is organized into five functional 
+domains that together support real-time data acquisition, semantic 
+processing, and adaptive route generation as shown in Fig. 1 . The 
+sensing domain collects raw measurements from occupants’ smart -
+phones, including Wi-Fi and BLE signal strengths as well as contextual 
+indicators such as barometric pressure and ambient light levels. Baro -
+metric pressure measurements are incorporated as an auxiliary sensing 
+input to support floor-level differentiation and vertical movement 
+detection in multi-story buildings, thereby improving the robustness of 
+Wi-Fi–based indoor localization during evacuation. These data are 
+transmitted to the collection domain through the network domain, 
+which ensures secure and continuous communication between mobile 
+devices and the server.
+Within the collection domain, incoming measurements are stored in 
+a unified repository where they are associated with corresponding IFC 
+entities extracted from the BIM model. The processing domain acts as 
+the core computational layer, performing data filtering, feature extrac -
+tion, semantic alignment, and dynamic updating of the evacuation 
+graph. Continuous updates from MCS and IFC-linked sensors allow the 
+routing engine to adjust edge weights based on changing conditions such 
+as congestion, hazard proximity, and exit accessibility. The application 
+domain provides the interface through which evacuation instructions 
+and updated paths are visualized for occupants or emergency managers. 
+Fig. 2 shows class diagram and Fig. 3 illustrates the integrated workflow 
+connecting BIM semantics, mobile sensing, and the routing engine 
+within the proposed architecture.
+3.2. BIM model
+The BIM model provides the spatial and semantic foundation of the 
+proposed evacuation framework. To ensure interoperability and 
+robustness across heterogeneous modeling practices, the building model 
+is exported to the Industry Foundation Classes (IFC) format, which en -
+ables standardized access to architectural and spatial entities while 
+remaining independent of authoring software.
+Relevant IFC entities are extracted to construct a semantically 
+enriched evacuation graph. Spatial hierarchy is defined using IfcBuild -
+ing, IfcBuildingStorey, and IfcSpace, while circulation-related elements 
+such as corridors, staircases, and vertical connections are identified 
+through their spatial containment and adjacency relationships. Rather 
+M. Rashidian and M.R. Malek Advanced Engineering Informatics 72 (2026) 104500 
+3 
+than relying on a single IFC object type, the framework emphasizes se -
+mantic roles (e.g., navigable space, transition, exit) over specific schema 
+classes to support consistent graph construction.
+To address heterogeneity in IFC representations, an explicit 
+normalization step is applied during IFC parsing. In IFC-based models, 
+passable connections between spaces may be represented either 
+explicitly by IfcDoor elements or implicitly by wall openings modeled as 
+IfcOpeningElement, depending on authoring conventions and export 
+configurations. In the proposed framework, both representations are 
+abstracted into a unified Transition entity in the evacuation graph. The 
+IFC schema elements used in this semantic extraction process are sum -
+marized in Fig. 4 .
+Transitions are identified primarily through IFC relational semantics 
+rather than object labels. Specifically, IfcRelVoidsElement and IfcRel -
+FillsElement relationships are used to associate openings and doors with 
+their host elements, while space-boundary and spatial-containment re -
+lations are employed to determine adjacency between IfcSpace entities. 
+When an IfcDoor object is present, the corresponding transition inherits 
+door-specific attributes such as accessibility status. When only an 
+opening is available, a passable transition is still created using default 
+attributes. This normalization strategy ensures equivalent graph con -
+nectivity across different IFC representations and prevents loss of navi -
+gable links due to modeling variations.
+While IfcSpace entities provide the basis for indoor spatial repre -
+sentation, the term “ space ” is used differently in the IFC schema and in 
+the proposed graph abstraction. In the proposed abstraction, decision- 
+oriented spaces such as rooms and junctions are represented as nodes, 
+whereas traversal-oriented spaces, including corridors, stairwells, and 
+elevator shafts, are abstracted as transition elements (edges) connecting 
+decision nodes. Environmental conditions such as hazards, congestion, 
+or accessibility constraints primarily affect movement feasibility and are 
+therefore applied to edges rather than nodes.
+Based on the extracted and normalized entities, the IFC model is 
+transformed into a graph structure in which nodes represent indoor 
+spaces and edges represent navigable transitions. The resulting graph 
+encodes both geometric connectivity and semantic constraints, 
+including vertical circulation, region-specific accessibility, and exit re -
+lationships. This semantically grounded graph serves as the basis for 
+dynamic evacuation routing and enables subsequent integration of real- 
+time crowd-sensed and hazard-related information. Although geometric 
+discretization of walkable spaces is avoided, geometric attributes such as 
+distance and traversal cost are explicitly computed on the derived graph 
+edges (Transitions) after graph abstraction.
+3.3. Mobile crowd sensing
+MCS provides the dynamic component of the proposed framework by 
+supplying real-time information on occupant locations and environ -
+mental conditions. Smartphones carried by building occupants contin -
+uously collect Wi-Fi and Bluetooth Low Energy (BLE) signal strength 
+measurements for indoor localization, together with contextual in -
+dicators such as barometric pressure, ambient light levels, and device- 
+level status information. These measurements capture both spatial 
+movement and environmental variations that are relevant to evacuation 
+behavior.
+Barometric pressure measurements are incorporated as an auxiliary 
+Fig. 1. Proposed integration method.
+Fig. 2. Class diagram of proposed method.
+M. Rashidian and M.R. Malek Advanced Engineering Informatics 72 (2026) 104500 
+4 
+sensing input to support floor-level differentiation and vertical move -
+ment detection in multi-story buildings. Changes in atmospheric pres -
+sure provide lightweight cues for identifying transitions between floors, 
+thereby improving the robustness of Wi-Fi – based indoor localization 
+during evacuation without introducing additional infrastructure re -
+quirements. During the initial stage, raw sensing data are stored locally 
+on each device to ensure reliability under unstable network conditions. 
+When connectivity becomes available, the data are transmitted to the 
+central server, where they undergo a preprocessing pipeline that in -
+cludes redundancy removal, temporal filtering, and quality assessment. 
+The resulting cleaned dataset provides a robust representation of occu -
+pant distribution and movement patterns and is subsequently mapped 
+onto the IFC-based spatial graph derived in Section 3.2 .
+This mapping enables real-time updates of the evacuation model by 
+Fig. 3. Overview of the integrated BIM – MCS framework for adaptive evacuation routing.
+Fig. 4. IFC schema elements and semantic relationships used to derive the evacuation graph. Adjacent IfcSpace entities form graph nodes, while passable connections 
+are inferred through IfcDoor and IfcOpeningElement using IFC relational semantics (IfcRelFillsElement, IfcRelVoidsElement) and space-boundary information. A 
+Transition represents a derived graph edge connecting two adjacent spaces and is not an IFC entity.
+M. Rashidian and M.R. Malek Advanced Engineering Informatics 72 (2026) 104500 
+5 
+aligning user positions with the navigable indoor spaces defined in the 
+BIM representation. In addition to location updates, crowd-sensed in -
+formation supports the identification of vulnerable occupants, detection 
+of congestion or blocked routes, and interpretation of evolving envi -
+ronmental conditions. As a result, the evacuation model remains 
+responsive to dynamic indoor situations, even when some participants 
+do not actively transmit data.
+3.3.1. Evacuation Plan
+The Evacuation Plan defines a set of high-level decision rules that 
+govern how evacuation routing is adapted under different emergency 
+conditions. Rather than introducing additional building-specific con -
+figurations, the Evacuation Plan operates as a policy layer that translates 
+hazard states and contextual constraints into routing decisions within 
+the evacuation graph.
+The questions specified in the Evacuation Plan are designed to cap -
+ture essential operational considerations relevant to emergency evacu -
+ation, such as exit availability, route accessibility, and the permissibility 
+of specific building components (e.g., elevators or restricted zones) 
+under a given hazard scenario. Each question functions as a decision 
+trigger that activates or deactivates corresponding routing constraints, 
+ensuring that evacuation strategies remain consistent with safety regu -
+lations and situational requirements.
+Hazard information is not directly extracted from BIM geometry. 
+Instead, BIM provides the spatial and semantic context such as space 
+topology, connectivity, and the locations of relevant building elements 
+within which hazard data are interpreted. Actual hazard states are 
+derived from environmental sensors, mobile crowd sensing inputs, and 
+system-level observations (e.g., congestion or route obstruction). These 
+hazard inputs are then mapped onto the evacuation graph by modifying 
+edge weights, accessibility flags, or availability conditions associated 
+with affected transitions.
+The Evacuation Plan thus serves as an intermediary decision layer 
+between sensed hazard conditions and graph-based routing computa -
+tion. By separating policy-level decision logic from building geometry 
+and sensing mechanisms, the framework maintains generality across 
+different building types while enabling scenario-specific evacuation 
+behavior. This design allows the same Evacuation Plan structure to be 
+reused across buildings, with instantiation determined by available BIM 
+semantics and real-time operational data rather than hard-coded 
+configurations.
+Based on these policy-level decision rules, Table 1 summarizes the 
+Evacuation Plan items and their effects on evacuation routing.
+Table 2 lists the crowd-sensing strategies used in the framework, 
+together with their corresponding system-level prerequisites required 
+for successful execution.
+3.4. Evacuation component
+The evacuation component constitutes the core analytical unit of the 
+proposed framework, integrating semantic building information from 
+the BIM model with real-time MCS data to generate adaptive evacuation 
+routes. The IFC-derived spatial graph is continuously updated with dy -
+namic edge weights that represent changing indoor conditions, 
+including congestion levels, hazard proximity, accessibility, and exit 
+status. Through these updates, the routing engine maintains an accurate 
+and real-time representation of the building environment during 
+emergencies.
+3.4.1. Positioning
+Accurate occupant localization is essential for computing real-time 
+evacuation routes. The proposed system employs Wi-Fi – based indoor 
+positioning, in which received signal strength indicators (RSSI) are used 
+to estimate the distance between a mobile device and multiple access 
+points. Equation (1) expresses the standard RSSI-to-distance conversion 
+model, where A represents the reference signal strength and n is the 
+environment-specific path-loss exponent. These estimated distances 
+form the input to trilateration or fingerprinting methods, refined 
+through an optimization procedure defined in Equation (2) , which 
+minimizes the difference between measured and predicted distances. 
+This approach compensates for multipath interference, device vari -
+ability, and signal fluctuations common in indoor environments.
+A two-stage positioning strategy is used to address cases where some 
+users are unable to transmit sensing data. In the first stage, locations of 
+active users are estimated directly from RSSI-based trilateration. These 
+positions then serve as reference points for the second stage, in which 
+locations of silent users are inferred through proximity relationships 
+derived from the signals of nearby active users. As illustrated in Fig. 5 , 
+this strategy ensures a complete spatial distribution of occupants even 
+under inconsistent data availability, enabling the evacuation engine to 
+maintain a coherent occupancy map under real-world conditions. 
+D = d
+0
+10
+RSSI   A
+10 n
+(1) 
+minimize
+∑
+n
+k = 0
+(( x   x
+i
+)
+2
++ ( y   y
+i
+)
+2
+  D
+2
+i
+)
+2
+(2) 
+3.4.2. Route Finding
+The routing engine extends Dijkstra ’ s algorithm by incorporating 
+Table 1 
+Evacuation Plan Items.
+Evacuation plan items
+Lifts are/are not usable during evacuation: yes ◻ no ◻
+Starecases are/ are notusable during evacuation: yes ◻ no ◻
+are thereany individuals requiring additional assistance(high risk persons: kids,elderies, disbled persons)? yes ◻ no ◻
+individuals selected as coordinator/informer in the evacuation yes ◻ no ◻
+extract hidden individuals from mobile crowd sensing data? yes ◻ no ◻
+Location of key safety hazards or other related equipment condidered in calculating evacuation routes: yes ◻ no ◻
+Table 2 
+Crowd-sensing strategies.
+CS strategy Description Required system 
+prerequisites
+Detect 
+congestion
+Identify high-density areas and 
+crowd accumulation using 
+aggregated user movement and 
+location data
+Availability of Wi-Fi/BLE 
+signals; sufficient number of 
+participating devices
+Identify blocked 
+paths
+Infer blocked or obstructed 
+routes based on abnormal 
+movement patterns or sudden 
+flow interruptions
+Continuous sensing data; 
+reliable indoor connectivity
+Select 
+coordinators / 
+guides
+Designate selected occupants as 
+coordinators to assist 
+evacuation based on location 
+and mobility patterns
+Active user participation; 
+sufficient battery level and 
+network access
+Detect silent 
+users
+Infer the presence and 
+approximate locations of 
+occupants who do not actively 
+transmit data
+Crowd-density estimation; 
+historical movement 
+patterns; nearby active users
+Assess hazard 
+proximity
+Estimate proximity to 
+hazardous areas (e.g., smoke- 
+affected zones) using crowd- 
+sensed and environmental data
+Environmental sensing 
+inputs; mapping to BIM- 
+based spatial context
+M. Rashidian and M.R. Malek Advanced Engineering Informatics 72 (2026) 104500 
+6 
+four weighted criteria: normalized distance to hazard, travel time, exit 
+availability, and a Route Safety Index (RSI). Distance normalization is 
+defined in Eq. (3) , and travel time is computed using Eq. (4) based on 
+edge length and walking speed, which varies with corridor type, vertical 
+circulation, and user characteristics. Exit availability is enforced directly 
+in the cost function by assigning prohibitive penalties to blocked exits. 
+D =
+X   Min
+Max   Min
+(3) 
+T =
+Length
+edge
+Speed
+edge
+(4) 
+The Route Safety Index (RSI) represents an aggregated environ -
+mental risk indicator derived from BIM-integrated sensors and Mobile 
+Crowd Sensing (MCS) data, reflecting conditions such as smoke in -
+tensity, crowd density, temperature, and hazard proximity. In the pre -
+sent implementation, RSI is formulated primarily based on smoke 
+density due to its dominant role in fire-related evacuation scenarios. Let 
+S denote the normalized smoke intensity along a route segment. RSI is 
+defined in Eq. (5) and constrained to the interval ( 0 , 1 ] , where 1 denotes 
+the maximum normalized value and lower values indicate higher envi -
+ronmental risk. Through this formulation, the routing engine prioritizes 
+evacuation paths that minimize exposure to hazardous smoke in addi -
+tion to geometric distance and travel time. 
+RSI =
+1
+1 + S
+(5) 
+The criteria are combined using the weighted cost function defined 
+in Eq. (6) . Variable D denotes the normalized distance to the hazard 
+location, T represents the normalized travel time, and E encodes exit 
+availability, with values set to 0 for accessible exits and to a large pen -
+alty (e.g., 10
+6
+) for blocked exits to ensure infeasible routes are excluded 
+from selection. RSI refers to the normalized Route Safety Index. The 
+weights w 1, w 2, and w 3 correspond to distance, time, and safety 
+criteria, respectively, and are constrained to sum to one. 
+Cost = ( W
+1
+D + W
+2
+T + W
+3
+( 1   RSI ))( E + 1 ) (6) 
+Initial weight values were informed by domain expertise and prior 
+research in emergency planning. Weight distributions vary by emer -
+gency type: in fire scenarios, higher values were assigned to w
+3 
+to 
+emphasize route safety, while in time-critical events such as gas leaks or 
+structural failures, greater emphasis was placed on travel time by 
+increasing w
+2
+. To formalize this process, weights were derived using the 
+Analytical Hierarchy Process (AHP) through expert-based pairwise 
+comparisons, and the resulting priorities were normalized to reflect 
+scenario-specific evacuation objectives. Weight configurations were 
+further evaluated through sensitivity analysis under multiple emergency 
+scenarios, as reported in Table 3 .
+The multi-weighted Dijkstra algorithm then computes optimal 
+evacuation routes using the continuously updated cost structure. As new 
+MCS and BIM-linked sensor data are received, edge weights are 
+recalculated and evacuation paths are dynamically updated in near real 
+time. Route updates are performed in an event-driven manner. When 
+new hazard information is received or when existing hazards propagate, 
+the attributes of the affected transitions are updated or temporarily 
+disabled, triggering re-routing from the occupant ’ s most recent valid 
+location rather than global graph reconstruction.
+3.5. Implementation Setup
+The proposed framework was implemented and evaluated in a four- 
+story academic building belonging to the Faculty of Surveying and 
+Geomatics. The building includes two staircases located on the eastern 
+and western sides and an elevator adjacent to the main corridor. A 
+detailed BIM model was created in Autodesk Revit and exported to IFC 
+to support semantic processing. Fig. 6 shows the reconstructed BIM 
+model, floor layouts, and the placement of smoke sensors installed along 
+the main corridors of each floor. The sensor network provides real-time 
+hazard indicators that are integrated directly into the evacuation graph.
+The building ’ s spatial configuration was converted into a graph 
+representation ( Fig. 7 ), where indoor spaces and circulation segments 
+were transformed into nodes and edges, respectively. Each edge was 
+assigned attributes related to distance, capacity, and travel type (e.g., 
+corridor, stair, elevator). Hazard-related properties derived from the 
+sensor network were also embedded into the graph to allow real-time 
+updates of edge weights.
+Mobile sensing data were collected using an application developed in 
+Android Studio based on the AWARE framework. The interface ( Fig. 8 ) 
+enables participants to activate sensing modules and transmit data when 
+connectivity is available. Thirteen physical sensors including Wi-Fi, 
+Bluetooth, accelerometer, barometer, ambient light, magnetic field, 
+and proximity and three virtual sensors (battery, network, and pro -
+cessing status) were utilized. Sensed data were stored locally and 
+uploaded to the server during connection intervals, where they were 
+processed and mapped to the IFC-based spatial graph.
+User positions were estimated using Wi-Fi fingerprinting as 
+described in Section 3.4 . A two-stage crowdsensing approach was used 
+to infer the locations of hidden users who were unable to upload their 
+data. Coordinators or informers were selected according to evacuation- 
+Fig. 5. Two-stage crowdsensing positioning.
+Table 3 
+Scenario-based weight configurations for the evacuation cost function derived 
+through expert judgment and sensitivity testing within the AHP framework.
+Scenario Type W1 
+(Distance)
+W2 
+(Time)
+W3 (1   RSI / Safety 
+Priority)
+Balanced priorities 0.3 0.35 0.35
+Safety-first (e.g., fire) 0.15 0.25 0.6
+Time-critical (e.g., gas leak) 0.1 0.6 0.3
+Mobility-focused (e.g., elderly 
+evacuation)
+0.25 0.5 0.25
+Short-distance emphasis 0.5 0.3 0.2
+M. Rashidian and M.R. Malek Advanced Engineering Informatics 72 (2026) 104500 
+7 
+plan requirements and spatial proximity criteria. The routing engine 
+then generated evacuation paths for each participant based on the dy -
+namic conditions derived from the sensing data and building sensors.
+The system was evaluated under three emergency scenarios, sum -
+marized in Table 4 . Scenario A involved 50 occupants located on the 
+second floor in Room 204 during a fire event, with both the elevator and 
+stairs available. Scenario B included occupants on the western part of the 
+first floor during a structural failure, where the west exit was blocked 
+and coordinators were required. Scenario C simulated an earthquake 
+with occupants distributed across all floors, restricted to stair usage and 
+confronted with severe time constraints. These scenarios were used to 
+assess the adaptability and performance of the routing model under 
+hazard-specific conditions.
+4. Results
+This section presents the experimental evaluation of the proposed 
+BIM – MCS framework across three emergency scenarios. The findings are 
+reported in terms of route performance, usability, localization precision 
+and accuracy, and evacuation time. The purpose of the analysis is to 
+assess both quantitative system performance and the framework ’ s 
+adaptive behavior under varying hazard and building constraints.
+Fig. 6. Case Study: Revit Model (left) and Floor Plans, Rooms, and Smoke Sensors (right).
+Fig. 7. Extracted graph from the BIM model and associated edge types of the case study.
+M. Rashidian and M.R. Malek Advanced Engineering Informatics 72 (2026) 104500 
+8 
+4.1. Route performance metrics
+Route performance was assessed using four indicators: average 
+positioning error, average egress time, average route length, and the 
+proportion of in-time versus out-of-time evacuations. Table 5 summa -
+rizes the results for all three scenarios.
+Scenario A achieved an average positioning error of 3.02 m, while 
+Scenario C exhibited the highest error (3.58 m), reflecting increased 
+localization complexity due to the building-wide distribution of occu -
+pants. Despite this, Scenario C produced the shortest average egress time 
+(103 s) and the shortest route length (188 m). These findings indicate 
+that the adaptive routing engine effectively redirected occupants around 
+blocked exits and prioritized feasible short paths even under restrictive 
+conditions. Scenario B yielded the most reliable route completion rates, 
+with 48 in-time evacuations and only 2 out-of-time cases, largely due to 
+the model ’ s successful avoidance of the structurally compromised west 
+exit.
+Overall, the results demonstrate that the routing engine adapts 
+effectively to spatial and hazard constraints. In scenarios with limited 
+egress options (Scenario B) or building-wide dispersion (Scenario C), the 
+system still identified safe and efficient evacuation paths. Fig. 9 illus -
+trates representative minimum-cost routes generated across the three 
+scenarios. Note that the illustrated route in the fire scenario represents 
+routing on the complete building graph for demonstration purposes. 
+Elevator links are disabled during fire-specific evacuation decision- 
+making and are not used in the final evacuation guidance.
+4.2. Usability evaluation
+A usability assessment was carried out with all 50 participants to 
+evaluate the Android-based evacuation interface. The interface was 
+rated on navigation clarity, guidance clarity, and responsiveness using a 
+5-point Likert scale. Average scores were 4.6, 4.2, and 4.4, respectively. 
+High ratings for navigation and responsiveness indicate that the system 
+effectively communicated route updates and that users could follow 
+instructions without confusion. Although more formal usability in -
+struments (e.g., SUS or UEQ) will be considered in future studies, the 
+current results show that the interface provides intuitive and reliable 
+support during evacuation tasks.
+Fig. 8. MCS interface and locally stored crowd sensing data.
+Table 4 
+Summary of evaluation scenarios (*Elevator usage is shown solely for system testing on the complete building graph; elevators are disabled and not used in real fire 
+evacuation guidance.).
+Senario occupant num location of incident use of elevator use of stairs need of coordinators incident type Exit blockage Time limit
+A 50 second floor_room 204 yes* yes no Fire no 8 minuts
+B 50 first floor, western part yes only the east stairs yes Structural failure yes 10 min
+C 50 whole building no yes yes Earthquake yes 2 min
+Table 5 
+Summary of calculated routing and evacuation results.
+Senario Average positioning 
+error(meters)
+Average egress/travel 
+time(seconds)
+Average route 
+lengths (meters)
+A 3.02 111 247
+B 3.16 116 221
+C 3.58 103 188
+M. Rashidian and M.R. Malek Advanced Engineering Informatics 72 (2026) 104500 
+9 
+4.3. Routing performance and evacuation outcomes
+Evaluation is conducted using routing- and system-level metrics 
+derived directly from the outputs of the proposed dynamic evacuation 
+framework. Since the system performs decision-oriented routing under 
+evolving hazards rather than classification or prediction, machine- 
+learning metrics such as accuracy, precision, or confusion-matrix mea -
+sures are not applicable. Instead, performance is assessed using 
+evacuation-oriented measures that reflect route validity, accessibility to 
+exits, temporal efficiency, and system adaptability.
+Route feasibility is characterized using the Route Feasibility Rate 
+(RFR), defined as the proportion of computed routes that remain valid 
+after hazard or obstacle updates: 
+RFR =
+N
+feasible
+N
+Total 
+where N
+feasible 
+denotes the number of routes that continue to lead to an 
+accessible exit without invalidation, and N
+Total 
+is the total number of 
+computed routes. RFR captures the robustness of routing decisions 
+under dynamic environmental conditions.
+Accessibility to exits is described using the Exit Reachability Rate 
+(ERR), which measures the proportion of starting locations that retain at 
+least one valid path to an exit after hazard updates: 
+ERR = 100 ×
+| S
+reachable
+|
+| S |
+where S represents the set of starting locations (e.g., spaces or origins), 
+and S
+reachable 
+denotes the subset that remains connected to an exit. ERR 
+serves as an evacuation-oriented proxy for accessibility without 
+requiring agent-level evacuation simulation.
+Temporal evacuation efficiency is evaluated using the Average 
+Evacuation Time (AET), computed as: 
+AET = (
+1
+N
+∑
+N
+i = 1
+T
+i
+)
+where T
+i 
+is the evacuation time associated with route i, and N denotes 
+the total number of evaluated routes. In addition, evacuation effec -
+tiveness under time-critical conditions is assessed using in-time versus 
+out-of-time evacuation outcomes, which distinguish routes that reach an 
+exit within a predefined scenario-specific time limit from those that 
+exceed it.
+Based on the experimental results summarized in Table 5 (N = 50 per 
+scenario), the average evacuation times were 111 s, 116 s, and 103 s for 
+Scenarios A, B, and C, respectively. Under the corresponding scenario- 
+specific time limits (8 min, 10 min, and 2 min), the numbers of in- 
+time routes were 47, 48, and 48, while the numbers of out-of-time 
+routes were 3, 2, and 2, respectively. To improve clarity, Table 6 re -
+ports time-based evacuation performance metrics derived directly from 
+these results, including in-time and out-of-time rates.
+5. Discussion
+This study demonstrates that semantic integration between Building 
+Information Modeling (BIM) and Mobile Crowd Sensing (MCS) is a 
+viable mechanism for enabling real-time, data-driven evacuation man -
+agement in complex indoor environments. The proposed framework 
+moves evacuation planning beyond static path computation toward a 
+continuously updated computational process that reflects changing 
+building conditions and occupant states.
+Fig. 9. Sample of visualized minimum cost routes for three evaluation scenarios. The illustrated routes represent routing results on the complete building graph for 
+demonstration and evaluation purposes. In fire-related scenarios, elevator links shown in the visualization represent available building infrastructure and are disabled 
+during evacuation decision-making; final evacuation guidance is therefore restricted to stair-based paths.
+Table 6 
+Time-based evacuation performance metrics summarizing scenario-specific time 
+limits, average evacuation times, and in-time versus out-of-time evacuation 
+outcomes.
+Senario Time 
+limit (s)
+Avg. evacuation 
+time AET(s)
+In-time 
+routes
+Out-of- 
+time 
+routes
+In-time 
+rate (%)
+A 480 111 47 3 94
+B 600 116 48 2 96
+C 120 103 48 2 96
+M. Rashidian and M.R. Malek Advanced Engineering Informatics 72 (2026) 104500 
+10 
+5.1. Semantic coupling of BIM and MCS
+A key contribution of this work is the operational alignment between 
+IFC-based building semantics and real-time crowd-sensed data. Con -
+ventional BIM-based evacuation models typically rely on precomputed 
+routes or static hazard assumptions, whereas the proposed framework 
+converts the IFC building model into a dynamic graph structure whose 
+nodes and edges are continuously updated using live MCS inputs. This 
+transformation enables indoor spaces, circulation elements, and exits to 
+function as computational entities rather than passive geometric 
+representations.
+Through semantic mapping, occupant locations and environmental 
+conditions are bound directly to IFC entities, allowing spatial reasoning 
+and route computation to operate within a building-aware context. This 
+mechanism establishes a persistent link between the physical environ -
+ment and its digital representation and conforms to the core digital twin 
+requirement of state synchronization between physical and virtual 
+systems.
+5.2. Routing behavior under multi-criteria optimization
+The evacuation routing formulation extends conventional shortest- 
+path methods by introducing a multi-criteria cost function that ac -
+counts for proximity to hazard, travel time, exit availability, and route 
+safety. Unlike distance-only routing strategies, this design treats evac -
+uation as a dynamic optimization problem governed by both spatial and 
+environmental constraints.
+The incorporation of a route safety index allows environmental data 
+to influence routing decisions directly. Smoke intensity and crowd 
+density are not handled as secondary indicators but are embedded as 
+control variables within the routing computation. The Analytical Hier -
+archy Process (AHP) provides a structured approach to weighting 
+parameter selection and reduces subjectivity in cost formulation.
+Observed improvements in routing stability indicate that perfor -
+mance gains result from structured multi-criterion integration rather 
+than from dominance of any single factor. Sensitivity analysis confirms 
+that the algorithm adapts to varying hazard profiles without requiring 
+manual retuning, which supports its applicability across multiple 
+emergency contexts.
+5.3. Implications for digital twin systems in emergency management
+From a digital twin perspective, the proposed system demonstrates 
+how BIM models can evolve from static design artifacts into real-time 
+operational platforms. The integration of live occupancy and environ -
+mental sensing enables continuous state updating and route re- 
+computation, forming a closed-loop system between sensing, 
+modeling, and decision execution.
+This approach supports the development of smart building systems 
+capable of active intervention rather than passive monitoring. The 
+framework establishes an architectural pattern for BIM-centered digital 
+twins consisting of semantic modeling, sensor integration, dynamic 
+computation, and decision output. This pattern is transferable to other 
+application domains, including energy control, facility automation, and 
+resilience analysis.
+For emergency management, the system delivers prescriptive guid -
+ance rather than descriptive status updates. Instead of visualizing haz -
+ards alone, the system computes and distributes optimized evacuation 
+routes in real time, contributing directly to operational decision-making.
+5.4. Reliability and system behavior under constraints
+Evaluation results show that evacuation times exhibit lower variance 
+under restrictive conditions. In scenarios with limited exits, routing 
+convergence was more stable due to reduced solution paths. This 
+behavior suggests that constraint-limited environments may exhibit 
+higher algorithmic determinism, leading to predictable outcomes during 
+navigation.
+The two-stage crowdsensing localization strategy contributed to 
+maintaining situational awareness even when part of the user popula -
+tion was unable to transmit data. From a system reliability standpoint, 
+this indicates resilience against partial data loss and supports continued 
+operation under degraded communication conditions.
+While Wi-Fi–based localization accuracy remains bounded by envi -
+ronmental factors, the confinement of user positions to IFC-defined 
+spaces mitigates uncertainty by constraining feasible locations to 
+architecturally valid zones.
+5.5. Limitations and future implications
+Several limitations warrant attention. The case study involved a 
+single mid-sized academic building, and further validation across 
+diverse building types is required. Although the experimental validation 
+was conducted in a single academic building, the architecture is inde -
+pendent of building type and relies exclusively on IFC and standard 
+wireless protocols, enabling direct transferability. Wi-Fi localization 
+error remains non-negligible and should be addressed through hybrid 
+positioning strategies incorporating BLE, inertial sensors, or Ultra- 
+Wideband (UWB).
+Ethical and privacy challenges associated with mobile crowd sensing 
+must also be acknowledged. Real-time occupant monitoring requires 
+strict data governance mechanisms including anonymization, encryp -
+tion, and transparency of data usage policies. These considerations are 
+central to sustainable deployment of digital twin technologies in occu -
+pied environments. In buildings with highly articulated or irregular 
+circulation geometries, increased spatial complexity primarily results in 
+a larger number of spatial partitions and transitions, yielding a denser 
+evacuation graph rather than requiring methodological changes.
+Future work will focus on extending the framework through pre -
+dictive hazard modeling, sensor fusion strategies, and privacy- 
+preserving data architectures. These developments are necessary to 
+support scalable digital twin deployment in highly occupied and 
+infrastructure-intensive facilities.
+6. Conclusion
+This paper presented an IFC-based integration framework that 
+tightly couples Building Information Modeling (BIM) with mobile crowd 
+sensing (MCS) to enable dynamic, context-aware evacuation routing in 
+complex buildings. By transforming IFC models into a semantically 
+enriched decision graph continuously updated with crowd-sensed in -
+formation, the proposed approach moves beyond static BIM-based 
+evacuation models toward operational, real-time decision support.
+The main contributions of this work can be summarized as follows. 
+First, a semantic interoperability mechanism was developed to system -
+atically link IFC building entities with live sensing data, enabling dy -
+namic annotation of spaces, exits, and sensors. Second, a graph-based 
+evacuation model was formulated in which routing decisions adapt to 
+evolving hazards, crowd conditions, and exit availability using a multi- 
+criteria shortest-path strategy. Third, a two-stage crowdsensing 
+approach was incorporated to estimate occupant positions by account -
+ing for both active and silent users. Finally, the framework was imple -
+mented and evaluated in a real multi-story academic building under 
+multiple emergency scenarios, demonstrating improved evacuation 
+effectiveness under scenario-specific temporal constraints.
+Compared to existing BIM-based evacuation approaches, which often 
+rely on static assumptions or precomputed routes, the proposed frame -
+work emphasizes continuous data integration and adaptive routing 
+behavior. This positions the framework closer to digital-twin–like 
+operation, where building models are not only descriptive but also 
+actively support real-time operational decision-making during 
+emergencies.
+M. Rashidian and M.R. Malek Advanced Engineering Informatics 72 (2026) 104500 
+11 
+Several limitations of the current study should be acknowledged. The 
+experimental evaluation was conducted in a single building, and the 
+number of emergency scenarios was limited. In addition, while routing 
+adaptability was analyzed through time-based outcomes, detailed agent- 
+level behavioral modeling and large-scale multi-building validation 
+were beyond the scope of this work.
+Future research will focus on extending the framework to larger and 
+more diverse building typologies, incorporating richer behavioral and 
+compliance models for evacuees, and integrating additional real-time 
+data sources such as IoT-based environmental sensors. These di -
+rections aim to further strengthen the role of BIM-based digital twins as 
+practical decision-support systems for emergency management.
+CRediT authorship contribution statement
+Mohsen Rashidian: Writing – original draft, Visualization, Valida -
+tion, Software, Methodology, Formal analysis, Data curation, Concep -
+tualization. Mohammad Reza Malek: Writing – review & editing, 
+Validation, Supervision, Software, Methodology, Formal analysis, 
+Conceptualization.
+Declaration of competing interest
+The authors declare that they have no known competing financial 
+interests or personal relationships that could have appeared to influence 
+the work reported in this paper.
+Data availability
+Data will be made available on request.
+References
+[1] A. Bahamid, A. Mohd Ibrahim, A review on crowd analysis of evacuation and 
+abnormality detection based on machine learning systems, Neural Comput. & 
+Applic. 34 (24) (2022) 21641–21655, https://doi.org/10.1007/s00521-022- 
+06890-0.
+[2] Radianti, J., Granmo, O.-C., Bouhmala, N., Sarshar, P., Yazidi, A., & Gonzalez, J. 
+Crowd models for emergency evacuation: A review targeting human-centered 
+sensing. In 2013 46th Hawaii international conference on system sciences, 2013 (pp. 
+156-165): IEEE.
+[3] A.M. Ibrahim, I. Venkat, K. Subramanian, A.T. Khader, P.D. Wilde, Intelligent 
+evacuation management systems: a review, ACM Transactions on Intelligent 
+Systems and Technology (TIST) 7 (3) (2016) 1–27, https://doi.org/10.1145/ 
+2842630.
+[4] D. Suhag, V. Jha, A comprehensive survey on mobile crowdsensing systems, J. Syst. 
+Archit. 142 (2023) 102952, https://doi.org/10.1016/j.sysarc.2023.102952.
+[5] Y. Yu, S. Kim, H. Jeon, B. Koo, A systematic review of the trends and advances in 
+IFC schema extensions for BIM interoperability, Appl. Sci. 13 (23) (2023) 12560, 
+https://doi.org/10.3390/app132312560.
+[6] R. Wehbe, I. Shahrour, A bim-based smart system for fire evacuation, Future 
+Internet 13 (9) (2021) 221, https://doi.org/10.3390/fi13090221.
+[7] M.M.F. Ariyachandra, G. Wedawatta, Digital twin smart cities for disaster risk 
+management: a review of evolving concepts, Sustainability 15 (15) (2023) 11910, 
+https://doi.org/10.3390/su151511910.
+[8] K. Liu, Y. Ma, M. Chen, K. Wang, K. Zheng, A survey of crowd evacuation on 
+passenger ships: recent advances and future challenges, Ocean Eng. 263 (2022) 
+112403, https://doi.org/10.1016/j.oceaneng.2022.112403.
+[9] D. Darsena, G. Gelli, I. Iudice, F. Verde, Sensing technologies for crowd 
+management, adaptation, and information dissemination in public transportation 
+systems: a review, IEEE Sens. J. 23 (1) (2022) 68–87, https://doi.org/10.36227/ 
+techrxiv.16811191.v5.
+[10] Q. Deng, B. Zhang, Z. Zhou, H. Deng, L. Zhou, Z. Zhou, et al., Evacuation time 
+estimation model in large buildings based on individual characteristics and real- 
+time congestion situation of evacuation exit, Fire 5 (6) (2022) 204, https://doi. 
+org/10.3390/fire5060204.
+[11] Y. Ji, W. Wang, M. Zheng, S. Chen, Real time building evacuation modeling with an 
+improved cellular automata method and correspo

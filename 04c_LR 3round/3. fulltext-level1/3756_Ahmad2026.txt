@@ -1,0 +1,739 @@
+LESSONS LEARNED FROM THE REAL-WORLD DEPLOYMENT OF
+MULTI-SENSOR FUSION FOR PROACTIVE WORK ZONE SAFETY APPLICATION
+Minhaj Uddin Ahmad, Ph.D. Student, Corresponding Author
+Department of Civil, Construction & Environmental Engineering, The University of Alabama
+2009 SCIB, 28 Kirkbride Lane, Tuscaloosa, AL 35487-0288
+Email: mahmad12@crimson.ua.edu
+Sagar Dasgupta, Ph.D.
+Department of Civil, Construction & Environmental Engineering, The University of Alabama
+2009 SCIB, 28 Kirkbride Lane, Tuscaloosa, AL 35487-0288
+Email: sdasgupta@ua.edu
+Mizanur Rahman, Ph.D.
+Department of Civil, Construction & Environmental Engineering, The University of Alabama
+2007 SCIB, 28 Kirkbride Lane, Tuscaloosa, AL 35487-0288
+Email: mizan.rahman@ua.edu
+Sakib Khan, Ph.D.
+Principal Intelligent Transportation Systems Engineer, MITRE Corporation
+7525 Colshire Dr, McLean, 22102 Virginia
+Email: sakibkhan@mitre.org
+Md. Wasiul Haque, Ph.D. Student
+Department of Civil, Construction & Environmental Engineering, The University of Alabama
+2009 SCIB, 28 Kirkbride Lane, Tuscaloosa, AL 35487-0288
+Email: mhaque16@crimson.ua.edu
+Suhala Rabab Saba, Ph.D. Student
+Department of Civil, Construction & Environmental Engineering, The University of Alabama
+2009 SCIB, 28 Kirkbride Lane, Tuscaloosa, AL 35487-0288
+Email: ssaba@crimson.ua.edu
+David Bodoh
+Lead Systems Engineer, MITRE Corporation
+7525 Colshire Dr, McLean, 22102 Virginia
+Email: dbodoh@mitre.org
+Nathan Huynh, Ph.D.
+Department of Civil and Environmental Engineering, University of Nebraska-Lincoln
+262D Prem Paul Research Center at Whittier School
+2200 Vine Street, Lincoln 68588 Nebraska
+Email: nathan.huynh@unl.edu
+arXiv:2508.01599v1  [cs.OH]  3 Aug 2025
+Ahmad, Dasgupta, Rahman, Khan, Hauque, Saba, Huynh, Zhao, and Ozguven 2
+Li Zhao, Ph.D
+Department of Civil and Environmental Engineering, University of Nebraska-Lincoln
+262K Prem Paul Research Center at Whittier School
+2200 Vine Street, Lincoln 68588 Nebraska
+Email: lizhao@unl.edu, (402) 472-1928
+Eren Erman Ozguven, Ph.D.
+Department of Civil and Environmental Engineering, FAMU-FSU College of Engineering
+2525 Pottsdamer Street, Tallahassee, FL, 32311
+Email: eozguven@eng.famu.fsu.edu
+Word Count: [REDACTED FOR ARXIV]
+Submission Date: August 5, 2025
+Ahmad, Dasgupta, Rahman, Khan, Hauque, Saba, Huynh, Zhao, and Ozguven 3
+ABSTRACT
+Proactivesafetysystemsthatanticipateandmitigatetrafficrisksbeforeincidentsoccurareincreas-
+ingly recognized as essential for improving work zone safety. Unlike traditional reactive methods,
+thesesystemsrelyonreal-timesensing,trajectoryprediction,andintelligentinfrastructuretodetect
+potential hazards. Existing simulation-based studies often overlook, and real-world deployment
+studies rarely discuss the practical challenges associated with deploying such systems in opera-
+tionalsettings,particularlythoseinvolvingroadsideinfrastructureandmulti-sensorintegrationand
+fusion. This study addresses that gap by presenting deployment insights and technical lessons
+learnedfromareal-worldimplementationofamulti-sensorsafetysystematanactivebridgerepair
+work zone along the N-2/US-75 corridor in Lincoln, Nebraska. The deployed system combines
+LiDAR,radar,andcamerasensorswithanedgecomputingplatformtosupportmulti-modalobject
+tracking, trajectory fusion, and real-time analytics. Specifically, this study presents key lessons
+learned across three critical stages of deployment: (1) sensor selection and placement, (2) sensor
+calibration, system integration, and validation, and (3) sensor fusion. Additionally, we propose a
+predictive digital twin framework that leverages fused trajectory data for early conflict detection
+and real-time warning generation, enabling proactive safety interventions.
+Keywords: Proactive Safety, Work Zone Safety, Digital Twin, Trajectory Prediction
+Ahmad, Dasgupta, Rahman, Khan, Hauque, Saba, Huynh, Zhao, and Ozguven 4
+BACKGROUND AND MOTIVATION
+Proactivesafetystrategies,whichaimtopreventtrafficincidentsbeforetheyoccur,areincreasingly
+gainingtractioninbothresearchandpractice. Unliketraditionalreactivesystemsthatrespondafter
+acrashornear-miss,proactiveapproachesrelyonreal-timedata,predictiveanalytics,andintelligent
+infrastructuretoanticipaterisksandfacilitateearlyinterventions. Recentadvancementsinsensing,
+computation,andcommunicationtechnologieshavegreatlyenhancedthepotentialofsuchsystems
+that can substantially improve traffic safety and contribute to saving lives. Roadside infrastructure
+equipped with heterogeneous sensor suites, such as LiDAR, radar, and camera systems, can help
+to develop a proactive safety system for safety-critical roadway locations, such as work zones
+and intersections. These sensors enable the continuous and reliable monitoring and tracking of
+vehicleandvulnerableroadusermovementsacrossdiverselightingandweatherconditions. When
+properly calibrated and integrated, they offer a rich and complementary data stream capable of
+capturingawiderangeofspatialandcontextualinformationessentialforunderstanding,modeling,
+and anticipating roadway traffic behavior in real time.
+Numerous studies have explored the use of roadside infrastructure-based multi-modal sen-
+sordatatoimprovedetection,classification,andtrackingcapabilities( 1, 2). Differentstudiesutilize
+sensordatastreamsatdifferentlevelsofdetailtosupportvarioustasks. Somefusetheinformation
+available from sensor modalities at the detection and classification level (3) while others focus on
+fusing vehicle trajectories generated by individual sensors (4). While simulation-based research
+has contributed significantly to such development, it often overlooks the complexities present in
+real-worlddeployments,suchasimperfectsensoralignment,datadropout,sensorcalibration,com-
+putation latency, and environmental variability (5, 6). Real-world deployments, on the other hand,
+provides invaluable insights into operational constraints and challenges. These challenges include
+effects of terrain characteristic impacting sensor placement decisions, weather variability, stability
+and vibrations of the mounting pole, the height of the sensors for optimal line of sight, calibration
+and hardware integration issues, and system-level integration challenges that are necessary for
+transitioning from prototype to practice.
+Studies with real-world deployments, such as Li and Yoon (7), Zimmer et al. (8), and
+Tsaregorodtsev et al. (9), have demonstrated the value of deploying and evaluating systems under
+real-worldconditions. Thesedeploymentshighlightpracticallimitationsanddesigntradeoffs,such
+as the importance of power and network infrastructure, local storage capacity, sensor visibility
+constraints, and the need for accurate ground truth sources for validation. Moreover, real-world
+experimentsoftenrequireclosecollaborationwithpublicagenciesandinfrastructurestakeholders,
+introducing additional operational considerations related to safety, accessibility, and equipment
+protection. For instance, Tsaregorodtsev et al. (9) deployed a real-time camera and radar-based
+perception system at a live urban intersection in Ulm, Germany. Their study highlighted prac-
+tical challenges, such as achieving low-latency performance suitable for cooperative driving and
+ensuring robustness under snow and low-visibility conditions. Similarly, InfraDet3D (8) demon-
+strated a robust multi-modal 3D perception system deployed at the A9 Test Stretch in Germany
+using infrastructure-mounted LiDAR and camera sensors. They emphasized the benefits of fusing
+early and late-stage detections while introducing automatic calibration tools, HD map integration,
+and support for adverse lighting conditions. While these efforts underscore the feasibility of de-
+ploying infrastructure-based multi-sensor systems, most existing studies tend to focus on system
+performance rather than addressing the broader set of practical deployment challenges, especially
+those involving sensor placement, maintenance, real-time data fusion, and operational integration
+Ahmad, Dasgupta, Rahman, Khan, Hauque, Saba, Huynh, Zhao, and Ozguven 5
+with existing roadside infrastructure. As a result, there remains a significant gap in the litera-
+ture concerning the sustained deployment and scalability of such systems under diverse real-world
+conditions.
+This study presents deployment insights from a real-world implementation of work zone
+safety applications that utilize roadside infrastructure integrated with heterogeneous sensors, in-
+cluding LiDAR, radar, and camera systems. Thus, specifically, this study presents key lessons
+learned across three critical stages of real-world deployment: (1) sensor selection and placement,
+(2) sensor calibration, system integration, and validation, and (3) integration of sensor-generated
+data into a predictive digital twin framework to support proactive safety applications. We address
+the challenges associated with sensor installation, calibration, and data fusion in dynamic roadside
+environments. Additionally, we highlight how fused vehicle trajectories can be incorporated into a
+predictive digital twin to enable early conflict detection and real-time warning generation.
+The remainder of this paper is structured as follows. The next section describes the real-
+world deployment of the multi-sensor system at an active work zone, including sensor selection,
+placement,andsitecharacteristics. Thisisfollowedbyadiscussionofkeylessonslearnedfromthe
+deployment, with emphasis on sensor configuration, calibration challenges, and integration issues.
+The paper then outlines the calibration methods used for both LiDAR and radar-camera systems,
+including spatial alignment and coordinate transformation processes. Subsequently, we present
+the trajectory validation procedure using data collected from a reference vehicle equipped with a
+Global Navigation Satellite System (GNSS) receiver and an Inertial Measurement Unit (IMU), to
+evaluate the accuracy of vehicle detection, tracking, and sensor-derived trajectories. Building on
+thesevalidatedtrajectories,thepaperintroducesapredictivedigitaltwinframeworkthatintegrates
+fused sensor data to support proactive safety applications. Finally, we conclude with a summary
+of findings and a set of practical recommendations for future deployments of infrastructure-based
+multi-sensor systems in work zone environments.
+REAL-WORLD DEPLOYMENT OF MULTI-SENSOR TRACKING IN WORK ZONES
+We established a roadside sensing deployment integrated with heterogeneous sensors, including
+LiDAR, radar, and camera systems, at an active bridge repair work zone site along the N-2/US-
+75 corridor in Lincoln, Nebraska, United States. The selected location featured dynamic traffic
+operationswithatwo-to-onelanereduction, whereonlyasingletravellaneremainedopenineach
+direction at a time. The work zone site is shown in Figure 1. This configuration, combined with a
+temporaryspeedlimitreductionfrom70mphto55mph,providedanidealreal-worldenvironment
+to observe traffic flow disruptions and driver behavior under constrained conditions. The site was
+selected in collaboration with local transportation agencies and construction contractors following
+an assessment of several candidate locations along the US-75 corridor. The chosen segment
+exhibited operational characteristics conducive to the study of work zone mobility and safety,
+including frequent lane changes, vehicle merging behavior, and compliance with temporary traffic
+control measures.
+For data acquisition, two sensing platforms were deployed within the work zone: a long-
+range Ouster LiDAR and an integrated Omnisight radar-camera system. These systems provide
+multimodal tracking of vehicle movement and classification. Figure 2 illustrates the placement of
+the installed sensor systems within the experimental work zone. This multi-sensor configuration,
+comprisingLiDAR,radar,andcamerasystems,ensuresbothredundancyandoperationalresilience.
+Each sensor modality has distinct strengths and limitations; for instance, cameras may struggle in
+Ahmad, Dasgupta, Rahman, Khan, Hauque, Saba, Huynh, Zhao, and Ozguven 6
+low-light or foggy conditions, while LiDAR can be affected by heavy rain or snow. By fusing
+data from multiple heterogeneous sensors, the system can compensate for the weaknesses of any
+single sensor, thereby maintaining reliable performance across a wide range of environmental and
+operational conditions. This redundancy is particularly critical for roadside safety applications,
+whereconsistentandaccuratedetectionofroadusersisessentialforproactiveriskmitigation. Here
+is a brief description of these sensor details.
+LiDARcreateshigh-resolution3Dspatialdatautilizingthereflectionsfromitslaserbeams.
+This enables the LiDAR to construct a 3D point cloud representation with depth information.
+Unlike a passive sensor like a camera, LiDAR is not affected by environmental lighting, such as
+low light at night or lens glare. However, rain or snow may hamper the LiDAR detection as rain
+orsnowparticlesdispersethelaserbeam. Vehiclesandpedestrianscanbedetected,classified,and
+tracked by processing the LiDAR point cloud. Considerations in the choice of a particular LiDAR
+sensorincludefieldofview,laserarraydensity,detectionrange,andintegrationsupportbyvendor-
+provided Software Development Kits (SDKs) to extract object-level trajectory and classification
+data in real-time.
+Radar operates reliably under adverse weather and low-visibility conditions, such as rain,
+fog, or snow, utilizing reflected radio waves. It provides precise Doppler-based velocity estima-
+tions. However, the radar detections and the point cloud generated are often sparse, unlike their
+LiDARcounterparts. Objectclassificationandtrackingreliabilitymaybehamperedinchallenging
+environments such as dense traffic due to sparse data points.
+Camerascancontributetodetection,classification,andtrackingwithrichsemanticcontext
+(e.g.,classification,visualcues),andareeffectiveindaylight. However,theiraccuracydropsunder
+adverse weather and low visibility conditions.
+For ground truth reference, we equipped a minivan with the NovAtel CPT7700 system, a
+real-time kinematic (RTK) GNSS and IMU. The Global Positioning System (GPS) is the satellite
+navigationsystemoperatedbytheUnitedStatesandrepresentsoneofseveralGNSS.Fromthispoint
+forward, we use the terms GNSS and GPS interchangeably to refer to GNSS throughout the paper.
+TheCPT7700integratesasingle-antennaGNSSreceiverwiththeHoneywellHG4930MEMSIMU,
+offeringhigh-accuracypositioningthroughcombinedGNSSandinertialmeasurements. TerraStar-
+L correction services were employed during the experiment, and IMU data were logged at a 10
+Hz frequency to capture detailed vehicle motion, including heading and acceleration. This ground
+truth data served as a reference for validating sensor measurements and trajectory reconstruction
+algorithms. Figure3illustratesanimagefromthecamerasensor,showingtheworkzonesitefrom
+the perspective of the sensors. An edge computer, as demonstrated in Figure 4, processes and
+storestheincomingdatafromtheLiDARandradar-camerasystems. Theedgecomputerfeaturesa
+NVIDIAJetsonAGXOrincomputingplatformwith275Terra-FlopsPerSecond(TOPS)processing
+capability and 32GB LPDDR5 RAM. It also features a 1024-core NVIDIA Ampere GPU, which
+enables real-time processing of dense LiDAR data.
+Ahmad, Dasgupta, Rahman, Khan, Hauque, Saba, Huynh, Zhao, and Ozguven 7
+FIGURE 1 Satellite view of work zone along N-2/US-75 in Lincoln, NE (lane closure area
+highlighted in yellow).
+FIGURE 2 LiDAR and radar-camera sensor placement in the work zone.
+Ahmad, Dasgupta, Rahman, Khan, Hauque, Saba, Huynh, Zhao, and Ozguven 8
+FIGURE 3 View of the active work zone captured by the radar-camera system.
+FIGURE 4 Edge computer for real-time processing and storing multi-sensor data stream.
+Ahmad, Dasgupta, Rahman, Khan, Hauque, Saba, Huynh, Zhao, and Ozguven 9
+LESSONS LEARNED
+Selection of Sensors
+Toenablereal-timeperceptionandproactivesafetyapplications,wedeployaheterogeneoussensor
+suite comprising LiDAR, radar, and camera. As explained before, this multi-sensor configuration
+ensuresredundancyandresilience,particularlyinchallengingconditions,suchaslowlighting,fog,
+rain,andsnow,whereindividualsensorsmayunderperform. Toconstructadigitaltwinofthework
+zoneenvironment,thespecificationofdatarequirementsisestablishedinTable1. Differentsensor
+modalities are often fused to complement each other to produce reliable detection, classification,
+andtracking. Amongcommerciallyavailablesensoroptionsforroadsideinfrastructure,weselected
+sensors based on three key criteria: (1) compatibility with data specification listed in Table 1, (2)
+long detection range suitable for highway environment, and (3) availability of vendor provided
+Software Development Kit (SDK) or Application Programming Interface (API) to facilitate real-
+timedataaccessandintegrationintocustomapplications. Inthisstudy,theOusterOS2-128LiDAR
+andtheOmniSightradar-camerafusionsensorwereselectedtomeetthesecriteria. Theirsoftware
+support enabled data streaming to an edge computer and provided the flexibility needed to build
+higher-level applications such as a digital twin-based proactive safety application for work zone
+environments. Table 2 lists the specifications of the selected sensors.
+TABLE 1 Data requirement specification
+Field Description
+Timestamp Millisecondresolutiontimestampstoensuretemporalalignment
+across modalities and consistency.
+Track ID Unique persistent identifier for each tracked object.
+Classification Object category, such as passenger vehicle, commercial motor
+vehicle, or pedestrian.
+Position Localization of each object with standard units of measurement
+in sensor reference frame or global reference frame.
+Velocity Object velocity expressed as vector components (e.g.,𝑣 𝑥, 𝑣 𝑦) in
+sensor reference frame or global reference frame.
+Ahmad, Dasgupta, Rahman, Khan, Hauque, Saba, Huynh, Zhao, and Ozguven 10
+TABLE 2 Technical Specifications of OmniSight FusionSensor and Ouster OS2-128 LiDAR
+Specification OmniSight FusionSensor Ouster OS2-128 LiDAR
+Sensor Type Camera + Radar Fusion LiDAR
+Function Object detection, classifica-
+tion, tracking
+Object detection, classificatin
+and tracking
+Range 100 meter 200 m
+Field of View (FoV) 120◦ 360◦ horizontal,22.5 ◦ vertical
+Frame Rate Up to 20 fps (fused output) Up to 20 fps
+Data Interface RJ45 Ethernet Proprietary Connector to
+RJ45 Ethernet
+Points per Second N/A Up to 2.6 million
+Time Synchronization NTP supported PPS + NMEA / PTP sup-
+ported
+Power Consumption 30 W PoE+ 28 W
+IP Rating IP66 IP68 / IP69K
+Operating Temperature –30◦C to +75◦C –20◦C to +60◦C
+Weight 0.78 kg 1.1 kg
+Mounting Rear-mounted bracket / plate Bottom mount
+Placement of Sensors
+In deployment preparation of the roadside sensing system, careful consideration was given to the
+installation height and placement of the radar-camera and LiDAR platforms to ensure optimal
+coverage, sensor field of view, and tracking performance. Each sensor platform comes with
+vendor-recommended mounting guidelines, which are informed not only by hardware constraints
+such as radar beam spread, camera lens properties, but also by specific sensing principles and
+the configuration of detection and tracking algorithms. The detection and tracking algorithms are
+often trained on datasets collected under specific deployment conditions, including sensor height,
+tilt angle, and environmental context for placement. Deviating from the vendor-recommended
+specificationsmayadverselyaffectdetectionandtrackingperformancebyintroducingdiscrepancies
+between observed data and the model’s training distribution.
+The radar-camera unit (i.e., OmniSight FusionSensor), which integrates millimeter-wave
+radarwithopticalimaging,istypicallyrecommendedtobeinstalledatanelevationof15-20ftfrom
+theroadsurface. Incontrast,theOusterLiDARunitperformsoptimallyatalowermountingheight
+of 10-15 ft, where it can generate a dense point cloud, as the laser beam tends to disperse with
+increasing distance from the LiDAR unit. In this study, we placed the multi-sensor system inside
+the work zone, in the median of the highway, ensuring the oncoming traffic is in the field of view
+ofboththesensors. Bothsensorplatformswereinstalledataheightof15ftfromtheroadsurface,
+where both sensors could detect and track oncoming vehicles. While this configuration proved
+effective in our deployment, there remains potential for further improvement through additional
+fine-tuning of the installation height based on specific site geometry and operational objectives.
+Calibration of Sensors
+In multi-sensor deployments, each sensor type, whether it is LiDAR, radar, or camera, typically
+produces spatial data in its own coordinate reference system (CRS). These CRSs vary in origin,
+Ahmad, Dasgupta, Rahman, Khan, Hauque, Saba, Huynh, Zhao, and Ozguven 11
+orientation, and units, depending on the sensor’s design, its software and firmware, and their
+mounting configurations. Most LiDAR, radar, and camera systems produce spatial data of tracked
+objectsinalocalCartesiancoordinateframecenteredatthesensor,whilethelocalaxesarealigned
+with the heading of the sensor. As such, in a multi-sensor deployment, two sensors mounted in
+close proximity report detected object positions in CRS frames that differ in both translation and
+rotation.
+To enable interpretation of the detections and tracking output produced by each of the
+sensors, data must be transformed into a common spatial reference. In this study, we adopt the
+WorldGeodeticSystem1984(WGS84)geodeticcoordinatesystemastheglobalframeofreference.
+WGS84isawidelyacceptedstandardinnavigation,mapping,andgeographicinformationsystems
+(GIS). GNSS receivers also produce data in the WGS84 coordinate frame. This common CRS
+enables compatibility to test our sensor-produced tracks with a test vehicle equipped with a GNSS
+receiver, as well as compatibility to plot our results on a digital map using the WGS84 coordinate
+system.
+Point cloud data
+LiDAR
+(Ouster OS2-128) 
+Vehicles detected and tracked
+Ouster Gemini Detect
+software
+Vechile class, ID, positions
+in sensor coordinate system
+Trajectory extraction
+script
+Vechile trajectories
+aligned with map
+Coordinate
+transformation
+Geodetic projection
+(WGS84)
+Track-fusion algorithm
+Fused vehicle class
+and trajectory data
+LiDAR Processing Radar-Camera 
+Processing
+Radar Camera
+Coordinate
+transformation
+Vechile trajectories
+aligned with map
+Geodetic projection
+(WGS84)
+TextVechile class, ID, positions
+in sensor coordinate system
+Omnisight
+FUSIONSENSOR
+Vehicle class, ID, Position (Lat, Lon)
+Vehicle class, ID,
+ Position (Lat, Lon)
+FIGURE 5 Real-time processing pipeline for LiDAR and radar-camera trajectory fusion.
+We find the amount of translation and rotation that is required to transform individual
+sensor outputs to a common CRS through a calibration process. A sample of collected data is
+used for the calibration of the LiDAR and radar-camera system. Once the desired calibration
+values for the transformation are available, it is applied to the real-time data processing pipeline.
+The data processing pipeline is illustrated in Figure 5. The LiDAR and radar-camera system
+produces raw sensor readings that are processed by the vendor software SDK to detect and track
+Ahmad, Dasgupta, Rahman, Khan, Hauque, Saba, Huynh, Zhao, and Ozguven 12
+different classes of vehicles and pedestrians. Our software client script requests and retrieves the
+objectclassificationandtrackingoutputfromthevendorAPI(ApplicationProgrammingInterface)
+endpoints 10 times a second (10 Hz). The corresponding coordinate transformation is applied to
+thespatialdataproducedbythesensors. Oncetrajectorydataareinthecommoncoordinatesystem,
+downstream track fusion algorithms can associate and fuse the individual object tracks, producing
+a robust vehicle trajectory. This fused trajectory can later be used by the application program. In
+the following subsections, we describe the calibration steps for the LiDAR and the radar-camera
+system.
+LiDAR Sensor Calibration
+LiDARsensorsgeneratedetailedspatialobservationintheirfieldofviewbydetectingthereflection
+fromsurroundingobjects. Thedataisinitiallyinpointcloudformat,whichisprocessedbyvendor
+software to produce object detections, classification, and tracking. The tracking produces a series
+oftrajectoriesthatareencodedinthesensorcoordinatesystem. Usingtheinstallationsitelocation,
+we create an initial visualization in the WGS84 coordinate reference frame. Figure 6 shows the
+visualization of all trajectories in the sample overlaid on ESRI satellite imagery, tracing out the
+shapeoftheroad,albeitnotalignedwiththeroad. However,thegeometryofthetrajectoriesallows
+ustomanuallyadjusttheorientationand necessaryoffsetsuchthatthetrajectorieslineupwiththe
+satellite image map.
+FIGURE 6 LiDAR trajectories overlaid on satellite map before calibration
+To support the intuitive trial-and-error alignment process, we have developed a browser-
+basedinteractivecalibrationtoolthatallowsustoadjusttheorientationazimuthangleandpositional
+offsets. The interactive tool is presented in Figure 7 and the code is provided as open-source
+Ahmad, Dasgupta, Rahman, Khan, Hauque, Saba, Huynh, Zhao, and Ozguven 13
+Github Gist https://gist.github.com/minhaj6/fa3cc06bee9b6df5274133041c3cf3d4.
+The interface enables real-time visualization of the transformed trajectories over satellite imagery,
+facilitating manual calibration. By iteratively adjusting the transformation parameters within the
+tool, we manually aligned the trajectory overlay to the roadway with high visual fidelity. Once an
+appropriaterotationandtranslationwereidentified,weappliedthistransformationtothedatasetto
+bringitintotheWGS84geodeticframe. ThiscalibratedLiDARdatawasthenusedindownstream
+fusion and analysis steps within our digital twin workflow.
+FIGURE 7 Interactive calibration tool for aligning LiDAR trajectories.
+The transformation applied to each LiDAR point involved a two-dimensional similarity
+transformation. Let (𝑥, 𝑦) be the original coordinates in the local sensor frame,𝜃 the azimuth
+rotation angle, and (Δ𝑥, Δ𝑦) the translational offsets in meters. The transformed coordinates
+(𝑥′, 𝑦′) are computed as:
+𝑥′
+𝑦′
+
+=
+cos 𝜃 −sin 𝜃
+sin 𝜃 cos 𝜃
+  𝑥
+𝑦
+
++
+Δ𝑥
+Δ𝑦
+
+(1)
+Inpractice, therotationisperformedaboutthecentroidofthetrajectoryclustertopreserve
+the overall shape. The resulting coordinates are then re-projected into the WGS84 coordinate
+system using an inverse map projection centered at the sensor’s installation location. Figure 8
+presents a collection of trajectories after the calibration process. The values found for𝜃 are 185◦
+fromnorth,thenorth-southandeast-westoffsetswerefoundtobe −92and 28meters,respectively.
+Ahmad, Dasgupta, Rahman, Khan, Hauque, Saba, Huynh, Zhao, and Ozguven 14
+FIGURE 8 LiDAR trajectories overlaid on satellite map after calibration.
+Radar-Camera Sensor Calibration
+We employed a data-driven calibration approach using a rigid-body Procrustes alignment between
+radar-camera detected trajectories and calibrated against calibrated LiDAR detections. The cali-
+bration procedure aimed to estimate the 2D rigid transformation that is required to align the radar
+trajectories. The transformation comprises the necessary rotation and translation to align radar
+detections with the WGS84 reference frame. No scaling or shearing was assumed, as the radar
+detections are metric and only subject to heading and positional offsets due to sensor mounting.
+The radar data used for calibration is sampled from detections and tracking produced by
+the OmniSight FusionSensor unit deployed at the work zone. Each detection entry in the data
+included a Well-Known Text (WKT)-encodedraw_position field for tracked object coordinates
+in a local Cartesian frame. These coordinates were first extracted and converted to planar East-
+Northcoordinatesusinganazimuthalequidistant(AEQD)projectioncenteredattheknownsensor
+installation location.
+Simultaneously, corrected LiDAR trajectories were projected into the same AEQD frame,
+creating two comparable point sets. To align them, we employed a Procrustes-based rigid trans-
+formation algorithm that minimizes the mean squared error between the corresponding radar and
+LiDAR positions. This involves computing the optimal rotation matrix𝑅 and translation vector𝑡
+minimizingtheFrobeniusnorm |𝑅 𝐴+𝑡 − 𝐵|𝐹,subjecttotheconstraint 𝑅⊤𝑅 = 𝐼 and det(𝑅) = 1. The
+solution was obtained by first mean-centering both radar-camera trajectory𝐴 ∈ R𝑛×2 and LiDAR
+trajectory 𝐵 ∈ R𝑛×2, computing the cross-covariance matrix𝐻 = ( 𝐴 − ¯𝐴)⊤(𝐵 − ¯𝐵), and applying
+singular value decomposition𝐻 = 𝑈Σ𝑉 ⊤. The optimal rotation was𝑅 = 𝑉𝑈 ⊤, with a reflection
+correction applied ifdet(𝑅) < 0. The translation was then computed as𝑡 = ¯𝐵 − 𝑅 ¯𝐴.
+Aftersolvingfor 𝑅and 𝑡,weappliedtheresultingtransformtoeachradartrajectorycandidate
+Ahmad, Dasgupta, Rahman, Khan, Hauque, Saba, Huynh, Zhao, and Ozguven 15
+FIGURE 9 Radar-camera trajectories aligned using orthogonal Procrustes alignment.
+Ahmad, Dasgupta, Rahman, Khan, Hauque, Saba, Huynh, Zhao, and Ozguven 16
+and evaluated the alignment quality. The radar ID with the strongest spatial correspondence to
+the LiDAR trajectory—based on time-synchronized matching and shape similarity—was selected.
+In our deployment, the radar ID 5fd4e80b-f1b1-4418-b0c5-e3f0d9dba021 was identified
+automatically based on this criterion. The derived sensor yaw angle was−109.74◦, representing
+the rotation needed to align the radar’s internal coordinate frame with the north–aligned AEQD
+referenceframe. Thisyawcapturestheheadingoffsetoftheradar’saxesfromgeographicnorthand
+isindependentofanyparticularvehicle’strajectory. Thetranslationvectoraccountsforthesensor’s
+spatial offset from the origin of the AEQD projection. The final transformation was applied to all
+radar detections, enabling consistent fusion with LiDAR and GPS data for downstream processing
+in the digital twin framework. The aligned radar trajectory was then projected back into WGS84
+coordinates and visualized over a satellite basemap, illustrated in Figure 9. The spatial alignment
+showed strong agreement with LiDAR observations. Using this value of azimuth angle and the
+sensorinstallationlocationasorigin,thecalibrationcanbeintegratedintothereal-timeprocessing
+pipeline.
+System validation
+Figure 10 illustrates the workflow designed for validating the trajectories produced by the LiDAR
+andradar-camerasensors. Fromtheprocessedandcorrectlyalignedsensortrajectories,weidentify
+and extract the test vehicle trajectory by filtering the time window when GNSS-equipped vehicles
+are in the sensor’s field of view, as well as vehicle classification and the geometric shape of the
+trajectory from the data. The test vehicle trajectory is further validated visually using the recorded
+video from the camera.
+Recorded trajectoriesProcessed trajectories
+(LiDAR)
+Processed trajectories
+(Radar-Camera)
+Lat/Lon coordinates
+Identify and extract test-
+vehicle trajectory
+Identify and extract test-
+vehicle trajectory
+Recorded trajectories Fused Lat/Lon 
+coordinates
+Track fusion algorithm
+Lat/Lon coordinates
+Validation module
+GNSS receiver
+dataGNSS receiver
+(NovAtel CP7700)
+Lat/Lon ground truthExtracted test-vehicle
+trajectory
+Trajectory Validation
+Validation results
+FIGURE 10 Trajectory validation workflow comparing sensor tracks with GNSS.
+In the LiDAR data sample, vehicle ID 5769 was identified as the test vehicle. Figure 11
+presents the LiDAR trajectory visualization of the test vehicle along with the RTK GNSS-derived
+trajectory,alongwiththeirrespectivetimestamps. Thetimestampsannotatedinthefigurerepresent
+only the seconds and milliseconds component, as this level of temporal resolution is most relevant
+for observing fine-scale alignment and delays. The visualization demonstrates lane-level accurate
+tracking of the test vehicle by the LiDAR. A constant time-lag in the LiDAR trajectory track is
+observed, which can be explained by the clock source of the different logs. The GNSS trajectory
+Ahmad, Dasgupta, Rahman, Khan, Hauque, Saba, Huynh, Zhao, and Ozguven 17
+logusestimefromGNSSreceivers,whichisprecisetimeinformationderivedfromGNSSsignals.
+However, the LiDAR logging utilizes the Network Time Protocol (NTP) server, which can add
+errors. We observe approximately 200 milliseconds delay, which will be accounted for in our
+future testing by equipping the edge computer with a GNSS clock source.
+FIGURE11 LiDARtrajectoryoftestvehicleversusGPStrajectoryshowingLiDARtracking
+capability and alignment.
+Similarly,Figure12presentsthetrajectoryoftheidentifiedtestvehicleID 5fd4e80b-f1b1
+-4418-b0c5-e3f0d9dba021alongwithRTKGNSStrajectory,demonstratingasimilaroutcome.
+We observe sparse data points in the radar-camera generated trajectory; however, the trajectory
+shows lane-level accuracy.
+Figure 13 presents trajectories from both sensor systems along with the GNSS trajectory
+for a comparative visualization.
+For real-world implementation, since detections and tracking from all sensors may not be
+available for all timestamps, due to the inherent limitations of the technology, it is necessary to
+fuse the sensor data with a robust state estimation algorithm that produces a reliable trajectory
+by fusing the sensor data. Figure 14 demonstrates a fused trajectory utilizing a Kalman Filter
+(KF) that reliably combines the sensor-generated tracks using measurement updates when data is
+availablefromeachsensor. Thisapproachensuresarobusttrajectorygenerationevenwhenoneof
+the sensors may fail to detect, and ensures a more reliable trajectory for downstream applications
+to utilize.
+Ahmad, Dasgupta, Rahman, Khan, Hauque, Saba, Huynh, Zhao, and Ozguven 18
+FIGURE 12 Radar-camera trajectory of test vehicle versus GPS trajectory showing radar-
+camera tracking capability and alignment.
+FIGURE 13 Overlay of LiDAR, radar-camera, and GPS trajectories for the test vehicle,
+demonstrating consistency across sensor modalities.
+Ahmad, Dasgupta, Rahman, Khan, Hauque, Saba, Huynh, Zhao, and Ozguven 19
+FIGURE14 Fusedtrajectorydemonstratingcontinuityandrobustnessagainstmissingsensor
+data.
+Application of multi-sensor tracking and fusion for digital twin-based safety application
+DigitalTwin(DT)technologyoffersacompellingframeworkforintegratingroadsideinfrastructure-
+baseddetection,tracking,andpredictiveanalyticsforproactivesafetyapplicationsintransportation
+environments. ADTisadynamic,virtualrepresentationofthephysicalworldthatiscontinuously
+synchronized with real-time sensor data. This bidirectional data flow between the physical and
+virtual layers allows the system to accurately reflect the current state of roadway assets, vehi-
+cles, workers, and environmental conditions. In the context of intelligent transportation systems,
+Transportation Digital Twins (TDTs) extend this concept by focusing specifically on modeling and
+monitoringtrafficflow,infrastructureconditions,andmulti-agentinteractionsonroadways,thereby
+enablingadvanced safety-criticalapplicationssuchas real-timeincidentdetection, riskevaluation,
+and trajectory forecasting (10, 11).
+A particularly promising extension of the TDT paradigm is the Predictive Digital Twin
+(PDT).PDTsystemsintegratereal-timesensorfeeds,historicaltrajectorydata,andmachinelearn-
+ingmodelswithphysicalsimulationenginestoforecastfuturestatesofatransportationenvironment.
+Theseforecastssimulatemultipleplausiblefuturescenariosinvolvingconnectedvehicles,roadside
+workers, and heavy machinery. By continuously evaluating the safety implications of predicted
+behaviors, PDT systems can identify hazards before they materialize—such as near-collisions, dy-
+namicgeofenceviolations,orunsafeworkermovement. Thisanticipatorycapabilityenablesashift
+from reactive response to proactive safety enforcement, improving both operational efficiency and
+protection for all road users.
+Ahmad, Dasgupta, Rahman, Khan, Hauque, Saba, Huynh, Zhao, and Ozguven 20
+Application
+Work Zone
+Road
+Segment
+Map
+Edge Computer
+Camera
+Radar
+LiDAR
+Roadside Infrastructure
+Wireless
+Transceiver/
+Ethernet
+VRUVehicle
+SensorsConstruction
+Workers
+Flaggers
+Pedestrian
+Passenger
+Car
+Construction
+Vehicles
+CMV
+Traffic Control
+Traffic Signal
+VMS
+Traffic Sign
+Physical World
+Work Zone
+Road
+Segment
+Digital Twin
+Traffic
+Control
+Equipment
+Digital Twin
+Vehicle
+Digital Twin
+VRU Digital
+Twin Roadside Infrastructure Digital Twin
+Data Aggregation Data Synchronization Data Fusion Data Visualization
+Digital Shadow
+Digital Twin
+Multi-Modal Trajectory
+Prediction Model
+(e.g., HPNet, QCNet)
+HD Vector Map
+Fused Trajectory and
+Vehicle Class Data
+Warning Event Log
+Database Predicted Trajectories
+(PT) for All Vehicles and
+Maneuver Scenarios
+V-1 PT-1
+V-1 PT-2
+V-1 PT-3
+V-n PT-n
+Digital Sibling
+Communication Gateway
+Proactive Work Zone Safety
+Application 
+Conflict Detection and Early
+Warning Generation
+Proactive Application n
+Proactive Application
+Outcome n
+Proactive Application 1
+Proactive Application
+Outcome 1
+FIGURE 15 Predictive Digital Twin framework for proactive work zone safety applications.
+Ahmad, Dasgupta, Rahman, Khan, Hauque, Saba, Huynh, Zhao, and Ozguven 21
+Figure15illustratesthearchitectureofareal-worldDTsystemtailoredforworkzonesafety.
+Thesystemisorganizedintotwotightlyintegrateddomains: thephysicalworldanditsdigitaltwin
+counterpart. In the physical domain, the work zone road segment is equipped with roadside
+sensors, including LiDAR, radar, and cameras, which monitor the movement and behavior of
+construction workers, flaggers, pedestrians, passenger cars, construction vehicles, and commercial
+motor vehicles (CMVs). These sensors are connected to an edge computing unit via wireless or
+wired networks, enabling low-latency, high-frequency data transmission. Additional components
+such as traffic signals, variable message signs (VMS), and static signage are also monitored and
+mirrored in the digital twin.
+Theincomingmulti-modalsensordataundergoesaggregation,synchronization,andfusion
+to form the real-time "Digital Shadow." This layer maintains an accurate, high-resolution spatial
+and semantic representation of all agents and infrastructure. It includes fused trajectories, object
+classifications, and alignment with high-definition (HD) vector maps. On top of this, the “Digital
+Sibling” layer enables predictive simulation. Within this layer, multi-modal trajectory prediction
+models forecast the future motion of each detected agent under various plausible maneuvering
+scenarios. These predictions, along with metadata such as object class, predicted intent, and
+confidence scores, are stored and visualized in the system’s central database.
+ThecomputationalenginewithintheDigitalSiblingcansimulateeachentity’smotionusing
+a combination of physical models and data-driven approaches. This allows the system to generate
+diverse maneuver possibilities for each actor and evaluate them for spatial-temporal conflicts. Key
+safety metrics—such as Time-to-Collision (TTC), Post-Encroachment Time (PET), and minimum
+predicted distance—are computed for each trajectory pair. These risk indicators can be feed into a
+risk evaluation framework that ranks scenarios by severity and urgency.
+When high-risk interactions can be detected—such as a pedestrian entering a vehicle’s
+projected path or two vehicles approaching a collision course—the system activates safety inter-
+ventions. These include real-time alerts to drivers via Basic Safety Messages (BSMs) or Personal
+Safety Messages (PSMs) transmitted over C-V2X, and audio or haptic alerts to workers through
+wearable devices. In cases of repeated or extreme violations, the system can also initiate virtual
+enforcement mechanisms. Dynamic safety geofences can be continuously updated based on the
+latest predictions, and the system can also trigger rerouting logic or command enforcement alerts
+depending on context. All alerts and events are recorded in a structured log for post-analysis and
+system refinement.
+The framework supports the simultaneous execution of multiple proactive safety applica-
+tions. Theseincludedynamicworkerprotectionzones,predictivedriverwarningsystems,real-time
+conflictdetection,andadaptivesignalcontrolinhigh-riskareas. Avisualizationdashboardenables
+traffic management personnel to monitor live and predicted system states, including risk levels
+and system responses. Additionally, the recorded event logs can inform long-term enforcement
+strategies, safety audits, and system performance evaluation.
+This PDT architecture enables the immediate deployment of a broad range of proactive
+safetycapabilities. Throughpredictivemodelingandreal-timefusionofsensordata,thesystemcan
+anticipateandmitigateriskssuchasvehicle-to-workerconflictsordangerousvehicleinteractions. It
+supports V2X-based driver alerts using BSMs or SPaT/MAP messages over PC5 or Uu interfaces,
+providing advance notice of stopped vehicles, active workers, or speed reductions. Real-time
+Vulnerable Road User (VRU) trajectories enable dynamic geofencing that alerts oncoming traffic
+whensafetythresholdsareviolated. Meanwhile,operatorsgainhigh-resolutionvisibilityintowork
+Ahmad, Dasgupta, Rahman, Khan, Hauque, Saba, Huynh, Zhao, and Ozguven 22
+zone dynamics via interactive dashboards. The architecture also facilitates proactive enforcement
+by tracking repeated violations in the warning event log. Finally, by modeling the real-time status
+of traffic control infrastructure, the DT system can support adaptive signal control algorithms
+that prioritize worker and VRU safety during critical phases. Together, these components create
+a comprehensive, intelligent, and scalable safety system that shifts the paradigm from passive
+monitoring to proactive protection.
+CONCLUSION AND RECOMMENDATIONS
+This study presented practical insights from the real-world deployment of a multi-sensor vehicle
+tracking system designed for proactive safety applications in a work zone setting. Drawing from
+hands-onimplementationexperience,weaddressedthetechnicalandoperationalchallengesofde-
+ployingLiDAR,radar,andcamerasensorsintegratedwithedgecomputinginfrastructure. Specific
+issuesrelatedtosensorplacement,calibration,timesynchronization,anddatafusionwerediscussed
+in detail. Through extensive calibration procedures and ground truth validation using RTK-GNSS
+andanIMU-equippedreferencevehicle,wedemonstratedthesystem’sabilitytogeneratelane-level
+accurate,fusedtrajectoriesandrobusttrackingfordownstreamapplications. Wealsoexploredhow
+thesefusedtrajectoriescanfeedintopredictivedigitaltwinframeworks,enablingproactiveconflict
+detection and early warning generation. Future deployments can benefit significantly from careful
+sensor placement, synchronization, and integration strategies, thereby further advancing proactive
+safety in dynamic transportation environments that extend beyond work zones.
+Based on our observations from the real-world multi-sensor deployment at the Nebraska
+work zone site, several practical recommendations emerged to enhance detection and tracking
+performance, improve spatial coverage, and increase system reliability. These insights can inform
+future deployments of infrastructure-based proactive safety systems:
+• Sensor Placement Considerations: It is beneficial to install sensors on stable, elevated
+platforms with unobstructed lines of sight to reduce occlusions. Considering roadway
+geometry, grade, and curvature during placement could help improve overall sensor
+coverage and tracking performance. The range of the sensor system may be increased to
+satisfyapplicationrequirementsbyplacingsensorsinmorethanonelocation. Thiscould
+be particularly beneficial where an unobstructed line of sight is short due to sharp curves
+and hills.
+• Time Synchronization: To support accurate data fusion across sensor types, equipping
+edge computing units with GNSS-synchronized clocks may help address latency and
+synchronization challenges.
+• Standardized and Modular Application Development: Adopting open and standard-
+ized data protocols can facilitate interoperability across diverse sensor systems, such as
+replacingtheLiDAR,radar,andcamerasensorsfromdifferentvendorswithlittlefriction.
+Leveraging a flexible architecture, such as a DT framework, can streamline integration,
+support future scalability, and simplify system maintenance. This approach enables
+modular application development, where new safety applications can be added, updated,
+or maintained independently without disrupting the overall system. It also facilitates
+long-term insight generation by organizing and preserving historical data for analysis.
+• Sensor Calibration: Multi-sensor calibration process can potentially be streamlined us-
+ing an automated optimization technique if a known GNSS-equipped test vehicle can
+be uniquely identified automatically in individual sensor data. Establishing periodic
+Ahmad, Dasgupta, Rahman, Khan, Hauque, Saba, Huynh, Zhao, and Ozguven 23
+recalibrationintervalscanhelpmaintainsensoraccuracyoverextendedperiodofdeploy-
+ments,accountingforenvironmentalvariations,andphysicaldriftofsensorhardwaredue
+to high wind or vibrations. Clear documentation of calibration procedures might also
+ensure consistent system performance across deployment sites.
+• Sensor Fusion: Fusion of trajectories across sensor modalities using state estimation al-
+gorithms,includingExtendedKalmanFilter(EKF)andUnscentedKalmanFilters(UKF),
+can effectively handle intermittent or noisy sensor data, thereby improving trajectory re-
+liability. Well-calibrated state estimation algorithms with sensor noise and process noise
+modeling can further enhance the quality of the fused trajectory.
+• Stakeholder Involvement and Coordination: Active communication with stakeholders
+such as transportation agencies, construction contractors, technology vendors, and local
+authorities from an early stage of the project can help identify site-specific constraints
+and requirements while minimizing operational frictions of deployment.
+ACKNOWLEDGMENTS
+ThisstudywasfinanciallysupportedbytheFederalMotorCarrierSafetyAdministration(FMCSA)
+of the United States Department of Transportation (US DOT). The views expressed in this paper
+are solely those of the authors, who are responsible for the accuracy and factual content presented.
+The contents do not necessarily reflect the official views or policies of the FMCSA and US DOT.
+We have used ‘ChatGPT4o’ to rephrase some of our own writing for editorial purposes.
+AUTHORS CONTRIBUTION
+MinhajAhmad,SagarDasgupta,MizanurRahman: conceptualization,methodology,datacol-
+lection,dataanalysis,andwriting–originaldraft; SakibKhan: conceptualization,datacollection,
+writing – review and editing, and funding acquisition;Md. Wasiul Haque, Suhala Rabab Saba,
+and David Bodoh:data collection and writing – review and editing;Mizanur Rahman, Sakib
+Khan,LiZhao,NathanHuynh,andErenErmanOzguven: conceptualization,writing–review
+and editing, and funding acquisition.
+Ahmad, Dasgupta, Rahman, Khan, Hauque, Saba, Huynh, Zhao, and Ozguven 24
+REFERENCES
+1. Syamal,S.,C.Huang,andI.Petrunin,Enhancingobjectdetectionandlocalizationthrough
+multi-sensor fusion for smart city infrastructure. In2024 IEEE International Workshop on
+Metrology for Automotive (MetroAutomotive), IEEE, 2024, pp. 41–46.
+2. Wang, S., R. Pi, J. Li, X. Guo, Y. Lu, T. Li, and Y. Tian, Object tracking based on the
+fusion of roadside LiDAR and camera data.IEEE Transactions on Instrumentation and
+Measurement, Vol. 71, 2022, pp. 1–14.
+3. Li,K.,Z.Dai,C.Zuo,X.Wang,H.Cui,H.Song,andM.Cui,Sceneadaptationinadverse
+conditions: a multi-sensor fusion framework for roadside traffic perception.Journal of
+Intelligent Transportation Systems, 2024, pp. 1–21.
+4. Azimjonov, J. and A. Özmen, A real-time vehicle detection and a novel vehicle tracking
+systems for estimating and monitoring traffic flow on highways.Advanced Engineering
+Informatics, Vol. 50, 2021, p. 101393.
+5. Fu, Y., D. Tian, X. Duan, J. Zhou, P. Lang, C. Lin, and X. You, A camera–radar fu-
+sion method based on edge computing. In2020 IEEE International Conference on Edge
+Computing (EDGE), IEEE, 2020, pp. 9–14.
+6. Drews, F., D. Feng, F. Faion, L. Rosenbaum, M. Ulrich, and C. Gläser, Deepfusion: A
+robust and modular 3d object detector for lidars, cameras and radars. In2022 IEEE/RSJ
+International Conference on Intelligent Robots and Systems (IROS), IEEE, 2022, pp. 560–
+567.
+7. Li, S. and H.-S. Yoon, Sensor fusion-based vehicle detection and tracking using a single
+camera and radar at a traffic intersection.Sensors, Vol. 23, No. 10, 2023, p. 4888.
+8. Zimmer,W.,J.Birkner,M.Brucker,H.T.Nguyen,S.Petrovski,B.Wang,andA.C.Knoll,
+Infradet3d: Multi-modal 3d object detection based on roadside infrastructure camera and
+lidar sensors. In2023 IEEE Intelligent Vehicles Symposium (IV), IEEE, 2023, pp. 1–8.
+9. Tsaregorodtsev,A.,M.Buchholz,andV.Belagiannis,Infrastructure-basedPerceptionwith
+CamerasandRadarsforCooperativeDrivingScenarios.In 2024 IEEE Intelligent Vehicles
+Symposium (IV), IEEE, 2024, pp. 1678–1685.
+10. Irfan, M. S., S. Dasgupta, and M. Rahman, Towards Transportation Digital Twin Systems
+for Traffic Safety and Mobility: A Review.IEEE Internet of Things Journal, 2024.
+11. Dasgupta, S., M. Rahman, and S. Jon, Harnessing Digital Twin Technology for Adaptive
+Traffic Signal Control: Improving Signalized Intersection Performance and User Satisfac-
+tion. IEEE Internet of Things Journal, Vol. 11, No. 22, 2024, pp. 36596–36618.

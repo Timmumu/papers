@@ -21,4 +21,17 @@ Abnormal large-diameter slurry shield attitudes (SA) lead to safety and quality 
 | Yes | Yes | Yes | Tier 2 - Digital Shadow (one-way physical to virtual) | 0 | 1 | 0 | Design for Safety (DfS) | None | Other / Mixed | Multi (two or more data types) | Single case study | 4 | Predictive analytics / decision support |
 
 **Key evidence (AG):** Multisource information fusion for real-time prediction and multiobjective optimization of large-diameter slurry shield attitude (HUST): BO-CatBoost prediction model (R2 > 0.9, RMSE < 1.2, MAE < 0.9 across 3 soils) + MOEAD multiobjective optimization; SHAP identifies propulsive thrust as most influential; DT framework for SA control; validated on Yangtze River large-diameter slurry shield project (Wuhan). One-way monitoring→prediction→optimization; no actuation and no learning loop (offline-trained).
+
+
+**Strength & gap filled (AH):** Combines prediction and optimization for large-diameter slurry shield attitude: Bayesian-optimized CatBoost maps 19 construction parameters to six attitude targets with R-squared above 0.9 on three soils of the Yangtze River tunnel in Wuhan, SHAP finds push-group thrust dominant, and MOEAD multiobjective optimization improves attitude by up to 23.436 percent across five scenarios, embedded in a digital twin framework with warnings and parameter recommendations.
+
+**Deficiencies & future work (AI):** The three studied soils are relatively uniform, so complex ground behavior is untested, penetration degree and tool size are ignored, and real-time monitoring data must be imported manually with no autonomous platform link. Future work will add more shield projects and soil types for generalizability and connect the monitoring platform so prediction and optimization run independently.
+**Fusion depth (AC1):** Fused
+
+**Fusion evidence (AC2):**
+- **Data streams:** 19 construction-parameter streams (Yangtze River slurry shield, three soils).
+- **Integration mechanism:** CatBoost jointly consumes the parameters to predict six attitude targets (R2 above 0.9), SHAP ranks push-group thrust as dominant, and MOEAD optimisation improves attitude by up to 23.436%.
+- **Why this code:** a multi-input model whose output depends on many parameter streams simultaneously, so Fused.
+
+**Confidence (AC3):** High - the CatBoost input structure is explicit.
 (full-text source: Endnote)

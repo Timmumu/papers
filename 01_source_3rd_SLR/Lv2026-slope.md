@@ -21,4 +21,17 @@ Slope safety management is transitioning toward the digital twin paradigm, where
 | Yes | Yes | Yes | Tier 1 - Digital Model (static, no live data) | 0 | 0 | 1 | Design for Safety (DfS) | None | Perception / Computer Vision | Multi (two or more data types) | Single case study | 4 | BIM-to-Digital-Twin architecture |
 
 **Key evidence (AG):** Automated digitalization of engineered slopes for interactive digital twin visualization (HKUST): city-scale LiDAR point clouds → DrainNet (CNN, 81.26% Dice) for drainage channel delineation → automated parametric BIM modeling (Grasshopper, 9x faster than Dynamo) → web-based digital twin platform for interactive visualization and asset management. Static BIM models for visualization — no live data link, no actuation, no learning loop.
+
+
+**Strength & gap filled (AH):** Fills the gap of resource-intensive modeling blocking city-scale slope digital twins: DrainNet, a CNN with directional convolutions, dilated blocks and channel attention, delineates drainage channels with 81.26 percent Dice and 0.24 connectivity error using only 0.28M parameters on the 1226-image CurvaChannel dataset, and an automated Grasshopper workflow builds slope BIM models about nine times faster than Dynamo for a web-based twin platform.
+
+**Deficiencies & future work (AI):** Only exposed drainage channels and topography are modeled, cross-sections use one uniform empirical size, the closure heuristic may wrongly connect distinct channels, and the twin is static with no live monitoring data; the authors plan real-time sensor integration, hydrodynamic simulation, data-driven susceptibility analysis and higher-LOD models toward fully realized digital twins.
+**Fusion depth (AC1):** SINGLE
+
+**Fusion evidence (AC2):**
+- **Data streams:** LiDAR survey data only - DrainNet delineates channels in images derived from the LiDAR dataset (1226 annotated images), and topography comes from the same survey.
+- **Integration mechanism:** none across independent data types - the CNN delineation and parametric BIM reconstruction are two processing steps over one source modality.
+- **Why this code:** exactly one measured data type is used, so SINGLE. Note: column AC lists Multi because the derived image and topography products were counted separately; under the fusion-depth rules derived products of one survey are not distinct data types.
+
+**Confidence (AC3):** High - the single LiDAR source is stated explicitly (the paper contrasts it with traditional imagery).
 (full-text source: Endnote)

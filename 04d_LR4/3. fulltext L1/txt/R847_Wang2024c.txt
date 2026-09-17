@@ -1,0 +1,947 @@
+Computers in Industry 161 (2024) 104112
+Available online 7 June 2024
+0166-3615/© 2024 Elsevier B.V. All rights are reserved, including those for text and data mining, AI training, and similar technologies.
+Enabling Building Information Model-driven human-robot collaborative 
+construction workflows with closed-loop digital twins 
+Xi Wang
+a , 1
+, Hongrui Yu
+b , 1
+, Wes McGee
+c
+, Carol C. Menassa
+b , *
+, Vineet R. Kamat
+b 
+a
+Department of Construction Science, Texas A & M University, 3337 TAMU, College Station, TX 77843, USA 
+b
+Department of Civil and Environmental Engineering, University of Michigan, 2350 Hayward Street, Ann Arbor, MI 48109, USA 
+c
+Taubman College of Architecture and Urban Planning, University of Michigan, 2000 Bonisteel Boulevard, Ann Arbor, MI 48109, USA 
+ARTICLE INFO 
+Keywords: 
+Construction robotics 
+Building Information Model 
+Digital twin 
+Human-robot collaboration 
+ABSTRACT 
+The introduction of assistive construction robots can significantly alleviate physical demands on construction 
+workers while enhancing both the productivity and safety of construction projects. Leveraging a Building In -
+formation Model (BIM) offers a natural and promising approach to driving robotic construction workflows. 
+However, because of uncertainties inherent in construction sites, such as discrepancies between the as-designed 
+and as-built components, robots cannot solely rely on a BIM to plan and perform field construction work. Human 
+workers are adept at improvising alternative plans with their creativity and experience and thus can assist robots 
+in overcoming uncertainties and performing construction work successfully. In such scenarios, it is critical to 
+continuously update the BIM as work processes unfold so that it includes as-built information for the ensuing 
+construction and maintenance tasks. This research introduces an interactive closed-loop digital twin framework 
+that integrates a BIM into human-robot collaborative construction workflows. The robot ’ s functions are primarily 
+driven by the BIM, but it adaptively adjusts its plans based on actual site conditions, while the human co-worker 
+oversees and supervises the process. When necessary, the human co-worker intervenes in the robot ’ s plan by 
+changing the task sequence or workspace geometry or requesting a new motion plan to help the robot overcome 
+the encountered uncertainties. A drywall installation case study is conducted to verify the proposed workflow. In 
+addition, experiments are carried out to evaluate the system performance using an industrial robotic arm in a 
+research laboratory setting that mimics a construction site and in the Gazebo simulation. Integrating the flexi -
+bility of human workers and the autonomy and accuracy afforded by the BIM, the proposed framework offers 
+significant promise of increasing the robustness of construction robots in the performance of field construction 
+work. 
+1. Introduction 
+Construction has been ill-famed for its dangerous and harsh working 
+environments and excessive physical demands on workers, which often 
+result in a lack of motivation for people, especially those of diverse 
+abilities, to pursue their careers in the industry ( Escamilla et al., 2016; 
+Park et al., 2023; Aulin and Jingmond, 2011; Zhang et al., 2023 ). As a 
+result, the construction industry is facing severe shortages of skilled 
+labor ( Kim et al., 2020; Cai et al., 2023 ). According to the Associated 
+General Contractors of America, 73% of contractors consider worker 
+shortage as their biggest concern in 2022 ( AGC, 2022 ). 
+Industrial robotic manipulators can exert high physical power and 
+operate at high speeds, and thus have significant potential to reduce the 
+physical burden on human workers ( Brosque et al., 2023 ). Robots have 
+already been adopted in several industry sectors such as manufacturing, 
+nuclear, healthcare, and rescue to reduce human workers ’ workload and 
+their exposure to potential hazards ( Fu et al., 2023; Barbash and Glied, 
+2010; Qian et al., 2012; Davids, 2002; P ´erez et al., 2019 ). Construction 
+automation powered by robotics has demonstrated the potential to 
+reduce the physical demand on construction workers and improve the 
+diversity and inclusion of the construction workforce, thus mitigating 
+the labor shortage issues faced by the industry ( Davila Delgado et al., 
+2019; Liang et al., 2021; Rodrigues et al., 2023 ). On the other hand, 
+while robotics is still in its emerging phase in the field of construction 
+* Corresponding author. 
+E-mail address: menassa@umich.edu (C.C. Menassa). 
+1 
+These two authors contributed equally to this work. 
+Contents lists available at ScienceDirect 
+Computers in Industry 
+journal homepag e: www.sci encedirect.co m/journa l/computers-i n-industry 
+https://doi.org/10.1016/j.compind.2024.104112 
+Received 3 December 2023; Received in revised form 24 April 2024; Accepted 21 May 2024 
+Computers in Industry 161 (2024) 104112
+2
+automation, the use of Building Information Models (BIMs) has been 
+widely adopted in the industry to support digital construction project 
+workflows ( Zhang et al., 2022; Volk et al., 2014 ). 
+A BIM is “ a digital representation of physical and functional char -
+acteristics of a facility ” ( NIBS, 2015 ). It contains a variety of geometric 
+and attribute information, such as 3D models, schedules, construction 
+methods, and materials, which are used to facilitate the construction 
+processes ( Correa, 2016 ). Although BIMs play important roles in design, 
+communication, and project management throughout the project life 
+cycle ( Zhang et al., 2022; Golabchi et al., 2013 ), they generally lack the 
+interoperability needed to support construction robot task planning 
+( Correa, 2019; Kim et al., 2021 ). Currently, robot installation sequences 
+and poses are generated primarily by retrieving geometric data from 
+BIMs encoded using Industry Foundation Classes (IFC) ( Correa, 2016; 
+Kim et al., 2021; Ding et al., 2020 ). However, such proposed approaches 
+are limited to specific construction tasks or types of components, such as 
+bricklaying or wall panels. Moreover, working environments for field 
+construction involve a lot of uncertainties (e.g., deviations in as-built 
+components) that can cause robot failure when following a rigid pro -
+gram. While a BIM can provide information to the robot, the workflow 
+needs the ability to improvise (i.e., dynamically adjust plans based on 
+encountered situations) to flexibly perform the work during the field 
+construction process ( Lundeen et al., 2017 ). 
+Compared to robots, humans are more adept at creative and adaptive 
+planning based on their experience ( Suresh et al., 2019; Sharif et al., 
+2016 ). They can adjust a task plan according to what they observe on the 
+construction site to ensure the quality and continuity of the work. Thus, 
+human expertise in improvisation is indispensable for field construction 
+that involves considerable uncertainties and is necessary to support 
+robotic construction ( Yoon et al., 2023; Yu et al., 2024 ). In addition, 
+human workers can supervise the robotic construction process to ensure 
+collision-free safe manipulation in dynamic on-site working environ -
+ments. Therefore, by enabling Human-Robot Collaboration (HRC), the 
+flexibility and robustness of BIM-driven robotic construction systems 
+can be significantly improved. 
+This research proposes a closed-loop digital twin framework to 
+enable BIM-driven Human-Robot Collaborative Construction (HRCC) 
+workflows, as shown in Fig. 1 . The system is built upon an interactive 
+and immersive process-level digital twin (I2PL-DT) system previously 
+developed by the authors ( Wang et al., 2021 ). A BIM module is inte -
+grated to provide geometric and attribute data to both the human 
+workers through the user interface and the Robot Operating System 
+(ROS). After a robot generates work plans with information from the 
+BIM, human co-workers supervise the robot ’ s workflow (e.g., preview 
+robot plans and monitor execution status) and make interventions (e.g., 
+adjust installation target or request another trajectory plan) when 
+necessary. 
+In addition, the as-built data collected by the robot during the con -
+struction process is sent to the BIM to reflect changes between the as- 
+designed and the as-built workspace to be used for ensuing construc -
+tion tasks, thereby closing the loop. The system supports seamless 
+integration of various sources of information received from the BIM, 
+human co-workers, and robot sensors. In parallel, the system processes 
+the collected information in various ways: it converts data into forms 
+that can be visualized and understood by humans, prepares it for 
+computation and control by robots, and saves and presents it within 
+BIMs. 
+The BIM-driven HRCC processes involve five main steps, including 
+(1) formulation of the BIM repository that supports robotic construction; 
+(2) preparation of the construction site and the BIM for a specific con -
+struction activity; (3) automatic digital twin generation; (4) construc -
+tion execution, including resolution of as-built / as-designed deviations; 
+and (5) updating of the BIM repository with as-built construction data 
+collected by the robot. The technical approach to enable these processes 
+is discussed in Section 3 . 
+A drywall installation case study conducted on a large-scale physical 
+Kuka industrial robotic arm is presented as a proof-of-concept imple -
+mentation to explore the physical setup process and for system verifi -
+cation ( Section 4 ). In addition, physical and simulation experiments 
+involving block pick-and-place and drywall installation activities are 
+carried out to evaluate system performance and validate the proposed 
+deviation adaptation methods ( Section 5 ). The proposed system not only 
+extends the autonomy and accuracy of robotic construction but also 
+offers the flexibility to overcome uncertainties in field construction 
+work. The presented framework and workflow have the potential to be 
+applied to a broad variety of construction tasks. 
+Fig. 1. Closed-Loop Digital Twin Framework Overview. 
+X. Wang et al. 
+Computers in Industry 161 (2024) 104112
+3
+2. Background 
+2.1. Human-robot collaboration 
+HRC aims to retain the robustness and adaptability of an automated 
+system by combining robots ’ computational ability and durability with 
+humans ’ creativity and flexibility ( Tsarouchi et al., 2017; Yu et al., 
+2023 ). HRC can be classified into two types, physical collaboration and 
+contactless collaboration ( Hentout et al., 2019 ). For physical HRC, the 
+human co-worker intentionally makes physical contact with the robot or 
+the object held by the robot to hand over or co-manipulate objects ( Lee 
+and Moon, 2014; Devadass et al., 2019 ). However, working alongside 
+robots, especially construction robots that carry large and heavy com -
+ponents, poses high safety risks to humans. Therefore, contactless HRC 
+has been used in many applications. It allows humans to guide robots 
+with gestures ( Kim et al., 2009 ), natural language ( Park et al., 2024; She 
+et al., 2014 ), joysticks and haptic devices ( Chotiprayanakul et al., 2012; 
+Zhu et al., 2022 ), Virtual Reality (VR) ( P ´erez et al., 2019; Li and Zou, 
+2023; Adami et al., 2021 ), and neural signals ( Zhang et al., 2023; Liu 
+et al., 2021 ). One main concern with contactless HRC, especially those 
+from remote locations, is that humans ’ perception of the operational 
+environment and the robot is limited. It is critical to provide humans 
+with sufficient and accurate information in an effective way to enable 
+efficient decision making. One of the popular approaches is to create a 
+digital twin to provide real-time information about the robot and its 
+operation environment to humans ( Malik and Brem, 2021; Wang et al., 
+2020 ). 
+In prior work, the authors proposed an I2PL-DT system for human 
+workers to remotely receive and visualize the updated state of a con -
+struction workspace ( Wang et al., 2021 ). The system consists of three 
+modules, including an immersive Virtual Reality (VR) interface, mid -
+dleware enabled by ROS, and Robot Operation Environment (ROE) (i.e., 
+construction site, robot, and sensors). Human co-workers can visualize 
+construction site and robot conditions in real-time and perform 
+high-level task planning (e.g., indicating component installation 
+sequence and positions). The high-level plan is then used to generate 
+motion plans, which are processed into realistic animations in VR for the 
+human co-worker to preview and evaluate. Upon approval, the robot 
+executes the approved plan under human supervision. The work sup -
+ports a collaboration paradigm where human workers perform 
+high-level decision-making and supervision while robots undertake 
+low-level motion planning and physical execution of the work. 
+Despite being a key component of the workflow proposed in this 
+paper, the previously developed I2PL-DT system, in and of itself, has 
+several limitations. First, the process of creating the digital twin for a 
+construction task takes considerable effort. The immersive VR interface 
+needs to be manually created by importing BIM data into VR, creating 
+interactive game objects, and adding interactive functions (e.g., sending 
+messages to ROS). Second, the human co-worker needs to specify the 
+work plan for each component by indicating to the robot which 
+component to pick up and the location to install it. Thus, substantial 
+human effort is required for such step-by-step instructions. Lastly, since 
+the human co-worker specifies the high-level task objectives by 
+manipulating and placing virtual objects with controllers in VR, the 
+accuracy is limited and the resulting work may not comply with typical 
+construction work specifications and desired tolerances. 
+In order to overcome these critical and practical limitations, this 
+paper integrates a BIM with the I2PL-DT system and proposes an auto -
+matic approach to creating digital twins. Fig. 2 shows the elements of the 
+updated and significantly expanded system presented in this paper and 
+compares it to the previous I2PL-DT system. With the proposed 
+approach, manual processes of creating the digital twin and placing each 
+component step-by-step in VR can be avoided, which improves system 
+autonomy and work accuracy as well as reduces human workers ’ 
+workload. In the remainder of this section, the adoption of a BIM to 
+support construction automation and robotics, along with the existing 
+approaches to create digital twins for robotic applications, are intro -
+duced and discussed. 
+2.2. BIMs in construction automation and robotics 
+BIMs have been widely adopted to promote automation throughout 
+the life cycle of the Architecture, Engineering and Construction, and 
+Facilities Management (AEC/FM) industry ( Deng et al., 2021 ). Recently, 
+BIMs have been used to facilitate robotized construction in various 
+ways. For example, BIMs can provide information to guide the off-site 
+prefabrication process ( Abanda et al., 2017; Zhu et al., 2021 ) and 
+assist with object recognition for on-site assembly ( Dawod and Hanna, 
+2019 ). Layout information contained in the BIM is used to support robot 
+indoor navigation tasks for building construction and maintenance 
+( Follini et al., 2020; Park et al., 2016; Mantha et al., 2020 ). Commercial 
+mobile robots have been introduced to draw layouts on-site based on 
+BIMs ( Dusty ). The geometric information contained in BIMs has also 
+been used to facilitate 3D printing in construction ( Davtalab et al., 2018; 
+Teizer et al., 2018 ). 
+BIMs can also provide information to support robot motion planning. 
+Fig. 2. Elements of the Updated System. 
+X. Wang et al. 
+Computers in Industry 161 (2024) 104112
+4
+For example, in robotic brick assembly tasks, BIMs can provide position 
+and orientation data for a robot to pick up and place materials, as well as 
+task sequencing data to control the robotic workflow ( Ding et al., 2020; 
+McClymonds et al., 2022 ). IFC models have been adapted to work with 
+robotic simulation platforms for robot navigation ( Kim et al., 2021 ) and 
+to simulate the robotic wall frame assembly process ( Wong Chong et al., 
+2022 ). In these existing studies, robots fully rely on the BIM for task 
+planning. The construction site needs to conform to the exact BIM 
+specifications for the robot to perform construction work successfully. 
+However, considerable uncertainties exist on construction sites. Devi -
+ated components, moving workers and equipment, and stacked mate -
+rials on-site may interrupt the BIM-generated robot motions, causing 
+robots to stall while performing construction work on-site. ( Lundeen 
+et al., 2019 ) used a combination of the BIM and sensing information to 
+generate adaptive robot motions. Despite such advances, the robot ’ s 
+adaptability is limited to a narrow set of situations and construction 
+tasks ( Lundeen et al., 2019 ). 
+In summary, existing studies leveraging BIMs in robotics have three 
+limitations. First, they lack generality to support various types of con -
+struction tasks. Second, they cannot handle uncertainties for field con -
+struction, which can go beyond the robot ’ s adaptive capabilities and 
+interrupt robot activities generated by the BIM. Thus, human interven -
+tion is necessary in addition to the BIM for the success of robotic field 
+construction. Third, as-built data collected by the robot during the 
+construction process is useful for the ensuing construction, operation, 
+and maintenance phases of the project; however, a closed loop for a BIM 
+to both provide and collect construction information is missing in 
+existing studies. Therefore, a general framework that supports different 
+types of construction tasks and allows human intervention is necessary. 
+2.3. Digital twins creation in robotic applications 
+Digital twins can be used for visualizing and incorporating infor -
+mation from different resources, and they also support real-time 
+communication and interaction ( Dembski et al., 2020; Wang et al., 
+2023 ). Therefore, they are a promising candidate to integrate BIMs with 
+HRCC. Depending on the different application requirements, digital 
+twins can be created with various approaches. One of the most popular 
+methods in the AEC/FM industry is to use 3D point clouds. The envi -
+ronment is captured with laser scanners or depth cameras as 3D point 
+clouds ( Fang et al., 2016; Feng et al., 2015; Xu et al., 2019 ). Such sys -
+tems can comprehensively capture the environment in real time, theo -
+retically allowing for continuous updates of the digital twin to reflect the 
+evolving environment at any point in time. However, the transmission of 
+large-size point cloud data is computationally expensive and is subject to 
+delays. Furthermore, subsequent steps of processing and registering the 
+point clouds, object detection, or 3D reconstruction are usually needed 
+to achieve the required functions ( Zhou et al., 2020; Park and Cho, 
+2022 ). 
+( Kamat and Martinez, 2003 ) developed the VITASCOPE language to 
+integrate simulation models, hardware control, and real-time construc -
+tion data for dynamic construction scenario visualization at the opera -
+tion level. ( Liang et al., 2022 ) and ( Rold ´an et al., 2019 ) created digital 
+twins of a robot to program, control, and visualize robot motions. Joint 
+state data are exchanged between the physical and virtual robots in real 
+time. In order to reduce the computation load while allowing real-time 
+visualization of the construction environment, ( Wang et al., 2021 ) 
+created a digital twin using a combination of a BIM, 3D meshes of 
+as-built structures, and point clouds. However, these approaches require 
+manually importing models or manually enabling the functionality of 
+the digital twin. As a result, it interrupts the automated workflow of 
+HRCC initiation, which can potentially hinder the widespread applica -
+tion of digital twins in HRCC. Therefore, an approach to automatically 
+generate digital twins that are equipped with pertinent functions (e.g., 
+target object selection, communication between modules) is necessary 
+to promote and extend the autonomy of the HRCC workflow. 
+2.4. Research objectives 
+To address the abovementioned research gaps, a workflow with the 
+following characteristics is needed to support HRCC effectively. First, 
+instead of parsing specific information from BIM repositories to auto -
+mate one type of construction work, a general framework that supports 
+different types of tasks and components is needed. Second, the workflow 
+should automatically interface with different construction tasks without 
+additional programming or development effort that cannot be per -
+formed by construction workers without related expertise. Third, robots 
+should have the ability to handle significant uncertainties on construc -
+tion sites while allowing human intervention to resolve cases that extend 
+beyond the robots ’ capabilities. Lastly, the workflow should record the 
+construction-related data collected by the robot sensors during the 
+HRCC process for future reference to enable loop closure. With these 
+objectives, the following section presents a closed-loop generalizable 
+framework integrating a BIM and HRCC, which supports automated 
+collaborative workflows and can overcome uncertainties in field con -
+struction work. 
+3. Technical approach 
+A BIM-driven HRCC workflow enabled by closed-loop digital twins is 
+proposed in this study. The BIM provides data (e.g., component geom -
+etry, position, type) to both the robot and the human co-workers by 
+compiling and sending messages to ROS and Unity (where the interface 
+is developed). The robot then generates the work plan based on the BIM 
+and adapts the plan according to the as-built circumstances detected by 
+its sensors. For example, during drywall installation, the robot retrieves 
+the name and target position of the next panel to install from the BIM; it 
+then adjusts the installation position of the panel based on how the wall 
+frame has actually been built as detected by its camera. Next, human co- 
+workers supervise the robotic construction process (e.g., by evaluating 
+and approving the robot plan) and intervene to adjust the high-level task 
+plan (e.g., by adjusting the target installation sequence and pose pro -
+posed by the robot) when necessary. 
+An overview of the BIM-driven HRCC process is shown in Fig. 3 . 
+First, the BIM data accessible by both human co-workers and robots 
+needs to be created. Next, before construction starts, human workers 
+need to prepare physically on the construction site (e.g., materials 
+staging) and digitally in the BIM (e.g., task designation). Then, the 
+interactive digital twin is generated, followed by the construction 
+execution. Lastly, after certain construction tasks are finished, the BIM 
+repository is updated with the latest as-built data. The remaining part of 
+this section introduces the system design and the technical approach to 
+enable this process. 
+3.1. System design 
+3.1.1. BIMs for robotic construction 
+BIMs created for traditional construction methods are typically 
+incompatible with robotic construction ( Meschini, 2016 ). Some addi -
+tional elements are necessary for a BIM to better support human-robot 
+collaborative task planning: 
+• Shop drawing-level geometry. Shop drawings precede detailed work 
+plans and contain information needed for fabrication, assembly, and 
+erection ( Pietroforte, 1997 ). For example, in a robotic drywall 
+installation task, shop drawings for drywall panels are needed so the 
+robot knows where each panel should be located. However, shop 
+drawing-level details are not needed for every component in BIM and 
+are dependent on the construction plan. For example, an object that 
+is prefabricated off-site or erected on-site as a whole can be repre -
+sented in the BIM as one single component. 
+• Construction sequence. Detailed construction sequence information 
+contained in the BIM is crucial to automate the construction process. 
+X. Wang et al. 
+Computers in Industry 161 (2024) 104112
+5
+The construction sequence information should be provided in cor -
+respondence with the shop drawing-level geometry, specifying the 
+order of installation of components. 
+• Component relationships. Relationships between components can 
+affect robot planning, especially when discrepancies exist and the 
+robot needs to adapt its plan. Even though some component ar -
+rangements visually look the same, they might indicate different 
+relationships (i.e., topologies) which require different construction 
+plans. As a result, clearly defined component relationships in the BIM 
+are necessary for the adaptive planning of the human-robot work 
+team. 
+• Component layers. A unified predefined layer structure in the BIM 
+not only helps organize components into different groups for better 
+user comprehension but also supports the development of interfaces 
+that can quickly connect to different BIM projects, automating 
+related processes in the project life cycle, such as construction. 
+Therefore, a BIM layer structure is proposed to facilitate the auto -
+matic generation of interactive digital twins and the HRCC process, 
+as shown in Table 1 . 
+• Robot operation support. Adding information to support robot 
+operation in the BIM can facilitate HRCC work. The information 
+added depends on the task type and robot intelligence level. For 
+example, robots can determine how to grip components by visually 
+detecting component geometry in some cases, but for some compo -
+nents with irregular shapes, external guidance can increase the 
+success rate of component gripping. 
+The creation and storage of these elements depend on the BIM 
+platform selected. In this study, Rhino is used as the BIM platform ( R. 
+M. & Associates ). The shop-drawing geometry, component name, and 
+layer information are stored with the software ’ s default field. Additional 
+attribute data are stored as “ Attribute User Text ” in Rhino. For example, 
+the component relationships are denoted by the “ Parent ” attribute of the 
+components, while the sequence data are held in the “ Sequence ” attri -
+bute. To facilitate robot gripping, a Python script automatically calcu -
+lates the gripping reference points from the component ’ s vertices and 
+writes the data to the corresponding component attribute. This geome -
+try, layer, and attribute data are extractable through scripts and can be 
+communicated to ROS and Unity. 
+It should be noted that, although being manually created in this 
+study, some of the abovementioned information has a high potential to 
+be automatically generated by the computer or the robot. For example, 
+( Kim et al., 2020 ) proposed an approach for automatically generating 
+steel erection sequences and ( Levine et al., 2018 ) used convolutional 
+neural network and large-scale robot grasping experiments to generate 
+robot grasping plans. ( Adel et al., 2018 ) used computational design to 
+generate the cutting planes, gripping planes, and connections for off-site 
+frame prefabrication. This research focuses on how to leverage such 
+information for HRCC; manual addition is thus sufficient for this study. 
+3.1.2. BIM-driven HRCC framework design 
+Five elements are included in the proposed framework for BIM- 
+driven HRCC: 1) the BIM that provides and saves data about the con -
+struction project; 2) the Graphical User Interface (GUI) that supports 
+both immersive VR and 3D options for human workers to interact with 
+the robot; 3) ROS as the middleware for communication and the central 
+unit for data processing, computing, and construction work process and 
+physical robot control; 4) ROE, which is the construction site that in -
+cludes robots, sensors, and materials; and 5) human workers who su -
+pervise the construction process and intervene when necessary. In this 
+study, Rhino 7 is used as the BIM platform, and the GUI is developed in 
+Unity with Oculus Rift S as the headset for the immersive VR option. 
+The information flow among system elements at different stages is 
+shown in Fig. 4 . To prepare for construction, setup activities are needed 
+both physically on the construction site and digitally in the BIM. In 
+general, workers need to start the sensors that are in use (e.g., cameras, 
+Fig. 3. BIM-driven HRCC Process. 
+Table 1 
+BIM Layer Structure for Robotic Construction. 
+Layer Name Description 
+Target Physical objects (e.g., timber) or virtual indicators (e.g., fastener 
+locations) the robot needs to install or operate for the current 
+construction task. 
+As-Built Components that have already been built. If they are inside the 
+workspace, they need to be considered for collision avoidance. 
+They update with the construction progress or as the robot senses 
+the environment. 
+Materials Construction materials staged on-site. If they are inside the 
+workspace, they need to be considered for collision avoidance and 
+may be updated during the construction process. 
+As-Designed The original design of the components. The information is used by 
+human co-workers and robots to understand as-designed versus as- 
+built deviations and develop plans accordingly. 
+Virtual 
+Collision 
+The space that is not physically occupied but the robot needs to 
+avoid during the movement (e.g., a safety laser curtain that marks 
+the edge of the work zone). The robot considers it for collision 
+detection during motion planning. 
+Fig. 4. System Information Flow at Different Stages. 
+X. Wang et al. 
+Computers in Industry 161 (2024) 104112
+6
+LiDARs) on the robot or construction site for the robot to perceive the 
+environment. They also need to place the required construction mate -
+rials in the robot workspace for the robot to reach and manipulate. 
+Lastly, workers need to assign tasks to the robot in the BIM (e.g., by 
+selecting some drywall panels on the frame and placing them onto the 
+“ Target ” layer). They should also adjust components ’ status in the BIM 
+according to the task scope (e.g., marking components that are outside 
+the robot workspace as “ unrelated ” by changing the user attribute data). 
+Considering that a BIM interface is intuitive and generally familiar to 
+construction personnel, it is typically easier for workers to indicate task 
+scope in a BIM rather than directly indicate this to the robot in ROS. 
+When construction starts, information is taken from both the BIM 
+and the construction site to generate the I2PL-DT. An automatic digital 
+twin generation approach is proposed, which is introduced in Section 
+3.2.1 . During the construction process, human co-workers collaborate 
+with the robot through the digital twin system, which integrates infor -
+mation from the BIM and the construction site. The detailed approach to 
+updating the digital twin and enabling HRC through bi-directional 
+communication is discussed in Section 3.2.2 . Section 3.2.3 introduces 
+how the system addresses the challenges caused by component de -
+viations on-site. The robot can suggest solutions to adapt to deviations to 
+human co-workers for approval. Occasionally, human interventions (e. 
+g., replacing a component with one of a different shape) are required to 
+resolve the deviations. 
+When construction completes or reaches a certain checkpoint, the 
+ROS environment that contains the related construction site information 
+at the time sends the information to update the BIM repository and re -
+cords data in the BIM for future reference. The technical approach to 
+updating the BIM with construction data is introduced in Section 3.2.4 . 
+It must be noted that even though this study chooses to update the BIM 
+at certain time points, the framework also allows the BIM repository to 
+be continuously updated as construction progresses. Lastly, Section 
+3.2.5 explores the deployment of the physical system to collect and 
+integrate data from the physical world and to control the physical in -
+dustrial robot. 
+3.2. Technical approach for system implementation 
+3.2.1. Automatic digital twin generation 
+To initiate construction, it is essential to generate the digital twins 
+that integrate visualization, interaction, and computation functional -
+ities. Our system incorporates two digital twins. One is the interaction 
+module with the GUI developed in Unity, which facilitates visualization, 
+supervision, and intervention. The other is the computation module 
+within ROS that manages the construction workflow (e.g., installation 
+sequence), adapts to as-built conditions, and generates task plans (e.g., 
+collision-free motion plans). The generation of these digital twins takes 
+advantage of the geometry and attribute data of components from the 
+BIM. The coordinates of the digital twin world and the BIM are aligned 
+using the robot ’ s base frame as the origin point. Sensor data are also 
+transformed into the robot base frame for integration into the digital 
+twins. For example, for the camera sensor mounted on the robot in the 
+experiments of this study, its pose relative to the robot link it is attached 
+to is calculated through hand-eye calibration ( Daniilidis, 1999 ). The 
+relative pose is further transformed to the robot base frame using for -
+ward kinematics according to the current robot joint states. The auto -
+mated generation process of the digital twin system is shown in Fig. 5 . 
+The computation module is developed in ROS. Geometries of task- 
+related components in the BIM are extracted as meshes, converted 
+into ROS messages by a script in Rhino, and subsequently sent to ROS. 
+Attribute information, including names, layers, and customized prop -
+erties designated as Attribute User Text (discussed in Section 3.1.1 ), is 
+also sent to the computation module in the form of ROS messages. As- 
+built data, including the locations of as-built components and mate -
+rials, are loaded into the module when they are detected at the con -
+struction site. During the construction process, the system retrieves 
+these data for task and motion planning. For example, the system queries 
+the parent of the target and whether it is deviated to determine if ad -
+justments are needed to install the target object. 
+Motion planning in the computation module is facilitated by the 
+MoveIt planning framework ( Chitta et al., 2012 ). The planning scene of 
+the MoveIt framework contains a virtual robot model that replicates the 
+actual robot using the URDF descriptions and synchronizes with the 
+actual robot ’ s states by subscribing to the joint_states topic. The plan -
+ning scene also incorporates environmental representations, where 
+meshes of task-related components on the “ As-Built ” , “ Materials ” , and 
+“ Virtual Collision ” layers in the BIM are spawned at their corresponding 
+locations as collision objects. The robot will use its camera to detect 
+as-built components and construction materials in the workspace and 
+subsequently update the collision information in the planning scene. If a 
+Fig. 5. Automatic Digital Twins Generation Process. 
+X. Wang et al. 
+Computers in Industry 161 (2024) 104112
+7
+component has been constructed but its as-built model is not yet present 
+in the BIM (not detected by the robot), its corresponding as-designed 
+model will first be generated and later replaced by the as-built model 
+once detected (e.g., through fiducial markers). Detected construction 
+materials are similarly updated in the digital twin. These collision ob -
+jects are used by the robot to plan collision-free paths during motion 
+planning. When the robot arm holding a material, the corresponding 
+collision object of that material is attached to the robot arm to ensure it 
+is considered during motion planning. 
+The interactive digital twin module in Unity is generated by directly 
+connecting Rhino and Unity through Rhino.Inside ( Robert McNeel & 
+Associates, Rhino.Inside, 2024 ), which is an open-source add-in that en -
+ables other applications (e.g., Unity) in the Windows Operating System 
+(OS) to run Rhino and Grasshopper (a visual programming tool integrated 
+with Rhino ( [79]Grasshopper 3D, Wikipedia (2023). 〈 https://en.wikipe -
+dia.org/w/index.php?title = Grasshopper_3D & oldid = 1189175937 〉
+(Accessed 23 April 2024). )) projects. The highlight of this process is that 
+instead of manually importing a BIM and creating functions in Unity for 
+different construction projects, a Unity program template is developed. It 
+contains template models with functions. When it receives information 
+from other modules (e.g., a BIM), Unity can quickly generate interactive 
+game objects using these template models according to the object layer. 
+For example, when it receives an object assigned to the “ Target ” layer 
+from a BIM, the program instantiates a game object with the target-type 
+template. This game object is equipped with functionalities for user se -
+lection and pose manipulation. Meanwhile, the mesh geometry received 
+from the BIM is loaded onto the game object for visualization, and the 
+game object attributes such as name, layer, and material are set accord -
+ingly. As a result, the template Unity program can automatically generate 
+interactive digital twin interfaces for different BIM projects. 
+At the initial state, Unity contains 1) light and camera systems for 
+human partners to visualize objects in the game interface; 2) event 
+systems to capture user input and enable interaction (e.g., selection, 
+movement); 3) virtual robot models generated from the Unified Robot 
+Description Format (URDF) files and meshes from ROS. One virtual 
+robot is synchronized with the actual robot for supervision. The other 
+virtual robot is used to evaluate robot motion plans and only appears 
+when the human workers preview these plans; 4) ROS connectors to 
+exchange data with ROS through Rosbridge using the ROS# library 
+( Siemens, 2021 ); 5) a game object to run Rhino and Grasshopper pro -
+jects to retrieve geometry and attribute (e.g., layer, name, type) data 
+from the BIM; 6) model templates that can automatically generate 
+interactive game objects with the information received; 7) interface 
+templates containing text instructions and buttons that appear at spe -
+cific times to prompt and receive user input; and 8) a virtual billboard to 
+show messages. 
+As the system is initiated, Rhino and Grasshopper applications start 
+with the Unity program through Rhino.Inside ( Robert McNeel & Asso -
+ciates, Rhino.Inside, 2024 ). A script developed in Grasshopper then 
+loads the BIM into Rhino, retrieves information (i.e., geometry, color, 
+name, layer) of objects from the BIM, and sends it to Unity. As Unity 
+receives the information, model templates can create game objects with 
+the same names, colors, and geometry as what they received from the 
+BIM. The generated game objects are automatically placed onto the 
+corresponding layers in the GUI. Based on the object layer, scripts that 
+contain different functions are embedded in the model templates and 
+attached to the object, thereby creating different interaction patterns. At 
+the same time, the communication between Unity and ROS is estab -
+lished through the Rosbridge WebSocket server ( Crick et al., 2017 ), 
+which enables the seamless interaction between the human co-worker 
+and the robot during the construction process ( Section 3.2.2 ). Lastly, 
+the robot moves to scan materials and as-built components in the 
+workspace. As-built components and materials detected are instantiated 
+at their corresponding locations in Unity to provide the human 
+co-worker with the most up-to-date representation of the construction 
+environment. With these steps accomplished, the digital twin systems 
+are completely generated and construction can start. 
+3.2.2. Digital twin update for collaborative construction implementation 
+During the construction process, the seamless integration of the 
+human co-worker and the robotic system is achieved through commu -
+nications via Rosbridge ( Crick et al., 2017 ), with ROS serving as the 
+middleware. Data exchange occurs at various frequencies throughout 
+the construction process. For example, joint states are written onto the 
+physical robot at a fixed frequency of 250 Hz. In contrast, certain data 
+are only published when specific events are triggered (e.g., the human 
+co-worker makes a selection from the GUI). The HRCC process is shown 
+in Fig. 6 . Human operations and decisions are shown in orange, and blue 
+elements show processes performed by the robot. The robot and its 
+human co-workers interact through the GUI. The overall workflow is 
+that the robot shows information and decisions intuitively in the GUI for 
+its human co-workers to visualize. Then, the GUI detects the human 
+co-workers ’ decisions and operations through their input and sends the 
+information to the robot. During the interaction process, corresponding 
+interfaces are generated from the interface templates to prompt the 
+human co-workers on the current process and get inputs. The templates 
+contain corresponding functions (e.g., sending messages to the robot on 
+certain ROS topic channels when the user clicks certain buttons) and are 
+automatically connected to corresponding scene objects when being 
+generated. 
+After generating the digital twins, the robot retrieves the next target 
+in the construction sequence from the BIM and highlights the target 
+object in the GUI in semi-transparent green. Meanwhile, it prompts the 
+human co-worker to confirm the target by instantiating a UI in Unity 
+with the natural language text “ Want to install this? ” , where the co- 
+worker can respond by choosing either the “ Yes ” or “ No ” button. If 
+“ No ” is selected, the human co-worker can select another target through 
+mouse clicks on a computer or ray casting in VR. After a target is 
+confirmed, the robot checks whether there are deviations in the work -
+space that affect the operation to achieve the target as originally 
+designed (e.g., a deviated component occupying the target space will 
+collide with the target if following the original design). If there is a 
+deviation, the robot will propose suggestions to adapt (see Section 3.2.3 
+for the adaptation approach). Note that the adaptation decision is 
+sometimes based on the robot ’ s suggested solutions and sometimes 
+based on human improvisations, thus the “ adaptation ” block appears in 
+two colors. If no deviation exists, it will go ahead with the original 
+installation pose from the BIM. The human co-worker can choose to 
+directly accept the robot ’ s suggestion (e.g., an adjusted pose to install 
+the target). There might be situations where the robot cannot properly 
+adapt, so the system also allows the human co-worker to improvise an 
+adaptive plan (e.g., move the target to indicate a desired installation 
+pose in GUI or directly install the component by themselves). 
+Next, based on the confirmed plan, the robot generates a collision- 
+free motion plan to achieve the target. When the human co-worker re -
+quests to preview the plan, a virtual robot will appear in the GUI and 
+demonstrate the motion plan as an animation. The animation includes 
+the robot movement during the whole manipulation process and the 
+material movement if it is being held by and moving with the robot. This 
+is enabled through a virtual joint state publisher in ROS that extracts and 
+publishes the joint states in the generated motion plan at a given fre -
+quency. A virtual robot emulator in Unity subscribes to the topic that 
+publishes the virtual joint states and moves according to the states 
+received, thereby allowing the motion plan to be previewed as an ani -
+mation. Such previewing processes enable the human co-worker to gain 
+insights into the consequences of the robot operation and make better 
+decisions ( Kamat and Martinez, 2000 ). If the human co-worker is not 
+satisfied with the motion plan, the robot will generate another plan with 
+MoveIt and demonstrate it in the GUI until the human co-worker finds 
+an acceptable plan. After a motion plan is accepted, the actual physical 
+robot executes the approved plan. A detailed introduction of the pro -
+cesses to preview, execute, and supervise the robot motions can be found 
+X. Wang et al. 
+Computers in Industry 161 (2024) 104112
+8
+in the authors ’ previous work ( Wang et al., 2021 ). 
+Since a robot model in GUI is synchronized with the actual robot by 
+subscribing to its joint states, the human co-worker can supervise the 
+robot execution states through this synchronized robot. They can also 
+understand the robot ’ s cognitive status (e.g., calculating the motion 
+plan) through the virtual billboard in the GUI. It should be noted that 
+certain steps of processing and robot operation can be skipped, 
+depending on the type of human intervention. The technical approaches 
+for establishing connections within the digital twin system and 
+achieving motion planning, plan preview, and execution and supervi -
+sion functions are discussed in ( Wang et al., 2021 ). After a target is 
+achieved, the system will check the next target in the sequence from the 
+BIM and go through the process again. If no target is left in the queue, 
+the assigned task is considered to be finished. 
+3.2.3. Deviation adaptation 
+This study develops methods to enable robots to provide suggestions 
+for adapting to two types of deviations commonly found in construction 
+assembly tasks. The process is supervised by the robot ’ s human co- 
+worker, and if needed, the human can intervene to adjust the robot ’ s 
+suggested solution or improvise a different adaptation strategy. 
+3.2.3.1. Parent deviation. The parent of the target to be installed is built 
+with deviations from its design. Since the target needs to be connected to 
+its parent, the installation pose of the target should be adjusted 
+accordingly. Two sources of transformation information are used to 
+address the deviation. The robot receives the as-designed position and 
+orientation of the parent object from the BIM through Rosbridge at the 
+beginning of the construction, which is then converted into a trans -
+formation matrix T
+D
+. The as-built transformation of the parent object T
+B 
+is detected by the robot with the camera. After both transformations are 
+received, the robot first calculates the design-built deviation T
+B
+D
+of the 
+parent using T
+B
+D
+= T
+B
+T
+  1
+D
+. Next, it calculates the suggested trans -
+formation matrix T
+t
+to install a target t using T
+t
+= T
+B
+D
+D
+t
+, where D
+t 
+is 
+the as-designed transformation of the target coming from BIM. Lastly, 
+the installation transformation matrix T
+t
+is converted into an instal -
+lation pose P
+t 
+with position and orientation information for robot 
+Fig. 6. Collaborative Construction Process Flow Chart. 
+X. Wang et al. 
+Computers in Industry 161 (2024) 104112
+9
+planning and operation. 
+3.2.3.2. Nearby object deviation. When certain objects near the target 
+are built with deviation, they might occupy the originally planned space 
+of the target. Before installation, the robot checks whether the planned 
+installation place collides with any as-built objects. This process is 
+enabled by the collider functions in Unity. If no collision is detected, the 
+robot will plan to go ahead with the original plan by default. Otherwise, 
+the robot will provide suggestions to offset the target installation pose to 
+avoid collision based on the deviation of the object that conflicts with 
+the target object. 
+3.2.3.3. Human supervision and intervention. The robot’s suggested so -
+lution always requires human approval before execution to prioritize 
+human preferences. The suggested installation pose is communicated to 
+human co-workers by instantiating a new object with the same geometry 
+as the target object highlighted in semi-transparent red material in the 
+digital twin interface. Meanwhile, an interface template is instantiated 
+asking “Robot suggest install it here. Do you accept?”. The human can 
+choose to take the robot’s suggested solution by clicking on the “Yes” 
+button. However, due to the possible uncertainties and complexities of 
+construction work, the deviation type may not belong to the two situ -
+ations considered above or the solution suggested by the robot may not 
+be optimal, especially for the nearby object deviation case where situ -
+ations vary. For example, offsetting one component may affect the 
+installation of subsequent targets, causing construction plan changes for 
+several targets. In this case, the human co-worker may prefer to 
+manually replace the target with one in a different shape (e.g., a smaller 
+piece). Even if the deviation does not introduce collisions (object de -
+viates towards other sides), the human co-worker may still want to 
+adjust the target workpiece to make it stay together with the objects 
+nearby. In these cases, the human co-worker will reject the robot’s 
+suggested solution and manually intervene. 
+The system affords two operations to facilitate human intervention. 
+First, they can manually adjust the position and orientation of the target 
+installation pose through sliders in the interface. Otherwise, they can 
+skip the robotic installation in the digital twin and manually adjust and 
+install the target. In this case, they need to manually record the infor -
+mation in the BIM to make it available for future use. 
+3.2.4. BIM information update 
+When an assigned construction task finishes or reaches a certain 
+checkpoint, three sources of data tracked by ROS can be sent to the BIM 
+via Rosbridge using the COMPAS library (COMPAS, COMPAS, 2021). 
+Three sources of data are saved in the BIM repository for future refer -
+ence. The workspace sensing data as the robot scans the environment 
+and the robotic construction data reflected by robot states are saved onto 
+the “As-Built” layer. The temporary material data (i.e., on-site con -
+struction material type, number, and locations) are saved onto the 
+“Materials” layer. It is inferred from the start state (e.g., materials 
+originally prepared) and the construction process (e.g., how many ma -
+terials are used). 
+To update the BIM, the pose and type (applies to Materials only) data 
+of these components in the ROS computation module are sent to the 
+BIM. Then, new components are instantiated in the BIM at the given 
+poses, with their geometries retrieved from corresponding components 
+previously existing on the other layers in the BIM. The Python script in 
+Rhino assigns names and layers to the instantiated components and 
+generates customized attribute data (e.g., component poses) as Attribute 
+User Text. Meanwhile, the components on the “Target” layer that are 
+installed by the robot are switched to the “As-Designed” layer. In the 
+ensuing steps, the repository will continue updating itself with incoming 
+sensing data and completed construction work. 
+3.2.5. Physical system deployment 
+The physical portion of the system is deployed on a large-scale Kuka 
+industrial robotic arm in a research laboratory setting designed to mimic 
+a construction site. The industrial robotic arm is selected because it has a 
+relatively large payload to manipulate heavy construction components 
+and higher flexibility to perform various construction tasks with 
+different end effectors. The assumption is that the robot has a relatively 
+static workspace (e.g., an area in a room) for each construction task. 
+Other workers and equipment conduct construction activities and move 
+outside the robot workspace. For safety reasons, if they get into the robot 
+workspace during the robotic construction process, the robot will stop 
+moving until safety is confirmed by its human co-worker. 
+The system involves several devices connected to a Local Area 
+Network (LAN). Devices can communicate with each other through 
+wired connections or wirelessly. The device communication and robot 
+control processes are shown in Fig. 7. The interfaces that the human co- 
+worker directly uses, including the GUI in Unity and the BIM in Rhino, 
+need to run on a computer with Windows OS. The sensors are connected 
+to portable microcontrollers (e.g., Raspberry Pi). Both the Windows 
+computer and microcontrollers can communicate with ROS wirelessly 
+through a router on the LAN via ROS messages. ROS runs on a computer 
+with Ubuntu OS that is connected to the robot embedded PC through an 
+Ethernet cable. The computing core in ROS sends the joint states to the 
+Automation Device Specification (ADS) interface of the programmable 
+logic controller (PLC) (Liang et al., 2022). ADS is an interface layer of 
+Twincat PLC that allows commands and data exchange between 
+different software modules (Beckoff, 2022). The joint states data is 
+received by the PLC and is then sent to the Kuka Robot Sensor Interface 
+(RSI) to control the robot (Liang et al., 2022). 
+4. System verification and case study 
+In order to verify the proposed system and explore the setup neces -
+sary for its physical deployment, a drywall installation case study is 
+conducted in a research laboratory, which is set up to mimic a con -
+struction site, as a proof-of-concept implementation. Drywall installa -
+tion is one of the most prevalent construction activities. It is also a 
+representative example of large-scale object manipulation and pick-and- 
+place operation, which is a common scenario in construction and com -
+prises the elemental motions for a variety of construction tasks on 
+structures (e.g., framing), surface (e.g., ceiling tile installation), and 
+systems (e.g., ductwork installation) (Park et al., 2024; Feng, 2015). In 
+this context, the wall frame itself is prefabricated without deviation but 
+is purposefully installed at a deviated pose on-site to simulate the case of 
+parent deviation. Four drywall panels in two different shapes need to be 
+installed onto the wall frame, simulating scenarios such as windows, 
+doors, or room corners that require varied panel sizes beyond the 
+standard dimensions. The remaining part of this section introduces the 
+physical and software setup and describes the HRCC process to perform 
+the drywall installation task in detail. 
+4.1. Physical setup 
+The robot used for the case study is a 6 DOF Kuka KR120 industrial 
+robotic arm that has a 120 kg payload and a 2.7 m reaching range. By 
+mounting it onto Kuka KL4000 Linear Unit, its base can move 4.5 m 
+linearly, which adds one DOF to the robot and significantly increases the 
+robot’s physical reach. Therefore, the robot has the capability to 
+manipulate a regular-sized drywall panel. The robot workspace is shown 
+in Fig. 8. A safety gate is used to mark the robot workspace and a laser 
+curtain is installed on the safety gate to prevent other workers and 
+equipment from entering the robot workspace while the robot is 
+operating. 
+Since the goal of the case study is to verify the capability of the 
+system framework and functions, the experiment is conducted on a 1:2 
+scale. A wall frame 4 feet (1.2192 m) tall by 8 feet (2.2384 m) long with 
+X. Wang et al. 
+Computers in Industry 161 (2024) 104112
+10
+a window area is built with studs on the back side to ensure stability 
+( Fig. 9 ). To expand the workspace, part of the frame support is placed 
+outside the gate, but it does not break the operation because it is lower 
+than the bottom of the curtain. The robot needs to install three larger 
+drywall panels of 2 feet (0.6096 m) by 4 feet (1.2192 m) and one smaller 
+panel of 2 feet (0.6096 m) by 2 feet (0.6096 m) onto the frame. A cubic 
+handle is attached to each panel for the robot to grip. A pneumatic 
+gripper is designed and connected to the robot with a tool changer and a 
+connection plate ( Fig. 10 ). The jaws of the gripper are made with slopes 
+to clutch the cubic handle on the drywall panel. Stabilizers are installed 
+to ensure that the drywall panel can fully contact the gripper to avoid 
+torque and shaking during manipulation. Rubber pads are used to add 
+friction between the gripper and the cubic handle to prevent slippage. 
+Given that only one robotic arm is deployed, for demonstration and 
+experiment repeatability, Medium-Density Fiber (MDF) boards with 
+higher durability are used as drywalls. Magnets are used to attach the 
+panels to the wall frame after the robot releases the panels. For actual 
+construction work, the panels could be fixed (typically with screws) onto 
+the wall frame, potentially by a human worker or another robot. An RGB 
+camera is fixed onto the gripper. It is connected to ROS running on a 
+Raspberry Pi microcontroller powered by a portable battery. Raspberry 
+Pi can send the camera sensing data as ROS messages wirelessly to the 
+ROS master running on the Linux machine. AprilTag fiducial markers 
+are positioned near the wall frame and on the panels, and can be 
+localized with the RGB camera ( Krogius et al., 2019 ). The markers store 
+information about the component type and the offset from the marker to 
+the component ’ s origin to help identify the components and their 6DOF 
+pose. The type and offset information can be easily modified by updating 
+the configuration file to accommodate multiple tasks. 
+4.2. Preparation of the BIM 
+Fig. 11 shows a screenshot of the BIM used for the drywall installa -
+tion task. The surrounding wall of the laboratory is set to be transparent 
+grey to make it easier to visualize the robot workspace. Shop drawings 
+for drywall installation are shown at the right bottom of the figure. The 
+BIM indicates how the panels are designed to be installed. In this drywall 
+installation task, these panels are specified as targets. The laser curtain is 
+the plane that lasers come through which does not physically exist. 
+Fig. 7. Physical Robot System Framework. 
+Fig. 8. Robot Workspace. 
+Fig. 9. Wall Frame and Drywall Panels Used in Case Study. 
+ Fig. 10. Gripper Design. 
+X. Wang et al. 
+Computers in Industry 161 (2024) 104112
+11
+However, interruption of the laser will cause the robot to stop for safety 
+reasons, so the robot should not get into the curtain during operation. 
+Thus, the laser curtain is considered a collision object during robot 
+motion planning. The BIM components and their corresponding layers 
+are shown in Table 2 . Before construction, the frame has already been 
+installed and materials are prepared but their poses are unknown and 
+need to be detected by the robot. 
+The BIM contains the component attributes needed for robot pro -
+cessing and construction, such as its identifier, layer, its relationship 
+with other components, whether it is related to the current task, con -
+struction sequence, and type (e.g., large or small) ( Fig. 12 ). For 
+manipulable components, how the robot should grip the component is 
+also indicated (e.g., at its center with orientation perpendicular to its 
+largest surface), which is also used as the indicator of robot picking and 
+installation pose. In this study, the program automatically calculates 
+pose indicators using the centroid of the Rhino object. Otherwise, pose 
+indicators can be automatically generated with computational design or 
+manually specified by human workers selecting points and directions in 
+Rhino. 
+4.3. Construction process 
+To prepare for the construction work, the drywall panels are placed 
+into two stacks in the robot workspace ( Fig. 9 ). There is a marker on 
+each panel and the wall frame. Offsets from the markers to the objects ’ 
+pose indicator points are recorded and input into the system. The marker 
+is used not only for pose estimation but also to provide configurable 
+attribute information (e.g., corresponding object type and quantity). 
+As construction starts, the robot follows a predefined trajectory to 
+scan the environment. After scanning, the robot replaces the as-designed 
+w

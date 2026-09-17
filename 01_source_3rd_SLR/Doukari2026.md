@@ -21,4 +21,17 @@ Achieving the EU’s energy and decarbonisation goals requires more efficient ma
 | Yes | Yes | Yes | Tier 2 - Digital Shadow (one-way physical to virtual) | 0 | 1 | 0 | Both | None | Digital Twin platform (no machine learning) | Multi (two or more data types) | Single case study | 4 | Lifecycle / governance |
 
 **Key evidence (AG):** Renovation Digital Twin (RDT) platform (Northumbria U, RINNO Project): pilot implementation on French demonstration site; real-time data + dashboards monitoring 13 KPIs across 5 domains (cost, schedule, quality, safety, environment); TAM evaluation (102 professionals, Attitude Toward Use RII 0.894); 73% emissions reduction achieved but economic viability challenges. One-way monitoring→dashboard→decision support; no actuation and no learning loop.
+
+
+**Strength & gap filled (AH):** Fills the renovation-phase gap in digital twins: a stakeholder-informed Renovation Digital Twin built with Design Science Research in the RINNO project monitors 13 KPIs across cost, schedule, quality, safety and environment on the Project Sarrazins demo site in Lille, and a Technology Acceptance Model survey of 102 professionals gave attitude toward use RII 0.894 while the site achieved a 73 percent emissions reduction.
+
+**Deficiencies & future work (AI):** Proof-of-concept scope: a single renovation project, functional verification only, no quantified cost, schedule or safety improvements, a short evaluation period, a TAM sample biased to early-career professionals, manual data entry, and no AI or predictive analytics beyond historical KPI visualization; future work calls for multi-site validation, longitudinal studies, IoT automation, deep-learning prediction and cognitive twin capabilities.
+**Fusion depth (AC1):** Co-present
+
+**Fusion evidence (AC2):**
+- **Data streams:** renovation-site monitoring streams feeding 13 KPIs across cost, schedule, quality, safety and environment (Project Sarrazins, Lille).
+- **Integration mechanism:** data are aggregated into central dashboards for human decision support; the full text does not describe spatial or temporal registration across the domain-specific KPIs.
+- **Why this code:** multiple data types are shown in one interface but without a shared reference frame, so Co-present (rule 4); downgraded from Aligned per rule 5.
+
+**Confidence (AC3):** Medium - dashboard-level integration is clear; the absence of a shared frame is inferred.
 (full-text source: Endnote)

@@ -21,4 +21,17 @@ Hurricanes are among the most devastating natural disasters in the United States
 | Yes | Yes | Yes | Tier 1 - Digital Model (static, no live data) | 0 | 1 | 0 | Design for Safety (DfS) | None | Perception / Computer Vision | Multi (two or more data types) | Single case study | 4 | Design for Safety |
 
 **Key evidence (AG):** Vision-based digital twinning and threat assessment for construction site disaster preparedness (Texas A&M): deep learning encodes disaster risk context into construction site digital twin models to identify and analyze potential wind-borne debris characteristics and impacts; case studies on nine piles of construction materials; rapid 2D/3D semantic segmentation for vulnerability flagging. Static DT for risk assessment — no live data link, no actuation, no learning loop.
+
+
+**Strength & gap filled (AH):** Systematizes pre-hurricane preparedness beyond error-prone manual checklist inspection: SfM and MVS photogrammetry reconstruct jobsite point clouds, ResNet50 semantic segmentation reaches 98.2 percent accuracy, and a depth-aware projection raises 3D segmentation accuracy from 97.85 to 99.8 percent; volumetric measurement of nine material piles (errors 2.4 to 9.2 percent) feeds kinetic-energy threat heatmaps at hurricane-category wind speeds.
+
+**Deficiencies & future work (AI):** Case studies are static snapshots of two jobsites without live data integration. Segmentation is expected to degrade in rain, fog, or dim light and under occlusions and moving objects; volumetric measurement overestimates unstacked piles because RGB cameras cannot see inside them. Building robust machine vision accounting for these challenges is the direction of ongoing research.
+**Fusion depth (AC1):** Fused
+
+**Fusion evidence (AC2):**
+- **Data streams:** jobsite imagery (SfM/MVS point clouds) + ResNet50 2D segmentations.
+- **Integration mechanism:** depth-aware projection maps 2D labels onto the 3D point cloud, raising 3D segmentation accuracy from 97.85% to 99.8%; volumetric measurements (2.4-9.2% error) then feed kinetic-energy threat heatmaps.
+- **Why this code:** the 3D segmentation output depends on imagery and depth geometry simultaneously, so Fused.
+
+**Confidence (AC3):** High - the depth-aware projection mechanism is explicit.
 (full-text source: Endnote)

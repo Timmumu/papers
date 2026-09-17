@@ -21,3 +21,16 @@ The construction industry continues to seek innovative ways to safely, timely an
 | Yes | Yes | Yes | Tier 3 - Digital Twin (bidirectional) | 0 | 1 | 1 | DfS | Mentioned only | Digital Twin platform (no ML) | Multi | Conceptual (no test) | 3 | BIM-to-Digital-Twin architecture |
 
 **Key evidence (AG):** Perspective/concept paper. Defines next-generation CPS/DT with explicit "two-way dynamic mapping between virtual models and physical components" and distinguishes DT passive control (model-based prediction) from CPS active control (actuators). Three future scenarios (teleoperated drywall robot, postural tracking/control for musculoskeletal-injury prevention, near-miss prevention) are described as workflows, none implemented. Learning is only suggested ("movement data … can be trained to recognize productive task movements") → AA = Mentioned only. Covers construction (W) and operation/FM (X) application areas.
+
+**Strength & gap filled (AH):** A perspective paper defining next-generation CPS and DT through two-way dynamic mapping between virtual models and the physical facility, distinguishing passive (model-based) from active (actuator-based) control, and illustrating scenarios: a teleoperated drywall robot controlled via wearable IMU motion capture, postural tracking with AR avatars and color-coded ergonomic risk feedback, and near-miss prediction using case-based reasoning and K-nearest neighbor.
+
+**Deficiencies & future work (AI):** Purely conceptual: none of the scenarios is implemented or validated, and the paper itself lists open challenges of a missing information model for DTs, missing version management guidelines, missing communication latency guidelines, and missing interoperability standards analogous to IFC.
+
+**Fusion depth (AC1):** Unclear
+
+**Fusion evidence (AC2):**
+- **Data streams:** illustrative scenario inputs only (wearable IMU motion capture, postural tracking, case-based near-miss records).
+- **Integration mechanism:** none implemented - the two-way mapping between virtual models and the physical facility is defined conceptually, and ML training of movement data is only suggested.
+- **Why this code:** Unclear (rule 2 - perspective paper with no implementation).
+
+**Confidence (AC3):** High.

@@ -21,4 +21,17 @@ In the field of aviation, terminal building renovation and expansion projects fr
 | Yes | Yes | Yes | Tier 2 - Digital Shadow (one-way physical to virtual) | 0 | 1 | 0 | Design for Safety (DfS) | None | Other / Mixed | Multi (two or more data types) | Single case study | 4 | Predictive analytics / decision support |
 
 **Key evidence (AG):** Structural safety risk prediction for terminal building steel roof construction (Beijing U Tech): DT model + FE analysis → sensor installation (hydraulic jacks, temperature, stress); XGBoost prediction model for stress changes of key rods (98% accuracy); compared GA-BPNN, RF, XGBoost; validated on airport renovation project. One-way monitoring→prediction→risk management; no actuation and no learning loop (XGBoost is offline-trained).
+
+
+**Strength & gap filled (AH):** Fills the gap between finite-element simulation and next-moment stress prediction during overall jacking of an airport terminal steel mesh roof: a digital twin built with Midas/Gen life-and-death element analysis guides sensor placement on twelve hydraulic jacks and key bars, and an XGBoost model predicts key-bar stress with 98 percent accuracy and validation R2 of 0.9919, outperforming GA-BPNN and random forest.
+
+**Deficiencies & future work (AI):** The training set uses real site monitoring values with error superposition, the model is offline-trained on one project with only four days of jacking data, and no automated warning integration exists; the authors plan multi-source sensor fusion with real-time monitoring systems and evaluation of generalization across different steel structures and construction conditions.
+**Fusion depth (AC1):** Fused
+
+**Fusion evidence (AC2):**
+- **Data streams:** hydraulic jack data, temperature and stress sensors on twelve jacks and key bars; Midas/Gen life-and-death element analysis for placement.
+- **Integration mechanism:** the multi-sensor channels jointly feed XGBoost (validation R2 0.9919), outperforming GA-BPNN and random forest on an airport terminal steel-roof jacking project.
+- **Why this code:** a multi-input model whose output depends on several sensor types simultaneously, so Fused.
+
+**Confidence (AC3):** High - the XGBoost input structure is explicit.
 (full-text source: Endnote)

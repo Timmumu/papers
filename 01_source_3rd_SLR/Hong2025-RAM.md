@@ -13,3 +13,26 @@ Poor construction worksite conditions cause many Serious Injuries and Fatalities
 | Yes | Yes | Yes | Yes | Yes | **Include** |
 
 **Note:** DTCS RAM module; struck-by hazard trajectory analysis; SIF prevention
+
+## Step-3 Deep-Read Coding (Prompt B)
+
+| P | Q | R | U Tier | V | W | X | Z | AA | AB | AC | AD | AE | AF |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| Yes | Yes | Yes | Tier 2 - Digital Shadow (one-way physical to virtual) | 0 | 1 | 0 | Design for Safety (DfS) | None | Digital Twin platform (no machine learning) | Single (one data type) | Single case study | 4 | Design for Safety |
+
+**Key evidence (AG):** Digital construction site layout planning and real-time trajectory analysis for proactive safety monitoring and control of struck-by hazards (DTCS Right-time Analysis and Mitigation module; DTU/TUM): RTK-GNSS + LoRa live location tracking of pedestrian workers and heavy equipment streamed to DTCS; semi-static and dynamic hazard zones (1-m boundary + operator blind-space geometry); real-time incident detection of unauthorized entry and too-close proximity; density maps / histogram heatmaps identify hazardous activities; safety-plan revision recommendations (separating worker/equipment areas, temporary pedestrian walkways); field experiments in Munich subway rail maintenance staging area showed significant reduction in spatial conflicts and improved zone connectivity, with newly detected hazards (rail traffic, delivery trucks) triggering iterative plan updates. One-way monitoring to analysis to mitigation recommendations/alerts for safety personnel; no actuation, no learning loop.
+
+
+
+**Strength & gap filled (AH):** Extends the Digital Twin for Construction Safety concept with a Right-time Analysis and Mitigation module tested at a Munich railway maintenance staging area: safeBIM rule checking plus RTK-GNSS over LoRa tracking at 1.0 cm median and 2.3 cm 95th percentile precision, detecting 99 unauthorized entries, mapping telehandler blind spots (right side obstructed to 1.9 m) and computing safety-weighted walkway routes that informed a revised safeBIM plan.
+
+**Deficiencies & future work (AI):** Experiments lasted a limited period in a controlled staging area, RTK-GNSS suffers signal loss and interference, and operator awareness of workers could not be recorded, so head-pose or eye-tracking data is proposed; future work includes longer data collection, other equipment types, drone-based condition capture, big data analytics and standards for safe distances.
+**Fusion depth (AC1):** SINGLE
+
+**Fusion evidence (AC2):**
+- **Data streams:** RTK-GNSS/LoRa live locations of workers and equipment at a Munich railway staging area.
+- **Integration mechanism:** none - position streams alone feed semi-static/dynamic hazard zones, 99 unauthorised-entry detections and heatmaps in the DTCS module.
+- **Why this code:** SINGLE (AC=Single).
+
+**Confidence (AC3):** High.
+(full-text source: Endnote)

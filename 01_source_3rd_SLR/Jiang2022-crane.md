@@ -21,3 +21,16 @@ Unsafe hoisting behaviors are the fuse of tower crane overturning safety acciden
 | Yes | Yes | Yes | Tier 2 - Digital Shadow | 0 | 1 | 0 | Design for Safety (DfS) | None | Finite Element Method / physics-based | Multi (two or more data types) | Simulation | 4 | Design for Safety |
 
 **Key evidence (AG):** DT framework of human-machine hoisting (tower crane, HUST): 1/30 physical scale model (sensors at 20 Hz) as physical entity + synchronous virtual model (FEM, BIM, component IDA) + IoT data flow for real-time dynamic stability analysis; four unsafe hoisting behaviors (vertical/tilt/sudden braking/unloading) compared (scale model vs simulation vs real-model simulation); collapse-probability level function ranks tilt hoisting as most dangerous, foundation/mast most vulnerable for sensor deployment. Lab scale-model experiment; warning to operator via threshold but no actuation and no learning loop (monitoring system design is future work).
+
+**Strength & gap filled (AH):** Addresses the scarcity of experimental knowledge on unsafe hoisting behavior effects: a human-machine interaction DT built on a 1/30 scale tower crane with 20 Hz sensors synchronizes virtual FEM and BIM models through IoT data flow, and incremental dynamic load analysis yields collapse probability levels (TCL, FCL, MCL, JCL, CCL, RCL) showing tilt hoisting as most dangerous with foundation and masts most vulnerable.
+
+**Deficiencies & future work (AI):** Results come from a laboratory scale model under simplified single-behavior conditions; sensor data agree with the virtual model in trend but differ in magnitude due to material property differences. Combined environmental loads and other unsafe behaviors, tower crane structural changes, and component influence weights during instability remain future work, and the unsafe hoisting monitoring system is only planned, not built.
+
+**Fusion depth (AC1):** Fused
+
+**Fusion evidence (AC2):**
+- **Data streams:** 20 Hz scale-model sensor data on a 1/30 tower crane; FEM, BIM and component IDA virtual models.
+- **Integration mechanism:** IoT data flow synchronises the virtual models with measured states, and incremental dynamic load analysis computes collapse-probability levels (TCL/FCL/MCL/JCL/CCL/RCL) that rank unsafe hoisting behaviours; sensor-vs-model trends are compared directly.
+- **Why this code:** the stability output depends on measured sensor states and model responses simultaneously, so Fused; lab-scale only (Medium).
+
+**Confidence (AC3):** Medium - the synchronisation mechanism is clear, but validation is a laboratory scale model.

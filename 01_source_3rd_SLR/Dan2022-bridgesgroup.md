@@ -14,7 +14,20 @@ Bridges play an important role in transportation infrastructure systems. Intelli
 
 **Note:** Regional bridge-group DT; condition perception & safety warning
 
-## Step-3 Deep-Read Coding (Prompt B) (full-text source: Digital twin system for a regional bridges group (Shanghai, Tongji U): physical space - WIM + multi-source machine vision traffic-load monitoring on target bridge + lightweight sensors on bridge group; digital space - mechanical analysis models per bridge linked by measured traffic loads for working-condition perception and safety warning across the regional network; preliminarily implemented in a Shanghai bridges group. One-way monitoring→analysis→warning for operators; no actuation and no learning loop.)
+## Step-3 Deep-Read Coding (Prompt B) 
+
+**Strength & gap filled (AH):** Fills the group-level gap in bridge digital twins: for a regional bridge network around Shanghai, weigh-in-motion and multi-source machine vision fusion measure full-bridge traffic loads on a target bridge, lightweight sensors capture responses on group bridges, and measured loads drive mechanical models in digital space, enabling working-condition perception and safety warning across the whole network, demonstrated with Monte Carlo and Intelligent Driver Model simulations on the Yongjiang cable-stayed bridge.
+
+**Deficiencies & future work (AI):** One-way implementation: digital models are loaded with measured traffic loads but no feedback or control channel back to physical bridges exists, and deriving bridge health status from simulation results to form more interaction tasks between the two spaces is left as future exploration.
+**Fusion depth (AC1):** Fused
+
+**Fusion evidence (AC2):**
+- **Data streams:** WIM loads + multi-source machine-vision traffic-load monitoring (target bridge) + lightweight sensor responses (bridge group).
+- **Integration mechanism:** machine-vision fusion monitoring combines the vision streams into one traffic-load measurement, which is linked as the load input to per-bridge mechanical models for working-condition perception and safety warning across the Shanghai network.
+- **Why this code:** vision fusion produces a joint traffic-load estimate whose downstream safety warnings depend on multiple data types simultaneously, so Fused; preliminarily implemented on a real bridges group.
+
+**Confidence (AC3):** High - machine vision fusion monitoring is the paper stated mechanism.
+(full-text source: Digital twin system for a regional bridges group (Shanghai, Tongji U): physical space - WIM + multi-source machine vision traffic-load monitoring on target bridge + lightweight sensors on bridge group; digital space - mechanical analysis models per bridge linked by measured traffic loads for working-condition perception and safety warning across the regional network; preliminarily implemented in a Shanghai bridges group. One-way monitoring→analysis→warning for operators; no actuation and no learning loop.)
 
 | P | Q | R | U Tier | V | W | X | Z | AA | AB | AC | AD | AE | AF |
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|

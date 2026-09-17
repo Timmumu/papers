@@ -1,0 +1,1679 @@
+Efficient low-collision UAV-based automated structural surface inspection
+using geometric digital twin and voxelized obstacle information
+Yonghui An
+a , b
+, Jianren Ning
+a
+, Chuanchuan Hou
+c , *
+, Jinping Ou
+b
+a
+State Key Laboratory of Featured Metal Materials and Life-Cycle Safety for Composite Structures (Provincially and Ministerially Co-Constructed), Guangxi University,
+Nanning 530004, China
+b
+Department of Civil Engineering, Dalian University of Technology, Dalian 116023, China
+c
+School of Transportation Science and Engineering, Beihang University, Beijing, China
+ARTICLE INFO
+Keywords:
+Structural surface inspection
+Unmanned aerial vehicle (UAV) inspection
+Flight mission planning
+Geometric digital twin (GDT) model
+Voxelized obstacle information (VOI)
+ABSTRACT
+The application of Unmanned Aerial Vehicle (UAV) automatic flight is increasingly popular for structural surface
+inspection. To address the low level of automation and insufficient adaption of the flight path in response to
+environmental obstacles, a method of automatic planning UAV inspection mission based on the Geometric Digital
+Twin (GDT) model and Voxelized Obstacle Information (VOI) is proposed. First, a method for shifting the Field of
+View (FOV) centroids in parallel is proposed to efficiently generate inspection waypoints. Second, a waypoints
+adjustment method based on environmental VOI of 3D point clouds is proposed to address the safety issues.
+Third, a method combining Genetic Algorithm (GA) with A* based on VOI is proposed for optimizing UAV flight
+path to avoid real-world obstacles. The feasibility of the proposed methods was verified in both an office building
+and a steel truss bridge. Compared to existing methods, the efficiency is significantly improved.
+1. Introduction
+Periodic structural surfaces inspection is crucial for ensuring the
+structural safety of large-scale infrastructures such as buildings and
+bridges. Traditionally, such inspection has been largely conducted
+manually, which is time consuming and prone to errors. More recently,
+due to the agility and efficiency of Unmanned Aerial Vehicles (UAVs) in
+capturing surface images, some studies have begun to apply UAV tech-
+nology for structural surface inspection and shown promising results
+[ 1 – 3 ]. This process typically involves orienting the UAV camera towards
+the target structure where it captures inspection images of the visible
+coverage area on the structural surface, which is defined as the Field of
+View (FOV). During the process of using UAVs to fly around structures
+and acquire inspection image data, three main control indicators are
+emphasized [ 4 – 6 ]: (1) safety, to ensure that UAVs do not collide with
+obstacles; (2) comprehensiveness, to acquire complete images of the
+whole surface to avoid missing inspection; (3) efficiency, to avoid un-
+necessary flight burdens. When using traditional manual UAV flight,
+such multiple and possibly conflicting goals can be challenging to be
+achieved simultaneously, especially for large-scale and complex struc-
+tures [ 7 – 9 ]. To tackle this issue, some researchers have comprehensively
+reviewed and studied the pre-planning of rational UAV flight missions to
+enable automatic execution [ 10 – 12 ]. Compared to the manual control
+method, it has been shown that pre-planning can significantly enhance
+the safety and efficiency of the inspection [ 6 ]. For an effective pre-
+planning of flight mission, the first step is to generate suitable struc-
+tural inspection waypoints, which are the specified location coordinates
+where a UAV hovers and acquires images.
+Properly choosing of waypoints is crucial for the complete while
+economical covering of the structural surface. Naturally, a reference
+model to the real structure is necessary for determining the distribution
+of the waypoints. Such a reference model can be classified into five
+levels of detail (LoD) according to the Open Geospatial Consortium
+(OGC) standard for City Geography Markup Language (GML) 2.0 [ 13 ]. A
+building example is used to illustrate the different levels from LoD0 to
+LoD4, as shown in Fig. 1 . The LoD0 model [ 14 – 16 ] represents the
+structural projection on a 2D plane, which is typically acquired using
+footprint extraction methods [ 17 , 18 ]. Such a simple model can be used
+for the generation of waypoints that focus on the acquisition of rough
+top view images. To generate waypoints that focus on the acquisition of
+both rough facade and top view images, the LoD1 model [ 19 ], which is a
+block model derived by extending the LoD0 model vertically, can be
+used. Although in 3D, the LoD1 model lacks differentiated facades and
+the roof structures [ 20 ], which can create difficulties for structures with
+* Corresponding author.
+E-mail address: houcc@buaa.edu.cn (C. Hou).
+Contents lists available at ScienceDirect
+Automation in Construction
+journal homep age: www.el sevier.com/l ocate/autcon
+https://doi.org/10.1016/j.autcon.2025.105972
+Received 19 July 2024; Received in revised form 28 December 2024; Accepted 9 January 2025
+Automation in Construction 171 (2025) 105972 
+Available online 13 January 2025 
+0926-5805/© 2025 Elsevier B.V. All rights are reserved, including those for text and data mining, AI training, and similar technologies. 
+irregular shapes. To deal with this, the LoD2 model, in which the ac-
+curate geometric shape of the structure is represented, can be used. With
+openings in the structure, such as doors and windows, the LoD2 model
+can be further upgraded to LoD3 [ 21 ]. By further including details of the
+structural interior, the LoD4 model can be created [ 6 ]. From their
+characteristics it can be seen that it is challenging to use LoD0 and LoD1
+models for effective structural surface inspection, while LoD2, LoD3 and
+LoD4 can serve as better reference models. Previously, some studies
+have generated waypoints based on models constructed by design
+drawings defined under LoD3, such as manually constructed Building
+Information Modeling (BIM) [ 22 – 25 ] and 3D geometric model [ 26 , 27 ].
+While these models can serve as effective reference models can be
+automatically generated through methods such as deep learning [ 28 ]
+and progressive model-driven approach [ 29 ], their openings and inter-
+nal details are not essential information for external surface inspection
+waypoint generation. Moreover, the large amount of training data and
+modeling complexity required do hinder the automatic construction of
+the efficient reference models. Thus, it can be concluded that the LoD2
+model is the most suitable choice for the task of external surface
+inspection.
+Some studies have utilized 3D point clouds to extract the geometric
+shape of the structure [ 4 , 30 – 32 ], voxelized it or adapt observation
+planes to the geometry of the scene for waypoints generation and iter-
+atively optimizing the number and positions of waypoints based on data
+quality [ 33 ]. The 3D point clouds can be produced by depth devices
+[ 34 , 35 ] and multi-view reconstruction [ 36 ], and extensive research has
+been conducted on the methods of point clouds generation [ 37 – 39 ] and
+factors affecting the quality of point clouds [ 11 , 12 , 40 ]. Processing 3D
+point clouds and voxelized models can effectively generate inspection
+waypoints. However, due to the inclusion of significant non-structural
+components and surrounding environments, it becomes challenging to
+focus on the structural surface. Additionally, since these methods
+involve a large amount of discrete data, they tend to be less accurate and
+efficient compared to waypoints generation using LoD2 models.
+Several studies have addressed waypoints generation based on
+reference models. Tan et al. [ 22 ] proposed a “ three-steps ” region divi-
+sion method. First, the polygonal surface of the building is divided into
+several rectangular regions, with the corner point of each rectangular
+region serving as initial point to create the first rectangle primitive.
+These primitives are then translated until them cover all rectangular
+regions on the surface, and the offset of each primitive ’ s center point is
+extracted to generate inspection waypoints for the surface. Additionally,
+by pre-dividing the plane into grids, a polygonal surface can be directly
+divided in a “ two-steps ” process. Yang et al. [ 41 ] used UAVs to collect
+overhead inspection images of debris fans, manually inputting the
+boundary information of the debris fan into the pre-divided grid and
+generating waypoints based on the grid ’ s center points, effectively
+covering the irregularly shaped debris fan. Yu et al. [ 15 ] also conducted
+research on the generation of overhead waypoints, using a four-
+neighborhood growing method to determine the areas to be covered
+and dividing the grid to generate waypoints. However, further research
+is needed on these methods to adapt them to the “ two-steps ” division of
+3D polygonal surfaces of GDT model, thereby improving the efficiency
+of waypoints generation.
+A subsequent task after obtaining the waypoints is to adjust them to
+address potential safety issues. Such issues, which are often overlooked
+Fig. 1. Five building levels of detail from LoD0 to LoD4 (created based on [ 13 ]).
+Fig. 2. Issues of waypoints generation due to parallel shift strategy: (a) Unsafe or inaccessible inspection waypoints, (b) Unsafe or inaccessible flight path.
+Y. An et al. Automation in Construction 171 (2025) 105972 
+2 
+in previous research, arise from the nature of the commonly used way-
+points generation methods and the unavoidable waypoints conflicting
+with real-world environmental obstacles, i.e., parallel shift strategies
+and obstacles. In these methods, feature points are first extracted from
+3D point clouds ’ plane and boundary [ 4 , 31 , 32 ], the center points of
+triangle mesh [ 30 ], or the sub region centroids of BIM surface
+[ 22 , 23 , 25 ], which are then shifted outward in parallel to determine the
+waypoints. As illustrated in Fig. 2 (a), waypoints generated with such
+strategies may be within obstacles, such as trees, power lines sur-
+rounding the building, and non-structural components installed on the
+building, or too close to them. Furthermore, the flight paths planned in
+these manners reduce flexibility and are less than optimal [ 42 ]. There-
+fore, it is necessary to adjust the positions of the waypoints according to
+the obstacle information around the structure to prevent unsafe or
+inaccessible waypoints. Some studies have considered the environ-
+mental obstacles in the process of flight path planning. For instance, Sun
+et al. [ 43 ] used a semantic segmentation method to divide obstacle areas
+in orthophotos, providing references for UAV flight path planning at the
+2D level. Some other studies have considered manually constructed
+obstacle models at the 3D level for path planning [ 44 , 45 ]. Tan et al. [ 46 ]
+researched multi-UAV path planning issues using virtual obstacles that
+simulate the environment. Obstacle information can also be expressed
+through automatic methods. Phung et al. [ 4 ] expressed the obstacle
+information using the maximum bounding boxes of 3D point clouds,
+ensuring that waypoints and flight paths avoid obstacles. While these
+methods can lower the flight risks to a certain degree by considering the
+environment obstacles, manually constructed virtual obstacle models
+may differ from actual conditions and be inefficient. Additionally, using
+rough models such as bounding boxes to represent environmental ob-
+stacles may result in the loss of valuable accessible areas, especially for
+inspecting complex structures. Therefore, it is vital to further consider
+more accurate obstacle information of the real-life environment when
+using the parallel shift strategy.
+Once the ultimate waypoints are determined, a flight path optimi-
+zation shall be conducted to find the optimal route that sequentially
+connects all generated unordered inspection waypoints. A typical unsafe
+or inaccessible flight path is shown in Fig. 2 (b), in which parts of it pass
+through obstacles or being too close to obstacles. It is necessary to
+optimize the flight path to ensure UAV flight safety while also mini-
+malize flight burden. These optimization challenges bear resemblance to
+the Traveling Salesman Problem (TSP) and are commonly addressed
+using heuristic algorithms, such as Genetic Algorithm (GA) [ 47 ], self-
+adaptive genetic simulated annealing algorithm (AGASA) [ 2 ], and Ant
+Colony Optimization (ACO) [ 15 ]. Research on these algorithms focuses
+on improving their execution speed, convergence, and avoiding local
+optima. These methods can enhance the accuracy and efficiency of path
+optimization. However, the issues of obstacle avoidance and energy
+consumption in UAV during practical engineering applications also
+warrant further attention. Optimization of flight path that also tackles
+safety issues is a constrained optimization problem, in which the con-
+siderations of obstacles as constraints in heuristic algorithms are
+incorporated. Koch et al. [ 48 ] used semantic maps overlaid on 3D model
+to determine if there are restrictions on UAV flight along these paths,
+and provided the results to heuristic algorithms to optimize the flight
+path. In environments where obstacles cannot be completely avoided
+using heuristic algorithms alone. To address this issue, some studies use
+a combination of automatic path finding algorithms and heuristic al-
+gorithms to ensure that the optimized flight paths avoid obstacles
+[ 4 , 5 , 23 ]. Among these, Phung et al. [ 4 ] considered UAV energy con-
+sumption related to flight direction when planning paths using such
+methods. Furthermore, Tan et al. [ 23 ] not only planned UAV flight paths
+but also devised routes for the UAV to reach designated locations for
+battery replacement. However, it is vital to ensure that flight paths
+maintain a certain safe distance from real-world environmental obsta-
+cles and reduce costs associated with UAV turns due to obstacle avoid-
+ance, which requires further research. In other words, it is crucial to
+consider more real and accurate obstacle information and minimize
+transitional waypoints for turns as much as possible to optimize the
+flight path, which has not been sufficiently considered in the past
+studies.
+To tackle these issues, this paper proposes a novel method for
+automatically planning UAV inspection flight missions for capturing
+surface images based on Geometric Digital Twin (GDT) model and
+Voxelized Obstacle Information (VOI). First, a LoD2-class GDT model,
+which can be automatically and rapidly constructed [ 49 – 51 ], is inno-
+vatively applied to the inspection waypoints generation. Based on the
+accurate geometric shape of the GDT model, a preliminary waypoints
+generation method that involves shifting FOV centroids in parallel is
+proposed, enhancing the automation and efficiency of the waypoint
+generation process. Second, a method utilizing more precise VOI for
+inspection waypoints adjustment is proposed. This method employs
+voxelization and regional division of the space containing the 3D point
+clouds and GDT model to relocate unsafe or inaccessible waypoints to
+safer areas. Finally, a heuristic path optimization method combining GA
+with A* based on VOI is proposed to define the safe flight path, incor-
+porating consideration of real-world environmental obstacles and
+reducing the additional energy and time costs associated with automatic
+routing through turn penalties. The method proposed in this paper
+efficiently and effectively generates waypoints based on the GDT model
+and ensures the safety of both the waypoints and the flight path con-
+necting them through VOI. This comprehensive ‘point-to-line ’ approach
+safeguards the safety of UAV in all aspects, ultimately acquiring effective
+‘surface ’ imagery data. The main content of this paper is structured as
+follows: the proposed method is presented in Section 2 . In Section 3 , the
+method is applied to a building and a bridge to demonstrate the feasi-
+bility of the proposed method. The final section presents the
+Fig. 3. Technology roadmap of automatic UAV inspection.
+Y. An et al. Automation in Construction 171 (2025) 105972 
+3 
+conclusions.
+2. Proposed UAV automatic inspection method using GDT model
+and VOI
+This paper proposes an automatic planning method for UAV in-
+spection missions based on the GDT model and VOI, allowing for a rapid
+and automatic deployment of UAV inspection flight mission, which can
+achieve automatic and safe inspection of structure surfaces. The main
+procedure of the method includes: (1) automatically constructing a GDT
+model based on 3D point clouds; (2) automatically generating pre-
+liminary inspection waypoints based on the GDT model; (3) adjusting
+the preliminary inspection waypoints based on divided areas that
+reference VOI; (4) optimizing the UAV flight path using the method
+combining GA with A* based on VOI; (5) compiling UAV flight files to
+realize automatic inspection. The technology roadmap is shown in
+Fig. 3 .
+In this paper, as shown in Fig. 4 , three coordinate systems are used in
+the presentation of the proposed method. The first is the 3D Global
+Coordinate System (GCS), OXYZ, where the positive direction of the X-
+axis points to true east, the positive direction of the Y-axis points to true
+north, and the positive direction of the Z-axis is determined by the right-
+hand rule, with O as the origin. The second is the 2D Local Coordinate
+System (LCS), oxy, located on the surface of the GDT model. On the
+Fig. 4. Coordinate systems used: (a) GCS and WGS-84, (b) GCS and LCS.
+Fig. 5. Process of multi-view 3D reconstruction: (a)multi-view images acquisition, (b) Detection and matching of feature points in multi-view images, (c) Sparse and
+dense point clouds reconstruction.
+Fig. 6. Process of structural GDT model generation based on Polyfit framework [ 49 ].
+Y. An et al. Automation in Construction 171 (2025) 105972 
+4 
+facade of the structure, the positive direction of the y-axis in the LCS
+points upward, and on the top surface of the structure, the positive di-
+rection of the y-axis is perpendicular to the longest edge of that surface,
+with the positive direction of the x-axis determined by the right-hand
+rule. The third is the World Geodetic System-1984 (WGS-84), “ Lati-
+tude Longitude Altitude ” (LLA), which is used for the compilation of the
+flight mission files.
+2.1. Automatic GDT model construction based on 3D point clouds
+As aforementioned, a reference model is the basis for generating the
+waypoints and an automatically constructed GDT model based on 3D
+point clouds is used as the reference model for the proposed method. In
+this study, 3D point clouds are produced through a multi-view 3D
+reconstruction (as shown in Fig. 5 ), which is of high efficiency and low
+cost [ 37 ], and can represent the actual position information of objects in
+the real world. Although there may be some potential positioning errors,
+these can be effectively limited by increasing the number of Ground
+Control Points (GCPs) [ 39 ]. The process consists of multi-view images
+acquisition and reconstruction stages. The image acquisition can be
+done manually [ 36 ] or automatically at a low cost [ 11 ]. The recon-
+struction process involves Structure from Motion (SFM) and Multi-View
+Fig. 7. Definition for key parameters of waypoints.
+Fig. 9. Process of FOV centroids generation based on grid mapping method.
+Fig. 8. Process of determining waypoints parameters.
+Y. An et al. Automation in Construction 171 (2025) 105972 
+5 
+Stereo (MVS) components [ 9 , 52 , 53 ]. In this process, SFM extracts and
+matches feature points from the acquired multi-view images, generating
+a sparse point cloud, while MVS estimates the depth maps based on the
+sparse point cloud and further generates a dense point cloud in 3D space.
+With the 3D point clouds, the GDT model can be automatically
+constructed based on the Polyfit framework proposed by Nan et al. [ 49 ].
+In Fig. 6 , the procedure of the construction of the GDT model is illus-
+trated with a building and a bridge: (1) extracting the plane primitives
+based on Random Sample Consensus (RANSAC) [ 54 ], and sampling
+points in the point cloud that belong to the same plane; (2) generating
+candidate faces for the GDT model based on the sampling results; (3)
+selecting the final faces of the GDT model based on topological rules.
+After the generation of the model, it is necessary to assess its feasi-
+bility and accuracy. The Root Mean Square Error (RMSE) is adopted for
+this purpose, where the 3D point clouds are considered as actual ob-
+servations, and the GDT model as predictions. The fitting error between
+the GDT model and the 3D point clouds is calculated using Eq. (1) [ 50 ].
+RMSE =
+̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅ ̅̅̅̅̅̅̅ ̅
+1
+T
+∑
+T
+i = 1
+( Δ D
+i
+)
+2
+√
+√
+√
+√
+(1)
+where, T is the total number of points in the 3D point clouds; Δ D
+i
+is the
+Euclidean distance between each point and the nearest surface of the
+GDT model.
+To provide a more direct assessment of the fit between the computed
+RMSE and the structural 3D point clouds, the RMSE is compared against
+the structural volume. Define L as the side length of a cube with a vol-
+ume equal to that of the structure, representing the structural volume.
+When RMSE < 0.02 L , the fit between the GDT model and the 3D point
+clouds is considered good; when 0.02 L < RMSE < 0.05 L , the fit is
+considered moderate; and when RMSE > 0.05 L , the fit is considered
+poor. Numerical evaluation is only one criterion for assessing the fit; a
+more comprehensive judgment can be made by directly overlaying the
+GDT model with the 3D point clouds for visual inspection.
+2.2. Inspection waypoints generation based on FOV centroids ’ parallel
+shift method
+After the GDT model is generated, the FOVs on its are pre-divided
+using the proposed grid mapping algorithm based on the camera ’ s
+FOV. Subsequently, using the proposed parallel shift algorithm, the FOV
+centroids on the GDT model surface are parallelly shifted along the
+surface normal up to the working distance d of the camera, achieving the
+generation of preliminary inspection waypoints, which also serve as the
+camera ’ s center points. The images captured by the UAV when it reaches
+these waypoints correspond to the subregions previously delineated on
+the GDT model surface.
+2.2.1. Waypoint parameters calculation method
+Each waypoint has a corresponding FOV on the GDT model surface.
+Fig. 10. Process of inspection waypoints generation based on parallel shift method.
+Fig. 11. Procedure of waypoints adjustment.
+Y. An et al. Automation in Construction 171 (2025) 105972 
+6 
+To determine the FOV so as to achieve complete covering of the model
+surface, several waypoint parameters need to be defined and calculated,
+the relationships between waypoint parameters are as shown in Fig. 7 .
+They include the camera sensor width W
+sens
+, camera sensor height H
+sens
+,
+camera focal length f , working distance d , FOV width W
+FOV
+, FOV height
+H
+FOV
+, FOV horizontal overlap width C
+x
+, FOV vertical overlap height C
+y
+,
+horizontal spacing between waypoints D
+px
+, and vertical spacing between
+waypoints D
+py
+. Among these, W
+sens
+, H
+sens
+, f are known camera param-
+eters, and d can be determined by planners based on the actual condi-
+tions of the UAV autonomous inspection and targets on the structure
+surface. The larger of d ,the larger the area of FOV, and the fewer
+waypoints needed to cover the structure surface [ 23 ]; however, the
+images captured at each waypoint are more likely to lose details.
+Therefore, for detecting small surface damages, d should be appropri-
+ately reduced to ensure sufficient resolution. Additionally, the value of d
+should also be related to the flight safety of the UAV. The working
+scenario of the UAV should also be considered; for instance, in dense
+urban areas, d should not be too large to prevent collisions with sur-
+rounding buildings, whereas in open areas such as inspecting bridges
+over rivers, d can be appropriately increased. However, to meet the
+detailed requirements of the inspection images, d should not exceed 10
+m. In this paper, it is suggested that d should be at least 5 m to ensure
+Fig. 12. Process of UAV inspection working space voxelization and areas division: (a) Extending bounding box to define workspace, (b) Voxelizing workspace and
+classifying voxels and spatial region to get VOI.
+Fig. 13. Moving adjustment of waypoints in inaccessible or unsafe areas.
+Fig. 14. Calculation of structural surface area each camera covers.
+Y. An et al. Automation in Construction 171 (2025) 105972 
+7 
+that UAV maintains an appropriate initial safety distance from the
+structure surface. Based on the known camera parameters and d , W
+FOV
+and H
+FOV
+can be further calculated by Eq. (2) [ 22 ].
+[
+W
+FOV
+H
+FOV
+]
+=
+d
+f
+[
+W
+sens
+H
+sens
+]
+(2)
+Among the parameters of the waypoints, the values C
+x
+and C
+y
+depend
+on the user requirements for capturing target images. For damage in-
+spection, the values of C
+x
+and C
+y
+should be 0 [ 4 ] to meet the re-
+quirements for image redundancy reduction, they can also be set to
+appropriate values to compensate the impact of UAV positioning errors
+on the actual FOV of the camera. Based on C
+x
+, C
+y
+, W
+FOV
+, H
+FOV
+, D
+px
+and
+D
+py
+can be calculated by Eq. (3) .
+[
+D
+px
+D
+py
+]
+=
+[
+W
+FOV
+  C
+x
+H
+FOV
+  C
+y
+]
+(3)
+As shown in Fig. 8 , after the aforementioned determination and
+calculations, the key waypoints parameters, including d , D
+px
+and D
+py
+, are
+obtained. These key parameters will serve as inputs to the subsequent
+waypoints generation algorithm.
+2.2.2. Grid mapping method of dividing FOVs for obtaining the centroids
+After the parameters of the waypoints are determined and calcu-
+lated, the FOVs can be divided on the surfaces of the model, allowing the
+waypoints generation based on the FOVs ’ centroid. Previous studies
+have proposed considering the model surface as a set and the FOVs as
+subsets within the set, completing the division of the model surface ’ s
+FOV by determining the subsets [ 4 ]. Covering regular rectangular planes
+with the FOVs is relatively straightforward; however, many buildings
+and bridges have surfaces that are irregular polygonal planes. Irregular
+polygonal planes can also be used to fit curved surfaces and detail fea-
+tures within structure. For such planes in 3D space, Tan et al. [ 22 ]
+employed the “ three-step ” method described in Section 1 , while Yu et al.
+[ 15 ] used the “ two-step ” method for dividing FOVs on polygonal planes
+in 2D space. Inspired by these methods, a grid mapping algorithm (see
+Fig. 9 ) is proposed to improve efficiency by achieve a “ two-steps ” divi-
+sion of the FOVs on the polygon surface of the GDT model in the 3D
+space. In this algorithm, an area larger than the model surface is pre-
+divided into FOVs in the local coordinate system. The model surface is
+then transformed from the global coordinate system to the local coor-
+dinate system. Based on the polygonal surface of the model, FOVs that
+fully cover the surface are automatically selected. This approach allows
+for the segmentation of FOVs on irregular polygonal planes and facili-
+tates automatic and efficient operations.
+As shown in Fig. 9 , the 3D spatial coordinate system in which the
+GDT model resides is GCS, and the 2D planar coordinate system parallel
+to the surfaces of the GDT model is LCS. The rotation matrix R of each
+surface for transforming from GCS to LCS can be calculated using Eq. (4)
+[ 55 ]. Multiply the coordinates of the vertices of each model surface in
+the GCS by R , to transform them into the LCS.
+R =
+⎡
+⎣
+β x
+2
++ cos θ β xy   zsin θ β xz + ysin θ
+β xy + zsin θ β y
+2
++ cos θ β yz   xsin θ
+β xz   ysin θ β yz + xsin θ β z
+2
++ cos θ
+⎤
+⎦
+, β = 1   cos θ (4)
+where, cos θ and sin θ are the cosine and sine of the angle between the
+outer normal of the polygonal plane of the GDT model in GCS and the Z-
+axis, respectively; x , y and z are the values of the plane ’ s rotation axis
+vectors, respectively.
+Then, in the LCS, a grid with a width of D
+px
+and a height of D
+py
+is
+divided. The range of the grid is set according to the volume of the target
+structure and should be larger than the area of each surface of the GDT
+model. As described in Subsection 2.2.1 regarding the relationship be-
+tween waypoint spacing and FOV, the grid corners within the model
+surface can serve as FOV centroids. To ensure complete coverage of the
+model surface, the vertices of the model surface and additional densified
+points along the edges are also used as FOV centroids. The principle for
+densifying edge points is that if the intersection of the grid line and the
+edge is within D
+px
+/ 2 in the x- or y-direction from a grid corner, the
+intersection point should not be used as an FOV centroid; otherwise, it
+should be used as one. Additionally, redundancy can occur at the corners
+of the model surface if the same model surface vertex is used as an FOV
+centroid along with nearby grid corners or densified edge points also
+serving as FOV centroids. To address this, a redundancy distance d
+b
+is
+set. If the distance between two FOV centroids is less than d
+b
+, one of the
+FOV centroids is removed. The redundancy distance d
+b
+can be set be-
+tween
+1
+10
+∼
+1
+5
+min
+ 
+D
+px
+, D
+py
+)
+. This method of appropriate densification
+ensures complete coverage without dividing redundant FOVs. Finally,
+calculate the inverse matrix R
+  1
+of the rotation matrix R , and multiply
+the FOV centroids coordinates by R
+  1
+to restore the FOV centroids
+located in the LCS back to the GCS. This process achieves the division of
+FOV on each surface of the GDT model and obtains the FOV centroids.
+2.2.3. Generating inspection waypoints based on FOV centroid ’ s parallel
+shift
+The grid mapping method can determine the FOV centroids on the
+surfaces of the GDT model. Based on the proposed parallel shift algo-
+rithm (see Fig. 10 ), these centroids are shifted along the surfaces ’ outer
+normal vectors by d , thereby generating UAV inspection waypoints. The
+Fig. 15. Procedure of flight path optimization.
+Y. An et al. Automation in Construction 171 (2025) 105972 
+8 
+normal vectors for each surface of the GDT model can be calculated
+using Eq. (5) .
+n
+→
+= ( V
+i + 2
+  V
+i + 1
+) × ( V
+i + 1
+  V
+i
+) (5)
+where, n
+→
+is the normal vector of the polygonal plane of the GDT model;
+V
+i + 2
+, V
+i + 1
+and V
+i
+are any three non-collinear vertices on the polygonal
+plane.
+2.3. Inspection waypoints adjustment method based on VOI
+As mentioned in Section 1 , because the bulk-generated waypoints do
+not account for the impact of environmental obstacles, they may be in
+unsafe or inaccessible positions, potentially lead to collisions. As sum-
+marized in Section 1 , previous studies that generated waypoints based
+on design models often overlooked the impact of real environmental
+obstacles on UAV flight safety [ 5 , 22 – 24 ]; other studies represented
+environmental obstacles with rough bounding boxes [ 4 ], which can still
+miss some valuable accessible areas. On the other hand, 3D point clouds
+used in this study, as reconstructions of real scenes, can accurately de-
+pict the positions of environmental obstacles. Voxels, as subdivisions of
+3D space [ 56 ], can clearly express the geometric information of envi-
+ronmental obstacles. Therefore, after voxelizing the 3D point clouds
+used to establish the GDT model as mentioned in Subsection 2.1 , the VOI
+is obtained. A method for adjusting inspection waypoints utilizing more
+precise VOI to refine waypoints adjustment is then proposed.
+As shown in Fig. 11 , the process is as follows: firstly, based on the
+maximum and minimum values of points in the 3D point clouds along
+each coordinate axis, a cubic bounding box for the 3D point clouds is
+constructed, and all surfaces of the bounding box except the bottom are
+expanded outward by d
+w
+to create the working space of UAV, which
+contains the waypoints. As shown in Fig. 12 , the larger the expansion
+distance d
+w
+, the larger the working space of the UAV. With the same
+voxel size, more voxels are needed to fill the working space, and the
+computational cost for obtaining the VOI increases. Therefore, this
+paper considers an expansion distance d
+w
+slightly greater than the
+working distance d , which as mentioned in Subsection 2.2.1 , specifically
+d
+w
+= d + 2 m, to balance computational efficiency with sufficient
+adjustment space for the waypoints. Subsequently, the voxel size S is set,
+and the working space is voxelized. The choice of S affects both
+computational efficiency and VOI precision. For the inspection of
+structures with smaller volumes, it is advisable to choose a smaller S , but
+it should be kept within the range of 0.5 m to 1 m to ensure the precision
+of the VOI. Based on the 3D point clouds and the GDT model, all voxels
+within the working space are classified into three categories (details of
+the voxel classification are as shown in Fig. 13 ): the first category is the
+inaccessible voxels, which are considered unreachable for UAV if the
+voxel contains points from the 3D point clouds or if the center point of
+the voxel is inside the GDT model; the second category is the unsafe
+voxels, which is considered having potential dangerous posed for UAV
+Fig. 16. File compilation method for UAV inspection mission: (a) UAV ’ s camera orientation adjustment method, (b) Process of mission file compilation.
+Fig. 17. Field test structures and equipment: (a) Office building, (b) Steel truss bridge, (c) UAV and remote controller.
+Y. An et al. Automation in Construction 171 (2025) 105972 
+9 
+inspection if the distance between the voxel and inaccessible voxels is
+less than d . The third category is the safe voxels, which are considered
+safe for UAV if the center point of the voxel is outside the GDT model and
+the distance to inaccessible voxels exceeds d . The VOI is the result of
+voxel classification, which expresses the position and geometric shape of
+obstacles.
+Secondly, based on the VOI, risky waypoints located in inaccessible
+voxels or unsafe voxels can be identified. Subsequently, these risky
+waypoints are moved to the nearest safe voxel since each waypoint
+corresponds to a unique FOV centroid, even if multiple risky waypoints
+are adjusted to the same safe voxel, they still point towards their
+respective FOV centroids. Therefore, this adjustment does not create
+issues with image overlap. If multiple nearest safe voxels exist, the risky
+waypoints are prioritized to move along the outward normal direction.
+This adjustment strategy ensures that all waypoints are safe.
+Finally, since the positions of some waypoints have been adjusted,
+altering the status of the full cover waypoints generated in Section 2 , it is
+crucial to ensure that the waypoints, after being moved, can still fully
+cover the structural surfaces. Therefore, it is necessary to re-evaluate the
+image coverage to ensure that no inspection areas are missed. The
+process of calculating each camera ’ s FOV coverage structural surface
+area is shown in Fig. 14 . First, the GDT model surfaces are subdivided
+into dense discrete points using the grid mapping method proposed in
+Subsection 2.2.2 with parameters contain the horizontal and vertical
+spacing between dense points, D
+dx
+and D
+dy
+, should be 1 % D
+px
+and D
+py
+,
+respectively. This method not only ensures that dense discrete points
+accurately represent the coverage area of the FOV ensuring less than 1 %
+coverage error but also maintains computational efficiency. Subse-
+quently, the camera ’ s FOV for adjusted waypoints is re-calculated to
+check whether any discrete points are not covered by the camera ’ s FOV
+based on the adjusted waypoints, ensuring that the surface of the GDT
+model has been fully covered by the UAV camera. It should be noted that
+UAV camera typically have a small focal length, providing a wide field of
+view and deep depth of field, which generally prevents blurring of the
+structural surface images. The proposed waypoint adjustment method
+can compensate the adverse effects of position changes on resolution
+while ensuring safety. Additionally, adjusting the focal length can
+further mitigate this impact. Whether discrete points are covered is
+determined by the angle between the normal vector of the discrete
+points and the view line, as well as whether there are any obstructions
+along the view line reaching the point. Additionally, the discrete points
+are consistent with the structure ’ s surface. Therefore, it is appropriate to
+evaluate whether the adjusted waypoints fully cover the surface ’ s
+discrete points using the accurate normal vectors provided by the GDT
+model. If there are uncovered discrete points, cluster these points to
+identify the uncovered areas. For each uncovered area, extract the
+center of the area as an additional FOV centroid. Correspondingly, an
+additional waypoint needs to be added; this waypoint should in the safe
+area along the outward normal direction of the model surface. This
+process continues until the UAV camera ’ s FOV covers all discrete points.
+By adjusting the preliminary generated waypoints based on the
+proposed VOI method, comprehensive coverage inspection of the
+structure can be achieved, while ensuring the safety of the UAV during
+inspection.
+Fig. 18. Integration of GDT models with 3D point clouds and target inspection surfaces: (a) Office building, (b) Steel truss bridge.
+Table 1
+Time required to construct GDT models using Polyfit framework [ 49 ].
+Building Bridge
+Workflow Time(sec) Workflow Time(sec)
+RANSAC 1.4 RANSAC 0.16
+Face hypothesis 1.63 Face hypothesis 0.14
+Face confidences 17.77 Face confidences 2.4
+Face optimization 16.4 Face optimization 2.01
+Total: 37.2 Total: 4.71
+Table 2
+Comparison of GDT model with other models.
+GDT
+Model
+Scan to BIM Manually
+BIM
+Manually 3D
+model
+Pre-
+requisites
+Point
+clouds
+Point clouds
+Design
+drawings
+Point clouds
+Time
+10 – 40(sec)
+10 + hours [ 28 ]
+(including
+training)
+A few hours 5 – 35(min)
+Efficiency High Low Low Medium
+Modeling
+method
+Automatic Automatic Manual Manual
+Table 3
+Calculation results of inspection waypoint parameters.
+Objection W
+sens
+(mm)
+H
+sens
+(mm)
+d
+(m)
+f
+(mm)
+W
+FOV
+(m)
+H
+FOV
+(m)
+Building 17.3 13.0 5 12.29 7.04 5.28
+Bridge 17.3 13.0 9 12.29 12.67 9.52
+Objection
+C
+x
+(m)
+C
+y
+(m)
+D
+px
+(m)
+D
+py
+(m)
+Image size
+(px)
+Resolution
+(mm/px)
+Building 0.7 0.5 6.34 4.78 5280 × 3956 1.33
+Bridge 1.2 0.9 11.47 8.62 5280 × 3956 2.40
+Table 4
+Statistics of number of inspection waypoints.
+Building Bridge
+Generated inspection waypoints 98 39
+Adjusted inspection
+waypoints
+unmoved 43 17
+moved 55 22
+added 1 0
+Transitional waypoints 63 53
+Repeat waypoints 11 0
+Total number of waypoints
+98 + 1 – 11 + 63 =
+151
+39 + 0 – 0 + 53 =
+92
+Total number of inspection images 98 + 1 = 99 39 + 0 = 39
+Y. An et al. Automation in Construction 171 (2025) 105972 
+10 
+2.4. Flight path optimization method combining GA with A* based on VOI
+The flight path is defined as a route that sequentially connects all
+generated inspection waypoints. Due to the unordered nature of the
+waypoints generated during the preceding processes, employing the
+initial sequence to establish the flight path could result in collision risks
+and significantly elevated energy consumption during the inspection
+process. Consequently, optimizing the sequence of waypoint
+connectivity to minimize the total travel distance and adding appro-
+priate transitional waypoints to alter the unsafe or inaccessible flight
+path between two waypoints becomes imperative. As mentioned in the
+Section 1 , previous studies have not sufficiently considered the issue that
+flight paths should maintain a safe distance from environmental obsta-
+cles, and reduce the costs associated with UAV turns due to obstacle
+avoidance. Therefore, a heuristic path optimization method combining
+GA with A* based on VOI is proposed, which constrained by the VOI,
+flight direction and turns costs.
+As shown in Fig. 15 , the process is as follows: initially, based on the
+GDT model, it is easy to determine whether a line connecting two
+waypoints passes through the target structure. Therefore, using a GA
+constrained by this condition can optimize the shortest flight path that
+passes through all waypoints without crossing the target structure. Many
+current path planning studies use GA [ 5 , 22 , 23 ], where GA treats flight
+paths formed by different connection orders of waypoints as individuals
+in nature. By crossing and mutating operations, GA changes the
+connection order of the parent individual to generate new offspring with
+different connection orders. The offspring with higher fitness are
+selected to repeatedly generate new individuals. In this problem, fitness
+refers to the distance of the current flight path, where a shorter flight
+path distance corresponds to higher fitness of the individual. The
+shortest flight path optimization problem constrained by flight direction
+costs can be represented by the objective function Eq. (6) . When opti-
+mizing this problem using GA, the objective function is negatively
+correlated with fitness, where GA generates the individual with the
+highest fitness by adjusting the waypoint arrangement order to
+Fig. 19. Preliminarily generated inspection waypoints: (a) Waypoints of building, (b) Waypoints of bridge.
+Table 5
+Verification of consistency in waypoints generation and parameter settings.
+Objection Waypoints coordinates Result distance between
+waypoints
+Setting
+distance
+Building
+P
+b1
+(15.888, 6.494,
+53.915)
+1 – 2: 6.34 m 6.34 m
+P
+b2
+(22.227, 6.582,
+53.915)
+3 – 4: 6.34 m 6.34 m
+P
+b3
+(22.227, 6.630,
+49.136)
+1 – 4: 4.78 m 4.78 m
+P
+b4
+(15.887, 6.542,
+49.136)
+2 – 3: 4.78 m 4.78 m
+Bridge
+P
+d1
+(   1.941, 22.783,
+38.001)
+1 – 2: 11.47 m 11.47 m
+P
+d2
+(   5.467, 11.868,
+38.001)
+2 – 3: 11.47 m 11.47 m
+P
+d3
+(   8.993, 0.954,
+38.001)
+1 – 3: 22.94 m 22.94 m
+Fig. 20. Division of areas in UAV workspace by voxelization.
+Y. An et al. Automation in Construction 171 (2025) 105972 
+11 
+minimize f ( P ) .
+f ( P ) =
+∑
+n   1
+i = 0
+λ
+i
+[
+ 
+p
+i + 1 , 1
+  p
+i , 1
+)
+2
++
+ 
+p
+i + 1 , 2
+  p
+i , 2
+)
+2
++ α
+ 
+p
+i + 1 , 3
+  p
+i , 3
+)
+2
+]
+(6)
+where, P is the flight path that passes through all waypoints, n is the
+number of waypoints, p
+i , 1
+, p
+i , 2
+and p
+i , 3
+are the first, second, and third
+components i -th waypoints in the flight path P , respectively, p
+i + 1 , 1
+, p
+i + 1 , 2
+and p
+i + 1 , 3
+are the first, second, and third components i + 1-th waypoints
+in the flight path P , respectively, λ
+i
+represents the distance weighting
+coefficient calculated through Eq. (7) and α represents the flight direc-
+tion energy consumption ratio coefficient calculated through Eq. (8) .
+λ
+i
+=
+{
+1 × 10
+5
+if p
+s , i
+∈ l ( p ) and p
+s , i
+∈ R ( P )
+1 if p
+s , i
+∕∈ l ( p ) or p
+s , i
+∕∈ R ( P )
+(7)
+where, p
+s , i
+is the intersection point of the line connecting waypoint p
+i
+and waypoint p
+i + 1
+with the plane of the GDT model surface, l ( p ) repre-
+sents the set of points within line segment between p
+i
+and p
+i + 1
+, and R ( P )
+represents the set of points within the polygonal regions of the GDT
+model surface.
+In Eq. (7) , p
+s , i
+∕∈ l ( p ) means that although the line passing through the
+two waypoints intersects with the plane of the GDT model surface, the
+intersection point is not located between the two waypoints, and
+therefore, the surface does not create an obstruction. The other condi-
+tion, p
+s , i
+∕∈ R ( P ) , indicates that an intersection point exists, but it lies
+outside the boundary of the GDT model surface, so it does not create an
+obstruction either.
+α =
+{
+W
+2
+/
+W
+1
+if p
+i + 1 , 3
+  p
+i , 3
+> 0
+W
+3
+/
+W
+1
+if p
+i + 1 , 3
+  p
+i , 3
+< 0
+(8)
+where, W
+1
+represents the motor power of the UAV during level flight at
+the set flight speed in calm wind environment, W
+2
+and W
+3
+represent the
+motor power during upward and downward flight under the same
+conditions, respectively.
+Subsequently, as described by Tan et al. [ 23 ], the flight paths opti-
+mized by the GA connect waypoints with straight lines, thus unable to
+navigate around obstacles. After obtaining the shortest flight path that
+connects all waypoints and does not cross the GDT model using GA, the
+proposed VOI-based flight path safety assessment method is used to
+check if each segment of the flight path is safe. For unsafe or inaccessible
+segments, the A* algorithm is employed to find transitional waypoints to
+alter the original straight-line connections, ensuring the flight path
+avoids and maintains a safe distance from environmental obstacles. The
+VOI-based flight path safety assessment method involves discretizing the
+flight path between two waypoints by a distance d
+s
+, where the choice of
+d
+s
+affects the computational speed and accuracy of the safety assess-
+ment. This paper considers a reasonable value for d
+s
+to be 0.2 S , where S
+is the voxel size in VOI (as mentioned in Subsection 2.3 ). If all discrete
+points lie within safe voxels, the flight path segment between two
+waypoints is deemed safe; otherwise, the A* algorithm is required to find
+a safe path to alternate origin segment for the two waypoints
+Fig. 21. Adjusted inspection waypoints: (a) Adjusted and added inspection waypoints for building, (b) Adjusted and added inspection waypoints for bridge.
+Fig. 22. Flight paths for executing UAV inspection mission: (a) Flight path for building, (b) Flight path for bridge.
+Y. An et al. Automation in Construction 171 (2025) 105972 
+12 
+connecting. Considering that the UAV needs to decelerate when
+approaching waypoints to prepare for the next action, either moving to
+the next waypoint or capturing images, and needs to accelerate when
+heading to the next waypoint to reach the set flight speed, using nodes
+found by the A* algorithm as transitional waypoints could lead to
+frequent acceleration and deceleration, thus consuming more energy.
+Nodes located on the same straight line may not be entered as transi-
+tional waypoints, thereby reducing the number of direction changes in
+the path found by the A* algorithm and minimizing the number of
+transitional waypoints, making the UAV operation smoother and more
+energy-efficient. Therefore, based on Tan et al. [ 23 ], the objective
+function for the A* algorithm, considering turning penalty and based on
+VOI, is described in Eqs. (9) – (13) .
+f ( n
+i
+) = γ
+i
+( n
+i
+) + g ( n
+i
+) + h ( n
+i
+) (9)
+where, f ( n
+i
+) represents the total cost of the current node n
+i
+, γ
+i
+( n
+i
+) rep-
+resents the safety cost of the current node n
+i
+, determined by Eq. (10) ;
+g ( n
+i
+) represents the cost from the starting waypoint to the current node
+n
+i
+, calculated by Eq. (11) and Eq. (12) ; h ( n
+i
+) represents the distance cost
+from the current node n
+i
+to the end waypoint, calculated by Eq. (13) .
+Fig. 23. Flight path generated by flight mission file and actual flight path of UAV: (a) Flight paths for bridge inspection, (b) Flight paths for building inspection.
+Fig. 24. Inspection images acquirement: (a) Expected inspection images from planned waypoints, (b) Screenshots of remote controller during mission execution, (c)
+Inspection images captured during mission.
+Y. An et al. Automation in Construction 171 (2025) 105972 
+13 
+γ
+i
+( n
+i
+) =
+{
+1 × 10
+5
+if n
+i
+∕∈ S ( P )
+0 if n
+i
+∈ S ( P )
+(10)
+where, n
+i
+represents the current node; S ( P ) represents the set of center
+points of safe voxels in the VOI.
+g ( n
+i
+) = g ( n
+i   1
+) + ( 1 + δ
+i
+) S (11)
+where, g ( n
+i   1
+) represents the cost from the starting waypoint to the
+previous node n
+i   1
+; S is the size of the voxels in VOI, and since the nodes
+are the center points of voxels, the distance between nodes is equal to the
+size of the voxels; δ
+i
+represents the path turning penalty coefficient,
+calculated by Eq. (12) .
+δ
+i
+=
+{
+1 if ( n
+i   2
+  n
+i   1
+) • ( n
+i   1
+  n
+i
+) = 0
+0 if ( n
+i   2
+  n
+i   1
+) • ( n
+i   1
+  n
+i
+) = 1
+(12)
+where, n
+i   1
+represents the coordinates of the node preceding n
+i
+; n
+i   2
+represents the coordinates of the node preceding n
+i   1
+.
+h ( n
+i
+) = | x
+e
+  x
+i
+| + | y
+e
+  y
+i
+| + | z
+e
+  z
+i
+| (13)
+where,
+ 
+x
+e
+, y
+e
+, z
+e
+)
+represents the coordinates of the end waypoint;
+ 
+x
+i
+, y
+i
+, z
+i
+)
+represents the coordinates of the current node.
+2.5. File compilation method for UAV inspection mission
+The waypoints and flight path generated through the above methods
+enable the UAV to reach each inspection waypoint along the flight path.
+However, it is necessary to control the UAV ’ s camera gimbal to face the
+target structure to capture the correct inspection images. As shown in
+Fig. 16 (a), the control process is divided into rotate and pitch adjust-
+ments. The angle between the target vector T
+→
+and the initial vector V
+→
+can be decomposed into a rotation angle and a pitch angle, which are
+achieved by the differential rotational speed of the UAV ’ s diagonal
+propellers and the adjustment of the camera gimbal, respectively. If the
+UAV is not directly above the FOV centroid, the vector between them
+can be used as T
+→
+to calculate the rotation angle and pitch angle.
+Otherwise, the vector between the UAV and the FOV centroid is
+orthogonal to the XOY plane, making it impossible to decompose the
+angle. In this case, the vector of the longest vertical edge on the top
+surface is used as T
+→
+to calculate rotation angle, ensuring that the width
+of images captured by the UAV are parallel to the longest edge on the top
+surface, facilitating better inspection results. The default camera direc-
+tion vector of the DJI UAV points north, and the default pitch angle of
+the gimbal is 0 degrees, therefore the initial vector in GCS is (0,1,0). The
+rotation angle and pitch angle can be calculated by Eqs. (14) – (16) .
+T
+→
+=
+⎧
+⎪
+⎪
+⎪
+⎨
+⎪
+⎪
+⎪
+⎩
+P
+FOV
+  P
+I
+if arccos
+⃒
+⃒
+⃒
+⃒
+( P
+FOV
+  P
+I
+) • ( 0 , 0 , 1 )
+‖( P
+FOV
+  P
+I
+)‖
+2
+⃒
+⃒
+⃒
+⃒
+∕= 0
+n
+→
+× l
+→
+max
+if arccos
+⃒
+⃒
+⃒
+⃒
+( P
+FOV
+  P
+I
+) • ( 0 , 0 , 1 )
+‖( P
+FOV
+  P
+I
+)‖
+2
+⃒
+⃒
+⃒
+⃒
+= 0
+(14)
+where, T
+→
+represents the target vector for acquire correct inspection
+images; P
+FOV
+represents the coordinates of the FOV centroids in GCS; P
+I
+represents the coordinates of the Inspection waypoints in GCS; n
+→
+is the
+normal vector of the polygonal plane of the GDT model; l
+→
+max
+is the
+vector of the longest edge on the surface of the GDT model.
+∠ R =
+T
+→
+1
+⃒
+⃒
+⃒ T
+→
+1
+⃒
+⃒
+⃒
+× arccos
+(
+T
+→
+1
+, T
+→
+2
+)
+• ( 0 , 1 )
+⃦
+⃦
+⃦
+⃦
+(
+T
+→
+1
+, T
+→
+2
+) ⃦
+⃦
+⃦
+⃦
+2
+(15)
+where, ∠ R represents the rotation angle needs to be adjusted, if T
+→
+1
+> 0,
+T
+→
+1
+⃒
+⃒
+⃒ T
+→
+1
+⃒
+⃒
+⃒
+= 1, the angle value is positive, it indicates a clockwise rotation
+from the initial direction, if T
+→
+1
+< 0,
+T
+→
+1
+⃒
+⃒
+⃒ T
+→
+1
+⃒
+⃒
+⃒
+=   1, it is negative, it in-
+dicates a counterclockwise rotation from the initial direction, if T
+→
+1
+= 0,
+∠ R = 0; T
+→
+1
+and T
+→
+2
+are the first and second components of vector T
+→
+(respectively)
+∠ P =
+⎧
+⎪
+⎪
+⎪
+⎪
+⎪
+⎪
+⎪
+⎨
+⎪
+⎪
+⎪
+⎪
+⎪
+⎪
+⎪
+⎩
+arctan
+T
+→
+3
+⃦
+⃦
+⃦
+⃦
+(
+T
+→
+1
+, T
+→
+2
+) ⃦
+⃦
+⃦
+⃦
+2
+if arccos
+⃒
+⃒
+⃒
+⃒
+( P
+FOV
+  P
+I
+) • ( 0 , 0 , 1 )
+‖( P
+FOV
+  P
+I
+)‖
+2
+⃒
+⃒
+⃒
+⃒
+∕= 0
+( P
+FOV
+  P
+I
+) • ( 0 , 0 , 1 )
+|( P
+FOV
+  P
+I
+) • ( 0 , 0 , 1 ) |
+×
+π
+2
+if arccos
+⃒
+⃒
+⃒
+⃒
+( P
+FOV
+  P
+I
+) • ( 0 , 0 , 1 )
+‖( P
+FOV
+  P
+I
+)‖
+2
+⃒
+⃒
+⃒
+⃒
+= 0
+(16)
+where, ∠ P represents the pitch angle needs to be adjusted, T
+→
+3
+is the
+third component of vector T
+→
+.
+Based on the above analysis, the following information can be
+compiled into a UAV flight mission file [see Fig. 16 (b)]: the geographic
+coordinates of the inspection waypoints. As mentioned in Subsection
+2.4 , the A* algorithm generates transitional waypoints to navigate the
+flight path around obstacles. Transitional waypoints will not capture
+images and will be directly compiled into the flight mission file with
+their coordinates, whereas inspection waypoints that require image
+capture will need more detailed preparation. This includes calculating
+the rotation and pitch angle information based on the vector from the
+inspection waypoints to the corresponding FOV centroids relative to the
+initial vector, as well as the camera action information for hovering and
+adjusting the focus to capture images after the UAV is oriented towards
+Table 7
+Camera orientation adjustment parameters during bridge inspection.
+NO. Inspection waypoints in GCS FOV centroids in GCS Waypoints in WGS-84
+X Y Z X Y Z Lat Long
+1 27.28 22.61 84.87 14.62 26.70 85.34 22.80325 108.29015
+2 27.29 22.70 91.67 – – – 22.80325 108.29016
+… … … … … … … … …
+92   14.35   15.22 92.00   5.78   17.99 92.21 22.80291 108.28975
+NO.
+Target vector T
+→
+Initial vector V
+→
+T
+→
+1
+Rotation angle Pitch angle Speed
+1 (   12.66, 4.09, 0.47) (0, 1, 0)   12.66   72.11
+◦
+2.04
+◦
+3 m/s
+2 – – – – – 3 m/s
+… … … … … …
+92 (8.56,   2.77, 0.21) (0, 1, 0) 8.56 107.90
+◦
+1.36
+◦
+3 m/s
+Y. An et al. Automation in Construction 171 (2025) 105972 
+14 
+the target. Once the file is compiled, it can be output in a standard
+format and imported into flight control software to enable the UAV to
+automatically execute the inspection mission.
+3. Field experimental validation
+To verify the effectiveness of the proposed automatic planning
+method for UAV inspection missions, it was applied to some represen-
+tative real-life structures, i.e., an 8-storeyed office building [Fig. 17(a)]
+and a 56 m-span steel truss bridge [Fig. 17(b)]. The UAV used to collect
+multi-view images of the structures and execute the inspection missions
+was a DJI Mavic3 Enterprise model, which has a maximum battery life of
+46 min. It is equipped with an RTK module that enhances the positioning
+capability of the UAV, and features a wide-angle camera sensor size of 4/
+3 with 20 million effective pixels. The computer used for modeling and
+running the algorithms was equipped with an Intel Core i7–10,700 CPU,
+an Nvidia RTX 3080 12G GPU, and 32GB of RAM.
+3.1. 3D point clouds reconstruction
+The selected structures are reconstructed into 3D point clouds using
+the multi-view 3D reconstruction method, with iTwin Capture utilized
+for this 3D reconstruction. To simplify the GDT model construction and
+omit some unnecessary details, a subset of multi-view images is used to
+reconstruct a rough 3D point cloud (as shown in Fig. 18). In contrast, the
+complete set of multi-view images is employed to generate a refined 3D
+point cloud (as shown in Fig. 20) for accurate VOI generation. To ensure
+the correct display of the 3D point clouds, the GCS is chosen for
+exporting the reconstructed 3D point clouds. Subsequently, the gener-
+ated inspection waypoints need to be imported into the flight control
+system using the WGS-84 coordinate system. The conversion between
+these two coordinate systems is facilitated by a MATLAB program
+developed specially for this purpose. The reconstruction results for the
+building and bridge 3D point clouds are shown in Fig. 6.
+3.2. Inspection flight paths planning
+The output 3D point clouds from 3D reconstruction are input into the
+Polyfit framework [49] for GDT model construction. As shown in
+Fig. 18, the models closely align with the 3D point clouds, accurately
+representing the structural geometric attributes. Some representative
+structural surfaces will be selected as targets for automatic inspection.
+According to Eq. (1), the RMSEs between the 3D point clouds and the
+GDT models of the building and bridge are calculated to be 0.29 m and
+0.18 m, respectively. The volumes of the building and bridge are
+approximately 23,972 m
+3
+and 2540 m
+3
+, respectively. As mentioned in
+Subsection 2.1, the calculated RMSE values normalized by L are 0.010 L
+and 0.013 L, respectively. Considering both the RMSE results and the
+alignment shown in Fig. 18, the GDT models accurately represent the
+structures.
+The time required to input 3D point clouds into the Polyfit frame-
+work [49] for constructing GDT models is shown in Table 1. A com-
+parison of the GDT models with other models is presented in Table 2. For
+both the building and the bridge, automatic modeling takes less than one
+minute, significantly enhances modeling efficiency compared to other
+methods. Moreover, except for inputting the RANSAC parameters, the
+modeling process is algorithmically handled without the need for
+manual intervention.
+Subsequently, the waypoint parameters are calculated, with results
+presented in Table 3. The working distance d is determined based on the
+analysis in Subsection 2.2. As demonstrative applications, the inspection
+images will be used to inspect cracks on the exterior walls for the
+building, and considering the complex surrounding environment, d is set
+to 5 m. For the bridge, the inspection images will be used to check for
+extensive corrosion, and given its more open surrounding environment,
+d is set to 9 m. To compensate the adverse impact of UAV positioning
+errors on inspection image coverage, the image overlap distance is set to
+10 % of the waypoint spacing and rounded down. After calculating the
+waypoint parameters, inspection waypoints are generated using the
+method introduced in Subsection 2.2, with the results shown in Fig. 19
+and their number listed in Table 4. The grid mapping algorithm and
+parallel shift algorithm were written in Python 3.10 and executed using
+PyCharm. The effectiveness of the generated inspection waypoints was
+validated by comparing the coordinates of the partial generated way-
+points (as shown in Fig. 19) with the waypoint parameters, the valida-
+tion results are presented in Table 5.
+After generating the inspection waypoints using the method
+described in Subsection 2.3, the bounding box of the 3D point cloud is
+expanded to define the working space of the UAV, with expansion dis-
+tances d
+w
+of 7 m for the building and 11 m for the bridge. The voxel size
+S set to 1 m. Subsequently, based on the 3D point clouds and the GDT
+model, the VOI is obtained, and the area of the working space is divided
+into inaccessible, unsafe, and safe areas (as illustrated in the cross-
+sectional view in Fig. 20). Based on the VOI, the inspection waypoints
+are adjusted, as shown in Fig. 21 and their number listed in Table 4, the
+proportion of unsafe waypoints are 56.1 % and 56.4 %, respectively.
+Subsequently, the coverage of the GDT model surface by the adjusted
+inspection waypoints is re-evaluated using the method in Subsection
+2.3. Corresponding to waypoint generation, UAV positioning errors also
+need to be considered during the re-evaluation process, with the FOV
+coverage area reduced by a ratio defined as the proportion of the C
+x
+and
+C
+y
+to D
+px
+and D
+py
+, respectively. Upon re-evaluation, it was found that for
+the building, the adjusted inspection waypoints did not fully cover the
+GDT model surface. The uncovered areas are shown as yellow regions in
+Fig. 21(a). To achieve full coverage, additional inspection waypoints
+were added for these uncovered areas. Notably, the Repeat waypoints in
+Table 4 refer to situations where multiple inspection waypoints are
+moved to the same safe voxel. In such cases, these waypoints count as a
+single inspection waypoint. When the UAV reaches this waypoint, it will
+adjust to multiple angles to capture several inspection images.
+After obtaining all waypoints, optimize the flight path using the
+Flight path optimization method combining GA with A* based on VOI
+proposed in Subsection 2.4. First, GA constrained by the GDT model and
+flight direction energy consumption is used to optimize the shortest
+flight path [As shown in Fig. 22(a)]. Based on the motor power con-
+sumption during flights in different directions in a windless environ-
+ment, the energy consumption ratios α for upward and downward flights
+are found to be 1.05 and 0.95, respectively. At this point, the path
+cannot avoid environmental obstacles. To address this, the A* algorithm
+based on VOI is used to perform a secondary optimization of the flight
+path. In calculating the cost, turning penalty δ
+i
+is set to 2. Add as few
+transitional waypoints as possible to unsafe or inaccessible segments to
+avoid obstacles and ensure the safety of the flight path while minimizing
+the additional energy consumption caused by obstacle avoidance [As
+shown in Fig. 22(b)]. The

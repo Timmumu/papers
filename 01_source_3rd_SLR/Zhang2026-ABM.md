@@ -21,4 +21,17 @@ The aerial building machine (ABM) provides an integrated solution for high-rise 
 | Yes | Yes | Yes | Tier 3 - Digital Twin (bidirectional, two-way) | 0 | 1 | 0 | Design for Safety (DfS) | Implemented | Reinforcement Learning (RL) | Multi (two or more data types) | Simulation | 4 | Design for Safety |
 
 **Key evidence (AG):** DT-enabled synchronous jacking control of an aerial building machine (ABM) using a scale model (HUST): scale experimental platform; deep neural network (DNN-PID) for dynamic error compensation; reinforcement learning tunes control parameters; transfer learning migrates DNN-PID controller to scale model; DT system for visual presentation of jacking data and equipment states during synchronous control; jacking tests show 0.407 mm synchronization error (max <0.46 mm across 10 conditions), 29% max error reduction with fewer iterations; DNN-PID reduces MSE by 5.87 mm vs traditional PID. Bidirectional closed-loop (monitoring->control) -> Tier 3; implemented RL tuning + transfer learning (implemented learning mechanism, no convergence proof).
+
+
+**Strength & gap filled (AH):** Fills the gap of closed-loop digital twin control for aerial building machine jacking, validated on a 1:25 scale model of a 380-meter Wuhan project: PPO reinforcement learning tunes PID parameters and a transfer-learned DNN-PID controller with deviation coupling runs on an STM32 platform, reducing mean synchronization error to 0.377 mm versus 3.485, 0.463 and 0.709 mm for competing methods, staying below 0.46 mm across ten loading conditions with a 29 percent gain from transfer learning.
+
+**Deficiencies & future work (AI):** Validated only on a scale model with four electric actuators instead of the real 12-cylinder hydraulic system; preset loading means failure boundaries, wind, actuator saturation, sensor drift and communication latency were not explored, and the twin has a 1-1.5 second delay. Future work targets stress-strain sensors, finite element safety assessment, real ABM operational data and physics-informed neural networks.
+**Fusion depth (AC1):** Fused
+
+**Fusion evidence (AC2):**
+- **Data streams:** 1:25 scale-model jacking sensors + DNN-PID controller state + PPO-tuned parameters (STM32 platform).
+- **Integration mechanism:** the transfer-learned DNN-PID fuses deviation coupling with sensor feedback to command four actuators, cutting mean synchronisation error to 0.377 mm versus 3.485/0.463/0.709 mm, with a 29% transfer-learning gain.
+- **Why this code:** the control output depends on multiple streams simultaneously in a closed loop, so Fused.
+
+**Confidence (AC3):** High - the control architecture is explicit; validation is scale-model only.
 (full-text source: Endnote)

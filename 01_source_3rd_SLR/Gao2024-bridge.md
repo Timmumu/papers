@@ -21,4 +21,17 @@ As an emerging technology, digital twin (DT) is increasingly valued in bridge ma
 | Yes | Yes | Yes | Tier 2 - Digital Shadow (one-way physical to virtual) | 0 | 0 | 1 | Design for Safety (DfS) | None | Digital Twin platform (no machine learning) | Multi (two or more data types) | Single case study | 4 | Lifecycle / governance |
 
 **Key evidence (AG):** Integrated bridge DT system (Cardiff U): combines WebGIS (Cesium), WebBIM (Xeokit), and graph algorithms (Neo4j) in a three-layer architecture with a common data environment (CDE); enables real-time monitoring, drone-enabled inspection, maintenance planning, traffic diversion, and logistics optimization; adaptive data structure with JSON-based bridge defect information modeling and triple-based roadmap graphs; SHM system flags structural issues and triggers alerts/traffic redirection; defects from drone inspection inform maintenance planning. One-way monitoring→analysis→decision support; no actuation and no learning loop.
+
+
+**Strength & gap filled (AH):** Integrates WebGIS (Cesium), WebBIM (Xeokit) and graph algorithms (Neo4j) in a three-layer bridge DT with a common data environment, JSON-based defect modeling and triple-based roadmap graphs, enabling real-time monitoring, drone inspection, traffic diversion and maintenance planning; validated on the River Neath Swing Bridge with regional operation and individual maintenance case studies.
+
+**Deficiencies & future work (AI):** Defect information modeling relies on custom JSON files that lack extensibility, and the multi-module stack risks cross-platform compatibility issues as functionality grows. Future work targets redefining defect and damage data in IFC format, improving cross-platform interoperability and scalability for more advanced bridge DT applications.
+**Fusion depth (AC1):** Aligned
+
+**Fusion evidence (AC2):**
+- **Data streams:** GIS layers, BIM model, SHM sensor alerts, drone-inspection defects (JSON defect model), triple-based roadmap graphs.
+- **Integration mechanism:** the CDE plus WebGIS/WebBIM integration provides the shared geospatial/model frame; SHM alerts trigger traffic redirection and defects inform maintenance planning as separate services.
+- **Why this code:** sources share a common frame while services analyse per data type, so Aligned.
+
+**Confidence (AC3):** High.
 (full-text source: Endnote)

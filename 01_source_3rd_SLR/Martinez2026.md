@@ -21,4 +21,17 @@ PurposeThis study explores the integration of monitored data from Tunnel Boring 
 | Yes | Yes | Yes | Tier 2 - Digital Shadow (one-way physical to virtual) | 0 | 1 | 0 | Design for Quality (DfQ) | None | Digital Twin platform (no machine learning) | Multi (two or more data types) | Single case study | 4 | Lifecycle / governance |
 
 **Key evidence (AG):** Integration of BIM and digital twin in mechanized tunnelling construction (Implenia/NYU/Technion): design-science case study of a TBM tunnelling project; computational design algorithm automates TBM excavation-data integration into a Digital Twin Construction (DTC) system; DT generates real-time status of the tunnel physical state in short cycles; 90% reduction in DT modelling time; supports lean design/construction (bracketry design, reducing rework/uncertainty); challenges: data interoperability, standardized modelling. One-way data->DT->decision support for lean workflows; no actuation, no learning loop.
+
+
+**Strength & gap filled (AH):** Integrates TBM excavation data into a BIM as-built model through a Dynamo computational design algorithm on a 2.4 km French tunnelling project, automatically placing segments from corrected TPC and VMT positioning, embedding segment manufacturing traceability and no-drill zones, and cutting ring modelling time from 15 to 20 minutes to 1 minute, a cycle time reduction above 90 percent supporting bracketry design and clash detection.
+
+**Deficiencies & future work (AI):** A single case study limits generalizability; parametric objects are tailored to project-specific proprietary systems, manual steps remain due to imperfect data interoperability and missing tunnel IFC standards, and no benchmark control project allows quantifying operational savings. Future research will evaluate adaptability across projects, scalability, and standardized IFC integration.
+**Fusion depth (AC1):** Aligned
+
+**Fusion evidence (AC2):**
+- **Data streams:** TPC/VMT TBM positioning, segment manufacturing traceability and no-drill-zone data (2.4 km French tunnelling project).
+- **Integration mechanism:** the computational design algorithm places segments automatically into the BIM as-built model (ring modelling 15-20 min down to 1 min), linking each data stream to model elements; lean analyses run on the model.
+- **Why this code:** streams share the BIM element frame with per-stream processing, so Aligned.
+
+**Confidence (AC3):** Medium - the automatic placement is explicit; joint inference beyond model assembly is not described.
 (full-text source: Endnote)

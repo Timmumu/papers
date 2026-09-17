@@ -1,0 +1,1152 @@
+ 
+Contents lists available at ScienceDirect
+Computers in Industry
+journal homepage: www.sciencedirect.com/journal/computers-in-industry 
+Digital twin-driven pose estimation and trajectory prediction for modular 
+integrated construction on-site stacking via spatio-temporal feature fusion 
+modelingI
+Yujie Han a,b, Kexin Sun a,b, Zhiheng Zhao a,b
+ ,∗, Yantao Yu c, George Q. Huang a,b
+a Department of Industrial and Systems Engineering, The Hong Kong Polytechnic University, Hong Kong, China
+b Research Institute for Advanced Manufacturing, The Hong Kong Polytechnic University, Hong Kong, China
+c Department of Civil and Environmental Engineering, The Hong Kong University of Science and Technology, Hong Kong, China
+A R T I C L E I N F O
+Keywords:
+Modular integrated construction (MiC)
+Digital twin (DT)
+Pose estimation
+Trajectory prediction
+Spatio-temporal feature fusion
+ A B S T R A C T
+High stacking precision is essential to prevent structural collisions, reduce safety accidents, and enhance 
+project efficiency in modular integrated construction. However, current stacking precision is constrained 
+by delayed hoisting control, limited perception, and fragmented information sharing. Therefore, this paper 
+proposes a digital twin-driven pose estimation and trajectory prediction system via spatio-temporal feature 
+fusion modeling, leveraging real-time information from high-fidelity digital twins. First, physical entities 
+are transformed into smart stacking objects that combine static inherent properties with real-time dynamic 
+activities captured by Ultra-Wideband sensors and Inertial Measurement Units. Then, a digital twin of stacking 
+operations is used to interact with their physical counterparts in real time, enabling seamless mapping 
+and visualization of the stacking process. Third, the PosTraFormer network is proposed for 6-dimensional 
+module pose estimation and trajectory prediction based on spatio-temporal fusion modeling of trajectory point 
+relations, to provide stacking guidance and improve installation precision. Both visualization and quantitative 
+analysis from comparative experiments and case studies demonstrate the significant advantages of the proposed 
+approach.
+1. Introduction
+As a disruptive innovation, Modular Integrated Construction (MiC) 
+is increasingly replacing traditional methods, offering benefits such 
+as improved quality, simplified management, and shorter project du-
+rations (Pan and Hon, 2020; Zheng et al., 2020). During the MiC 
+construction process, efficient module stacking is critical for timely 
+assembly, high construction quality, and safety (Shan et al., 2019; Zhai 
+et al., 2019). In practice, module stacking still depends on manual ob-
+servation and the expertise of crane operators (Zhu et al., 2022), which 
+gives rise to several critical challenges. First, crane operators often 
+exercise delayed control due to insufficient real-time information for 
+accurate perception of module status, thereby increasing the likelihood 
+of safety incidents, stacking errors, and module collisions (Kim and Chi, 
+2021). Second, the lack of timely and integrated information sharing 
+among stakeholders causes delays and fragmentation, which hinder 
+coordination and perception across the project team (Zhao et al., 2022). 
+I The authors would like to express their sincere thanks to the financial support from the National Natural Science Foundation of China (No. 52305557), Hong 
+Kong Research Grants Council (No. 15203025, T32-707/22-N, C7076-22GF, C6044-23GF, R7036-22), Guangdong Basic and Applied Basic Research Foundation 
+(No. 2024A1515011930), Research Institute for Advanced Manufacturing (RIAM) of The Hong Kong Polytechnic University (No. CDLU, CDLM, CDJX).
+∗ Corresponding author at: Department of Industrial and Systems Engineering, The Hong Kong Polytechnic University, Hong Kong, China.
+E-mail addresses: yujiejenny.han@connect.polyu.hk (Y. Han), zhiheng.zhao@polyu.edu.hk (Z. Zhao).
+These limitations further result in module accumulation in buffer zones, 
+thereby disrupting upstream production and timely delivery (Yue Zhai 
+and Huang, 2017; Zhong et al., 2017). Thus, these challenges raise 
+higher requirements to facilitate module stacking precision, including 
+but not limited to: (1) comprehensive module stacking perception to 
+replace workers’ observation; (2) efficient information transmission 
+and sharing among stakeholders to avoid information silos; (3) pre-
+dictive stacking guidance to refrain from delayed control of crane 
+operators (Yue Zhai and Huang, 2017; Salama et al., 2017).
+Collectively, these requirements highlight a central need: enabling 
+stakeholders to both perceive ongoing conditions and anticipate forth-
+coming events. Therefore, global perceptual monitoring supported by 
+real-time simulation of the stacking process and trajectory prediction 
+is required. Precise simulation of the module stacking process demands 
+real-time data collection and processing, highly accurate dynamic mod-
+eling, and extensive information sharing and collaboration. Traditional 
+https://doi.org/10.1016/j.compind.2026.104501
+Received 10 September 2024; Received in revised form 30 September 2025; Accepted 20 May 2026
+Computers in Industry 180 (2026) 104501 
+Available online 9 June 2026 
+0166-3615/© 2026 Elsevier B.V. All rights are reserved, including those for text and data mining, AI training, and similar technologies. 
+Y. Han et al.
+simulation techniques often fail to dynamically adapt to changes in 
+the physical environment and lack the required level of interconnec-
+tivity and coordination for complex tasks such as module stacking. In 
+contrast, Digital Twin (DT) technology provides a robust solution by 
+replicating physical processes in a virtual environment and integrating 
+sensors for real-time monitoring and prediction (Zhou et al., 2019; 
+Zhao et al., 2022; Liu et al., 2021). Within the DT framework, module 
+stacking is redefined to include real-time visibility, cyber–physical 
+connectivity, and traceability. Furthermore, a DT is incorporated into 
+collaborative platforms that facilitate access to and sharing of module 
+information among stakeholders, enhancing information synchroniza-
+tion. Consequently, this paper aims to leverage the advantages of DT 
+to achieve comprehensive visibility and traceability at module stacking 
+sites through real-time data collection and positioning.
+Nevertheless, addressing delayed control and achieving predictive 
+guidance requires further development of precise methods for module 
+pose estimation and trajectory prediction within the DT framework. 
+Computer vision-based methods have been proposed by researchers 
+and practitioners (Zhang et al., 2019). Yang et al. (2023) suggested 
+surveillance cameras for environmental perception and worker trajec-
+tory prediction to boost construction safety. Similarly, Cheng et al. 
+(2022) introduced a stereo-vision technique for aligning precast con-
+crete bridge components. Considering that vision-based methods often 
+fail to capture accurate 3D spatial relationships, Xie et al. (2025) 
+proposed a framework that leverages point cloud data to detect human–
+object interactions on construction sites. However, on-site practices re-
+veal that these methods struggle in dynamic and variable construction 
+environments, poorly addressing challenges like cluttered backgrounds, 
+wind, vibrations, fluctuating lighting, and limited camera angles (Kop-
+sida and Brilakis, 2020; Omar and Nehdi, 2016; Liu et al., 2023). In 
+contrast, Internet of Things (IoT) sensors can capture high precision, 
+multisource stacking data in real-time, offering superior environmental 
+adaptability and reliability. Combined with IoT devices, high fidelity 
+virtual models in the DT framework can reflect the dynamic state, be-
+havior, and changes of the physical stacking system in a comprehensive 
+perspective (Zhou et al., 2019; Zhao et al., 2022; Liu et al., 2021).
+Current methods for predicting trajectories with IoT sensors pri-
+marily use temporal models to analyze historical motion data se-
+quences (Wang et al., 2022; Yang et al., 2023; Zhang and Ge, 2022). 
+These sequential relationships expose the temporal continuity and 
+directional trends of motions, enabling more reliable future trajectory 
+predictions. However, in complex spatial movements like module ro-
+tation or flipping, reliance solely on temporal relationships for the 
+module trajectory prediction proves challenging. This is mainly because 
+such movements entail multi-dimensional displacement and spatial 
+pose adjustments. This difficulty often requires deep learning networks 
+with advanced capabilities for handling complex nonlinear problems. 
+Recently, deep learning models have achieved outstanding perfor-
+mance in multiple domains (Shang et al., 2023; Han et al., 2024; Gao 
+et al., 2025). Specifically, in tasks that involve extracting complex 
+spatiotemporal features, Zhang et al. (2024) designed a multi-attention 
+network based on spatio-temporal feature fusion to predict pedestrian 
+crossing intention. Ali et al. (2025) proposed a spatio-temporal graph 
+convolutional recurrent network with multi-scale feature extraction 
+and dual attention mechanisms, achieving superior long-term urban 
+traffic prediction on real-world datasets. Wang et al. (2025) recently 
+proposed a large language model (LLM)-driven probabilistic trajectory 
+prediction framework, which integrates spatio-temporal encoding with 
+normalizing flows to model uncertainty and complex motion dynamics. 
+Although these methods struggle to represent the complex spatial 
+posture changes during the module installation process, they show 
+that accurate pose prediction of modules depends crucially on effective 
+modeling of spatial relationships and temporal dependencies among 
+trajectory points, particularly in complex movements. Spatial structures 
+elucidate the distribution and interrelation of points in space, vital for 
+deciphering movement patterns. Consequently, this paper introduces 
+a DT-enabled module stacking system (DTPTS) with a novel network, 
+PosTraFormer, which enhances controllability by modeling the com-
+plex spatial posture changes during the module installation process 
+through multi-layer graph convolutional networks (GCNs), and by 
+estimating posture and predicting trajectories through the integration 
+of spatiotemporal modeling.
+The lifecycle of MiC is illustrated in Fig. 1. Initially, dynamic spatio-
+temporal data from assets involved in the stacking process (such as 
+cranes, workers, and modules) are captured using Ultra Wide Bands 
+(UWBs) and Inertial Measurement Units (IMUs) for enhanced position-
+ing accuracy in MiC environments. All real-time data and intrinsic 
+characteristics, including geometry and semantics, are updated to the 
+Smart Industry Foundation Classes (SIFCs) via the Mobile Gateway 
+Operating System (MGOS) for efficient data management. DTPTS en-
+ables real-time automatic mapping of stacking activities and unified 
+information sharing among stakeholders, while PosTraFormer analyzes 
+key stacking factors for enhanced trajectory prediction. Our primary 
+contributions are as follows:
+(1) A DT platform based on IoT is proposed for real-time perception, 
+pose estimation, and bidirectional interoperability between the 
+cyber and physical modules in MiC stacking scenarios.
+(2) A novel network called PosTraFormer is proposed to model the 
+spatial–temporal structure of trajectory points to predict future 
+motion trajectories, which is embedded into the DT platform to 
+prevent potential structural collision and misaligned stacking.
+(3) Comparative studies with the current state-of-the-art trajectory 
+prediction models are conducted to validate the feasibility of the 
+system and the effectiveness of the proposed method.
+The remainder of this paper is structured as follows. Section 2 
+presents the research related to MiC. Section 3 describes the DTPTS 
+framework. Section 4 gives the pose estimation and trajectory predic-
+tion algorithm. Comparative experiments are conducted in Section 5. 
+Section 6 applies the DTPTS in a real-life MiC construction site and 
+validates the effectiveness of our proposed method. Section 7 concludes 
+the whole paper and gives the future research directions.
+2. Literature review
+This section reviews research related to MiC on DT, pose estimation, 
+and trajectory prediction. At the end of this section, research gaps are 
+summarized.
+2.1. DT in MiC
+DT has become a revolutionary force for MiC lifecycle management 
+to facilitate real-time bidirectional interoperability between physical 
+and virtual environments (Nguyen et al., 2025; Zhou, 2025). DT frame-
+work with four layers has been widely recognized by researchers as 
+the conceptualized workflow which includes the physical layer (data 
+acquisition), data layer (data transmission, integration, and preprocess-
+ing), virtual layer (digital modeling and data analysis), and service 
+layer (visualization) (Tao and Zhang, 2017; Tuhaise et al., 2023; Preg-
+nolato et al., 2022). In recent years, studies based on DT have made 
+significant progress with the development of information and commu-
+nication technology, such as high precision IoT devices, state-of-the-art 
+artificial intelligence, robust cloud computing, secure blockchain, and 
+scalable big data analytics (Rangasamy and Yang, 2024; Q. Liu et al., 
+2024). Representative papers can be roughly categorized into four 
+aspects according to different MiC processes: (1) Design and planning; 
+(2) Transportation scheduling; (3) Construction and management; (4) 
+Operation and Maintenance.
+Computers in Industry 180 (2026) 104501 
+2 
+Y. Han et al.
+Fig. 1. Smart modular integrated construction lifecycle.
+(1) Design and planning. During the design phase, DT technology 
+can optimize MiC design schemes through three-dimensional 
+modeling and simulation analysis under the unified digital de-
+sign platform for multiple design stakeholders. Building Informa-
+tion Modeling (BIM) related 3D software has been extensively 
+utilized to support the design generation and optimization for 
+the MiC industry due to its advantages in the virtual represen-
+tation of building geometries and semantics. For example, Li 
+et al. (2024) integrated BIM and graphical convolutional neural 
+networks to automatically generate prefabricated space layouts 
+by extracting paired spatial geometric features. J. Liu et al. 
+(2024) proposed a modular high-rise residential building de-
+sign method based on graph constrained generative adversar-
+ial networks considering domain specific knowledge and con-
+straints. Kosse et al. (2025) developed a modular semantic DT 
+architecture to support knowledge integration and planning in 
+construction projects. Li et al. (2025) proposed LSDTs, which 
+integrate LLMs with DT to extract knowledge from unstruc-
+tured documents and enable regulation-aware, high-fidelity, and 
+adaptable infrastructure planning.
+(2) Transportation scheduling. DT technology can eliminate trans-
+portation scheduling deviations by simulating logistics processes 
+to keep synchronized with construction progress. Radio Fre-
+quency Identification (RFID) and Global Positioning System 
+(GPS) are primarily used in most research for locating and 
+recording the information of transport vehicles and modules 
+and coordinating the supply chain in conjunction with on-site 
+construction progress. Lee and Lee (Lee and Lee, 2021) devel-
+oped a hybrid geographic information system framework with 
+DT and IoT for real-time module logistics simulation and supply 
+chain coordination, which predicts potential logistics risks and 
+accurate module arrival times to reduce the module accumu-
+lation at the construction site. Tan et al. (2025) applied DT 
+to prefabricated component factories, optimizing manufacturing 
+and logistics processes.
+(3) Construction and management. Hoisting safety is a critical 
+research domain in prefabricated construction. Liu et al. (2021) 
+proposed a safety risk coupling model using multiple data col-
+lection terminals and the apriori algorithm to mine associated 
+risks, while Zhao et al. (2022) applied the Dijkstra algorithm for 
+hoisting path planning with IMUs, GPS, and RFIDs, supported 
+by LoRa-based data transmission. Beyond hoisting-specific stud-
+ies, Jiang et al. (2020) developed an IFC-based BIM model for 
+comprehensive safety management in mega projects, and Yuan 
+et al. (2016) introduced a cyber–physical system to monitor 
+temporary structures against failures. Other efforts have ex-
+plored advanced human–machine interaction, such as Hasan 
+et al. (2022), who linked augmented reality with DT to en-
+hance equipment interaction. Building on this, DT technology 
+has also been applied to MiC on-site assembly, where Jiang et al. 
+(2022a,b) developed systems for real-time monitoring, planning, 
+and execution using UWBs and RFIDs. More recently, Akha-
+vian et al. (2025) proposed BIM2RDT, an AI-driven framework 
+that converts BIM into a robot-ready DT to support automated 
+operations and safety management.
+(4) Operation and maintenance. In the maintenance process, DT 
+technology enables intelligent management of the entire build-
+ing lifecycle through real-time monitoring and predictive main-
+tenance. A large number of studies about indoor comfort and 
+energy conservation have been extensively reported. For in-
+stance, Tan et al. (2022) proposed a visualized DT lighting O&M 
+system to support timely adaptive adjustment of ambient bright-
+ness considering pedestrians detected by YOLOv4. Hosamo et al. 
+(2022) conducted a DT predictive maintenance framework for 
+stable air handling unit functioning in heating, ventilation, and 
+air conditioning (HVAC) systems in which analysis of variance 
+and support vector machine are integrated for condition predic-
+tion. Tagliabue et al. (2021) focused on the indoor air quality 
+problem and utilized IoT devices for real-time indoor air condi-
+tion monitoring to control the HVAC systems and define open-
+ing/closing patterns for windows. Furthermore, Lu et al. (2020) 
+proposed an anomaly detection system based on DT for asset 
+monitoring which is based on IFC data integration. DT also sup-
+ports emergency management by providing real-time monitoring 
+and simulation drills for emergency plans, enhancing building 
+safety and emergency response capabilities. For instance, Cheng 
+et al. (2017) constructed a BIM based intelligent fire prevention 
+system in which Bluetooth-based sensors and mobile apps are 
+used for personal localization and relief guidance. Cheng et al. 
+(2025) constructed high-fidelity multi-physics building models 
+for multi-energy system analysis, enabling precise simulation 
+and optimization of building operations. Additionally, DT tech-
+nology has broad and effective applications in advanced project 
+management (Pan and Zhang, 2021), structural health monitor-
+ing (Tuhaise et al., 2023), and information sharing (Lee et al., 
+2021).
+Computers in Industry 180 (2026) 104501 
+3 
+Y. Han et al.
+2.2. Pose estimation
+Pose estimation aims to accurately describe the position and rota-
+tion of an object in three-dimensional space. It has been widely used in 
+many scenarios such as autonomous driving (Raffin et al., 2021), aug-
+mented reality (Song et al., 2018), and industrial robotics (Peng et al., 
+2022). To effectively improve efficiency in a complex, dynamic site 
+environment with diverse equipment, many researchers have paid a lot 
+of attention to the application in construction scenarios. These studies 
+can be broadly categorized into two main types: non-visual sensor-
+based techniques (Azar et al., 2015) and vision-based techniques (Han 
+and Lee, 2013; Han et al., 2013; Żywanowski et al., 2025).
+Vision-based techniques use cameras to capture visual information, 
+which can be further divided into marker-based and marker-less meth-
+ods. For the marker-based method, tags are susceptible to damage 
+due to harsh construction environments or equipment intense move-
+ment (Lundeen et al., 2016). In contrast, the marker-less methods 
+are more suitable for the on-site environment of MiC. Liang et al. 
+(2019) proposed a stacked hourglass network for marker-less excavator 
+pose estimation to perform proximity detection and object tracking 
+on construction sites. Tian et al. (2023) combined internet data and 
+cinema4D generated data to construct a framework for real-time 3D 
+position estimation of excavators. Recently, Fu et al. (2025) proposed 
+a synthetic vision data-enhanced method for automated 3D pose recog-
+nition of construction workers, improving pose estimation accuracy 
+and robustness in complex construction environments. Additionally, 
+pose estimation can be found in other aspects of construction sites, 
+including excavated objects, trucks, workers (Yu et al., 2021), and 
+other equipment. However, these vision-based methods still cannot 
+adapt to the complex dynamic environment of construction sites, as 
+the accuracy of pose estimation is easily affected by variable and 
+insufficient lighting conditions, object occlusion, and adverse weather 
+conditions (Tang et al., 2023). Secondly, the coverage of construction 
+scenes can only be achieved through the strategic placement of multiple 
+cameras (Partsinevelos et al., 2024). Thirdly, rigorous system calibra-
+tion at regular intervals is necessary to ensure precise camera alignment 
+and the consistency of depth information. In such cases, the system 
+needs to process a large amount of image data, consuming significant 
+computational resources.
+To address the shortcomings of vision-based pose estimation in 
+construction, many researchers have increasingly focused on non-visual 
+sensor-based technologies, which can be further categorized into single-
+sensor methods and sensor fusion methods. For example, Tang et al. 
+(2022) proposed an IMU-based approach for unconstrained whole-
+body machines pose estimation in construction sites and provided 
+the optimal IMU installation strategy. Liu et al. (2025) proposed the 
+UMotion framework, which fuses six IMUs and UWB sensors using an 
+Unscented Kalman Filter to achieve robust and accurate 3D human 
+pose estimation. However, IMU cumulative errors may lead to the 
+problem of pose drift over time. Methods based on GPS are prone to 
+problems such as signal blocking and occlusion in the on-site assembly 
+of MiC due to the lack of penetration into concrete (Groves, 2011). 
+Meanwhile, the multipath effect can lead to large positioning errors. Ra-
+dio frequency methods, such as Wireless Local Area Network (WLAN), 
+UWBs, and RFIDs, lack orientation information for a single application. 
+Compared with the limitations of single-sensor methods, the sensor 
+fusion methods may provide a new solution for pose estimation in MiC 
+on-site assembly, which allows for the integration of multiple sensors 
+and the fusion of multimodal data. Although sensor fusion methods 
+have achieved excellent results, the effects of lost data and signal 
+interference should be considered, and further search for robust fusion 
+algorithms to address calibration and synchronization between sensors 
+should be made.
+In conclusion, preliminary exploration has been conducted on the 
+pose estimation for physical assets in construction sites. However, 
+there is little research on module pose estimation for the on-site in-
+stallation process. Through the literature review mentioned above, an 
+innovative method based on sensor fusion can be found for module 
+pose estimation to facilitate the correct alignment, connection, and 
+positioning of modules. In addition, deep learning methods can help 
+solve computational difficulties when fusing multimodal data due to 
+their ability to efficiently process various types of data and extract 
+valuable features (Brachmann et al., 2016; Cheng et al., 2021).
+2.3. Trajectory prediction
+The trajectory prediction aims to take a sequence of historical 
+trajectories as input and outputs a predicted trajectory for a future 
+period. Many researchers have integrated trajectory prediction into 
+applications in architectural scenes, thereby reducing the occurrence 
+of risk incidents. Trajectory prediction methods can be categorized into 
+four types: physics-based methods, classical machine learning methods, 
+deep learning methods, and reinforcement learning methods. Recently, 
+data-driven methods are increasingly being utilized as they do not 
+require explicit modeling of motion dynamics and can be generalized to 
+various scenarios (Hu et al., 2020). Indeed, Long Short-Term Memory 
+(LSTM) is one of the most widely used deep learning methods in 
+trajectory prediction (Xue et al., 2018). Yang et al. (2023) proposed a 
+framework for predicting worker trajectories based on LSTM networks, 
+which comprehensively considers the interactions between workers and 
+the interactions between workers and the environment. Hu et al. (2020) 
+proposed an A* algorithm and dynamic window approach for finding 
+the optimal path for construction robots and integrated the worker 
+trajectory prediction method based on LSTM into the existing robot 
+platform to enhance its performance potential. Zhang and Ge (2022) 
+applied a trajectory prediction model based on the Transformer to pre-
+dict the trajectories of loads and workers for the next ten seconds and 
+established an early warning model. Further advancing deep learning 
+for construction trajectory prediction, a novel framework employing a 
+Transformer encoder-decoder with graph attention networks was devel-
+oped to model worker temporal interactions and spatial relationships, 
+achieving low error in short-term predictions (Alduais et al., 2025). 
+However, they only considered the trajectories on the plane position 
+and ignored the impact of the height during the object movement 
+process. Nevertheless, several research gaps are identified from the 
+literature review:
+(1) DT technology for the module stacking process to enhance pre-
+cision, coordination, and visualization is scarcely reported.
+(2) Limited study explores multimodal data-based module pose es-
+timation algorithms during MiC on-site stacking.
+(3) Trajectory prediction in complex environments needs to be sys-
+tematically analyzed.
+Taking into account a certain spatial and temporal relationship 
+of the trajectories of the lifting weights, this paper presents a DT-
+enabled pose estimation and trajectory prediction network based on 
+spatio-temporal feature fusion modeling to fill these research gaps.
+3. DT-enabled module stacking management system (DTPTS)
+To overcome the challenges in MiC on-site stacking, this section 
+proposes a DT framework to realize the interoperability of MiC stacking 
+guidance, as shown in Fig. 2. The framework is divided into three 
+layers: the physical layer, the virtual layer, and the service layer. The 
+assets on site are embedded with smart IoT sensors for intelligent 
+perception. Multidimensional and multiscale data of the static intrinsic 
+properties and dynamic activities are captured by the IoT sensors. Then 
+these data are uploaded to the IFC-based virtual layer via MGOS for the 
+high-fidelity DT modeling. The service layer provides comprehensive 
+stacking task management for project managers, stacking guidance for 
+crane drivers, and collision warning for workers.
+Computers in Industry 180 (2026) 104501 
+4 
+Y. Han et al.
+Fig. 2. The framework of DTPTS system.
+3.1. Physical layer
+The MiC stacking process is primarily composed of four main physi-
+cal entities: assembly site environment, modules, equipment, and work-
+ers. On-site entities are embedded with intelligent IoT sensors to fa-
+cilitate real-time data acquisition, dynamic perception, information 
+sharing, and command acceptance for improving installation precision.
+(1) Assembly site environment. Given the complexity and vari-
+ability of actual assembly site, achieving a fully one-to-one 
+replication within a digital environment for module stacking 
+remains an unattainable objective. Therefore, critical environ-
+mental components that significantly impact module assembly 
+are considered to ensure the DT model effectively balances the 
+modeling complexity and actual assembly scenario mapping. The 
+integration of two critical components, including static terrain 
+and dynamic environmental changes, is essential. The terrain 
+contours and existing road networks determine the layout of the 
+buffer, crane, and modular building, as well as the transportation 
+routes for module trailers. Surrounding permanent buildings in-
+fluence the operational range of cranes. These static terrains are 
+non-invasively captured by unmanned aerial vehicles equipped 
+with cameras and laser scanners, supplemented by terrain data 
+acquired from Google Earth Engine. Dynamic environmental 
+changes, such as temperature, wind speed, and ground vibration, 
+are captured in real-time by IoT sensors deployed on-site to 
+mitigate the precision effect of pose estimation and trajectory 
+prediction.
+(2) Modules. Intelligent sensors integrating RFIDs, UWBs, and IMUs 
+are embedded in modules before assembly to capture both static 
+properties and dynamic poses. Globally unique identifiers, ge-
+ometry, material types, weight, and connection methods are 
+recorded in RFIDs. This information is crucial for module align-
+ment, balancing the stacking center of gravity, selecting appro-
+priate lifting equipment, and adjusting control parameters. To 
+model spatio-temporal characteristics for pose estimation and 
+trajectory prediction, accurate and real-time data acquisition of 
+the module position and attitude is essential. UWB measures 
+position with high precision and resistance to interference which 
+is suitable for complex environments. However, UWB has lim-
+ited capability in sensing rotational dimensions. IMU employs 
+accelerometers and gyroscopes to provide high frequency and 
+real-time measurements of acceleration and angular velocity, 
+enabling precise tracking of rapidly changing dynamic postures. 
+Nonetheless, IMU is prone to drift, which can lead to cumula-
+tive measurement errors and reduced localization accuracy. To 
+address the inherent deficiencies of UWBs and IMUs, this study 
+employs a Kalman filter to complementarily correct IMU drift 
+and UWB’s limited directional sensing capability. Additionally, 
+Computers in Industry 180 (2026) 104501 
+5 
+Y. Han et al.
+the selection of an appropriate number of base stations and op-
+timization of their deployment positions are crucial to mitigate 
+signal blocking, with the use of time difference of arrival method 
+to enhance signal robustness.
+(3) Equipment. The tower crane is the most crucial piece of machin-
+ery in the on-site assembly environment. Its static properties, 
+such as jib length, maximum lifting capacity, maximum working 
+radius, maximum load capacity, and maximum hook height, can 
+be accurately obtained from technical handbooks and equipment 
+nameplates. Dynamic activities of the tower crane are captured 
+by crane-mounted sensors, such as load sensor, moment sensor, 
+angle sensor, wind speed sensor, and acceleration sensor. Addi-
+tionally, the tower crane integrates a human-machine interface 
+that displays the module status in real-time and synchronized 
+cyber–physical visibility. This interface also visualizes the pose 
+estimation and trajectory prediction of the modules to guide 
+crane operators in the stacking operations. Other construction 
+equipment, such as module unloading forklifts, trailers, exca-
+vators, and trucks, are equipped with GPS for positioning to 
+prevent potential collisions with on-site workers.
+(4) Workers. Industrial wearables, including smart wristbands,
+smart helmets, and visualization interfaces, are equipped for 
+workers. Static properties such as the worker’s ID, department, 
+age, weight, skill level, professional qualifications, and safety 
+training records are stored in the smart wristband. Multi-functi-
+onal IoT sensors in industrial wearables continuously update and 
+monitor real-time location, working duration, heart rate, fatigue 
+level, and relative distance to other entities.
+(5) MGOS. LoRaWAN network communication protocol is used to 
+define how IoT devices are connected and how data is uploaded. 
+Star network architecture is adopted for simplified network man-
+agement, maintenance, and expansion. MGOS updates the static 
+properties and dynamic properties of the other four entities to 
+the virtual layer in real time and transports control commands 
+to the physical level for real-time interoperability.
+3.2. Virtual layer
+The virtual layer mainly realizes the unified management of the data 
+uploaded by the physical layer and establishes the high fidelity DT of 
+the stacking process.
+3.2.1. Unified data management based on IFC
+The multi-dimensional static and dynamic data in the stacking pro-
+cess are often uploaded and stored in different formats with different 
+sensors. Manually extracting and processing diversified and fragmented 
+stacking information is not only extremely time consuming but also 
+hinders information sharing. Therefore, a unified standard building 
+data architecture is needed to integrate and process fragmented data. 
+IFC, as a widely adopted industrial data format, is considered for the 
+unified DT construction and intelligent data management, as shown in 
+Fig. 3. Firstly, the data of various aspects of the stacking process is 
+organized with the ‘‘IfcRoot’’ entity as the root node to better describe 
+the relationships and hierarchical structure. For objects involved in 
+the MiC hoisting process, such as environment, workers, modules, 
+and equipment, ‘‘IfcObjectDefinition’’ is used for definition, and the 
+inherited description property is further explained for objects. This 
+mainly includes static predefined properties and dynamic expandable 
+properties. These static predefined properties come from the initial 
+design model of the project and are visually constructed in 3D through 
+Computer Aided Design (CAD) software (such as AutoCAD, Revit, 
+and Solidworks). Dynamic properties refer to all dynamic activity 
+information from the buffer zone to installation completion, which 
+is collected in real-time by on-site IoT devices and pointed to the 
+corresponding data position for updating and storage. The relationships 
+between various objects are defined in detail using ‘‘IfcRelationship’’ 
+to describe the bidirectional association. For instance, workers are 
+usually responsible for installing, moving, or handling modules, and 
+the ‘‘IfcRelAssignsToActor’’ can be used to associate modules with 
+workers to describe which workers are responsible for specific modules. 
+Cranes are typically used to move modules from the buffer zone to the 
+installation position. The ‘‘IfcRelAssignsToCrane’’ relationship can be 
+used to aggregate modules with cranes. Furthermore, IFC-compatible 
+interfaces and application programming interfaces are developed to 
+facilitate access and real-time modification of data by various types 
+of software and visualization pages in the service layer. Real-time 
+synchronization and consistency of data are ensured to support the 
+interoperability of the DT.
+3.2.2. Multi-dimensional high fidelity DT
+The MiC stacking instance is a virtual mapping of physical stacking, 
+synchronously inheriting the original parameters of physical stacking. 
+Any changes in physical stacking will have real-time corresponding 
+impacts on the respective MiC instances. DT modeling includes static 
+and dynamic modeling. Dynamic modeling is the most complex stage, 
+which will be comprehensive across the entire on-site assembly process 
+and will need to consider a wide range of contingencies and inter asset 
+interactions. It consists of four main components: (1) Dynamic envi-
+ronment modeling: Environmental factors are important for stacking 
+accuracy, and sensors are used to accurately capture environmental 
+variations (e.g., temperature, humidity, and windiness) and map them 
+to the virtual environment. (2) Asset dynamic sensing: dynamic infor-
+mation of modules, workers, and cranes is transmitted to the cloud 
+data via MGOS and reflected on the corresponding asset models in the 
+virtual environment in real-time. (3) Asset interaction: The interaction 
+and collaborative behaviors among assets are crucial for achieving 
+installation accuracy. Three main interactions are considered in this 
+section. The first one is the interaction between cranes and modules. 
+The sensors of the crane and module need to provide their respective 
+dynamic information at the same time stamp to facilitate the stacking 
+adjustment based on the position of the module. The second one is 
+the interaction between workers and cranes. The workers need to 
+communicate with crane drivers in real-time to identify and deal with 
+dynamic problems. The third one is the interaction between workers 
+and modules. Workers need to assist in installing the module to the 
+designated position and make necessary fixes and connections accord-
+ing to the module installation progress. (4) Emergency response: The 
+DT system simulates and evaluates various possible risk scenarios, such 
+as sudden change of wind, equipment failure, etc., as well as provides 
+an emergency response plan. This helps to identify potential risks in 
+advance and take responsive measures to mitigate losses.
+3.3. Service layer
+The service layer creates a real-time visualization and information 
+sharing platform for all stakeholders together. It primarily encompasses 
+two types of services:
+(1) Pose estimation and trajectory prediction for guidance ser-
+vice. The on-site installation guidance service for construction 
+workers and tower crane operators includes collision safety 
+warnings and installation guidance respectively. The operators 
+can adjust the crane tower in advance to avoid potential colli-
+sions based on the predicted trajectory of the module, which is 
+presented in the DT enabled visualization platform. In addition, 
+the crane operator can view the module stacking sequence list, 
+as well as the real-time status (e.g. whether it has reached 
+the buffer zone, whether it can be used for stacking) and real-
+time location of the module through the web page, which can 
+significantly reduce the driver’s time for searching the location 
+of the module and the commanding officer’s time for scheduling 
+the stacking sequence. Construction workers on the ground 
+Computers in Industry 180 (2026) 104501 
+6 
+Y. Han et al.
+Fig. 3. IFC-based smart on-site data management.
+assisting the crane driver can be informed of the safety of the 
+area they are in by means of alarms installed on the wearable 
+device, effectively avoiding potential falling objects and collision 
+risks.
+(2) Management service. The process management service for 
+managers and clients covers process management, quality assur-
+ance, and safety management services. The relevant stakeholders 
+have the right to access the dynamic map and verify the location 
+information of prefabricated modules and workers at any time. 
+Site managers and clients have access to the module installation 
+progress web page, which provides a real-time indication of 
+the status of the building’s installation, represented by different 
+modeling on the web page. The manager can track the construc-
+tion progress in real time, which facilitates the scheduling of the 
+subsequent installation process and the previous production and 
+transportation stages.
+4. PosTraFormer
+The algorithm implementation mainly consists of data preparation, 
+model training, and online testing phases, as shown in Fig. 4.
+4.1. Pose estimation
+Real-time pose estimation is a fundamental component of the fol-
+lowing services. Module pose estimation is the estimation of the po-
+sition and orientation of a module’s coordinate system in the Earth’s 
+coordinate system. The complexity lies in the nonlinear nature of the 
+orientation and the fact that the orientation can be parameterized 
+in different ways (Kok et al., 2017). In this paper, the real-time 3D 
+position information of intelligent modules is obtained by UWBs, and 
+attitude solving is performed based on IMUs.
+4.1.1. UWB distance measurement and positioning
+The distance measurement method adopts one-sided bidirectional 
+ranging. Node A sends a poll message and records the sending moment 
+𝑇 𝐴
+poll . Node B receives a poll message and records the receiving moment 
+𝑅𝐵
+poll , then sends a response message and records the sending moment 
+𝑇 𝐵
+resp . Node A receives the response message and records the receiving 
+moment 𝑅𝐴
+resp . Therefore, the distance (transmission time) between the 
+two points can be calculated using the above calculation process: 
+̂𝑇prop =
+𝑇round − 𝑇reply 
+2 (1)
+𝑇round = 𝑅𝐴
+resp − 𝑇 𝐴
+poll (2)
+𝑇reply = 𝑇 𝐵
+resp − 𝑅𝐵
+poll (3)
+The coordinates of the module are calculated by the fixed base 
+station. The coordinates of the fixed base stations are base station 
+a (𝑥1, 𝑦1, 𝑧1
+), base station b (𝑥2, 𝑦2, 𝑧2
+), base station c (𝑥3, 𝑦3, 𝑧3
+), base 
+station d (𝑥4, 𝑦4, 𝑧4
+). The coordinate of the desired positioning tag is 
+Computers in Industry 180 (2026) 104501 
+7 
+Y. Han et al.
+Fig. 4. Pose estimation and trajectory prediction algorithm. 
+O (𝑥0, 𝑦0, 𝑧0
+), which is calculated by the following formula: 
+̂𝑇prop 𝑛 × 𝑣 =
+√ (𝑥0 − 𝑥𝑛
+)2 + (𝑦0 − 𝑦𝑛
+)2 + (𝑧0 − 𝑧𝑛
+)2 (4)
+where n is a positive integer taking values from 1 to 4.
+4.1.2. IMU postural solution
+In a high dynamic construction environment, IMU performs real-
+time attitude estimation using Euler angles to intuitively represent the 
+object’s orientation. These Euler angles include yaw (𝜓), pitch (𝜃), and 
+roll (𝜙), as illustrated in Fig. 5. Specifically, pitch (𝜃) is calculated based 
+on the accelerometer readings. Using the normalized accelerations in 
+the 𝑥 and z directions, 𝜃 can be derived as: 
+𝜃 = arctan
+⎛
+⎜
+⎜
+⎜⎝
+accx√
+acc2
+y + acc2
+z
+⎞
+⎟
+⎟
+⎟⎠
+(5)
+where accx, accy, and accz represent the accelerations along the x, y, 
+and z axes, respectively.
+Roll (𝜙) is computed using the accelerations along the 𝑦 and z axes, 
+as follows: 
+𝜙 = arctan
+(−accy
+accz
+)
+(6)
+The yaw angle (𝜓) is determined using the magnetometer readings, 
+after compensating for pitch and roll. The corrected yaw is given by: 
+𝜓 = arctan
+(
+magy ⋅ cos 𝜙 − magz ⋅ sin 𝜙
+magx ⋅ cos 𝜃 + magy ⋅ sin 𝜃 ⋅ sin 𝜙 + magz ⋅ sin 𝜃 ⋅ cos 𝜙
+)
+(7)
+where magx, magy, and magz represent the magnetometer readings 
+along the x, y, and z axes, respectively.
+In construction module pose estimation, errors often arise due to 
+sensor noise, drift, and environmental interference. IMUs can experi-
+ence drift, especially in gyroscopes, while magnetometers are affected 
+by local magnetic disturbances. Additionally, mechanical vibrations, 
+sensor misalignment, and time synchronization issues between multiple 
+sensors further contribute to inaccuracies in the module’s orientation 
+estimation. When deviations between the actual and ideal values occur, 
+the accelerometer is used to correct deviations in the pitch and roll 
+angles. First, the current accelerometer outputs are normalized: 
+𝐚𝐜𝐜 = 𝐚𝐜𝐜
+‖ 𝐚𝐜𝐜‖ (8)
+where 𝐚𝐜𝐜 is the vector of accelerations in the x, y, and z directions.
+The ideal accelerometer output, in a perfect navigation coordinate 
+system, should only include the gravitational component. Therefore, 
+the normalized ideal acceleration in the navigation coordinate system 
+is: 
+𝐚𝐜𝐜ideal = [0, 0, 1] (9)
+Computers in Industry 180 (2026) 104501 
+8 
+Y. Han et al.
+Fig. 5. Euler angles for modular poses.
+The deviation between the actual and ideal values is calculated 
+using the cross product: 
+𝛥pitch,roll = 𝐚𝐜𝐜 × 𝐚𝐜𝐜ideal (10)
+This deviation is then used to correct the pitch and roll angles 
+by applying a small adjustment. Similarly, the magnetometer is used 
+to correct deviations in the yaw angle. Like the accelerometer, the 
+magnetometer outputs are normalized: 
+𝐦𝐚𝐠 = 𝐦𝐚𝐠
+‖ 𝐦𝐚𝐠‖ (11)
+The magnetometer output is then transformed into the navigation 
+coordinate system: 
+𝐦𝐚𝐠nav = 𝐂b
+n ⋅ 𝐦𝐚𝐠 (12)
+where 𝐂b
+n is the direction cosine matrix (rotation matrix) from the body 
+frame to the navigation frame.
+The deviation between the actual and ideal magnetometer outputs 
+is again calculated using the cross product: 
+𝛥yaw = 𝐦𝐚𝐠nav × 𝐦𝐚𝐠ideal (13)
+This deviation is used to adjust the yaw angle accordingly.
+4.2. Trajectory prediction algorithm
+4.2.1. Problem description
+Let 𝑋 represent all trajectories, including the installation trajecto-
+ries of 𝑁 prefabricated modules. It can be denoted as 𝑋 = { 𝑋1, 𝑋2, … ,
+𝑋𝑁
+} . The time step is 1, 2, … , 𝑡𝑜𝑏𝑠, 𝑡𝑜𝑏𝑠 denotes the length of the 
+observed sequence. Module 6D trajectory prediction uses historical 
+data to predict trajectories over time. The past trajectory of module 
+𝑖 is represented as 𝑋𝑖 = (𝑥𝑡
+𝑖, 𝑦𝑡
+𝑖, 𝑧𝑡
+𝑖, 𝜑𝑡
+𝑖, 𝜃𝑡
+𝑖 , 𝜓𝑡
+𝑖
+), and 𝑥𝑡
+𝑖, 𝑦𝑡
+𝑖, 𝑧𝑡
+𝑖, 𝜑𝑡
+𝑖, 𝜃𝑡
+𝑖 , 𝜓𝑡
+𝑖
+respectively represents 𝑥 coordinate, 𝑦 coordinate, z coordinate, roll, 
+pitch and yaw of the module at time 𝑡. When the time step is 𝑇 =(𝑡obs + 1, 𝑡obs + 2, … , 𝑡obs + 𝑡pred , …), the true trajectory of module 𝑖
+is: 
+𝑌𝑖 =
+(
+𝑥
+𝑡+𝑡pred 
+𝑖 , 𝑦
+𝑡+𝑡pred 
+𝑖 , 𝑧
+𝑡+𝑡pred 
+𝑖 , 𝜑
+𝑡+𝑡pred 
+𝑖 , 𝜃
+𝑡+𝑡pred 
+𝑖 , 𝜓
+𝑡+𝑡pred 
+𝑖
+)
+. (14)
+The predicted trajectory is: 
+̂𝑌𝑖 =
+(
+̂ 𝑥
+𝑡+𝑡pred 
+𝑖 , ̂ 𝑦
+𝑡+𝑡pred 
+𝑖 , ̂ 𝑧
+𝑡+𝑡pred 
+𝑖 , ̂ 𝜑
+𝑡+𝑡pred 
+𝑖 , ̂𝜃
+𝑡+𝑡pred 
+𝑖 , ̂ 𝜓
+𝑡+𝑡pred 
+𝑖
+)
+(15)
+where ̂ 𝑥
+𝑡+𝑡pred 
+𝑖 , ̂ 𝑦
+𝑡+𝑡pred 
+𝑖 , ̂ 𝑧
+𝑡+𝑡pred 
+𝑖 , ̂ 𝜑
+𝑡+𝑡pred 
+𝑖 , ̂𝜃
+𝑡+𝑡pred 
+𝑖 , ̂ 𝜓
+𝑡+𝑡pred 
+𝑖 respectively
+represent the predicted 𝑥 coordinate, 𝑦 coordinate, z coordinate, roll, 
+pitch and yaw of the module at future time 𝑡obs + 𝑡pred .
+4.2.2. Spatial structural relationship modeling
+In a set of trajectory points 𝑋 = { 𝑋1, 𝑋2, … , 𝑋𝑁 }, there exists 
+an inherent spatial structure relationship between the points, which 
+is crucial for accurately predicting the subsequent trajectory points. 
+Traditional methods may overlook these intricate spatial dependencies, 
+leading to suboptimal predictions. To address this, we employ a graph 
+model to capture the spatial relationships among the trajectory points, 
+enabling a more comprehensive understanding of the underlying pat-
+terns. As shown in Fig. 6, the trajectory points are encoded into a graph 
+structure, where each point 𝑋𝑖 is represented as a node in the graph. 
+The edges between these nodes, which signify the spatial relationships, 
+are defined by an adjacency matrix 𝐴. Unlike fixed adjacency matrices, 
+we utilize an adaptive approach where 𝐴 is a learnable parameter 
+matrix. This allows the model to dynamically adjust the connections 
+between nodes, thus better capturing the complex spatial dependencies 
+present in the data. The encoded trajectory points are then fed into an 
+adaptive GCN with multiple layers. The graph convolution operation at 
+each layer can be expressed as: 
+𝐻 (𝑙+1) = 𝜎 (̃𝐴𝐻 (𝑙)𝑊 (𝑙)) (16)
+where 𝐻 (𝑙) is the feature matrix of the trajectory points at layer 𝑙, ̃𝐴 is 
+the normalized adaptive adjacency matrix, 𝑊 (𝑙) is the trainable weight 
+matrix, and 𝜎 is a non-linear activation function. The initial feature ma-
+trix 𝐻 (0) corresponds to the input trajectory points. Through multiple 
+layers of graph convolution, the model iteratively refines the feature 
+representations, enabling the extraction of spatial structure features: 
+𝑆𝑓 = 𝐻 (𝑙+1). 𝑆𝑓 is then used to predict the next set of trajectory points. 
+The adaptive nature of the adjacency matrix ensures that the model can 
+effectively learn and capture the spatial dependencies, leading to more 
+accurate trajectory predictions.
+4.2.3. Time series relationship modeling
+The trajectory points not only present a certain distribution pattern 
+in space, but also show sequentiality and dependence in the time 
+dimension. The forward backward temporal relationship reflects the 
+continuity, speed change, and direction trend of the object movement, 
+and ignoring temporal information may lead to misjudgment of the 
+future trajectory. To effectively model these temporal relationships, we 
+employ a multi-head attention mechanism, which allows the model to 
+simultaneously focus on different aspects of the sequence, capturing 
+both short term and long term dependencies. The time series relation-
+ship modeling module architecture is shown in Fig. 6. The input size is 
+𝐵 × 𝐹 × 𝐿, where 𝐹 is the length of the input features, 𝐵 is the batch 
+dimension, and 𝐿 is the sequence length. In this study, the input is the 
+normalized three-dimensional coordinates and the deflection attitude, 
+so 𝐹 equals 6. The normalization method is 0 to 1 normalization. 
+Firstly, two trainable linear layers are used to map the inputs into high 
+dimensional features. Subsequently, PosTraFormer utilizes positional 
+embedding to retain the positional information of the sequence. The 
+Computers in Industry 180 (2026) 104501 
+9 
+Y. Han et al.
+Fig. 6. The overall framework of PosTraFormer. 
+historical trajectory is encoded by positional information, combined 
+with the relative positions between trajectory points. Position Encoding 
+(PE) is as follows: 
+𝑃 𝐸(𝑝𝑜𝑠, 2𝑖) = sin
+⎛
+⎜
+⎜
+⎜⎝
+𝑝𝑜𝑠
+10000
+(
+2𝑖
+𝑑model 
+)
+⎞
+⎟
+⎟
+⎟⎠
+𝑃 𝐸(𝑝𝑜𝑠, 2𝑖 + 1) = cos
+⎛
+⎜
+⎜
+⎜⎝
+𝑝𝑜𝑠
+10000
+(
+2𝑖
+𝑑model 
+)
+⎞
+⎟
+⎟
+⎟⎠
+(17)
+where 𝑝𝑜𝑠 represents position, 𝑖 denotes the dimension, and 𝑑𝑚𝑜𝑑𝑒𝑙
+signifies the dimensionality of the model. In this paper, 𝑑𝑚𝑜𝑑𝑒𝑙 is 512. 
+𝑍 = [ 𝑋1𝐸, 𝑋2𝐸, … , 𝑋𝑁 𝐸] + 𝑃 𝐸 (18)
+After embedding by a linear mapping 𝐸 ∈ R𝐹 ×𝐶 and summing with 
+the positional embedding 𝑃 𝐸 ∈ R𝐹 ×𝐶 , the input sequence is sent to the 
+encoder of PosTraFormer. where 𝐶 is the embedding dimension. The 
+PosTraFormer encoder consists of a multi-head self-attention module 
+and a feedforward module. Scaled dot-product attention is the core 
+functionality of PosTraFormer. It is described as a mapping function 
+that uses the query matrix 𝑄, the key matrix 𝐾, and the value matrix 
+𝑉 to compute the correlation between different positions in the input 
+sequence and maps it to the output attention matrix. This allows the 
+model to capture the importance and correlation between locations in 
+the input sequence. 
+ Attention (𝑄, 𝐾, 𝑉 ) = sof tmax
+(
+𝑄𝐾 𝑇
+√
+𝑑𝑘
+)
+𝑉 (19)
+where the query matrix 𝑄 is dot product with the 𝐾 matrix. The scale 
+factor 
+√
+𝑑𝑘 is used for proper softmax normalization. Thus, preventing 
+very small gradients when large values of d cause the dot product to 
+grow significantly.
+MSA parallelizes the semantic information of the input sequence 
+from different positions. A richer and more expressive feature represen-
+tation is obtained by splicing the weighted results of multiple attention 
+heads. 
+𝑀𝑆𝐴 (𝑄, 𝐾, 𝑉 ) = Concat (𝐻1, … , 𝐻𝑚
+)𝑊 (20)
+𝐻𝑖 = 𝐴𝑡𝑡𝑒𝑛𝑡𝑖𝑜𝑛
+(
+𝑄𝑖𝑊 𝑄
+𝑖 , 𝐾𝑖𝑊 𝐾
+𝑖 , 𝑉𝑖𝑊 𝑉
+𝑖
+)
+, 𝑖 ∈ [1, … , 𝑚], (21)
+where 𝑊 𝑄
+𝑖 ∈ R𝑑model ×𝑑𝑘 , 𝑊 𝐾
+𝑖 ∈ R𝑑model ×𝑑𝑘 , 𝑊 𝑉
+𝑖 ∈ R𝑑model ×𝑑𝑣 , 𝑊 ∈
+Rℎ𝑑𝑘×𝑑model .
+4.2.4. Trajectory prediction via spatio-temporal feature fusion
+To enhance the accuracy of trajectory prediction, we integrate 
+the spatial features 𝑆𝑓 extracted from the spatial structure modeling 
+module with the temporal features 𝐻𝑓 obtained from the multi-head at-
+tention mechanism. This fusion leverages both the spatial dependencies 
+among the trajectory points and their sequential temporal relationships. 
+The combined feature representation captures a comprehensive under-
+standing of the trajectory dynamics. The fusion process involves linear 
+concatenating 𝑆𝑓 and 𝐻𝑓 , which can be expressed as: 
+𝑍 = 𝜆 ⋅ 𝑆𝐹 + (1 − 𝜆)𝐻𝐹 (22)
+where 𝜆 is a trainable weight coefficient to control the influence of 
+spatial and temporal features after fusion.
+The fused spatio-temporal features are next used to predict the 
+location of future trajectory points. Position wise feed forward is the 
+feed forward neural network processing of the hidden representation of 
+each position. Specifically, the module applies two linear layers and the 
+ReLU activation function to nonlinearly transform the position informa-
+tion. This helps the model to better capture the semantic information 
+of each position when processing sequence data, and to provide a rich 
+representation of the position information while keeping it constant. 
+All the above components form the Encoder block, which is stacked 
+appropriately to form the Encoder. This encoded information is input 
+into the encoder for feature learning, generating intermediate encoded 
+information, which is then transmitted to the decoder for decoding. 
+𝑍′
+𝜄 = 𝐿𝑁 (𝑀𝑆𝐴 (𝑍𝚤−1
+)+ 𝑍𝜄−1
+), 𝜄 = 1, 2, … , 𝐿 (23)
+𝑍𝜄 = 𝐿𝑁 (𝑃 𝑊 𝐹 𝐹 (𝑍′
+𝚤
+)+ 𝑍′
+𝚤
+), 𝜄 = 1, 2, … , 𝐿 (24)
+𝑌 = LN (𝑍𝚤
+) (25)
+where 𝐿𝑁(⋅) denotes the layer normalization operator, + denotes the 
+residual join, and 𝐿 denotes the number of encoder block stacks.
+The Decoder block and the Encoder block have similar structures. 
+But different from the Encoder block, two MSA layers are included in 
+the Decoder block. During training, the model applies MSA layers to 
+prevent attention to future tokens, ensuring that each token can only 
+notice preceding tokens.
+4.2.5. Loss function
+Trajectory prediction is a regression task, and the model’s loss is 
+optimized using Smooth L1 Loss: 
+ SmoothL1 = 1
+𝑛
+𝑛∑
+𝑖=1
+⎧
+⎪
+⎨
+⎪⎩
+0.5 ∗
+(
+𝑝𝑡
+𝑖𝑝
+− 𝑝𝑡
+𝑖𝐺𝑇
+)2
+, if ||||
+𝑝𝑡
+𝑖𝑝
+− 𝑝𝑡
+𝑖𝐺𝑇
+||||
+< 1
+||||
+𝑝𝑡
+𝑖𝑝
+− 𝑝𝑡
+𝑖𝐺𝑇
+||||
+− 0.5, otherwise
+(26)
+Computers in Industry 180 (2026) 104501 
+10 
+Y. Han et al.
+Fig. 7. The physical simulation experimental platform.
+where 𝑝𝑡
+𝑖𝑝
+ and 𝑝𝑡
+𝑖𝐺𝑇
+ represent the predicted and ground truth positions 
+and poses. Within the interval of ||||
+𝑝𝑡
+𝑖𝑝
+− 𝑝𝑡
+𝑖𝐺𝑇
+||||
+< 1, Smooth L1 Loss adopts 
+the square function from L2 loss, addressing the issue of nondifferen-
+tiability at zero in L1 loss. Beyond the interval of ||||
+𝑝𝑡
+𝑖𝑝
+− 𝑝𝑡
+𝑖𝐺𝑇
+||||
+> 1, it 
+employs the linear function from L1 loss, mitigating the problem of 
+gradient explosion for outliers. Consequently, Smooth L1 Loss main-
+tains good stability and robustness when dealing with errors of varying 
+magnitudes.
+5. Experiments
+5.1. Experimental setting
+5.1.1. Experimental scenarios and data preparation
+To verify the feasibility of the DTPTS an experimental platform 
+for hoisting pose estimation and trajectory prediction is conducted in 
+a real laboratory setting, as shown in Fig. 7. The setup comprises a 
+physical stacking site, a digital stacking site, and an intelligent data 
+management system. The physical stacking site mainly includes a buffer 
+zone for storing modules, a building under construction, cranes, mod-
+ules, workers, gateway, and base stations. The buffer zone measures 
+0.7 m in length and 0.35 m in width, capable of storing up to 16 
+modules. The building model follows the mainstream Podium System 
+construction method, standing 1.35 m tall with 15 floors, including a 
+podium section at the bottom and a framework section above. Base 
+stations are strategically deployed around the building. Each room is 
+modular and demountable, closely resembling real construction instal-
+lation scenarios. Additionally, every module embeds intelligent RFID 
+tags, UWBs, and IMUs. The smart crane has an operating radius of 
+1 m, a maximum payload of 10 kg, and a lifting speed of 0.1 m/s. A 
+gateway is mounted on the crane hook to capture real-time data from 
+modules and transmit control commands to the tower crane. The digital 
+stacking site is developed by WebGL, which serves as the DT of the 
+aforementioned physical assets. To facilitate unified management of di-
+verse structural data, a ‘‘Trinity’’ platform is developed, encompassing 
+intelligent modules, workers, and cranes.
+The entire trajectory from hoisting the module in the buffer zone 
+to placing it at the designated position is sampled at 2 Hz. A sliding 
+window of fixed length is used to trim the trajectory starting from 
+every alternate time step of the original trajectory (specifically, 5 s, 
+10 frames). Each trimmed trajectory is divided into two parts: the 
+historical trajectory (input) and the predicted trajectory (output or la-
+bel), totaling 1200 trimmed trajectories. In the experiment, the dataset 
+is split into training and evaluation sets in a 7:3 ratio. The training 
+set is utilized to optimize the parameters of the trajectory prediction 
+model, while the evaluation set monitors the convergence of the model. 
+Additionally, the module storage and movement status, construction 
+progress of each building layer, and occupancy status of the tower 
+crane are automatically updated at the same timestamp during this 
+process. Dynamic activity data of workers, such as their movement 
+paths and actions on the construction site, are captured via smart 
+wristbands and helmets. All the aforementioned data is integrated into 
+the SIFC database and subjected to data calibration and synchronization 
+to ensure consistency and accuracy among various data sources. To 
+address possible jitter and anomalies in the collected data, Kalman 
+filtering is employed for smoothing and noise removal. Polynomial 
+interpolation is utilized to handle missing values. Finally, to standardize 
+the scale of position and orientation data for model training, the data 
+is normalized.
+5.1.2. Data processing
+In this section, we describe the process of augmenting the lifting 
+dataset through data augmentation techniques to ensure that various 
+possible lifting scenarios are covered during model training, including 
+normal lifting trajectories as well as anomalous situations (e.g., sen-
+sor malfunctions). As a result, the dataset size was expanded from a 
+few hundred trajectories to 6000 trajectories. The data augmentation 
+methods primarily include two techniques: using Time-Series Genera-
+tive Adversarial Network (TimeGAN) to simulate real lifting data and 
+injecting anomalous trajectory points into certain trajectory data using 
+noise.
+Real normal stacking data simulation. TimeGAN is used to gen-
+erate samples that resemble the distribution of real lifting data. The 
+generator of TimeGAN learns the temporal patterns of the real data, 
+thus simulating new trajectory data. This approach effectively enhances 
+the diversity of the dataset, especially when the original data is limited. 
+Specifically, we input real lifting data into the TimeGAN model and 
+train the generator to produce trajectory point sequences similar to 
+the real data. After several iterations, the generator can output a large 
+amount of new data that is temporally similar to the real data. To 
+validate the effectiveness of the generated data, we compared the 
+distribution of the generated data with the real data using principal 
+component analysis. Fig. 8 demonstrates that the generated data’s dis-
+tribution in the two-dimensional space closely matches the distribution 
+of the real data. These generated data not only increase the sample size 
+but also enhance the diversity of the dataset, helping to improve the 
+model’s generalization ability, particularly when dealing with unknown 
+lifting situations.
+Anomalous stacking data simulation. In addition to using Time-
+GAN to generate normal lifting data, we also simulated anomalies by 
+Computers in Industry 180 (2026) 104501 
+11 
+Y. Han et al.
+Fig. 8. Comparison of data distribution between simulated data and real data.
+inserting noise points into some of the trajectory data. These anomalous 
+trajectory points represent potential faults or irregular events that may 
+occur during actual lifting operations, such as sensor malfunctions, data 
+loss, or irregularities in lifting procedures. Specifically, we randomly 
+inserted Gaussian noise at certain positions in the original trajectory 
+data to create new trajectories with anomalous points. To ensure that 
+the generated anomalous data still maintains some physical plausibility, 
+the positions and magnitudes of the noise insertion were constrained, 
+ensuring that the anomalous points neither completely distort the 
+data nor introduce unrealistic situations, while still simulating some 
+potential actual anomalies. For example,

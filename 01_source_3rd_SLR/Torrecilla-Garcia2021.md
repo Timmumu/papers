@@ -21,3 +21,16 @@ There is a growing impact of digitalization on the management processes in the c
 | Yes | Yes | Yes | Unclear | 0 | 1 | 0 | Design for Safety (DfS) | None | Digital Twin platform (no machine learning) | Multi (two or more data types) | Conceptual (no test) | 2 | Design for Safety |
 
 **Key evidence (AG):** Scoping literature review + Research-through-Design proposal of a conceptual framework integrating BIM-based digital twinning, Safety Management processes, and a Decision Support System (DSS) for OHS decision-making in building construction; outlines data/information streams, KPIs, real-time interfaces and worker engagement, and notes ML as a future requirement for real-time optimisation of assessment. Purely conceptual — no DT built, no experiment, no test; predictive/self-improving features only proposed as future work.
+
+**Strength & gap filled (AH):** Provides an early conceptual bridge between BIM-based digital twinning and OHS decision-making: a scoping literature review plus a Research-through-Design proposal outlines a framework correlating safety management processes, project-level strategic decision-making, BIM-based digital twins and a Decision Support System to shift construction safety toward predictive analysis and all-worker inclusion.
+
+**Deficiencies & future work (AI):** It is a preliminary conceptual framework with no prototype, sensor integration, live data link, or implementation; the authors concede many shortcomings in the initial version and call for in-depth strategic analysis, development of a functional model for the executive level of construction companies, and alignment with real construction project contingencies.
+
+**Fusion depth (AC1):** Unclear
+
+**Fusion evidence (AC2):**
+- **Data streams:** framework components (data/information streams, KPIs, real-time interfaces) only.
+- **Integration mechanism:** none implemented - ML-based optimisation is future work.
+- **Why this code:** Unclear (rule 2).
+
+**Confidence (AC3):** High.

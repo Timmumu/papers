@@ -1,0 +1,776 @@
+Citation: Armijo, A.; Zamora-
+Sánchez, D. Integration of Railway
+Bridge Structural Health Monitoring
+into the Internet of Things with a
+Digital Twin: A Case Study. Sensors
+2024, 24, 2115. https://doi.org/
+10.3390/s24072115
+Academic Editor: Jiawei Xiang
+Received: 24 January 2024
+Revised: 8 March 2024
+Accepted: 22 March 2024
+Published: 26 March 2024
+Copyright: © 2024 by the authors.
+Licensee MDPI, Basel, Switzerland.
+This article is an open access article
+distributed under the terms and
+conditions of the Creative Commons
+Attribution (CC BY) license (https://
+creativecommons.org/licenses/by/
+4.0/).
+sensors
+Article
+Integration of Railway Bridge Structural Health Monitoring into
+the Internet of Things with a Digital Twin: A Case Study
+Alberto Armijo *
+ and Diego Zamora-Sánchez
+TECNALIA, Basque Research and Technology Alliance (BRTA), Astondo Bidea, Edificio 700,
+48160 Derio, Spain; diego.zamora@tecnalia.com
+* Correspondence: alberto.armijo@tecnalia.com
+Abstract: Structural health monitoring (SHM) is critical for ensuring the safety of infrastructure such
+as bridges. This article presents a digital twin solution for the SHM of railway bridges using low-cost
+wireless accelerometers and machine learning (ML). The system architecture combines on-premises
+edge computing and cloud analytics to enable efficient real-time monitoring and complete storage
+of relevant time-history datasets. After train crossings, the accelerometers stream raw vibration
+data, which are processed in the frequency domain and analyzed using machine learning to detect
+anomalies that indicate potential structural issues. The digital twin approach is demonstrated on an in-
+service railway bridge for which vibration data were collected over two years under normal operating
+conditions. By learning allowable ranges for vibration patterns, the digital twin model identifies
+abnormal spectral peaks that indicate potential changes in structural integrity. The long-term pilot
+proves that this affordable SHM system can provide automated and real-time warnings of bridge
+damage and also supports the use of in-house-designed sensors with lower cost and edge computing
+capabilities such as those used in the demonstration. The successful on-premises–cloud hybrid
+implementation provides a cost effective and scalable model for expanding monitoring to thousands
+of railway bridges, democratizing SHM to improve safety by avoiding catastrophic failures.
+Keywords: structural health monitoring (SHM); railway bridges; digital twin (DT); machine learning
+(ML); MLOps; low-cost MEMS accelerometers; vibration-based monitoring; wireless sensor networks
+(WSNs); hybrid computing; building information modeling (BIM)
+1. Introduction
+Railway bridges are indispensable components of global transportation networks
+and play a crucial role in facilitating the seamless movement of goods and passengers.
+Ensuring their structural integrity is not just a matter of maintenance but a critical safety
+imperative. Traditional methods of inspecting this vital infrastructure through visual
+surveys are not only resource-intensive but also sporadic and disruptive to daily operations.
+Recognizing these challenges, this article introduces an innovative approach to structural
+health monitoring (SHM) of railway bridges, integrating the principles of the Internet
+of Things (IoT) with a digital twin framework. This solution employs low-cost wireless
+sensors and leverages advanced machine learning algorithms to automate the monitoring
+process, offering real-time insights into the structural health of railway bridges.
+Section 1 provides insightful background on railway bridges and highlights the im-
+portance of SHM for these critical assets. It also summarizes previous research efforts that
+independently explored components like low-cost sensing, energy harvesting, digital twins,
+and machine learning for vibration-based SHM of bridges. Finally, the section introduces
+the proposed digital twin solution for SHM of railway bridges.
+Section 2 outlines the key objectives and performance metrics of our study, including
+achieving high classification accuracy for detecting abnormal vibration patterns using
+Sensors 2024, 24, 2115. https://doi.org/10.3390/s24072115 https://www.mdpi.com/journal/sensors
+Sensors 2024, 24, 2115 2 of 30
+cost-effective sensors, facilitating widespread deployment through a hybrid computing
+architecture, and reducing installation and maintenance complexity.
+Section 3 describes the system architecture, detailing the physical components, like
+wireless accelerometers and gateways, as well as the digital components, comprising on-
+premises middleware for real-time processing and a cloud platform for data storage, batch
+analytics, and machine learning model management.
+Section 4 presents our experimental methodology, introducing a comprehensive seven-
+step data-driven process as a generic framework for SHM (Section 4.1). This replicable
+methodology covers bridge characterization, sensor deployment, data preprocessing, un-
+supervised learning of normal vibration patterns, model calibration using finite element
+analysis, generation of synthetic damage data, supervised model training, and continuous
+learning through periodic retraining. Section 4.2 discusses the specific application of this
+methodology to a pilot railway bridge, including an overview of the field deployment,
+sample acceleration data, and insights into how the digital twin detects structural changes.
+Section 5 discusses the results, summarizing the digital twin approach’s capabilities, com-
+paring its performance to the existing literature, and quantifying the demonstrated benefits of
+low-cost and rapid damage detection enabled by the hybrid edge–cloud architecture.
+Finally, Section 6 concludes the article, highlighting the successful real-world valida-
+tion and outlining future research directions, such as expanding to broader production
+deployments, improving model fidelity through advanced simulations, and exploring
+applications for monitoring other infrastructure like wind turbines.
+By integrating IoT sensing, edge–cloud computing, digital twins, and machine learn-
+ing, this work establishes a pragmatic and scalable framework for continuous, automated
+monitoring of railway bridge structural integrity. The pilot implementation not only
+demonstrates the system’s reliability, accuracy, and cost-effectiveness but also marks a
+significant step toward ensuring safer and more resilient transportation infrastructure
+through data-driven SHM.
+1.1. Brief Background of Railway Bridges and Importance of Structural Health Monitoring
+The transport system—in particular, the railway system—is essential to our daily lives,
+and plays a fundamental role in the social and economic development of a region and
+a country [1]. The transport networks in the Basque Country (Spain) and in Europe are
+highly developed but face a growing problem of aging as, for example, 35% of European
+railroad bridges are more than 100 years old [2]. Also, many of these bridges, especially the
+relatively old ones, are being pushed beyond their designed physical capacities due to the
+increased speed, axle load, length, and travel frequency of new trains and transportation
+needs [3–6].
+Climate change introduces uncertainties, since previously unseen climatic conditions
+and phenomena tend to occur more frequently and unexpectedly, making these structures
+particularly vulnerable [7]. In addition, bridges, given their relatively low level of structural
+redundancy, are generally at risk of collapse in the event of significant damage caused by
+deterioration, resulting in serious economic losses, interruptions in the normal course of
+people’s lives, and, in the worst case, irreparable tragedies.
+Recently, there have been several major bridge collapses around the world, including
+the Morandi Bridge failure in Genoa in 2018 [8] and the Nanfang’ao Bridge collapse in Yilan
+County in Taiwan in 2019, among others [9]. These incidents show the potential dangers
+when critical structural damage goes undetected. As a result, frequent and proactive
+monitoring of bridge structural health is essential to avoid such catastrophic failures. Minor
+issues like cracking or loose connections can gradually worsen over time if not spotted early.
+Taking a broad definition, structural health monitoring (SHM) is the process of assess-
+ing the state of health of a structure based on data from instrumentation installed on the
+structure [10,11]. It is a process that can be divided into different phases depending on the
+criterion: some do it in three, such as in [12], although we distinguish four, since manage-
+Sensors 2024, 24, 2115 3 of 30
+ment or decision making, facilitated by contextualized access to the data, is considered
+within the process in the present work:
+• Instrumentation: Set of sensors and data acquisition systems that collect the physical
+structural parameters to be monitored and analyzed.
+• Monitoring: Remote data transmission and web publication.
+• Analysis: Set of techniques to convert the data into characteristic variables or param-
+eters to understand the structural behavior and implement systems to evaluate and
+detect structural damage.
+• Management: Decision-making aid for action and maintenance that involves making
+this real-time information available to the right people at the right time and within a
+realistic geometrical contextualization.
+Due to their high costs, installing sophisticated structural monitoring systems in
+bridges is uncommon, so their application is restricted to singular bridges with special
+relevance. However, due to the obvious improvements that their implementation leads to,
+their use for bridges in general would be justified by developing an optimized solution for
+alerts and diagnostic support at a relatively reduced cost, such as the integrated system
+presented in this work, which employs advanced analysis techniques and IoT technology.
+On the other hand, traditional on-site inspection methods are costly, since they require
+the travel of one or more technicians to each bridge to carry out the survey in order to
+evaluate the condition of the structure and, finally, to report it, and it may be necessary,
+particularly in the case of railway bridges, to interrupt or reduce the service to carry out
+some inspections. In this regard, if an automated alert system were commonly implemented
+to control the state of health of the structure, inspections could be optimized in number and
+form, and improved safety could be achieved in real-time instead of periodically. However,
+the main inspections and load tests required by the regulations in force in each case will
+always have to be carried out according to the scheduled preventive maintenance plans of
+the bridge structure.
+1.2. Related Research Summary
+This article builds upon and extends previous studies and has independently explored
+components like low-cost sensing, energy harvesting, digital twins, and machine learning
+for vibration-based structural health monitoring (SHM) of bridges.
+Vibration-based monitoring is a widely extended practice that tracks the dynamic
+response of a structure [13,14]. Continuous vibration monitoring provides a data-driven
+method to detect subtle changes in bridge integrity. The implementation of an SHM system
+combining structural monitoring and machine learning [ 15–18] through an interactive
+digital twin (DT) that allows contextualization of bridge geometry and sensor position
+can be a key tool for making decisions to avoid infrastructure disasters. As defined
+in [19,20] a DT is a technology that enables the virtual representation of a physical system
+and its associated environment and processes. The system is continuously updated by
+exchanging information between the virtual and physical worlds. The DT integrates sensor
+data through a network of sensors from the physical asset to mirror its status, condition,
+and behavior in real-time. Recently, the DT concept has gained popularity and broad
+acceptance across industries and is being consolidated as a cornerstone of the Industry
+4.0 paradigm. While manufacturing and naval sectors have developed many DT use
+cases, adoption in civil and structural engineering domain has lagged behind. Since 2018,
+the approach has been receiving more research attention in this domain, driven by the
+proliferation of the Industrial Internet of Things (IIoT) and market pull factors, such as the
+need for monitoring aging structures under changing use patterns and uncertain climatic
+conditions [20]. However, the integration of real-time sensor data with advanced simulation
+and AI algorithms remains an open challenge to realize the full benefits of digital twins for
+smarter and safer infrastructure management.
+The article [21] proposes minimal information data modeling (MID) using low-cost
+(equipment costs around EUR 400) and easy-to-install sensors, which is also one of the key
+Sensors 2024, 24, 2115 4 of 30
+aspects of our proposal. In this sense, the novel technique presented in the aforementioned
+article offers high accuracy with low-range sensors and damage detection sensitivity down
+to 0.01 Hz frequency shifts, whereas in our approach, we rely on clustering that addresses
+the variability in identification due to multiple factors. This technique could also be suitable
+to be implemented in the digital twin platform presented in this research through cloud
+processing of the obtained records.
+The article [22] proposes an automated framework to classify anomalies (i.e., drift,
+distortion, outlier, anomaly, bias, etc.) in the time domain and assess the current state of the
+structure, while in our approach, we work in the frequency domain, proposing clustering
+for anomaly detection after the identification of frequencies in free vibration, which also
+allows us to identify and discard faulty measurements. If a permanent discard were to
+occur, a no-data alert would also be issued, and we would have the corresponding signals
+in the time domain to perform a more detailed study or even accommodate algorithms
+such as the one proposed in the aforementioned paper since our digital twin system or
+architecture is flexible enough to include other algorithms and is capable of receiving and
+storing data in the time domain with high sampling frequencies.
+The work in [ 23] offers a new approach to damage identification based on the ex-
+traction of continuous time series of autoregressive (AR) coefficients from deformation
+measurements on a railway bridge, but it is based on fiber optic technology, i.e., expensive
+instrumentation, while the application of the present work is based on low-cost accelerom-
+etry after the passage of a train. In any case, the core of our work is a digital twin system
+with a middleware component that can be readily adapted to other types of sensors with
+any physical magnitude provided that communication can be implemented at least from a
+PC connected in situ, while high-level algorithms, such as the one proposed in the work
+cited above, could be included in our processing layer.
+The article [24] offers a bibliographic review of how energy harvesting technologies
+can provide sustainable power sources for wireless sensor networks (WSNs) deployed
+on bridges. The SHM systems implemented on bridges are mostly based on WSN. Solar,
+thermal, wind, and vibrational energy harvesting are all examined as ways to overcome the
+limitations of battery-operated sensor platforms. However, [24] was confined to an energy
+perspective and did not investigate how the data from such sensors could be utilized for
+automated SHM powered by simulations and analytics.
+The work in [25] discusses that MEMS sensors are miniature in size and have lower
+cost and weight than conventional wired alternatives. These advantages make MEMS
+sensors better suited for permanent installation over many years of continuous infrastruc-
+ture monitoring. The article also provides a bibliographic review regarding commonly
+used machine learning techniques, both classical and deep learning methods, for bridge
+structural health analysis using sensor data. But it identified high computational costs and
+model performance as limitations to practical cloud-based implementations for large-scale
+infrastructure monitoring. Edge computing is suggested as a potential solution, but it is
+not implemented.
+The article [ 26] provides a review of machine learning algorithms that have been
+successfully applied in SHM, specifically in the domains of vision-based and vibration-
+based SHM. In this regard, this paper leverages a vibration-based approach. However,
+other, more advanced AI powered deep learning algorithms could be implemented using
+our demonstrated workflow.
+1.3. A Digital Twin for SHM in Railway Bridges
+The present work advances the state-of-the-art by combining the vital concepts from
+prior work, such as low-cost sensing, energy harvesting, and machine learning, into an
+integrated on-premises–cloud digital twin architecture with a successful real-world im-
+plementation. It makes several key contributions beyond these preceding studies. First,
+it demonstrates how minimal low-cost sensing can be integrated into a complete digital
+twin architecture: advancing from pure data science [ 21] to a production SHM system.
+Sensors 2024, 24, 2115 5 of 30
+In addition, our approach offers the added benefit of building information modeling
+(BIM) [27] contextualization of sensors and measurements within an architecture adaptable
+to other algorithms and sensors. Indeed, for this study, we designed and developed our
+own low-cost devices with edge computing capabilities compatible with the digital twin
+system. However, we prefer to present this digital twin as a system compliant with any
+sensor and any machine learning algorithm as well as adaptable to all types of structural
+configurations thanks to the geometric BIM contextualization of the bridge geometry and
+the instrumentation. Secondly, it implements sustainable solar energy harvesting in the full
+SHM solution, building on the potential shown in [24]. And thirdly, it delivers a hybrid
+edge–cloud machine learning pipeline to make large-scale analytics financially feasible,
+addressing the barriers called out in [25,26].
+Specifically, our digital twin integrates inexpensive IoT acceleration sensors (equip-
+ment costs around EUR 300) with MQTT [ 28] connectivity, on-premises fog computing,
+cloud big data and machine learning services, and a visualization application. Compared
+to [21], the sensor data are augmented by their contextual placement within a digital twin
+model of the bridge for enhanced structural insights, with particular potential for mon-
+itoring local variables (such as strain) through the use of other types of sensors beyond
+accelerometers. This article applies the digital twin concept conforming to the definition
+given in [20] and comprises the next features:
+• Simulation: SHM + IoT + BIM;
+• Learning: AI;
+• Management: DS (provides decision support).
+The article [29] presents a pre-trained network with synthetic data, i.e., supervised
+with finite element models, which, based on deep learning techniques, could provide
+a fast response for damage identification if integrated with real-time monitoring, and
+which would be computationally suitable to be included in the digital twin system we
+present, thus extending its simulation performance for model inclusion (adding the MOD
+and DIAG function in the simulation capabilities according to the structural digital twin
+conceptualization presented in [20]).
+Moreover, powering the wireless sensors using solar energy harvesting realizes a
+self-contained system, enabling the sustainable sensor networks envisioned by [24]. And
+by leveraging both real-time on-premises edge processing and cloud machine learning, our
+solution overcomes the prior constraints around computational costs described in [25,26],
+demonstrating affordable analytics scaling.
+To handle the high-throughput vibration data generated by the accelerometers, the
+digital components of the structural health monitoring system were deployed in a hybrid on-
+premises and cloud architecture [30]. For real-time data ingestion and analysis, on-premises
+middleware was implemented. This on-premises system ingests the 500 Hz. sampled data
+streamed from the accelerometers on the bridges via MQTT and runs real-time machine
+learning algorithms to detect anomalies in the vibration patterns. To supplement this
+real-time analysis, the historical vibration data are also regularly forwarded to a cloud
+platform for longer-term storage and batch analysis. Storing and processing the entire
+high-frequency vibration dataset solely in the cloud would be prohibitively expensive due
+to large data volumes. By leveraging an on-premises system for time-critical analytics
+combined with cloud storage and batch processing, the railway operator can cost-effectively
+monitor the health of its bridges in real-time while also building up a knowledge base of
+historical structural dynamics data.
+2. Objectives and Metrics
+The aim of this work is to demonstrate and evaluate the capabilities of the proposed
+hybrid digital twin solution for short-span railway bridge structural health monitoring in
+terms of accuracy, cost-effectiveness, and ease of deployment compared to state-of-the-art
+methods. Specific objectives are to:
+Sensors 2024, 24, 2115 6 of 30
+• Achieve ≥ 95% classification accuracy for detecting abnormal vibration patterns that
+indicate potential structural issues using only low-cost wireless sensors;
+• Enable scalable large-scale monitoring across thousands of bridges through a cloud
+and on-premises edge computing architecture costing 80% less than traditional wired
+sensor networks;
+• Reduce installation and maintenance complexity by over 50% compared to typical
+SHM systems by utilizing self-contained wireless sensors with battery/solar power.
+Performance in these areas will quantify and demonstrate the improvements of the dig-
+ital twin approach over current SHM practices in rail infrastructure monitoring in terms of
+precision, affordability, practicality, and democratization. The quantification is carried out
+through showcasing a fast, reliable, and cost-effective remote damage detection system for
+bridge structures that integrates the measured data and the alerts generated for the bridge
+into the Internet of Things (IoT). The system aims to move from a reactive to a proactive
+approach in bridge maintenance, replacing basic inspections with an automated process,
+to take a first step towards the smartization of this infrastructure and its management as
+Industry 4.0 [31] assets in a generalized way.
+A pilot case of the system was implemented in a real environment for a railway bridge
+in the Basque Country. For this purpose, following a vibration signal data type approach
+and the application of a wireless sensor network (WSN) platform [24], an optimized sensor
+plan was developed for the structure, and the measurement information was remotely
+processed, enhancing its usability through its synthesized visualization on dashboards
+accessible from a geometric model in the cloud.
+One major contribution of our present work is the deployment and evaluation of the
+digital twin capabilities in an operational context on a real railway bridge, which also
+proves the viability of AI-powered digital twins using low-cost wireless IoT sensors. For
+structural health monitoring of infrastructure like this bridge, the digital twin is powered by
+machine learning algorithms instead of traditional physics-based simulations. Data-driven
+approaches, e.g., [32], are widely used in SHM in both the time and frequency domains,
+but they are not usually based on low-cost IoT sensors leveraging the clustering-based
+approach of this work. This approach is particularly well aligned to work in real-time
+using Eigenfrequencies with uncertainty in their identification (not only environmental and
+operational but also due to sensor and measurement limitations). We first train the digital
+twin, as is the common practice in unsupervised data-based approaches, on vibration
+data collected from the bridge under known normal conditions. This allows the machine
+learning model to learn the patterns of vibration that correspond to normal structural
+dynamics. The trained digital twin model is then connected to real-time vibration data
+streamed from accelerometers on the actual bridge. By analyzing these vibrations using
+its trained machine learning algorithms, the digital twin can detect anomalies that deviate
+from the learned ”normal” patterns. These anomalies may indicate potential structural
+problems not discoverable through visual inspection.
+Most of the traditional methods of operational modal analysis, or modal identification
+without input measurement, work with high-sensitivity and high-price accelerometers,
+such as the force-balance type, but in this case, we work with low-cost MEMS sensors, as
+the only valid measurable output is the one produced by the passage of the train, so that
+the free vibration after the exit of the train from the structure is a signal that contains only
+the natural frequencies of the bridge.
+The digital twin model can be re-trained over time as more sensor data are collected
+to improve its accuracy. The machine learning approach provides a data-driven way
+to monitor bridge health without relying on complex physics simulations. By detecting
+vibration anomalies, the digital twin can provide early warning of damage so that repairs
+can be made before catastrophic failure occurs.
+This work establishes a replicable and cost-effective methodology for real-time railway
+bridge monitoring that can be extended to large infrastructure networks. The approach
+demonstrates reliable high-frequency data collection using MQTT communication be-
+Sensors 2024, 24, 2115 7 of 30
+tween low-cost sensors and cloud platforms. Compatibility with commercial off-the-shelf
+acquisition modules enables flexible adoption with existing monitoring hardware.
+A hybrid on-premise and cloud architecture processes the high-volume sensor streams
+using open-source tools for edge analytics and cloud machine learning. Mosquitto, Node-
+RED, and time-series databases handle real-time needs, while cloud services provide
+scalable data storage, batch processing, and model management. The architecture is sensor-
+agnostic and adaptable to new data sources.
+Additionally , a realistic digital twin integrates the real-time sensor data with bridge geom-
+etry models and AI-generated health insights for enhanced situational awareness. Interactive
+dashboards connect the physical infrastructure state with digital monitoring outputs.
+Overall, this pilot study proves the real-world viability of transitioning from costly
+manual inspections to continuously automated AI-powered infrastructure health moni-
+toring. By demonstrating a pragmatic digital twin system architecture using affordable
+off-the-shelf components, this work enables scalable structural monitoring to improve
+railway operations, maintenance planning, and passenger safety.
+3. System Architecture Description
+3.1. High-Level Overview
+3.1.1. Physical Components: Accelerometers Installed on Bridge and Local Gateway
+The monitoring of structures is generally carried out only on bridges of special im-
+portance or in known poor condition and consist of extensive sensor networks with high
+unit cost. In this use case, although the developed system is compatible with any type
+of sensor (with or without a separate data acquisition system or a personal computer),
+low-cost wireless IoT sensors have been integrated, allowing high data acquisition rates
+and easy installation and communication through a 4G gateway located on site, and the
+entire system is energy self-sufficient through the use of solar panels.
+For the sensor and communications layer, as observed in Figure 1, communication
+of the sensors with the gateway was integrated through a local WiFi network generated
+by the gateway. With fewer cables than a conventional non-IoT system, the installation
+is faster, cleaner, and safer [33,34]. The MQTT protocol was used for sending data with a
+3G network or higher, which allows high sampling transmission (500 Hz during most of
+the measurements taken). This allows for communication of the amount of data needed
+for a remote evaluation of this type of structure. Classical IoT protocols such as LoRa or
+SigFox (0G) are insufficient for civil engineering if data are not preprocessed by the sensor
+hardware through edge computing before being sent [35–37]. This preprocessing, which
+is complex and generates dependency on the referred hardware, may not be available or
+valid in every situation. Finally, we configured triggers for data capture activation at the
+initial pulse signal of a train’s crossing, which is the event of interest, thus saving data and
+energy consumption.
+Among other aspects, transport infrastructure is a particular case in terms of:
+• The typology and materials used as well as construction uncertainties;
+• The failure modes to be considered: ELS (serviceability limit states) or ELU (ultimate
+limit states);
+• The locations or construction elements to be monitored (critical sections, deck, piles,
+bearings, abutments, etc.) and the stresses to which they are exposed;
+• The environment and other variables affecting durability and integrity, as wellas aging.
+Consequently, this pilot has been designed as a flexible, adaptable, and scalable
+solution for remote BIM contextualization [38] of measurements with IoT systems, which is
+considered the most suitable and feasible technological approach for general or wide-use
+bridge monitoring in practice.
+Sensors 2024, 24, 2115 8 of 30
+Figure 1. Sensor and communication layer, including a local WiFi network generated by the gateway
+and an MQTT publishing broker.
+3.1.2. Digital Components: On-Premises and Cloud System
+On the on-premises side, the middleware ingests the raw sensor data stream via
+MQTT and performs real-time processing to detect vibration events caused by passing
+trains. When a threshold is exceeded, indicating a train event, the middleware isolates
+the free vibration segment of the signal and performs a fast Fourier transform (FFT) [39]
+analysis on it to identify the prominent vibrational frequencies. For this response (free
+vibration), the structure can be considered to be in a linear regime, as its natural frequencies
+only depend on the stiffness and mass matrix, but there is a transient character in the signal
+that has a short duration and requires a high sampling frequency (covered by the selected
+network and the transmission system) to be processed, and then we must deal with higher
+uncertainty in modal identification (covered by the proposed machine learning strategy).
+At the end of each day, the historical on-premises data are forwarded to the cloud data lake
+to augment the training dataset and continually improve the machine learning model’s
+accuracy. On the cloud side, the daily batch of FFT peak data from the bridge is stored in
+a data lake. Using Spark clusters, these data are transformed into consolidated, cleansed
+datasets suitable for machine learning. The key steps are:
+• Filtering outliers in the vibration frequencies that fall outside expected ranges;
+• Extracting the top three principal vibration peaks for each bridge crossing event;
+• Clustering the data using k-means [25] to group similar vibration patterns;
+• Labeling the clusters to create a supervised training dataset.
+This curated dataset is used to train and re-train machine learning models to classify
+vibration patterns using automated machine learning and MLOps [ 40] techniques. The
+best-performing model is eventually deployed to an inference endpoint that can be called
+by the on-premises middleware. When the middleware sends new vibration peaks to
+the cloud endpoint, the model classifies the peaks into one of the learned clusters. This
+Sensors 2024, 24, 2115 9 of 30
+cluster assignment is returned to the middleware and stored. Any anomalies or changes in
+the typical cluster distribution can indicate a potential structural issue requiring further
+inspection. The on-premises database, in addition to the real-time inference results, registers
+contextual sensor data such as temperature.
+3.2. Technical Details of Key Components
+The structural health monitoring system follows a hybrid edge–cloud architecture
+to enable real-time monitoring and analytics. The key components include sensors and
+gateways as the edge layer, on-premises middleware for preprocessing, cloud services
+for storage and machine learning, and a digital twin application for data visualization
+and alerts. Figure 2 depicts the main components of the architecture. The components, as
+shown in the figure, are:
+• Sensors: Wireless accelerometers installed on the bridge to measure vibrations. They
+stream data via WiFi to an on-site gateway.
+• 4G gateway: Collects and transmits sensor data from the bridge location to the central
+system. Provides local WiFi connectivity.
+• MQTT broker: Message queuing protocol used for efficient sensor data transmission.
+• On-premises network (A): Middleware hosted on-site for real-time data ingestion and
+processing. Stores data in time-series database and runs analytics like FFT.
+• Cloud network (B): Cloud services for scalable storage, batch processing, and machine
+learning. Batch data are ingested to the cloud storage data lake and processed in
+Databricks for ML model training. It includes MLflow, which enables machine learning
+model management workflows. MLflow is used to track, version, and deploy machine
+learning models into production in a serverless, scalable way.
+• Digital twin application (C): Consumes real-time sensor data and includes a bridge
+geometry model for visualization and alerts. Includes dashboards, notifications, and a
+digital twin BIM viewer.
+Figure 2. Components of the hybrid on-premises and cloud network architecture.
+The edge layer acquires high-frequency sensor data, the on-premises middleware (A)
+handles real-time processing needs, while the cloud (B) provides big data and machine
+learning capabilities. The digital twin application (C) fuses sensor data with the bridge
+information model to bring monitoring insight to users.
+Sensors 2024, 24, 2115 10 of 30
+3.2.1. Mems Accelerometers
+Low-cost SHM monitoring systems offer good behavior in terms of resolution, noise
+level, and sensitivity [41]. The MEMS [25] accelerometers used in the bridge monitoring
+system are the cost-effective BeanDevice Willow AX-3D [ 42] wireless vibration sensors.
+These triaxial accelerometers can measure vibration along three perpendicular axes, cap-
+turing the full motion of the sensor. The selected measurement range was ±2 g, meaning
+they can detect accelerations up to two times the force of gravity in any direction. The
+frequency response reaches 800 Hz: suitable for capturing bridge structural vibrations,
+which typically range from a few hertz to 50 Hz. The Willow sensor was configured to
+sample acceleration values at 500 Hz (a short signal of a few seconds needs a high sampling
+rate to have enough points to be processed by FFT) and streams the data over WiFi using a
+local network set up specifically for the bridge deployment. A 4G cellular modem, acting
+as the gateway, provides the WiFi network access to a wide area network (WAN). The
+accelerometer data are published to an MQTT message broker hosted on the 4G modem
+itself, minimizing external dependencies. Using MQTT allows the low-power wireless
+sensors to easily integrate with the rest of the monitoring system architecture.
+3.2.2. On-Premises System
+The middleware was designed to handle the real-time processing and storage of
+sensor data. We chose the MQTT protocol for communication between the sensors and the
+middleware due to its lightweight nature, low bandwidth usage, and suitability for IoT
+and SHM applications [28].
+For MQTT message brokering, the open-source Mosquitto [43] broker was utilized.
+Mosquitto is a scalable implementation of an MQTT server. The sensors were configured to
+publish their acceleration data streams to topics on the Mosquitto broker. The on-premises
+middleware was built using Node-RED [44], which is a visual programming tool for wiring
+together IoT devices, APIs, and services.
+The use of Node-RED as middleware provides a cost-effective and flexible solution
+for industrial applications [45]. Custom Node-RED nodes were developed to decode the
+hexadecimal payload of the sensor messages into numerical acceleration values. Additional
+nodes enabled the storing of real-time data into an InfluxDB [46] time-series database. The
+Node-RED nodes enabled the following features for real-time analysis:
+• Signal processing algorithms: Signal processing is a crucial aspect of our study, as
+it allows us to extract valuable insights from the raw sensor data collected from the
+railway bridge. In this study, we used a combination of filtering and noise reduction
+to process the high-frequency sensor data in real-time.
+• Fast Fourier transform (FFT) analysis: Following filtering and noise reduction, the
+sensor data were then subjected to FFT analysis. FFT is a signal processing algorithm
+that transforms a signal from its original time domain to a representation in the
+frequency domain.
+In our study, FFT analysis was performed on-premises using a custom-built Node-
+RED node. This tool was designed to handle the high data rates of the sensor data and
+performs FFT analysis in real-time, thereby enabling us to detect any changes in the bridge’s
+Eigenfrequencies after a train has passed. The Node-RED environment provided an agile
+way to stream and process the high-frequency sensor data on the middleware.
+3.2.3. Cloud System
+The cloud infrastructure provider used was Microsoft Azure [ 47]. Within Azure, a
+Gen2 storage account was leveraged as a scalable data lake [48] for storing the historical
+vibration data forwarded from the on-premises system. Built on top of this data lake, a
+lake house [49] architecture was implemented using Databricks [50] for Azure. Databricks
+provided both data engineering capabilities for batch data processing as well as machine
+learning workflows in two workspaces.
+Sensors 2024, 24, 2115 11 of 30
+In the data engineering workspace, Databricks was used to process the raw FFT data
+from the accelerometers. Spark clusters running on Databricks consolidated and cleaned
+these data, ultimately clustering the FFT spectra into three labeled groups representing
+different vibration patterns. For data transformation, the medallion architecture [51] was
+used. This transformed the raw data into curated silver and gold datasets to make them
+suitable for training machine learning models.
+The machine learning component of Databricks leveraged the AutoML [52] feature
+to automatically train and evaluate different algorithms on the labeled FFT data. The
+best-performing algorithm was selected and registered into the MLflow [40] tracking server.
+MLflow enabled MLOps on Databricks by managing the model lifecycle, including model
+versioning, staging, and production deployment. Trained models were first tested in a
+staged environment and then promoted to production deployment on a serverless and
+scalable Azure Kubernetes service. The production models were exposed as real-time
+inference endpoints that could be called by the on-premises middleware system.
+3.3. Implementation Challenges and Solutions
+With the support of ETS, Euskal Trenbide Sarea/Basque Railway Network through
+the company DAIR Ingenieros, the bridge selected for this pilot is located at PK11/520 on
+the Txorierri line in the industrial area of Torrelarragoiti (Zamudio, Basque Country, Spain),
+as shown in Figure 3 below. The characteristics of the structure under study are as follows:
+• Railway bridge;
+• A single isostatic span of approximately 17 m;
+• Two non-standard steel main girders with reinforced concrete top slab.
+Figure 3. Railway bridge used as pilot at Torrelarragoiti industrial area, exploited by ETS Euskal
+Trenbide Sarea/Basque Railway Network (Zamudio, Basque Country, Spain).
+The 17 m single-span bridge chosen as the pilot for this structural health monitoring
+system represents a typical medium-length span used for urban bridges. In this kind
+of single-span bridges, deterioration issues eventually emerge from accumulated traffic,
+material aging, and exposure to climatic conditions.
+Sensors 2024, 24, 2115 12 of 30
+In order to record as clearly and accurately as possible the first three vibration frequen-
+cies, an accelerometer was placed close to the span center (to contrast the first longitudinal
+bending mode and, as a local variable, the acceleration of the point of maximum displace-
+ment, since this acceleration can also be controlled by a direct threshold), an accelerometer
+was placed at one-fourth of the span (between the span center and support, approximately
+where the maximum amplitude of the third modal form of vibration is located, correspond-
+ing to a second longitudinal bending, to which the accelerometer at the span center is
+theoretically blind), and an accelerometer was placed on the other beam to characterize the
+torsion (second theoretical mode, which might not always be excited by the passing of the
+centered load). However, this last added sensor ended up being removed before the end of
+the installation, as the concrete slab shielded the coverage provided by the WiFi antenna
+on the other side of the beam. That is, only one of the main girders was instrumented,
+which was sufficient for the demonstration or functionality test of the system parts once
+assembled, which is the objective of the pilot test. The installation was completed in about
+3 h, but it may be carried out faster on more accessible bridges. It was necessary to make a
+cut in the road under the bridge and use a flatbed truck to access the flange of the main
+girders. It was decided to place the gateway and the accumulators on the flange and to
+place the sensors next to the web. According to the usual practice of instrumentation
+of structures, this is a suitable position for the measurement of accelerations and main
+vibration frequencies.
+It is important to emphasize that it is necessary to record measurements from bridges
+for further analysis (a complete dynamic and/or more detailed study can be done by an
+expert after downloading data from the platform) and to have a power outlet available.
+Failing that, it is necessary to install solar panels and their respective accumulators, since
+the measurement equipment generally cannot withstand many hours without power when
+high measurement and transmission rates are required. IoT equipment that has autonomy
+for long periods of time using only batteries usually measures and transmits data every
+several minutes, while for the pilot experience, up to 500 data points per second were being
+recorded for train passages (achieved by implementing communication through the MQTT
+protocol and a 4G network).
+Regarding data quality, the span of the bridge resulted in being a bit short, and the
+free vibration of the bridge was restricted to less than 8 s. This meant that the part of the
+signal (after the train exit) corresponding to the free vibration had to be precisely captured.
+To solve this, and since the train units always cross at the same speed, a manual time
+adjustment of the capture was configured in the middleware to ensure that a significant
+free vibration signal was captured for each crossing.
+Another issue came from the differences in temperatures from one day to another. The
+sensors were sensitive to the temperature and summed an offset in the signal, generating
+false triggering due to detection of signals that exceeded the RMS thresholds and activating
+the capture of invalid signals. In addition, under certain climate circumstances, some noise
+was induced due to interference that occasioned the same triggering issue. The solution
+comprised regular remote calibration of the MQTT sensors when notable temperature
+changes were forecast.
+Concerning the selection of the on-premises and cloud infrastructures, a key challenge
+was to find the right balance for leveraging both platforms cost-effectively. While cloud
+services excel at data storage, batch processing, and machine learning, they can become
+prohibitively expensive. For this bridge monitoring use case, the raw sensor data rates
+were too high to process solely in the cloud. By handling real-time ingestion, parsing,
+and FFT analysis on-premises, the data forwarded to the cloud were reduced by orders of
+magnitude. This avoided excessive cloud data ingress charges. However, the cloud was still
+leveraged for its strengths, such as cheap storage, distributed batch data processing, and
+on-demand machine learning model training and deployment. These tasks are challenging
+to implement on-premises due to the maintenance costs and configuration efforts of these
+components. To scale the solution to many bridges, the on-premises components allow
+Sensors 2024, 24, 2115 13 of 30
+cheap real-time analytics, and the cloud then enables aggregated analytics by consolidating
+data from all bridge deployments. Careful testing was conducted to find the optimal split
+between real-time processing and batch cloud analytics. This balance minimized costs
+while still providing a robust, low-latency structural health monitoring system.
+4. Experimental Methodology
+4.1. Generic Methodology
+This sub-chapter introduces a comprehensive, generic methodology for structural
+health monitoring (SHM) of railway bridges that leverages low-cost IoT sensors, hybrid
+edge–cloud processing, finite element model (FEM) calibration, unsupervised learning to
+identify normal vibration patterns, generation of synthetic damage data, and supervised
+model training and validation. The goal is to enable accurate, cost-effective, and scalable
+SHM that can be replicated for other pilot bridges beyond the specific one presented in this
+manuscript. The proposed ideal framework consists of seven key steps:
+1. Characterization of the railway bridge;
+2. Sensor deployment and data acquisition;
+3. Data preprocessing;
+4. Unsupervised learning;
+5. Model calibration and synthetic data generation;
+6. Supervised learning;
+7. Validation and continuous learning.
+While not all seven steps were fully implemented for the pilot bridge in this work, the
+overall methodology provides a complete reference that other researchers can adapt and
+build upon to achieve robust SHM using affordable sensing and advanced analytics. The
+specific application and customization of this generic approach for the pilot railway bridge
+is detailed subsequently in Section 4.2.
+By presenting this methodology, the aim is to establish a replicable foundation for data-
+driven SHM that fuses IoT, AI, and digital twins to deliver a proactive, automated solution
+for assessing bridge health at a fraction of the cost of traditional inspection-based or wired
+monitoring techniques. This will allow infrastructure managers to scale real-time damage
+detection across their entire bridge networks: enabling timely maintenance interventions
+that prevent catastrophic failures and extend structure lifespans.
+4.1.1. Characterization of the Railway Bridge
+The proposed generic methodology begins with thoroughly characterizing the railway
+bridge through finite element method (FEM) modeling and detailed in situ measurements.
+A parameterized 3D FE model of the bridge should be created in software like ANSYS using
+the parametric design language (APDL). This virtual FE model should capture the precise
+geometry, structural elements, material properties, and existing damage conditions of the
+physical bridge. To achieve this, the in situ measurements should involve meticulously
+recording the bridge dimensions, cross-sections, material types (steel, concrete, etc.) and
+visible degradation.
+Although it has not been carried out in the present work, in order to achieve a faithful
+characterization of the structure, ideally, the measurements may involve testing to obtain
+concrete strength, rebar details, etc. These measurements ensure the FE model accurately
+represents the real bridge.
+As a result, at least the first three principal vibration mode shapes and frequencies
+should be calculated from this initial FEM bridge model. These will serve as a baseline for
+subsequent measurements and model calibration.
+4.1.2. Sensor Deployment and Data Acquisition
+Low-cost MEMS wireless accelerometer sensors should be configured for optimal sam-
+pling rates (e.g., 500 Hz) based on the expected vibration ranges and response duration from
+Sensors 2024, 24, 2115 14 of 30
+train loading. The sensors should be ruggedized with IP67 rating for outdoor conditions
+and integrated with solar panels and rechargeable batteries for self-powered operation.
+In our work, we implemented an optimized sensor installation plan by placing the
+accelerometers at the best locations on the bridge based on the FE analysis. The sensors
+connect to a local 4G gateway on the bridge through a WiFi mesh network, enabling
+redundant communication paths. The gateway streams the high-frequency vibration data
+to an on-premises middleware system using the MQTT protocol over 4G/5G networks.
+Triggers were set to activate data capture only during train crossing events in order to
+conserve bandwidth and battery life.
+4.1.3. Data Preprocessing
+The raw vibration data should be preprocessed in the on-premises middleware by
+applying filtering and outlier removal techniques to improve signal quality. After each train
+crossing, the free vibration portion of the signal should be extracted; this corresponds to the
+linear regime when only the bridge’s natural frequencies are present. Fast Fourier transform
+(FFT) analysis should be applied to this free vibration data to identify the prominent
+vibration frequency peaks, with a focus on the three principal peaks that correspond to the
+fundamental mode shapes.
+4.1.4. Unsupervised Learning
+The empirical vibration data, consisting of the three principal frequency peaks from
+each train crossing event, should be clustered into distinct groups using the k-means
+algorithm. This unsupervised clustering method segments the data into normal operating
+condition clusters based solely on the vibration patterns. To confirm cluster stability, it
+must be ensured that the relative sizes of the clusters do not change significantly as more
+data are accumulated over time. This would confirm the system is able to learn the intrinsic
+vibration patterns. Next, the data points should be labeled based on their assigned cluster
+for subsequent supervised learning.
+4.1.5. Model Calibration and Synthetic Data Generation
+The FE bridge model should be calibrated by tuning parameters like the modulus
+of elasticity of the steel or the concrete, or the boundary conditions (not always ideal),
+to match the empirical vibration modes extracted from the sensor data under normal
+operating conditions. Thus, this calibrated FE model would act as an accurate digital
+representation of the real bridge. Synthetic damage scenarios should be simulated in the FE
+model by reducing parameters like the elastic modulus of steel or the inertia of components
+by a small amount, like 10%, 20%, or 30%, based on, e.g., visual degradation observed
+during inspections. Finally, new vibration modes should be calculated from this analytical
+damaged state.
+The percentage differences between the damaged and normal vibration modes should
+be applied to the empirical sensor data clusters to create the same number of corresponding
+synthetically damaged data clusters. These should be labeled differently from the normal
+condition clusters.
+4.1.6. Supervised Learning
+The normal and synthetic damaged labeled datasets should be combined into one
+dataset with the total number of clusters: the normal operation clusters and the corre-
+sponding damaged data clusters. This consolidated dataset should be split into train, test,
+and validation partitions. Several machine learning classifiers, like the LightGBM classi-
+fier finally selected for this bridge, should be trained on the train set using the AutoML
+approach to automatically tune hyperparameters like tree depth, learning rates, etc., via
+cross-validation on a validation set. Metrics like log loss, receiver operating characteristic
+curve and area under the curve (ROC-AUC), precision, and recall should be systematically
+tracked to optimize the model’s discrimination ability.
+Sensors 2024, 24, 2115 15 of 30
+Once the optimal model configuration is identified, it should be evaluated on the
+held-out validation set to estimate the final classification accuracy, precision, recall, and
+F1-score for detecting abnormal/damaged vibration patterns against normal patterns using
+the empirical sensor data.
+4.1.7. Validation and Continuous Learning
+The final stage of our generic methodology, validation and continuous learning, is
+crucial for maintaining the integrity and relevance of our structural health monitoring
+system. The validation process, therefore, confirms not only the model’s accuracy but also
+its reliability in a real-world setting.
+After training the machine learning model on the labeled dataset of normal and
+synthetic damaged vibration patterns, it is crucial to rigorously validate the model’s per-
+formance and accuracy. This validation step assesses the model’s ability to generalize and
+correctly classify new, unseen vibration data from the bridge sensors into the appropriate
+normal or anomalous clusters. Once validated on this test set, the trained model should be
+deployed to a production environment for real-time inference.
+Our trained LightGBM model achieved an excellent validation ROC-AUC score of
+0.9999, demonstrating its ability to accurately discriminate between normal and anomalous
+vibration patterns on the validation set. In the production system, this model is deployed
+to a serverless, cloud-based inference endpoint. The on-premises middleware streams
+new vibration data from the bridge sensors to this endpoint for real-time classification.
+The model’s predictions along with sensor metadata like temperatures are stored in the
+on-premises database. Any anomalies or deviations from the typical cluster distributions
+can provide early warning of potential structural issues requiring further inspections.
+However, the monitoring process does not stop there. This validated model now
+becomes the initial baseline that enables continuous learning and adaptation as more real-
+world vibration data accumulate over time. The digital twin system stores all historical
+sensor data in a cloud data lake. At regular intervals, this growing dataset is used to
+retrain and update the machine learning model, further enhancing its accuracy through
+additional training on real-world examples. This continuous learning loop allows the
+model to automatically adapt to gradual changes in structural dynamics, seasonality effects,
+aging of the bridge materials, and more.
+4.2. Application of the Methodology to the Pilot Bridge
+4.2.1. Overview of Field Deployment
+The structural health monitoring system was deployed on an in-service railway bridge
+for an extended real-world validation. The instrumentation was installed rapidly, as the
+equipment consists mainly of wireless devices. Despite exposure to weather and vibrations,
+the ruggedized equipment required no maintenance over two years of continuous operation.
+Over this period, the system captured a rich dataset of bridge vibrations under daily rail
+traffic with a mean frequency of two trains crossing every 18 min. The machine learning
+models were successfully trained on these data to classify normal vibration patterns, and the
+model deployment demonstrated the effectiveness and robustness of the monitoring system
+concept. The sensors provided reliable high-frequency data even in noisy environments
+near active rail lines.
+The digital twin concept demonstrated here proved to be robust, and the implementa-
+tion methodology can be extended to other railway bridges with similar characteristics and
+potentially to other types of infrastructure.
+4.2.2. Sample Acceleration Data Collected from Sensors
+There is some variability in the natural frequencies extracted during each train pass
+because different trains pass in both directions with slightly varying loads and speeds that
+do not excite the structure in the same way, and also, there is inherent variability due to
+working with short free vibration signals rather than long environmental vibration record-
+Sensors 2024, 24, 2115 16 of 30
+ings. To cope with this fact, a clustering algorithm was used to separate the measurements
+into a reduced number of groups or cases. Basically, depending on the passing of the train,
+some frequencies are not identifiable after the departure of the vehicle because they have
+not been sufficiently excited, or signals with higher noise and/or insufficient duration of
+free vibration are generated for a correct processing. These latter signals are discarded,
+since the identification of frequencies with accelerations of free vibration is more unstable
+with these more limited sensitivity sensors (lower than class A ones). That is, a series of
+clusters can be separated to generate three different clusters. With clustering, different
+regions of normality can be easily defined for the training of anomaly detection so that
+once the algorithm has been trained, at the passage of each new train, the membership of
+each of the clusters can be evaluated.
+Figure 4 shows a time-series plot of free vibration after a passing train. The signal is fur-
+ther processed with an FFT algorithm for frequency domain transformation and classification.
+Figure 4. Time-series plot of the free vibration after the crossing of a train.
+Figure 5 shows a plot of the free vibration FFT of the previous figure. Clustering is
+performed based on the patterns of these modal frequencies for the characterization of the
+normal situation of the bridge.
+Figure 5. Frequency plot of the free vibration after the crossing of a train.
+To validate this characterization, the free vibrations were processed after the passing
+of a train to obtain a vector with the natural frequencies of the structure of the pilot
+research case. These frequencies are approximately in agreement with the frequencies of
+the Ansys Mechanical APDL [53] finite element model, knowing that this is only indicative
+because there are no drawings of the structure and was no access permission to carry out
+exhaustive measurements. Thus, it was verified with regard to the frequency domain that
+Sensors 2024, 24, 2115 17 of 30
+the measurements provided by the equipment are valid and that the bridge does not differ
+appreciably from its theoretical behavior, i.e., as it is physically.
+After assigning some parameters that could not be measured directly within acceptable
+values (Young’s modulus of steel = 210,000 MPa, Young’s modulus of concrete = 35,000 MPa,
+density of steel = 7850 Kg/m3, density of concrete = 2400 Kg/m3, and web thickness of the
+non-standard steel girder = 65% of the measured flange), the values obtained by the finite
+element model for the main three vibration modes are as follows:
+• 5.71 Hz for the first mode (bending);
+• 15.11 Hz for the second mode (torsion);
+• 20.84 Hz for the third mode (second order bending).
+The corresponding modal shapes are shown in Figure 6 (Ansys Mechanical APDL).
+Figure 6. Modal shapes of the Ansys Mechanical APDL for the pilot bridge. The boundary conditions
+are those of a simply supported beam (applying the restraints at the bottom flange end of the steel
+girders in line with how the structure is actually supported).
+4.3. How a Digital Twin Detects 

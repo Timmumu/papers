@@ -20,4 +20,19 @@ This study proposes a methodological framework for integrating structural health
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 | Yes | Yes | Yes | Tier 1 - Digital Model (static, no live data) | 0 | 0 | 1 | Design for Safety (DfS) | None | Finite Element Method / physics-based | Multi (two or more data types) | Conceptual (no test) | 4 | BIM-to-Digital-Twin architecture |
 
-**Key evidence (AG):** Methodological framework for integrating SHM with numerical DT models for seismic assessment of heritage buildings (Basilica Maria Auxiliadora, Lima): numerical models in 3DEC and SAP2000 (modal + time-history of 34 seismic ground-motion records) identify susceptible zones and recommended sensor locations; sensor deployment and validation against experimental models are explicitly future work - no DT implemented, no live data link, no learning loop. Source: Endnote library (front-matter DOI verified).
+**Key evidence (AG):** Methodological framework for integrating SHM with numerical DT models for seismic assessment of heritage buildings (Basilica Maria Auxiliadora, Lima): numerical models in 3DEC and SAP2000 (modal + time-history of 34 seismic ground-motion records) identify susceptible zones and recommended sensor locations; sensor deployment and validation against experimental models are explicitly future work - no DT implemented, no live data link, no learning loop. 
+
+**Strength & gap filled (AH):** Provides a methodology for integrating SHM with numerical DT models for seismic assessment of heritage buildings: a LiDAR-derived BIM of the Basilica Maria Auxiliadora in Lima fed calibrated SAP2000 and 3DEC models (about 4500 block elements, 161000 contact zones), modal analysis with 220 modes, time-history analysis reproducing the 2007 Pisco earthquake crack patterns, and 25 sensor control points selected via intensity-duration-frequency plots.
+
+**Deficiencies & future work (AI):** No sensors are yet deployed: the study covers only Building Virtualization and part of sensor data analysis, so the EWS and DT feedback loop remain pending; validation relies on historical damage reports and analytical consistency, with future research to include experimental models, tri-axial sensor installation, and ambient-vibration calibration of the numerical model.
+
+
+**Fusion depth (AC1):** Aligned
+
+**Fusion evidence (AC2):**
+- **Data streams:** 3D LiDAR point-cloud survey of the Basilica Maria Auxiliadora + BIM geometry + 3DEC/SAP2000 FEM models.
+- **Integration mechanism:** the point-cloud survey is converted into a BIM that is linked to the FEM models through an explicit BIM-FEM linking process, sharing one building geometry frame, while each model analyses separately (modal with 220 modes, time-history of 34 records); sensor deployment is future work.
+- **Why this code:** geometry sources share the BIM frame but analysis stays per model, so Aligned.
+
+**Confidence (AC3):** Medium - the BIM-FEM linking process is explicit, but no live sensor data exists yet.
+Source: Endnote library (front-matter DOI verified).

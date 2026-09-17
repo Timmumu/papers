@@ -21,4 +21,17 @@ Traditional inspection and diagnosis methods for civil infrastructure operation 
 | Yes | Yes | Yes | Tier 3 - Digital Twin (bidirectional, two-way) | 0 | 0 | 1 | Design for Safety (DfS) | None | Other / Mixed | Multi (two or more data types) | Conceptual (no test) | 3 | Predictive analytics / decision support |
 
 **Key evidence (AG):** Human-in-the-loop digital twin (HITL-DT) framework for smart civil infrastructure O&M (Beijing U Tech): fuses human cognition (perception, team situation awareness), AI, and engineering knowledge for risk sensing/diagnosis (spatiotemporal changes) and risk prediction/control; formalizes structural mechanics knowledge, embeds engineering code rules, expandable case knowledge base; multi-source spatiotemporal sensing (human inspection + machine vision). Human-in-the-loop bidirectional with human oversight → Tier 3; no learning loop (knowledge is rule-based, not learning).
+
+
+**Strength & gap filled (AH):** Bridges the divide between data-driven automation with limited interpretability and human-centered assessment with limited scalability: a human-AI-knowledge HITL-DT framework formalizes engineering codes and human cognition (individual perception, team situation awareness) alongside AI reasoning into a closed-loop device-model-decision architecture for risk sensing, prediction and control in civil infrastructure O&M.
+
+**Deficiencies & future work (AI):** Validation is qualitative and conceptual only, demonstrating operational feasibility and logical consistency without numerical performance tests or comparisons with other systems; formalizing context-dependent expert knowledge into computable rules remains unresolved, multi-source data systems are costly, and future work targets autonomous learning, cross-infrastructure knowledge transfer, and full-lifecycle risk management.
+**Fusion depth (AC1):** Unclear
+
+**Fusion evidence (AC2):**
+- **Data streams:** framework components (human inspection, machine vision, engineering codes, case knowledge).
+- **Integration mechanism:** none demonstrated - operational feasibility and logical consistency only; no numerical tests.
+- **Why this code:** Unclear (rule 1/2).
+
+**Confidence (AC3):** High.
 (full-text source: Endnote)

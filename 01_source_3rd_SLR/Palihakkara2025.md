@@ -21,3 +21,16 @@ SUMMARY: As the construction industry is moving towards digitalisation, the inte
 | Yes | Yes | Yes | Unclear | 0 | 1 | 0 | Both | None | Ontology / semantic | Multi (two or more data types) | Conceptual (no test) | 3 | Semantic interoperability |
 
 **Key evidence (AG):** Systematic literature review (52 papers, Scopus+WoS, 2005–2023) on ontology/semantic-web/linked-data integration in BIM and digital-twin based construction management during the construction execution phase; identifies 8 use cases (incl. safety management, compliance checking, construction planning & production control); trend + theoretical analysis of how semantic-web tools (ifcOWL, BOT, SPARQL, SWRL) serve each use case; barriers: data privacy, scalability, ontology-mapping complexity. Review only — no DT built or tested; DfS/DfQ appear among reviewed use cases, not demonstrated; no learning loop.
+
+**Strength & gap filled (AH):** Maps the under-reviewed use of ontologies and semantic web technologies for construction execution: a systematic review of 52 papers from Scopus and Web of Science spanning 2005-2023 categorizes use cases including safety management, compliance checking, site monitoring and 4D BIM, analyzes how semantic web tools support BIM and digital twin applications, and positions ontologies as the path toward BIM Maturity Stage 3.
+
+**Deficiencies & future work (AI):** It is a literature review without its own ontology or case validation; findings are limited to building construction execution papers retrieved by April 2023 and exclude infrastructure projects; barriers include unpublished ontologies causing redundancy, scalability limits and mapping complexity, with future work on reuse best practices, IoT-linked real-time semantic data and scalable solutions.
+
+**Fusion depth (AC1):** Unclear
+
+**Fusion evidence (AC2):**
+- **Data streams:** reviewed use cases only (safety management, compliance checking, site monitoring, 4D BIM).
+- **Integration mechanism:** none implemented - the review analyses how semantic tools serve each use case.
+- **Why this code:** Unclear (rule 2).
+
+**Confidence (AC3):** High.

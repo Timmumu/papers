@@ -21,3 +21,16 @@ As digital twins are gaining importance in various industries, research on their
 | Yes | Yes | Yes | Tier 2 - Digital Shadow | 0 | 0 | 1 | Design for Safety (DfS) | None | Digital Twin platform (no machine learning) | Multi (two or more data types) | Single case study | 4 | Design for Safety |
 
 **Key evidence (AG):** Real-world building digital twin for fire safety and anomaly detection (17 months of data, two use cases): advanced sensors + dimensionally-accurate 3D model + thermal camera sensors with real-time data fusion; features early fire/anomaly detection, fire localization and intensity evaluation, real-time incident data sharing, and fire-propagation simulation; data analysis predicts potential future threats. One-way sensing→visualization/simulation for operators; no automated actuation (integrating access-control actuation suggested as future work) and no learning loop.
+
+**Strength & gap filled (AH):** Fills the scarce real-world evidence gap on building safety DTs with two 17-month deployments: an office and a grain drying facility using Raspberry Pi sensor packages (thermal, RGB, UV, motion sensors), LiDAR-derived dimensionally accurate 3D models in Unity and WebGL, and Azure dashboards; normal operational signature analysis detects anomalies, localizes fires without triangulation, and a candle flame was detected in under one second.
+
+**Deficiencies & future work (AI):** Monitoring only with no actuation or closed control of building systems. Validation is limited to the use phase, with no case studies from other lifecycle phases, and no quantitative comparison of detection speed and accuracy against conventional fire detection methods. Cost, lack of adoption knowledge, and manual 3D model generation remain obstacles; these comparisons and lifecycle studies are future research.
+
+**Fusion depth (AC1):** Fused
+
+**Fusion evidence (AC2):**
+- **Data streams:** Raspberry Pi thermal camera, RGB, UV and motion sensors; LiDAR-derived dimensionally accurate Unity/WebGL models; Azure dashboards.
+- **Integration mechanism:** the paper states real-time data fusion of the sensor streams for normal-operational-signature analysis, fire localisation without triangulation and intensity evaluation; a candle flame was detected in under one second.
+- **Why this code:** detection output depends on multiple fused sensor types simultaneously, so Fused; implemented in real buildings.
+
+**Confidence (AC3):** High - real-time data fusion is the paper stated mechanism.

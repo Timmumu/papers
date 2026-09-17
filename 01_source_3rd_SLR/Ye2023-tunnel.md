@@ -21,4 +21,17 @@ Accidents tend to happen during tunnel construction due to the harsh environment
 | Yes | Yes | Yes | Tier 2 - Digital Shadow (one-way physical to virtual) | 0 | 1 | 0 | Design for Safety (DfS) | None | Digital Twin platform (no machine learning) | Multi (two or more data types) | Single case study | 4 | Design for Safety |
 
 **Key evidence (AG):** Digital-twin based multi-information intelligent early warning and safety management platform for tunnel construction (CUGB/Beijing Jiaotong U): WSN base stations for instruction sending, warning, positioning, information transmission; multi-source sensors (safety, environmental, construction, auxiliary) integrated; four-level early warning and emergency response plan; validated on Dongtianshan Tunnel (deep buried, extreme weather, harmful gas); collapse accident successfully predicted. One-way monitoring→early warning→management; no actuation and no learning loop.
+
+
+**Strength & gap filled (AH):** Fills the gap of multi-source information transmission and DT-based early warning in deep-buried tunnel construction: multifunctional wireless base stations collect harmful gas, meteorological, deformation, and personnel-positioning data, mirrored in an OpenGL virtual tunnel with a four-level warning and emergency response mechanism, which successfully predicted a collapse at the K0+668 face of the 11.7 km Dongtianshan Tunnel with no casualties.
+
+**Deficiencies & future work (AI):** The virtual simulation lacks detailed display and monitoring of worker behavior, health, and collision risks, and pre-construction risk analysis is not integrated; future work adds more monitoring data types, deeper pre-construction risk analysis, and an improved tunnel construction information database for predictive analysis in the maintenance stage.
+**Fusion depth (AC1):** Aligned
+
+**Fusion evidence (AC2):**
+- **Data streams:** harmful-gas, meteorological, deformation and personnel-positioning sensors (Dongtianshan Tunnel, 11.7 km).
+- **Integration mechanism:** multifunctional WSN base stations mirror the streams into the virtual tunnel, and the four-level warning/emergency mechanism acts on thresholds, successfully predicting a K0+668 face collapse.
+- **Why this code:** streams share the tunnel-model frame while warnings run per parameter, so Aligned.
+
+**Confidence (AC3):** High - the virtual-tunnel mapping is explicit.
 (full-text source: Endnote)

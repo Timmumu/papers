@@ -14,7 +14,20 @@ Multi-robot systems are emerging as a promising solution to the growing demand f
 
 **Note:** Closed-loop site DT + LLM; productivity & safety motivation
 
-## Step-3 Deep-Read Coding (Prompt B) (full-text source: Adaptive multi-robot task allocation framework (UTK/Amazon/TAMU): DT system enables real-time synchronization between physical operations and digital representations as user interface, creating closed-loop feedback; Integer Programming models task allocation (dependencies, heterogeneity, scheduling, replanning); LLM interprets natural-language inputs to autonomously update optimization constraints (97% accuracy in constraint/parameter extraction) without manual programming; case study demonstrates computational efficiency and LLM reasoning. Closed-loop feedback + LLM-based constraint adaptation → Tier 3; no learning loop (LLM is inference-time, not self-improving).)
+## Step-3 Deep-Read Coding (Prompt B) 
+
+**Strength & gap filled (AH):** Addresses static, code-bound multi-robot scheduling: a closed-loop digital twin in Unity, synchronized with ROS and Gazebo, supports integer-programming task allocation whose constraints are updated by an LLM interpreting plain-language site narratives, achieving over 97 percent constraint and parameter extraction accuracy with GPT-4.1, optimal plans within about one second and 0.08-second replanning across 1024 scenarios of 27 tasks and 15 robots.
+
+**Deficiencies & future work (AI):** Validated only in simulation: Gazebo idealizes robot-human collaboration and material handling, human worker actions are not modeled, and the LLM is limited to constraint extraction; extending to further construction scenarios, proactive conflict detection and pre-optimization reasoning are future work, with physical robot deployment still pending.
+**Fusion depth (AC1):** Fused
+
+**Fusion evidence (AC2):**
+- **Data streams:** natural-language site narratives (text) + synchronised robot/operation state in the Unity-ROS-Gazebo DT.
+- **Integration mechanism:** LLM-extracted constraints (97% accuracy with GPT-4.1) are fed into the integer-programming allocator whose output depends on both the textual constraints and the live DT state; replanning runs in about 0.08 s.
+- **Why this code:** a model whose output depends on two data types simultaneously (text + system state), so Fused; demonstrated across 1024 scenarios.
+
+**Confidence (AC3):** High - the LLM-constraint-to-optimiser mechanism is explicit, though validation is simulation-only.
+(full-text source: Adaptive multi-robot task allocation framework (UTK/Amazon/TAMU): DT system enables real-time synchronization between physical operations and digital representations as user interface, creating closed-loop feedback; Integer Programming models task allocation (dependencies, heterogeneity, scheduling, replanning); LLM interprets natural-language inputs to autonomously update optimization constraints (97% accuracy in constraint/parameter extraction) without manual programming; case study demonstrates computational efficiency and LLM reasoning. Closed-loop feedback + LLM-based constraint adaptation → Tier 3; no learning loop (LLM is inference-time, not self-improving).)
 
 | P | Q | R | U Tier | V | W | X | Z | AA | AB | AC | AD | AE | AF |
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|

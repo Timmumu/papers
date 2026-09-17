@@ -1,0 +1,1087 @@
+Full length article
+AIoT-powered building digital twin for smart firefighting and super 
+real-time fire forecast
+Weikang Xie
+a
+, Yanfu Zeng
+a
+, Xiaoning Zhang
+a , d , *
+, Ho Yin Wong
+a
+, Tianhang Zhang
+a , b
+, 
+Zilong Wang
+a
+, Xiqiang Wu
+a , c
+, Jihao Shi
+a , *
+, Xinyan Huang
+a , *
+, Fu Xiao
+a
+, Asif Usmani
+a
+a
+Research Centre for Smart Urban Resilience and Firefighting, Department of Building Environment and Energy Engineering, The Hong Kong Polytechnic University, 
+Kowloon, Hong Kong, China
+b
+Research Center for Urban Fire Safety Engineering, Zhejiang University, Hangzhou, China
+c
+School of Transportation, Southeast University, Nanjing, China
+d
+Pengcheng Laboratory, Shenzhen, China
+ARTICLE INFO
+Keywords:
+Smart Building
+Fire Forecast
+Internet of Things
+Deep Learning
+Sensor Network
+Digital Twin
+ABSTRACT
+Complex dynamics inherent of building fire poses big challenges to firefighting and rescue, especially with 
+limited access to critical fire-hazard information. This work proposes the novel AIoT-integrated Digital Twin for 
+the full-scale multi-floor building to manage the dynamics fire information. This system allows for super real- 
+time mapping of actual building fires into accurate and concise digital fire scene at the cloud platform. By 
+developing the ADLSTM-Fire model, we effectively transform discrete sensor-array data into high-dimensional 
+spatiotemporal temperature fields in real-time, and furthermore, forecast future fire development and hazard -
+ous regions 60 s in advance. By comparing with benchmark numerical simulations, the Digital Twin system 
+demonstrates the high reliability of super real-time fire-scene reconstruction and the capacity of fire-risk fore -
+casting in supporting firefighting. The full-scale building fire experiment is employed to validate the general -
+isation capability of the proposed smart firefighting method. This work demonstrates the great potential and 
+robustness of AIoT and digital twin in support smart firefighting and reducing fire casualties by information 
+fusion.
+1. Introduction
+Today, the concept of smart cities has gained significant traction 
+playing a pivotal role in enhancing urban information management [1] . 
+Through creating a virtual replica of physical systems, the rising tech -
+nology Digital Twin enables real-time monitoring the building lifecycle 
+[2] and thereby improves the urban infrastructure operation and 
+maintenance [3] . These emerging methods is widely used for smart 
+operation of various types of infrastructures such as civil infrastructures 
+[4] , stormwater infrastructure systems [5] and hydro-steel structures 
+[6] . Moreover, data computing technology featured by the multi-source 
+data fusion allows for the in-depth discovery of critical information, 
+which makes smart buildings resilient to unforeseen events especially in 
+urban hazard management [7] . Data-driven approaches are widely used 
+in urban disaster management [8 – 10] .
+Among the various hazards faced by urban environments, building 
+fires remain a predominant threat, causing substantial damage and loss 
+of life [11,12] . The catastrophic fires accidents, like the 2017 London 
+Grenfell Tower Fire ( Fig. 1 a), happen frequently worldwide. The total 
+cost of fire safety, emergency response, and fire losses are approximately 
+1 – 2 % of annual global GDP [11] . A large portion of casualties in urban 
+fires resulted from insufficient information of fire scenes. Although 
+Abbreviations: AI, Artificial intelligence; ADLSTM, AutoDecoder Long short-term memory neural network; AIoT, Artificial intelligence of things; ANN, Artificial 
+neural network; CNN, Convolutional neural networks; FBG, Fiber Bragg Grating; FASA, Fire and ambulance services academy; GAN, Generative adversarial network; 
+GNN, Graph neural network; HRR, Heat release rate; IoT, Internet of things; LoRa, Long range; MSE, Mean square error; RNN, Recurrent neural network; SureFire, 
+Smart Urban Resilience and Firefighting; UI, User interface.
+* Corresponding authors.
+E-mail addresses: wei-kang.xie@connect.polyu.hk (W. Xie), yan-fu.zeng@connect.polyu.hk (Y. Zeng), zhangxn@pcl.ac.cn (X. Zhang), deacon-hoyin.wong@ 
+connect.polyu.hk (H.Y. Wong), tianhang.zhang@connect.polyu.hk (T. Zhang), zilong.wang@connect.polyu.hk (Z. Wang), wuxiqiang1988@gmail.com (X. Wu), 
+jihao.shi@polyu.edu.hk (J. Shi), xy.huang@polyu.edu.hk (X. Huang), linda.xiao@polyu.edu.hk (F. Xiao), asif.usmani@polyu.edu.hk (A. Usmani). 
+Contents lists available at ScienceDirect
+Advanced Engineering Informatics
+journal homepag e: www.else vier.com/loc ate/aei
+https://doi.org/10.1016/j.aei.2025.103117
+Received 6 August 2024; Received in revised form 23 November 2024; Accepted 6 January 2025 
+Advanced Engineering Informatics 65 (2025) 103117 
+Available online 21 January 2025 
+1474-0346/© 2025 The Author(s). Published by Elsevier Ltd. This is an open access article under the CC BY-NC-ND license ( http://creativecommons.org/licenses/by- 
+nc-nd/4.0/ ). 
+firefighters usually have good experiences and extra information from 
+the commander, lack of fire information in complex built environment 
+poses a high risk to firefighting operation and decision-making [13,14] . 
+For example, in the 2016 Hong Kong mini-storage fire, two firefighters 
+lost in contact after entering the smoky fire scene in two separated days, 
+and eventually both lost their lives ( Fig. 1 b). In the firefighting operation 
+of a recent battery energy storage station fire in Beijing, a sudden ex -
+plosion killed two firefighters and one electrician ( Fig. 1 c).
+There is an urgent demand for a method to provide building interior 
+information in the event of fire. Several type of fire-scene information 
+can be acquired and valuable for firefighting, evacuation, and rescue, 
+such as temperature [15,16] , heat flux, smoke colour and visibility 
+[17,18] , sound [19,20] , images and videos of fire and smoke [21,22] . 
+For example, the ceiling temperature distribution is a critical parameter 
+for fire detection [23 – 25] . However, heat detectors are neither always 
+available nor accessible, and eventually, they can be damaged by 
+growing hot fire smoke. Moreover, most of fire detectors only provide 
+binary information (Y/N) once reaching certain thresholds, rather than 
+providing continuous readings about fire scene. Therefore, IoT sensor 
+network has been employed to measure the time-evolution temperature 
+data and enable automatic mitigation measures, such as alarms, sprin -
+klers [26] , smoke ventilation system [27] , fire hose [28] , and fire doors.
+However, without building fire knowledge and model, information 
+collected by IoT alone cannot contribute to the full understanding of fire 
+spatiotemporal development. Currently, various methods are applied to 
+the study of building fire patterns. Full-scale fire experiments are reli -
+able methods for data collection, serving as benchmarks for empirical 
+fire modelling [29 – 31] . Nonetheless, conducting many high-risk and 
+costly building fire experiments is unrealistic. Even if large fire tests are 
+available, limited spatiotemporal temperature data can be acquired 
+[32] . Subsequently, massive and accurate fire simulations driven by 
+Computational Fluid Dynamics (CFD) codes are more effective in un -
+derstanding fire developments [33] , but they are too time-consuming to 
+predict fire in real-time and support smart firefighting [34] . Moreover, 
+the demand for real time mapping of fire spatiotemporal information is 
+growing to support future smart firefighting system. Therefore, Artificial 
+Intelligence of Things (AIoT) has been proposed for smart building that 
+can achieve real-time fire forecast through the functional convergence of 
+Internet of Things (IoT), smart sensors and Artificial Intelligence (AI) 
+algorithm [35] . Particularly, deep learning can explore hidden fire in -
+formation and advance smart fire services systems by facilitating big 
+data processing, complex system analysis and making decisions [36] . 
+Recent studies have demonstrated AIoT systems in fire localization, 
+evacuation route optimization, and planning firefighting strategy 
+[8,37,38] . Despite these new technologies are not fully realized in 
+complex-built environment, they provided better awareness of fire.
+Digital twin is also proposed to enhance the intelligence and 
+reliability of fire safety management and firefighting [22,39 – 42] . 
+Serving as a data-fusion platform, Digital Twin contributes to sharing 
+real-time information and resources regarding the on-scene situation. 
+Recent advancements have demonstrated the potential of digital twin 
+systems in building fire key parameters inference, such as fire location 
+and intensity within the single room [41] , or the dativization of human 
+evacuation behaviour during building fires [40] . Although the advanced 
+information computation is initially applied to enhance building fire 
+safety [43,44] , there is still limited research on real-time digitisation of 
+the effects of fire on the overall environment of complex multi-room 
+buildings. Therefore, the pursuit of high-dimensional information like 
+dynamic of temperature fields over time is an important objective in this 
+work for Digital Twin systems development. The digital models driven 
+by the limited on-site information represents a promising avenue in 
+supporting smart firefighting practices. Once equipped with 
+information-generating capabilities, the smart firefighting can bridge 
+the gap between the available on-site fire information and the compre -
+hensive understanding of the temperature field, even obtaining super 
+real-time information on fire dynamics.
+To improve the urban safety and resilience, this study proposes the 
+development of an AIoT-integrated Digital Twin system specifically 
+designed for smart building management, with a focus on fire safety. The 
+smart firefighting framework is proposed, tailored for a multi-floor 
+firefighting training building. We have developed an ADLSTM-Fire 
+model for real-time reconstruction and 60 s advance forecasting of 
+temperature field by inputting low-dimensional sparse data from the 
+IoT. Full-scale fire experiments are conducted to demonstrate the 
+competitiveness and robustness of the proposed Digital Twin system for 
+smart firefighting practices, including real-time inference of fire haz -
+ardous area, and the guidance of firefighting operation and evacuation 
+process.
+2. Methodology
+2.1. Wireless thermometry in building IoT
+The IoT systems that integrate various interconnected electronic and 
+optical devices enables the environment sensing, so it is a prerequisite 
+for building intelligence and disaster informatisation [1,45] . For the 
+comprehensive insights into building fire dynamics, the thermometry 
+array constructed from sensors need to be deployed to support real-time 
+temperature monitoring. Although there are smoke/temperature sen -
+sors wired to fire alarm control panels in some new buildings, either 
+many existing buildings are not equipped with these wired sensors or 
+these sensor data are not accessible for firefighting operation. In addi -
+tion, cons of wired sensor networks include cumbersome equipment 
+upgrades, inflexible layout adjustments, and high labour cost [46] . 
+Fig. 1. Major fire accident sites (a) Grenfell Building fire, London in 2017 (cc by: The Telegraph), (b) Ngau Tau Kok mini-storage fire, Hong Kong in 2016 (cc by: 
+RTHK), and (c) Dahongmen fire in battery energy storage station, Beijing in 2021 (cc by: Sina).
+W. Xie et al. Advanced Engineering Informatics 65 (2025) 103117 
+2 
+Consequently, the wireless integration of IoT systems has emerged as an 
+imperative requirement, offering a viable solution to overcome these 
+challenges.
+Temperature measurement encompasses a broad array of sensor 
+options, primarily classified as contact or non-contact sensors. Table 1
+demonstrates the characteristics comparison among common building 
+temperature monitoring technologies [47,48] . Thermocouples are 
+currently widely used for temperature measurement, relying on the 
+thermoelectric effect of dissimilar metals at varying temperatures [49] . 
+However, thermocouple needs a reference room temperature, so the 
+accuracy of wireless thermocouple is questionable. Resistance temper -
+ature detector (RTD) works based on a strong linear relationship be -
+tween resistance and temperature. But response speed and probe size 
+also affect its competitiveness in wireless temperature measurement. 
+Thermistors satisfy the requirements for fire temperature wireless 
+sensing in buildings by virtue of their resistance-based thermometric 
+principle [50] . For example, Negative Temperature Coefficient of 
+Resistance is widely integrated into wireless sensing devices due to their 
+affordability, compact size, high precision, and rapid response. Some 
+optical-based temperature measurement methods such as fibre optics 
+(FBG/DTS) and infrared (IR) cameras are also suitable for temperature 
+measurement in the built environment. However, the integration into 
+smart firefighting is still under-researched due to high overheads.
+Advances in wireless technology eliminated the limitations of wired, 
+allowing the widespread implementation of IoT. The integration of 
+wireless networks and devices has garnered significant attention in 
+various areas such as object detection, environment monitoring and 
+disaster management [51] . There are already a variety of wireless 
+sensing protocols have been adopted in industry, such as Zigbee, Wi-Fi, 
+and Bluetooth [52] . Considering the low power consumption charac -
+teristics required for long-term operation of the device, LoRa (Long 
+Range) is an alternative wireless IoT connectivity method. The feature of 
+transmitting limited data over long distances in a short period of time 
+makes LoRa increasingly popular in low-power battery-powered 
+embedded systems [53] . However, the existing IoT communication is 
+limited to simple feedback on monitored fire signals, while the potential 
+for smart firefighting driven by wireless IoT data inputs remains largely 
+unexplored.
+2.2. Ai-driven smart firefighting
+Currently, AI technology represented by deep learning is widely used 
+in construction safety assessment and information management [54] . 
+AI-driven fire forecast is primarily achieved by the multi-dimensional 
+fitting via artificial neural networks (ANN). Database is constructed 
+from large amounts of fire experiments and simulations to assist deep 
+learning in characterizing building fires. Deep learning models can 
+accelerate the solution process by establishing efficient mapping re -
+lationships [55] . Presently, various deep learning algorithms [55,56]
+have been developed and migrated to fulfil research on smart fire -
+fighting. It expedites access to fire-related information for decision- 
+makers, encompassing aspects, such as fire source localization, heat 
+release rate (HRR), and fire development stages [57 – 59] . Leveraging 
+convolutional neural networks (CNN) for image processing, computer 
+video techniques can be utilized to detect visual target in fire scenarios 
+[60,61] . Advanced algorithms like recurrent neural networks (RNN), 
+graph neural networks (GNNs), generative adversarial network (GAN), 
+and Diffusion models can rapidly identify or advance forecast disaster 
+escalations such as flashover and booms [62 – 65] .
+Previous research has focused on extracting crucial insights from 
+extensive field data such as the fire source important that is important 
+for fire analysis and modelling. However, to support immediate fire -
+fighting decisions, generalized information such as temperature 
+spatiotemporal distribution needs to be accurately access. In case of 
+emergency, intuitive temperature field can provide comprehensive view 
+of fire behaviour throughout the entire structure. Such fundamental 
+information can be widely and effectively used in firefighting decisions 
+such as hazardous area identification, structural damage assessment and 
+rescue route planning. Many studies assumed the uniform ceiling tem -
+perature for a room based on zone models [15,64] . Some studies have 
+quantified flame and smoke by parameter characteristics [66,67] , but 
+dissimilarities in fire scales and data types restrict the transferability of 
+knowledge. Considering the scarcity of internal building data during fire 
+incidents, unresolved challenges arise in reconstructing the 2D or 3D 
+spatial distribution of the temperature field and forecasting temperature 
+evolution in advance.
+In this work, the hybrid deep learning model of AutoDecoder Long 
+Short-term Memory Neural Network (ADLSTM-Fire) is proposed, which 
+enable real-time high-dimensional spatiotemporal inference for building 
+fires based on discrete sensor information. Mathematically speaking, 
+ADLSTM-Fire model could forecast the 2D temperature field information 
+Y after K -steps in advance when the previous sensor array historical 
+data X is given. The X represents the temperature information of sensor 
+array for J moments, which can be expressed as X = [ X
+1
+, X
+2
+, … , X
+J
+]. Y 
+represents the forecasted temperature distribution after K moments 
+since the beginning of J moments. The mathematical expressions are as 
+follows: 
+X =
+⎛
+⎜
+⎜
+⎝
+X
+1
+1
+⋯ X
+1
+S No
+⋮ ⋱ ⋮
+X
+J
+1
+⋯ X
+J
+S No
+⎞
+⎟
+⎟
+⎠
+, Y =
+⎛
+⎜
+⎜
+⎝
+Y
+J + K
+1 , 1
+⋯ Y
+J + K
+1 , n 2
+⋮ ⋱ ⋮
+Y
+J + K
+n 1 , 1
+⋯ Y
+J + K
+n 1 , n 2
+⎞
+⎟
+⎟
+⎠
+(1) 
+where S_No represents the number of sensors. ( n 1, n 2) represents the 
+slice consisting of any two dimensions within a three-dimensional space.
+In the architecture of the proposed deep learning model, the inte -
+grated LSTM enables the model with the capability of advance forecast 
+for temperature field based on the historical data. AutoDecoder can 
+achieve the mapping from low-dimensional discrete temperature values 
+to high-dimensional 2D temperature slices by fusing DNN and Decoder 
+[68] . The information flow is shown as follows: 
+X
+J + K
+S No
+= LSTM
+w
+1
+( X
+S No
+) (2) 
+H = Dnn
+w
+2
+( X
+J + K
+1
+, X
+J + K
+2
+, ⋯ X
+J + K
+S No
+) (3) 
+Y = AutoDecoder
+w
+3
+( H ) (4) 
+where X
+S_NO 
+is the historical data of the sensor in J moments X
+S_NO 
+= [ X
+1
+, 
+Table 1 
+Characteristics comparison of three types of temperature sensors.
+Feathers Thermocouple Thermistor RTD Optical fibre IR camera
+Range ( ℃ )   270 ~ 2,300   100 ~ 1,000   200 ~ 850 0 ~ 320   20 ~ 2000
+Output signal Voltage Resistance Resistance Optical signal Thermal Image
+Linearity Moderate Poor High High Moderate
+Accuracy ( ± ℃ ) Low (0.05 ~ 5) High (0.001 ~ 1) High (0.001 ~ 1) High (0.001 ~ 1) Low (0.5 ~ 5)
+Sensitivity Low High Moderate High High
+Probe size (mm) 0.5 ~ 8 0.4 ~ 3 3 ~ 7 0.2 ~ 8 N/A
+Response (s) 0.1 ~ 10 0.1 ~ 10 1 ~ 50 0.01 ~ 60 0.001 ~ 0.05
+Cost Low Moderate High Very High Very High
+W. Xie et al. Advanced Engineering Informatics 65 (2025) 103117 
+3 
+X
+2
+, … , X
+J
+] 
+S_NO
+. LSTM , Dnn and AutoDecoder is the different neural 
+network. w = [ w 1, w 2, w 3] are the corresponding hyperparameters in -
+side different neural networks, which will be optimised during model 
+training.
+Moreover, the simple model used for temperature field real-time 
+reconstruction can be developed by directly combining the two equa -
+tions Eq. (3) and Eq. (4) . The mathematical expression can be shown as 
+follows: 
+X = ( X
+1
+, X
+2
+, ⋯ X
+S No
+) , Y =
+⎛
+⎝
+Y
+1 , 1
+⋯ Y
+1 , n 2
+⋮ ⋱ ⋮
+Y
+n 1 , 1
+⋯ Y
+n 1 , n 2
+⎞
+⎠
+(5) 
+Compared to the thermometry system that can only get the data at 
+limited locations in the building, the simplified model derived from 
+ADLSTM-Fire could reconstruct the complete temperature field distri -
+bution at the current moment. Furthermore, the well-trained ADLSTM- 
+Fire exhibits the capability to forecast the future temperature field 
+evolution, allowing for sufficient decision-making time in AI-driven 
+smart firefighting operations.
+2.3. Digital Twin system
+Digital Twin is initially defined for production lifecycle management 
+by Grieves in 2002 [69] , which is then re-contextualized by NASA 
+during the Apollo space program as the digital equivalent of a physical 
+product [70] . The maturity of data-driven system can be categorized 
+into 6 levels, where Digital Twin signifies Level 4 [71] . By efficiently 
+integrating the overall data-driven system, the real-time interaction and 
+synchronization between the physical model and digital model is ach -
+ieved. Furthermore, the Digital Twin becomes powerful to deal with 
+complex target with the advancement of AIoT in real-time sensing and 
+efficient data processing [72] . Gradually, AIoT-integrated Digital Twin 
+is gaining traction in smart building and safety management [73] .
+Notably the concept of digital twins is still evolving in fire safety 
+research, and researchers are actively exploring its new applications. 
+Building fire Digital Twin not only takes care of the dynamic visuali -
+zation of the real fire, but also assumes responsibility for data distillation 
+and analysis for a faster emergency response. For example, Zhang et al. 
+[35] constructed the AIoT-enabled Digital Twin system of tunnel to 
+predict fire location, motion, power, fuel hazard, and evacuation risk in 
+tunnel fire. A Digital Twin platform can also predict and monitor crowd 
+evacuation and fire risk during emergency events based on the computer 
+vision and deep learning [40,43,74] . Nevertheless, detailed approaches 
+to generating the invisible high-dimensional physical fields have not yet 
+been fully investigated. Therefore, it is necessary to develop the AIoT- 
+integrated Digital Twin to demonstrate the application value of tem -
+perature field spatiotemporal forecast for building smart firefighting. By 
+accessing sensor data in the fire scene, the system can provide firefighter 
+commanders with spatio-temporal forecast of the temperature field 
+through a user-friendly interface. Commanders can identify hazardous 
+areas by setting temperature thresholds and develop specific strategies 
+accordingly for frontline firefighters. This interaction enhances 
+Fig. 2. AIoT-Powered Digital Twin framework for a full-scale three-storey firefighting training building.
+W. Xie et al. Advanced Engineering Informatics 65 (2025) 103117 
+4 
+situational awareness and coordination, ultimately improving the effi -
+ciency and safety of firefighting operations.
+3. AIoT-integrated Digital Twin
+Fig. 2 shows the concept of AIoT-integrated Digital Twin system for 
+smart firefighting training and practices, which is part of our proposed 
+SureFire (Smart Urban Resilience and Firefighting) system. The selected 
+physical building is full-scale structure for the firefighter training, 
+located at the Fire and Ambulance Services Academy (FASA) of Hong 
+Kong Fire Services Department. This firefighter-training building has 
+three floors (i.e., Ground Floor, First Floor, and Second Floor), which are 
+Fig. 3. Schematic of wireless thermometry system in full-scale building fire test, (a) Wireless temperature measurement network in the 1st Floor, (b) Fire test set-up 
+with Ground Floor and 1st floor, (c) detailed of the room of fire source on the Ground floor, and (d) wireless IoT configuration.
+W. Xie et al. Advanced Engineering Informatics 65 (2025) 103117 
+5 
+connected by external and internal staircases. It is made of two 10-feet, 
+three 30-feet, twelve 40-feet standard containers, and another four 52- 
+feet customized containers. Containers can be easily connected or 
+insulated by doors to create different training areas. Then, instructors 
+can conduct various training tasks, e.g., observing flashover and roll -
+over, practicing fire hoses, and testing novel and advanced smart fire -
+fighting technologies.
+The Digital Twin connects the functions of the systems in series 
+through data loops. Thermometry arrays is deployed in buildings and 
+responsible for collecting field data. The uploaded fire data triggers 
+relevant mitigation measures within the control system, and simulta -
+neously being fed into the data processing system. Equipped with deep 
+learning models, the data processing system can analysis the input data 
+and guide smart firefighting. As a specific case study, temperature field 
+real-time reconstruction and advance 60 s forecast are presented to 
+exemplify the function of smart firefighting in Digital Twin system. This 
+is achieved based on AI architecture of ADLSTM-Fire and its simplified 
+model. The models are hosted on the cloud server, which can generate 
+reliable fire-related prediction and visualize to the user. The dynamic 
+Digital Twin of temperature field can assist firefighters in making de -
+cisions and evaluating the effectiveness of mitigation measures.
+3.1. Building fire test
+Fig. 3 illustrates the configuration of wireless thermometry system in 
+full-scale building fire test. The overall geometry dimensions of the 
+building structure are approximately length = 25 m, width = 16 m, and 
+height = 8.5 m, respectively. The typical fire case that hot smoke 
+spreading to other floors is selected as the building fire experiment 
+scenario, because it ’ s common in building fires and will cause the 
+disaster escalation [75] . The First Floor is utilised as the main experi -
+mental subject, where four rooms (or areas) are highlighted with 
+different colours ( Fig. 3 a). To collect the real-time temperature data, 
+thermometry arrays that integrated into IoT systems are strategically 
+deployed on the ceiling of the First Floor. Fig. 3 b shows the specific 
+configuration of building fire test. The camera is setup for recording 
+videos of the fire experiment. The router works as data acquisition unit 
+to receive the temperature signal from the thermometry network. As 
+shown in Fig. 3 c, the room of fire source is located at the Ground Floor 
+where wooden planks were fuel and placed in the innermost part of the 
+room. The door open/ close is configurated to ensure that high- 
+temperature gas will enter the First Floor through the stairwell in 
+room 1F_1. Fig. 3 d demonstrates the wireless IoT configuration on the 
+First Floor. For stable signal transmission with multiple sensors, the 
+wireless thermometry array divides sensors into serval groups and 
+establish the star appropriate network topology.
+The data acquisition unite can get the overall temperature informa -
+tion under the topology network by accessing the central nodes. The 
+private cloud server and edge computing devices are both deployed 
+within the same local area network (LAN) to support data transfer ef -
+ficiency and privacy. The polling mechanism is adopted where the data 
+acquisition unit periodically accesses each sensor. During the building 
+fire test, the sampling frequency of edge computing devices are set 1/6 
+Hz (i.e., once every 6 s) to collect and process data into simplified 
+temperature value to reduce the transmission burden. Edge computing 
+devices will store data locally while uploading to ensure system reli -
+ability. This setting is to balance the requirements of real-time data 
+collection, stable upload of signals in the building fires, and reduction of 
+battery energy consumption. With continuous invasion of high- 
+temperature gases into the First Floor, the sequential temperature data 
+will be transmitted directly to a data logger approximately 50 m away 
+via LoRa wireless protocol. Afterwards, the sensed data is further 
+synchronised to the IoT for user access. The feasibility of wireless IoT- 
+based fire monitoring in real-world scenarios is validated (see Video 
+S1 for more details). Moreover, the experimental data will be further 
+utilized in the following CFD accuracy validation and generalization 
+investigation of the Digital Twin system for building fire.
+3.2. Benchmark numerical dataset
+Constrained by the high cost of building fire experiments and the 
+impracticality of obtaining full-dimensional physical temperature field, 
+benchmark numerical dataset is very important to understand the ac -
+cident evolution process. Referring to the experimental configuration, 
+different fire scenarios can be simulated by adjusting the fire source 
+parameters. The resulting benchmark numerical dataset can fully reflect 
+real-world fire dynamic, and the huge amount of data containing 
+different scenarios will be the basis for training ADLSTM-Fire models. As 
+an alternative of real-world sensor data, numerical datasets generated 
+through widely-validated Computational Fluid Dynamics (CFD) meets 
+the requirements of deep learning models with satisfactory accuracy 
+[41] . As a representative CFD software for fire simulation, the Fire Dy -
+namics Simulator (FDS) [76] is employed to simulate the building fire 
+and establish the benchmark database. This work can be divided into 
+two steps:(1) FDS accuracy validation based on fire experiments (2) 
+Numerical benchmark dataset development.
+Step 1: CFD model validation via fire experiments. A precondi -
+tion for database construction using numerical simulation is the credi -
+bility of this method. According to the building fire test in FASA, the full- 
+scale FDS simulation is conducted to reproduce the experiment and 
+verify FDS accuracy. For avoiding the effect of the computational 
+domain on the simulation results, the computational domain is set as 30 
+m × 20 m × 10 m and the boundary condition is set as Open. In this 
+configuration, the high-temperature smoke overflowing the building can 
+be accurately modelled, which can guarantee the correctness of the 
+calculation convergence. Based on mesh sensitivity analysis, the grid 
+size is determined as 0.2 m in all directions for the trade-off between 
+computational accuracy and efficiency. To simulate the fire experiment, 
+we use the recorded fire video and AI-image fire calorimetry method 
+[60,77] to help estimate the evolution of HRR in the room of fire source 
+(see Fig. 3 c) as the boundary condition in the CFD model. As illustrated 
+in Fig. 4 (a), the fire is modelled to increase linearly until 500 kW at 
+1,400 s and then stabilise for another 1,000 s.
+Fig. 4 (b) compares the temperature evolution at four positions in the 
+building. The selection contrasting locations represents the sensors from 
+different rooms in Fig. 3 a (S02, S06, S13 and S18). Nicely the compar -
+ison of the curves shows the satisfactory fitting of the simulation results 
+with the experimental data in terms of slopes and durations. The 
+comparative results explain that numerical simulation can robustly 
+predict overall temperature change for the fire scenarios, thereby 
+enabling the database construction for the subsequent development of 
+deep learning models.
+Step 2: Numerical benchmark dataset development. Based on the 
+verified availability, the FDS is employed to generate the building fire 
+numerical benchmark dataset. A total of 75 building fire scenarios were 
+simulated by considering 3 fire locations in the combustion chamber, 5 
+HRRs (300, 500, 1000, 1500, 2000 kW) and 5 duration times (1000, 
+1300, 1500, 1800, 2000 s). Referring to the sampling frequency of the 
+sensors (1/6 Hz) in the experiment, 10 consecutive temperature data 
+(within 1 min) is extracted as a dataset and collectively constructs the 
+1,644 sets of dataset D = [X
+10 × 20
+, Y
+150 × 100
+]. The constructed dataset D 
+will be further used for ADLSTM-Fire model construction where X is the 
+input data and Y is the label. X
+10 × 20 
+represents the 10 temperature 
+values collected by each of the 20 sensors over a 1-minute period. 
+Y
+150 × 100 
+represents horizontal temperature slice 2.7 m above the 
+ground, which is depends on the sensor installation height. The size of 
+the slice is 150 × 100 (length × width), which contains 150 × 100 
+temperature values. Among the datasets, 80 % samples are designed as 
+the train dataset D
+train 
+for the training and validation during the model 
+construction. The remaining 20 % serves as test dataset D
+test 
+to evaluate 
+the generalisation ability of the well-trained model.
+W. Xie et al. Advanced Engineering Informatics 65 (2025) 103117 
+6 
+3.3. ADLISTM-Fire development
+The utilization of deep learning for smart firefighting is a key feature 
+of the proposed AIoT-integrated Digital Twin System. Given the signif -
+icance of temperature in guiding firefighting, the approach of temper -
+ature fields spatiotemporal prediction is proposed to showcase the 
+feasibility of digital system for smart firefighting.
+This work aims to (1) reconstruct the current temperature field in 
+real time and (2) forecast the future temperature distribution 60 s in 
+advance, based on the temperature history data from the sensors. This 
+requires temporal advance forecasting based on time-series data and 
+spatial feature inference of the 2D temperature field based on discrete 
+data. To address these challenges, the deep learning model of ADLSTM- 
+Fire is developed to handle complex spatiotemporal relationships.
+Fig. 4. Numerical model validation, (a) heat release rate curves for fire sources set in the model, and (b) Data comparison between experiments and numerical 
+simulations.
+Fig. 5. Architecture of ADLSTM-Fire.
+W. Xie et al. Advanced Engineering Informatics 65 (2025) 103117 
+7 
+As shown in Fig. 5 , proposed ADLSTM-Fire model can advance 
+forecast the temperature field based on sensor data with the hybrid al -
+gorithm. The target function is implemented in two steps that can 
+investigate the spatio-temporal pattern of temperature evolution using 
+LSTM and DeConv.
+The First Step is to forecast temperature value 1 min in advance 
+based on current collected sensor data, which is achieved by Part 1 and 
+Part 2. Part 1 represents the input layer where the data format is data 
+values obtained from 20 sensors for 10 sampling. Subsequently, Part 2 
+should handle temporal correlation of the data collected by each sensor. 
+Traditional RNNs (recurrent neural network) for temporal correlation 
+prediction often suffer from vanishing gradient during model training. 
+The architecture of LSTM is selected because its cell state and gating 
+mechanisms allows it to retain relevant information over extended time 
+periods. Therefore, this capability enables that the ADLSTM-Fire model 
+can learn from historical data and forecast the temperature value in 
+advance for each sensor location.
+The Second Step is the upscaling of the discrete temperature fore -
+casted values to a 2-D temperature slice, which is achieved by Part 3 and 
+Part 4. Part 3 indicates the DNN model that is responsible for connecting 
+the sequence of forecasted temperature values from Part 2 to the fully 
+connected neural network. Information expansion is achieved through 
+the increasing number of neurons in each layer along with the super -
+position of the fully connected layers. Part 4 employs DeConv, the 
+reverse of the convolution operation, to discover the spatial distribution 
+of temperature features embedded in the data. Generally, the convolu -
+tion operation for a 2-D matrix is to extract the key information and 
+reduce it to 1-D data. In this work, DeConv can reverse output the 2-D 
+space by multiplying two 1-D matrices, the data from Part3 and model 
+hyperparametric filter. This upscaling transformation enables the 
+ADLSTM-Fire model to effectively capture the spatial distribution 
+characteristics of the temperature field based on information from the 
+previous part. Finally, the spatial distribution of temperatures Y
+150 × 100 
+is obtained as output (Part 5) through multiple transpose-convolution.
+Therefore, the hybrid ADLSTM-Fire model is proposed for building 
+fire spatio-temporal prediction by integrating the advantages of LSTM in 
+time-sequence processing and the DeConv in multidimensional infor -
+mation generation. Table 2 shows the specific configurations of 
+ADLSTM-Fire model. Moreover, the advance forecast of sensor data is an 
+important part of model development that makes the ADLSTM-Fire work 
+more interpretable. Therefore, the LSTM in Part 2 requires pre-training 
+to ensure the accurate advance forecast of temperature value in sensor 
+location. In the pre-training, the model input is the temperature values 
+collected by 20 sensors for 10 sampling X
+10 × 20
+. The output is the fore -
+casted temperature value of these 20 sensors after 1 min X
+20
+. Once the 
+pre-training is completed, the neuron parameters of the LSTM are frozen 
+[68] to avoid adjustment of this Part during subsequent ADLSTM-Fire 
+model training. This manipulation ensures that the advance forecast 
+sensor temperatures are taken as inputs to Part 3, thus guaranteeing 
+accurate inference of ADLSTM-Fire model in the temporal dimension.
+The forecast of the fire temperature field is a supervised regression 
+issue. To govern the training process, the mean square error (MSE) is 
+employed as a loss function. Meanwhile, the determination coefficient 
+(R
+2
+) is adopted to assess the regression performance of the model. 
+During the model training process, the initial learning rate and the 
+number of training epoch were set to 0.001 and 500. By training the 
+neuron parameters, the model establishes the mapping relationship 
+between sensor history information and future temperature field dis -
+tribution. The deep learning-based model is allowed to obtain the target 
+information directly without suffering the iterative computation of 
+dynamical equations.
+Regarding the real-time reconstruction of the temperature field, the 
+framework of the deep learning model can be simplified as the DNN & 
+DeConv in Fig. 5 . The configuration of this simplified model can be 
+referred to as Parts 3 & 4 in Table 2 . The LSTM is abandoned since there 
+is no requirement about the forecast the future scenarios. Then, the real- 
+time data from the sensor array X
+20 
+will be employed as input. The 
+temperature data is generalised to capture representative information 
+for the entire temperature distribution based on multi-layer fully con -
+nected neural network. Subsequently, the 1D information will be 
+deconvolved into 2D data and the temperature slice Y
+150 × 100 
+will be 
+finally output. Therefore, 1,644 sets of dataset D = [ X
+20
+, Y
+150 × 100
+] can 
+be extracted for the development of temperature field real-time inver -
+sion model.
+Fig. 6 demonstrates the training process of (a) the simplified real- 
+time reconstruction model and (b) the ADLSTM-Fire advance forecast 
+model. R
+2 
+and MSE are used to measure the prediction accuracy of train 
+dataset D
+train 
+and test dataset D
+test
+. The dashed line represents the pre -
+dictive performance of the model training based on train dataset D
+train
+. 
+The model performance keeps improving with the increase in the 
+number of epochs, as evident form the growth in R
+2 
+and decay in MSE . 
+As expected, the training process of real-time reconstruction model 
+initially exhibits a dramatic decrease in MSE to below 0.01 before epoch 
+70, and R
+2 
+eventually stabilises above 95 %. Moreover, the ADLSTM-Fire 
+advance forecast model shows the similar pattern with the R
+2 
+ends up at 
+around 94 %.
+The solid line represents the validation of the prediction against the 
+test dataset D
+test
+. The validation curve exhibits that the proposed models 
+still perform satisfactorily for scenarios. And there is no overfitting 
+during the model training. R
+2 
+for the ADLSTM-Fire model is about 92 %, 
+which is slightly lower than that of 93 % for the simplified real time 
+reconstruction model. Since omitting the prediction of temperature 
+development, real-time reconstruction model tends to perform better. 
+To predict the evolution of the temperature field, advance forecast 
+model that integrates the LSTM models sacrifices accuracy partially. 
+Noteworthy is the fact that the proposed models both present competi -
+tive R
+2
+, indicating that the well-trained model can capture the rela -
+tionship between the discrete data form thermometry array and the 
+high-dimensional temperature field.
+3.4. Information interactions for digital twins
+Fig. 7 illustrates the information interaction of the AIoT-integrated 
+Digital Twin system, designed to facilitate smart firefighting and inte -
+grate with existing smart building technologies. The system incorporates 
+distinct types of data within different functional layers, including the 
+Physical sensing layer, the Virtual data layer and the User application 
+layer. The Network layer responsible for communication between 
+different modules.
+The Physical Sensing Layer constitutes the sensing and control sys -
+tem, so it is part of the interface for collecting real-world target objects 
+and parameter data. In this implementation, the wireless sensors are the 
+primary hardware component within this layer and required to acquire 
+temperature data and synchronise it to IoT in real time. Data uploading 
+relies on the network layer containing different communication pro -
+tocols. The sensed data is wirelessly transmitted via LoRa within 433 
+Table 2 
+Configuration of ADLSTM-Fire, where ↓ represents the layer connected to neural 
+network below, and ↗ represents the layer connected to neural network of the 
+next Part.
+Part 1: Input þ Part 
+2: LSTM
+Part 3: DNN Part 4: De C onv þ Part5: 
+Output
+200 Dense ↓ , ReLU 20 Dense ↓ , ReLU32 Dense 
+↓ , ReLU
+3 × 3 128 DeConv2D ↓ , 
+ReLU 
+3 × 3 64 DeConv2D ↓ , 
+ReLU
+100 LSTM ↓ , Tanh 64 Dense ↓ , ReLU128 Dense 
+↓ , ReLU
+3 × 3 32 DeConv2D ↓ , 
+ReLU 
+3 × 3 8 DeConv2D ↓ , ReLU
+20 LSTM ↗ , Tanh 128 × 150 × 100 Dense ↗ , 
+ReLU
+3 × 3 1 DeConv2D, None
+W. Xie et al. Advanced Engineering Informatics 65 (2025) 103117 
+8 
+MHz band RF to the router. The local workstation can access the router 
+utilizing the Modbus protocol, and upload the processed data into Vir -
+tual data layer in real time. Due to the requirements of smart fire -
+fighting, the real-time sensor data are eventually uploaded to a cloud 
+server via WiFi or other methods for ready access to the components of 
+the Digital Twin system.
+The User application layer encompasses a range of functionalities 
+such as user interface (UI). Its primary role involves presenting valuable 
+data in a user-friendly manner, tailored to specific functional re -
+quirements. Also, it is the issuers of executive commands to make 
+Fig. 6. The evaluation for temperature field by data-driven AI methods: (a) real-time reconstruction and (b) forecast with a lead time of 60 s.
+Fig. 7. Information interaction framework within the AIoT-integrated Digital Twin system.
+W. Xie et al. Advanced Engineering Informatics 65 (2025) 103117 
+9 
+physical adjustments. To establish a connection between the User 
+application layer and the Virtual data layer, a network layer is required 
+for data transmission and communication. The network layer, situated 
+within the computer network architecture, assumes the responsibility of 
+delivering data packets between different hosts. To support diverse 
+communication requirements and application scenarios, a variety of 
+communication protocols such as HTTP, MQTT, and WebSocket can be 
+deployed within this process.
+As the core of the AIoT-integrated Digital Twin, the Virtual data layer 
+is the data-fusion platform that integrates diverse information sources. 
+On the one hand, it serves as a recipient of real-time data from the 
+Physical sensing layer and handles access requests from the User 
+application layer. On the other hand, it acts as a data processing carrier 
+to fulfil the system-defined tasks. Through TensorFlow framework, the 
+deep learning-driven models are deployed with the Digital Twin plat -
+form to implement specific smart functions. Throughout the loop iter -
+ations, the output keeps updating in real time by continuously feeding 
+the latest data from the Physical sensing layer. A dynamic Building In -
+formation Modelling (BIM) [78] provides a benchmark information for 
+establishing the building fires digital twin. Meanwhile, new data can be 
+efficiently integrated into the BIM model by positioning technology; 
+Moreover, the Digital Twin platform is deployed on cloud servers by 
+using the LAMP stack, which is recognized as the open-source software 
+for web servers development and applications [35] . Comprising four 
+components, the LAMP stack encompasses the Linux operating system as 
+the foundation, Apache as the web server, MySQL as the database 
+management system, and programming languages such as PHP for 
+application development.
+4. Result and discussion
+4.1. Ai-driven fire spatiotemporal inference
+Numerical simulation results are taken as the benchmark to inves -
+tigate the performance of the proposed models. Fig. 8 illustrated the 
+spatiotemporal evolution comparison regarding the fire temperature 
+field among the different models at four typical moments (see Video S2
+for more details), where the peak HRR is set to 2,000 kW. The temper -
+ature evolution shown in the left column are benchmark data, which is 
+obtained by CFD. Due to the heat loss during gas dispersion, the 
+resulting temperature gradient can be used to infer the gas propagation 
+path. About 220 s after fire ignition, high-temperature gas enters 1F_1 
+from the stairwell and heats up the area dramatically. The remainder gas 
+keeps pouring into the First Floor through door D01. By the time 580 s 
+elapse, the temperature of the whole floor continues to rise and there is 
+obvious temperature gradient distribution within the building. Since 
+heating stops at 800 s, there is a significant decrease in the area where 
+temperature exceeds 50 
+◦
+C after 60 s. For some areas that have been 
+heated to 30 
+◦
+C, the temperature decrease is not as drastic as in the high 
+temperature areas. By 1,150 s, the original high-temperature areas have 
+been reduced to 65 
+◦
+C or even lower, while the slightly heated areas 
+remain relatively stable.
+The images in middle column are the temperature field inferenced by 
+the real-time reconstruction model. The right column displays the 60 s 
+advance forecast of temperature field by the proposed ADLSTM-Fire. It 
+shows that both advance forecast model and the real-time reconstruc -
+tion model successfully predict the similar distribution characteristics to 
+Fig. 8. Temperature field spatiotemporal evolution predicted by different AI model (a) baseline by CFD, (b) simplified real-time reconstruction result, and (c) 
+forecast 60 s in advance. Please see Video S2 for more details.
+W. Xie et al. Advanced Engineering Informatics 65 (2025) 103117 
+10 
+the benchmark data. The relative locations of temperature regions and 
+gradients are accurately predicted. Meanwhile, the characterization of 
+isothermal development over time is also accurately presented by the 
+proposed deep learning models. This demonstrates the accuracy and 
+efficiency of deep learning-based numerical engines in predicting the 
+building fire development. It should be recognized that there are still 
+some differences in the specific outputs of these two deep learning 
+models. Therefore, the systematic comparisons between models are 
+performed by temperature change at specific location.
+Fig. 9 illustrates the temperature evolution curve predicted by the 
+different models. The output from the deep learning model is clearly 
+consistent with the variation pattern of the numerical simulation rep -
+resented by the black curve. Compare to the blue curve output by 
+advance forecast model, the red curve inferred by the real-time recon -
+struction model closely resembles the black baseline curve. In addition, 
+the simplified model shows high robustness in stable variation trend. On 
+the contrary, the advance forecast curve clearly fluctuates around the 
+baseline curve. Nevertheless, the similar trends to baseline data shows 
+that the forecast bias will be corrected in time with the continuous data 
+update. Therefore, this hybrid model demonstrates satisfactory capa -
+bility and resilient in credible spatiotemporal forecasts.
+Data-driven deep learning models are well validated to fire infor -
+mation monitoring and forecast based on temperature sensor array in -
+formation. With inference time less than 0.3 s, the real-time 
+reconstruction model can expand the spatial dimensionality of discrete 
+sensor information in real time. Compared with single-point informa -
+tion, more comprehensive temperature field allows decision-makers to 
+visualize the building damage in a fully manner. Moreover, the 
+ADLSTM-Fire model is demonstrated to forecast the distribution 
+characteristics of the future temperature field effectively within 0.5 s. 
+The one-minute-advanced forecast from ADLSTM-Fire model demon -
+strates the capabilities of temporal dimension expansion based on the 
+historical data. Such super real-time capability is crucial in firefighting 
+scenarios characterized by urgency. With the integration of the proposed 
+deep learning models, the developed smart firefighting Digital Twin 
+system empowers decision-makers to foresee dynamic development of 
+building fire, formulate firefighting strategies in advance, and avoid 
+potentially hazardous areas in a timely manner.
+4.2. Generalisation validation
+The development of smart firefighting driven by deep learning is 
+rooted in an extensive collection of numerical simulation data. In further 
+consideration of the realistic suitability of the proposed methodology, 
+full-scale building fire experiments are performed to showcase the 
+generalisation capabilities of the AIoT-integrated Digital Twin system.
+The fire forecast for smart firefighting is realized by the configured 
+deep learning model, whose generalisation capability is significant for 
+extending the model to different fire scenarios. The actual experimental 
+case that was not involved in the model construction is employed to test 
+the system ’ s generalization ability for real-world scenarios. Compared 
+with the numerical dataset in the previous section, the building fire 
+experiments exhibit a considerably longer burning period more than one 
+hour. In addition, the intensity of the fire source is controlled for safety 
+reasons. In this configuration, the experimental temperature peaks were 
+relatively low, and the curve dynamics are smoother. Therefore, the 
+experimental scenario significantly differs from the database, which is 
+suitable to test the generalization ability of the proposed AIoT- 
+Fig. 9. Single-point temperature comparison in real-time inversion and forecast 60 s in advance (see detailed evolution in Video S1 ).
+W. Xie et al. Advanced Engineering Informatics 65 (2025) 103117 
+11 
+integrated Digital Twin system.
+Fig. 10 illustrated the comparison among the experimental temper -
+ature values (black curve), real-time reconstruction values (red curve) 
+and advance forecast values (blue curve). For temperature sensors S03 
+( Fig. 10 a) and S12 ( Fig. 10 c), the deep learning model exhibit a great 
+similarity to the experimental data, in terms of variation slope and 
+stabilization time, where the error is less than 5 
+◦
+C. The difference in 
+initial temperatures between experiments and simulations poses the 
+challenge to model fitting. The dramatic increase in the deep learning 
+model prediction curve can be seen in the first 120 s. This indicates that 
+the well-established model posse certain toughness to approximate the 
+real situation by continuously iterating the input data.
+For the other scenario like Fig. 10 b, there are some biases in 
+ADLSTM-Fire ’ s advance forecasts for the temperature change with a 
+maximum error of 18 %. As a supplement, the simplified model focusing 
+on real-time inference achieve 7.2 % error, which shows more promising 
+competitiveness in prediction accuracy. This indicates that the simpli -
+fied model accurately captures the relationship between the input data 
+and the spatial location of the sensors, good resilience allows for quick 
+adjustment to ideal values.
+Furthermore, this study expands its analysis by examining 2D slices 
+for visual comparison of the overall outputs from different models. 
+Fig. 11 shows the temperature field at various moments, with the real- 
+time reconstructed image on the left and an advance forecast image 
+on the right. By importing real-time temperature data from the experi -
+ment site, the models exhibit similar evolutions of the temperature field. 
+At 300 s, the overall building temperature distribution is disturbed. 
+There is a high-temperature area in the 1F_1 stairwell, and the wall 
+facing the exit of the stairwell is also significantly heat up. At 900 s, the 
+region above 25 
+◦
+C expanded noticeably and a clear temperature 
+gradient is observed from the stairwell to the far end. The overall 
+building temperature reaches the maximum at around 1,500 s and 
+Fig. 10. Comparison of model generalisation capabilities based on experimental data, where the forecast is 60 s in advance (see Video S1 for more details).
+Fig. 11. Deep learning-driven temperature field inference based on experiment 
+data input (a) simplified real-time reconstruction result, and (b) forecast 60 s 
+in advance.
+W. Xie et al. Advanced Engineering Informatics 65 (2025) 103117 
+12 
+remains stable thereafter, resulting in similar temperature slices at 
+2,100 s.
+Meanwhile, there are also distinctions in performance between the 
+two developed deep learning models. One the one hand, the real-time 
+reconstruction model shows more robustness in in face of drastic 
+changes in data. In the initial 300 s, the prediction of real-time model is 
+more aggressive than that of advance forecast model. It implies that the 
+simplified model responds more sensitively to data variation. At the 
+900th second, the temperature gradient obtained from real-time 
+reconstruction model is more obvious. Considering the previous com -
+parison with the experimental benchmark data in Fig. 10 , the temper -
+ature distribution predicted by the real-time reconstruction model aligns 
+more closely with the actual working conditions with time goes by. One 
+the other hand, the advance forecast model output the prediction that 
+are similar but less precise than those from the real-time reconstruction 
+model. Although the future temperature field cannot be flawlessly 
+Fig. 12. Demonstration of the developed Digital Twin platform for smart building fire monitoring and forecast (see Video S3 ).
+W. Xie et al. Advanced Engineering Informatics 65 (2025) 103117 
+13 
+reproduced, advance forecasting makes more instructive for emergency 
+decision-making.
+Verification of the generalisation capability ensures that the con -
+structed building fire Digital Twin system can effectively fulfil its smart 
+firefighting function in different fire scenarios. Each deep learning 
+model assumes distinct roles in smart firefighting. Without the infor -
+mation inference in temporal dimension, the simplified model shows 
+higher confidence in inference of the temperature field in various sce -
+narios. Meanwhile, the generalisation capability of ADLSTM-Fire model 
+is partially affected by the complex model structure and demanding task 
+requirements. Instead of the precise data generation, advance forecast 
+from ADLSTM-Fire model remain satisfactorily competitive in fore -
+casting development of building fires. Therefore, the proposed Digital 
+Twin system is suitable for variable building fire scenarios. The gener -
+ated reliable information allows firefighters to make proactive decisions 
+based on the fire evolution, thereby enhancing their ability to respond 
+effectively.
+4.3. AIoT-integrated digital twin system for smart firefighting
+The AIoT-integrated digital twin for SureFire system is constructed 
+based on the above-mentioned technological framework. As shown in 
+Fig. 12 , the interactive Digital Twin necessitates the integration of 
+multiple data types. Based on real full-scale buildings, separate pro -
+cesses are carried out including BIM construction, on-site sensing system 
+deployment and AI model development. The cloud server assumes the 
+responsibility of data interaction and Unity game engine is utilised as 
+development engine and visualization platform. The system interface of 
+FASA Fire Safety Digital Twin is demonstrated in Video S3 . Users can 
+access and operate the system through the cloud-based user interface 
+(UI) by entering the IP address, username, and password. The main 
+interface of the system comprises five functional modules, namely On- 
+site CCTV , Temperature distribution , 3D digital twin , Temperature field 
+inference , and Hazard risk region .
+In the event of building fires, data form sensors will be shown on 
+Temperature distribution module as bar chart and synchronised to the 
+cloud server by the IoT system. The AI-integrated system allows for the 
+fire Temperature field inference , include real-time reconstruction and 60- 
+second-advanced forecasting. By setting target information (like tem -
+perature above 50 
+◦
+C), Hazard risk region module will display the valu -
+able regional information to support fire evacuation and rescue 
+planning. In addition, on-site CCTV enables direct monitoring of the 
+actual environment as the realistic basis for smart fighting system. The 
+3D Digital Twin is designed to visualise the virtual scene of the building 
+fire by rendering flame and smoke data.
+5. Conclusions
+For smart firefighting in buildings, this work proposes an informa -
+tion fusion framework for AIoT-integrated digital twin. ADLSTM-Fire 
+model is developed to achieve the physical field spatiotemporal infer -
+ence based the limited on-site data. Moreover, the generalization 
+capability of the proposed approach is demonstrated through the full- 
+scale building fire experiments. The main conclusions are: 
+(1) An AIoT-integrated Digital Twin system is proposed as the data 
+fusion platform, overcoming the issues of data cross-domain 
+collaboration during building fires. The system maps the com -
+plete building temperature field distribution in virtual space 
+based on the collected discrete environmental data. Digitisation 
+and visualisation of high-dimensional generic information can 
+help decision-makers to fully understand the details of building 
+fire and guide subsequent firefighting measures.
+(2) The simplified model can reconstruct the complete 2D tempera -
+ture field by discrete sensor data (Accuracy = 93 %), and its high 
+robustness is well verified by benchmark numerical data. 
+Moreover, ADLSTM-Fire model is developed leveraging the 
+parameter initialization method based on model pre-training. 
+ADLSTM-Fire model could forecast the temperature field distri -
+bution 60 s in advance based on the historical data (Accuracy =
+92 %). Such super-real-time fire physical field information is 
+available for building safety enhancement by fire prognosis and 
+escalation prevention.
+(3) Without involvement in the system construction, the full-scale 
+building fire experiment is employed to demonstrate the gener -
+alisation capability of the Digital Twin model. The validation 
+showcases that the constructed system can generates trustworthy 
+predictions with the realistic fire dynamic pattern. Therefore, the 
+proposed AIoT-integrated Digital Twin system could be extended 
+to different fire scenarios and served as the information founda -
+tion for the development of smart firefighting features.
+Future research of SureFire will further accommodate the challenges 
+posed by scenario changes in real building fires. The ADLSTM-Fire 
+model will be further refined for smart firefighting in unfamiliar 
+buildings. With the building layout acting as an additional input 
+parameter, a comprehensive multi-modal framework integrating 
+ADLSTM-Fire will be developed to regulate the 2D data generation 
+process of temperature field. Similarly, the dataset will be further 
+enhanced by simulating more different factors in building fire scenarios 
+such as structural type, room arrangement and wind environment. Rich 
+datasets can enhance the comprehension o

@@ -21,3 +21,16 @@ In recent years, the implementation of digital twin (DT) technology has gained s
 | Yes | Yes | Yes | Tier 3 - Digital Twin (bidirectional) | 0 | 0 | 1 | DfS | Mentioned only | Digital Twin platform (no ML) | Multi | Conceptual (no test) | 3 | Design for Safety |
 
 **Key evidence (AG):** Systematic review + synthesized four-layer smart fire-safety framework (physical building / virtual building / application / user interaction) integrating BIM, IoT, AI, AR, blockchain. Bidirectionality is explicit: decisions from the application layer are "integrated back with the physical building layer for automatic control and operation optimization" (door closure, suppression, smoke control), with human-in-the-loop confirmation. Validation is only a questionnaire of FM professionals (IFMA) on benefits/barriers — no technical implementation or empirical test → AD = Conceptual. AI/ML fire prediction is cited from reviewed literature, not implemented → AA = Mentioned only. Operation phase only (X = 1).
+
+**Strength & gap filled (AH):** Addresses the underexplored application of DT to fire safety management: a four-layer framework (physical building, virtual building, application, and user interaction layers) combining BIM, IoT, AI, data fusion, blockchain, and AR, with virtual-layer decisions fed back to the physical building layer for automatic control and operation optimization while keeping FM professionals in the loop.
+
+**Deficiencies & future work (AI):** Conceptual only: the framework was validated through a thematic analysis of 37 studies and a survey of FM professionals (66 responses, 28 complete) rather than a live implementation; no prototype or sensor deployment is reported. Future work includes a Delphi study with a broader panel and involving firefighters as end users.
+
+**Fusion depth (AC1):** Unclear
+
+**Fusion evidence (AC2):**
+- **Data streams:** 37 reviewed studies plus 66 FM-professional questionnaire responses.
+- **Integration mechanism:** none implemented - the four-layer framework (physical/virtual/application/user-interaction) and its data fusion and feedback are conceptual, validated only by thematic analysis and survey.
+- **Why this code:** Unclear (rule 2).
+
+**Confidence (AC3):** High.

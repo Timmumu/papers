@@ -21,4 +21,17 @@ The rapid expansion of civil infrastructure in China underscores the critical ne
 | Yes | Yes | Yes | Tier 2 - Digital Shadow (one-way physical to virtual) | 0 | 0 | 1 | Design for Safety (DfS) | None | Ontology / semantic | Multi (two or more data types) | Single case study | 4 | Predictive analytics / decision support |
 
 **Key evidence (AG):** Data and knowledge-driven bridge digital twin modeling (DK-DTM) framework for smart O&M (Beijing U Tech): multi-source data collection + spatiotemporal modeling + expert knowledge reasoning; real-time data from spatial/temporal models; expert knowledge model for automated structural health assessment; supports monitoring, prediction, and decision-making for efficient maintenance. One-way monitoring→assessment→decision support; no actuation and no learning loop (expert knowledge is rule-based, not learning).
+
+
+**Strength & gap filled (AH):** Fills the gap between data-driven bridge SHM and expert knowledge: the DK-DTM framework combines UAV imagery processed by YOLOv8, LiDAR point clouds processed by PointNet, and LSTM-forecast sensor series with a fuzzy-logic expert knowledge base and rule engine, applied to the 612 m Hedong Bridge where it found a 12 mm mid-span displacement and early-stage fatigue risks.
+
+**Deficiencies & future work (AI):** Validation is limited to the Hedong Bridge case with no reported quantitative accuracy for the detection and prediction models; real-time performance depends on multi-source data integration speed, machine-learning robustness depends on training data quality, and uncertain expert rules complicate knowledge base construction; future work includes advanced ML algorithms and automatic knowledge-base selection per bridge type.
+**Fusion depth (AC1):** Fused
+
+**Fusion evidence (AC2):**
+- **Data streams:** UAV imagery (YOLOv8), LiDAR point clouds (PointNet), LSTM-forecast sensor series (Hedong Bridge).
+- **Integration mechanism:** three perception pipelines feed one fuzzy-logic knowledge base with rule-engine reasoning that produces the automated health assessment (12 mm mid-span displacement, early fatigue risks).
+- **Why this code:** the assessment output depends on three data types simultaneously, so Fused.
+
+**Confidence (AC3):** Medium - the three-pipeline-to-knowledge-base combination is explicit, but no quantitative fusion accuracy is reported.
 (full-text source: Endnote)

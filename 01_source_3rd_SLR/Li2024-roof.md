@@ -21,3 +21,16 @@ Roofs are one of the building elements most exposed to environment-induced deter
 | Yes | Yes | Yes | Tier 1 - Digital Model | 0 | 0 | 1 | Design for Quality (DfQ) | None | Perception / Computer Vision | Multi (two or more data types) | Cross-project (multiple real projects) | 4 | Perception / Computer Vision |
 
 **Key evidence (AG):** DT-based monitoring pipeline for slated pitched roofs (University of Edinburgh / Historic Environment Scotland): (1) automated occlusion-free roof-panel orthophoto generation from SfM photogrammetry + the building DT/BIM model; (2) deep-learning semantic segmentation of orthophotos into slates/leadwork/other (PointRend+Focal Loss best, background corrected to 100%); validated on 3 real traditional buildings (Duff House, St Mary's Church, ...). Outputs are semantically linked to DT/digital logbook elements for future defect detection and epoch comparison; processing pipeline is static/offline — no live data link and no learning loop.
+
+**Strength & gap filled (AH):** Fills the gap of automated condition monitoring for pitched slated roofs, for which no prior orthophoto or segmentation work existed: a pipeline generating occlusion-free metric panel orthophotos from SfM reconstruction plus the building DT model, then deep-learning semantic segmentation into slate, leadwork and other, with PointRend plus background label correction reaching 94.22 mIoU and 100 percent background accuracy, validated on Duff House, St Marys Church and a Stirling house.
+
+**Deficiencies & future work (AI):** Stage C defect detection is not implemented; segmentation still confuses leadwork and other classes, generalization drops sharply on unseen buildings, and occlusions such as chimneys can survive the median merging as shadows. Future work covers more roof data, SAM-based segmentation, defect detection in the semantic segments, and populating and maintaining the roof digital logbook.
+
+**Fusion depth (AC1):** Fused
+
+**Fusion evidence (AC2):**
+- **Data streams:** SfM reconstruction imagery + building DT/BIM model geometry.
+- **Integration mechanism:** orthophoto generation projects imagery onto the model geometry, so the output depends on both simultaneously; PointRend segmentation reaches 94.22 mIoU on Duff House, St Marys Church and a Stirling house.
+- **Why this code:** the orthophoto is a joint product of imagery and model geometry, so Fused.
+
+**Confidence (AC3):** Medium - the projection mechanism is clear, though one could argue the streams are merely registered (Aligned); Fused retained because the orthophoto output itself is the joint computation.

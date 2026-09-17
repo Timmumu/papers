@@ -21,4 +21,17 @@ Digital twins (DTs) are increasingly adopted to enhance the monitoring, manageme
 | Yes | Yes | Yes | Tier 1 - Digital Model (static, no live data) | 0 | 0 | 1 | Design for Safety (DfS) | None | Digital Twin platform (no machine learning) | Multi (two or more data types) | Cross-project (multiple real projects) | 4 | BIM-to-Digital-Twin architecture |
 
 **Key evidence (AG):** BIM-based DT framework for urban roads (Sapienza/Politecnico di Torino): integrates MMS-derived LiDAR point clouds with municipal GIS layers and authoritative geodatabases; multi-scale workflow (city-wide LoD200 to asset-level LoD400) with IFC 4.3 semantic enrichment; geometric accuracy ±3 cm; integrates 45+ km of urban road network; supports multi-scale visualization, asset management, and predictive maintenance. Static DT — no live data link, no actuation, no learning loop (sensor-integrated updates are future work).
+
+
+**Strength & gap filled (AH):** Delivers a BIM-based digital twin framework for urban roads in Turin integrating MMS LiDAR point clouds, municipal GIS layers and authoritative geodatabases into IFC 4.3 models at LoD200 (city scale) and LoD400 (asset scale), covering about 45 km of network with over 2000 vertical elements and achieving RMSE 3 cm geometric accuracy validated by cloud-to-mesh deviation analysis, creating AI-ready, semantically enriched datasets for maintenance planning.
+
+**Deficiencies & future work (AI):** The twin is a static information model without real-time IoT ingestion, bidirectional communication or automated updates, relying on periodic surveys and semi-automated processing with manual intervention; behavioral and performance indicators are absent and only one urban area was tested, with data governance and privacy unresolved. Future work covers sensor integration, deep learning automation and city-wide scaling.
+**Fusion depth (AC1):** Fused
+
+**Fusion evidence (AC2):**
+- **Data streams:** MMS LiDAR point clouds + municipal GIS layers + authoritative geodatabases.
+- **Integration mechanism:** the multi-scale workflow merges the sources into one semantically enriched IFC model validated by cloud-to-mesh deviation analysis (RMSE 3 cm).
+- **Why this code:** the IFC model is a joint product of several data sources, so Fused; static (no live ingestion), hence Medium.
+
+**Confidence (AC3):** Medium - the integration workflow is explicit; no live data link exists.
 (full-text source: Endnote)

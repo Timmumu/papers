@@ -1,0 +1,567 @@
+SPECIAL ISSUE PAPER
+Development and validation of graphics-based digital twin
+framework for UAV-aided post-earthquake inspection of high-
+rise buildings
+Jingjing Wang 1 | Yongjingbang Wu 1,2 | Shuo Wang 3 | Yasutaka Narazaki 4 |
+Hai Liu 1 | Billie F. Spencer Jr 3
+1School of Civil Engineering, Guangzhou University, Guangzhou, China
+2Shenzhen Urban Public Safety and Technology Institute, Shenzhen, China
+3Department of Civil and Environmental Engineering, University of Illinois Urbana-Champaign, Urbana, Illinois, USA
+4Zhejiang University/University of Illinois Urbana-Champaign Institute, Zhejiang University, Zhejiang, China
+Correspondence
+Shuo Wang, Department of Civil and
+Environmental Engineering, University of
+Illinois Urbana-Champaign, Urbana, Illinois,
+USA; Hai Liu, School of Civil Engineering,
+Guangzhou University, Guangzhou, China.
+Email: shuow2@illinois.edu;
+hliu@gzhu.edu.cn
+Funding information
+China Scholarship Council, Grant/Award
+Number: 201706320312; National Natural
+Science Foundation of China, Grant/Award
+Numbers: 51978182, 52020105002
+Summary
+Traditional post-earthquake inspection of civil infrastructure is conducted manually,
+taking a considerable amount of time and often putting inspectors in harm's way. This
+problem is exacerbated in modern cities, where millions of people can be left home-
+less until their residences are deemed safe to reinhabit. Image collection enabled by
+commercial unmanned aerial vehicles (UAVs) combined with computer vision-based
+techniques has provided an alternative with high potential for rapid post-earthquake
+inspection. However, the extracted images of the damage alone are inadequate to
+evaluate the system-level safety condition of a structure. The quality of the visual
+information also heavily relies on the effectiveness of the UAV inspection scheme
+which is susceptible to environmental uncertainties. To this end, a graphics-based
+digital twin (GBDT) framework is developed for UAV-aided post-earthquake inspec-
+tion of high-rise buildings and validated using a high-rise building in Guangzhou,
+China. The GBDT is comprised of a finite element (FE) model and a photorealistic
+computer graphics (CG) model, with the latter being informed by the former, jointly
+providing as a comprehensive virtual representation of the structure so that every
+step of the post-earthquake inspection procedure can be planned and evaluated vir-
+tually. First, to avoid the cumbersome nature of constructing the graphical represen-
+tation of the numerous components in high-rise buildings, the CG model in the GBDT
+is created by automatically importing structural components from the FE model and
+adding nonstructural components according to the dimensions of the as-built struc-
+ture. This fast modeling process as well as the accuracy of the virtual presentation
+are validated by point cloud comparisons between the CG model and the as-built
+structure. Subsequently, the GBDT is used to showcase the evaluation of UAV flight
+schemes for post-earthquake inspection of high-rise buildings. To shorten flight time
+and place more emphasis on potential damage, FE analysis is conducted to determine
+the earthquake-induced damage locations. Consistent damage hotspots are then
+Received: 30 June 2023 Revised: 3 February 2024 Accepted: 17 April 2024
+DOI: 10.1002/tal.2127
+Struct Design Tall Spec Build. 2024;33:e2127. wileyonlinelibrary.com/journal/tal © 2024 John Wiley & Sons Ltd. 1o f1 7
+https://doi.org/10.1002/tal.2127
+
+marked on the CG model, along with restrictions from the real environment such as
+obstacles, weak satellite signal, wind speed, and lighting conditions considered in the
+synthetic environment. Finally, applying the synthetic environment as the testbed,
+three UAV-aided inspection schemes are implemented virtually and the best UAV
+flight scheme is determined for the assumed field inspection. This example demon-
+strates the flexibility of the GBDT in representing the real-world structure and envi-
+ronmental conditions and its efficacy in assisting decision making for rapid and
+effective structural inspection in the aftermath of an earthquake.
+KEYWORDS
+3D synthetic environment, earthquake engineering, graphics-based digital twin (GBDT), high-
+rise buildings, post-earthquake inspection, UAV-aided inspection
+1 | INTRODUCTION
+Earthquakes are among the most catastrophic natural disasters faced by modern societies. Damage to civil infrastructure is inevitable due to the rapid
+urbanization in regions of high seismicity. Rapid inspection and evaluation of damaged structures therefore become crucial and urgent to ensure the
+safety of life and property, as well as to restore normalcy to society. Traditional post-earthquake inspections are usually conducted by structuralengi-
+neering experts based on visual checks and empirical judgment. For example, during the 1978 Thessaloniki earthquake in Greece, it took almost 1000
+engineers about 2 months to inspect more than 150,000 apartments in 30,000 buildings within Thessaloniki city and 30,000 apartments in 13,000
+buildings in the surrounding rural area. This earthquake, along with the subsequent 1981 Aklyonides–Korinthos earthquake, led to the establishment
+of the Earthquake Planning and Protection Organization of Greece in 1983, which marked the beginning of systematic post-earthquake inspection
+guidelines.
+1 Similarly, the U.S. Applied Technology Council published a field manual for post-earthquake safety evaluation of buildings in 1989. 2 In
+1997, China passed the law on Earthquake Prevention and Disaster Reduction 3 which provided similar guidelines. Despite the standardization of
+post-earthquake inspection procedures by these manuals and laws, inspections are still conducted manually, and therefore are incredibly time-
+consuming and perilous for inspectors, especially when dealing with high-rise buildings. Because of the significant heights and dimensions of such
+buildings, damage to the upper floors is nearly impossible to identify from the ground and thus requires extensive inspection time inside the damaged
+building. Moreover, high-rise buildings play a major role in sheltering large populations in cities; until these buildings are inspected, the resid ents are
+essentially homeless. Thus, means for rapid post-earthquake inspection of the civil infrastructure is direly needed.
+With the recent development of the drone industry,
+4–7 image collection enabled by commercial unmanned aerial vehicles (UAVs) provides a
+significant opportunity for rapid post-earthquake inspections. Researchers have proposed that UAV-collected images can be utilized to build com-
+puter graphics (CG) models with point cloud reconstruction techniques,
+8,9 which can then be used for visual inspection. The capacity and effec-
+tiveness of the inspection can be further facilitated by automated damage detection based on the UAV-collected images. Early research about
+damage detection techniques employed heuristic feature extraction methods, applying a threshold or a classifier to the output of a manually
+designed filter for a particular type of damage. 10–13 To address the challenges faced by such heuristic feature extraction techniques, such as com-
+plex design, narrow applicability, and low accuracy, researchers have turned toward machine learning-based methods. 14,15 Machine learning-
+based algorithms can handle several types of damage simultaneously. Damage can also be projected onto a mesh model to better guide engineers
+in assessing structural conditions. For example, Hoskere et al. 16 generated a 3D mesh model from UAV-collected images of a damaged building
+following the 2017 Central Mexico Earthquake. By projecting the inferred damage information onto the 3D mesh model, a condition-aware model
+was developed for damage documentation and higher-level inspection decisions. However, such drone surveys still need to be flown by human
+operators in the field.
+The Resilient City initiative developed by the San Francisco Bay Area Planning and Urban Research Association (SPUR) is aimed at developing
+customized inspection programs and pre-assess structures to enable rapid post-earthquake response. 17 While the Resilient City initiative is
+designed to allow building owners to better respond to seismic disasters, human inspectors are still relied upon.
+Inspired by the Resilient City Initiative, Wang et al.18 proposed a graphics-based digital twin (GBDT) framework for automated computer vision-
+based post-earthquake inspection and evaluation of as-built structures. The concept of the digital twin was first introduced in the early 2000s 19 and
+has since expanded to the field of civil engineering, encompassing the monitoring and management of construction 20–22 and the operation and
+maintenance of civil infrastructure.23–25 The digital twin, continuously updated by the sensor information and load history from the physical world,
+provides predictive information about the physical entity and demonstrates the potential for improved understanding of the physical world. How-
+ever, much of the information about the current state of a structure is visual in nature. Thus, the GBDT builds on the work by Hoskere et al. 26–28
+2o f1 7 WANG ET AL .
+ 15417808, 2024, 13, Downloaded from https://onlinelibrary.wiley.com/doi/10.1002/tal.2127 by City University Of Hong Kong, Wiley Online Library on [04/07/2026]. See the Terms and Conditions (https://onlinelibrary.wiley.com/terms-and-conditions) on Wiley Online Library for rules of use; OA articles are governed by the applicable Creative Commons License
+
+and Narazaki et al.29–31 on physics-based graphics models (PBGM) and incorporates a photorealistic graphics model with the traditional digital twin.
+As shown in Figure 1,18 the “digital twin” in the GBDT consists of two components, which are as follows: (i) a global FE model and (ii) an associated
+photorealistic CG model of the as-built structure. Note that the CG model can realistically represent the appearance of the as-built structure in bot h
+undamaged and damaged conditions. Following the steps outlined in Figure 1, the GBDT of a simple five-story reinforced concrete benchmark
+building was built and various UAV inspection trajectories for post-earthquake scenarios were designed and assessed in the synthetic environ-
+ment.
+18 However, the application of GBDT has yet to be applied in the field, where structures such as high-rise buildings in densely populated areas
+pose significant additional challenges. Moreover, the quality of UAV-collected images is highly dependent on various environmental factors, such as
+weather, lighting, satellite signals, and obstacles. Therefore, the environmental conditions at the site of the target structure, in addition to th e struc-
+ture itself, should also be replicated in the visual representation, which was not considered in previous studies.
+To validate the GBDT framework using real-world structures and account for the environmental restrictions in the context of post-
+earthquake inspection, this paper concentrates on a 45-floor building located in Guangzhou, China. In contrast to the fictional low-rise building
+with a regular plan examined in the previous study,
+18 the structure chosen for this investigation is a high-rise building characterized by a more
+intricate architectural form. Following the research overview in Figure 2, the FE model is first built according to the structural drawings, providing
+meshes of the structural components that can be automatically imported into the CG software. The nonstructural components are then added to
+the CG model based on the given dimensions from the architectural drawings. The exterior surfaces of the CG model are textured using the
+photos taken on-site (Section
+2). Based on the undamaged CG model, appropriate parameters are determined for the UAV flight path with the
+aim of constructing a high-quality point cloud model of the as-built structure. This point cloud model is then used to validate the fast CG modeling
+FIGURE 1 Graphics-based digital twin (GBDT) Framework. 18
+FIGURE 2 Research overview.
+WANG ET AL . 3o f1 7
+ 15417808, 2024, 13, Downloaded from https://onlinelibrary.wiley.com/doi/10.1002/tal.2127 by City University Of Hong Kong, Wiley Online Library on [04/07/2026]. See the Terms and Conditions (https://onlinelibrary.wiley.com/terms-and-conditions) on Wiley Online Library for rules of use; OA articles are governed by the applicable Creative Commons License
+
+process and accuracy of the virtual representation (Section 3), which is carried out on a real-world high-rise structure for the first time. For the
+damaged CG model, nonlinear analysis using the global FE model under assumed seismic excitation is conducted to determine the location and
+extent of damage. With this information, damage hotspots are marked in the CG model to highlight areas that require special attention during
+post-earthquake inspections (Section
+4). Additionally, environmental restrictions including obstacles, weak satellite signal, wind speed, and lighting
+conditions are considered to create a synthetic testbed for UAV flight schemes. Subsequently, three UAV-aided inspection schemes are
+implemented virtually, and the best UAV flight scheme is determined for the planned field inspection (Section
+5). This example demonstrates the
+flexibility of the GBDT in representing the real-world structure and environmental conditions, as well as the significant potential of the GBDT
+framework for UAV-aided post-earthquake inspection of high-rise buildings.
+2 | DEVELOPMENT OF THE GBDT
+This section provides the steps to create the GBDT of the high-rise building, including FE modeling, CG modeling, and the environment in which
+the building is located.
+2.1 | Target structure
+The target structure of this study is a residential building located in Guangzhou, China. This 45-floor high-rise building, which is one of two twin
+towers, is a reinforced concrete shear wall structure shown in Figure 3a. The dimension of the structural plan is 25.0 m /C2 27.2 m, and the total
+height is 138 m, including 6 m for the ground floor, and 3 m for each of the remaining floors. The concrete tensile strength of the shear walls on
+floors 1–8, 9–21, and 22 –45 are 2.04, 1.89, and 1.71 N/mm
+2, respectively, and the concrete tensile strength of beams and slabs is 1.43 N/mm 2.
+The layout of the structure is shown in Figure 3b.
+2.2 | FE model of the structure
+The FE model is a key component of the GBDT, as it not only provides information on structural components for the CG model but also is used to
+predict the damage through nonlinear time history analysis. In this study, the structural analysis software SAP2000 is adopted to build the
+nonlinear FE model of the target structure. Structural components including the beams, columns, slabs, and shear walls are constructed in the FE
+model. The beams and columns are modeled as frame elements, the slabs as thick shells, and the shear walls as nonlinear layered shells. Three
+types of nonlinearity are considered for the FE model in this study, including the P –Δ effect for the overall structure, the layered shell arrange-
+ment for the shear walls, and the plastic hinge setting for the beams. The plastic hinges are placed at one-tenth locations near the two ends of the
+beams. Modal analysis is conducted to examine the natural periods and mode shapes of the structure. The first three natural periods and
+FIGURE 3 Target structure: (a) photo (the left building) and (b) plan.
+4o f1 7 WANG ET AL .
+ 15417808, 2024, 13, Downloaded from https://onlinelibrary.wiley.com/doi/10.1002/tal.2127 by City University Of Hong Kong, Wiley Online Library on [04/07/2026]. See the Terms and Conditions (https://onlinelibrary.wiley.com/terms-and-conditions) on Wiley Online Library for rules of use; OA articles are governed by the applicable Creative Commons License
+
+the corresponding first three mode shapes are translation in the north –south direction (3.46 s), translation in the east –west direction (3.08 s), and
+torsion (2.62 s), as shown in Figure 4. The modal results obtained are deemed reasonable for a typical high-rise building. In practical applications,
+the natural frequencies and other modal characteristics of the as-built structure can be identified through field tests, offering a viable means for
+the validation of the FE model.
+2.3 | CG model of the structure
+This section describes the construction of both the structural and nonstructural components of the CG model. The structural components are
+automatically built based on the FE model, whereas the nonstructural components are manually built in accordance with the architectural draw-
+ings. The CG model is then textured using the on-site photos of the real building.
+2.3.1 | Structural components of the CG model
+The open-source 3D software, Blender, is adopted to build the CG model of the target structure. In the CG model, the structural components are
+generated automatically based on the mesh information of the FE model in two steps. First, the mesh information of the FE model, including the
+node coordinates, shell element nodes, and frame nodes, is exported and saved using the SAP-Python Application Programming Interface (API);
+next, the saved mesh information is imported into the Blender environment using the Blender Python API. The structural components of the CG
+model generated by the above process are shown in Figure
+5a.
+2.3.2 | Nonstructural components of the CG model
+The nonstructural components on the exterior surfaces of the high-rise structure include the balconies, glass windows, and shutters. Since these
+nonstructural components are configured in different ways, modeling with the Blender Python API would be time-consuming and labor-intensive.
+Therefore, this study uses the graphical user interface (GUI) to manually build the nonstructural components of the CG model. Cube units are cre-
+ated and reshaped in Blender according to the dimensions in the architecture drawings to obtain a refined 3D replica of the nonstructural compo-
+nent. Figure
+6a shows the 3D model of the balcony part by the above method. The finished nonstructural components are then assembled into
+the structural components to obtain a complete CG model of the high-rise structure (see Figure 5b).
+2.3.3 | Texture of the CG model
+The textures of the CG model are generated based on photos of the exterior surface of the high-rise structure taken in the field. Four types of
+textures are prepared including the base color map, displacement map, normal map, and roughness map. Those textures are combined through
+FIGURE 4 Mode shapes of the structure.
+WANG ET AL . 5o f1 7
+ 15417808, 2024, 13, Downloaded from https://onlinelibrary.wiley.com/doi/10.1002/tal.2127 by City University Of Hong Kong, Wiley Online Library on [04/07/2026]. See the Terms and Conditions (https://onlinelibrary.wiley.com/terms-and-conditions) on Wiley Online Library for rules of use; OA articles are governed by the applicable Creative Commons License
+
+the principled bidirectional scattering distribution function (BSDF) shader in Blender. Nodes are added to the principled BSDF shader to further
+adjust the base color and the brightness intensity of the textures so that the CG model can resemble the real structure as much as possible. The
+structure and balcony part after texturing are shown in Figures 5c and 6b, respectively. Figure 7 compares the photo of the real high-rise structure
+and a screenshot of the final CG model from a similar pose. A high degree of similarity can be seen between these two images.
+2.4 | Environmental adjustment for the CG model
+To conduct practical post-earthquake UAV flight planning using the CG model, the surrounding environment of the target structure also should
+be considered. Roads, trees, and especially adjacent buildings that must be respected in determining the UAV path are constructed in Blender
+according to the physical environment of the target structure. The locations and dimensions of surrounding buildings are obtained by satellite
+images, while the dimensions and heights of the adjacent high-rise buildings are read from drawings. The CG models of the surrounding buildings
+are created by performing manual operations on cube units using the GUI. Because the UAV flight path only concerns with the positions and sizes
+FIGURE 5 CG model of the structure: (a) structural components only, (b) structural and nonstructural components, and (c) textured.
+FIGURE 6 Balcony in the CG model: (a) untextured and (b) textured.
+FIGURE 7 Visual comparison: (a) real structure and (b) CG model.
+6o f1 7 WANG ET AL .
+ 15417808, 2024, 13, Downloaded from https://onlinelibrary.wiley.com/doi/10.1002/tal.2127 by City University Of Hong Kong, Wiley Online Library on [04/07/2026]. See the Terms and Conditions (https://onlinelibrary.wiley.com/terms-and-conditions) on Wiley Online Library for rules of use; OA articles are governed by the applicable Creative Commons License
+
+of the obstacles, there is no need to texture the surrounding buildings. Roads are built by scaling the plane model and adjusting the terrain height
+and size. Trees are acquired from the open-source asset library and placed referring to the buildings and roads. Finally, the high-dynamic range
+image environment map is used to add lighting to the CG environment. The CG model of the high-rise structure with those environmental consid-
+erations is shown in Figure
+8.
+3 | VALIDATION OF THE CG MODEL
+In this section, an issue that arises during the field UAV inspection of the as-built structure is first described. Subsequently, a solution is sought
+based on the analysis of the synthetic environment using the CG model of the high-rise building. An updated UAV flight path is then implemented
+on site, and a high-quality point cloud model of the as-built structure is constructed, which serves as a reference for validation of the CG model.
+3.1 | Initial point cloud model of the structure
+In the context of post-earthquake UAV-aided inspection of engineering structures, a point cloud model built using the UAV-collected images pro-
+vides a means to evaluate the effectiveness of the flight path. Typically, a higher point cloud density indicates a higher quality model and thus a
+more effective UAV flight path.
+In this example, the images of the as-built structure were captured by a commercial UAV DJI Phantom 4 Pro V2.0 with parallel trajectory
+loops. The detailed parameters of this UAV are shown in Table 1.32 The images were initially taken at an interval of 5 m, both vertically and hori-
+zontally, with a downward camera angle of 30 /C14 , and at a distance of 5 m away from the building surfaces. The images were then used to construct
+the point cloud model of the as-built structure in the photogrammetry software RealityCapture. However, the resulting point cloud model shown
+in Figure 9a was of poor quality, as evident from large missing areas and a low point cloud density assessed by the software CloudCompare shown
+in Figure 9c. To show the details, only three stories are displayed.
+To obtain deeper insight into the encountered issue, the UAV survey was replicated in the synthetic environment. The camera poses along
+the UAV trajectory relative to the building surfaces were obtained directly from the path planning software. Synthetic cameras were placed at
+those locations to take pictures with the same camera angle and image resolution as in the field. These synthetic images were then used to
+FIGURE 8 Textured CG model with environmental setting.
+TABLE 1 Parameters of DJI Phantom 4 ProV2.0.
+Max horizontal flight speed (position model) 13.9 m/s
+Max wind speed 10 m/s
+Camera resolution 5,472 /C2 3,648
+Image sensor 1-in. CMOS, 20-M pixels
+Camera lens Focal length 8.8 mm (a 35-mm equivalent focal length of 24 mm)
+Aperture value f/2.8 –f/11
+WANG ET AL . 7o f1 7
+ 15417808, 2024, 13, Downloaded from https://onlinelibrary.wiley.com/doi/10.1002/tal.2127 by City University Of Hong Kong, Wiley Online Library on [04/07/2026]. See the Terms and Conditions (https://onlinelibrary.wiley.com/terms-and-conditions) on Wiley Online Library for rules of use; OA articles are governed by the applicable Creative Commons License
+
+construct another point cloud model in RealityCapture. As shown in Figure 9b,d, the values of the point cloud densities are different due to inevi-
+table variations in lighting conditions and texture. Additionally, the absence of windows in the point cloud model of the as-built structure is attri b-
+uted to reflection issues. Nevertheless, consistent tendencies are observed between the point cloud models of the as-built structure and the CG
+model. For example, some parts on the west side are missing, and the point cloud densities of the dented area on the surface of the building are
+lower than the prominent areas for both the as-built structure and the CG model. The similarity between the real and synthetic applications sug-
+gests that the assessment of the UAV flight path and camera settings can be carried out with the assistance of the GBDT. This approach can save
+significant time and effort that would have otherwise been spent in the field.
+3.2 | Updated point cloud model of the structure
+To explain the reason for the insufficient point cloud quality, the effect of various parameters such as different increment distances, camera
+angles, and distance between the UAV and building surfaces were examined in the synthetic environment. The point cloud models constructed
+on the synthetic images following different flight paths were evaluated for their visual integrity and point cloud densities. Results show that sim-
+ply increasing the distance between the UAV and building surfaces could result in a significant improvement in the point cloud model. As shown
+in Figure
+10, when the distance between the UAV and the building surface was above 10 m while the other parameters remained the same, a
+high-quality point cloud model was obtained. The reason for this improvement is that taking photos farther away from the building increases the
+FIGURE 9 Initial point cloud models and point cloud densities of (a, c) as-built structure and (b, d) CG model.
+FIGURE 10 Updated point cloud models and point cloud densities of (a, c) as-built structure and (b, d) CG model.
+8o f1 7 WANG ET AL .
+ 15417808, 2024, 13, Downloaded from https://onlinelibrary.wiley.com/doi/10.1002/tal.2127 by City University Of Hong Kong, Wiley Online Library on [04/07/2026]. See the Terms and Conditions (https://onlinelibrary.wiley.com/terms-and-conditions) on Wiley Online Library for rules of use; OA articles are governed by the applicable Creative Commons License
+
+overlapping area between adjacent images, which benefits the coverage of the point cloud. Finally, this updated flight path was implemented on
+the as-built structure. The resulting point cloud model and point cloud density of the as-built structure were compared to those of the CG model,
+as shown in Figure
+10.
+3.3 | Dimension validation of the CG model
+The high-quality point cloud model of the as-built structure, which was obtained in the previous section, is now being used as a reference to vali-
+date the dimensions of the CG model. The dimensions of the CG model are directly exported from the Blender (not from rendered images), and a
+quantitative assessment is made between the CG model and the as-built structure by Hausdorff distance. Hausdorff distance is a widely used per-
+formance measure in computer vision to calculate the distance between two point sets. 33 The two sets are close in the Hausdorff distance if
+every point of either set is close to some point of the other set. Therefore, the CG model is considered accurate with a large quantity of points
+located in the range of a small Hausdroff distance. Using the physical dimension as the scale for the Hausdroff distance, the proportion of points
+reaches 86.01% in the Hausdroff distance range less than 100 cm. This difference of 100 cm is equal to a percentage error of less than 4% in ref-
+erence to the dimensions of the structure (25.0 m /C2 27.2 m /C2 138 m), which indicates a good agreement between the CG model and the as-built
+structure.
+4 | DEVELOPMENT OF THE DAMAGED CG MODEL
+The damaged CG model which serves as a testbed for UAV-aided structural inspection is built. To place more emphasis on potential damage loca-
+tions, FE analysis is conducted to determine the damage locations under a specific earthquake. Those damage locations, referred to as damage
+hotspots, are then marked in the CG model with an additional texture layer.
+4.1 | Seismic nonlinear analysis of the FE model
+In practical applications, the actual excitation should be used to acquire damage information of the structure by FE analysis. For illustration pur-
+poses, the seismic ground motion of the 1940 El Centro earthquake is adopted as the excitation in this study. The peak ground acceleration (PGA)
+of the seismic excitation is deliberately scaled to a large value of 0.22 g so that significant damage can be detected in the structure. This PGA cor-
+responds to the rare earthquake of intensity seven according to the Chinese seismic code. 34
+Time histories of structural responses are obtained through the nonlinear time history analysis under the seismic excitation. Interstory drift is
+an important index to evaluate the safety condition of structures. Cai et al. 35 suggested that interstory drift can be divided into harmless and
+harmful interstory drifts. The former is caused by the pure bending of the structure while the latter is caused by the shear reaction between the
+floors which is the main cause of damage in the structure. Figure
+11a shows the maximum total and harmful interstory drift ratios (interstory drift
+divided by the height of the floor) at each floor of the structure under the scaled (0.22 g) El Centro earthquake. The interstory drifts may follow a
+different pattern under earthquakes with different frequency characteristics. The elastic limit of the interstory drift ratio (1/1000 according t o the
+Chinese seismic code 34) is marked with a vertical line as a reference. Note that this elastic limit is a conservative guideline for engineering design,
+and thus, damage is not expected on floors with interstory drift ratios below this limit. By referring to this limit, the maximum total interstory drif t
+ratios (all exceed the elastic limit) suggest that all the floors have structural damage whereas the maximum harmful interstory ratios suggest that
+floors from 15 to 17 are not damaged. By checking the stresses of the shear walls, the concrete condition is found to be consistent with the harm-
+ful interstory drift ratios rather than the total interstory drift. Specifically, the shell stresses on floors 14 –21 are less than the tensile strength of
+the concrete, indicating that the concrete is intact without any cracks. Therefore, the harmful interstory drift is used to determine the floors
+where damage is most likely to occur. Take floor 6 for example, Figure
+11b shows the harmful interstory drift time history, 3.07 and 4.56 s
+(labeled as A and B, respectively) are marked with red dots for analysis in the subsequent section.
+4.2 | Damage hotspot
+To find the damage hotspots on those potentially damaged floors, the time histories of harmful interstory drifts and associated stress color maps
+are further examined. From Figure 11b, the two points in time with the largest magnitudes (i.e., 3.07 and 4.56 s) are selected to explore further.
+The stress color maps for the time point A (3.07 s) are shown in Figure 12, for example, where the color bar of the stress color map is adjusted so
+that the minimum tensile stress displayed is the same as the ultimate tensile strength (2.04 N/mm 2) of the concrete on those floors (floors 1 –8).
+WANG ET AL . 9o f1 7
+ 15417808, 2024, 13, Downloaded from https://onlinelibrary.wiley.com/doi/10.1002/tal.2127 by City University Of Hong Kong, Wiley Online Library on [04/07/2026]. See the Terms and Conditions (https://onlinelibrary.wiley.com/terms-and-conditions) on Wiley Online Library for rules of use; OA articles are governed by the applicable Creative Commons License
+
+Dark blue indicates that the stress is below the tensile limit and other colors are above the limit. The stress color maps show that the damage hot-
+spots, suggested by the multi-color areas, occur in the south external shear walls of the structure. Those areas will be the focus of inspection in
+subsequent UAV flight planning.
+4.3 | Damage texture of the CG model
+In the CG model, the damage hotspots predicted by the FE model are textured with synthetic cracks, as shown in Figure 13. The damage texture
+is accomplished by superimposing a transparent layer containing the crack image (generated by design software based on the real seismic cracks
+on high-rise buildings) right above the original texture. The intention of the crack texture here is to mark the damage hotspots so that attention
+will be given to those areas in designing the UAV path. During extreme loading events, the locations of damage on both structural and
+FIGURE 11 FE analysis results (a) maximum interstory drift ratios and (b) harmful interstory drift time history of floor 6. The vertical dashed
+line in (a) denotes the elastic limit of the interstory drift ratio (1/1000).
+FIGURE 12 Stress color maps at Moment A. The zoom-in of the south external shear walls is marked with a red box.
+10 of 17 WANG ET AL .
+ 15417808, 2024, 13, Downloaded from https://onlinelibrary.wiley.com/doi/10.1002/tal.2127 by City University Of Hong Kong, Wiley Online Library on [04/07/2026]. See the Terms and Conditions (https://onlinelibrary.wiley.com/terms-and-conditions) on Wiley Online Library for rules of use; OA articles are governed by the applicable Creative Commons License
+
+nonstructural components tend to be generally consistent in terms of floor and orientation. Therefore, for time efficiency, the damage on
+nonstructural components and crack patterns describing the shapes and sizes of the cracks are not analyzed in this example. The realistic crack
+patterns and damage on nonstructural components can be obtained by component-level FE analysis using a finer mesh of the elements.
+5 | GBDT-BASED POST-EARTHQUAKE UAV FL IGHT PLANNING FOR FIELD INSPECTION
+To ensure the efficiency of the UAV-aided post-earthquake inspection in practical implementation, the synthetic environment of the GBDT is
+applied as the testbed to compare different inspection strategies. First, restrictions imposed by the physical environment including obstacles,
+weak satellite signal, wind speed, and lighting conditions are considered for the CG model. Based on these environmental considerations and the
+results of the FE analysis, the flight path and camera setting are designed. Subsequently, the designed flight schemes are carried out in the syn-
+thetic environment, and images rendered in the view of the UAV are obtained. Finally, different UAV flight schemes are evaluated, and the most
+appropriate scheme is determined.
+5.1 | Environmental restrictions
+For illustration purposes, non-ideal environmental conditions that may affect path planning and camera settings for the UAV are assumed, serving
+as an example of the necessary considerations in UAV flight planning.
+Satellite signal interference can jeopardize UAV flight stability and accurate positioning, especially in complex urban environments. In this
+study, the target building is located a mere 15 m away from the twin building (143 m tall and situated on the west side of the target building). The
+satellite signal can be significantly disturbed in the area between the two adjacent high-rise buildings, which may increase the risk of flight-path
+failure and potential drone accidents. Moreover, strong winds resulting from the channeling effect between tall buildings can also destabilize UAV
+flights. The wind forces between parallel buildings can reach twice the normal level,
+37 due to increased wind speeds in the narrow passage. There-
+fore, avoiding the narrow passage between the adjacent buildings when planning the flight path under strong winds is advisable. Additionally, the
+randomness of earthquakes requires UAV inspections to be carried out regardless of time, including times with poor lighting conditions such as
+dawn or dusk. In this study, poor lighting conditions akin to dusk are simulated in Blender using a sunlight strength of 500 W/m
+2. The lighting
+condition will impact the selection of camera parameters.
+While the aforementioned environmental restrictions are set for this specific example, adjustments can be easily made to explore the effects
+of various factors on path planning within the synthetic environment. For instance, simulating different lighting conditions can be achieved by
+modifying the light source and its intensity, introducing a dusty environment can be simulated by adding noise to the texture, and a significant
+change in wind speed can be replicated by randomly altering the pose of the camera in the synthetic environment.
+5.2 | UAV flight schemes
+Three UAV flight schemes are considered in this example. For different flight schemes, different combinations of the flight path and camera set-
+ting are considered.
+FIGURE 13 Seismic damage: (a) crack photo 36 and (b) cracks on CG model.
+WANG ET AL . 11 of 17
+ 15417808, 2024, 13, Downloaded from https://onlinelibrary.wiley.com/doi/10.1002/tal.2127 by City University Of Hong Kong, Wiley Online Library on [04/07/2026]. See the Terms and Conditions (https://onlinelibrary.wiley.com/terms-and-conditions) on Wiley Online Library for rules of use; OA articles are governed by the applicable Creative Commons License
+
+5.2.1 | Flight path
+Two distinct flight paths, including a circular path and a parallel path, are considered for the high-rise structure (Figure 14). The two trajectories
+are inherently simple, as there is no need to account for collisions between multiple UAVs, and the presence of obstacles around the building is
+limited. The circular flight path takes the structure as the center of the circle. Such types of trajectory plans, as seen in Cheng et al, 38 provide a
+unified algorithm applicable to buildings of various sizes, ensuring sufficient coverage. In contrast, the parallel path is more intricate, as it ad opts
+the structural surface with damage hotspots as a point of interest. Therefore, the normal distance from the UAV to those critical shear walls is set
+uniformly. The flight paths of different surfaces are connected by curved paths at the corners. Combining factors including obstacles, satellite si g-
+nal, and wind speed, both flight paths are set to avoid the area between the target building and the adjacent building.
+5.2.2 | Camera setting
+Camera settings determine the quality of the images and 3D reconstruction of the structure. A synthetic movable camera consistent with the DJI
+Phantom 4 Pro V2.0 UAVused in the original survey is chosen for simulated image collection. In the Blender, the built-in camera uses the aperture
+parameters to adjust the camera exposure. Two very different aperture sizes, f/2.8 and f/5.6, are selected. The purpose is to illustrate that the
+quality of UAV-collected images can be evaluated through trials in the synthetic environment. For the physical camera, the exposure can be
+adjusted by changing the shutter speed, and the conversion between the aperture size of the synthetic camera and the shutter speed of the phys-
+ical camera should be acquired for practical implementation. In the practical application, camera parameters need to be determined considering
+the UAV's distance from building surfaces and resolution requirements.
+The working distance at 9 m from the structural surface is calculated from the field of view, camera resolution, and expected crack scale of
+1 mm/pixel (Equations
+1 and 2). The actual sensor size is 13.2 mm /C2 8.8 mm with the camera resolution considered. To ensure the 80% frontal
+and side overlap of collected images, the resulting intervals between two adjacent camera positions are 2.7 and 2.4 m in the horizontal and verti-
+cal directions, respectively.
+HFOV ¼ HRes /C2 ObjRes, ð1Þ
+WD ¼ HFOV
+SH /C2 f, ð2Þ
+where HFOV is the horizontal distance that can be captured by the field of view, HRes is the horizontal resolution of the camera, ObjRes is the
+object recognition resolution, WD is the working distance of the UAV relative to the structure, SH is the width of the camera sensor, and f is
+the focal length of the camera.
+5.2.3 | Implementation in the synthetic environment
+With different combinations of flight paths and camera parameters, the following three UAV flight schemes are compared in this study: (1) circular
+path with an aperture size of f/2.8, (2) parallel path with an aperture size of f/2.8, and (3) parallel path with an aperture size of f/5.6.
+FIGURE 14 Two types of flight paths.
+12 of 17 WANG ET AL .
+ 15417808, 2024, 13, Downloaded from https://onlinelibrary.wiley.com/doi/10.1002/tal.2127 by City University Of Hong Kong, Wiley Online Library on [04/07/2026]. See the Terms and Conditions (https://onlinelibrary.wiley.com/terms-and-conditions) on Wiley Online Library for rules of use; OA articles are governed by the applicable Creative Commons License
+
+In the synthetic environment, the flight path is created using the Bezier curve by editing pre-designed control points for the camera. Mean-
+while, the virtual camera is constrained to track the center and surface of the high-rise structure for circular and parallel flight paths, respectiv ely.
+5.3 | Evaluation of UAV flight schemes
+In this section, the three UAV flight schemes are evaluated to determine the most appropriate scheme for practical application. The resulting
+inspection strategy should meet the following requirements: (1) Photos of potentially damaged parts (damage hotspots) must be clear to deter-
+mine the extent of damage on critical components. (2) The generated point cloud model of the overall structure must be accurate to judge the
+location and distribution of damage. (3) The UAV captures photos in as short a time as possible. It is worth mentioning that the time required to
+compare different flight paths using the GBDT primarily depends on the rendering of images from the CG model and the construction of the point
+cloud model. For the 45-floor high-rise building, the total time required for these two tasks is approximately one and a half hours. However, to
+assess the quality of photos and point cloud models, focusing on representative sections of the building (e.g., three to five floors) is sufficient.
+Consequently, the assessment time for one flight path can be limited to less than 10 minutes. Assessing different flight paths and choosing the
+appropriate one for the field inspection can therefore be implemented in a relatively short time.
+5.3.1 | Photo of damage hotspot
+The image sets are rendered using the Eevee engine 39 in the CG environment. Figure 15 shows examples of the images including the original
+views (top row) and zoom-ins on cracks (bottom row) collected following the three UAV flight schemes. Without distortion due to the skew angle,
+the shapes and sizes of the cracks in the images collected from Schemes (b) and (c) (parallel to the damaged building surface) can be better recog-
+nized than those collected from Scheme (a). However, due to the insufficient camera settings (less light reaches the sensor for the aperture size of
+f/5.6 than for the aperture size of f/2.8), the image of Scheme (c) is somewhat blurry.
+5.3.2 | Accuracy of the point cloud model
+The collected image set is also used for 3D point cloud model reconstruction in RealityCapture. The quality of the reconstruction is evaluated by
+comparing the point cloud models obtained by different flight schemes and the dimensions of the CG model directly exported from Blender. In
+contrast to the comparison in Section 3.3, where the ground truth is the as-built structure, the ground truth here is the CG model. It is important
+FIGURE 15 Images collected in the synthetic environment following different UAV flight schemes. Scheme (b) outperforms the others.
+WANG ET AL . 13 of 17
+ 15417808, 2024, 13, Downloaded from https://onlinelibrary.wiley.com/doi/10.1002/tal.2127 by City University Of Hong Kong, Wiley Online Library on [04/07/2026]. See the Terms and Conditions (https://onlinelibrary.wiley.com/terms-and-conditions) on Wiley Online Library for rules of use; OA articles are governed by the applicable Creative Commons License
+
+to note that this CG model has been validated against the high-quality point cloud model of the as-built structure, as detailed in Section 3.3. The
+reconstructed model following each flight scheme is first registered with the CG model, and then, its point cloud distribution is used as the evalua-
+tion index. The reconstruction from Flight Scheme (c) is of low quality due to the suboptimal camera setting of the aperture size and thus not able
+to be registered with the CG model (Figure
+16c). Table 2 shows the point cloud distribution in the Hausdorff distance range of less than 100 cm
+for the registered reconstructions of Schemes (a) and (b). In each 20-cm range, the reconstruction from Scheme (b) has a higher percentage of
+point cloud distribution than that of Scheme (a), indicating a more accurate reconstruction. The reconstruction quality is also visually compared i n
+Figure
+16a,b.
+5.3.3 | Time of flight
+The inspection time for potentially damaged structures in post-earthquake scenarios should be as short as possible as the battery life of most
+commercial UAVs is approximately 30 min. 32 The single-lap flight distance is approximated to be 146 and 124 m for the circular and parallel paths,
+respectively, and the number of laps covering all the damaged floors (floors 1 –13 and 22 –45) throughout the height of the building is 43. The
+speed of the UAV is assumed to be 3 m/s, a value lower than the maximum UAV speed of 5 m/s as adopted in Nagasawa et al. 40 This intentional
+reduction is implemented to ensure the safety of the flight, particularly under the challenging conditions of strong wind and poor lighting that are
+considered in the current example. Thus, the total time consumptions for the circular path (Scheme (a)) and parallel path (Schemes (b) and (c))
+are 2093 and 1777 s, respectively. The flight schemes with the parallel path require a shorter time than that with the circular path, and the image
+collection using the parallel path can be completed within the battery life of the UAV. In the case where the inspection time is beyond the battery
+life of the UAV due to the large volume of the structure, change of battery should also be accounted for in the inspection time.
+Based on the evaluation of the visual check, quality of the point cloud reconstruction, and time of the flight, Scheme (b) outperforms the
+others. This flight scheme is recommended for the assumed field UAV-aided post-earthquake inspection of the high-rise structure. It is important
+to note that the conclusion drawn is specific to this particular example. Alterations in environmental restrictions and UAV speed may result in a
+different optimal inspection scheme.
+6 | FUTURE DEVELOPMENT
+In the above section, the GBDT is devised to test and evaluate post-earthquake UAV flight schemes based on the knowledge of damage location
+and environmental restrictions. While the assumptions and conditions employed have been simplified, this example nonetheless demonstrates
+the capability of GBDT for use in the field. Applications of the GBDT toward automated detection of damage and assessment of structural condi-
+tions will be the focus of research in the future.
+FIGURE 16 Point-cloud reconstruction for the three UAV flight schemes.
+TABLE 2 Point cloud distribution of different Hausdorff distance ranges.
+Reconstructed model
+Hausdorff distance range (cm)
+0–20 20 –40 40 –60 60 –80 80 –100
+Scheme (a) 66.86% 5.00% 3.96% 3.29% 2.89%
+Scheme (b) 70.24% 8.24% 7.35% 5.57% 4.95%
+14 of 17 WANG ET AL .
+ 15417808, 2024, 13, Downloaded from https://onlinelibrary.wiley.com/doi/10.1002/tal.2127 by City University Of Hong Kong, Wiley Online Library on [04/07/2026]. See the Terms and Conditions (https://onlinelibrary.wiley.com/terms-and-conditions) on Wiley Online Library for rules of use; OA articles are governed by the applicable Creative Commons License
+
+6.1 | Component-level FE analysis
+In this study, only the global FE analysis of the high-rise structure is conducted and the CG model with damage hotspots is constructed accord-
+ingly. Extending the previous work about PBGM, 18,28 the responses of the high-rise structure from the global FE analysis will be used as the
+boundary conditions to carry out a more detailed study on the structural and nonstructural components. The damage patterns resulting from
+the finer component-level FE analysis will be used to render realistic damage textures including cracks, spalling, and exposed rebars for the CG
+model.
+6.2 | CG model construction
+Because the nonstructural components and the building materials of high-rise structures for a certain function are limited to just a few types
+(e.g., apartment and office), a library of building parts and textures should be established. In addition, CG algorithms will be developed to obtain
+ready-to-use damage textures from the stress color maps of both global and component-level FE analyses. Consequently, the whole building pro-
+cess of the CG model will be automated to further raise the modeling efficiency, especially when creating the GBDT for a community of buildings.
+6.3 | UAV path planning
+In addition to guiding UAV path planning, the damaged hotspots identified by the FE model of the GBDT can be utilized to further optimize the
+inspection strategy. A detailed examination of the damaged areas, achieved by capturing additional photos, can enhance the accuracy of damage
+detection and evaluation. Furthermore, while UAV paths were tested for inspecting a single building in this study, the potential for multiple UAV
+path planning for a cluster of nearby buildings, as demonstrated in Nagasawa et al,
+40 can be implemented. The quality of UAV-collected images
+can then be evaluated with the assistance of the GBDT.
+6.4 | Damage detection
+Given the ease with which UAV inspections can be conducted in the synthetic environment, automated scene mapping and feature recognition
+using advanced machine learning, as discussed in Kerle et al, 41 can also be conveniently implemented based on the virtually realistic images col-
+lected by the fictional UAV. The GBDT will be applied to test and train machine learning algorithms for automated detection of damage and
+assessment of structural conditions. In particular, the CG model with detailed damage patterns (a realistic visual representation of the as-built
+structure) will be used to generate synthetic data for the purpose of seismic damage detection and identification.
+42,43 The information obtained
+from the visual damage will then be trained to infer the structural condition after the earthquake, making the post-earthquake inspection and
+evaluation of structures more intelligent and efficient.
+7 | CONCLUSION
+In this study, a GBDT framework is developed for UAV-aided post-earthquake inspection of high-rise buildings and validated using a real-world
+high-rise building in Guangzhou, China. The GBDT is comprised of an FE model and a CG model, with the former simulating the physical proper-
+ties and the latter being the photorealistic virtual representation of the as-built structure. The virtual representation of the structure combine d
+with environmental considerations from the physical world provides a synthetic testbed in which every step of the post-earthquake inspection
+procedure can be planned and evaluated virtually.
+To avoid the cumbersome nature of constructing the numerous components in the CG model of the high-rise building, structural components
+are automatically imported from the FE model, whereas the nonstructural components are added according to the architectural drawings. Visual
+checks and quantitative comparisons using the point cloud distribution are made between the CG model and the as-built structure. The high con-
+sistency found between the CG model and its physical counterpart validates the fast modeling process as well as the accuracy of the virtual
+representation.
+To demonstrate the efficacy of the GBDT framework in assisting practical applications, the validated GBDT of the high-rise building is used
+to evaluate UAV flight schemes for post-earthquake inspection. To place more emphasis on potential damage, FE analysis is conducted to deter-
+mine the damage locations under the earthquake, and consistent damage hotspots are then marked on the CG model. Environmental restrictions
+such as obstacles, weak satellite signals, wind speed, and lighting conditions are also considered, further enhancing the authenticity of the
+WANG ET AL . 15 of 17
+ 15417808, 2024, 13, Downloaded from https://onlinelibrary.wiley.com/doi/10.1002/tal.2127 by City University Of Hong Kong, Wiley Online Library on [04/07/2026]. See the Terms and Conditions (https://onlinelibrary.wiley.com/terms-and-conditions) on Wiley Online Library for rules of use; OA articles are governed by the applicable Creative Commons License
+
+synthetic environment. Within this environment, three UAV flight schemes with different flight paths and camera settings are implemented virtu-
+ally. The evaluation of photo quality, accuracy of point cloud distribution, and time consumption allows for a comprehensive comparison of the
+different flight schemes. Based on these evaluations, the best scheme for the assumed field inspection is determined to be the parallel path with
+the greater camera exposure.
+These results highlight the significant potential of the GBDT framework as a valuable tool in guiding real-world post-earthquake inspection
+activities. Its ability to simulate and evaluate various scenarios contributes to efficient decisionmaking and improves the overall effectivenes so f
+structural inspections in the aftermath of earthquakes.
+ACKNOWLEDGMENTS
+This work is supported by the National Natural Science Foundation of China (Nos. 51978182, 52020105002). The third author acknowledges the
+partial support of this research by the China Scholarship Council (No. 201706320312). The authors would like to acknowledge the efforts of
+Amirali Najafi, Nate Levine, Koji Tsuchimoto, Vedhus Hoskere, Casey Rodgers, Ziluo Yao, Sheng Jiang, Guanghao Zhai, Lixing Ma, and Jianying Lin
+for this research.
+DATA AVAILABILITY STATEMENT
+The data that support the findings of this study are available from the corresponding author upon reasonable request.
+REFERENCES
+[1] M. Dandoulaki, M. Panoutsopoulou, K. Ioannides, "An over4tion practices in Greece and the introduction of a rapid building usability evaluation pro-
+cedure after the 1996 Konitsa earthquake, " in 11th European conference on earthquake engineering, Rotterdam, 1998.
+[2] ATC, Field Manual: Postearthquake Safety Evaluation of Buildings, Redwood City, 1989.
+[3] Standing Committee of the National People's Congress of the PRC, Law of the People's Republic of China on Earthquake Prevention and Disaster
+Reduction, China Seismological Bureau, 2018.
+[4] M. Wen, S. Kang, "Augmented reality and unmanned aerial vehicle assist in construction management, " in International Conference on Computing in
+Civil and Building Engineering, Orlando, 2014.
+[5] Y. Chen, J. Zhang, B. Min, "Applications of BIM and UAV to construction safety, " in The 7th International Construction Conference Jointly With the
+Construction Research Congress, Montreal, 2019.
+[6] A. Dou, X. Wang, X. Yuan, "The loss assessment method of building earthquake damage using the remote sensing and building grid data, " in IEEE
+International Geoscience and Remote Sensing Symposium, Beijing, 2016.
+[7] A. I. N. Alshbatat, Int. J. Modern Educ. Comput. Sci. 2018, 10(1), 23.
+[8] M. Golparvar-Fard, J. Bohn, J. Teizer, S. Savarese, F. Peña-Mora, Autom. Constr. 2011, 20(8), 1143.
+[9] S. Du, Y. Zhang, R. Qin, Z. Yang, Z. Zou, Y. Tang, C. Fan, Remote Sens. 2016, 8(12), 1030.
+[10] B. F. Spencer, V. Hoskere, Y. Narazaki, Engineering 2019, 5(2), 199.
+[11] Z. Zhu, S. German, I. Brilakis, Autom. Constr. 2011, 20(7), 874.
+[12] S. German, I. Brilakis, R. DesRoches, Sens. Smart Struct. Technol. Civil, Mech. Aerosp. Syst. 2012, 8345, 83454S.
+[13] S. G. Paal, I. K. Brilakis, R. DesRoches, "Automated measurement of concrete spalling through reinforcement detection, " 2014.
+[14] Z. Ma, E. Zhao, G. Granello, G. Loporcaro, "Drone aided machine-learning tool for post-earthquake bridge damage reconnaissance, " in 17th World
+Conference on Earthquake Engineering, Sendai, 2020.
+[15] T. G. Mondal, M. R. Jahanshahi, R. T. Wu, Z. Y. Wu, Struct. Control Health Monit. 2020, 27(4), e2507.
+[16] V. Hoskere, Y. Narazaki, T. A. Hoang, B. F. Spencer, "Towards automated post-earthquake inspections with deep learning-based condition-aware
+models," in The 7th World Conference on Structural Control and Monitoring, Qingdao, 2018.
+[17] SPUR, “Safe enough to stay ,” SPUR Report, Jan. 2012. https://www.spur.org/sites/default/files/2013-09/SPUR_Safe_Enough_to_Stay.pdf
+[18] S. Wang, C. Rodgers, G. Zhai, T. N. Matiki, B. Welsh, A. Najafi, J. Wang, Y. Narazaki, V. Hoskere, B. F. Spencer Jr., J. Infrastruct. Intell. Resilience 2022,
+1(1), 100003.
+[19] E. J. Tuegel, A. R. Ingraffea, T. G. Eason, S. M. Spottswood, Int. J. Aerosp. Eng. 2011, 2011, 154798.
+[20] J. Matthews, P. E. D. Love, S. Heinemann, R. Chandler, C. Rumsey, O. Olatunj, Autom. Constr. 2015, 58, 38.
+[21] A. Akanmu, F. Okoukoni, Autom. Constr. 2018, 90, 294.
+[22] M. Akula, R. R. Lipman, M. Franaszek, K. S. Saidi, G. S. Cheok, V. R. Kamat, Autom. Constr. 2013, 36,1 .
+[23] C. S. Shim, N. S. Dang, S. Lon, C. H. Jeon, Struct. Infrastruct. Eng. 2019, 15(10), 1319.
+[24] C. Ye, L. Butler, B. Calka, M. Iangurazov, Q. Lu, A. Gregory, C. Middleton, A digital twin of bridges for structural health monitoring, in 12th International
+Workshop on Structural Health Monitoring , Stanford, San Francisco,San Francisco, 2019.
+[25] Y. C. Zhu, D. Wagg, E. Cross, R. Barthorpe, "Real-time digital twin updating strategy based on Structural Health Monitoring Systems. Model Validation
+and Uncertainty Quantification, " Model Validation and Uncertainty Quantification, vol. 3, 2020.
+[26] V. Hoskere, Y. Narazaki, B. F Spencer, M. D. Smith, Struct. Health Monit. 2019, 3073.
+[27] V. Hoskere, Y. Narazaki, B. F. Spencer, "Learning to detect important visual changes for structural inspections using physics-based graphics models, "
+in 9th International Conference on Structural Health Monitoring of Intelligent Infrastructure, St. Louis, 2019.
+[28] V. Hoskere, Y. Narazaki, B. F. Spencer, Sensors 2022, 22(2), 532.
+[29] Y. Narazaki, V. Hoskere, K. Yoshida, B. Spencer, Y. Fujino, Mech. Syst. Signal Process. 2021, 160, 107850.
+[30] Y. Narazaki, V. Hoskere, B. A. Eick, M. D. Smith, B. F. Spencer, Smart Struct. Syst. 2019, 24(6), 709.
+[31] Y. Narazaki, F. Gomez, V. Hoskere, M. D. Smith, B. F. Spencer, Struct. Health Monit. 2021, 20(4), 1841.
+[32] DJI, PHANTOM 4 User Manual, 2017.
+16 of 17 WANG ET AL .
+ 15417808, 2024, 13, Downloaded from https://onlinelibrary.wiley.com/doi/10.1002/tal.2127 by City University Of Hong Kong, Wiley Online Library on [04/07/2026]. See the Terms and Conditions (https://onlinelibrary.wiley.com/terms-and-conditions) on Wiley Online Library for rules of use; OA articles are governed by the applicable Creative Commons License
+
+[33] A. Javaheri, C. Brites, F. Pereira, J. Ascenso, "A generalized Hausdorff distance based quality metric for point cloud geometry, " in Twelfth International
+Conference on Quality of Multimedia Experience, Athlone, 2020.
+[34] Code for seismic design of buildings GB

@@ -1,0 +1,996 @@
+Measurement 217 (2023) 112955
+Available online 3 May 2023
+0263-2241/© 2023 Elsevier Ltd. All rights reserved.
+Developing a digital twin model for monitoring building structural health 
+by combining a building information model and a real-scene 3D model 
+Jinghai Xu
+a , *
+, Xin Shu
+a
+, Peng Qiao
+b
+, Shanshan Li
+a
+, Jigang Xu
+c 
+a
+School of Geomatics Science and Engineering, Nanjing Tech University, 30 South Puzhu road, Nanjing, China 
+b
+Science and Technology Development Center, Jiangsu Provincial Department of Housing and Urban-Rural Development, 287 North Jiangdong road, Nanjing, China 
+c
+School of Civil Engineering, Nanjing Tech University, 30 South Puzhu road, Nanjing, China 
+ARTICLE INFO 
+Keywords: 
+Real-scene 3D model 
+Building information model (BIM) 
+Digital twin 
+Oblique photogrammetry 
+Structural health monitoring (SHM) 
+ABSTRACT 
+Structural health monitoring (SHM) is a critical component of ensuring the safety of buildings, yet the effective 
+management of sensors and their corresponding monitoring data is complex. Thus, a digital twin health moni -
+toring information model for buildings was proposed to simultaneously locate sensors in space and monitor data. 
+We described the requirements of this process and designed a conceptual model by combining a building in -
+formation model (BIM) and a real-scene 3D model. The key steps in the fusion process include reconstructing the 
+BIM into sub-BIMs considering building component types and geometric transformations, 3D spatial position 
+registration with a rigid-body transformation method, and semantic information mapping. After the fusion 
+process, monitoring data from sensors are stored in a database management system and integrated with the fused 
+model. A digital twin model of the Nanjing Museum Old Hall was constructed as a case study, which evaluated 
+the fusion method ’ s feasibility and usability. 
+1. Introduction 
+Ensuring the safety of buildings is a critical component of urban 
+disaster prevention. In addition to external factors, such as natural di -
+sasters, the safety of buildings can also be affected by internal factors 
+such as material performance degradation and component creeps [39] . 
+However, structural health is dynamic, and when the health status of a 
+building varies greatly from the design expectations, accidents may 
+result. For example, the Jiaxin Hotel in Quanzhou, China unexpectedly 
+collapsed in March 2020, causing 29 deaths and 42 injuries during its 
+reconstruction
+1
+. In another incident, 53 people died when an old 
+building in Changsha City was suddenly damaged and collapsed in April 
+2022.
+2 
+To prevent further loss of life owing to lapses in building safety, 
+ongoing monitoring is required. Thus, structural health monitoring 
+(SHM) technology has been widely used to collect and analyze data to 
+diagnose structural health status using non-destructive sensors arranged 
+inside the structure [22] . 
+Early studies and applications of SHM in civil engineering focused on 
+projects related to water conservation, such as bridges and dams [18] . 
+However, with the increase in the construction of large or structurally 
+complex buildings, SHM technology has been gradually introduced into 
+the field of building engineering. Multiple aspects of SHM technology 
+have been investigated, such as high-performance sensors, data collec -
+tion, automatic monitoring systems, and methods of identifying struc -
+tural damage [4,15,36] . 
+However, accurately evaluating and predicting a building ’ s health 
+state based on SHM data is challenging owing to the diversity in the 
+structural forms of building engineering, the complexity of the internal 
+structural components (e.g., beams, plates, and columns), and the sub -
+stantial variation in the states of these two factors [31] . To address this 
+issue, numerous studies have focused on improving the methods of SHM 
+data analysis. For example, to prevent the impact of anomalous moni -
+toring data, Zhang et al. [38] described a simple and efficient approach 
+that incorporates complementary information obtained from multi-view 
+local binary patterns and the random forest algorithm to distinguish 
+data anomalies. Additionally, Jayawickrem et al. (2022) reviewed the 
+* Corresponding author. 
+E-mail address: xu_jing_hai@163.com (J. Xu). 
+1 
+https://baike.baidu.com/item/3%C2%B77%E6%B3%89%E5%B7%9E%E6%AC%A3%E4%BD%B3%E9%85%92%E5%BA%97%E5%9D%8D%E5%A1%8C%E4% 
+BA%8B%E6%95%85/24517017?fr = aladdin. 
+2 
+https://baike.baidu.com/item/4%C2%B729%E9%95%BF%E6%B2%99%E8%87%AA%E5%BB%BA%E6%88%BF%E5%80%92%E5%A1%8C%E4%BA%8B% 
+E6%95%85/60965288?fr = aladdin. 
+Contents lists available at ScienceDirect 
+Measurement 
+journal homepag e: www.el sevier.com/loc ate/mea surement 
+https://doi.org/10.1016/j.measurement.2023.112955 
+Received 29 November 2022; Received in revised form 14 April 2023; Accepted 25 April 2023 
+Measurement 217 (2023) 112955
+2
+application of optical fiber sensor technology and deep learning ap -
+proaches in the data processing capability of SHM technology. Related 
+data-processing methods, including Bayesian inference method, the 
+Kalman filter algorithm, fuzzy logic, and various machine learning ap -
+proaches, have also been explored [24,13,21]. 
+In addition to the data-processing methods, data models are an 
+important component of addressing the complexity of building safety. 
+For example, the structural mechanics model supports the analysis of 
+structural health using the finite-element method. In this study, a new 
+building SHM information model based on digital twin technology was 
+proposed to extend and complement the structural mechanics model. 
+The objectives of this study were to: (1) manage the monitoring sensors 
+located on the internal components of a building and their monitoring 
+data in space and (2) analyze the external influences on the building. 
+Subsequently, the association of the monitoring data of different struc -
+tural components as a whole in real time helps restore the dynamic 
+health state of the building. Furthermore, the external environment is 
+another crucial factor that can cause damage to buildings. Thus, the 
+second objective of our study was to analyze the external influences on 
+the building. The model offers a foundation for monitoring data man -
+agement, analysis, and the dynamic representation of the structural 
+health state. 
+Digital twin technology refers to the process of mapping an object in 
+the real world to create a highly accurate digital representation and 
+reflecting the information collected in the real world onto the digital 
+model to make predictions based on the simulation, analysis, and visu -
+alization of the natural world [27]. A digital twin maps the attributes, 
+structures, states, performances, and functions of physical entities and 
+systems within a virtual world [6]. Grigor et al. [14] addressed the 
+methodological development of structural simulation, analysis, and 
+control models for historic buildings using the concept of digital twin 
+technology and demonstrated that developing a digital twin model for a 
+historical building allows for more extensive usage of SHM data. Addi -
+tionally, these models facilitate a greater understanding of the real-time 
+structural behavior of complex buildings to ensure general structural 
+safety with minimal technical interventions. Jiang et al. [17] introduced 
+the concept of a digital twin within the field of bridge engineering and 
+established a general, non-deterministic, digital twin-driven multiscale 
+fatigue life prediction framework for steel bridges, which enhanced the 
+understanding of the fatigue evolution mechanism throughout the 
+bridge lifecycle. 
+The direct exploration of establishing a digital twin model for 
+building an SHM system is limited and requires further investigation. 
+However, studies on the potential applications of the digital twin 
+concept in evaluating smart cities may provide a point of reference. 
+Batty [3] analyzed the construction methods of digital twin cities, 
+including that of high- and low-frequency cities. Similarly, White et al. 
+[30] analyzed the modeling and construction of a digital twin smart city 
+and found that it is possible to create an accurate digital twin by 
+combining a large BIM with the big data generated by the Internet of 
+Things (IoT) sensors. Further, Jaume et al. [16] conceptualized the use 
+of digital twins in urban management and defined the basic structure of 
+a city’s digital twin. Additionally, Du [12] reported that creating digital 
+twin buildings may involve constructing physical information systems 
+that use buildings as carriers and utilize BIMs, geographic information 
+systems (GIS), the IoT, artificial intelligence, big data, and other tech -
+nologies. In comparison, Zhu et al. [40] introduced digital twin tech -
+nology in the construction of the Sichuan–Tibet railway and explored 
+the methods for classification and coding of physical elements. 
+As shown above, realizing a digital twin model of building health 
+monitoring is important by combining a BIM and a real-scene 3D model. 
+In particular, BIM technology can provide the distribution details of a 
+building’s internal components (such as beams, plates, and columns) in 
+a 3D form and integrate information from construction to operation to 
+provide a foundation for collecting and managing a building’s health 
+data from monitoring sensors. To this end, BIM technology has been 
+introduced into the process of monitoring building health, including the 
+visualization of monitoring information, comprehensive management of 
+structure monitoring information, and establishment of a structural 
+safety early warning system [25,23,19,29]. For example, Boddupalli 
+et al. [5] adopted a BIM as a health monitoring computing and digital 
+platform to organize and visualize health monitoring data and verify the 
+advantages of BIM technology in these capacities. Further, Yang [34] 
+and Deng et al. [11] explored the application of BIMs in SHM visuali -
+zation, while Theiler and Smarsly [28] proposed a BIM-based health 
+monitoring information description model by extending the industry 
+foundation class (IFC) model. This model uses IFC as a formal basis to 
+describe the information of the SHM system and promote the develop -
+ment of the interoperability between the SHM systems. 
+Although BIMs provide the internal location information of a struc -
+ture for monitoring sensors, which is conducive to analyzing the re -
+lationships among different structural components, health monitoring 
+systems should also focus on the impact of a structure’s external envi -
+ronment. For example, the impact of surrounding disturbances and 
+seismic waves should be monitored. Therefore, research on the SHM of a 
+building based on its spatial location is required. 
+One such tool that may be utilized for this purpose is GIS, which is 
+essential for urban information analysis [33], emphasizes the 
+geographical and spatial characteristics of objects, and provides accu -
+rate positioning and spatial analysis of buildings. An important devel -
+opment in the current GIS field is the real-scene 3D model, which results 
+from the oblique photogrammetry method, and possesses the charac -
+teristics of high accuracy, fidelity, and measurability and has become an 
+important technology in the construction and management of smart 
+cities [10,35]. Recently, the Chinese government issued a notice to 
+promote the construction of a 3D realistic geospatial scene in China, 
+aiming to develop new 3D geospatial information products to describe 
+and represent the real 3D spaces of industrial production, living envi -
+ronments, and ecological development [8]. However, the real-scene 3D 
+model represents the “skin,” or exterior, of the building without the 
+interior component information, which inhibits its capacity to meet 
+sophisticated needs such as indoor navigation, fire evacuation, and 
+building construction. 
+In summary, it is necessary to merge the complementary real-scene 
+3D model and BIM to establish an accurate digital twin model of 
+buildings for SHM. Chen et al. [9] explored feasible approaches for 
+converting IFC models into 3D Tiles based on an open-source solution 
+for visualizing BIM in Cesium. Following the open-source solution, we 
+aim to merge a BIM and a real-scene 3D model to create a digital twin 
+model for building SHM. The remainder of this paper is organized as 
+follows: Section 2—the conceptual model of the digital twin, Section 
+3—the proposed methodology for merging a BIM and a real-scene 3D 
+model, Section 4—the application of the methodology to the Nanjing 
+Museum, and Section 5—conclusions. 
+2. Conceptual model of the digital twin 
+2.1. Analysis of model requirements 
+To monitor and manage a buildings’ health information in real-time, 
+its digital twin model needs to meet three requirements, as shown in 
+Fig. 1: (1) The ability to manage structural information such as the 
+building’s size and geometric parameters, as well as semantic informa -
+tion, such as the materials used for beams, plates, and columns and their 
+prefabricated assembly. The structural information of buildings can be 
+used for dynamic and static mechanical analysis of structures under the 
+influence of the environment. (2) The ability to describe the external 
+shape of the building in terms of its location, contour, and geometric 
+shape. This information can be used to analyze the relationship between 
+the building and its surroundings, such as the impact of foundation pit 
+excavation on surrounding buildings during the construction period or 
+the impact of surrounding disturbances on the building. (3) The ability 
+J. Xu et al. 
+Measurement 217 (2023) 112955
+3
+to manage the build-state monitoring information. In addition, the 
+model should support managing dynamic monitoring information, such 
+as stress, displacement, and vibration, from various sensors. These 
+sensors collect real-time information on the external representation of 
+the building structure and internal changes in the structure. 
+Building structure information, external shape information, and 
+sensor data can be considered the geometric and attribute information of 
+a GIS, and existing GIS data models can be referenced. The BIM is 
+convenient for managing building component information and is widely 
+used in the construction industry. However, this model can also repre -
+sent and manage building information during the planning, design, 
+construction, and maintenance periods. Therefore, we selected the BIM 
+to represent and manage the building structure information in this 
+study. The real-scene 3D model provides accurate geographic location 
+information, realistic effects, and accurate measurements. Therefore, we 
+selected a real-scene 3D model to describe the geographic information of 
+the building. Combining a real-scene 3D model with a BIM can meet the 
+first two requirements outlined above and provide a foundation for 
+locating sensors and analyzing the surrounding environment. For the 
+third requirement, the building SHM data are essentially structured data 
+that can be managed using a database. The monitoring data were then 
+easily associated with the geometric data of the fused model as attribute 
+data for the GIS model. Therefore, the fusion of a BIM and a real-scene 
+3D model was the key to building a digital twin model in this study. 
+2.2. Selection of data standards for the model fusion 
+A basic model for converting a BIM into a real-scene 3D model is 
+required to support fusion and combine BIMs and real-scene 3D models. 
+For the GIS model, we selected a real-scene 3D model as the target/ 
+foundation model for fusion because it simultaneously manages the 
+geometry and dynamic monitoring data of a building. Thus, the data 
+must first be transferred from the BIM to a real-scene 3D model to merge 
+the two models. 
+In recent years, researchers and engineers have developed many data 
+standards for BIMs and real-scene 3D models. The optimal data standard 
+that is a good starting point (standard of the source model) and endpoint 
+(standard of the target model) for the fusion must be addressed. Several 
+professional BIM software programs, and their corresponding model 
+standards, are available including: the RVT extension of Autodesk ’ s 
+Revit product files, the CATIA program used by Gehry Technology, and 
+the PLN files created with Graphisoft ArchiCAD. Furthermore, the IFC 
+model has become a widely used BIM standard [1] . This standard was 
+formulated and managed by the International Alliance for Interopera -
+bility and displays the characteristics of stability, openness, and integ -
+rity. Therefore, the IFC standard was selected as the source model 
+standard for the model fusion in this study. 
+A real-scene 3D model is generally created using the oblique 
+photogrammetry method to provide a near-real 3D model of physical 
+objects. Many commonly used data standards have been produced for 
+real-scene 3D modeling programs such as Astrium ’ s Street Factory, 
+photoscans, and PIX4Dmapper. The commonly used model standards for 
+real-scene 3D models include OpenSceneGraph (OSGB), object file 
+(OBJ), 3D Tiles, and S3c. Among them, the 3D Tiles model is an open- 
+source standard that is easily accessible to the public and provides 
+good support for rendering the 3D Digital Earth [37] . Therefore, the 3D 
+Tiles model was used as the target standard for the model fusion in this 
+study. The basic structure of the 3D Tiles standard is shown in Fig. 2 . The 
+tiles in the model store all 3D geographic information data. The batched 
+3D Model (b3dm) standard tiles are suitable for mass 3D model loading, 
+support rich texture and material information, and are widely used to 
+represent buildings. The data in the “ tileset.json ” file describes the tiles 
+and the storage of the spatial organization structure of the tiles. 
+3. Merging a BIM with real-scene 3D model 
+As mentioned in the previous section, the key to model fusion is 
+transferring the BIM from the IFC standard to the real-scene 3D model in 
+the 3D Tiles standard. The difficulty in fusion lies in transforming the 
+BIM ’ s geometric, spatial, and semantic information. The fusion frame -
+work is designed as shown in Fig. 3 . The BIM of buildings in the IFC 
+standards must undergo a series of transformation processes, which 
+mainly include four steps: (1) BIM reconstruction, (2) geometric infor -
+mation conversion, (3) spatial position registration, and (4) semantic 
+mapping of the construction information. During the BIM reconstruction 
+step, the model must be split into sub-BIMs according to their compo -
+nent types. Subsequently, their geometric and semantic information is 
+obtained, which lays the foundation for geometric and semantic infor -
+mation transformation. The geometric information conversion step 
+Fig. 1. Conceptual model of the digital twin model for building structural health monitoring (SHM) systems. IFC, industry foundation class; JSON, JavaScript 
+Object Notation. 
+Fig. 2. Structure of 3D Tiles format. b3dm, batched 3D model; i3dm, instanced 
+3D model; pnts, Point Cloud tile; cmpt, Composite tile. 
+J. Xu et al. 
+Measurement 217 (2023) 112955
+4
+transforms the BIM in the IFC standard into a 3D Tiles standard; thus, the 
+geometric information is merged. Although BIM and real-scene 3D 
+models have different coordination systems, the spatial position regis -
+tration step solves this problem. The semantic information of the BIM is 
+converted and merged into the corresponding real-scene 3D model 
+through semantic mapping of construction information. 
+3.1. BIM reconstruction 
+A BIM contains geometric and semantic information for several 
+building components, such as the size of walls and the specifications for 
+column materials. A BIM can easily lose semantic building information 
+when directly converted into a model with a 3D Tiles standard. To avoid 
+this, we first deconstruct the BIM and then reconstruct it into a set of 
+BIMs with multiple sub-components. Each sub-component model uses 
+the IFC standard to store geometric information, such as beam1.ifc, 
+beam2.ifc, and column1.ifc. These sub-components store the corre -
+sponding semantic attribute information in an attribute file with the 
+same name. The attribute file is stored in JavaScript Object Notation 
+(JSON) format, which is a lightweight data-exchange format suitable for 
+transmitting and exchanging text data [7] . The BIM reconstruction 
+process is illustrated in Fig. 4 . 
+In this process, accurately splitting the BIM, forming sub- 
+components, and accurately linking and saving the geometric and 
+attribute information are crucial for reconstruction. Building compo -
+nents were classified based on their type, including building columns, 
+structural columns, walls (such as internal partitions and curtain walls), 
+stair railings, ramps, doors, and windows. A few software packages can 
+be used for reconstruction operations, such as a secondary development 
+method based on Autodesk Revit. Considering software copyright, an 
+open-source software BIM server was used to reconstruct the BIM. As a 
+commonly used open-source software in the BIM field, the BIM server 
+provides IFC file management, data parsing, and formatted output and 
+can directly open the model in the RVT standard. With the support of the 
+application programming interface (API) of the BIM server, we devel -
+oped a program to implement a series of reconstruction processes, such 
+as sub-component traversal, component type discrimination, semantic 
+information reading, and component data export. 
+The type of each sub-component is queried by traversing all sub- 
+components in the BIM. The following types of sub-components are 
+available: stair railings, doors, and windows. These sub-components are 
+identified as the ones to be reconstructed; their attribute information 
+will be explored further. The reading and parsing rules vary depending 
+on the geometric characteristics of components, which are mainly 
+divided into three categories: (1) A simple component — conventional 
+read-and-parse statements of the BIM server are used to obtain the 
+component geometric and semantic information, such as windows, 
+doors, and columns. (2) Components with holes — in addition to reading 
+and parsing the normal information of the component, nested hole in -
+formation, such as walls, must be read and parsed. (3) Objects con -
+taining composite components — in addition to reading and parsing the 
+components ’ normal information, the composited components ’ sub- 
+parts need to be read and parsed according to associative properties, 
+such as stairs containing railings, stair runs, and floors. 
+Fig. 3. Framework of the fusion of building information model (BIM) and real-scene 3D model. IFC, industry foundation class; OBJ, object file; JSON, JavaScript 
+Object Notation; glTF, GL transmission format; b3dm, batched 3D model. 
+Fig. 4. Reconstruction process of BIM. 
+J. Xu et al. 
+Measurement 217 (2023) 112955
+5
+After the component information is read, it is stored in the geometric 
+information (IFC) and semantic information (JSON) file formats. The file 
+names for the IFC and JSON files reflected a one-to-one correspondence 
+between the geometric and semantic information of the components. 
+3.2. Geometric information transformation 
+The geometric information in the IFC standard cannot be directly 
+converted into a 3D Tiles standard. Therefore, an indirect conversion 
+method is adopted. First, the OBJ format is selected as the intermediate 
+exchange format. This object file format was a standard 3D model 
+developed by Alias Wavefront. This standard is recorded in text and is 
+widely used to exchange 3D software models. Subsequently, the OBJ 
+format was converted to the GL transmission format (glTF) in the real- 
+scene 3D model. The glTF format was converted to the b3dm format. 
+The tile file in the 3D Tiles was established to realize the geometric in -
+formation conversion of BIM using the b3dm file. 
+During the geometric transformation process, an open-source tool, 
+IfcConvert ( https://ifcopenshell.org/ifcconvert.html ), was used to pro -
+vide the conversion function from the IFC format to the OBJ format. To 
+fully convert geometric information from the IFC format to the b3dm 
+format, it is necessary to focus on the transformation from the OBJ to the 
+b3dm format. The main part of the b3dm model that describes the 
+geometric element information is in binary glTF format, which can 
+reduce redundant data irrelevant to rendering in a 3D format and is a 3D 
+file format suitable for OpenGL loading. With the development of 3D 
+technology, various 3D standards have emerged, such as Blender, Maya, 
+and Lightwave3D. However, glTF is committed to providing an ex -
+change format for web 3D models. 
+The data structure framework of the glTF format differs from that of 
+the OBJ format. As shown in Fig. 5 , the conversion of vertex coordinates, 
+external normal vectors, texture coordinates, texture images, and other 
+information in the OBJ standard is required. The glTF bin file stores the 
+basic geometric data; therefore, it is necessary to save building vertex 
+coordinates, external normal vectors, and texture coordinates in the 
+OBJ. Texture images of buildings were stored in formats including glTF, 
+PNG, and JPG. In OBJ, triangular patches are drawn using a vertex index 
+to form the geometry. With glTF, a mesh of primitive arrays was used to 
+represent a single complex geometry. Each primitive array contains the 
+corresponding vertex attributes and textures referenced in a bin file. 
+Therefore, setting the vertex traversal mode is vital for ensuring that the 
+grid can be converted correctly. 
+Several glTF conversion tools have been developed, including the 
+relatively sophisticated obj2gltf, an open-source library launched by 
+Analytical Graphics, Inc. ( https://github.com/AnalyticalGraphicsInc 
+/obj2gltf ). Based on the process shown in Fig. 5 , the OBJ standard was 
+converted to glTF using the tool obj2gltf. 
+3.3. 3D spatial position registration 
+The 3D Tiles standard is a GIS model that typically has a spatial 
+coordinate system, such as the WGS84 world coordinate system. The 
+BIM coordinate system in the IFC is typically a local coordinate system 
+that can describe the scale and size of a building. However, it is neces -
+sary to register the spatial positions of the two models under 3D regis -
+tration to correctly display the BIM in the GIS. 
+The source model was the BIM and the real-scene 3D model was set 
+as the target model. The iterative closure point (ICP) algorithm is widely 
+used, particularly in the point-cloud field, when considering multiple 
+algorithms for registering 3D spatial models. The implementation pro -
+cess of the ICP algorithm involves repeatedly selecting the tie-point pairs 
+in two point clouds and calculating the optimal rigid-body trans -
+formation until the convergence accuracy requirements for correct 
+registration are satisfied [32,20] . The ICP algorithm is suitable for 
+registering multi-station ground point clouds and can achieve good re -
+sults. The coordinate system of BIM differs considerably from that of a 
+real-scene 3D model. However, the ICP algorithm has weaknesses in 
+registering BIMs, such as the slow speed of iterative convergence and 
+low accuracy. 
+The BIM and real-scene 3D model have prominent rigid-body char -
+acteristics, and both models have good geometric characteristics 
+conducive to determining the point pair relationship. Therefore, accu -
+rate rigid-body transformation parameters can be calculated according 
+to the tie-point pairs of the building. Afterwards, their fusion trans -
+formation can be realized. The singular value decomposition (SVD) 
+method in rigid-body transformations has the advantages of easy 
+implementation, simple calculation, high speed, and reliable accuracy 
+[26,2] . Therefore, this method is suitable for the registration of BIMs and 
+real-scene 3D models. 
+The first step of the registration process is to choose tie points that 
+mainly adhere to the following criteria: (1) Tie points should be selected 
+from visible feature points located on the building surface. Since 
+buildings in a real-scene 3D model usually have external surface infor -
+mation alone, it is unsuitable to use the internal points of the building as 
+tie points. Instead, points on the building surface should be selected, 
+such as wall corners, window corners, and building-surface structure 
+joints, to improve the accuracy of point acquisition. (2) Tie points should 
+be evenly distributed. The positions of the selected tie points should be 
+reasonably distributed according to the scale of the building to avoid 
+excessive concentrations or linear arrangements, which would affect the 
+results. (3) There should be at least three tie points. The SVD method 
+requires at least three groups of initial data points to determine regis -
+tration parameters. The number of tie points can be appropriately 
+increased to improve the calculation ’ s accuracy. After the tie-point pairs 
+are selected, the registration calculation is performed, as shown in Fig. 6 . 
+The source data is the BIM data, and the coordinates of the tie points in 
+the BIM are expressed as TP
+’
+i
+=
+ 
+x
+’
+i
+, y
+’
+i
+, z
+’
+i
+)
+. The real-scene 3D model data 
+were regarded as the target data, and the coordinates of the tie points 
+were expressed as TP
+i
+=
+ 
+x
+i
+, y
+i
+, z
+i
+)
+. 
+The detailed processes for generating solutions for the registration 
+parameters are summarized as follows (Eqs. (1) – (6) : 
+(1) Calculation of the center of gravity of two sets of coordinates. 
+P =
+1
+N
+∑
+N
+i = 1
+TP
+i
+Q =
+1
+N
+∑
+N
+i = 1
+TP
+i
+’
+(1) 
+where P represents the center of gravity of the tie points of the BIM, Q 
+Fig. 5. Conversion from OBJ to glTF. 
+Fig. 6. Registration of building information model (BIM) and real-scene 3D 
+model. TP
+i 
+represents coordinates of the tie point of the real-scene 3D model, 
+and TP
+i
+’ 
+represents coordinates of the tie point of the BIM. 
+J. Xu et al. 
+Measurement 217 (2023) 112955
+6
+represents the center of gravity of the tie points of a real-scene 3D model, 
+N is the pair number of selected tie points, i is the serial number of tie 
+points, TP
+i 
+represents coordinates of the tie point of the real-scene 3D 
+model, and TP
+i
+’ 
+represents coordinates of the tie point of the BIM. 
+(2) Barycentrization of model coordinates. 
+{ Δ TP
+i
+= TP
+i
+  P }
+{
+Δ TP
+’
+i
+= TP
+’
+i
+  Q
+}
+(2) 
+where Δ TP
+’
+i 
+represents the coordinates of the BIM after barycentrization, 
+and Δ TP
+i 
+represents the coordinates of the real-scene 3D model after 
+barycentrization. 
+(3) Calculation of 3 × 3 transformation data matrix S. 
+S =
+∑
+N
+i = 1
+Δ TP
+i
+T
+Δ TP
+i
+’
+(3) 
+where S represents the transformation matrix, which is decomposed into 
+rotation and translation matrices for the convenience of the trans -
+formation operation. 
+(4) Decomposition of the matrix based on the SVD algorithm. 
+S = U Λ V
+T
+(4) 
+where, U and V are unitary matrices composed of left and right singular 
+vectors, respectively, and Λ are diagonal matrices composed of singular 
+values. 
+(5) Calculation of the rotation matrix R . 
+R = VU
+T
+(5) 
+(6) Calculation of the translation matrix T . 
+T = Q   RP (6) 
+To complete the calculation of the rotation and translation parame -
+ters, we solved the parameter values of the SVD function using MATLAB 
+software and completed the registration with Python. 
+3.4. Mapping semantic information 
+A BIM includes the semantic information of sub-components, such as 
+the beam material and concrete strength. The semantic information of 
+the sub-components was stored in the corresponding JSON files through 
+the previous reconstruction steps. Semantic mapping aligns the JSON 
+semantic information of multiple sub-components in the BIM to the se -
+mantic attribute information in the real-scene 3D model. However, it 
+associates the semantic information of each sub-component with its glTF 
+geometric information individually. Thus, the converted b3dm file was 
+obtained and integrated into 3D Tiles. This accomplished the fusion of 
+the BIM and real-scene 3D model. 
+As shown in Fig. 7 , the b3dm file comprises a file header and body. 
+The file header records the file type, version, size, and other relevant 
+information. The file body includes a feature table, batch table, and 
+binary glTF, which record the number of features, feature attributes, and 
+geometric data. Therefore, the essence of semantic mapping is to place 
+the glTF and JSON data of the sub-components into the corresponding 
+blocks of the b3dm file and maintain their original relationships. 
+In the semantic mapping process, the JSON file is first generated 
+based on the name of the glTF geometry file of each sub-component. For 
+example, wall0.json has been indexed according to wall0.gltf, and they 
+have a common ID. The glTF data of the sub-components, such as wall0. 
+gltf, is binarized and written in the binary glTF data block of the b3dm 
+file. Meanwhile, a semantic information file, such as wall0.json, corre -
+sponding to the sub-component is written into the batch table data block 
+of the b3dm file. The identification (ID)between walls wall0.gltf and 
+wall0.json was converted to a batch ID to maintain its connection. 
+Finally, a tool is developed to realize the semantic mapping based on the 
+open source 3D Tiles tool sample generator published by Cesium ( https: 
+//github.com/AnalyticalGraphicsInc/3D-tiles-tools ). 
+4. Application and discussion 
+4.1. Case study 
+The Nanjing Museum is one of the most important historical and 
+cultural landmark buildings and the first large comprehensive museum 
+invested by the state of China. The museum ’ s Old Hall has a long history 
+spanning more than 70 years. In 2008, the museum was lifted through 
+raising columns 3.0 m after cutting on the first floor. In addition, 
+isolation bearings were installed at the base of the building for seismic 
+reinforcement. With an increase in service time, the stiffness of the 
+rubber isolation bearing is prone to increase, and the horizontal defor -
+mation capacity decreases. A deterioration in the mechanical properties 
+of isolation bearings affects the safety of isolation structures under 
+strong earthquakes. Portions of the Old Hall ’ s structural components 
+may be damaged by nature or humans, which in turn will impact the 
+safety of the entire structure. Therefore, it is necessary to monitor the 
+structural health of the Old Hall. To this end, 60 sensors were deployed 
+for vibration isolation on nine abutments (A – I), as shown in Fig. 8 and 
+Table 1 . Illustrations of the sensors are displayed in Fig. 9 . 
+We developed a digital twin model for the Old Hall SHM system, 
+based on the combination of a BIM with a real-scene 3D model, and the 
+integration of sensor monitoring data. Tilt photos were acquired using a 
+DJI Matrix 600 electric multirotor unpiloted aerial vehicle (UAV) with a 
+five-lens tilt camera. The parameters of the UAV platform and cameras 
+used in the aerial survey are listed in Table 2 . During the aerial survey, 
+the azimuth overlap was 80 % and the lateral overlap was 75 %. As a 
+result, more than 1600 aerial photographs were obtained, and the data 
+volume was approximately 11 gigabytes. After post-processing these 
+photos, the real-scene 3D model of the Nanjing Museum in 3D Tiles 
+standard was established through context capture smart 3D software, as 
+shown in Fig. 13 . 
+The BIM of the Old Hall of the Nanjing Museum was manually 
+modeled using Revit software. The BIM of the Old Hall was first 
+reconstructed using the open-source software BIM server ( Fig. 10 ) to 
+Fig. 7. The process of mapping semantic information. JSON, JavaScript Object Notation; glTF, GL transmission format; b3dm, batched 3D model. 
+J. Xu et al. 
+Measurement 217 (2023) 112955
+7
+accomplish the fusion of the BIM and the real-scene 3D model. Using the 
+operating API functions of the BIM server, the BIM of the Old Hall was 
+reconstructed as a series of sub-BIMs with sub-components. The new 
+sub-BIMs are in the IFC and JSON formats (as shown in Table 3 ). The 
+sub-BIMs are registered with a real-scene 3D model with the support of 
+selected tie points such as roofs and corner points. The transformation 
+matrix was then calculated and matched to the coordinate systems of the 
+two models. Finally, the IFC format of the sub-BIMs was converted into 
+the b3dm format, and the two models were fused in the physical format. 
+Figs. 11 – 13 show the results of the fusion of the BIM and real-scene 
+3D model of the Old Hall. In the fused model, the real-scene 3D model 
+and BIM were placed at the same location in space, similar to a single 
+model, as shown in Fig. 13 . As the “ skin ” of the BIM, the real-scene 3D 
+model “ decorates ” the BIM model to describe the external situation of 
+the Old Hall of Nanjing Museum. However, the real-scene 3D model 
+controls the spatial positioning of the BIM. On the other hand, the BIM 
+provides a skeleton for the real-scene 3D model, thus laying a basis for 
+locating health monitoring sensors, which makes it possible to monitor 
+Fig. 8. Plane distribution of sensors in the isolation storey. 
+Table 1 
+Sensor information of the Nanjing Museum Old Hall. 
+Sensor type Number Sampling 
+frequency 
+Location 
+Vibration sensor 21 20 HZ A – H 
+Displacement sensor (computer 
+vision) 
+9 10 Hz A – H 
+Displacement sensor (optical fiber) 10 20 Hz A – H 
+Strain sensor 10 20 Hz A – H 
+Temperature 10 1 Hz A – H 
+Fig. 9. Illustration of installed sensors. (i) Vibration sensor at location A; (ii) displacement sensor (optical fiber) at location C; (iii) displacement sensor (computer 
+vision) at location A; (iv) temperature/strain sensor at location H. 
+Table 2 
+Parameters of unpiloted aerial vehicle and carried sensors. 
+UAV type Fly time Sensor Sensor size Focal length Pix Resolution 
+DJI M600 25 min Sony Dsx-qx100 13.2 mm 10.4 mm 20.2 million 5472 × 3648 px 
+J. Xu et al. 
+Measurement 217 (2023) 112955
+8
+the details of a building ’ s structural health. For example, vibration 
+sensors are deployed on the key beams and columns on different 
+building floors, thus supporting the structural and mechanical analysis 
+of the building and facilitating judgments about the building ’ s health 
+state. Fig. 11 shows the BIM of the Old Hall after conversion from the IFC 
+to the 3D Tiles standard. For convenience in displaying the fusion re -
+sults, Fig. 12 is deliberately separated into two figures: the left side 
+shows the real-scene 3D model of the Old Hall, and the right side shows 
+the BIM behind the real-scene 3D model. Fig. 13 shows the fused model, 
+in which the two models are in the same spatial position on the map and 
+have been fused into the same software system. 
+Under the support of the fused model, the building SHM system for 
+the Old Hall was developed, as shown in Fig. 13 . The system adopts the 
+Browser/Server architecture: the server side is developed with Visual 
+Studio C#, the client side is developed with Vue.js, and the 3D engine on 
+the client side is Cesium. A Microsoft SQL server was used to store the 
+monitoring data and table structure, as shown in Table 4 . Fig. 13 shows 
+the six main functions that were developed: (1) The sensor information 
+function manages the design drawings, BIM, and real-scene 3D model. 
+(2) The early warning function manages sensor parameter information 
+and real-time monitoring data. (3) The structural safety evaluation 
+function provides early warnings for building safety according to real- 
+time monitoring data from sensors and preset thresholds. However, it 
+is a reserved function and will be developed in the future. (4) The 
+Nanjing Museum information function introduces (5) the Nanjing Mu -
+seum ’ s auxiliary decision-making function. Preplans of the Nanjing 
+Museum were stored and managed using this function. (6) The structural 
+information function manages information regarding the building 
+structure. 
+This study focused on integrating monitoring data and a fused 3D 
+model. The Dev_id field name connects and integrates monitoring data 
+with the corresponding sensor located on the fused model, as shown in 
+Fig. 14 . After clicking on the sensor icon in the SHM system (indicated 
+by the red circle in Fig. 14 ), the real-time monitoring data of the selected 
+sensor are displayed as shown in Fig. 15 . In summary, integrating BIMs, 
+real-scene 3D models, and monitoring data fosters the digital twin model 
+of the Old Hall of the Nanjing Museum, which also supports building 
+SHM for the Old Hall. 
+Fig. 10. Building information model of the Old Hall in BIM server before fusion. 
+Table 3 
+Component information of building information model of Old Hall of Nanjing 
+Museum. 
+Types Object 
+number 
+Data volume of 
+OBJ 
+Data volume of 
+JSON 
+Ifcwalls 129 604 KB 43.2 MB 
+Ifcslabs 151 3.74 MB 47.9 MB 
+Ifcbeams 1154 6.08 MB 443 MB 
+Ifccolumns 1373 516 KB 421 MB 
+Ifcbuildingelementproxy 56 1.27 MB 2.50 MB 
+Fig. 11. BIM of the Old Hall in 3D Tiles format after fusion. 
+Fig. 12. The fusion of BIM and the real-scene 3D model. 
+J. Xu et al. 
+Measurement 217 (2023) 112955
+9
+4.2. Discussion 
+Monitoring a building ’ s health status is complicated and establishing 
+an effective building health-monitoring information model is important. 
+By combining a BIM and a real-scene 3D model, we established an SHM 
+information model based on digital twin technology. This information 
+model supports the sensor arrangement, analysis of sensing data, and 
+representation of a building ’ s structural and mechanical status. The BIM 
+provides a foundation for sensor location and mechanical state analysis 
+of building structures. In contrast, the real-scene 3D model supports 
+analyzing external environmental influences. The fused model in -
+tegrates internal and external representations of a building. We propose 
+that the fusion method can be applied to other fields, such as smart city 
+planning, decision-making, building operations, and building 
+maintenance. 
+The challenges of fusing BIMs and real-scene 3D models include 
+different organizational methods regarding geometry, semantics, and 
+space. The IFC standard for BIMs was selected as the source in the fusion 
+method. The 3D Tiles standard for the real-scene 3D model was selected 
+as the target. Both open-source standards are convenient for converting 
+and supporting related model standards. Semantic information is 
+extracted before geometric transformation and restored after conver -
+sion. Therefore, the semantic information of a BIM can be retained in the 
+fusion process, which is essential for applying the fused model and 
+constructing the digital twin. Following open standards, geometric and 
+semantic information fusion adopts open-source software: a BIM server 
+and Cesium library. This will assist in the promotion and application of 
+the fusion method. 
+The spatial positional information of the building was fused using a 
+3D registration method. Based on the tie-point pairs of the two models, 
+we used the rigid-body transformation method to determine the trans -
+formation relationship between the two coordinate systems. The trans -
+formation matrix is decomposed into several basic operations, namely, 
+rotation and translation, using the SVD method. This makes the complex 
+transformation easy to perform and realize. 
+Considering the Old Hall of the Nanjing Museum as a case study, a 
+fusion model was developed. The merging process between the BIM and 
+real-scene 3D model can be automatically accomplished using a pro -
+gram, excluding the tie-point selection. This was performed manually in 
+this study. The automatic transformation process consumes approxi -
+mately 25 min on a standard laptop (CPU is an Intel Core i7-10510U at 
+2.30 GHz). In this case, the programs for each merging step are separate. 
+In the future, we can unify all the programs and select the tie points as 
+input conditions to automate and accelerate the entire merging process. 
+The fused model results show that the buildings ’ geometric graphics 
+and semantic information are preserved after fusion. Furthermore, the 
+spatial positions of the two models are consistent with the external and 
+internal scenarios of the building display. Thus, the micro-internal de -
+tails of the building can be shown in a 3D macro space, and a 3D in -
+formation model with a realistic scene and rich information can be built. 
+Fig. 13. Interface of the structural heath monitoring (SHM) system based on the fused model. 
+Table 4 
+Table structure of sensor data. 
+Field name Data type Description 
+ID Int Record No. 
+Dev_id Vchar(10) Sensor identification 
+Sensordata_starttime Datetime The time received data 
+Rawdata Binary Monitoring data of sensor 
+Fig. 14. Location of the sensor on the fusion model. 
+Fig. 15. Illustration of the sensor monitoring data. 
+J. Xu et al. 
+Measurement 217 (2023) 112955
+10
+Based on the fused model of the Old Hall, a building SHM system was 
+developed, in which 60 sensors for vibration, temperature, stress, and 
+strain were arranged. The monitoring data were collected in real-time 
+and integrated with the fused model, which formed the digital twin 
+model for building health. The application to the Old Hall verifies the 
+effectiveness of the BIM and real-scene 3D model fusion method that 
+establishes a building health monitoring information model for a digital 
+twin of the building. 
+Although we have achieved the integration of a BIM and a real-scene 
+3D model in terms of geometry, semantics, spatialization, and expres -
+sion standards, a few unresolved issues remain. To effectively speed up 
+the display of a real-scene 3D model, the level of detail method is 
+typically used to establish different detail levels of the model. However, 
+the level of detail method of the BIM is not established in the current 
+fusion process, which decreases its loading speed. Furthermore, the BIM 
+of a building may include numerous detailed components and large 
+volumes of data, which may not be required to complete the process. 
+Thus, simplifying and reducing the BIM is a problem worthy of further 
+exploration. In addition, effectively analyzing the SHM data collected by 
+all the arranged sensors is a challenge. The digital twin model can 
+connect monitoring data from a spatial angle that offers a synthetic 
+perspective to analyze the data, which needs further exploration. 
+5. Conclusion 
+Building safety is an important aspect of urban safety and disaster 
+reduction. We propose a digital-twin-oriented building health moni -
+toring information model. The model fuses a BIM with a real-scene 3D 
+model, achieves the integrated management of a building ’ s internal 
+components and external environment, and combines a building ’ s 
+spatial shape and state. The greatest challenge in establishing a digital 
+model is the fusion of geometric, semantic, and spatial location infor -
+mation between the BIM and real-scene 3D model. This work was 
+completed with the support of multiple open-source standards and 
+software, such as IFC, 3D Tiles, OBJ, and BIM server, which make the 
+fusion method easier to use. The fusion process applied a registration 
+method based on rigid-body transformation and a BIM semantic trans -
+formation method based on JSON. 
+The fused model integrates the monitoring data by providing a 
+spatial description of the monitoring sensors. The monitoring data of the 
+sensors distributed in the local part of the building can be connected in 
+space, thus providing a foundation and support for analyzing the health 
+status of the building from the perspective of the entire building. Thus, 
+the response status of the building structure under the influence of the 
+external environment can be dynamically represented, such as through 
+the stress, strain, and vibration of the components. Considering Nanjing 
+Museum ’ s Old Hall as an example, we established a digital twin model 
+and developed a building safety monitoring system based on this model, 
+which preliminary verified the accuracy of our digital twin model. 
+However, dynamically analyzing the overall health status of buildings 
+according to monitoring data obtained locally requires further investi -
+gation. The proposed digital twin model can provide an overall 
+perspective and an integrated data management platform for different 
+monitoring data from sensors arranged in a building. Future studies 
+should focus on examining the dynamic inversion and real-time pre -
+sentation methods for the overall health status of buildings based on the 
+digital twin model. 
+CRediT authorship contribution statement 
+Jinghai Xu: Conceptualization, Methodology, Writing- Original 
+draft preparation. Xin Shu: Case study. Peng Qiao: Case study. Shan -
+shan Li: Writing- Reviewing and Editing. Jigang Xu: Case study. 
+Declaration of Competing Interest 
+The authors declare that they have no known competing financial 
+interests or personal relationships that could have appeared to influence 
+the work reported in this paper. 
+Data availability 
+The authors do not have permission to share data. 
+Acknowledgments 
+This work was jointly supported by The National Natural Science 
+Foundation of China (Grant No. 42271420), the Science and Technology 
+Plan Project of the Ministry of Housing and Urban-Rural Development of 
+China in 2022 (Grant No. 2022-K-041). The authors would like to ex -
+press their appreciation to the editor and the referees for their comments 
+and suggestions that greatly improved the manuscript. 
+References 
+[1] R.Z. Angel, B. Kawtar, N. Manuel, IFC + : towards the integration of IoT into early 
+stages of building design, Autom. Constr. 136 (104149) (2022) 1 – 17 . 
+[2] K.S. Arun, T.S. Huang, S.D. Blostein, Least-squares fitting of two 3-D point sets, 
+IEEE Trans. Pattern Anal. Mach. Intell. PAMI-9(5) (1987) 698 – 700. doi: 10.1109/ 
+TPAMI.1987.4767965. 
+[3] M. Batty, Digital twins, Environ. Plan. B: Urban Anal. City Sci. 45 (5) (2018) 
+817 – 820 . 
+[4] R. Bernini, A. Minardo, L. Zeni, Accurate high-resolution fiber-optic distributed 
+strain measurements for structural health monitoring, Sens. Actuat., A 134 (2) 
+(2007) 389 – 395 . 
+[5] C. Boddupalli, A. Sadhu, E.R. Azar, et al., Improved visualization of infrastructure 
+monitoring data using building information modeling, Struct. Infrastruct. Eng. 15 
+(9) (2019) 1247 – 1263 . 
+[6] H. Boyes, T. Watson, Digital twins: an analysis framework and open issues, 
+Comput. Ind. 143 (103763) (2022) 1 – 19 . 
+[7] Z. Brahmia, F. Grandi, S. Brahmia, R. Bouaziz, A graphical conceptual model for 
+conventional and time-varying JSON data, Proc. Comput. Sci. 184 (2021) 823 – 828 . 
+[8] J. Chen, J. Liu, H. Tian, Basic directions and technological path for building 3D 
+realistic geospatial scene in China, Geom. Inform. Sci. Wuhan Univ. 47 (10) (2022) 
+1568 – 1575 . 
+[9] Y. Chen, E. Shooraj, A. Rajabifard, et al., From IFC to 3D tiles: an integrated open- 
+source solution for visualising BIMs on cesium, ISPRS Int. J. Geo-Inform. 7(10) 
+(2018), https://doi.org/10.3390/ijgi7100393 . 
+[10] P. Dang, J. Zhu, J.L. Wu, W.L. Li, J. You, L. Fu, Y.Q. Shi, Y.H. Gong, A real 3D scene 
+rendering optimization method based on region of interest and viewing frustum 
+prediction in virtual reality, Int. J. Digital Earth 15 (1) (2022) 1081 – 1100, https:// 
+doi.org/10.1080/17538947.2022.2080878 . 
+[11] L.N. Deng, S.J. Lai, J.C. Ma, et al., Visualization and monitoring information 
+management of bridge structure health and safety early warning based on BIM[J], 
+J. Asian Architect. Build. Eng. (2021), https://doi.org/10.1080/ 
+13467581.2020.1869013 . 
+[12] M.F. Du, Digital twin building: realize integrated management and control of 
+buildings, China Constr. Inform. 20 (2020) 40 – 43 . 
+[13] K. Erazo, D. Sen, S. Nagarajaiah, L.M. Sun, Vibration-based structural health 
+monitoring under changing environmental conditions using Kalman filtering, 
+Mech. Syst. Sig. Process. 117 (2019) 1 – 15 . 
+[14] A. Grigor, C. Dario, C. Giuliana, Development of the simulation model for Digital 
+Twin applications in historical masonry buildings: the integration between 
+numerical and experimental reality, Comput. Struct. 238 (106282) (2020) 1 – 20 . 
+[15] E.M. Hernandez, Efficient sensor placement for state estimation in structural 
+dynamics, Mech. Syst. Sig. Process. 85 (2017) 789 – 800 . 
+[16] F.B. Jaume, C. Miquel, G. Marta, The adoption of urban digital twins, Cities 131 
+(103905) (2022) 1 – 12 . 
+[17] F. Jiang, Y. Ding, Y. Song, F. Geng, Z. Wang, Digital twin-driven framework for 
+fatigue life prediction of steel bridges using a probabilistic multiscale model: 
+application to segmental orthotropic steel deck specimen, Eng. Struct. 241 
+(112461) (2021) 1 – 13 . 
+[18] H.N. Li, L.D. Yang, L. Ren, Z.G. Jia, Design and development of structural health 
+monitoring system for the Dalian Stadium, J. Build. Struct. 34 (11) (2013) 40 – 49 . 
+[19] L.Z. Li, J.F. Yuan, M.L. Tang, Z. Xu, W. Xu, Y.S. Cheng, Developing a BIM-enabled 
+building lifecycle management system for owners: architecture and case scenario, 
+Autom. Constr. 129 (103814) (2021) 1 – 17 . 
+[20] W.M. Li, P.F. Song, A modified ICP algorithm based on dynamic adjustment factor 
+for registration of point cloud and CAD model, Pattern Recogn. Lett. 65 (2015) 
+88 – 94 . 
+[21] G. Meisam, S. Saeed-Reza, I. Zubaidah, G. Khaled, C. Paraic, M. Daniel, S. Bijan, 
+State-of-the-art review on advancements of data mining in structural health 
+monitoring, Measurement 193 (110939) (2022) 1 – 12 . 
+J. Xu et al. 
+Measurement 217 (2023) 112955
+11
+[22] M. Mishra, B.P. Lourenço, G.V. Ramana, Structural health monitoring of civil 
+engineering structures by using the internet of things: a review, J. Build. Eng. 48 
+(103954) (2022) 1 – 20 . 
+[23] V. Mojtaba, M. Osama, B. Ashutosh, S. Ashraf, Development of an IoT and BIM- 
+based automated alert system for thermal comfort monitoring in buildings, Sust. 
+Cities Soc. 66 (102602) (2021) 1 – 19 . 
+[24] Y.Q. Ni, Y.W. Wang, C. Zhang, A Bayesian approach for condition assessment and 
+damage alarm of bridge expansion joints using long-term structural health 
+monitoring data, Eng. Struct. 212 (110520) (2020) 1 – 13 . 
+[25] C. Rabia, A. Hafiz, E. Stephen, Beyond the third dimension of BIM A systematic 
+review of literature and assessment of professional views, J. Build. Eng. 19 (2018) 
+242 – 257 . 
+[26] H.R. Ren, X.M. Feng, Calculating vertical deformation using a single InSAR pair 
+based on singular value decomposition in mining areas, Int. J. Appl. Earth Observ. 
+Geoinform. 102115 (2020) 1 – 7 . 
+[27] F. Tao, B. Xiao, Q.L. Qi, J.F. Cheng, P. Ji, Digital twin modeling, J. Manuf. Syst. 64 
+(2022) 372 – 389 . 
+[28] M. Theiler, K. Smarsly, IFC Monitor – an IFC schema extension for modeling 
+structural health monitoring systems, Adv. Eng. Inf. 37 (2018) 54 – 65 . 
+[29] F. Víctor, J.N. Ignacio, Y. Víctor, Integration of the structural project into the BIM 
+paradigm: a literature review, J. Build. Eng. 53 (104318) (2022) 1 – 19 . 
+[30] G. White, A. Zink, L. Codec ´a, et al., A digital twin smart city for citizen feedback, 
+Cities 110 (2021), 103064 . 
+[31] Z.S. Wu, J. Zhang, Advanced Structural Health Monitoring Technology and Theory, 
+China Science Publishing & Media Ltd., 2015 . 
+[32] Z.Z. Wu, H.C. Chen, S.Y. Du, M.Y. Fu, N. Zhou, N.N. Zheng, Correntropy based 
+scale ICP algorithm for robust point set registration, Pattern Recogn. 93 (2019) 
+14 – 24 . 
+[33] J.H. Xu, Y.P. Zhang, Y.F. Dong, Principles of Geographic Information Systems, 
+China Science Publishing & Media Ltd., 2016 . 
+[34] B. Yang, Research on Visualization of Bridge Structure Health Monitoring 
+Information Based on BIM, Chongqing Jiaotong University MS thesis, 2018. 
+[35] B.X. Yang, F.Z. Ali, B. Zhou, S.L. Li, Y. Yu, T.T. Yang, X.F. Liu, Z.Y. Liang, K. 
+C. Zhang, A novel approach of efficient 3D reconstruction for real scene using 
+unmanned aerial vehicle oblique photogrammetry with five cameras, Comput. 
+Electr. Eng. 99 (107804) (2022) 1 – 15 . 
+[36] C. Yang, Advances and prospects for optimal sensor placement of structural health 
+monitoring, J. Vib. Shock 39 (17) (2020) 82 – 93 . 
+[37] S.R. Zhang, P.Q. Jiang, Implementation of BIM + WebGIS based on extended IFC 
+and batched 3D tiles data: an application in RCC gravity dam for republication of 
+design change model, KSCE J. Civ. Eng. 25 (11) (2021) 4045 – 4064 . 
+[38] Y.Q. Zhang, Z.Y. Tang, R.J. Yang, Data anomaly detection for structural health 
+monitoring by multi-view representation based on local binary patterns, 
+Measurement 111804 (2022) 1 – 12 . 
+[39] J.X. Zhou, S. Li, G.Z. Nie, X.W. Fan, Y. Deng, C.X. Xia, Research on seismic 
+vulnerability of buildings and seismic disaster risk A case study in Yancheng, 
+China, Int. J. Disaster Risk Reduct. 45 (101477) (2020) 1 – 14 . 
+[40] Q. Zhu, H.K. Li, H.W. Zeng, M.W. Liu, Y.L. Ding, X.C. Ren, W. Wang, L.G. Zhang, 
+X. Luo, J. Zhu, Classification and coding of entity features for digital twin Sichuan- 
+Tibet railway, Geom. Inform. Sci. Wuhan Univ. 45 (9) (2020) 1319 – 1327 . 
+J. Xu et al. 

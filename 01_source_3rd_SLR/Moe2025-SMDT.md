@@ -21,4 +21,17 @@ The construction industry remains one of the most hazardous sectors, requiring i
 | Yes | Yes | Yes | Tier 2 - Digital Shadow (one-way physical to virtual) | 0 | 1 | 0 | Design for Safety (DfS) | Implemented | Other / Mixed | Multi (two or more data types) | Single case study | 4 | Predictive analytics / decision support |
 
 **Key evidence (AG):** FL-based Safety Monitoring Digital Twin (SMDT) framework for multi-worker safety prediction (Jeju National U): DT platform + central FL server; edge devices (Raspberry Pi) represent workers and IoT nodes; real-world construction safety data (worker status, weather, structural parameters); dynamic node selection mechanism (normal distribution) optimizes global model convergence in FL; DT supports device registration, model creation, real-time control, visualization of FL training, and safety prediction. One-way monitoring→FL aggregation→safety prediction; implemented FL training loop but no convergence criterion.
+
+
+**Strength & gap filled (AH):** Fills the lack of integrated multi-worker safety monitoring systems by coupling a digital twin platform with federated learning: six Raspberry Pi edge nodes train a DNN on 50,000 records of worker, weather and structural data, and a normal-distribution-based dynamic node selection improves FedAVG aggregation to R2 0.978 under IID and 0.965 under non-IID conditions with 0.551 s average inference delay.
+
+**Deficiencies & future work (AI):** Experiments run in a controlled testbed with emulated sensors rather than an active construction site, the digital twin supports monitoring and control commands but no autonomous actuation, and only general safety prediction is covered; the authors plan field deployment, additional data features, accident-specific models and fairness plus long-term robustness evaluation.
+**Fusion depth (AC1):** Fused
+
+**Fusion evidence (AC2):**
+- **Data streams:** worker status, weather and structural-parameter records across six Raspberry Pi edge nodes.
+- **Integration mechanism:** normal-distribution-based dynamic node selection improves FedAVG aggregation of the multi-domain records into one safety-prediction model (R2 0.978 IID / 0.965 non-IID, 0.551 s inference).
+- **Why this code:** one model trained on multiple data domains simultaneously, so Fused.
+
+**Confidence (AC3):** High - the FL aggregation over multi-domain records is explicit.
 (full-text source: Endnote)

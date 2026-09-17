@@ -1,0 +1,1690 @@
+Digital twin-based multi-objective parameter identification for a 
+cable-stayed bridge
+Zhuang Tan
+a
+, Wenhao Li
+a
+, Hongye Gou
+a , b , c , *
+, Xin Huang
+a
+, Junming Wang
+a
+, 
+Alireza Entezami
+d
+, Yi Bao
+e
+a
+Department of Bridge Engineering, School of Civil Engineering, Southwest Jiaotong University, Chengdu, Sichuan 610031, China
+b
+Key Laboratory of High-Speed Railway Engineering, Ministry of Education, Chengdu, Sichuan 610031, China
+c
+State Key Laboratory of Bridge Intelligent and Green Construction, Southwest Jiaotong University, Chengdu, Sichuan 611756, China
+d
+Department of Civil and Environmental Engineering, Politecnico di Milano, Milan 20133, Italy
+e
+Department of Civil, Environmental and Ocean Engineering, Stevens Institute of Technology, Hoboken, NJ 07030, USA
+ARTICLE INFO
+Keywords:
+Cable ‑ stayed bridge
+Structural parameter identification
+Sensitivity analysis
+Multi-objective optimization
+Bridge condition assessment
+ABSTRACT
+Accurate parameter identification is essential for ensuring the structural safety and operational performance of 
+long-span bridges. This paper presents a digital twin-based multi-objective optimization framework for identi -
+fying structural parameters of a cable-stayed bridge by matching its frequencies, mode shapes, and deflections. 
+The framework integrates three techniques: (1) adaptive reference point relocation to maintain solution diversity 
+across irregular Pareto fronts; (2) sensitivity-informed variation operators that concentrate exploration on pa -
+rameters with significant influence; and (3) hybrid local search incorporating quasi-Newton refinement for 
+accelerated convergence. The framework was evaluated through implementation on a case study of a 580-meter- 
+long cable-stayed bridge. Experimental results demonstrate up to a 52% reduction in parameter identification 
+error and 25 – 35% reductions in total runtime compared with the Non-dominated Sorting Genetic Algorithm II 
+(NSGA-II) and standard NSGA-III. Robustness analysis confirms the framework ’ s reliability with errors consis -
+tently below 3%. This research contributes to advancing bridge condition assessment capabilities, thereby 
+enhancing structural monitoring and optimizing maintenance strategies for critical infrastructure.
+1. Introduction
+Cable-stayed bridges constitute a prominent category of long-span 
+structures acclaimed for their superior structural efficiency, architec -
+tural aesthetics, and construction adaptability [1,2] . In practice, reliable 
+bridge condition assessment is essential for ensuring operational safety 
+and supporting risk-informed maintenance, because long-span cable- -
+stayed systems are highly sensitive to localized deterioration and stiff -
+ness/force redistribution in safety-critical components. Nevertheless, 
+the inherent complexities of these structures, such as geometric non -
+linearities and material property uncertainties, pose considerable chal -
+lenges for accurate condition assessment. In long-term service, key 
+components such as girders, stay cables, pylons, and anchorage systems 
+inevitably deteriorate due to fatigue damage [3] , material aging, and 
+environmental corrosion, which can reduce structural performance and 
+trigger safety risks [4] . Since condition assessment fundamentally relies 
+on comparing measured and predicted structural responses, establishing 
+reliable Finite Element (FE) models and conducting effective parameter 
+identification are critical but technically demanding tasks for integrity 
+assurance and maintenance optimization [5 – 7] . Consequently, the fi -
+delity of bridge FE models governs the precision of structural response 
+analysis and prediction capabilities [8,9] .
+The mechanical responses of cable-stayed bridges are governed by 
+numerous interdependent parameters, such as material properties, 
+stayed-cable pretension forces, tower stiffness, and bearing support 
+conditions [7,10] . Conventional parameter identification methods have 
+often relied on single-objective optimization frameworks [11] , wherein 
+individual response metrics such as stayed-cable forces [12 – 14] or 
+bridge deflections [15] serve as optimization targets. Although compu -
+tationally tractable, these approaches exhibit a fundamental deficiency: 
+optimization of individual response parameters fails to ensure consis -
+tency across other critical structural behaviors, resulting in parameter 
+estimates with limited adaptability and reliability.
+Moreover, when performance degradation evolves over time and 
+* Corresponding author at: Department of Bridge Engineering, School of Civil Engineering, Southwest Jiaotong University, Chengdu, Sichuan 610031, China.
+E-mail address: gouhongye@swjtu.edu.cn (H. Gou). 
+Contents lists available at ScienceDirect
+Structures
+journal homepage: www.else vier.com/loc ate/structur es
+https://doi.org/10.1016/j.istruc.2026.111723
+Received 7 December 2025; Received in revised form 23 February 2026; Accepted 22 March 2026 
+Structures 87 (2026) 111723 
+Available online 26 March 2026 
+2352-0124/© 2026 Institution of Structural Engineers. Published by Elsevier Ltd. All rights are reserved, including those for text and data mining, AI training, and 
+similar technologies. 
+different components deteriorate asynchronously, matching a single 
+response metric may further amplify non-uniqueness and reduce the 
+transferability of identified parameters across different operational 
+states. To overcome the above limitations, researchers have pursued 
+multi-objective optimization methods to enable comprehensive param -
+eter identification strategies. Huang et al. [16,17] developed a 
+bi-objective optimization framework incorporating both cable preten -
+sion forces and tower-deck deflections, whereas Peng et al. [18]
+formulated multiple objective functions encompassing static displace -
+ments and modal frequencies. These multi-objective approaches have 
+demonstrated enhanced reliability through simultaneous consideration 
+of multiple influential parameters [19 – 21] . However, they inevitably 
+confront the curse of dimensionality, wherein exponentially increasing 
+computational demands and conflicting objective functions significantly 
+impede convergence efficiency and parameter estimation robustness.
+In response to these computational bottlenecks, data-driven methods 
+have been introduced as practical alternatives. Wu et al. [22] developed 
+FE-based Kriging surrogate models for parameter identification, Qiu 
+et al. [23] proposed two-phase model updating strategies integrating 
+multi-objective optimization with elimination and choice expressing 
+reality III (ELECTRE-III) decision-making frameworks, and Xu et al. [24]
+implemented enhanced particle swarm optimization algorithms for vi -
+bration control objectives. Despite these advances, computational effi -
+ciency improvements come at the cost of vulnerability to measurement 
+noises and uncertainties that are ubiquitous in real-world bridge moni -
+toring systems [25 – 27] .
+Collectively, these evolutionary developments reveal three persistent 
+fundamental challenges: (1) high-dimensional parameter spaces (often 
+exceeding 100 parameters) creating computational inefficiency and 
+overfitting risks; (2) irregular, non-convex Pareto fronts from simulta -
+neous multi-objective matching requirements that conventional algo -
+rithms struggle to navigate; and (3) measurement uncertainties in field 
+monitoring data that significantly compromise identification accuracy 
+under realistic conditions.
+Addressing these challenges requires innovative optimization 
+frameworks that transcend conventional limitations. Recent research 
+reveals promising pathways via integrating reference-point based 
+mechanisms [28,29] for maintaining solution diversity across irregular 
+Pareto fronts, sensitivity analysis techniques [30] for efficient 
+high-dimensional exploration, and hybrid optimization approaches [31, 
+32] for enhanced robustness. While conventional algorithms such as the 
+Non-dominated Sorting Genetic Algorithm II (NSGA-II) [33,34] and 
+Multi-Objective Evolutionary Algorithm based on Decomposition 
+(MOEA/D) [35] exhibit limitations in high-dimensional scenarios [36] , 
+the emergence of NSGA-III [37] with its reference-point mechanism 
+represents a significant advancement for multi-objective optimization 
+tasks. This transformative potential is evidenced by successful applica -
+tions across diverse engineering domains: Hernandez et al. [31] ach -
+ieved superior power transformer optimization through hybrid methods; 
+Zhang et al. [32] overcame complex hydraulic parameter constraints; 
+Sun et al. [30] integrated sensitivity analysis for high-dimensional motor 
+optimization; and Li et al. [38] demonstrated advantages in structural 
+bridge optimization compared with conventional algorithms [39] .
+The synergistic integration of these advanced techniques offers un -
+precedented capabilities: reference-point mechanisms employed in 
+NSGA-III [28,29,37] ensure uniform exploration of non-convex Pareto 
+fronts; sensitivity-informed approaches [30] conquer dimensionality 
+curses by focusing on influential parameters while maintaining system 
+fidelity; hybrid local-global strategies [31,32] provide robustness under 
+realistic noise conditions through combined exploration and refinement. 
+However, integrating these techniques into a cohesive framework spe -
+cifically tailored for cable-stayed bridge parameter identification re -
+mains an open challenge.
+As discussed above, this paper presents a digital twin-enabled multi- 
+objective optimization framework that integrates a four-stage pipeline 
+to tackle both computational complexity and measurement 
+uncertainties in bridge parameter identification. As shown in Fig. 1 , the 
+framework consists of: (1) problem definition and setup with physics- 
+constrained digital twin modelling; (2) sensitivity analysis for dimen -
+sionality reduction; (3) an enhanced NSGA-III algorithm with adaptive 
+reference-point management and sensitivity-informed variation opera -
+tors; and (4) multi-objective optimization followed by robustness eval -
+uation under measurement noise. This work represents the first 
+integrated solution that systematically addresses both complexity and 
+uncertainty challenges in large-scale bridge parameter identification, 
+providing a robust and computationally efficient approach essential for 
+practical engineering applications and advancing the state-of-the-art in 
+structural health monitoring and digital twin technologies.
+2. Methods
+This section presents the methodological framework for digital twin- 
+enabled multi-objective optimization in bridge parameter identification. 
+The methods comprise problem definition, multi-objective optimization 
+formulation with constraint systems and sensitivity analysis, and an 
+improved NSGA-III algorithm featuring adaptive mechanisms for 
+enhanced convergence and robustness. Each component addresses 
+computational complexity and measurement uncertainty in large-scale 
+structural parameter identification.
+2.1. Problem definition
+Let θ = [ θ
+1
+, θ
+2
+, … , θ
+n
+]
+T
+∈ Θ ⊂ ℝ
+n 
+denote the vector of parameters to be 
+identified, where the feasible domain Θ is determined by lower and 
+upper bounds θ
+min
+K
+≤ θ
+K
+≤ θ
+max
+K
+, ensuring physical plausibility and nu -
+merical stability according to design specifications, material tolerances, 
+and field calibrations. The identification problem encompasses 156 
+parameters organized into four categories ( Table 1 ): (1) pretension 
+forces for 144 stay cables grouped into 36 symmetric sets; (2) deck 
+material properties including elastic and shear moduli; (3) pylon 
+structural parameters comprising elastic moduli and moment-of-inertia 
+correction factors; and (4) modal damping ratios for the first five modes. 
+Given the high-dimensional nature of this optimization task, sensitivity 
+analysis is employed to identify the most influential parameters for 
+subsequent multi-objective optimization, thereby maintaining solution 
+accuracy while achieving computational efficiency. At the element level, 
+the digital twin contains 156 independent parameters (cable forces, 
+sectional stiffnesses, and damping ratios). For parameter identification, 
+these are first grouped into 48 design variables as listed in Table 1 (e.g., 
+144 cables consolidated into 36 symmetric groups), and then further 
+reduced to 16 influential parameters via Sobol sensitivity screening as 
+described in Section 2.2 .
+2.2. Multi-objective optimization
+The multi-objective optimization framework simultaneously ad -
+dresses modal frequency matching, mode shape correlation, and static 
+deflection accuracy without a priori preference weighting [40] . The 
+Pareto-optimal set P * represents the complete trade-off frontier where 
+no objective can be improved without degrading others, as defined in 
+Eq. (1) : 
+P
+∗
+=
+{
+θ ∈ Θ | ∄ θ
+ʹ
+∈ Θ : F
+∗
+i
+( θ
+ʹ
+) ≤ F
+∗
+i
+( θ )∀ i , F
+∗
+j
+( θ
+ʹ
+) < F
+∗
+j
+( θ ) for some j
+}
+(1) 
+where θ ∈ Θ is the parameter vector and fi ( θ )( i = 1 , 2 , 3 ) are the objec -
+tive functions.
+2.2.1. Objective function
+Three objective functions are used to quantify the discrepancy be -
+tween numerical predictions and experimental measurements [41] , as 
+follows:
+Z. Tan et al. Structures 87 (2026) 111723 
+2 
+Normalized modal frequency error.
+For the first N
+m 
+modes, the normalized modal frequency error f
+1
+( θ ) is 
+formulated as: 
+f
+1
+( θ ) =
+1
+N
+m
+∑
+N m
+i = 1
+⃒
+⃒
+ω
+calc
+i
+( θ )   ω
+meas
+i
+⃒
+⃒
+ω
+meas
+i
+(2) 
+where ω
+calc
+i
+( θ ) and ω
+meas
+i 
+denote the i -th natural frequency calculated by 
+an FE model under parameter vector θ and the measured i -th natural 
+frequency, respectively. Minimizing f
+1
+( θ ) is equivalent to forcing the 
+natural frequencies predicted by the FE model to match the 
+measurements.
+Modal assurance criterion (MAC).
+The MAC for the i -th mode is defined as: 
+MAC
+i
+( θ ) =
+⃒
+⃒
+ϕ
+calc
+i
+( θ )
+T
+ϕ
+meas
+i
+⃒
+⃒
+2
+⃦
+⃦
+ϕ
+calc
+i
+( θ )
+⃦
+⃦
+2
+2
+⃦
+⃦
+ϕ
+meas
+i
+⃦
+⃦
+2
+2
+(3) 
+where ϕ
+calc
+i
+( θ )∈ ℝ
+d 
+is the normalized i -th mode shape computed using 
+the FE model under parameter vector θ and ϕ
+meas
+i
+∈ ℝ
+d 
+is the corre -
+sponding measured mode shape.
+The MAC complement is used to include mode shape matching as a 
+minimization objective: 
+f
+2
+( θ ) =
+1
+N
+m
+∑
+N m
+i = 1
+[ 1   MAC
+i
+( θ )] (4) 
+where N
+m 
+is the total number of modes considered and f
+2
+( θ ) is the 
+average modal-shape mismatch. Minimizing f
+2
+( θ ) maximizes mode 
+shape correlation, with MAC
+i
+= 1 indicating perfect correlation and 
+MAC
+i
+= 0 indicating orthogonality.
+Normalized static deflection error.
+Under M static load cases (e.g., uniform live load, asymmetric truck 
+load), the normalized static-deflection error f
+3
+( θ ) is defined as: 
+f
+3
+( θ ) =
+1
+M
+∑
+M
+j = 1
+⃦
+⃦
+⃦ u
+calc
+j
+( θ )   u
+meas
+j
+⃦
+⃦
+⃦
+2
+⃦
+⃦
+⃦ u
+meas
+j
+⃦
+⃦
+⃦
+2
+(5) 
+where u
+calc
+j
+( θ )∈ ℝ
+d 
+is the displacement vector at sensor locations 
+computed by the numerical model under the j -th load case, and 
+u
+meas
+j
+∈ ℝ
+d 
+is the corresponding experimentally measured displacement 
+Four-Stage Enhancement Pipeline
+Stage 1: Sensitivity Analysis 
+• Sobol global sensitivity analysis 
+• Parameter reduction:
+156→16 (89.7% reduction)
+• Sensitivity retention: 99% 
+Stage 2: Enhanced NSGA-III Algorithm
+• Adaptive reference-point relocation
+(every 20 generations) 
+• Sensitivity-informed variation operators 
+• Hybrid local search (Quasi-Newton) 
+• Population: 200, Generations: 180 
+Stage 3: Sensitivity Analysis 
+• Objective functions: f₁, f₂, f₃
+• Non-dominated Sorting 
+• Solution selection 
+Stage 4: Robustness Evaluation 
+• Noise sensitivity testing (up to 5%) 
+• 30 independent runs 
+• Statistical validation 
+Results & Validation
+• vs NSGA-II &
+Standard NSGA-III
+• Statistical significance 
+testing 
+• Hypervolume indicator
+• 580 m Bridge Case Study
+• Real-world constraints 
+• Practical implementation 
+• 20% lower 
+identification error 
+• 30% faster convergence 
+• 22% higher hypervolume 
+• Average error: 1.21% 
+Performance 
+comparison 
+Engineering 
+application Final results 
+Input data
+Problem Definition & Setup
+• 580 m 
+Cable-stayed 
+Bridge 
+• Modal frequencies, 
+mode shapes, 
+deflection responses
+• 156 design parameters
+Physics-based constraints 
+Digital twin model Multi-objective 
+problem formulation
+Fig. 1. Enhanced NSGA-III framework workflow for bridge parameter identification.
+Z. Tan et al. Structures 87 (2026) 111723 
+3 
+vector. Minimizing f
+3
+( θ ) ensures static response consistency. By simul -
+taneously minimizing f
+1
+( θ ), f
+2
+( θ ), and f
+3
+( θ ), the optimization algorithm 
+calibrates parameter vector θ so that the FE model reproduces both the 
+dynamic and static characteristics observed in experimental data.
+2.2.2. Constraint system formulation
+To ensure physical feasibility and numerical stability, three 
+constraint classes are imposed on the parameter vector θ as shown in 
+Fig. 2 : bound constraints, equilibrium-residual constraints, and modal- 
+stability constraints. Bound constraints restrict parameters to physi -
+cally credible ranges based on design codes and engineering practice. 
+For instance, steel elastic modulus is limited to 195 – 230 GPa, ensuring 
+material properties remain within realistic bounds: 
+θ
+min
+K
+≤ θ
+K
+≤ θ
+max
+K
+, k = 1 , 2 , … n (6) 
+where θ
+min 
+and θ
+max 
+are vectors of lower and upper bounds for each 
+parameter component, respectively. Equilibrium-residual constraints 
+require finite element equilibrium between internal forces and applied 
+loads. The residual vector R ( θ ) = K ( θ ) ⋅ u
+s
+  F
+s 
+must satisfy: 
+‖ R ( θ )‖
+2
+≤ ε
+R
+(7) 
+where K ( θ ) is the parameter-dependent stiffness matrix, u
+s 
+is the static 
+displacement vector, F
+s 
+is the applied load vector, || ⋅ ||
+2 
+denotes the 
+Euclidean norm, and ε
+R 
+is the relative equilibrium tolerance (typically 
+10
+  6
+). Modal-stability constraints ensure positive eigenvalues to avoid 
+numerical instabilities and the mathematical expression is given in Eq. 
+(8) : 
+[ K ( θ )   λ
+i
+M ] φ
+i
+= 0 (8) 
+where M is the mass matrix, φ
+i 
+is the i -th mode shape vector, and λ
+i 
+relates the eigenvalue to the i -th natural frequency ω
+i
+.
+The constrained problem is converted to unconstrained form via 
+quadratic penalties: 
+F
+∗
+i
+( θ ) = F
+i
+( θ ) + ω
+b
+∑
+n
+k = 1
+[ max ( 0 , θ
+min
+k
+  θ
+k
+]
+2
++ ω
+b
+∑
+n
+k = 1
+[ max ( 0 , θ
+k
+  θ
+min
+k
+]
+2 
++ ω
+e
+‖ R ( θ )‖
+2
+2
+(9) 
+where i = 1, 2, 3 and penalty weights ω
+b
+, ω
+e
+≫ 1 heavily penalize 
+constraint violations.
+2.2.3. Parameter sensitivity analysis
+High-dimensional optimization faces computational challenges and 
+overfitting risks. Parameter sensitivity analysis quantifies each param -
+eter's importance, enabling dimensionality reduction while preserving 
+solution quality.
+Table 1 
+Parameters for identification: categories, symbols, physical meanings, units, and 
+bounds.
+Category Symbol Physical meaning Unit Lower 
+bound
+Upper 
+bound
+Count
+Cable T
+1
+~ T
+36
+Pretension in 
+stayed cables
+kN 2000 5000 36
+Deck E
+d
+Elastic modulus 
+of deck steel
+GPa 195 230 1
+G
+d
+Shear modulus of 
+deck steel
+GPa 75 90 1
+Pylon E
+t 1
+Elastic modulus 
+of concrete in 
+Tower 1
+GPa 27 33 1
+E
+t 2
+Elastic modulus 
+of concrete in 
+Tower 2
+GPa 27 33 1
+I
+1
+~ I
+3
+Sectional 
+moment-of- 
+inertia correction 
+factors
+- 0.8 1.2 3
+Damping ξ
+1
+~ ξ
+5
+Damping ratios 
+(the first five 
+modes)
+% 0.2 2.0 5
+Fig. 2. Constraint formulations: (a) parameter bound constraints; (b) equilibrium constraints; and (c) modal stability constraints.
+Z. Tan et al. Structures 87 (2026) 111723 
+4 
+Sobol variance-based sensitivity analysis quantifies the influence of 
+each parameter θ
+k 
+on the penalized objective vector F
+∗
+( θ ) = [ F
+∗
+1
+( θ ) , F
+∗
+2
+( θ ) ,
+F
+∗
+3
+( θ )] . The total sensitivity index S
+K
+T 
+measures the fraction of output 
+variance attributable to θ
+k 
+(including interactions), and lies between 
+0 and 1. Using Quasi-Monte Carlo Sobol sequences with sample size N
+s 
+per parameter, first- and total-order indices are computed via the Saltelli 
+scheme [42] .
+Parameter screening fixes parameter k at its nominal design value 
+when: 
+S
+K
+T
+< δ
+S
+(10) 
+where δ
+S 
+= 0.01 is the sensitivity threshold. This yields a reduced de -
+cision space Θ
+reduced
+⊂ ℝ
+{ n
+r
+}
+, n
+r
+≪ n .
+Objective normalization addresses scale disparities that can bias 
+multi-objective operators. Each penalized objective is normalized to 
+[0,1] using preliminary sample extrema: 
+̂
+F
+i
+( θ ) =
+F
+∗
+i
+( θ )   min
+ζ ∈ Θ
+sample
+F
+∗
+i
+( ζ )
+max
+ζ ∈ Θ
+sample
+F
+∗
+i
+( ζ )   min
+ζ ∈ Θ
+sample
+F
+∗
+i
+( ζ )
+(11) 
+where min
+ζ ∈ Θ
+sample
+F
+∗
+i
+( ζ ) and max
+ζ ∈ Θ
+sample
+F
+∗
+i
+( ζ ) are the minimum and 
+maximum values of the i -th objective observed during preliminary 
+sampling.
+Fig. 3 presents Sobol global sensitivity analysis quantifying 
+parameter importance across the three optimization objectives. The 
+analysis reveals distinct sensitivity patterns: cable pretensions ( T
+1
+, T
+2
+) 
+dominate modal frequency objective f
+1 
+(sensitivity indices 0.6 – 0.8), 
+tower elastic moduli ( E
+t 1
+, E
+t 2
+) primarily affect mode shape objective f
+2 
+(0.4 – 0.5), while deck elastic modulus ( E
+d
+) overwhelmingly influences 
+static deflection objective f
+3 
+(0.65).
+Using sensitivity threshold δ
+S 
+= 0.01, systematic screening reduces 
+the parameter space from 156 to 16 parameters (89.7% reduction) while 
+retaining 99% of system sensitivity, providing both computational effi -
+ciency and scientific foundation for the enhanced NSGA-III algorithm.
+2.3. Improved NSGA ‑ III algorithm
+To address high-dimensional, constrained multi-objective parameter 
+identification in large-span cable-stayed bridges, several enhancements 
+are implemented to the standard NSGA-III framework [43] . The key 
+innovations are: An adaptive reference ‑ point relocation strategy to 
+maintain diversity in irregular Pareto fronts; Sensitivity ‑ informed vari -
+ation operators that bias exploration toward the most influential pa -
+rameters; A hybrid local ‑ search module that accelerates fine ‑ scale 
+convergence; A brief convergence discussion under realistic modeling 
+assumptions.
+2.3.1. Baseline NSGA-III framework
+NSGA-III extends NSGA-II to multi-objective problems (M ≥ 3) by 
+Fig. 3. Sobol global sensitivity analysis: (a) sensitivity index; (b) modal frequency sensitivity heatmap; (c) modal shape sensitivity heatmap; and (d) static deflection 
+sensitivity heatmap.
+Z. Tan et al. Structures 87 (2026) 111723 
+5 
+replacing crowding-distance with a reference-point-based niche pres -
+ervation. Fig. 4 illustrates the baseline algorithm workflow, which 
+proceeds as follows: 
+(1) Initialization: Generate an initial population P
+0 
+of size N by 
+uniform sampling in decision space Θ
+reduced
+.
+(2) Reference point generation: Construct a set Z =
+{
+z
+1
+, … z
+H
+}
+of H 
+uniformly distributed reference points on the unit M -simplex.
+(3) Evolution loop (for g = 1, … , G
+max
+):
+• Variation: Apply binary tournament selection, simulated binary 
+crossover (SBX) and polynomial mutation to P
+g   1
+, producing 
+offspring Q
+g
+.
+• Combination: R
+g
+= P
+g   1
+∪ Q
+g
+.
+• Non ‑ dominated Sorting: Decompose R
+g 
+into fronts F
+1
+, F
+2
+, … .
+• Population Reduction: Fill new population P
+g 
+front by front. When 
+the next front F
+k 
+cannot be entirely accommodated, apply reference- 
+point niche selection: project individuals in F
+k 
+onto the normalized 
+objective space; associate each with nearest reference point in Z and 
+prefer individuals from underrepresented niches until N members 
+are selected.
+(4) Termination: Return nondominated set in P
+G
+max
+While effective for multi-objective optimization, the vanilla 
+NSGA ‑ III may lose diversity when Pareto fronts are non ‑ convex or 
+exhibit uneven density, and applies generic variation operators that 
+ignore problem-specific parameter sensitivity.
+2.3.2. Reference point adaptation
+Fixed reference grids can cause solution clustering in dense Pareto 
+front regions and gaps in sparsely populated areas, particularly for non- 
+convex trade-off surfaces common in cable-stayed bridge calibration. To 
+address this limitation, reference points are periodically adjusted to 
+better track the evolving front geometry.
+Table 2 details the adaptive reference-point adjustment mechanism 
+parameters for the improved NSGA-III. For three-dimensional objective 
+Fig. 4. Flowchart of the baseline NSGA-III algorithm.
+Table 2 
+Reference point adaptation parameters and settings.
+Parameter Symbol Value Description
+Reference-point 
+generation 
+dimension
+M 3 Number of objectives (three- 
+dimensional objective space)
+Simplex division count p 12 Division parameter in the Das & 
+Dennis method
+Total number of 
+reference points
+H 220 Interior + boundary points
+Number of interior 
+reference points
+H
+1
+91 First-layer (interior) reference-point 
+count
+Number of boundary 
+reference points
+H
+2
+129 Second-layer (boundary) reference- 
+point count
+Adaptation interval G
+adapt
+20 Detect and adjust reference-point 
+distribution every 20 generations
+Minimum associated- 
+solution threshold
+ρ
+min
+1 Reference points with fewer 
+associated solutions than this are 
+deemed “ empty ”
+Overcrowding 
+threshold
+ρ
+max
+5 Reference points with more 
+associated solutions than this are 
+deemed “ overcrowded ”
+Mixing factor for 
+relocation
+α 0.5 Weight balancing old vs. new 
+position ( ∈ [0,1])
+Maximum adjustment 
+ratio
+β
+max
+0.3 Maximum fraction of reference 
+points to move per adaptation to 
+avoid overshooting
+Reference-point 
+normalization 
+method
+- ASF Achievement scalarizing function
+Z. Tan et al. Structures 87 (2026) 111723 
+6 
+space ( M = 3), 220 reference points are generated using the Das & 
+Dennis method (91 interior and 129 boundary points) [44] . The adap -
+tation mechanism inspects solution associations every G
+adapt 
+= 20 gen -
+erations. “ Empty ” reference points (associated with fewer than ρ
+min
+= 1 
+solutions) are relocated toward "crowded" points (associated with more 
+than ρ
+max
+= 5 solutions) using: 
+z
+new
+j
+= ( 1   α ) ⋅ z
+j
++ α ⋅ z
+nearest
+(12) 
+where α = 0.5 is the mixing factor, dynamically redistributing reference 
+points to maximize uniform coverage across the entire Pareto front.
+Fig. 5 demonstrates the advantage of adaptive reference point 
+management. Standard NSGA-III ( Fig. 5 (a) ) employs uniformly distrib -
+uted reference points across the entire [0,1] × [0,1] objective space, 
+creating misalignment with the actual Pareto front and resulting in 
+sparse coverage in critical non-convex regions. The improved algorithm 
+( Fig. 5 (b) ) implements dynamic relocation every 20 generations, sys -
+tematically moving empty reference points toward high-concentration 
+areas, achieving superior front coverage and eliminating redundant 
+points in infeasible regions.
+Fig. 6 provides comprehensive performance evaluation across key 
+multi-objective metrics. The improved algorithm achieves 12% 
+enhancement in hypervolume coverage compared with standard NSGA- 
+III ( Fig. 6 (a) ), indicating better Pareto space exploration. Diversity 
+analysis ( Fig. 6 (b) ) shows consistent superiority across all front regions, 
+including the depression zone (0.28 vs 0.25), convex zone (0.30 vs 0.28), 
+and overall diversity (0.36 vs 0.32). The inverted generational distance 
+(IGD) convergence ( Fig. 6 (c) ) is 17% lower than that of standard NSGA- 
+III at termination, confirming superior convergence quality and closer 
+proximity to the true Pareto front.
+2.3.3. Sensitivity-informed variation operators
+Global sensitivity analysis yields Sobol total indices S
+K
+T
+∈ [ 0 , 1 ] , k = 1 ,
+… n
+r 
+quantifying parameter importance. These indices are embedded 
+into crossover and mutation operators to bias search effort toward 
+influential parameters. 
+(1) SBX with adaptive distribution index 
+For each decision variable θ
+k
+, the SBX distribution index is set 
+as: 
+η
+c , k
+= η
+c , min
++ ( 1   S
+k
+T
+) ⋅ ( η
+c , max
+  η
+c , min
+) (13) 
+where η
+c , min 
+and η
+c , max 
+define the allowable range. 
+This adaptive mechanism establishes an inverse relationship 
+between parameter sensitivity and distribution index.
+(2) Constraint-aware polynomial mutation
+Standard polynomial mutation employs adaptive index η
+m 
+following 
+Eq. (13) . After mutating θ
+k
+, if the result violates bounds [ θ
+min
+k
+, θ
+max
+k
+] or 
+creates equilibrium residual r ( θ ) > r
+max
+, re-mutation occurs up to M
+max 
+attempts before clamping to the nearest feasible bound.
+This targeted operator design accelerates convergence by concen -
+trating search effort on parameters with maximum structural influence.
+2.3.4. Hybrid local search strategy
+Global MOEAs can stagnate near Pareto fronts due to diminishing 
+objective gradients. A gradient-based local search is interleaved every 
+G
+local 
+generations to enhance fine-scale convergence.
+Scalarization: For each nondominated solution θ
+( p )
+, form the simple 
+average 
+φ ( θ ) =
+1
+M
+∑
+M
+i = 1
+̂
+F
+i
+( θ ) (14) 
+where 
+̂
+F
+i 
+is the normalized objectives from Eq. (11) .
+Quasi-Newton optimization:
+Approximate ∇ φ ( θ
+( p )
+) via central finite differences with step size h 
+= 10
+  6
+.
+Perform up to L
+max 
+Broyden-Fletcher-Goldfarb-Shanno (BFGS) iter -
+ations subject to bounds θ ∈ Θ .
+Terminate early if ‖∇ φ ‖ < ε
+loc
+= 10
+  4
+.
+Replacement: If the refined solution remains nondominated with 
+respect to the current population, replace the original solution.
+The hybrid local search mechanism provides dual advantages: 
+elimination of Pareto front discontinuities and enhancement of trade-off 
+resolution quality. While introducing computational overhead, this cost 
+is offset by substantial reduction in required global evolutionary itera -
+tions, ultimately achieving superior convergence efficiency toward high- 
+quality Pareto-optimal solutions.
+3. Case Study
+The proposed multi-objective parameter identification framework is 
+validated on a high-fidelity finite element model of a 580-m span cable- 
+stayed bridge. This section presents the bridge model configuration, 
+synthetic measurement data, optimization setup, and quantitative re -
+sults demonstrating identification accuracy, convergence speed, and 
+Pareto front diversity. Fig. 7 illustrates the comprehensive sensor 
+deployment strategy employed for structural response measurements.
+3.1. Bridge model description
+This section presents the finite element model of the cable-stayed 
+bridge used for validation of the proposed parameter identification 
+Fig. 5. Reference point adaptation: (a) standard NSGA-III with fixed reference points; (b) improved NSGA-III with adaptive reference points.
+Z. Tan et al. Structures 87 (2026) 111723 
+7 
+framework. Table 3 details the main parameters of the cable-stayed 
+bridge finite element model. The bridge features total length of 912 m 
+(62 m + 104 m + 580 m + 104 m + 62 m) with 30-m deck width. Material 
+properties include orthotropic steel deck panels with elastic modulus E
+d 
+= 210 GPa, Poisson ’ s ratio ν
+d 
+= 0.3, and shear modulus G
+d 
+= E
+d 
+/[2 
+(1 + ν
+d
+)] ≈ 80.8 GPa; C60 high-performance concrete towers with 
+elastic modulus E
+t 
+= 30 GPa; and high-strength parallel wire cable 
+strands (diameter 80 – 160 mm, elastic modulus E
+c 
+= 195 GPa) with 
+prestress forces serving as key identification parameters. The model 
+contains approximately 12,500 elements (10,000 shell, 2500 beam) 
+with around 150,000 
+◦
+of freedom, accounting for geometric nonline -
+arity under large deformations, as shown in Fig. 8 . Rayleigh damping 
+with unknown modal damping ratios is assumed. Boundary conditions 
+include fixed tower bases and elastic bearings at deck ends, providing a 
+high-accuracy numerical platform for parameter identification. All 
+computational experiments were conducted on a personal workstation 
+Fig. 6. Multi-metric performance comparison of standard and improved NSGA-III algorithms: (a) hypervolume convergence; (b) pareto front diversity; and (c) IGD 
+metric convergence.
+Fig. 7. Sensor deployment scheme for cable-stayed bridge monitoring.
+Table 3 
+Finite element model properties of cable-stayed bridge.
+Parameter Category Value Unit Description
+Deck elastic modulus, E
+d
+210 GPa Orthotropic steel panels
+Steel density, ρ
+d
+7850 kg/m³ Orthotropic steel panels
+Deck Poisson ’ s ratio, ν
+d
+0.3 - Orthotropic steel panels
+Deck shear modulus, G
+d
+80.8 GPa Orthotropic steel panels
+Tower elastic modulus, E
+t
+30 GPa C60 concrete
+Tower density, ρ
+t
+2500 kg/m³ C60 concrete
+Tower Poisson ’ s ratio, ν
+t
+0.2 - C60 concrete
+Cable elastic modulus, E
+c
+195 GPa Parallel steel strands
+Cable prestress range 2000 – 5000 kN Identification parameter
+Damping ratio range, ξ 0.2 – 2.0 % Identification parameter
+Modal analysis First 5 modes - Primary contributors
+Tower base Fixed - Fully constrained
+Deck ends Elastic bearings - Vertical sliding allowed
+Z. Tan et al. Structures 87 (2026) 111723 
+8 
+equipped with an Intel Core i7 – 10700 processor (2.9 GHz, 8 cores), 
+128 GB DDR4 RAM, and an NVIDIA GeForce RTX 3090 Ti GPU (24 GB 
+VRAM).
+3.2. Parameter identification setup
+The parameter identification framework employs sensitivity-driven 
+parameter selection to reduce computational complexity while main -
+taining accuracy. Based on the cable-stayed bridge configuration, the 
+structure features 36 pairs of stay cables symmetrically arranged on both 
+sides of the bridge deck. Among these, nine critical cable segments are 
+selected for identification: T
+1 
+and T
+2 
+represent tower-base cables 
+anchored near the tower foundation; T
+3
+, T
+4
+, T
+5 
+and T
+6 
+denote transition- 
+zone cables in the quarter-span region; while T
+8
+, T
+12 
+and T
+15 
+correspond 
+to mid-span cables experiencing maximum tension forces and load 
+redistribution effects.
+Table 4 presents comprehensive statistical analysis based on 30 in -
+dependent algorithm runs, demonstrating exceptional identification 
+performance with an average absolute relative error of 1.21%, falling 
+well within typical engineering tolerance thresholds ( ± 5%). All pa -
+rameters exhibit coefficients of variation below 3%, indicating high 
+algorithmic stability and reproducibility across stochastic runs. The 95% 
+confidence intervals, contained within ± 3.5% bounds, provide robust 
+uncertainty quantification essential for engineering decision-making. 
+The reduced parameter set retains 99% of system parametric influence 
+while significantly enhancing computational efficiency, effectively 
+addressing the curse of dimensionality in large-scale structural 
+optimization.
+Fig. 9 presents comprehensive performance comparison across three 
+critical metrics. The improved NSGA-III achieves about 20% lower 
+average objective error than standard NSGA-III ( Fig. 9 (a) ) and con -
+verges 25 – 29% faster, reaching convergence at generation 180 
+compared to 240 for standard NSGA-III and 255 for NSGA-II. Hyper -
+volume evolution ( Fig. 9 (b) ) shows 25% improvement in solution di -
+versity and Pareto front coverage. Despite 9.5% increase in per- 
+generation computational cost (81 s vs. 74 s), the accelerated conver -
+gence yields 35% overall time savings compared to standard NSGA-III 
+(3.2 h vs. 4.9 h) and 41% savings versus NSGA-II (3.2 h vs. 5.4 h) as 
+shown in Fig. 9 (c) , establishing practical viability for periodic offline 
+updates in structural health monitoring.
+4. Results and discussion
+This section presents the experimental results obtained using the 
+methodology outlined in Section 2 and the case study configuration 
+described in Section 3 . Three key aspects are analyzed: (1) comparative 
+performance evaluation among improved NSGA-III, standard NSGA-III, 
+and NSGA-II algorithms; (2) robustness assessment under measurement 
+noise conditions; and (3) comprehensive discussion of algorithmic 
+mechanisms and practical implications.
+4.1. Algorithm performance comparison
+Fig. 10 demonstrates the superior parameter identification accuracy 
+of the improved NSGA-III algorithm through comprehensive error 
+analysis across critical structural parameters. For cable tension identi -
+fication ( Fig. 10 (a) ), nine representative cable segments ( T
+1
+, T
+2
+, T
+3
+, T
+4
+, 
+T
+5
+, T
+6
+, T
+8
+, T
+12
+, T
+15
+) spanning from tower-base to mid-span regions are 
+evaluated.
+The improved algorithm consistently achieves the lowest identifi -
+cation errors, with an average error of 1.4% compared to 3.3% for 
+standard NSGA-III and 4.4% for NSGA-II, which represents accuracy 
+improvements of 58% and 68%, respectively. On the other hand, ma -
+terial parameter identification results ( Fig. 10 (b) ) exhibit even more 
+pronounced advantages. For deck elastic modulus E
+d
+, the improved al -
+gorithm achieves 1.2% error compared to 2.3% (standard NSGA-III) and 
+3.5% (NSGA-II), representing 48% and 66% error reductions. Similar 
+superiority is observed for shear modulus G
+d 
+(0.9% vs. 1.8% vs. 2.5%), 
+tower elastic modulus E
+t 1 
+(1.0% vs. 2.0% vs. 2.8%), and damping ratio ξ
+1 
+(0.5% vs. 0.8% vs. 1.2%). Notably, the improved algorithm maintains 
+maximum error below 1.2% across all material parameters, whereas 
+competing algorithms exhibit higher variability with peak errors 
+approaching 3.5%. This precision is important because elastic moduli 
+and damping parameters directly govern serviceability predictions and 
+fatigue life assessments.
+The consistently superior performance validates the synergistic 
+effectiveness of three algorithmic enhancements: (1) adaptive reference 
+point relocation maintains solution diversity across irregular Pareto 
+regions, preventing premature convergence; (2) sensitivity-informed 
+operators concentrate computational effort on influential parameters 
+Fig. 8. The FE model.
+Table 4 
+Parameter identification results and statistical validation (30 independent runs).
+Parameter True 
+value
+Mean Std 
+deviation
+CV 
+(%)
+Relative 
+error (%)
+95% 
+confidence 
+interval
+T
+1 
+(kN) 3580 3632 48.6 1.34 + 1.45 [3537, 3727]
+T
+2 
+(kN) 3750 3818 52.4 1.37 + 1.81 [3715, 3921]
+T
+3 
+(kN) 4120 4165 45.8 1.10 + 1.09 [4075, 4255]
+T
+4 
+(kN) 4380 4325 56.2 1.30   1.26 [4215, 4435]
+T
+5 
+(kN) 4580 4514 62.8 1.39   1.44 [4391, 4637]
+T
+6 
+(kN) 4650 4675 43.2 0.92 + 0.54 [4590, 4760]
+T
+8 
+(kN) 4820 4785 51.6 1.08   0.73 [4684, 4886]
+T
+12 
+(kN) 5150 5095 72.4 1.42   1.07 [4953, 5237]
+T
+15 
+(kN) 5350 5318 84.6 1.59   0.60 [5152, 5484]
+E
+d 
+(GPa) 210.0 206.8 3.25 1.57   1.52 [200, 213]
+G
+d 
+(GPa) 80.8 81.9 1.28 1.56 + 1.36 [79.4, 84.4]
+E
+t 1 
+(GPa) 30.0 29.5 0.42 1.42   1.67 [28.7, 30.3]
+E
+t 2 
+(GPa) 30.0 30.4 0.38 1.25 + 1.33 [29.7, 31.1]
+I
+1
+1.00 0.98 0.018 1.84   2.00 [0.94, 1.02]
+ξ
+1 
+(%) 0.8 0.79 0.021 2.66   1.25 [0.75, 0.83]
+Average - - - 1.45 ± 1.21 ± 3.5%
+Note: Std deviation and CV denote standard deviation and coefficient of varia -
+tion, respectively, quantifying the dispersion of 30 independent runs.
+Z. Tan et al. Structures 87 (2026) 111723 
+9 
+identified through global sensitivity analysis; and (3) hybrid local search 
+refines solutions near Pareto optimality, eliminating residual errors. 
+These coordinated improvements establish the proposed framework as 
+highly effective for high-fidelity digital twin construction of cable- 
+stayed bridges, where parameter accuracy directly impacts structural 
+safety assessment and long-term health monitoring reliability.
+4.2. Robustness assessment under measurement noise
+To evaluate algorithm robustness under realistic field conditions, 
+comprehensive noise sensitivity analysis was conducted across three 
+progressively challenging scenarios: S1 (low noise, 1% modal frequency 
+error and 0.5 mm deflection noise), S2 (baseline, 2% frequency and 
+1 mm deflection noise), and S3 (high noise, 5% frequency and 2 mm 
+deflection noise). For each scenario, 30 independent algorithm runs 
+were performed to assess: (1) average normalized objective at termi -
+nation; (2) mean relative parameter identification error across 16 
+reduced parameters; (3) generations required for convergence (defined 
+as no improvement in objective for 20 consecutive generations); and (4) 
+hypervolume of the final Pareto front.
+Table 5 demonstrates exceptional algorithm robustness across noise 
+scenarios. Under low noise (S1), the improved NSGA-III achieves overall 
+average error of 0.9%, representing a 55% reduction compared to 
+standard NSGA-III (2.0%). At baseline noise (S2), average error in -
+creases moderately to 1.3% (52% improvement), while under high noise 
+(S3) it remains at 2.8% (39% improvement). Parameter category anal -
+ysis under S2 shows consistent performance: cable tensions (1.4% error), 
+deck properties (1.4%), and tower parameters (1.1%). Convergence 
+acceleration of 25 – 29% and hypervolume improvements of 18 – 24% are 
+maintained across scenarios, while computational time reductions of 
+30 – 37% offset the 9.5% per-generation overhead. The noise sensitivity 
+coefficient of 0.75 (vs. 0.85 for standard NSGA-III, 0.90 for NSGA-II) 
+confirms graceful performance degradation, validating practical appli -
+cability for real-world structural health monitoring.
+Fig. 9. Algorithm convergence and efficiency comparison for parameter identification of the cable-stayed bridge: (a) convergence curves; (b) hypervolume tra -
+jectories; and (c) breakdown of computational efficiency metrics.
+Fig. 10. Comparative identification accuracy of three optimization algorithms: (a) cable tension identification errors; and (b) material parameter identifica -
+tion errors.
+Z. Tan et al. Structures 87 (2026) 111723 
+10 
+Fig. 11 illustrates the relationship between measurement noise and 
+identification accuracy. The improved NSGA-III maintains superior 
+performance across both frequency ( Fig. 11 (a) ) and displacement noise 
+scenarios ( Fig. 11 (b) ), with accuracy degrading gracefully from 99.5% 
+under low noise to 96.1% under high noise. The noise sensitivity coef -
+ficient of 0.75 significantly outperforms standard NSGA-III (0.85) and 
+NSGA-II (0.90), confirming exceptional robustness against measurement 
+uncertainties typical in field applications.
+Fig. 12 (a) presents average identification errors across parameter 
+categories through bar chart comparison, showing the improved algo -
+rithm consistently achieves lowest errors for cable tensions (0.8 – 2.6%), 
+deck parameters (1.0 – 3.0%), and tower parameters (1.1 – 2.5%), with 
+performance advantages becoming more pronounced under higher 
+noise conditions. Fig. 12 (b) provides three-dimensional surface visual -
+ization demonstrating complex interplay between noise levels, conver -
+gence generations, and identification accuracy, confirming faster 
+convergence (150 – 240 generations) with consistently lower errors 
+across the entire noise spectrum.
+Fig. 13 provides comprehensive validation of identified parameters 
+against synthetic measurements, showing excellent agreement across 
+multiple response domains: modal frequencies with correlation co -
+efficients exceeding 0.98 ( Fig. 13 (a) ), mode shape correlations (MAC 
+values) above 0.95 ( Fig. 13 (b) ), and static responses under uniform 
+loading (5 kN/m, Fig. 13 (c) ) and concentrated loading (200 kN, Fig. 13
+(d) ) with all residuals within ± 2% engineering accuracy thresholds. 
+These results demonstrate that optimized parameters successfully 
+reproduce target structural behavior across domains essential for reli -
+able digital twin applications.
+4.3. Mechanistic insights and practical implications
+The enhanced NSGA-III algorithm demonstrates that carefully 
+tailored evolutionary strategies can effectively address high- 
+Table 5 
+Noise sensitivity analysis results across measurement scenarios.
+Evaluation 
+metric
+Noise 
+level
+NSGA- 
+II
+Standard 
+NSGA-III
+Improved 
+NSGA-III
+Improvement*
+Cable tension 
+error (%)
+S1 2.8 2.1 0.8   62%
+S2 4.3 3.2 1.4   56%
+S3 6.8 5.2 2.6   50%
+Deck parameter 
+error (%)
+S1 3.0 2.0 1.0   50%
+S2 3.8 2.8 1.4   50%
+S3 6.0 4.5 3.0   33%
+Tower 
+parameter 
+error (%)
+S1 3.2 1.8 1.1   39%
+S2 3.0 2.1 1.1   48%
+S3 5.2 3.8 2.5   34%
+Overall error 
+(%)
+S1 3.0 2.0 0.9   55%
+S2 3.8 2.7 1.3   52%
+S3 6.0 4.6 2.8   39%
+Convergence 
+(generations)
+S1 220 210 150   29%
+S2 255 240 180   25%
+S3 300 + 300 + 240   20%
+Hypervolume 
+index
+S1 0.312 0.348 0.412 + 18%
+S2 0.285 0.316 0.385 + 22%
+S3 0.218 0.265 0.328 + 24%
+Computational 
+time (h)
+S1 4.0 4.3 2.7   37%
+S2 4.6 4.9 3.2   35%
+S3 5.4 + 6.1 + 4.3   30%
+Noise 
+sensitivity 
+coefficient
+- 0.90 0.85 0.75   12%
+Note: Improvement* values are computed with respect to the standard NSGA-III 
+results (negative values indicate reductions, positive values indicate increases).
+Fig. 11. Effect of measurement noise on parameter identification accuracy: (a) identification accuracy versus modal frequency noise level; (b) identification accuracy 
+versus displacement measurement noise.
+Fig. 12. Comprehensive error analysis under varying noise scenarios: (a) average parameter identification errors categorized by structural component (cables, deck, 
+towers) across three noise levels; (b) three-dimensional noise-convergence-accuracy relationships.
+Z. Tan et al. Structures 87 (2026) 111723 
+11 
+dimensional, noisy, multi-objective calibration challenges inherent in 
+cable-stayed bridge digital twin construction. The integrated framework 
+combines three synergistic innovations that collectively improve both 
+identification accuracy and computational efficiency.
+Sensitivity-driven dimensionality reduction proves essential for 
+tractable optimization in high-parameter spaces. By applying Sobol 
+global sensitivity analysis to screen 156 candidate parameters and retain 
+only the 16 most influential variables (capturing 99% of cumulative 
+system variance), the framework concentrates computational effort on 
+regions where structural response sensitivity is maximized. This stra -
+tegic reduction mitigates overfitting risks, enhances convergence reli -
+ability, and enables practical deployment in structural health 
+monitoring systems. Further embedding sensitivity indices into SBX 
+crossover and polynomial mutation operators biases evolutionary 
+exploration toward high-impact parameters, thereby accelerating error 
+reduction across modal frequencies, mode shapes, and static deflection 
+responses.
+Adaptive Pareto front management maintains solution diversity 
+essential for revealing complete trade-off spectra among competing 
+calibration objectives. The dynamic reference point relocation mecha -
+nism, which redistributes underutilized reference points toward over -
+crowded regions every 20 generations, achieves 22% higher 
+hypervolume compared to fixed reference grid strategies under baseline 
+noise conditions (scenario S2, Table 5 ) and effectively prevents solution 
+clustering in locally convex regions. By integrating hybrid local search 
+that intermittently refines non-dominated solutions via BFGS iterations, 
+this dual-scale optimization strategy reduces required generations by 
+approximately 25% (scenario S2, Table 5 ) while eliminating gaps in the 
+Pareto front without sacrificing global exploration capability.
+Robustness under measurement uncertainty is confirmed through 
+progressively challenging noise scenarios spanning 1 – 5% modal fre -
+quency disturbances and 0.5 – 2 mm deflection noise (scenarios S1 – S3, 
+Table 5 ). Even under the highest noise level (S3: 5% frequency error, 
+2 mm deflection noise), the improved NSGA-III maintains average 
+parameter errors at 2.8%, representing 39% and 53% improvements 
+relative to standard NSGA-III and NSGA-II, respectively. Although 
+adaptive mechanisms introduce modest per-generation computational 
+overhead, accelerated convergence (20 – 29% fewer generations, 
+Table 5 ) yields net reductions of 30 – 37% in total computation time 
+across all noise scenarios, with 35% savings achieved under baseline 
+conditions (scenario S2, from 4.9 h to 3.2 h). This computational effi -
+ciency establishes practical viability for near-real-time digital twin up -
+dates in operational bridge monitoring systems.
+5. Conclusions
+This paper presents an enhanced NSGA-III framework for multi- 
+objective parameter identification in cable-stayed bridge digital twins, 
+addressing critical challenges in solution diversity maintenance, 
+convergence efficiency, and measurement noise robustness. The main 
+findings are summarized as follows: 
+• A unified multi-objective formulation balancing modal frequency 
+matching, mode shape correlation, and static deflection error is 
+established under physics-based constraints. Sobol global sensitivity 
+analysis reduces the parameter space from 156 to 16 variables 
+(89.7% reduction) while retaining 99% of system sensitivity, effec -
+tively addressing the curse of dimensionality.
+• Three coordinated innovations improve standard NSGA-III: adaptive 
+reference point relocation (every 20 generations) preserves diversity 
+across non-convex Pareto regions; sensitivity-informed variation 
+operators emphasize high-impact parameters; and intermittent 
+quasi-Newton local search accelerates convergence by 25 – 30% while 
+eliminating Pareto front gaps.
+• On a 580 m-span finite element model, the enhanced algorithm re -
+duces average identification error from 2.7% (standard NSGA-III) to 
+Fig. 13. Validation of identified parameters against synthetic measurement data: (a) modal frequency identification; (b) modal assurance criterion value; (c) mid- 
+span deflection under uniform distributed load (5 kN/m); (d) deflection profile under concentrated point load (200 kN at mid-span).
+Z. Tan et al. Structures 87 (2026) 111723 
+12 
+1.3%, increases hypervolume by 22%, and decreases total runtime by 
+35% despite 9.5% per-generation overhead. Identified parameters 
+reproduce synthetic measurements with frequency correlation 
+> 0.98, MAC > 0.95, and static residuals within ± 2%.
+• Under realistic noise levels (1 – 5% frequency error, 0.5 – 2 mm 
+deflection noise), average parameter errors remain below 3.0%, 
+convergence accelerates by 20 – 29%, and the noise sensitivity coef -
+ficient of 0.75 (vs. 0.85 for standard NSGA-III) demonstrates graceful 
+degradation suitable for field applications.
+Current validation relies on synthetic data with controlled noise 
+profiles; real-world measurements exhibit non-Gaussian noise, inter -
+mittent data loss, and unmodeled effects (soil-structure interaction, 
+temperature gradients, traffic-induced vibrations) that may challenge 
+identification accuracy. Furthermore, the framework performs offline 
+calibration, whereas online adaptive updating would enable continuous 
+model fidelity during operation. Future research should: (1) validate the 
+approach on instrumented bridges with long-term monitoring data; (2) 
+investigate surrogate-assisted evolutionary algorithms or reduced-order 
+modeling to accelerate ultrahigh-fidelity simulations; (3) incorporate 
+Bayesian uncertainty quantification for probabilistic parameter bounds; 
+and (4) extend the methodology to suspension bridges, arch bridges, and 
+building structures.
+CRediT authorship contribution statement
+Hongye Gou: Writing – review & editing, Validation, Supervision, 
+Methodology. Wenhao Li: Writing – review & editing, Software, 
+Methodology, Conceptualization. Xin Huang: Writing – review & edit -
+ing, Visualization, Data curation. Zhuang Tan: Writing – original draft, 
+Software, Methodology, Conceptualization. Alireza Entezami: Writing 
+– review & editing, Validation, Conceptualization. Junming Wang: 
+Writing – review & editing, Resources, Project administration. Yi Bao: 
+Writing – review & editing, Supervision.
+Declaration of Competing Interest
+The authors declare that they have no known competing financial 
+interests or personal relationships that could have appeared to influence 
+the work reported in this paper.
+Acknowledgment
+This research was funded by the National Natural Science Founda -
+tion of China [Grant No. 52478214 and 52172374], the Project of 
+Beijing-Shanghai High Speed Railway Company Limited [Grant No. 
+2024 – 2].
+Data availability
+Data will be made available on request.
+References
+[1] Shen Y, Deng Z, Wang J, Fu S, Chen D. Automatic identification and segmentation 
+of long-span rail-and-road cable-stayed bridges using UAV LiDAR point cloud. 
+Struct Control Hlth 2024;2024:4605081. https://doi.org/10.1155/2024/4605081 .
+[2] Bayraktar A, Akk ¨ose M, Tas ¸ Y, Ventura CE, Yang TY. Monitored seismic 
+performance assessment of cable ‑ stayed bridges during the 2023 Kahramanmaras ¸ 
+earthquakes (M7.7 and M7.6). J Civ Struct Health Monit 2024;14:1667 – 85. 
+https://doi.org/10.1007/s13349-024-00807-8 .
+[3] Song L, Cui C, Liu J, et al. Corrosion-fatigue life assessment of RC plate girder in 
+heavy-haul railway under combined carbonation and train loads[J]. Int J Fatigue 
+2021;151(2):106368. https://doi.org/10.1016/j.ijfatigue.2021.106368 .
+[4] Sun H, Song L, Cui C, et al. Bridge performance prediction based on nonlinear 
+stochastic processes and digital twins[J]. Structures 2024;82:110711. https://doi. 
+org/10.1016/j.istruc.2025.110711 .
+[5] Li H, Ou J. The state of the art in structural health monitoring of cable-stayed 
+bridges. J Civ Struct Health Monit 2016;6:43 – 67. https://doi.org/10.1007/s13349- 
+015-0115-x .
+[6] Guo J, Mao R, Ma K, Chen D. Deep learning-based approach for identifying vortex- 
+induced vibrations in stay cables. Adv Struct Eng 2025;28:690 – 715. https://doi. 
+org/10.1177/13694332241295594 .
+[7] Shang XQ, Huang TL, Tang L, Wang NB, Ren WX. Time-varying cable force 
+identification in cable-stayed bridges by a high-resolution time-frequency method. 
+Eng Struct 2025;322:119170. https://doi.org/10.1016/j.engstruct.2024.119170 .
+[8] Ma Z, Jing X, Qu L, Guo W. Deep-learning-based noncontact cable vibration 
+frequency identification by combining vision camera and 6-axis IMU sensor 
+measurements. Struct 2025;75:108734. https://doi.org/10.1016/j. 
+istruc.2025.108734 .
+[9] Gou H, Zhao T, Qin S, Zheng X, Pipinato A, Bao Y. In-situ testing and model 
+updating of a long-span cable-stayed railway bridge with hybrid girders subjected 
+to a running train. Eng Struct 2022;253:113823. https://doi.org/10.1016/j. 
+engstruct.2021.113823 .
+[10] Hu W, Cui C, Wang H, Zhang Q. Multi-scale finite element model update method 
+based on a multi ⁃ objective evolutionary algorithm. Ind Constr 2023;53:161 – 7. 
+https://doi.org/10.13204/j.gyjzG22061306 .
+[11] Tian X, Zhang Y, Spencer BF, Tao C. A study of global cable force identification of 
+tensegrity structures. Struct 2024;65:106610. https://doi.org/10.1016/j. 
+istruc.2024.106610 .
+[12] Dan D, Xu B, Xia Y, Yan X, Jia P. Intelligent parameter identification for bridge 
+cables based on characteristic frequency equation of transverse dynamic stiffness. 
+J Low Freq Noise Vib Act Control 2020;39:678 – 89. https://doi.org/10.1177/ 
+1461348418814617 .
+[13] Wang L, Xiao Z, Li M, Fu N. Cable force optimization of cable-stayed bridge based 
+on multiobjective particle swarm optimization algorithm with mutation operation 
+and the influence matrix. Appl Sci 2023;13:2611. https://doi.org/10.3390/ 
+app13042611 .
+[14] Gai T, Yu D, Zeng S, Lin JC-W. An optimization neural network model for bridge 
+cable force identification. Eng Struct 2023;286:116056. https://doi.org/10.1016/j. 
+engstruct.2023.116056 .
+[15] Meng Q, Qi X, Li Q, Bu Y. Parameter identification of long-span cable-stayed bridge 
+based on grey-neural network (In Chinese) J Southeast Univ 2009;44:704 – 9. 
+https://doi.org/10.3969/j.issn.0258-2724.2009.05.014 .
+[16] Huang K, Chai S, Wang X. Optimization of cable pre-tension forces in multi-tower 
+cable-stayed bridges with crossing cables considering the dead load allocation. 
+Appl Sci 2025;15:1967. https://doi.org/10.3390/app15041967 .
+[17] Huang KJ, Chai SB, Wang XL. Crossing cable design optimization of multi-tower 
+cable-stayed bridge based on joint analytical method and genetic algorithm. Struct 
+2024;69:107335. https://doi.org/10.1016/j.istruc.2024.107335 .
+[18] Peng T, Tian Z, Zhang J, Zheng W. Static and dynamic finite element model 
+updating for a concrete cable-stayed bridge based on multi-objective optimization. 
+J Vib Shock 2018;37:108 – 16. https://doi.org/10.13465/j.cnki.jvs.2018.21.016 .
+[19] Guo J, Yuan W, Dang X, Alam MS. Cable force optimization of a curved cable- 
+stayed bridge with combined simulated annealing method and cubic B-Spline 
+interpolation curves. Eng Struct 2019;201:109813. https://doi.org/10.1016/j. 
+engstruct.2019.109813 .
+[20] Bendalla ASKh, Morgenthal G. A nonlinear finite element framework for static and 
+dynamic analysis of structural cables with deviating supports. Eng Struct 2023;291: 
+116363. https://doi.org/10.1016/j.engstruct.2023.116363 .
+[21] Pan R, Dan D, Yan X. Interval uncertainty identification and application of strain 
+modes in bridge structures based on monitoring big data. Int J Struct Stab Dy 2024; 
+24(23):2450277. https://doi.org/10.1142/S0219455424502778 .
+[22] Wu J, Cheng F, Zou C, Zhang R, Li C, Huang S, Zhou Y. Swarm intelligent 
+optimization conjunction with kriging model for bridge structure finite element 
+model updating. Build-Basel 2022;12:504. https://doi.org/10.3390/ 
+buildings12050504 .
+[23] Qiu K, Li S, Sun H, Wang Y, Lv B. Evaluation of long-service-life cable-stayed bridge 
+strengthening schemes using a two-phase finite element model updating 
+technology. Struct 2023;47:625 – 37. https://doi.org/10.1016/j. 
+istruc.2022.11.072 .
+[24] Xu L, Li Y, Ding Z, Liu G, Liu K, Jia H. Parameter optimization of viscous damper 
+for cable-stayed bridge using improved multi-objective particle swarm algorithm 
+(In Chinese) J Vib Eng 2024;37:1006 – 14. https://doi.org/10.16385/j.cnki. 
+issn.1004-4523.2024.06.011 .
+[25] Khan I, Shan D, Li Q, Jie H. Continuous modal parameter identification of cable- 
+stayed bridges based on a novel improved ensemble empirical mode 
+decomposition. Struct Infrastruct Eng 2018;14:177 – 91. https://doi.org/10.1080/ 
+15732479.2017.1338734 .
+[26] Xia Q, Tian Y, Cai D, Zhang J. Structural flexibility identification and fast-Bayesian- 
+based uncertainty quantification of a cable-stayed bridge. Eng Struct 2020;214: 
+110616. https://doi.org/10.1016/j.engstruct.2020.110616 .
+[27] Feng Z, Zhang J, Xuan X, Wang Y, Hua X, Chen Z, Yan W. Bayesian time domain 
+approach for damping identification and uncertainty quantification in stay cables 
+using free vibration response. Eng Struct 2024;315:118477. https://doi.org/ 
+10.1016/j.engstruct.2024.118477 .
+[28] Deng R, Zheng W, Doerr B. The first theoretical approximation guarantees for the 
+non-dominated sorting genetic algorithm III (NSGA-III). 21552v1 arXiv 2025:2504. 
+https://doi.org/10.48550/arXiv.2504.21552 .
+[29] Sethy BP, Gupta P, Chandra A, Sethi KC, Behera AP, Sharma K. Optimizing 
+construction time, cost, and quality: a hybrid AHP-NSGA-III model for enhanced 
+multi-objective decision making. Asian J Civ Eng 2025;26:1043 – 57. https://doi. 
+org/10.1007/s42107-024-01232-4 .
+Z. Tan et al. Structures 87 (2026) 111723 
+13 
+[30] Sun X, Xu N, Yao M. Sequential subspace optimization design of a dual three-phase 
+permanent magnet synchronous hub motor based on NSGA III. IEEE Trans Transp 
+Electrific 2023;9:622–30. https://doi.org/10.1109/TTE.2022.3190536.
+[31] Hernandez C, Lara J, Arjona MA, Melgoza-Vazquez E. Multi-objective 
+electromagnetic design optimization of a power transformer using 3D finite 
+element analysis, response surface methodology, and the third generation non- 
+sorting genetic algorithm. Energies 2023;16:2248. https://doi.org/10.3390/ 
+en16052248.
+[32] Zhang Z, Xu F, Sun X. Optimization of process parameters during hydroforming of 
+tank bottom using NSGA-III algorithm. Int J Adv Manuf Technol 2022;119: 
+4043–55. https://doi.org/10.1007/s00170-021-08057-4.
+[33] Tian Z, Zhang Z, Ning C, Peng T, Guo Y, Cao Z. Multi-objective optimization of 
+cable force of arch bridge constructed by cable-stayed cantilever cast-in-situ 
+method based on improved NSGA-II. Struct 2024;59:105782. https://doi.org/ 
+10.1016/j.istruc.2023.105782.
+[34] Geng FF, Ding YL. Multiobjective optimal control of longitudinal seismic response 
+of a multitower cable-stayed bridge. Shock Vib 2016;201

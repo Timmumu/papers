@@ -21,3 +21,16 @@ The digital twin can reconstruct the scenes of real traffic operation of inland 
 | Yes | Yes | Yes | Tier 2 - Digital Shadow | 0 | 0 | 1 | Design for Safety (DfS) | Mentioned only | Perception / Computer Vision | Multi (two or more data types) | Single case study | 4 | Predictive analytics / decision support |
 
 **Key evidence (AG):** Inland waterway digital twin based on 3D video fusion (China Academy of Transportation Sciences): drone tilt photography + BIM build a static 3D waterway scene; multi-channel surveillance-video 3D registration/rendering fuses discrete videos into the scene (2D/3D linkage); multi-source IoT sensing data (AIS, etc.) integrated into the digital twin scene for water safety management (facility management, daily monitoring, illegal-evidence collection, emergency response); demonstrated on Changhu-Shen Line segment. One-way fusion/monitoring/visualisation for managers; "scene iteration driven by online data" is stated as next-step future work — not yet implemented, no learning loop.
+
+**Strength & gap filled (AH):** Addresses video fragmentation, subsystem data separation (AIS, smart bayonet) and untimely emergency response in inland waterway safety monitoring: drone tilt photography plus BIM build a static scene, multi-channel video is 3D-registered and fused with 25 cameras, and multi-source IoT data form a digital twin demonstrated on a Changhu-Shen Line segment with two- and three-dimensional linkage.
+
+**Deficiencies & future work (AI):** The platform is a monitoring and visualization system without predictive analytics or actuation, validated on only one waterway segment; future work focuses on digital twin scene iteration driven by online data, simulation and fusion drawing of water traffic operation, and updating of the water environment from monitoring data.
+
+**Fusion depth (AC1):** Aligned
+
+**Fusion evidence (AC2):**
+- **Data streams:** 25 surveillance-video channels + drone tilt-photography/BIM scene + AIS and smart-bayonet IoT data (Changhu-Shen Line).
+- **Integration mechanism:** 3D registration renders the video into the shared scene with 2D/3D linkage, and IoT sources are displayed for facility monitoring, evidence collection and emergency response; online-data-driven scene iteration is future work.
+- **Why this code:** streams share the registered scene frame while analysis stays per source, so Aligned.
+
+**Confidence (AC3):** High - the video 3D-registration mechanism is explicit.

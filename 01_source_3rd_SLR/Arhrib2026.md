@@ -21,3 +21,16 @@ While infrastructure asset management increasingly relies on high-resolution dro
 | Yes | Yes | Yes | Tier 1 - Digital Model | 0 | 0 | 1 | DfQ | None | Digital Twin platform (no ML) | Multi | Single case study | 4 | Perception / Computer Vision |
 
 **Key evidence (AG):** Cloud-native "Spatial Intelligence Hub": serverless, timeout-resilient orchestration of SfM/MVS photogrammetry, multi-user 3D review environment, PostGIS spatial DB storing defects as georeferenced anchors, frustum-based visibility scoring for image retrieval. Validated on real inspection datasets (reconstruction < 1 h, query < 25 ms). Authors explicitly contrast with passive "Level 1" twins yet the workflow is periodic re-scan, not live data: Tier 1. Strong DfQ relevance: traceable, spatially indexed defect evidence for infrastructure DTs.
+
+**Strength & gap filled (AH):** Addresses fragmented inspection data by replacing desktop photogrammetry with a serverless spatial intelligence hub: timeout-resilient orchestration of SfM/MVS, PostGIS-anchored defect records linked to georeferenced 3D meshes via raycasting and frustum-based image retrieval, end-to-end reconstruction in under one hour, sub-25 ms query latency, and over 90% image retrieval accuracy on two real UAV inspection datasets.
+
+**Deficiencies & future work (AI):** No automated defect detection: annotations are manually created by human inspectors, which the authors call the main bottleneck for scaling; validation covers only two UAV datasets, hyperparameters are not systematically optimized, and the system assumes reliable connectivity. Future work includes automated detection, temporal change monitoring, 3D Gaussian Splatting visualization, and offline capabilities.
+
+**Fusion depth (AC1):** Aligned
+
+**Fusion evidence (AC2):**
+- **Data streams:** UAV imagery-derived 3D meshes + georeferenced defect records on two real inspection datasets.
+- **Integration mechanism:** defect records are anchored to the georeferenced meshes in PostGIS via raycasting and frustum-based image retrieval, putting imagery geometry and defect annotations in one spatial reference frame (sub-25 ms queries, over 90% retrieval accuracy).
+- **Why this code:** the two data types share a spatial (georeferenced) frame while annotation and reconstruction run separately, so Aligned.
+
+**Confidence (AC3):** High - the raycasting/frustum anchoring mechanism is explicit in the full text.

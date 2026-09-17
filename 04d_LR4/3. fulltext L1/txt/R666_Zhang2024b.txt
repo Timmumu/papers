@@ -1,0 +1,1735 @@
+Joint detection PCD-based method for automatic construction of geometric 
+digital twin in cable dome structure
+Ailin Zhang
+a , b
+, Jie Wang
+a
+, Yanxia Zhang
+a , *
+, Guanghao Shangguan
+a
+a
+Beijing University of Civil Engineering and Architecture, Beijing 100044, China
+b
+Beijing University of Technology, Beijing 100124, China
+ARTICLE INFO
+Keywords:
+Geometric digital twin
+Cable dome structure
+Object detection
+Geometric topological reconstruction
+Joint deviation
+ABSTRACT
+The geometric digitization of cable dome structures using Point Cloud Datasets (PCD) holds significant impor -
+tance as it serves as a foundational step in constructing the Digital Twin of such structures. However, accurately 
+detecting the positions of structural joints for effective construction of a geometric digital twin from PCD remains 
+a challenging task. To address this issue, we propose an enhanced algorithm and system solution for joint 
+detection based on target recognition. The method leverages a novel shape estimation model to identify struc -
+tural components by randomly sampling the minimum set of points from the point cloud. Subsequently, 
+connection joints and their coordinates are determined according to the spatial relationships of the components. 
+This enables the digital reconstruction of the structure based on the topological relationships of the joints, ul -
+timately facilitating the establishment of a geometric digital twin. The efficacy and reliability of the proposed 
+method are validated through a case study involving PCD from a scaled cable dome structure, demonstrating 
+outstanding performance in joint detection and fitting with accuracy levels exceeding 99 %. Based on the results 
+of joint detection, the feasibility of model topology reconstruction is corroborated, and the potential for accu -
+rately assessing joint deviations is explored. These research findings serve to advance the progress of digital twins 
+in large-span dome structures, facilitating enhanced analysis and inference regarding structural performance, 
+safety, and stability within the digital twin framework.
+1. Introduction
+The cable dome structure, characterized by its efficient material 
+usage, high load-bearing capacity, and ability to achieve large spans 
+with elegance, finds extensive applications in numerous national land -
+mark large-span public buildings. From the standpoint of engineering 
+safety assessment, the substantial span of such structures renders joint 
+deviations pivotal factors impacting prestress and structural stability [1, 
+2] . The endeavor to construct a real-time analysis model of structural 
+performance holds immense significance, with the crucial prerequisite 
+being the establishment of accurate and efficient geometric Digital Twin 
+(gDT) of the structures concerned. Digital twins (DTs) have demon -
+strated their significance in various phases of the building life cycle, 
+including construction, maintenance, and reconstruction [3 – 7] . The 
+foundation of gDT modeling rests upon creating a precise digital 
+three-dimensional representation rooted in the physical realm. In the 
+context of cable dome structures, the precise location of key joints stands 
+out as the most crucial and tangible factor for mirroring the physical 
+entity. The objective of developing a gDT serves a dual purpose: firstly, 
+to enable rapid detection of joint deviations and early warning of po -
+tential security risks; secondly, the gDT serves as the fundamental model 
+and primary initiative for mechanical DT projects. The construction of 
+gDTs for tensioned cable dome structures rely on the PCD. This necessity 
+arises from the presence of numerous joints within these structures, 
+whose spatial coordinates cannot be swiftly measured by traditional 
+methods, such as total stations. PCDs are characterized by its high pre -
+cision, resolution, and dimensionality, offering rich geometric infor -
+mation that holds significant potential for extracting the intricate 
+features of dome structures.
+Current commercial point cloud processing solutions lack the 
+inherent capability to generate gDTs for dome structures. Typically, 
+these solutions focus on specific functionalities such as component shape 
+recognition and segmentation. Moreover, these processes often involve 
+semi-automatic or manual procedures (e.g., CloudCompare). Manual 
+selection of similar points for joint position representation hampers 
+automatic modeling, and establishing joint connections through 
+* Corresponding author.
+E-mail address: zhangyanxia@bucea.edu.cn (Y. Zhang). 
+Contents lists available at ScienceDirect
+Engineering Structures
+journal homepage: www.else vier.com/loc ate/engstruc t
+https://doi.org/10.1016/j.engstruct.2024.118908
+Received 1 April 2024; Received in revised form 6 August 2024; Accepted 30 August 2024 
+Engineering Structures 320 (2024) 118908 
+Available online 4 September 2024 
+0141-0296/© 2024 Elsevier Ltd. All rights are reserved, including those for text and data mining, AI training, and similar technologies. 
+geometric topology poses a significant challenge. Consequently, in the 
+automation of joint detection for dome structures, the labor costs 
+outweigh the potential benefits of DTs, significantly impeding the real -
+ization of true digital automation.
+Establishing the gDTs of cable dome structures relies on accurately 
+detecting components spatial relationship and fitting the spatial posi -
+tions of key joints. Analogous to the detection of connectivity among 
+various functional units in building structures, topological information 
+effectively facilitates the construction of the building ’ s gDT [4] . Recent 
+research indicates that detecting and fitting joints in large-span steel 
+structures yield various practical applications. For instance, determining 
+the degree of structural components bending based on joint coordinates 
+[8] , utilizing fitting results for joint segmentation and topological in -
+formation in establishing BIM models for dome structures [9] , and 
+deriving construction errors from joint position coordinates [10] . 
+Consequently, the spatial location and topological relationships of joints 
+constitute a pivotal step in the digitization of cable dome structures.
+The process of structural digitization, particularly in the context of 
+cable dome structures, necessitates the detection and segmentation of 
+target objects, along with the establishment of digital spatial relation -
+ships. Target detection and segmentation involve identifying the geo -
+metric entity shape within the PCDs and segmenting the object based on 
+the inter-entity relationships. In the case of dome structures, the target 
+object encompasses all the constituent components forming the struc -
+ture. While existing methods can effectively detect and classify certain 
+types of geometric objects, they currently lack the capability to auto -
+matically fit key joints based on the detection and segmentation results, 
+or to automatically establish the connection relationships between 
+joints.
+Therefore, we propose the introduction of the concept of a gDT for 
+cable dome structures. Central to this is the pivotal challenge of joint 
+position detection, which essentially entails the precise fitting of spatial 
+coordinates and positional relationships of all joints based on PCD. To 
+address this challenge, we present a comprehensive process that spans 
+from the extraction of low-level geometric information to the estab -
+lishment of high-level spatial structural topology, as depicted in Fig. 1 . 
+The extraction of geometric information encompasses target object 
+detection, component segmentation, joint coordinate fitting. Mean -
+while, spatial structural topology relies on the spatial topological re -
+lationships among joints to establish gDTs. Notably, our proposed 
+method integrates joint fitting and inter-joint relationship connection 
+within the same solution, thereby significantly advancing the realization 
+of digital automation. In summary, our contributions are outlined as 
+follows:
+• A proposal is outlined for constructing a gDT for cable dome struc -
+tures, based on joint position detection. This solution integrates 
+target detection, segmentation, joint fitting, and automatic topology 
+reconstruction functionalities.
+• The minimum set shape estimation model of point cloud is proposed 
+innovatively. This model ensures computational accuracy and effi -
+ciency while mitigating the impact of noise points.
+• Innovatively introduced into the target recognition framework are 
+the random sampling constraint mechanism and adaptive termina -
+tion mechanism, enhancing efficiency and precision.
+• We validate the effectiveness of the proposed method through a case 
+study and explore its potential applications in joint deviations.
+2. Background and related work
+Digital twin technology offers an effective and dependable approach 
+for the rapid and precise detection of structural joint positions. It facil -
+itates the transformation of safety detection from labor-intensive pro -
+cesses to digital automation, while also supporting the information 
+management of large-span structures. However, challenges remain in 
+creating DTs for cable dome structures and meeting the demands of joint 
+detection. Traditional methods like total station measurements have not 
+met the desired efficiency levels [11] . Joint detection using PCD is 
+mainly manual or semi-automated [12] . There is an urgent requirement 
+to develop algorithms that can meet the needs of digital processing and 
+information management in structural domains.
+For the joint detection in cable dome structures, the fundamental 
+objective lies in detecting the target object accurately. Currently, 
+methods for target object detection can be categorized into model- 
+driven and data-driven approaches. The model-driven method ach -
+ieves object recognition and segmentation in PCD by optimizing 
+parameter input according to the mathematical representation of the 
+target object. For instance, a predominant feature of cable dome struc -
+tures comprises tubular components, effectively represented as cylinders 
+within PCD. Automated techniques, including RANSAC [13,14] , Hough 
+transform [15] , and region growth segmentation [16] , are employed for 
+object segmentation by leveraging original shape detection methodol -
+ogies. The connectivity or adjacency of distinct target objects is estab -
+lished through joints, enabling the realization of joint fitting and 
+coordinate extraction subsequent to object segmentation. Data-driven 
+detection involves inferring patterns from extensive sets of labeled 
+data to detect objects. Research indicates that machine learning can 
+enable the digital processing of building structures and direct object 
+detection from large-scale point clouds [17 – 19] . While this approach is 
+not confined by specific environmental constraints, enhancing the 
+recognition success rates of diverse objects necessitates the expansion of 
+the training dataset.
+The application of the conventional model-driven approach to point 
+cloud target detection and segmentation has demonstrated favorable 
+Fig. 1. Geometric digital twin construction of cable dome based on PCD.
+A. Zhang et al. Engineering Structures 320 (2024) 118908 
+2 
+performance [8,9,20] . These investigations involve the explicit simula -
+tion and segmentation of target objects, along with the establishment of 
+inter-object connections. Moreover, the model-driven methodology fa -
+cilitates joint coordinate fitting in subsequent stages and encapsulates 
+essential information for deriving structural topology. Nevertheless, 
+existing research predominantly centers on reverse modeling or defor -
+mation identification [21 – 23] , neglecting structural joint detection and 
+thereby impeding the creation of a true gDT [24] . Simultaneously, the 
+mentioned methods cannot be directly applied to establish the gDT of 
+the cable dome structure. The RANSAC algorithm stands out as one of 
+the most widely employed robust estimation tools. Its widespread 
+adoption stems from not only its simplicity but also its capacity to 
+furnish reliable parameter estimation even in scenarios where more than 
+half of the data comprises outliers. Nevertheless, while the basic RAN -
+SAC algorithm is robust, further enhancements are imperative to elevate 
+its accuracy, efficiency, and stability [25,26] .
+The process of topology reconstruction, predicated on joint detection 
+outcomes, represents an ongoing endeavor aimed at automatically 
+interlinking an explicit three-dimensional geometric model through the 
+topological associations within joint space to facilitate visualization. 
+Effectively addressing this challenge hinges on establishing joint corre -
+spondences and articulating them through mathematical frameworks. 
+Prior research has employed direct array or sequential representations 
+to express the planar distribution of joints, proving highly efficient and 
+rapid in delineating an optimal structural geometric model [27] . 
+Nevertheless, the geometric model constructed based on the detected 
+joint coordinates cannot be directly resolved using the above method 
+due to the inherent deviation of joints from their intended positions. 
+Additionally, topology reconstruction can be applied by integrating 
+model information directly into finite element software for efficient 3D 
+geometric modeling, reducing manual effort and time needed for 
+modeling tasks.
+According to related work, the following research gaps have been 
+summarized:
+• Currently, there is no comprehensive and systematic fully automated 
+method for detecting joint positions and establishing geometric 
+digital twins of cable dome structures.
+• Data-driven object detection struggles to achieve ideal performance 
+with sparse datasets. Model-driven approaches, such as traditional 
+RANSAC algorithms, fail to meet the accuracy and efficiency re -
+quirements for detecting joints in cable dome structures.
+• Implementing automated 3D topology reconstruction based on 
+detected joint coordinates is also challenging. Deviations in actual 
+joint positions prevent direct application of theoretical topology al -
+gorithms for geometric modeling.
+This paper aims to provide a systematic and universally applicable 
+method for the geometric digital twin (gDT) of cable dome structures, 
+while addressing the aforementioned gaps.
+3. Proposed solution
+A geometric digital twin solution (abbr. DS-gDT) for constructing 
+cable dome structures is proposed. It expects a PCD as input and, 
+through a series of developed algorithms, output joint spatial position 
+Fig. 2. Solution for detecting joints PCD-based.
+A. Zhang et al. Engineering Structures 320 (2024) 118908 
+3 
+coordinates arranged in a specific order and the gDT of structure. Fig. 2
+illustrates our proposed method, encompassing the following sequential 
+steps: (1) Module segmentation and down-sampling, (2) Estimation of 
+surface normal for point cloud, (3) Object component segmentation, and 
+(4) Joints fitting and geometric digital twin. The detailed elaboration of 
+each step will be presented in subsequent sections.
+3.1. Module segmentation and down-sampling
+To enhance the precision and fault tolerance of the final joint co -
+ordinates, a method is proposed to partition the PCD into 1/4 modules, 
+as illustrated in Eq.3 and Eq . (1). Adjacent modules are allowed to have 
+an angular adjustment of 2
+◦
+to 3
+◦
+, and this angle is determined through 
+multiple experiments. The principle underlying this determination is to 
+avoid duplicate fitting of identical joints. 
+M = { M
+1
+, M
+2
+, M
+3
+, M
+4
+} (1) 
+M represents the entire PCD of structure, while { M
+i
+} ( i = 1,2,3,4) 
+represents each 1/4 module.
+Considering the vast scale of initial point cloud, down-sampling is 
+necessary to compress data and reduce computational costs. Currently, 
+there are several classical point cloud down-sampling methods such as 
+voxel grid down-sampling, uniform down-sampling, and octree down- 
+sampling. Voxel grid down-sampling computes the centroids of point 
+clouds within each grid cell. Consequently, after down-sampling, the 
+positions of points in the point cloud may change, as they represent 
+centroids or average positions of points within respective grid cells, 
+rather than specific points identified by their original IDs in the initial 
+point cloud (as shown in Fig. 4 a). While uniform down-sampling theo -
+retically preserves original positions, it may exhibit non-uniform effects 
+across different regions, as demonstrated in the experimental results of 
+this study ( Fig. 4 b) demonstrate this phenomenon. Octree down- 
+sampling recursively subdivides the point cloud into parent and child 
+relationships, demonstrating superior down-sampling effectiveness 
+compared to the above methods. Initially, the maximum scene size is 
+determined, and the first cube is established. Unit elements are 
+sequentially placed into cubes that can contain them without child 
+nodes. If a cube exceeds the minimum voxel size, it is subdivided into 
+eight equal parts, distributing all unit elements within it among its eight 
+child cubes. Subdivision stops for a child cube containing a nonzero 
+number of unit elements identical to its parent cube. All data points 
+associated with octree cells are replaced by the cell ’ s center, effectively 
+compressing these elements into a single octree cell. Fig. 5 illustrates the 
+application of octree-based down-sampling. It should be noted that if 
+there are a significant number of noise points in the PCD, noise point 
+reduction can be performed using algorithms such as radius filtering, 
+statistical filtering, and Gaussian filtering before down-sampling.
+3.2. Estimation of surface normal for point cloud
+The normal vector serves as a crucial attribute for each point within 
+PCD, playing a vital role in the accurate estimation of normal vectors 
+required for the point cloud segmentation algorithm essential in target 
+object recognition. The determination of surface normal vectors within 
+the point cloud necessitates neighboring point support, with the 
+neighborhood ’ s size typically denoted by either the neighborhood 
+radius or the count of adjacent points. In this paper, resolving the normal 
+vector of a surface point in the point cloud parallels the task of esti -
+mating the normal to a tangent plane on the surface, thereby trans -
+forming into a least squares plane fitting estimation problem. The 
+resolution of the surface normal estimation problem ultimately boils 
+down to computing the eigenvalues and eigenvectors of the covariance 
+matrix through PCA (Principal Component Analysis) dimensionality 
+reduction.
+Given a point ( p
+i
+∈ P
+k
+), the utilization of a kd-tree nearest neighbor 
+[28] search employing the depth-first search (DFS) algorithm facilitates 
+the acquisition of neighboring points of p
+i
+. Subsequently, the centroid s 
+is computed as depicted in Eq. (2) . Consequently, the plane P
+l 
+fitting 
+procedure, derived from these neighboring points and employing the 
+least squares method, can be expressed by Eq. (3) : 
+s = p =
+1
+k
+⋅
+∑
+k
+i = 1
+p
+i
+(2) 
+P
+l
+= min
+s , n
+→
+, ‖ n
+→
+‖= 1
+∑
+k
+i = 1
+[
+( p
+i
+  s )
+T
+n
+→
+]
+2
+(3) 
+Where, n
+→
+is the normal vector of the fitting plane.
+Within the optimization objective function, the goal is to identify a 
+plane encompassing all neighboring points such that these points exhibit 
+minimal distances from it. Therefore, the selection process involves 
+isolating the minimum eigenvalues along with their corresponding ei -
+genvectors from the covariance matrix. To elaborate further, for each 
+point p
+i
+, the associated point covariance matrix C is defined as follows: 
+C =
+1
+k
+∑
+k
+i = 1
+ε ⋅
+ 
+p
+i
+  p
+)
+⋅ ( p
+i
+  p )
+T
+(4) 
+C ⋅ v
+→
+j
+= λ
+j
+⋅ v
+→
+j
+, j ∈
+{
+0 , 1 , 2
+}
+(5) 
+Among them, λ
+j 
+represents the j - th eigenvalue of the covariance 
+matrix, and v
+→
+j 
+signifies the j - th eigenvector of the covariance matrix. 
+Consequently, the normal vector of the fitting plane n
+→
+is determined by 
+the eigenvector corresponding to the minimum eigenvalue.
+3.3. Object component segmentation
+The RANSAC (Random Sample Consensus) paradigm extracts shape 
+primitives by randomly selecting the minimum set of points from the 
+point cloud data and constructing the corresponding shape primitives. 
+The minimum set refers to the minimum number of points required to 
+uniquely define a geometric primitive of a given type. Model equation 
+parameters and error rates are computed using randomly selected points 
+to determine whether the established model is optimal, and iterative 
+calculations are performed until the best model is achieved. The geo -
+metric feature model of interest in this study is the cylinder. The tradi -
+tional cylinder fitting method involves using two points with normal 
+lines and judging the number of inner points based on the distance 
+threshold to obtain the best fitted cylinder [13] . However, this method is 
+greatly influenced by the quality of the point cloud. In cases where 
+sampling times are consistent, the data set of the cylindrical model 
+Fig. 3. The principle of module segmentation.
+A. Zhang et al. Engineering Structures 320 (2024) 118908 
+4 
+satisfying the judgment criterion is reduced, reducing the probability of 
+obtaining the optimal model. Therefore, this paper proposes a “ 3-point 
+normal ” cylinder fitting model (abbr. T-Ncf), whereby three points are 
+randomly selected, neighborhood points are obtained using kd-tree 
+nearest neighbor search, and PCA dimensionality reduction is utilized 
+to solve the covariance matrix and obtain the normal vector of the 
+points. The parameters are calculated using the proposed three-point 
+normal cylinder fitting model. Distance and angle thresholds are used 
+as criteria to judge the optimal model parameters, resulting in accurate 
+identification and segmentation of the target object.
+3.3.1. “ 3-point normal ” cylinder fitting model
+Specifically, as shown in Fig. 6 , the normal vectors m
+→
+1
+, m
+→
+2
+, m
+→
+3 
+of the 
+randomly selected three points p
+1
+, p
+2
+, p
+3 
+are computed using the method 
+described in Section 3.2 . These normal vectors are then utilized to 
+construct the initial values of v
+→
+1
+, v
+→
+2 
+in the axis direction, as shown in 
+Eq. (6) . 
+⎧
+⎨
+⎩
+v
+→
+1
+= τ
+→
+1
+× τ
+→
+2
+v
+→
+2
+= τ
+→
+2
+× τ
+→
+3
+ϕ = arccos ( v
+→
+1
+× v
+→
+2
+)
+(6) 
+ϕ represents the construction axis angle. In theory, v
+→
+1 
+= δ v
+→
+2
+, where 
+δ is a constant. However, due to the presence of noise on the cylinder 
+surface in point cloud data, an angle exists between the two axis di -
+rections. If ϕ < ϕ ʹ (where ϕ ʹ is the angle threshold), then the central axis 
+Fig. 4. (a) Results of voxel grid down-sampling. (b) Results of uniform down-sampling.
+Fig. 5. Octree-based down-sampling.
+Fig. 6. Diagram of the “ 3-point normal ” cylinder fitting model.
+A. Zhang et al. Engineering Structures 320 (2024) 118908 
+5 
+of the entire cylinder can be represented as v
+→
+= v
+→
+1
++ v
+→
+2
+.
+The three parameter lines, p
+1
++ m τ
+→
+1
+, p
+2
++ m τ
+→
+2
+, and p
+3
++ m τ
+→
+3 
+are 
+projected onto the v
+→
+x = 0 plane along the axis v
+→
+. In the presence of 
+noise in the point cloud data, these projections intersect pairwise, 
+forming a triangle. Illustrated in Fig. 6 , the lengths of the triangle ’ s edges 
+are denoted as d
+12
+, d
+13
+, and d
+23
+. If Eq. (7) is satisfied, the centroid of the 
+triangle, c (computed using Eq. 8), is determined. Otherwise, the data set 
+is reselected using the aforementioned steps for model parameter 
+calculation. 
+{ d
+12
+, d
+13
+, d
+23
+} < d
+0
+(7) 
+⎧
+⎪
+⎪
+⎪
+⎪
+⎪
+⎪
+⎪
+⎪
+⎪
+⎪
+⎪
+⎨
+⎪
+⎪
+⎪
+⎪
+⎪
+⎪
+⎪
+⎪
+⎪
+⎪
+⎪
+⎩
+x
+c
+=
+1
+3
+∑
+3
+i = 1
+x
+i
+y
+c
+=
+1
+3
+∑
+3
+i = 1
+y
+i
+z
+c
+=
+1
+3
+∑
+3
+i = 1
+z
+i
+(8) 
+Here, d
+0 
+is the distance error threshold. The coordinates of the 
+centroid c are denoted as ( x
+c
+, y
+c
+, z
+c
+), while the three intersection points 
+of the parameter lines ’ projections are represented as ( x
+i
+, y
+i
+, z
+i
+).
+To enhance the efficiency of the RANSAC algorithm in the random 
+sample selection process, a radius constraint mechanism is incorporated to 
+guide the random sampling process, considering the planar geometric 
+characteristics of the dome structure. As illustrated in Fig. 7 , the plane ’ s 
+radius is segmented into r
+1 
+~ r
+5
+, and the sampling area is delineated 
+based on the radius intervals: {0~ r
+1
+}, { r
+1
+~ r
+2
+}, { r
+2
+~ r
+3
+}, { r
+3
+~ r
+4
+}, 
+{ r
+4
+~ r
+5
+}. This approach ensures that the minimum set and model pa -
+rameters are randomly selected within the defined sampling areas. The 
+radius constraint mechanism helps maintain the quality of random 
+samples and mitigates the occurrence of “ over-acquisition ” , which in -
+volves capturing sample points with abrupt changes in curvature, while 
+also reducing computational costs to a certain extent.
+3.3.2. An adaptive termination
+The termination criterion of the traditional RANSAC algorithm in -
+corporates an adaptive termination (AT) criterion by updating the 
+number of iterations N using the iterative interior point rate ε . When N 
+exceeds a predetermined threshold, the process is terminated ( Eq. 9 ). 
+The interior point ratio refers to the ratio of the number of interior points 
+T to the total number of points M . The subset with the highest number of 
+interior points is considered the best matching point, which leads to the 
+generation of the best model. Since N depends on ε , the interior point 
+rate directly influences the termination process. When the number of 
+interior points is small, it increases the likelihood of selecting a local 
+optimum. To improve efficiency and result accuracy, a double 
+termination criterion is adopted. This criterion combines the traditional 
+adaptive termination criterion with a similarity criterion and distance 
+threshold. The similarity criterion considers the similarity of interior 
+points between two consecutive iterations. If the similarity exceeds 
+95 %, the algorithm terminates; otherwise, it continues until a certain 
+threshold is met. 
+N ≥
+log ( 1   η
+0
+)
+log ( 1   ε
+e
+)
+(9) 
+ε =
+T
+M
+(10) 
+Where, e represents the minimum sample size of each subset, indicating 
+the minimum number of points required to calculate the model pa -
+rameters. In this paper, the value of e is set to 3.
+The distance threshold plays a crucial role in determining the sup -
+port of a specific model within a dataset. It distinguishes whether a data 
+point is considered an inlier or an outlier based on its distance from the 
+model. While empirical approaches can be used to determine such 
+thresholds in practice, a more formalized method can be employed. 
+Following the methodology outlined in [29] , the distance error can be 
+assumed to follow a Gaussian distribution with a mean of 0 and a 
+standard deviation of σ . In this case, the squared perpendicular distance 
+( d
+2
+⊥
+) of a point is the sum of squares of Gaussian variables ( Eq. 11 ). This 
+squared distance follows a χ
+2
+s 
+distribution with s degrees of freedom, 
+where s corresponds to the codimension of the model. The probability 
+that a χ
+2
+s 
+random variable, denoted as ξ , is less than t
+2 
+is determined by 
+the cumulative chi-square distribution ( Eq. 12 ). By utilizing the inverse 
+chi-square distribution, a threshold value, denoted as t , can be deter -
+mined to capture a specific proportion of true inlier points, as illustrated 
+in Eq. (13) . 
+d
+2
+⊥
+=
+ 
+x
+i
+  x
+j
+)
+2
++
+(
+y
+i
+  y
+j
+)
+2
++
+ 
+z
+i
+  z
+j
+)
+2
+(11) 
+F
+s
+ 
+t
+2
+)
+=
+∫
+t
+2
+0
+χ
+2
+s
+( ξ ) d ξ (12) 
+{
+inlier d
+2
+⊥
+< t
+2
+outlier d
+2
+⊥
+≥ t
+2
+with t
+2
+= F
+  1
+s
+( α ) σ
+2
+(13) 
+Where, ( x
+i
+, y
+i
+, z
+i
+), ( x
+j
+, y
+j
+, z
+j
+) denote the coordinates of two points, α 
+typically takes a value of 0.95, indicating that an interior point will only 
+be erroneously rejected in 5 % of cases.
+3.4. Joints fitting and geometric digital twin
+3.4.1. Joints fitting
+Cable dome structures typical include upper joints, cable bracing 
+joints, upper chord joints of the ring truss, and lower chord joints of the 
+ring truss. The identification and segmentation of these components 
+serve as a fundamental step in elucidating the spatial positioning re -
+lationships of each constituent part. Furthermore, it is an essential 
+prerequisite for extracting the three-dimensional coordinates of the 
+intersection points, referred to as joints. This section presents the pro -
+posed process for extracting three-dimensional coordinates and the key 
+algorithms pertaining to joints, based on the outcomes of component 
+identification and segmentation, as illustrated in Fig. 8 .
+The specific details of the algorithm flow are explained as follows:
+(1) The algorithm initially selects two data sets, S
+i 
+and S
+j
+, from the 
+entire set of segmented component point clouds. To mitigate 
+noise interference, the algorithm verifies whether the number of 
+data sets exceeds 200. If this condition is not met, the selection 
+process is repeated.
+Fig. 7. Radius constraint mechanism for random sampling.
+A. Zhang et al. Engineering Structures 320 (2024) 118908 
+6 
+(2) Initialization of the minimum distance variable, d
+min
+, is set to 
+5 mm.
+(3) Points m
+1 
+and m
+2 
+are selected from S
+i 
+and S
+j
+, respectively, referred 
+to as “ pairing point ” , and the Euclidean distance d between the 
+pairing points is calculated using Eq. (14) . If d < d
+min
+, the mean 
+coordinate is computed according to Eq. (15) to yield the 
+“ candidate point { m
+t
+} ” . Alternatively, if d ≥ d
+min
+, the group 
+pairing points are discarded. This process is repeated to obtain all 
+candidate points.
+(4) The candidate points are clustered using Eq. (16) , such that k 
+candidate points { m
+1
+, m
+2
+, … , m
+k
+} within each joint range are 
+allocated to the same attribute group based on explicit distance 
+constraint criteria.
+(5) The centroid of the candidate points within each cluster group is 
+computed using Eq. (17) to derive the three-dimensional co -
+ordinates of the joint m (refer to Fig. 9 ).
+d =
+̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅ ̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅ ̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅ ̅̅̅̅̅̅ ̅
+( x
+1
+  x
+2
+)
+2
++ ( y
+1
+  y
+2
+)
+2
++ ( z
+1
+  z
+2
+)
+2
+√
+(14) 
+{ m
+t
+} =
+⎧
+⎨
+⎩
+( x
+1
++ x
+2
+) / 2 ,
+( y
+1
++ y
+2
+) / 2 ,
+( z
+1
++ z
+2
+) / 2
+⎫
+⎬
+⎭
+(15) 
+⃒
+⃒
+z
+ti
+  z
+tj
+⃒
+⃒
+< D
+max
+(16) 
+⎧
+⎪
+⎪
+⎪
+⎪
+⎪
+⎪
+⎪
+⎪
+⎪
+⎪
+⎪
+⎨
+⎪
+⎪
+⎪
+⎪
+⎪
+⎪
+⎪
+⎪
+⎪
+⎪
+⎪
+⎩
+x
+m
+=
+1
+k
+∑
+k
+n = 1
+x
+tn
+y
+m
+=
+1
+k
+∑
+k
+n = 1
+y
+tn
+z
+m
+=
+1
+k
+∑
+k
+n = 1
+z
+tn
+, M =
+⎛
+⎜
+⎜
+⎜
+⎜
+⎜
+⎜
+⎜
+⎜
+⎜
+⎜
+⎜
+⎝
+x
+m
+, y
+m
+, z
+m
+⎞
+⎟
+⎟
+⎟
+⎟
+⎟
+⎟
+⎟
+⎟
+⎟
+⎟
+⎟
+⎠
+(17) 
+Among them, the coordinates of the matching points m
+1 
+and m
+2 
+are 
+denoted as ( x
+1
+, y
+1
+, z
+1
+) and ( x
+2
+, y
+2
+, z
+2
+), respectively. The candidate point 
+coordinates are represented as ( x
+t
+, y
+t
+, z
+t
+), where z
+ti 
+and z
+tj 
+denote the z 
+coordinates of different candidate points. Additionally, D
+max 
+corre -
+sponds to the maximum diameter of the component at the same inter -
+section point.
+Due to the significance of selecting the “ pairing point ” located in the 
+upper or lower part when the intersection of two components occurs, it 
+becomes meaningless to choose a point situated in the middle of the 
+component. To enhance the computational efficiency of the algorithm, a 
+stringent constraint condition is introduced into the “ pairing point ” se -
+lection process. The “ pairing region ” is determined based on the z -di -
+rection (i.e., the height direction) of the point, as depicted in Fig. 10 . 
+There are two cases to consider: (a) in the case of a vertical component, 
+the height range of the pairing area is [( z
+1
+- t ), z
+1
+]; (b) for non-vertical 
+components, the height range of the matching area is [( z
+1
+-3 t ), ( z
+1
+-2 t )], 
+where z
+1 
+represents the maximum z coordinate of the component, z
+2 
+denotes the minimum z coordinate of the component, and t is the 
+constraint parameter. Through extensive testing, the value of t is 
+computed in accordance with Eq. (18) . 
+t =
+1
+6
+(
+z
+1
+  z
+2
+)
+(18) 
+3.4.2. Geometric digital twin
+The primary distinguishing characteristic among diverse cable dome 
+structures resides in the quantity of joints they encompass. Thus, the 
+algorithm functions by regarding the joint count as the input variable, 
+applying specific criteria to assign numerical labels to the joints, 
+leveraging the adjacency matrix for constructing the joint network 
+model, and interconnecting the relevant joints in accordance with geo -
+metric topological relationships. This systematic approach results in the 
+formulation of an integrated automatic joint topology connection al -
+gorithm tailored for dome structures, thereby enabling the creation of a 
+gDT.
+Joint numbering follows a prescribed set of rules, specifically 
+adhering to the principle of “ from the inside out, from high to low ” , as 
+illustrated in Fig. 11 . The concept of “ from inside to outside ” dictates 
+that joint numbering progresses from the innermost circle to the 
+outermost circle based on the radial distribution along the joint 
+circumference. For instance, in the blue section of the Fig. 11 , the 
+numbering sequence begins with the first circle denoted as {1, 2, … , a
+1
+}, 
+followed by the second circle designated as { a
+1
++ 1, a
+1
++ 2, … , 
+∑
+2
+i = 1
+a
+i
+}, 
+and so forth. Subsequently, the n th circle is assigned numbers {
+∑
+n   1
+i = 1
+a
+i
++
+Fig. 8. Three-dimensional coordinate extraction process of joints.
+Fig. 9. Coordinate fitting of joint.
+A. Zhang et al. Engineering Structures 320 (2024) 118908 
+7 
+1, 
+∑
+n   1
+i = 1
+a
+i
++ 2, … , 
+∑
+n
+i = 1
+a
+i
+}, where a
+i 
+represents the joint count in each 
+circle, n denotes the total number of radial joint circumferences, and i 
+ranges from 1 to n . “ From high to low ” signifies following the numbering 
+sequence from the innermost to the outermost joints with greater ver -
+tical elevation along the radial circumference, the enumeration then 
+progresses to include joints with lesser vertical elevation. For instance, 
+the blue segment in the Fig. 11 represents joints with greater vertical 
+elevation, while the red segment denotes joints with lower vertical 
+positioning. Here, A denotes the total count of joints with greater ver -
+tical elevation, and b
+i 
+symbolizes the quantity of joints within each circle 
+possessing lower vertical positioning.
+The emphasis lies in the binary connectivity of joint pairs, without 
+consideration for joint differentials or the intensity of their relationships. 
+As such, the entire cable dome structure is conceptualized as an un -
+weighted, undirected network topology (denoted as D ) comprising joints 
+and edges. Each intersection of the structural components corresponds 
+to a joint, while each component represents an edge, articulated in set 
+notation as Eq. (19) : 
+D = { J , L } (19) 
+Here, the nonempty set J = { j
+1
+, j
+2
+, … , j
+n
+} pertains to the collection of 
+joints within D , while the set L = { l
+1
+, l
+2
+, … , l
+n
+} encapsulates the edges 
+present in D . Each edge l
+i
+= { j
+s
+, j
+k
+} within this context correlates to a 
+subset comprising two elements from the set J .
+To streamline program implementation, an adjacency matrix is 
+employed to delineate the unweighted, undirected network topology, 
+with the matrix dimension aligning with the joint count. Given that the 
+undirected topology graph D encompasses n joints, an n × n adjacency 
+matrix A ( Eq. 20 ) is utilized to depict inter-joint connectivity. The 
+element value a
+ij 
+within the adjacency matrix A , as depicted in Eq. (21) , 
+signifies the connection status between joints i and j . 
+A =
+[
+a
+ij
+]
+(20) 
+a
+ij
+=
+{
+1 , Joints j
+s
+and j
+k
+areconnected .
+0 , Joints j
+s
+and j
+k
+arenotconnected .
+(21) 
+4. Experiment and results
+In this section, we will assess the practical application and efficacy of 
+the proposed methodology via a case study. The chosen case is a scaled 
+model of a fully assembled cable dome structure, with pertinent struc -
+tural design details available in the references [30,31] . The holographic 
+point cloud data of the structure was acquired using a laser scanner 
+( Fig. 12 ).
+4.1. Point cloud processing
+Utilizing the module segmentation principle and down-sampling 
+method, the acquired PCD of the structure undergoes processing. 
+Initially, the PCD is segmented into four modules (M1~M4), as depicted 
+in Fig. 13 (a). To streamline the subsequent gDT establishment, all joints 
+are systematically numbered following the methodology outlined in 
+Section 3.4.2 prior to module subdivision. Subsequently, each module 
+undergoes down-sampling using the Octree method. The down-sampling 
+results are depicted in Fig. 13 (b), showcasing the quantity of point 
+clouds before and after the down-sampling process for each module. Our 
+approach leverages the Octree framework (OctFilter / addPoints -
+FromInputCloud) within PCL, assigning a unique identifier to each 
+voxel. Following extensive experimentation, a voxel size of 2 mm ×
+2 mm × 2 mm is selected, and the Octree resolution is fixed at 128 for 
+optimal results. An inherent advantage of this approach lies in the hi -
+erarchical organization of PCD facilitated by the Octree data structure, 
+enhancing down-sampling efficiency while mitigating shape distortion 
+or information loss arising from random sampling. The results of module 
+segmentation reveal the absence of duplicate joints across modules, 
+indicating that module segmentation occurs solely at the component 
+level rather than among adjacent joints within each module. With geo -
+metric shape features remaining unaltered, down-sampling results in 
+approximately a 98 % reduction in the number of points within each 
+module ’ s point cloud. This reduction significantly optimizes memory 
+utilization and enhances algorithmic efficiency in subsequent stages.
+4.2. Components identification and segmentation
+The estimation of point cloud surface normal is computed internally 
+within the program. Further definition of the direction of the normal 
+Fig. 10. The height constraint of the pairing region.
+Fig. 11. Numbering principle for joints.
+A. Zhang et al. Engineering Structures 320 (2024) 118908 
+8 
+vectors is required, namely, the normal vector n
+→
+at point p aligns with 
+the viewing direction V ( Eq. 22 ). 
+n
+→
+⋅
+ 
+V
+p
+  p
+)
+> 0 (22) 
+Using Module 1 as a case study, the point cloud of Module 1 is 
+processed through DS-gDT, employing the shape fitting model T-Ncf, 
+radius constraint mechanism sampling, and a double termination cri -
+terion (with a selected distance threshold of 2 mm, and an angle 
+threshold of 10
+◦
+). The results are visualized in Fig. 14 (a), where distinct 
+colors represent different components. Analysis of the component 
+recognition rate by DS-gDT revealed a recognition success rate 
+exceeding 99 % for all components. Despite challenges such as down- 
+sampling, interference occlusion, and laser diffusion impacting the 
+recognition of certain components, a minimal number of identification 
+failures were tolerated, as they do not affect the final joints fitting 
+outcome.
+4.3. Construction of geometric digital twin
+Initially, the joint fitting of the segmented point cloud is executed 
+using the three-dimensional coordinate extraction algorithm for joints. 
+As illustrated in Fig. 15 (a), the calculation results of candidate points 
+(using Module 1 point cloud as an example) demonstrate that all 
+candidate points form a clustered group within the joint range based on 
+clustering conditions. The centroid of each cluster group of candidate 
+points is computed to obtain the three-dimensional spatial coordinates 
+of the joints, as depicted in Fig. 15 (b). It is evident from the outcomes 
+that the proposed algorithm adeptly fits all joints and their coordinates. 
+Despite a lower cable recognition rate, the algorithm exhibits 
+commendable stability and reliability.
+The fitting joints are organized based on their assigned numbers, 
+forming the joint set [ M ] = [ M
+ij
+]. Utilizing the topological characteristics 
+of these joints, an equivalent network model mirroring the actual 
+structure is constructed, depicted in Fig. 16 (a). This network model 
+serves to elucidate the topological interconnection among joints within 
+Fig. 12. Case: scale model of cable dome structure and its point cloud.
+Fig. 13. (a) PCD module segmentation, (b) Result of the down-sampling.
+Fig. 14. (a) Segmentation result based on DS-gDT. (b) Segmentation result based on traditional RANSAC.
+A. Zhang et al. Engineering Structures 320 (2024) 118908 
+9 
+the cable dome structure. The size of a joint ’ s diameter in the model 
+directly correlates to the number of components linked to that joint. An 
+adjacency matrix is employed to represent this network model, illus -
+trated in Fig. 16 (b), where a “ black dot ” signifies a connection between 
+two joints, while a blank indicates no connection. Within the program, 
+joint connectivity is determined through relevant logic and algorithms, 
+involving indexing and accessing elements in the adjacency matrix. 
+Explicitly solving the adjacency matrix is often unnecessary.
+Given that the cable dome structure in this case comprises two 
+distinct sections: the upper structure (cable dome) and the lower 
+structure (ring truss), the process of establishing the gDT for both upper 
+and lower structures is delineated following the methodology outlined 
+in Section 3.4.2 (as depicted in Fig. 17 ). Despite the structural division 
+into two parts for developing gDTs, an inherent relationship exists be -
+tween them: the outermost joints of the cable dome align with the upper 
+chord joint of the ring truss at the corresponding position. Thus, the 
+fusion of the two sections in the final gDT necessitates no additional 
+assessment of the interconnection status of coinciding joints. Further -
+more, the adjacency matrices of the two sections adhere to the rela -
+tionship defined by Eq. (23) , wherein the sum of the rank of the cable 
+dome joints adjacency matrix A
+d 
+and the ring truss joints adjacency 
+matrix A
+t 
+equals the rank of the overall joint set [ M ]. 
+Fig. 15. (a) Candidate points for Module 1. (b) Joints fitting of Module 1.
+Fig. 16. (a) Equivalent network model. (b) The corresponding visual adjacency matrix, and the joint codes can be referenced in Fig. 12 ; for example, “ UJ-UJ ” denotes 
+“ upper joint is connected to upper joint ” .
+A. Zhang et al. Engineering Structures 320 (2024) 118908 
+10 
+R ( M ) = R ( A
+d
+) + R ( A
+t
+) (23) 
+5. Discussion
+This section provides an in-depth discussion of the results, focusing 
+on the effectiveness of the “ three-point normal ” cylindrical fitting model 
+(T-Ncf), the accuracy of target recognition and joint fitting, the evalu -
+ation of joint deviation derived from gDT, the influence of module 
+segmentation on joints accuracy, and the limitations of DS-gDT.
+5.1. Performance analysis of the T-Ncf
+Utilizing a scanned point cloud derived from a cylindrical steel pipe 
+segment measuring 280 mm in length and 24 mm in radius as a case 
+study (without any noise points), illustrated in Fig. 18 (a), this paper 
+introduces noise by incorporating a 0.24 ratio of noise points to a subset 
+of the original point cloud, as depicted in Fig. 18 (b), to emulate the 
+complexities of real-world scanning environments. Subsequently, the 
+RANSAC-based cylindrical surface fitting method and the proposed T- 
+Ncf are applied to process the noise point cloud dataset shown in Fig. 18
+(b). The dataset sizes vary across 6800, 14,630, 45,200, 84,500, and 
+Fig. 17. Case: construction process of geometric digital twin of cable dome.
+Fig. 18. Point cloud of tube: (a) Noise-free point cloud, (b) Simulated point cloud with noise, (c) Non-vertical noise-free point cloud, (d) Non-vertical point cloud 
+with noise.
+A. Zhang et al. Engineering Structures 320 (2024) 118908 
+11 
+169,000 points. A comparative analysis is conducted on the processing 
+time and the accuracy of radius fitting achieved by both methodologies 
+across different dataset sizes. Additionally, random rotation angles were 
+applied to orient the point cloud to the configuration shown in Fig. 18 (c, 
+d), aiming to validate whether different component orientations affect 
+T-Ncf.
+In Fig. 19 (a), it is evident that the processing time of T-Ncf is 
+consistently lower than that of the conventional RANSAC method across 
+varying numbers of point clouds. Moreover, as the number of point 
+clouds increases, the disparity in processing efficiency between the two 
+methods progressively widens. As shown in Fig. 19 (b), under the in -
+fluence of noise points, both methodologies exhibit errors in radius 
+fitting; however, the traditional RANSAC fitting demonstrates limited 
+robustness with a maximum error of 18.8 %. In contrast, despite the 
+impact of noise points on the results, the T-Ncf demonstrates superior 
+stability and accuracy, with a maximum error of only 7.1 %. The 
+calculation of T-Ncf on the point cloud in Fig. 18 (d) similarly yields the 
+above results, indicating that T-Ncf is not influenced by the orientation 
+of the component.
+5.2. Accuracy of extracting joints from PCD
+This section conducts a comparative analysis of target segmentation 
+and the precision of joint extraction. Initially, we contrast the target 
+recognition and segmentation results between DS-gDT and the conven -
+tional RANSAC algorithm. The segmentation results of the traditional 
+RANSAC algorithm applied to the point cloud of Module 1 are depicted 
+in Fig. 14 (b). Concurrently, a comparative analysis of the recognition 
+and segmentation time for both methods is presented in Table 1 . The 
+findings reveal that the recognition rate achieved by the traditional 
+RANSAC algorithm stands at approximately 65 %. Moreover, it is 
+observed that the traditional RANSAC algorithm exhibits sensitivity to 
+point cloud drift induced by interference occlusion and laser diffusion. 
+In contrast, the component recognition success rate of DS-gDT surpasses 
+that of the traditional RANSAC algorithm by approximately 51.5 %, 
+with a corresponding efficiency improvement of about 20.09 %. 
+Consequently, DS-gDT demonstrates superior performance in identi -
+fying dome structural components, displaying enhanced robustness and 
+efficiency.
+While DS-gDT is capable of fitting and extracting the spatial co -
+ordinates of all joints, the accuracy of its joint coordinate extraction 
+necessitates further validation. Consequently, following the completion 
+of tensioning the test model, the absolute coordinates of the joints are 
+manually measured using methods such as a total station and general 
+software fitting. To facilitate comparative analysis, the upper chord joint 
+plane of the ring truss is set as the z = 0 plane, and the relative co -
+ordinates of all joints in relation to this plane are computed. Simulta -
+neously, the joint coordinates extracted by DS-gDT undergo the same 
+processing. Subsequently, the accuracy of DS-gDT coordinate extraction 
+is evaluated using Eq. (24) , where P
+re 
+denotes the coordinate extraction 
+error, d
+pcd 
+represents the relative coordinates of joints extracted by DS- 
+gDT, and d
+mea 
+represents the relative coordinates of joints measured 
+manually. 
+P
+re
+= d
+pcd
+  d
+mea
+(24) 
+A comprehensive statistical analysis was conducted to assess the 
+error in coordinate extraction, with the findings visually represented in 
+Fig. 20 . The analysis revealed that the maximum coordinate extraction 
+error occurs at the cable bracing joint, measuring 2.2 mm. Additionally, 
+the coordinate extraction error at the lower chord joint within the ring 
+truss exceeds 2 mm, amounting to 2.1 mm. Despite some joints exhib -
+iting significant errors, it was observed that only 0.93 % of joint co -
+ordinates had errors exceeding ± 2 mm, while 17.59 % had errors 
+surpassing ± 1 mm. Taking into consideration potential instrument 
+inaccuracies and human-induced errors during measurements, a ± 2 mm 
+margin was established as the acceptable error range. Consequently, the 
+accuracy of joint coordinates extracted by DS-gDT was determined to be 
+above 99 %. This outcome not only validates the reliability of the pro -
+posed algorithm but also underscores its robustness in practical 
+implementations.
+Fig. 19. Comparison of required time and fitting radius.
+Table 1 
+Execution time of point cloud recognition and segmentation.
+Hardware 
+capacity
+Intel(R) Core (TM) i7-9700 CPU @ 3.00 GHz, 8 cores, 8 threads, 
+32.0 GB RAM
+Project Time (s)
+RANSAC 64.812
+DS-gDT 49.779
+Fig. 20. Coordinate error between DS-gDT and manually measured.
+A. Zhang et al. Engineering Structures 320 (2024) 118908 
+12 
+5.3. gDT-based joints deviation analysis
+The gDT enables precise representation of the actual joint position 
+post-structural tensioning. Through comparisons with the designed joint 
+positions, efficient and accurate calculation of joint deviations is facili -
+tated, offering a comprehensive and effective approach for joint devia -
+tion detection. This paper utilizes Eq. (25) to compute joint deviations, 
+with the resulting calculations subjected to statistical analysis, as 
+depicted in Fig. 21 (a). 
+d
+e
+= d
+pcd
+  d
+des
+(25) 
+Here, d
+e 
+signifies the joints ’ deviations, with d
+pcd 
+denotes the relative 
+coordinates of joints extracted by DS-gDT, and d
+des 
+represents the rela -
+tive coordinates of design joints.
+The analysis presented in Fig. 21 (a) reveals significant deviations in 
+the joints of the superstructure, with particular emphasis on the notable 
+deviation observed at the second-lap upper joint, peaking at 33.11 mm. 
+Furthermore, the maximum deviation at the cable bracing joint is also 
+prominent in the second lap, measuring 31.27 mm. Specifically, the 
+percentage of upper joint deviations exceeding 30 mm stands at 9.72 %, 
+while those surpassing 20 mm amount to 33.33 %. Similarly, the pro -
+portion of cable bracing joint deviations exceeding 30 mm is 6.94 %, 
+with deviations exceeding 20 mm accounting for 20.83 % of the total. 
+Thus, the likelihood of significant deviations occurring in the upper joint 
+is evidently greater. In the lower ring truss structure, the deviation of the 
+upper chord joint is distributed within ± 10 mm, with 15.63 % of de -
+viations exceeding 5 mm, and an average deviation of   0.61 mm. The 
+maximum deviation of the inner joint of the lower chord reaches 
+12.67 mm, with 9.37 % of deviations exceeding 10 mm and an average 
+deviation of 3.87 mm. Additionally, the maximum deviation of the outer 
+joint of the lower chord is 14.862 mm, with 23.96 % of deviations 
+exceeding 10 mm and an average deviation of 7.10 mm. This observa -
+tion highlights the relatively pronounced deviation of the outer joint of 
+the lower chord, attributed to various factors such as blanking length, 
+welding temperature, and residual deformation.
+Taking into account stability and other relevant factors, the 
+permissible joint construction deviation for large-span cable dome 
+structures is typically set at L /300 (where L represents the structural 
+span) [32] . In this specific scenario, the limit value equates to 33.33 mm 
+(i.e., 10,000/300). As the supporting structure for the upper dome as -
+sembly, the maximum permissible deviation for the ring truss structure 
+is set at 30 mm [33] . Thus, despite notable construction deviations in 
+the joints of both upper and lower structures, they still adhere to the 
+specified deviation limits.
+Furthermore, careful consideration is required for the radial devia -
+tion of the joints. Defining the uppermost joint as the origin O (0, 0, 0), 
+vector OJ
+s
+̅ →
+is established using the design coordinates J ( x
+1
+, y
+1
+, z
+1
+) 
+relative to O for each joint. Similarly, coordinates OJ
+m
+̅ ̅ →
+are defined 
+relative to measured joint coordinates and O . Subsequently, the radial 
+deviation R
+d 
+of the joint can be computed using Eq. (26) . 
+R
+d
+=
+⃦
+⃦
+⃦ OJ
+s
+̅ →
+⃦
+⃦
+⃦  
+⃒
+⃒
+⃒
+⃒
+⃒
+OJ
+m
+̅ ̅ →
+⋅ OJ
+s
+̅ →
+⃦
+⃦
+⃦ OJ
+s
+̅ →
+⃦
+⃦
+⃦
+⃒
+⃒
+⃒
+⃒
+⃒
+(26) 
+Here, 
+⃦
+⃦
+⃦ OJ
+s
+̅ →
+⃦
+⃦
+⃦ represents the magnitude or length of vector OJ
+s
+̅ →
+.
+Fig. 21 (b) depicts the statistical distribution of radial deviations 
+among joints. The maximum radial deviation for the upper joint occurs 
+during the second lap, measuring 16.97 mm. Similarly, the maximum 
+radial deviation for the cable bracing joint also occurs in the second lap, 
+measuring 16.26 mm. Moreover, the percentage of upper joint radial 
+deviations exceeding 10 mm is 15.28 %, while for the cable bracing joint 
+it is 16.67 %. Hence, compared to joint deviations, larger radial de -
+viations are less frequent. Importantly, the consistent location and 
+proportion of maximum radial deviations for both upper and lower 
+joints underscore DS-gDT ’ s efficacy in capturing radial deviation syn -
+ergy across corresponding parts.
+In summary, this highlights the inevitability of notable joint de -
+viations, underscoring the critical importance of acquiring and 
+analyzing these variations from a holistic standpoint. The proposed 
+method for joint deviation measurement based on gDTs exhibits sig -
+nificant potential for use in activities such as structural construction 
+quality evaluations and early safety warnings.
+5.4. The influence of duplicate fitting of identical joints
+This section will discuss the effectiveness of the proposed method 
+under the specific scenario of duplicate fitting of identical joints. In the 
+point cloud of the cable dome structure, modules M
+1 
+and M
+2 
+are 
+segmented (see Fig. 22 a), and share common joints N
+1
+, N
+2
+, and N
+3
+. 
+These joints are accurately located using DS-gDT, as illustrated in Fig. 22
+(b). It is worth noting that the proposed shape estimation model allows 
+for the estimation of a cylindrical shape with a minimum of three points. 
+Therefore, even if the steel tube is split longitudinally into two, accurate 
+identification and segmentation of components can still be achieved. Eq. 
+(14) is utilized for filtering out the fitting coordinates belonging to the 
+shared joints. The average of these results serves as the final joint co -
+ordinate ( Eq. 27 ). The joint design coordinates in the same coordinate 
+system as the point cloud are as follows: N
+1 
+(35,   1250, 795), N
+2 
+(110, 
+  2500,   125), N
+3 
+(155,   3710, 340). The maximum error due to 
+duplicate fitting of identical joints is calculated to be 1.8 %. Thus, 
+despite instances of duplicate fitting of identical joints, the method ex -
+hibits robustness and stability. Nevertheless, effective module segmen -
+tation remains crucial as it mitigates the computational costs associated 
+with redundant fitting of joints. 
+Fig. 21. (a) Deviations of joints. (b) Radial deviations of joints.
+A. Zhang et al. Engineering Structures 320 (2024) 118908 
+13 
+{
+if d ≤ d
+sj
+, x =
+∑
+x
+i
+/
+2 , y =
+∑
+y
+i
+/
+2 , z =
+∑
+z
+i
+/
+2
+elseif , ∅
+(27) 
+Where, d represents the deviation of two fitting results for shared joints, 
+( x
+i
+, y
+i
+, z
+i
+) represents the joint coordinates, i = 1, 2. d
+sj 
+represents the 
+deviation limit, that is, the two points that meet this limit value are the 
+duplicate fitting results of identical joints. This paper sets it at 20 mm.
+5.5. Limitations of DS-gDT
+Although DS-gDT proposed in this paper can effectively solve the 
+problem of constructing the geometric Digital Twin of cable dome 
+structures, this method has certain limitations. The limitations of this 
+method are mainly reflected in the following aspects.
+(1) According to the Standard for Design of Steel Structures (GB 
+50017 – 2017) [32] , if the eccentricity between the brace member and 
+the chord member connection joint of the intersecting joint ( Fig. 23 ) 
+does not exceed the limit specified in Eq. (28) , the bending moment 
+caused by eccentricity can be disregarded. Therefore, even when the 
+intersection point of the component axes is non-singular, the joint po -
+sition can still be determined using the method proposed in this paper. 
+However, if the eccentricity exceeds the limit defined by Eq. (28) , and 
+when calculating the bearing capacity of the compressed chord member, 
+the influence of eccentricity must be considered. In such cases, the ec -
+centricity value is derived from design information. Automating the 
+calculation of eccentricity remains a challenge that requires further 
+resolution. 
+  0 . 55 ≤ e / D ≤ 0 . 25 (28) 
+Where, e denotes the eccentricity, D denotes outer diameter of the chord 
+member.
+(2) The proposed method in this paper addresses the issue of 
+detecting joint coordinates in cable dome structures. However, in 
+practical engineering applications, our method cannot monitor stresses/ 
+strains of structural components, nor can it update joint positions in real- 
+time under varying loads. Processing massive point cloud inherently 
+requires significant time.
+(3) “ Clustering ” is primarily used for selecting “ candidate points ” . 
+However, during this process, potential bias may arise: in cases where 
+there is a significant amount of missing point cloud data in paired re -
+gions, clustering can become challenging, thereby affecting the accuracy 
+of subsequent joint fitting. Therefore, optimizing the laser scanning path 
+is necessary to ensure comprehensive and high-quality point cloud data 
+acquisition.
+6. Conclusions and future work
+In this paper, a method for establishing geometric digital twins (DS- 
+gDT) for large-span cable dome structures is proposed, offering a 
+comprehensive solution and technical pathway. The primary results are 
+outlined as follows:
+(1) DS-gDT demonstrates proficiency in automatically fitting joint 
+coordinates while accurately identifying and segmenting pivotal 
+components within PCD. The segmentation of components serves 
+as the fundamental prerequisite for achieving precise joint 
+localization. This segmentation process hinges on spatial posi -
+tional relationships of components, with joints ’ positions deter -
+mined by transitions between distinct components. In this study, 
+the success rate of component segmentation is approximately 
+51.5 % higher compared to traditional methods. DS-gDT achieves 
+joints fitting accuracy of 99 %. Furthermore, the automated 
+fitting of joint coordinates, guided by component segmentation 
+outcomes, plays a crucial role in the establishment of gDT, 
+reducing the time investment required for gDT construction.
+(2) DS-gDT represents an advancement and enhancement over con -
+ventional software and other gDT solutions available in the 
+Fig. 22. Duplicate fitting of identical joints.
+Fig. 23. The intersecting joint: (i)~(iv) is the brace member, (v) is the 
+chord member.
+A. Zhang et al. Engineering Structures 320 (2024) 118908 
+14 
+market. The integration of the T-Ncf, sampling radius constraint 
+mechanism, double termination criterion, and other methodolo -
+gies significantly enhance the efficiency and precision of DS-gDT. 
+Compared to traditional methods, DS-gDT achieves an efficiency 
+improvement of approximately 20.09 %. Furthermore, by utiliz -
+ing PCD as the sole input, DS-gDT effectively replaces the tradi -
+tional labor-intensive measurement methods.
+(3) This method offers a cohesive strategy for the visualization and 
+digital management of gDTs. Leveraging a digital model auto -
+mation algorithm rooted in the geometric topological relation -
+ships among joints, it enables seamless visualization of gDTs 
+while facilitating digital representation and analysis of joint de -
+viations. Moreover, this approach serves as a benchmark for early 
+structural safety alerts based on joint deviations, showcasing 
+extensive potential for widespread adoption and application.
+In future research, the methodology presented in this paper will be 
+extended to encompass a wider array of structural forms, thereby 
+unlocking the potential for comprehensive geometric information 
+management and analysis. This expansion may include applications to 
+various structures such as suspend-dome structures, single-layer retic -
+ulated shell structures, and others. Building upon the gDT framework 
+outlined in this paper, an advanced solution for digital twins of dome 
+structure mec

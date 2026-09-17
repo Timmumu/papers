@@ -21,4 +21,17 @@ This study aims to analyze and discuss the risks facing construction projects by
 | Yes | Yes | Yes | Tier 1 - Digital Model (static, no live data) | 0 | 1 | 0 | Design for Safety (DfS) | None | Digital Twin platform (no machine learning) | Multi (two or more data types) | Conceptual (no test) | 3 | Lifecycle / governance |
 
 **Key evidence (AG):** Risk systematization approach for construction projects using Digital Twins for Construction Projects (DTCP) (UT Cluj-Napoca): reviews risks and proposes risk treatment procedure + custom risk matrix adapted to DTCP; aims to improve prediction capabilities for decision-makers; conceptual framework with no DT built or validated; no live data link, no actuation, no learning loop.
+
+
+**Strength & gap filled (AH):** Develops a conceptual risk systematization for the Digital Twin for Construction Projects (DTCP) approach through READ-method document analysis of 32 selected studies, mapping five construction risk categories (planning and monitoring, security and safety, quality, human resources, execution) onto twin capabilities, and proposing a ten-step risk treatment procedure plus a custom risk matrix with reduced assessment levels to speed anomaly handling and prediction.
+
+**Deficiencies & future work (AI):** The work is purely conceptual with no implemented system, sensor deployment or case validation, and conclusions rely on a narrow set of studies and the authors individual project experience. The paper calls for future research on safeguarding shared data and information security, human-machine interface issues, psychological impacts of automation, regulatory compliance, and machine learning extensions.
+**Fusion depth (AC1):** Unclear
+
+**Fusion evidence (AC2):**
+- **Data streams:** 32 analysed studies mapped onto five risk categories.
+- **Integration mechanism:** none implemented - conceptual framework only.
+- **Why this code:** Unclear (rule 2).
+
+**Confidence (AC3):** High.
 (full-text source: Endnote)

@@ -21,4 +21,17 @@ Vibration accidents of high-rise buildings are frequently reported around the gl
 | Yes | Yes | Yes | Tier 2 - Digital Shadow (one-way physical to virtual) | 0 | 0 | 1 | Design for Safety (DfS) | None | Digital Twin platform (no machine learning) | Multi (two or more data types) | Single case study | 4 | Design for Safety |
 
 **Key evidence (AG):** Edge-cloud collaborative digital twin for vibration anomaly detection and localization in high-rise buildings (Shenzhen U): wireless time-synchronized smart sensor (WTSS) with edge computing for anomaly detection; cloud server runs structural dynamics DT model for vibration source localization; BIM-based management platform for visualization; validated on 17-story high-rise teaching building with harmonic excitation tests. One-way monitoring→detection→localization; no actuation and no learning loop.
+
+
+**Strength & gap filled (AH):** Fills the gap of edge-cloud collaborative intelligence for vibration anomaly detection and localization in high-rise buildings: a wireless time-synchronized smart sensor with LoRa chain synchronization below 20 microseconds and edge STFT anomaly detection, plus a cloud MDOF flexural-shear digital twin updated by SSI-COV and PSO that localizes sources via spectrum amplitude feature matching, validated on a 17-story building under 82.9 N shaking-table excitation.
+
+**Deficiencies & future work (AI):** Localization reaches only zonal level with about one floor of error because adjacent-floor signatures are similar; the method covers only single-frequency steady-state excitations, edge nodes run only basic signal processing, and validation used one building with five sensors. Future work targets floor-specific identification, multi-source non-stationary vibration, and deep learning at the edge.
+**Fusion depth (AC1):** Aligned
+
+**Fusion evidence (AC2):**
+- **Data streams:** WTSS vibration records (LoRa synchronisation under 20 microseconds) + edge STFT anomaly features.
+- **Integration mechanism:** sensor data update the cloud twin, and source localisation compares measured spectra against twin feature amplitudes (zonal, about one-floor error) on a 17-story building under 82.9 N excitation.
+- **Why this code:** one measured stream is registered onto the model frame for matching, so Aligned.
+
+**Confidence (AC3):** Medium - the SSI-COV/PSO updating and matching are explicit; only one sensor modality exists.
 (full-text source: Endnote)

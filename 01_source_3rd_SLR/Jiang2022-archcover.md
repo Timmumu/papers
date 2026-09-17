@@ -21,3 +21,16 @@ Aiming at the problems of safety and monitoring beyond the existing experience i
 | Yes | Yes | Yes | Tier 2 - Digital Shadow | 0 | 1 | 0 | Design for Safety (DfS) | None | Digital Twin platform (no machine learning) | Multi (two or more data types) | Single case study | 3 | Design for Safety |
 
 **Key evidence (AG):** DT+IoT multi-information monitoring system for arch-cover method subway station construction (Shikui Road Station, Dalian Metro Line 5): automatic sensor network (settlement, stress, etc.) → IFC extension + Revit BIM parametric sensor models → BIM database visualization with time-history curves and color-change early-warning; "Construction Control Based on Data Analysis" uses monitored data as control value for decisions, but the loop is human-in-the-loop (feedback to decision-makers), not automated actuation; no ML, no self-improvement.
+
+**Strength & gap filled (AH):** Provides automatic monitoring for arch cover method subway stations, rare in the literature, via a DT and IoT system at Shikui Road Station of Dalian Metro Line 5: pressure cells, rebar meters, strain gauges and displacement meters stream into a Revit secondary-developed BIM platform with IFC-extended sensor attributes and color-change alarms; lining pressure rises after temporary support removal informed inverse analysis that set midwall demolition at 12 m.
+
+**Deficiencies & future work (AI):** The system is only applied to one station project, sensor equipment still needs anticorrosion and anti-interference development, and the numerical analysis model must be improved for true two-way mapping between digital and physical worlds; future work includes prediction algorithms, web, GIS, 5G and blockchain integration for multi-station unified management.
+
+**Fusion depth (AC1):** Aligned
+
+**Fusion evidence (AC2):**
+- **Data streams:** pressure cells, rebar meters, strain gauges and displacement meters (Shikui Road Station, Dalian Metro Line 5).
+- **Integration mechanism:** IFC extension plus Revit parametric sensor models attach each sensor to a BIM element for visualisation and colour-change alarms; inverse analysis decisions (midwall demolition at 12 m) are human-in-the-loop.
+- **Why this code:** sensors share the BIM asset frame while analysis stays per element, so Aligned.
+
+**Confidence (AC3):** High - the IFC sensor-attribute extension is explicit.

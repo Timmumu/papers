@@ -21,4 +21,17 @@ A fire protection system takes on a critical significance to building operation.
 | Yes | Yes | Yes | Tier 3 - Digital Twin (bidirectional, two-way) | 0 | 0 | 1 | Design for Safety (DfS) | None | Ontology / semantic | Multi (two or more data types) | Simulation | 4 | Design for Safety |
 
 **Key evidence (AG):** Intelligent control of building fire protection (BFP) system using DT + semantic web technologies (SJTU): BFP ontology fuses static BIM geometric info + dynamic IoT sensing data into DT data model; rule model activates process model (workflow engine) for intelligent control mechanisms; DT data model synced with physical space; fire accident simulation case study demonstrates rapid response and evacuation facilitation; semantic web enables information acquisition/extraction/verification/update. Bidirectional — rule model triggers process model → physical actuation → Tier 3; no ML learning loop (rule-based control).
+
+
+**Strength & gap filled (AH):** Fills the gap between BIM and IoT fire monitoring and closed-loop fire protection control: a BFP ontology fuses static BIM geometry with dynamic IoT sensing data into a DT data model, and rule models plus BPMN process models execute intelligent control with update rules keeping virtual and physical spaces synchronized. Three scenarios, sprinkler, fire door, and smoke control, were verified through FDS simulation.
+
+**Deficiencies & future work (AI):** Only verified by fire accident simulation; on-site experiments are still needed. The approach assumes IoT terminal data are fully obtainable and well processed, and only three basic fire protection scenarios are investigated. Future work covers a unified hardware-software platform for validation, more fire protection scenarios refined by domain experts, and extension to other system control tasks such as active seismic response control.
+**Fusion depth (AC1):** Fused
+
+**Fusion evidence (AC2):**
+- **Data streams:** static BIM geometry + dynamic IoT sensing data.
+- **Integration mechanism:** the BFP ontology is the joint representation fusing the two types; rule models then activate process models (sprinkler, fire door, smoke control) with update rules synchronising virtual and physical spaces.
+- **Why this code:** an explicit fusion into one ontology-based data model, so Fused; verified through FDS fire simulations rather than live deployment (hence Medium confidence).
+
+**Confidence (AC3):** Medium - the fusion mechanism is explicit, but validation is simulation-only.
 (full-text source: Endnote)

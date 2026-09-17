@@ -21,4 +21,17 @@ The rapid deterioration of building facades presents substantial safety hazards 
 | Yes | Yes | Yes | Tier 2 - Digital Shadow (one-way physical to virtual) | 0 | 1 | 0 | Design for Safety (DfS) | None | Perception / Computer Vision | Multi (two or more data types) | Single case study | 4 | Perception / Computer Vision |
 
 **Key evidence (AG):** Simultaneous digital twin framework for building facade inspection (Tsinghua U): wall-climbing robot (negative pressure adhesion) with RGB camera + penetrating sensors; real-time vision-based defect segmentation (mAP 0.775) and metric quantification (length error 1.140 cm, center error 0.826 cm); cloud-based DT platform for quantitative defect visualization, spatiotemporal traceability, and data-driven project management; on-site inspection cycle latency 2.8-4.8s; validated on real building projects. One-way monitoring→DT→decision support; no actuation and no learning loop.
+
+
+**Strength & gap filled (AH):** Addresses the gap between robotic facade inspection and quantitative, real-time damage assessment: a negative-pressure wall-climbing robot with RTK-GNSS and IMU localization feeds a lightweight YOLO12 segmentation model (0.775 mAP) whose skeletonization and PCA quantification reach 1.140 cm length error and 0.826 cm center error, all mapped into a cloud digital twin with 2.8-4.8 s response cycles on a Tongzhou Beijing building.
+
+**Deficiencies & future work (AI):** The adhesion mechanism cannot handle highly rough surfaces and only surface cracks and spalling are analyzed, leaving UWB radar and infrared subsurface data unused; validation is limited to laboratory specimens and one residential building, and future work targets robot hardware adaptation to complex facades plus subsurface defect characterization through multi-modal cross-validation.
+**Fusion depth (AC1):** Fused
+
+**Fusion evidence (AC2):**
+- **Data streams:** RGB camera imagery (YOLO12, 0.775 mAP) + RTK-GNSS/IMU robot localisation; UWB radar and infrared data are noted but unused.
+- **Integration mechanism:** localisation and segmentation are combined to produce metric defect quantification (1.140 cm length, 0.826 cm centre error) in the cloud DT with 2.8-4.8 s cycles.
+- **Why this code:** metric quantification depends on imagery and positioning simultaneously, so Fused.
+
+**Confidence (AC3):** Medium - the localisation-segmentation combination is explicit, but subsurface channels are unused.
 (full-text source: Endnote)

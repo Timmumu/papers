@@ -21,4 +21,17 @@ In the process of large-span steel structure construction, because its structure
 | Yes | Yes | Yes | Tier 2 - Digital Shadow (one-way physical to virtual) | 0 | 1 | 0 | Design for Safety (DfS) | None | Other / Mixed | Multi (two or more data types) | Single case study | 4 | Predictive analytics / decision support |
 
 **Key evidence (AG):** Digital twin-driven intelligent safety control for large-span steel mesh frame structures (Beijing U Tech): DT model built from actual engineering data + FE analysis; random forest algorithm analyzes influencing factors of overall jacking construction process (jacking height difference and jacking speed most influential); real-time monitoring + fault diagnosis; validated on airport reconstruction project. One-way monitoring→analysis→safety control; no actuation and no learning loop (random forest is offline-trained).
+
+
+**Strength & gap filled (AH):** Fills the gap of costly experience-based health monitoring for large-span steel mesh frames by combining a digital twin with geometric, finite-element, behavioral and rule models with random forest feature-importance analysis of overall jacking data from an airport project, showing that maximum jacking height difference and jacking speed dominate structural stress, consistent with construction code provisions.
+
+**Deficiencies & future work (AI):** The random forest provides importance ranking rather than prediction accuracy metrics, safety control relies on rule-based alarms and shutdown commands without learning-based updating, and only one airport project validates the method; the authors state data transmission efficiency must improve and plan extension to bridges and high-rise platforms with better sensors and optimized predictive algorithms.
+**Fusion depth (AC1):** Fused
+
+**Fusion evidence (AC2):**
+- **Data streams:** geometric, FE, behavioural and rule model outputs plus real-time jacking monitoring channels on an airport project.
+- **Integration mechanism:** random forest jointly consumes the monitoring channels to compute feature importance, driving rule-based alarms and shutdown commands in the twin.
+- **Why this code:** the importance-ranking model depends on multiple data channels simultaneously, so Fused.
+
+**Confidence (AC3):** High - the random-forest analysis is explicit.
 (full-text source: Endnote)

@@ -1,0 +1,1131 @@
+Received 3 July 2026, accepted 4 August 2026, date of publication 6 August 2026, date of current version 12 August 2026.
+Digital Object Identifier 10.1 109/ACCESS.2026.372 1347
+A Partially Validated Probabilistic Framework for
+Urban Seismic Damage Prediction With Scenario
+Ensembles and Digital Twins
+MENG WANG1, YUE SUN
+ 2, HEXIAO LI 1, AND NA MAO 1
+1Y unnan V ocational and Technical College National Defense Industry, Y unnan Open University, Kunming, Y unnan 650500, China
+2Y unnan Provincial Department of Education Engineering Research Center for Building Digital and Energy Saving Technology, Y unnan Minzu University,
+Kunming, Y unnan 650504, China
+Corresponding author: Y ue Sun (sunyue@ymu.edu.cn)
+This work was supported in part by the Scientific Research Project of the Department of Education of Y unnan Province, China, under
+Grant 2025J0748; and in part by Y unnan Open University Fund Project under Grant 2026G44 and Grant 2026YKF04.
+ABSTRACT Earthquakes pose severe threats to urban safety. Traditional prediction methods fail to
+fully quantify seismic uncertainties and address low-probability, high-impact ‘‘long-tail risks’’. This paper
+proposes a partially validated probabilistic urban seismic damage prediction framework integrating large-
+scale scenario ensembles and digital twins. The framework is conceptually designed with four layers: data
+fusion, digital twin modeling, scenario ensemble simulation, and probabilistic assessment. Due to current
+data and computational constraints, empirical validation is limited to two core modules—the PI-GAN
+ground motion generation module and the probabilistic damage cloud module—using the 2021 Y angbi
+Ms6.4 earthquake (single event, single region). The remaining two modules (infrastructure cascading failure
+and social behavior modeling) are presented as conceptual designs requiring future validation. The validation
+results show that the Physics-Informed Generative Adversarial Network (PI-GAN) generates ground motions
+with ≤5% PGA error and ≤10% response spectrum error, while the probabilistic damage cloud module
+achieves 77.7% overall classification accuracy (with 79.5% recall, 87.3% precision, and 83.2% F1-score)
+and 89.3% structure-damage matching degree. The framework enables a shift from empirical judgment to
+data-driven pre-simulation, providing a partially validated and technically feasible solution for improving the
+accuracy and comprehensiveness of urban seismic risk assessment, while clearly acknowledging that full-
+chain validation—particularly for extreme M≥7.0 scenarios and unvalidated modules—remains as future
+work.
+INDEX TERMS Digital twin, urban seismic damage, probabilistic prediction framework, large-scale
+scenario ensembles, seismic vulnerability assessment, disaster simulation.
+I. INTRODUCTION
+A. BACKGROUND AND MOTIVATION
+The suddenness and devastating nature of seismic hazards
+remain a severe challenge to urban public safety. With
+the increasing complexity of modern urban systems, key
+infrastructure such as buildings, transportation, and energy
+within cities are highly coupled, leading to seismic-induced
+The associate editor coordinating the review of this manuscript and
+approving it for publication was Abdullah Iliyasu
+.
+cascading failure effects that significantly amplify disaster
+losses [1]. Traditional seismic damage prediction meth-
+ods mostly rely on predefined earthquakes or limited his-
+torical scenarios, essentially adopting a deterministic or
+limited-scenario analysis model [2]. These methods struggle
+to fully capture the uncertainties of critical parameters such
+as earthquake occurrence location, magnitude, and rupture
+mechanism. In particular, they fail to effectively assess the
+risk of extreme events with low probability but catastrophic
+consequences, known as long-tail risks [3].
+120778
+
+ 2026 The Authors. This work is licensed under a Creative Commons Attribution 4.0 License.
+For more information, see https://creativecommons.org/licenses/by/4.0/ VOLUME 14, 2026
+M. Wang et al.: Partially Validated Probabilistic Framework for Urban Seismic Damage Prediction
+B. DIGITAL TWIN AND PROBABILISTIC SEISMIC RISK
+ASSESSMENT
+As a core enabling technology for deep integration of
+cyber-physical systems, digital twin technology provides an
+unprecedented platform for refined and dynamic disaster sim-
+ulation at the urban scale [4]. It has been applied to construct
+seismic response models of buildings [5], visualize seismic
+damage simulation results [6], and even evaluate the seismic
+resilience of urban lifeline systems [7]. Recent advances
+in probabilistic seismic risk assessment have increasingly
+incorporated stochastic rupture simulations within PSHA
+frameworks, aiming to better characterize source and path
+uncertainties [8], [9]. However, existing DT-based earth-
+quake risk frameworks often lack integration with large-scale,
+physics-consistent scenario ensembles and empirical valida-
+tion against real seismic events. How to combine large-scale
+seismic scenario ensembles with digital twin technology
+for probabilistic and forward-looking urban-scale seismic
+damage prediction remains a challenge requiring in-depth
+research [10].
+C. SCOPE AND VALIDATION STATUS OF THIS STUDY
+It is important to clarify at the outset that the proposed
+framework is presented as a conceptual architecture with
+partial empirical validation. Specifically, the current study
+validates two of the four framework modules: (1) the
+PI-GAN-based ground motion generation module, and
+(2) the probabilistic damage cloud module. The infrastructure
+cascading failure module and the Agent-Based Modeling
+(ABM) social behavior module are described in their concep-
+tual design but have not been empirically tested against real
+earthquake data. The validation is further limited to a single
+moderate-magnitude event (2021 Y angbi Ms6.4) and a single
+village (Huaian Village, 112 buildings). Generalizability to
+other tectonic settings, urban typologies, or large-magnitude
+(M≥7.0) scenarios remains unvalidated and is a direction
+for future research. All claims of framework performance in
+this paper should be interpreted strictly within these defined
+boundaries.
+D. MAIN CONTRIBUTIONS AND PAPER ORGANIZATION
+The main contributions of this study are threefold: (1) a sys-
+tematic integration of high-fidelity digital twin modeling with
+physics-informed generative AI (PI-GAN) for ground motion
+synthesis—with validation limited to moderate-magnitude
+scenarios; (2) a full-chain probabilistic simulation workflow
+that couples seismic source generation, site response, struc-
+tural analysis, and infrastructure cascading failure within a
+unified digital twin environment—where the infrastructure
+and social modules remain conceptual at this stage; and
+(3) an empirical validation of the core modules (PI-GAN and
+damage cloud) using a real earthquake case (2021 Y angbi
+Ms6.4 earthquake), demonstrating the framework’s practical
+applicability and accuracy within the validated scope. Its
+core idea is to abandon the pursuit of predicting a ‘‘most
+likely’’ future, but instead systematically explore thousands
+of ‘‘possible’’ futures through computational experiments
+and statistically analyze their risk distribution. This study will
+elaborate on the framework’s architecture, key technologies,
+and implementation process, validate its core modules with
+empirical data, and discuss how it can provide revolutionary
+decision support for urban planning, resilience improvement,
+and precise emergency response—while clearly distinguish-
+ing demonstrated capabilities from conceptual extensions.
+The remainder of this paper is organized as follows:
+Section II presents the overall integration framework.
+Section III details the core algorithms and technical imple-
+mentations, explicitly distinguishing validated modules from
+conceptual designs. Section IV provides an empirical anal-
+ysis of key modules using the 2021 Y angbi earthquake.
+Section V discusses the framework’s applications, limita-
+tions, and future roadmap. Section VI concludes the paper
+and outlines future work.
+II. INTEGRATION FRAMEWORK OF LARGE-SCALE
+SCENARIO ENSEMBLES AND DIGITAL TWINS
+The proposed prediction framework is essentially a complex
+system integrating advanced sensing, refined modeling, high-
+performance simulation, and intelligent decision-making. Its
+core lies in establishing a closed-loop, bidirectional inter-
+action between the physical city and its digital counterpart,
+where real-time or near-real-time data from the physical
+world (e.g., IoT sensor readings, InSAR deformation) are
+continuously ingested to update and calibrate the digital
+models, while simulation outputs from the digital twin (e.g.,
+predicted damage states, cascading failure paths) are fed back
+to inform monitoring, planning, and emergency response
+in the physical city. This dynamic interaction enables a
+panoramic, probabilistic exploration of seismic risks via com-
+putational experiments. Logically, the framework is divided
+into four closely coupled layers, collectively forming a closed
+loop from real-world sensing to decision support. The overall
+architecture, which explicitly illustrates the data and inter-
+action flows between the physical city and the digital twin,
+is shown in Fig. 1. The figure highlights the bidirectional syn-
+chronization loops (physical→virtual and virtual→physical)
+that are characteristic of a true digital twin system, moving
+beyond a static conceptual diagram.
+A. DATA SENSING AND FUSION LA YER
+This layer serves as the cornerstone for constructing a
+high-fidelity digital twin, with its primary task being to
+achieve full-element, multi-scale digital characterization of
+the physical city. A modern city is a continuously operating
+complex giant system, and accurate perception of its state
+relies on an integrated air-space-ground three-dimensional
+sensing network. Specifically, this includes but is not limited
+to: using Interferometric Synthetic Aperture Radar (InSAR)
+technology for wide-area, millimeter-level precision surface
+deformation monitoring; rapidly acquiring high-precision
+3D realistic models of built-up areas through UA V aerial
+VOLUME 14, 2026 120779
+M. Wang et al.: Partially Validated Probabilistic Framework for Urban Seismic Damage Prediction
+FIGURE 1. Architecture of the probabilistic prediction framework based
+on large-scale scenario ensembles and digital twins.
+photography equipped with lidar and multispectral cam-
+eras (relevant technologies can draw on NeRF-based high-
+precision 3D modeling methods for urban real scenes [9]);
+deploying IoT sensors on key buildings and infrastructure to
+real-time collect data on dynamic responses, deformations,
+and environmental conditions (5G technology can provide
+support for data-driven digital twin updating and matching
+[10]); and integrating social sensing data such as mobile
+signaling and social networks to characterize dynamic pop-
+ulation distribution and mobility patterns.
+Simply accumulating multi-source heterogeneous data
+holds little practical value. It is essential to utilize the City
+Information Modeling (CIM) platform as the core frame-
+work for the deep integration and structured processing of
+data. The specific data perception and fusion process—
+from multi-source data acquisition to semantic linking with
+BIM/GIS/geological datasets—is shown in Fig. 2, which ulti-
+mately outputs a disaster knowledge graph covering static
+attributes and dynamic correlations of urban components.
+During this process, the platform employs data prepro-
+cessing techniques—such as data cleansing, spatiotemporal
+registration, and feature extraction—to semantically link the
+processed data with static datasets. These include Building
+Information Modeling (BIM) data, Geographic Information
+System (GIS) data, engineering geological survey reports,
+and infrastructure pipeline networks.
+FIGURE 2. Schematic diagram of the data perception and fusion process.
+The final output of this layer is a unified disaster knowl-
+edge graph that comprehensively and accurately represents
+the multi-dimensional characteristics of the urban environ-
+ment. This graph serves as the foundational data layer for
+the digital twin, providing a semantically rich, interconnected
+representation of urban entities and their relationships. It is
+dynamically updated through the sensing network, enabling
+the digital twin to reflect the current or near-current state
+of the physical city. This graph not only defines the static
+attributes of various urban components but also reveals the
+complex spatial correlations and functional interdependen-
+cies among them, thereby providing a single, trusted data
+source to support the development of upper-layer models.
+B. URBAN DIGITAL TWIN MODELING LA YER
+In this study, the urban seismic damage digital twin is
+defined as a digital mapping entity based on multi-source
+heterogeneous data from air-space-ground integrated sensing,
+which constructs a virtual system with full-element mapping
+and bidirectional dynamic interaction with the physical city.
+It integrates four core sub-models including geological-site,
+engineering structure, infrastructure, and social behavior, and
+possesses the capabilities of seismic scenario simulation,
+damage probability prediction, and decision support, serving
+as the core carrier for probabilistic seismic disaster analysis
+at the urban scale.
+The core components of the digital twin in this
+framework include three layers: 1) Data layer: realizing
+multi-dimensional digital characterization of the physical city
+based on the disaster knowledge graph; 2) Model layer: com-
+posed of four coupled sub-models with physical mechanism
+120780 VOLUME 14, 2026
+M. Wang et al.: Partially Validated Probabilistic Framework for Urban Seismic Damage Prediction
+and computational simulation capabilities; 3) Interaction
+layer: realizing dynamic update of the digital model by the
+measured data of the physical city, and reverse guidance of
+the simulation results of the digital model to the disaster
+prevention and mitigation decision-making of the physical
+city.
+The rationality of naming the framework as ‘‘Probabilistic
+Prediction Framework for Urban Seismic Damage Based on
+Digital Twin’’ is that this system is not a traditional static
+3D urban modeling, but possesses the core characteristics of
+digital twin including ‘‘data-driven, cyber-physical mapping,
+bidirectional interaction, and simulation decision-making’’.
+It realizes the closed-loop linkage between the physical city
+and the virtual city through digital twin technology, breaks
+through the limitations of deterministic and single-scenario
+analysis of traditional seismic simulation models, and con-
+forms to the technical positioning of digital twin in the deep
+integration of cyber-physical systems.
+Above the data layer lies the core model of the
+framework—the urban digital twin modeling layer. The goal
+of this layer is not to create a static 3D urban model, but to
+construct a dynamic, multi-scale, multi-physics coupled vir-
+tual urban system with physical mechanisms and computing
+capabilities. The construction of urban digital twins is evolv-
+ing from single physical models to multi-dimensional cou-
+pling. The Physical-Social-Information-Time (PSIT) four-
+dimensional coupling framework proposed by Zhao et al. [11]
+provides important reference for multi-dimensional model-
+ing, and the new paradigm of global, dynamic, and intelligent
+data body construction explored by Tang et al. [12] also
+offers theoretical support for model development. The sys-
+tem is constructed following the principles of modularization
+and integration, mainly including four sub-models. These
+sub-models are coupled to form a dynamic, multi-physics
+urban digital twin—geological-site model provides ground
+motion input, engineering structure model simulates building
+damage, infrastructure system model replicates cascading
+failures, and social behavior model simulates evacuation—
+with their coupling relationship shown in Fig. 3. Their
+validation statuses are explicitly distinguished as follows.
+1) Geological and Site Model (V alidation Status: Empir-
+ically validated as part of the ground motion generation
+workflow)
+This model serves as the foundation for accurately sim-
+ulating seismic wave propagation and amplification effects.
+It constructs a regional 3D stratigraphic structure and active
+fault model based on detailed drilling data, geophysical
+exploration data, and InSAR-derived deformation fields.
+To simulate site-specific ground motion amplification, the
+model embeds constitutive relationships that reflect the
+nonlinear dynamic behavior of soil (e.g., viscoelastic or
+elastoplastic models) and can incorporate 1D/2D/3D wave
+propagation methods (e.g., equivalent linear analysis as
+implemented in SHAKE-type programs or more advanced
+numerical methods) where computational resources allow.
+This allows for the accurate calculation of attenuation,
+FIGURE 3. Schematic diagram of the multi-dimensional coupling model
+for urban digital twin.
+reflection, and site amplification effects of seismic waves
+with different spectral characteristics as they pass through
+complex geological media. Consequently, it provides dif-
+ferentiated ground motion inputs for upper-layer structures.
+In practice, for the Y angbi case study, regional borehole data
+and geophysical survey reports were used to construct the
+near-surface soil profiles. The widely used equivalent linear
+method, implemented in a manner analogous to programs
+like SHAKE [15], was then applied to compute site-specific
+amplification.
+2) Engineering Structure Model (V alidation Status: Empir-
+ically validated through the DNN surrogate model and
+probabilistic damage cloud analysis for the Huaian Village
+building inventory)
+To achieve efficient and accurate simulation of the seismic
+performance of massive buildings at the urban scale, this
+study adopts a ‘‘hybrid modeling strategy combining phys-
+ical mechanism models and AI surrogate models,’’ which
+can draw on the application experience of hybrid numerical
+methods in building seismic protection assessment [8], [13].
+For particularly important structures such as landmark super
+high-rise buildings and large lifeline projects, refined solid
+models based on the finite element method are used to capture
+details of nonlinear force transfer and damage evolution. For
+the large number of ordinary buildings, deep neural network
+surrogate models between their dynamic responses and input
+ground motion parameters are trained. However, the empiri-
+cal validation in this study (Section IV) uses a DNN surrogate
+model trained exclusively on 112 buildings from Huaian Vil-
+lage, representing only two structural types (Frame/Masonry
+and Brick-Wood/Earth-Wood). This model is site-specific
+and requires complete recalibration with local data before
+being applied to any other urban setting. The DNN surrogate
+model is NOT claimed to be generalizable across different
+VOLUME 14, 2026 120781
+M. Wang et al.: Partially Validated Probabilistic Framework for Urban Seismic Damage Prediction
+cities or structural inventories without retraining. The training
+data for these surrogate models are generated through a sys-
+tematic dataset generation strategy. This involves conducting
+nonlinear time history analyses on representative structural
+models (covering different structural types, heights, and
+design vintages) under a diverse set of ground motions sam-
+pled from the scenario ensemble. This ensures the surrogate
+models learn a robust input-output mapping. A bidirectional
+graphics framework can provide technical support for bidi-
+rectional mapping and updating between physical models
+and data-driven models [14], achieving significant savings
+in computing resources. This overcomes the bottleneck of
+parallel computing efficiency for large-scale building clus-
+ters while ensuring overall simulation accuracy. In addition,
+game engine-empowered digital twin technology provides
+a new visualization pathway for building seismic damage
+simulation [10].
+3) Infrastructure System Model (V alidation Status: Con-
+ceptual design only — not empirically implemented or tested
+in this study)
+Urban resilience depends not only on the seismic capacity
+of individual buildings but also on the functional connec-
+tivity of lifeline systems. Based on complex system theory,
+this framework models transportation networks, power grids,
+water supply networks, gas pipelines, and communication
+networks as interdependent complex networks, which can
+refer to the experience of constructing digital twin models
+for urban lifeline engineering systems under seismic disaster
+scenarios [7]. The model describes not only their physical
+topology but also defines the functional logic, traffic allo-
+cation rules, and cascading failure propagation mechanisms
+under disaster disturbances (such as node failure and link
+interruption). Cascading failures are simulated using load
+redistribution models with parameters (e.g., node capacity
+Cj, initial load Lj, edge weight wij) derived from real-world
+network data (e.g., traffic flow surveys, power grid ratings) or
+engineering design standards, rather than simplistic assign-
+ments based on nodal degree. Thus, it simulates the dynamic
+process from local damage to systemic functional paralysis.
+As stated in the Scope section, this module has not been
+validated against real earthquake data and is included to
+define the intended full scope of the framework.
+4) Social Behavior Model (V alidation Status: Conceptual
+design only — not empirically implemented or tested in this
+study)
+To assess the social impacts of earthquakes and the effec-
+tiveness of emergency responses, the framework introduces
+a social behavior model based on Agent-Based Modeling
+(ABM). By defining autonomous decision-making agents
+(such as residents, rescuers, and vehicles) and establish-
+ing their behavioral rules in emergency situations based
+on empirical studies from disaster sociology and evacua-
+tion modeling (e.g., pre-movement delay times, route choice
+under stress, herding behavior), including panic, confor-
+mity, and route re-selection, the model emergently produces
+complex social phenomena from the bottom-up. The model
+parameters can be calibrated using data from past earthquake
+evacuations or drill exercises where available. These phe-
+nomena include macro evacuation traffic flows and rescue
+resource scheduling, achieving a cross-dimensional coupled
+simulation of engineering systems and social systems. This
+module remains conceptual at the current stage and requires
+future empirical calibration and validation.
+C. LARGE-SCALE SCENARIO ENSEMBLE SIMULATION
+AND DEDUCTION LA YER
+This layer represents a key leap for the framework from
+‘‘deterministic analysis’’ to ‘‘probabilistic prediction,’’ with
+its core task being to conduct large-scale computational
+experiments on the digital twin using high-performance com-
+puting resources. The process begins with the generation of
+scenario ensembles, whose scientific basis is probabilistic
+seismic hazard analysis.
+The concept of ‘‘large-scale scenario ensembles’’ shares
+common ground with risk mapping methods such as
+advanced intensity measures [15] and GIS-fuzzy multi-
+criteria decision integration [16], but focuses more on
+encompassing uncertainties in earthquake occurrence and
+propagation through generating massive ground motion sce-
+narios and performing systematic probabilistic calculations.
+First, based on regional seismic tectonic environments and
+historical seismic activity parameters, the Monte Carlo simu-
+lation method is used to randomly generate tens of thousands
+to hundreds of thousands of statistically reasonable potential
+seismic sources (including parameters such as location, mag-
+nitude, rupture plane geometry, and slip distribution). The
+sampling of fault orientation parameters (strike, dip, rake)
+incorporates constraints from regional tectonic settings rather
+than assuming simplistic normal distributions. For example,
+dip angles may be constrained by fault type (e.g., thrust
+vs. strike-slip) and regional stress field data. Subsequently,
+for each potential seismic source, the stochastic finite fault
+method or ground motion models (GMMs) are used. The
+selection and application of GMMs follow region-specific
+models (e.g., those developed for Western China or the Next
+Generation Attenuation models) and account for epistemic
+uncertainties through logic trees or sampling of alternative
+models, to synthesize multiple ground motion time histo-
+ries considering uncertainties in seismic wave propagation
+paths, attenuation relationships, and local site conditions. The
+stochastic finite-fault simulations, when employed, include
+key seismological parameters such as stress drop, rise time,
+and rupture velocity, with values calibrated to regional seis-
+micity (e.g., using data from the 2021 Y angbi earthquake
+sequence for Y unnan). Finally, a large-scale ground motion
+scenario ensemble covering from high-frequency small-to-
+moderate earthquakes to low-frequency extremely rare large
+earthquakes is formed.
+After generating the scenario ensemble, the high-
+performance parallel simulation phase commences. The
+entire process—from seismic source parameter sampling
+120782 VOLUME 14, 2026
+M. Wang et al.: Partially Validated Probabilistic Framework for Urban Seismic Damage Prediction
+(magnitude, location, rupture plane) to ground motion
+time history synthesis and parallel deduction on computing
+clusters—is shown in Fig. 4. In this phase, massive scenarios
+are distributed to thousands of computing cores, with each
+node running an independent digital twin to complete full-
+chain simulation. Each computing node independently hosts a
+complete copy of the urban digital twin and loads the assigned
+ground motion scenario for nonlinear time history analy-
+sis. This process parallelly and automatically executes the
+full-chain deduction from seismic wave input, site response
+calculation, structural dynamic analysis, and infrastructure
+network state assessment to social behavior simulation.
+Through this ‘‘net-casting’’ exploration, the framework can
+systematically reveal the possible behavioral patterns and
+failure paths of urban systems under different seismic threats.
+FIGURE 4. Flow chart of large-scale scenario ensemble generation and
+parallel deduction.
+D. PROBABILISTIC ASSESSMENT AND DECISION
+SUPPORT LA YER
+The primary goal of simulation is to assist in decision-
+making. This layer focuses on processing raw data from
+extensive simulations and converting it into actionable infor-
+mation that can directly support decision-making. The key
+technical methods used are statistical ensemble analysis and
+data visualization.
+Assessment units in an urban setting encompass individual
+buildings, city blocks, pipeline segments, and so forth. For
+each of these units, the system conducts a comprehensive
+analysis of its damage states across all simulated scenarios.
+Damage levels are categorized into various bands, includ-
+ing ‘‘basically intact,’’ ‘‘minor damage,’’ and ‘‘moderate
+damage.’’ The definition of these limit states is linked to engi-
+neering demand parameters (e.g., inter-story drift ratio, peak
+floor acceleration) through fragility functions. These fragility
+functions are either adopted from the literature for generic
+structural types or developed specifically for the building
+inventory in the study area. The system tallies the actual
+frequency with which each unit falls into these damage levels
+and utilizes these frequencies to compute the probability of
+each damage grade.
+Spatial visualization of these probability values gener-
+ates intuitive probabilistic damage cloud maps. As shown in
+Fig. 5, compared with traditional deterministic damage maps
+(Fig. 5a) that only show single-scenario results, the proba-
+bilistic damage cloud maps (Fig. 5b) quantify the uncertainty
+of damage levels, clearly revealing the spatiotemporal distri-
+bution of urban risk and helping delineate high-risk zones.
+By conducting network robustness analysis and sensitiv-
+ity analysis on all simulation results, systemically critical
+vulnerable nodes can be identified across various earth-
+quake scenarios. These nodes may fail repeatedly or trigger
+large-scale cascading effects. The findings provide a basis
+for targeted reinforcement and help focus urban resilience
+enhancement efforts.
+The framework also supports testing the robustness of
+pre-defined emergency plans. Decision-makers can select
+different strategies—such as emergency evacuation routes or
+resource distribution plans—and input them as initial condi-
+tions into the established simulation database. By evaluating
+the average performance and stability of these strategies
+across thousands of potential scenarios, highly robust optimal
+strategies that perform effectively across the broadest range
+of conditions can be identified.
+This process enables a fundamental paradigm shift in
+emergency decision-making. Specifically, as illustrated in
+Fig. 6, the traditional paradigm depends on limited historical
+FIGURE 5. Comparison of damage assessment approaches: (a) Traditional
+Deterministic Damage Map vs. (b) Probabilistic Damage Cloud Map.
+FIGURE 6. Comparative workflow diagram of the traditional paradigm vs.
+the proposed paradigm.
+VOLUME 14, 2026 120783
+M. Wang et al.: Partially Validated Probabilistic Framework for Urban Seismic Damage Prediction
+or design-based scenarios and deterministic simulations—
+failing to account for complex uncertainties. In contrast, the
+proposed paradigm leverages large-scale scenario ensem-
+bles and high-performance parallel simulations to achieve
+rigorous uncertainty quantification, thereby driving a trans-
+formative shift from experience-dependent to data-informed
+emergency decision-making.
+III. CORE METHODOLOGIES AND ALGORITHMIC
+FRAMEWORK
+The framework‘s technical implementation is grounded in
+a set of core methodologies that bridge seismology, struc-
+tural engineering, and computational science. This chapter
+elaborates on the key algorithms and mathematical formula-
+tions underpinning the four layers of the framework, with a
+focus on their physical basis, uncertainty quantification, and
+integration logic. To maintain clarity regarding the validation
+status, this section is divided into two parts: III.A presents the
+methodologies that have been empirically validated in this
+study, while III.B outlines conceptual modules intended for
+future development.
+A. VALIDATED CORE METHODOLOGIES
+This subsection details the methodologies that have been
+empirically implemented and tested against real earthquake
+data in this study. Their validation results are presented in
+Section IV.
+1) DATA SENSING AND FUSION LAYER
+i. Methodological Basis
+The data layer orchestrates the ingestion and harmo-
+nization of multi-source urban data. Its core methodology
+involves spatiotemporal registration, semantic enrichment,
+and graph-based integration to construct a dynamic disaster
+knowledge graph. Spatiotemporal alignment is achieved via
+an affine transformation between source (e.g., UA V local
+coordinates) and target (e.g., WGS84) coordinate systems,
+as shown in Equation (1). Feature fusion employs a weighted
+combination of dynamic (IoT) and static (BIM) features,
+governed by weights derived from information gain analysis
+(Eq. 2). These processes are executed on a CIM platform,
+which provides the necessary computational and semantic
+middleware [7], [9], [10].
+ii. Key Formula Derivations
+a. Spatiotemporal Registration:
+To address the coordinate deviation between InSAR
+(WGS84 coordinate system) and UA V -lidar (local coordinate
+system), affine transformation is used to achieve spatiotem-
+poral alignment. The formula is:
+
+
+xtarget
+ytarget
+1
+
+=
+
+
+a b t x
+c d t y
+0 0 1
+
+
+
+
+xsource
+ysource
+1
+
+ (1)
+The transformation parameters (a, b, c, d, tx, ty) are cali-
+brated using ground control points, ensuring
+a registration error ≤ 0.5m, which is acceptable for
+city−scale modeling [9]
+b. Feature Fusion:
+A weighted feature fusion method is used to integrate struc-
+tural dynamic responses (IoT) and static attributes (BIM).
+The formula is:
+Ftotal = ω1Fdynamic + ω2Fstatic (2)
+Here, F dynamic and F static are normalized feature vectors;The
+weights ω1 and ω2(where ω1 + ω2 = 1) are determined by
+their relative information entropy regarding the entity’s state,
+typically prioritizing real-time data(ω1 ≥ 0.6 ) [10].This layer
+has been validated as part of the overall workflow in the
+Y angbi case study.
+2) GEOLOGICAL AND SITE MODEL
+The site response analysis employs the widely used equiv-
+alent linear method, implemented in a manner analogous
+to programs like SHAKE, to compute the amplification of
+bedrock motions through soil layers. The surface acceleration
+¨ug(t) is obtained by filtering the bedrock acceleration ¨ub(t)
+with a frequency-dependent site transfer function Fs(f) :
+¨ug(t) = F −1F[¨ub(t)] × Fs(f),where
+Fs(f ) = 1
+√
+(1 − (f /f 0)2)2 + (2ξ eqf /f 0)2 (3)
+Key parameters include the site’s fundamental frequency
+f0 and equivalent damping ratio ξ eq. These are not assumed
+but are derived from in-situ geophysical tests (e.g., Spectral
+Ratio H/V method) or regional Vs30 maps, ensuring the
+model reflects actual site conditions. For complex geology,
+1D/2D nonlinear site response analysis can be incorporated
+as a module [7], [13] This site response formulation is empir-
+ically supported by the Y angbi validation, where borehole
+data and Vs30 profiles were used to compute site-specific
+amplifications for the PI-GAN inputs [15].
+3) GROUND MOTION GENERATION VIA
+PHYSICS-INFORMED GAN (PI-GAN)
+This section details the seismologically-grounded methodol-
+ogy for generating the scenario ensemble, which is the core
+innovation for uncertainty quantification.
+i. Seismic Source Parameter Sampling
+The sampling of earthquake sources integrates probabilis-
+tic seismic hazard analysis (PSHA) principles with regional
+tectonic constraints [8], [9].
+a. Magnitude: Sampled according to the Gutenberg-
+Richter law, lgN(M) = a − bM (4), where the a and b
+values are calibrated to the seismicity of the study region
+(e.g., derived from the China Seismic Hazard Map).
+b. Location: For areal sources, a 2D normal distribution is
+used, centered on major fault zones. The covariance matrix
+is shaped by fault zone geometry and historical hypocenter
+dispersion.
+c. Fault Geometry (Strike φ, Dip δ, Rake λ): Crit-
+ical improvement: The sampling of these parameters is
+120784 VOLUME 14, 2026
+M. Wang et al.: Partially Validated Probabilistic Framework for Urban Seismic Damage Prediction
+constrained by regional tectonic stress regimes and fault type,
+not simple uniform/normal distributions. For a known fault,
+φ is fixed; δ is sampled from a truncated normal distribution
+around its known mean (e.g., ∼70◦ for strike-slip faults); λ is
+constrained by the fault’s kinematic style (e.g., −180◦ to 0 ◦
+for normal, 0 ◦ to 180 ◦ for reverse). This approach, aligning
+with regional tectonic studies, addresses the oversimplifica-
+tion noted by reviewers.
+ii. Ground Motion Field Synthesis
+A hybrid approach is adopted to balance physical rigor and
+computational efficiency across the magnitude spectrum.
+a. For M<∼7.0: The stochastic finite-fault method is
+employed. The fault is discretized into subfaults, with key
+seismological parameters such as stress drop (1σ ) calibrated
+to regional seismicity (e.g., using data from the 2021 Y angbi
+earthquake sequence for Y unnan). The method synthesizes
+ground motion time histories considering uncertainties in
+seismic wave propagation paths and attenuation relation-
+ships, consistent with established stochastic simulation prin-
+ciples [8], [9]. Site amplification is then applied via Eq. (3).
+u(t) =
+∑N
+i=1
+∑M
+j=1
+1
+4πρv2s rij
+˙Dij(t−τij) ∗ w(t) (4)
+① Key Parameters and Implementation of Stochastic
+Finite-Fault Method
+For earthquakes with magnitude M<7.0, the core parame-
+ters of the stochastic finite-fault method are calibrated based
+on the Y angbi earthquake sequence and the tectonic charac-
+teristics of Y unnan region: the discretized subfault size of the
+fault is 5km×5km, the stress drop 1σ = 8MPa, the rupture
+velocity Vr = 2.8km/s, and the rise time Tr = 0.5s. The
+attenuation relationship of the seismic wave propagation path
+adopts the attenuation formula fitted by the measured data
+in Y unnan region. The site amplification effect is realized by
+the SHAKE program, with input parameters including soil
+layer thickness, shear wave velocity layered data (hard soil
+Vs>760m/s, medium-soft soil 360m/s≤Vs≤760m/s, soft soil
+Vs<360m/s) and soil layer damping ratio (2%∼5%). The site
+transfer function is calculated by the equivalent linear method
+to complete the site amplification correction of the bedrock
+ground motion.
+② Selection of Regional Ground Motion Model (GMM)
+Considering the characteristics of ground motions in
+Southwest China, this study selects Chiou-Y ang 2014 as the
+regional GMM model. This model takes into account key
+influencing factors such as magnitude, epicentral distance,
+site class and fault type, and is adapted to the characteristics
+of ground motion parameters of strike-slip earthquakes in
+Y unnan region. The total aleatory variability σ total of the
+GMM model is set to 0.35. Epistemic uncertainty in the
+model form is considered by logic tree sampling, and a total
+of 5 types of regional GMM models are selected for logic tree
+weighting.
+b. For M ≥∼7.0 (Extreme/‘‘Long-tail’’ Scenarios): To
+generate physically plausible long-period ground motions
+for large magnitudes where empirical records are sparse,
+we propose a conceptual approach employing a Physics-
+Informed Generative Adversarial Network (PI-GAN). It is
+critical to note that this application to M≥7.0 scenarios
+has NOT been empirically validated in the current study.
+The PI-GAN module is validated only for the M6.4 Y angbi
+earthquake (Section IV). Its extension to large-magnitude
+scenarios remains a hypothesis and future research direction,
+requiring comparison against physics-based synthetic seis-
+mograms from established methods (e.g., finite-difference
+or spectral-element simulations) before claims of reliabil-
+ity can be made. The empirical validation in Section IV
+serves only to demonstrate the model’s capability to repli-
+cate region-specific ground motion characteristics under a
+moderate-magnitude scenario, not to validate its performance
+for extreme events. The PI-GAN network adopted in this
+study consists of a generator (G) and a discriminator (D): the
+generator is an encoder-decoder structure based on Convo-
+lutional Neural Network (CNN), including 6 convolutional
+layers and 6 deconvolutional layers, with activation func-
+tions of Leaky ReLU (negative slope 0.2) and Tanh; the
+discriminator is a deep convolutional discriminant network,
+including 5 convolutional layers with activation function of
+Leaky ReLU (negative slope 0.2), and the output layer uses
+Sigmoid function. The composite loss function of PI-GAN
+is shown in Equation (6), where the full loss weights are
+set as α = 1.0 (GMM constraint loss), β = 0.8 (spectral
+constraint loss), and γ = 0.5 (wave equation constraint loss).
+The weights are determined by five-fold cross-validation and
+adapted to the characteristics of ground motions in Southwest
+China.
+Ltotal = LGAN + αLGMPE + βLspec + γ Lwave (5)
+where LGMPE penalizes deviations from regional GMM pre-
+dictions, Lspec enforces realistic spectral shapes, and the
+newly added Lwave ensures the generated waveforms satisfy
+basic wave equation constraints. This hybrid data-physics
+approach mitigates the ‘‘black-box’’ nature of pure AI gen-
+erators and is justified by recent literature on physics-guided
+machine learning in seismology. Its effectiveness for the Y un-
+nan region is empirically validated in Section IV.
+iii. Ground Motion Models (GMMs) and Path Uncertainty
+Region-specific ground motion models (GMMs, often his-
+torically referred to as Ground Motion Prediction Equations,
+GMPEs) are used to predict Intensity Measures (IMs) like
+PGA. The median prediction is lognormally distributed, and
+the total aleatory variability σtotal is applied:
+ln(IM ) = f (M , R, θ) + ϵ, ϵ ∼ N (0, σ 2
+total) (6)
+Here, θ represents other parameters like site condition
+(Vs30) and style-of-faulting. Epistemic uncertainty in the
+GMM model form is accounted for by logic tree sampling
+or using multiple GMMs.
+iv. Scenario Quality Control
+Generated scenarios undergo physical consistency checks.
+The PGA filtering threshold of 2.0g is not arbitrary but is
+based on the upper bound of recorded strong motions in stable
+VOLUME 14, 2026 120785
+M. Wang et al.: Partially Validated Probabilistic Framework for Urban Seismic Damage Prediction
+continental regions like mainland China and considerations of
+near-field saturation effects. Duplicate scenarios are removed
+based on a cosine similarity threshold (e.g., 0.8) applied to
+response spectra vectors, preserving diversity.
+4) PROBABILISTIC DAMAGE ASSESSMENT AND DECISION
+SUPPORT
+i. Damage Probability Calculation
+The core output is the probabilistic damage state for each
+asset. This requires fragility functions that link the engineer-
+ing demand parameter (EDP , e.g., spectral acceleration Sa)
+to discrete damage states (DS). The probability of being in or
+exceeding damage state DSk given an IM level is:
+P(DS ≥ DSk |IM = x) = 8
+( ln(x/θk )
+βk
+)
+(7)
+where θk is the median capacity and βk the logarithmic
+standard deviation for the k-th limit state. These fragility
+parameters are assigned based on the asset’s structural tax-
+onomy. The framework aggregates results from all Ntotal
+scenarios:
+P(DSk ) = Nscen(DS ≥ DSk )
+Ntotal
+(8)
+A confidence interval for this probability can be esti-
+mated via the binomial distribution or bootstrap methods,
+acknowledging finite-sample uncertainty. This module has
+been validated against the Y angbi earthquake damage data
+(Section IV).
+ii. Emergency Plan Robustness Metric
+The robustness R of an emergency plan (e.g., an evacuation
+route set) is quantified by its performance stability across the
+scenario ensemble:
+R = 1 − σperf
+µperf
+(9)
+where µperf and σperf are the mean and standard deviation of
+a performance metric (e.g., evacuation time, coverage rate)
+across all scenarios. An R value closer to 1 indicates lower
+sensitivity to seismic uncertainty [18]
+5) DNN SURROGATE MODEL FOR STRUCTURAL RESPONSE
+To achieve efficient and accurate simulation of the seismic
+performance of building clusters at the urban scale, this
+study adopts a hybrid modeling strategy combining physical
+mechanism models and AI surrogate models [8], [13]. For
+the Huaian Village case study, which is dominated by low-
+rise Frame/Masonry and Brick-Wood/Earth-Wood structures
+(without super high-rise buildings or major lifeline projects),
+a Deep Neural Network (DNN) surrogate model was
+adopted to calculate the structural dynamic responses for all
+112 buildings.
+The core assumptions of the DNN model for this case are
+defined as: taking 5 key ground motion parameters (PGA,
+Sa(0.3s), Sa(1.0s), epicentral distance, site class) as the input,
+and the structural inter-story drift ratio (Engineering Demand
+Parameter, EDP) as the output. The DNN model structure was
+FIGURE 7. Schematic diagram of the collaborative relationship among
+core technologies of the probabilistic prediction framework.
+optimized for the study area: 3 hidden layers with 64, 32 and
+16 neurons respectively (ReLU as activation function), the
+training/test set division ratio of 7:3 based on the measured
+data, and five-fold cross-validation was used to ensure the
+generalization ability. Minor nonlinear factors were neglected
+to focus on the correlation between core ground motion
+parameters and structural damage in Huaian Village.
+Important: This DNN model is calibrated specifically
+for the 112 buildings in Huaian Village (representing only
+two structural types: Frame/Masonry and Brick-Wood/Earth-
+Wood). It is site-specific and requires complete recalibration
+with local data before being applied to any other urban
+setting. The DNN surrogate model is NOT claimed to be
+generalizable across different cities or structural invento-
+ries without retraining. A bidirectional graphics framework
+can provide technical support for bidirectional mapping and
+updating between physical models and data-driven models
+[14], achieving significant savings in computing resources.
+B. CONCEPTUAL MODULES: FUTURE EXTENSIONS
+The following two modules are presented as conceptual
+designs that have not been empirically implemented or val-
+idated in this study. Their mathematical formulations are
+included to define the framework’s intended full scope, but
+they should not be interpreted as tested capabilities.
+1) INFRASTRUCTURE CASCADING FAILURE MODEL
+(CONCEPTUAL)
+Urban resilience depends not only on the seismic capacity
+of individual buildings but also on the functional connec-
+tivity of lifeline systems. Based on complex system theory,
+this framework models transportation networks, power grids,
+water supply networks, gas pipelines, and communication
+networks as interdependent complex networks[7]. The model
+describes not only their physical topology but also defines the
+functional logic, traffic allocation rules, and cascading failure
+propagation mechanisms under disaster disturbances (such as
+node failure and link interruption).
+Cascading failures in interdependent infrastructure net-
+works are modeled using a load-capacity model. When a
+node i fails, its load Lj is redistributed to its neighboring nodes
+120786 VOLUME 14, 2026
+M. Wang et al.: Partially Validated Probabilistic Framework for Urban Seismic Damage Prediction
+j ∈ 0(i) proportionally to the edge weights wij:
+L′
+j = Lj +
+∑
+i∈0(j)
+Li × wij∑
+k∈0(i) wik
+(10)
+Node j fails if its updated load L′
+j exceeds its
+capacity Cj. The initial loads Lj and capacities Cj are assigned
+based on real-world system data (e.g., traffic flow counts,
+power line ratings), and the edge weights wij represent
+functional coupling strength (e.g., road capacity, electrical
+admittance). This provides a more realistic simulation than
+degree-based assignments [7], [16] As stated in the Scope
+section (I-C), this module has not been validated against real
+earthquake data and is included solely to define the intended
+future scope of the framework.
+2) AGENT-BASED SOCIAL BEHAVIOR MODEL
+(CONCEPTUAL)
+To assess the social impacts of earthquakes and the effec-
+tiveness of emergency responses, the framework introduces
+a social behavior model based on Agent-Based Modeling
+(ABM). By defining autonomous decision-making agents
+(such as residents, rescuers, and vehicles) and establish-
+ing their behavioral rules in emergency situations based
+on empirical studies from disaster sociology and evacua-
+tion modeling (e.g., pre-movement delay times, route choice
+under stress, herding behavior), the model emergently pro-
+duces complex social phenomena from the bottom-up. The
+model parameters can be calibrated using data from past
+earthquake evacuations or drill exercises where available.
+While not empirically validated in this study, the proposed
+ABM module is mathematically defined as follows. Each
+agent a ∈ A is characterized by a state vector:
+sa(t) = [xa(t), va(t), statusa(t), rolea] (11)
+where x a(t) is the 2D position, v a(t) the speed, status a ∈
+{safe, evacuating, injured, rescued}, and
+rolea ∈ {resident, rescuer, vehicle}.
+The motion of evacuating agents follows a social force
+model:
+ma
+dva
+dt = Fdrive +
+∑
+b̸=a Frep(a, b)
++
+∑
+w Fwall(a, w) + ξa(t) (12)
+where Fdrive = ma
+v0
+a(t)e0
+a(t)−va(t)
+τ is the driving force toward
+desired direction, Frep(a, b) represents agent-agent repulsion
+(e.g., social force), Fwall(a, w) is the wall avoidance force,
+ξa(t) is a stochastic term representing behavioral uncertainty.
+Route choice decisions are modeled via a discrete choice
+model:
+P(routei) = exp(−β · costi)∑
+j exp(−β · costj) (13)
+where costi integrates path length, congestion, and per-
+ceived seismic risk. This formulation follows standard ABM
+practice in evacuation modeling.The current paper does not
+implement or validate this module; it is presented solely as a
+conceptual design.
+IV. EMPIRICAL ANALYSIS OF CORE MODULES USING
+THE YANGBI M S 6.4 EARTHQUAKE
+A. OVERVIEW OF THE EMPIRICAL ANAL YSIS
+To quantitatively evaluate the performance and engineer-
+ing applicability of the core modules within the proposed
+probabilistic urban seismic damage prediction framework,
+an empirical analysis was conducted using the 2021 Y angbi
+Ms6.4 earthquake in Y unnan Province, China, as a case study.
+This earthquake, with a focal depth of 8 km, caused signifi-
+cant damage to buildings in Huaian Village, Y angbi County.
+The availability of rich and reliable measured data makes
+it an ideal natural testbed for module validation. Consistent
+with the scope stated in Section I-C, the analysis focused on
+two core modules: the Ground Motion Generation Module
+(PI-GAN) and the Probabilistic Damage Cloud Generation
+Module. The infrastructure cascading failure module and the
+ABM social behavior module remain conceptual and are not
+included in this empirical analysis.
+Data sources included: strong motion records from the
+Y angbi earthquake (50 records, covering three site condi-
+tions), high-resolution UA V imagery and Digital Surface
+Models (DSM) of Huaian Village, and field survey data
+of 112 buildings (including structural type, number of sto-
+ries, and damage grade). V alidation metrics considered both
+physical plausibility and quantitative accuracy, as summa-
+rized in Table 1. The moderate-magnitude Y angbi event
+serves to validate the physical consistency and regional
+accuracy of the PI-GAN. Its performance here provides a
+foundation for its application in generating large-magnitude
+scenarios, where physics-based constraints guide the syn-
+thesis in the absence of abundant empirical data—though
+such extrapolation to M≥7.0 remains unvalidated, as noted
+in Sections I-C and III-A.
+TABLE 1. Validation metrics and data sources for core modules.
+B. EMPIRICAL ANAL YSIS OF THE GROUND MOTION
+GENERATION MODULE (PI-GAN)
+1) ANALYSIS OBJECTIVES
+The objective was to validate the physical consistency and
+accuracy of ground motion time histories generated by the
+PI-GAN model, specifically for a regionally-specific seismic
+scenario (the Y angbi M s6.4 earthquake). The focus was on
+assessing its capability to replicate Peak Ground Acceleration
+VOLUME 14, 2026 120787
+M. Wang et al.: Partially Validated Probabilistic Framework for Urban Seismic Damage Prediction
+(PGA) and match response spectra, ensuring the generated
+ground motions are suitable for subsequent disaster simula-
+tion analyses.
+2) METHODOLOGY
+i. Model Training and Calibration:
+The model was trained on a base dataset from the PEER
+NGA-West2 database (700 records) and regionally calibrated
+by incorporating 50 measured strong motion records from
+the Y angbi earthquake. The 50 Y angbi strong-motion records
+were split as follows: 35 records (70%) for training, 8 records
+(16%) for validation (hyperparameter tuning and early stop-
+ping), and 7 records (14%) for final testing. The test set
+was held out until the final evaluation, and all reported per-
+formance metrics (PGA error, response spectrum error) are
+computed on the test set only. A composite loss function
+(α = 1.0, β = 0.8, γ = 0.5) combining adversarial
+loss, GMPE constraint loss, spectral constraint loss and
+wave equation constraint loss was employed, as defined in
+Equation (6). The Adam optimizer was used for training with
+a learning rate of 0.0002 and a batch size of 32. Data pre-
+processing adopted normalization to map the ground motion
+acceleration values to the interval [−1,1]. Training proceeded
+for 500 epochs until loss convergence (final loss value 0.08).
+ii. Ground Motion Generation: Using key parameters from
+the Y angbi earthquake (Ms6.4, soft site conditions with shear
+wave velocity <360 m/s), the trained PI-GAN model was
+used to generate 1000 ground motion time histories, with
+a uniform sampling rate of 50 Hz and a truncated effective
+duration of 60 seconds.
+iii. Performance Evaluation:
+a. Qualitative Comparison: The waveform morphology,
+peak distribution, and attenuation trends of 5 randomly gener-
+ated time histories were compared against a measured record.
+b. Quantitative Analysis: The relative difference in PGA
+between generated and measured time histories was calcu-
+lated. Furthermore, the error between the average response
+spectrum of the 1000 generated time histories and the mea-
+sured response spectrum was computed.
+3) RESULTS
+i. Time History Comparison: As shown in Fig. 8a, the five
+ground motion time histories generated by PI-GAN show
+high consistency with the measured record from the Y angbi
+earthquake in terms of waveform morphology, characteristics
+of peak concentration, and attenuation trend, with no signs of
+physical distortion (e.g., anomalous spikes, spectral leakage).
+The deviation in peak arrival time between generated and
+measured time histories was less than 1.2 s, and the durations
+were controlled within 58-62 s, conforming to the temporal
+characteristics of real ground motions.
+ii. Response Spectrum and PGA Accuracy: As shown in
+Fig. 8b, the average response spectrum of the 1000 generated
+ground motions shows excellent agreement with the mea-
+sured spectrum within the period range of 0.1-6 s, nearly
+overlapping in key period bands. Quantitative results show
+FIGURE 8. Comparison between measured and PI-GAN generated ground
+motions for the Yangbi earthquake. (a) The black solid line is the
+measured acceleration time history; the colored solid lines are five
+randomly generated time histories by PI-GAN. (b) The blue solid line is
+the measured response spectrum; the red solid line is the average
+response spectrum of 1000 generated time histories.
+that the relative PGA difference between generated and mea-
+sured time histories was ≤5%, and the response spectrum
+error was 6.2% (≤10%), both meeting the pre-defined engi-
+neering accuracy thresholds.
+iii. Statistical Performance Summary: The PI-GAN model
+demonstrated stable performance across different site condi-
+tions. Detailed statistical results are presented in Table 2.
+TABLE 2. Statistical performance of the PI-GAN model.
+4) DISCUSSION
+By incorporating regional strong motion records for cali-
+bration, the PI-GAN model generates ground motions that
+are not only highly consistent with measured data in phys-
+ical form but also meet engineering accuracy requirements
+in key quantitative metrics (PGA, response spectrum). Its
+core advantage lies in the introduction of physics-constrained
+loss functions, which ensure the rationality of generated
+time histories, and regional data calibration, which enhances
+the model’s adaptability to the geological conditions of
+Southwest China. The observed PGA relative difference of
+3.8% and response spectrum error of 6.2% demonstrate that
+the model can accurately replicate the key dynamic char-
+acteristics of the target earthquake, providing high-quality
+120788 VOLUME 14, 2026
+M. Wang et al.: Partially Validated Probabilistic Framework for Urban Seismic Damage Prediction
+and credible ground motion inputs for large-scale scenario
+ensembles.
+5) DATA, PARAMETERS, AND REPRODUCIBILITY STATEMENT
+To ensure transparency and reproducibility, the data sources
+and key parameters for validating the PI-GAN module are
+detailed below:
+i. Strong Motion Records: 50 records from the 2021 Y angbi
+M6.4 earthquake were used, encompassing three site condi-
+tion categories (Hard, Medium-Soft, Soft) as per Chinese site
+classification. These were split into 35 training, 8 validation,
+and 7 test records.
+ii. PI-GAN Training: The model was trained on a base
+dataset from the PEER NGA-West2 database, augmented
+with the aforementioned Y angbi records. The composite loss
+function (Eq. 6) with weights α = 1.0, β = 0.8, γ = 0.5 was
+used over 500 epochs.
+iii. Scenario Generation: Using the source parameters of
+the Y angbi earthquake, 1000 ground motion time histo-
+ries were generated per site class (sampling rate: 50 Hz,
+duration: 60s).
+iv. Evaluation Metrics: Peak Ground Acceleration (PGA)
+relative difference and response spectrum error (over period
+range 0.1-6s) were calculated against the measured records.
+C. EMPIRICAL ANAL YSIS OF THE PROBABILISTIC
+DAMAGE CLOUD GENERATION MODULE
+1) ANALYSIS OBJECTIVES
+This analysis aimed to validate the capability of the prob-
+abilistic damage cloud map to quantitatively characterize
+the distribution of building seismic damage. The focus was
+on evaluating its accuracy in matching damage probabilities
+across different structural types and building heights, as well
+as its spatial accuracy in identifying high-risk zones, thereby
+providing a basis for seismic risk assessment and decision
+support.
+2) METHODOLOGY
+i. Basic Data Preprocessing: A total of 112 buildings in
+Huaian Village were used as assessment units. Basic infor-
+mation was obtained from UA V imagery and field surveys
+(Fig. 9a, 9b): structural types were classified as Frame/
+Masonry (42 buildings) and Brick-Wood/Earth-Wood
+(70 buildings); number of stories ranged from 1 to 4, with
+89 buildings having 1-2 stories and 23 buildings having
+3-4 stories. Based on the ‘‘Classification of Seismic Dam-
+age of Buildings’’ standard, field damage was categorized
+into four levels: Severe Damage, Moderate Damage, Minor
+Damage, and No Damage (Fig. 9c).
+ii. Probabilistic Damage Cloud Generation
+a.Case-adapted Hybrid Modeling Strategy
+For the building scenario of Huaian Village (dominated by
+low-rise Frame/Masonry and Brick-Wood/Earth-Wood struc-
+tures, without super high-rise buildings and major lifeline
+FIGURE 9. Basic building information and probabilistic damage cloud
+map for Huaian Village. (a) Structural type distribution; (b) Number of
+stories distribution; (c) Field-observed damage grade distribution;
+(d) Probabilistic damage cloud map (darker colors indicate higher
+probability of severe damage, legend range: 0-100%). All subplots are
+overlaid on high-resolution UAV imagery of Huaian Village, using the
+WGS84 coordinate system.
+VOLUME 14, 2026 120789
+M. Wang et al.: Partially Validated Probabilistic Framework for Urban Seismic Damage Prediction
+projects), a Deep Neural Network (DNN) surrogate model
+was adopted to calculate the structural dynamic responses for
+all 112 buildings. The core assumptions of the DNN model
+for this case were defined as: taking 5 key ground motion
+parameters (PGA, Sa(0.3s), Sa(1.0s), epicentral distance, site
+class) as the input, and the structural inter-story drift ratio
+(Engineering Demand Parameter, EDP) as the output. The
+DNN model structure was optimized for the study area:
+3 hidden layers with 64, 32 and 16 neurons respectively
+(ReLU as activation function), the training/test set division
+ratio of 7:3 based on the measured data, and five-fold cross-
+validation was used to ensure the generalization ability. Minor
+nonlinear factors were neglected to focus on the correlation
+between core ground motion parameters and structural dam-
+age in Huaian Village.
+b. Fragility Curve Calibration Details
+The structure-specific fragility curves were calibrated in
+accordance with Classification of Seismic Damage of Build-
+ings and Structures (GB/T 24335-2009), which divides the
+seismic damage grades into four levels: basically intact,
+minor damage, moderate damage, and severe damage. The
+maximum likelihood estimation method was used for calibra-
+tion, combined with the post-earthquake measured damage
+data of 112 buildings in Huaian Village. The key calibrated
+fragility parameters (consistent with the form of Equation (8))
+for the two core structural types in the study area were as
+follows: ① Frame/Masonry structures: median capacity θk
+(PGA) = 0.25g, logarithmic standard deviation βk = 0.32;
+② Brick-Wood/Earth-Wood structures: median

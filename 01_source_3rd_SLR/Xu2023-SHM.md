@@ -21,4 +21,17 @@ Structural health monitoring (SHM) is a critical component of ensuring the safet
 | Yes | Yes | Yes | Tier 2 - Digital Shadow (one-way physical to virtual) | 0 | 0 | 1 | Design for Safety (DfS) | None | Digital Twin platform (no machine learning) | Multi (two or more data types) | Single case study | 4 | BIM-to-Digital-Twin architecture |
 
 **Key evidence (AG):** Digital twin model for monitoring building structural health by combining BIM and real-scene 3D model (Nanjing Tech U): fuses BIM with real-scene 3D model via rigid-body transformation (3D spatial position registration) + semantic information mapping (JSON); reconstructs BIM into sub-BIMs; sensor data stored in database and integrated with fused model; Nanjing Museum Old Hall case study. One-way monitoring→fusion→visualization; no actuation and no learning loop.
+
+
+**Strength & gap filled (AH):** Addresses the lack of spatial linkage between internal BIM components and external building scenes for structural health monitoring: IFC BIM is split into sub-BIMs and fused with an oblique-photogrammetry real-scene 3D Tiles model through rigid-body SVD registration and JSON semantic mapping, integrating 60 vibration, displacement, strain, and temperature sensors of the Nanjing Museum Old Hall into a Cesium-based monitoring system.
+
+**Deficiencies & future work (AI):** Tie-point selection is manual and the separate merging programs take about 25 minutes to run; the fusion lacks level-of-detail handling which slows BIM loading, the structural safety evaluation function is reserved and not yet developed, and dynamic analysis of overall building health from local sensor data requires further investigation.
+**Fusion depth (AC1):** Fused
+
+**Fusion evidence (AC2):**
+- **Data streams:** IFC BIM sub-models + real-scene 3D Tiles photogrammetry model + 60 sensor series (Nanjing Museum Old Hall).
+- **Integration mechanism:** rigid-body SVD registration and JSON semantic mapping fuse BIM and reality-mesh into one model, into which the sensor data are integrated for Cesium-based monitoring visualisation.
+- **Why this code:** the fused BIM-mesh product depends on two geometry sources simultaneously and then absorbs sensor data, so Fused.
+
+**Confidence (AC3):** High - the SVD registration + JSON mapping fusion is explicit.
 (full-text source: Endnote)

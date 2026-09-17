@@ -21,3 +21,16 @@ In the process of building construction, traditional architectural design and co
 | Yes | Yes | Yes | Tier 2 - Digital Shadow | 0 | 1 | 0 | Design for Safety (DfS) | None | Statistical / change-point | Multi (two or more data types) | Single case study | 3 | Design for Safety |
 
 **Key evidence (AG):** Modelling study of prefabricated building construction process using digital twins + prefabricated BIM (Chongqing Jiaotong U): DT/prefab construction system with measuring sensors for real-time monitoring and prediction of component damage/deformation (production, transport, assembly); assembly BIM transferred to network cloud for BIM display; risk-indicator data analysed with factor analysis (Cronbach alpha 0.8-0.9, KMO, variance 65.02% cumulative) for potential safety hazards during construction. One-way monitoring/prediction→designer guidance; no actuation and no self-improvement loop (data collection is narrow — acknowledged limitation).
+
+**Strength & gap filled (AH):** Combines DT technology with prefabricated BIM to model prefabricated building construction, so measuring sensors monitor displacement and rotation torque during component production, transport, and assembly, and risk indicators are tracked in real time. Validation uses factor analysis on risk cases (130 valid cases, 100 percent effective, extraction values 0.75 to 0.86), filling the gap of few DT studies on prefabricated construction in smart cities.
+
+**Deficiencies & future work (AI):** The index selection in the construction process is not comprehensive enough and the data collection area is narrow, which the authors state affects universality; the work remains a modelling study without a demonstrated live sensor-to-twin data link. Future work will select multilevel data, supplement research data, and reduce the deviation of research results.
+
+**Fusion depth (AC1):** Unclear
+
+**Fusion evidence (AC2):**
+- **Data streams:** displacement/rotation-torque measuring sensors (described) + 130 risk-case records (Cronbach alpha 0.8-0.9, KMO, 65.02% variance).
+- **Integration mechanism:** none demonstrated - sensor monitoring and factor analysis are described side by side without an implemented linkage.
+- **Why this code:** Unclear (rule 1 - no demonstrated integration).
+
+**Confidence (AC3):** High - the missing live link is acknowledged by the authors.

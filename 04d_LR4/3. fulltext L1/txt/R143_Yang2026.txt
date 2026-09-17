@@ -1,0 +1,1430 @@
+Digital twin-based framework for multi-objective optimization of shield 
+tunneling parameters
+☆
+Congzhen Yang
+b
+, Zhikun Ding
+a , c , *
+, Tianrui Liu
+b
+, Zezhou Wu
+a , c
+, Ke Chen
+a , b , *
+a
+Open Research Fund of Key Laboratory of Coastal Urban Resilient Infrastructures (Shenzhen University), Ministry of Education, Shenzhen 518060, China
+b
+School of Civil and Hydraulic Engineering, Huazhong University of Science and Technology, Wuhan 430074, China
+c
+State Key Laboratory of Intelligent Geotechnics and Tunnelling, Shenzhen 518061, China
+ARTICLE INFO
+Keywords:
+Shield tunneling
+Digital twin
+Parameter optimization
+Multi-objective optimization
+ABSTRACT
+Optimizing shield tunneling parameters is critical for ensuring both safety and efficiency in tunnel construction. 
+However, existing optimization approaches often underutilize operational data and are prone to entrapment in 
+local optima. This study proposes a digital twin (DT) -based framework for multi-objective optimization (MOO) 
+of shield tunneling parameters. The framework integrates data acquisition, preprocessing, modeling, and opti -
+mization within a layered architecture. Key parameters are identified using the shapley additive explanations 
+(SHAP) method, while a hybrid optimization algorithm — artificial bee colony (ABC) – non-dominated sorting 
+genetic algorithm III (NSGA-III) — combines the strengths of both algorithms and is applied across three opera -
+tional scenarios. Optimized parameters are iteratively fed back into the DT to guide parameter adjustment. The 
+framework is validated using data from the Shanghai Airport Link Line project. Full-parameter optimization 
+yields the best performance, achieving an overall optimization rate of 32.02%, with particularly notable im -
+provements in controlling the vertical deviation of shield head. Comparative analyses show that the proposed 
+framework surpasses benchmark methods in convergence speed and solution quality, reducing shield attitude 
+deviation by 2.21% – 17.13%. These results underscore the framework ’ s potential as an effective decision-support 
+tool for shield tunneling operations.
+1. Introduction
+With the rapid expansion of urban underground infrastructure, the 
+demand for tunnel construction has increased substantially ( Guo et al., 
+2025 ). Among the available tunneling methods, shield tunneling has 
+been widely adopted due to its advantages in construction efficiency, 
+operational safety, and minimal disturbance to surrounding environ -
+ments ( Lei et al., 2024 ). Nevertheless, shield tunneling control remains 
+inherently complex, and inappropriate tunneling parameter settings can 
+induce deviations in shield attitude, leading to trajectory misalignment, 
+segment dislocation, or even structural damage ( Li et al., 2024 ). 
+Therefore, optimizing shield tunneling parameters is essential to main -
+tain alignment with the designed tunnel axis and ensure construction 
+safety ( Shen et al., 2022 ).
+Optimization of shield tunneling parameters involves multiple 
+interdependent variables — such as thrust force, cutterhead torque, and 
+advance speed — that exhibit nonlinear relationships ( Fu et al., 2026 ). As 
+such, the problem is typically formulated as a multi-objective optimi -
+zation (MOO) task ( Chen et al., 2024 ). Existing approaches to addressing 
+this problem include statistical analysis, numerical simulation, and 
+intelligent algorithms ( Chang et al., 2024 ). Statistical analysis methods 
+can reveal empirical relationships among variables ( Sugimoto and Sra -
+moon, 2002 ), but often fail to capture nonlinear interactions under 
+heterogeneous geological conditions ( Huang et al., 2022 ). Fu et al. 
+(2025) introduced automated stratum identification techniques to 
+address challenges arising from geological uncertainties. Numerical 
+simulations, such as those based on finite element methods, provide 
+valuable insights into mechanical behavior and deformation control 
+( Yin et al., 2018 ), yet their applicability is limited by computational cost 
+( Huang et al., 2024 ). More recently, intelligent optimization algorithms 
+☆
+This article is part of a special issue entitled: ‘Advances in Shield Tunneling ’ published in Tunnelling and Underground Space Technology incorporating 
+Trenchless Technology Research.
+* Corresponding authors at: Open Research Fund of Key Laboratory of Coastal Urban Resilient Infrastructures (Shenzhen University), Ministry of Education, 
+Shenzhen 518060, China.
+E-mail addresses: ddzk@szu.edu.cn (Z. Ding), chenkecm@hust.edu.cn (K. Chen). 
+Contents lists available at ScienceDirect
+Tunnelling and Underground Space Technology 
+incorporating Trenchless Technology Research
+journal homepag e: www.else vier.com/loc ate/tust
+https://doi.org/10.1016/j.tust.2026.107457
+Received 18 August 2025; Received in revised form 22 November 2025; Accepted 6 January 2026 
+Tunnelling and Underground Space Technology 171 (2026) 107457 
+Available online 13 January 2026 
+0886-7798/© 2026 Elsevier Ltd. All rights are reserved, including those for text and data mining, AI training, and similar technologies. 
+have demonstrated strong optimization capabilities.
+Several MOO algorithms such as non-dominated sorting genetic al -
+gorithm II (NSGA-II) ( Deb et al., 2002 ), non-dominated sorting genetic 
+algorithm III (NSGA-III) ( Deb and Jain, 2014 ), multi-objective evolu -
+tionary algorithm based on decomposition (MOEA/D) ( Fan et al., 2022; 
+Wang et al., 2021 ), and multi-objective marine predator algorithm 
+(MOMPA) ( Zhong et al., 2021 ), have been developed and applied across 
+engineering domains. These algorithms are well-suited for problems 
+characterized by nonlinear relationships, high dimensionality, and 
+conflicting objectives. However, when dealing with six or more objec -
+tives, MOEA/D struggles to maintain a uniform distribution of weight 
+vectors, whereas MOMPA tends to converge prematurely to local optima 
+due to limited mechanisms for preserving population diversity ( Lai 
+et al., 2025 ). By contrast, NSGA-III employs a reference-point-based 
+selection strategy that effectively preserves solution diversity in high- 
+dimensional objective spaces, rendering it suitable for complex MOO 
+problems. In the context of shield tunneling, NSGA-III has been applied 
+to optimize critical tunneling parameters. For instance, Liu et al. (2021)
+utilized it to determine optimal cutterhead rotation speeds. Neverthe -
+less, NSGA-III exhibits slow convergence, which may hinder its ability to 
+approximate the true Pareto front ( Cui et al., 2019 ). Thus, a research gap 
+remains in achieving both convergence performance and solution 
+quality in high-dimensional optimization for tunneling parameters.
+To address these limitations, meta-heuristic algorithms such as par -
+ticle swarm optimization ( Tharwat and Schenck, 2021 ), ant colony 
+optimization ( Priyadarshi and Kumar, 2025 ), and artificial bee colony 
+(ABC) optimization ( Ibrahim et al., 2025 ) have been used to navigate 
+complex search spaces and avoid entrapment in local optima ( Hussain 
+et al., 2020 ). Among them, the ABC algorithm is particularly notable for 
+its strong global search capability, inspired by the collective foraging 
+behavior of honeybees ( Lin et al., 2025 ). Accordingly, integrating the 
+ABC algorithm with NSGA-III offers the potential to improve the di -
+versity and quality of initial candidate solutions, thereby enhancing the 
+overall optimization performance. However, current research on shield 
+tunneling parameter optimization remains predominantly algorithm- 
+centric, with limited attention given to integrating optimization 
+models with the underlying physical processes of tunneling ( Li et al., 
+2019 ).
+In response, the emergence of digital twin (DT) technology has 
+attracted growing attention as a promising pathway toward bridging 
+this gap ( Kritzinger et al., 2018 ). First conceptualized by Grieves (2005) , 
+DT technology establishes high-fidelity virtual representations of phys -
+ical assets, enabling interactions among simulation, optimization, and 
+feedback. This capability creates new opportunities for intelligent con -
+trol in tunnel construction ( Barata and Kayser, 2024 ). For example, Ye 
+et al. (2023) developed a DT-based safety management system for 
+simulating tunneling processes and monitoring risks; and Feng et al. 
+(2024) applied DT to simulate ground deformation. Despite these ad -
+vances, most DT applications focused on simulation and monitoring, 
+with limited functionality for high-level optimization decisions ( Zheng 
+et al., 2024 ).
+This study proposes a dynamic optimization framework for shield 
+tunnelling parameters by integrating DT with an improved NSGA-III 
+algorithm. Leveraging the continuous synchronization capabilities of 
+DT, data streams are used to update constraint conditions and objective 
+functions, which overcome the shortcomings of conventional static 
+decision-making approaches. The main contributions of this study are as 
+follows: (1) A dynamic optimization framework that integrates DT 
+technology with an enhanced evolutionary algorithm is developed, 
+expanding the application scope of DT in tunnel construction and 
+advancing its functional evolution from monitoring and simulation to 
+intelligent decision-making; (2) A human–machine collaborative closed- 
+loop architecture is introduced, which enhances the framework’s 
+adaptability under complex tunneling conditions by integrating algo -
+rithmic optimization with expert operational knowledge.
+In the remainder of this paper, Section 2 presents the DT framework 
+and the MOO approach for shield tunneling parameters. Section 3
+evaluates the performance of the proposed framework through a real- 
+world case study. Section 4 discusses the case study results. Section 5
+concludes this study.
+2. Framework for tunneling parameter optimization
+2.1. Overview of the framework
+As illustrated in Fig. 1 , the proposed DT-based tunneling parameter 
+optimization framework comprises four interrelated layers: the physical 
+layer, responsible for monitoring of the tunneling process; the virtual 
+layer, dedicated to constructing a high-fidelity DT model; the data 
+interaction layer, which ensures seamless synchronization between the 
+physical and virtual layers; and the application service layer, which 
+executes dynamic optimizations and generates operational feedback. 
+Grounded in continuously synchronized data, the integration of these 
+layers forms a closed-loop architecture enabling parameter perception, 
+intelligent optimization, and dynamic feedback. This integrated design 
+enables a paradigm shift from passive monitoring to data-driven, 
+human–machine collaborative shield tunneling operations.
+Effective optimization of shield tunneling parameters necessitates a 
+robust mapping mechanism that connects physical measurements with 
+virtual modeling. The physical layer comprises the shield machine and 
+an array of data acquisition devices, which together provide the primary 
+data source for parameter optimization. After data preprocessing and 
+analysis, tunneling parameters and geological information are extracted 
+as input variables for the MOO algorithm. The multi-dimensional nature 
+of these variables directly affects the interdependencies among the 
+objective functions that must be balanced during optimization. Table 1
+summarizes the types of sensors used to quantify tunneling performance.
+The virtual layer establishes a digital environment for parameter 
+optimization through the coordinated integration of three models. The 
+geometric model provides spatial constraints for shield machine. The 
+behavior model uses the shapley additive explanations(SHAP) method 
+( Qiao et al., 2024 ) to construct a dynamic response mechanism between 
+tunneling parameters and optimization objectives. The rule model de -
+fines permissible parameter ranges and operational constraints, thereby 
+establishing a feasible decision space for the MOO problem. Interaction 
+among these models allows the optimization algorithm to periodically 
+evaluate the impact of different parameter combinations on conflicting 
+objectives within the virtual environment.
+The application service layer integrates monitoring data from the 
+physical layer with virtual modeling to execute tunneling parameter 
+optimization. By using an advanced MOO algorithm, this layer identifies 
+optimal parameter combinations and established recommended control 
+ranges aimed at minimizing shield attitude deviations. Once the opti -
+mization results are obtained, the geometric model within the virtual 
+layer maps the optimized parameters to corresponding components or 
+locations of the shield machine. These validated adjustments are sub -
+sequently transmitted back to the physical layer, ensuring adaptive 
+control of shield advancement.
+The data interaction layer serves as the information hub of the 
+framework, enabling seamless communication and integration across all 
+layers. It manages data flows among the physical layer, virtual models, 
+application service layer, and embedded knowledge bases, including 
+industry standards, optimization algorithms, and historical parameter 
+libraries. Through multi-source data integration and transmission, this 
+layer establishes a comprehensive data integration framework to pro -
+vide data support and feedback for parameter optimization, and en -
+hances the level of intelligence in shield tunneling operations.
+2.2. Data preprocessing
+2.2.1. Downtime data removal
+During shield tunneling, monitoring data collected over extended 
+C. Yang et al. Tunnelling and Underground Space Technology incorporating Trenchless Technology Research 171 (2026) 107457 
+2 
+shutdown periods are of limited value for parameter optimization and 
+should be excluded from analysis. Accurate identification of such shut -
+down conditions depends on five key operational parameters, including 
+advancement speed (V), cutterhead rotational speed (N), cutterhead 
+torque (T), penetration per revolution (S), and total thrust (F). These 
+variables collectively characterize the operational status of the shield 
+machine. To distinguish non-tunneling or maintenance conditions, a 
+binary discriminant function can be established to determine whether 
+all relevant parameters simultaneously approach or equal zero. The 
+discriminant logic is formalized in Eq. (1) : 
+D = V • N • T • S • F 
+Status =
+{
+Normaltunnelingstate , D ∕= 0
+Abnormaltunnelingstate , D = 0
+(1) 
+2.2.2. Outlier removal
+To ensure dataset reliability, outliers must be detected and removed. 
+In this study, the boxplot method is employed for outlier identification 
+Fig. 1. Framework for shield tunneling parameter optimization.
+Table 1 
+Common sensor types, functions, and collected data.
+Type Function Collected data
+Pressure sensor Measure pressure at the 
+cutterhead and key 
+locations
+Burial depth; Internal friction 
+angle; Soil cohesion; Thrust 
+cylinder pressure; Total thrust; 
+Cutterhead torque; Grouting 
+pressure; Inlet slurry density; 
+Outlet slurry density; Air cushion 
+pressure; Slurry pressure
+Displacement 
+sensor
+Measure stroke length of 
+thrust cylinders and other 
+conditions.
+Cutterhead penetration rate; 
+Horizontal deviation of shield 
+head; Vertical deviation of shield 
+head; Horizontal deviation of 
+shield tail; Vertical deviation of 
+shield tail
+Speed sensor Measure advance speed, 
+cutterhead rotation rate 
+and other conditions.
+Thrust speed; Cutterhead speed; 
+Inlet slurry flow rate; Outlet 
+slurry flow rate
+Tilt sensor Measure roll and pitch of 
+the shield machine
+Roll angels; Pitch angels
+C. Yang et al. Tunnelling and Underground Space Technology incorporating Trenchless Technology Research 171 (2026) 107457 
+3 
+( Kim and Noh, 2025 ). This statistical approach defines outlier bound -
+aries based on quartiles and the interquartile range (IQR). The proced -
+ure is as follows:
+Step 1 Quartile and IQR calculation. For each input parameter, the 
+first quartile Q
+1
+, third quartile Q
+3
+, and interquartile range IQR are 
+calculated, as illustrated in Eq. (2) . 
+IQR = Q
+3
+  Q
+1
+(2) 
+Step 2 Outlier range determination. The upper and lower limits for 
+acceptable values are defined using Eq. (3) . Values outside this range are 
+considered outliers. 
+{
+lowerlimits = Q
+1
+  1 . 5 × IQR
+upperlimits = Q
+3
++ 1 . 5 × IQR
+(3) 
+Step 3 Outlier removal. Data points beyond the defined range are 
+removed, and only values within the range are retained for subsequent 
+analysis.
+2.2.3. Data imputation
+Removing outliers can introduce missing values that must be 
+handled to preserve dataset integrity. Simply discarding incomplete 
+records may compromise representativeness. To address this issue, 
+random forest (RF) imputation is applied ( Luo et al., 2025 ). As a non- 
+parametric, supervised learning-based approach, RF imputation lever -
+ages inter-variable correlations to estimate missing values, making it 
+effective for high-dimensional engineering datasets characterized by 
+nonlinear dependencies.
+2.2.4. Wavelet-based denoising
+Operational data collected from shield machines are often affected 
+by environmental noise and sensor inaccuracies. To enhance signal fi -
+delity, denoising is performed after missing-value imputation. In this 
+study, the discrete wavelet transform (DWT) is adopted, with the Dau -
+bechies wavelet family selected as the basis function due to its strong 
+time – frequency localization characteristics and suitability for process -
+ing non-stationary signals ( Barjasteh et al., 2024 ).
+2.3. Optimization of tunneling parameters
+To address the high-dimensionality and non-linearity inherent in 
+tunneling parameter optimization, the ABC-NSGA-III algorithm was 
+developed within the application service layer of the proposed frame -
+work. This hybrid algorithm incorporates the global search capability of 
+the ABC algorithm into the initialization and evolutionary processes of 
+NSGA-III, thereby mitigating the tendency of standard NSGA-III to 
+converge prematurely to local optima. By maintaining population di -
+versity, ABC-NSGA-III enables a more efficient and stable search of the 
+Pareto front. Once the Pareto-optimal solutions are obtained, the ideal 
+point method ( Xu et al., 2018 ) is applied to determine the most suitable 
+combination of tunneling parameters. Finally, the optimized parameters 
+are transmitted to the physical layer, establishing a closed-loop archi -
+tecture of perception, optimization, and feedback.
+2.3.1. Objective function and constraints
+The optimization process is formulated to minimize six attitude- 
+related objective functions f
+i
+( x ) , including horizontal deviation of 
+shield head (HDSH), vertical deviation of shield head (VDSH), hori -
+zontal deviation of shield tail (HDST), vertical deviation of shield tail 
+(VDST), roll angels (ROLL) and pitch angels (PITCH). The operational 
+constraints for these objectives are defined by the national standard 
+Acceptance Specification for Shield Tunnel Construction (GB50446-2017). 
+The standard stipulates maximum allowable limits of ± 50 mm for 
+translational deviations (HDSH, VDSH, HDST, VDST) and ± 30 mm/m 
+for angular deviations (ROLL, PITCH). To enhance operational safety, a 
+more stringent on-site warning threshold is set at 80% of these limits. 
+Once the deviation of any parameter exceeds the threshold, tunneling 
+parameters must be promptly adjusted to restore control ( Wu et al., 
+2024 ). Subject to these limits and other construction-related constraints, 
+the general mathematical formulation of this MOO problem is given by 
+Eq. (4) : 
+{
+minf
+i
+( x ) =
+ 
+f
+1
+( x ) , f
+2
+( x ) , f
+3
+( x ) , f
+4
+( x ) , f
+5
+( x ) , f
+6
+( x )
+)
+s . t . g ( x ) = ( g
+1
+( x ) , g
+2
+( x ) , ⋯ ) < g
+max
+(4) 
+where g ( x ) is the constraint function of tunneling parameters; g
+max 
+is the 
+corresponding upper bound.
+2.3.2. Hyparameter setting
+Before conducting MOO, it is necessary to reasonably configure the 
+algorithm to ensure both convergence efficiency and global search 
+capability. The parameters considered include the number of objective 
+functions in NSGA-III, population size, crossover probability, mutation 
+probability, maximum number of iterations, the number of ABC itera -
+tions, and the limit on honey collection attempts for abandoning a nectar 
+source. Common approaches to hyperparameter optimization include 
+random search, grid search, and Bayesian optimization ( Zhao et al., 
+2024 ). Among these, grid search can systematically explore the 
+parameter space through exhaustive traversal. Therefore, the grid 
+search method is employed to configure the hyperparameters and 
+determine the optimal parameter ranges.
+For the optimization of the six objective functions considered in this 
+study, parameter settings were determined following the recommen -
+dations of Deb and Jain. (2014) . The population size was varied within 
+the range of 200 – 500, the number of iterations between 100 and 500, 
+the crossover probability from 0.3 to 0.7 in increments of 0.1, and the 
+mutation probability from 0.001 to 0.02 in increments of 0.001. For 
+each parameter combination, multiple independent runs were per -
+formed, and the configuration that achieved the best average perfor -
+mance across these trials was selected as the optimal parameter setting.
+2.3.3. ABC-NSGA-III optimization model
+An initial population of tunneling parameters is generated using the 
+ABC algorithm, which consists of employed bees, onlooker bees, and 
+scout bees. Employed bees explore local neighborhoods and refine 
+current solutions using Eq. (5) . Onlooker bees probabilistically select 
+solutions based on shared information provided by employed bees and 
+exploit promising regions as per Eq. (6) . Scout bees explore the search 
+space randomly to maintain population diversity. 
+x
+( t + 1 )
+ij
+= x
+( t )
+ij
++ φ
+ij
+(
+x
+( t )
+ij
+  x
+( t )
+best
+)
+(5) 
+where x
+( t + 1 )
+ij 
+represents the j-th parameter value of the newly generated 
+candidate solution; x
+( t )
+ij 
+represents the j-th parameter value of the i-th 
+solution corresponding to the current employed bee; x
+( t )
+best 
+represents the 
+j-th optimal parameter value of the current employed bee.; φ
+ij 
+is a uni -
+formly distributed random number. 
+p
+ 
+x
+ij
+)
+=
+fitness ( x
+ij
+)
+∑
+N
+j = 1
+fitness ( x
+bestj
+)
+(6) 
+where p ( x
+ij
+) is the probability that x
+ij 
+of the i-th solution in the j-th 
+dimension is selected by the onlooker bee; fitness ( x
+ij
+) and fitness ( x
+bestj
+)
+denote the fitness of the i-th solution in the j-th dimension; N represents 
+the parameter group size.
+Adaptive normalization is applied to mitigate scale differences 
+among objectives. Reference points are computed using Eq. (7) . 
+H =
+(
+M + p   1
+p
+)
+(7) 
+where M is the number of objectives, and p is the number of the 
+C. Yang et al. Tunnelling and Underground Space Technology incorporating Trenchless Technology Research 171 (2026) 107457 
+4 
+dimension partition per objective.
+Optimization objectives are normalized to mitigate dimensional in -
+consistencies. The minimum value of objective function Z
+min
+i 
+is first 
+determined. The objective values f
+ʹ
+i
+( x ) are then transformed by sub -
+tracting the ideal point, as shown in Eq. (8) . These transformations 
+generate an M   dimensional hyperplane whose intercepts a
+i 
+on each 
+axis are used to calculate the normalized objective functions f
+n
+i
+( x ) , as 
+shown in Eq. (9) . 
+f
+ʹ
+i
+( X ) = f
+i
+( X )   Z
+min
+i
+(8) 
+f
+n
+i
+( X ) =
+f
+ʹ
+i
+( X )
+a
+i
+  Z
+min
+i
+=
+f
+i
+( X )   Z
+min
+i
+a
+i
+  Z
+min
+i
+, i = 1 , 2 , ⋅⋅⋅ M (9) 
+After calculating the reference points, each solution is associated with 
+the nearest reference line extended from the origin to each reference 
+point. Individuals are selected based on the sparsity of associations to 
+maintain diversity. This process iterates until convergence, resulting in a 
+well-distributed set of Pareto-optimal solutions. The specific process of 
+this algorithm is shown in Fig. 2 .
+2.3.4. Ideal point method
+To identify the most desirable solution from the Pareto set, the ideal 
+point method is employed. The ideal point vector Z
+i 
+is defined as: 
+Z
+i
+=
+(
+f
+min
+1
+, f
+min
+2
+, ⋯ f
+min
+M
+)
+(10) 
+To measure how close Pareto solutions are to the ideal solution, this 
+paper uses Euclidean distance D
+i
+, as defined in Eq. (11) . The solution 
+with the smallest distance to the ideal point is chosen as the optimal 
+tunneling parameter scheme D
+opt
+, as defined in Eq. (12) . 
+D
+i
+=
+̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅ ̅̅̅̅ ̅
+∑
+M
+j = 1
+(
+f
+ij
+  f
+min
+j
+)
+2
+√
+√
+√
+√
+(11) 
+D
+opt
+= min ( D
+i
+) (12) 
+where f
+ij 
+represents the value of solution i on objective function j .
+To assess the overall quality of the solution set, the normalized 
+hypervolume (HV) is adopted as the primary performance metric ( Shang 
+et al., 2021 ). HV is defined as: 
+HV ( P ) = VOL
+(
+∪
+x ∈ P
+[ f
+1
+( x ) , H
+1
+] × ⋯ × [ f
+M
+( x ) , H
+M
+]
+)
+(13) 
+where VOL(.) represents the Lebesgue measure; P represents the solu -
+tion set to be measured; H
+M 
+denotes the reference point.
+3. Case study
+3.1. Project background
+The DT-based tunneling parameter optimization framework was 
+evaluated using a real-world case study from the western section of the 
+Shanghai Airport Link Line project. A large slurry pressure balance 
+shield machine was employed for tunnel construction, with lining seg -
+ments of 13.6 m outer diameter and 12.5 m inner diameter. As shown in 
+Fig. 3 , a continuous stretch of 100 rings (Rings 2275 – 2375) — located 
+between Air Shaft No. 2 and Air Shaft No. 3 — was selected for detailed 
+analysis. This subsection features a tight horizontal curve radius of 520 
+m and lies in close proximity to existing metro lines. Additionally, the 
+geological profile in this area increases the complexity of tunnel con -
+struction, which traverses interbedded strata composed of highly 
+permeable layers of clay, silty clay, clayey silt, and silty sand. The het -
+erogeneous distribution of these strata creates a challenging excavation 
+environment, making the selected subsection an ideal testbed for eval -
+uating the performance of the proposed framework.
+A set of sensory devices, as detailed in Table 1 , continuously recor -
+ded key operational parameters at 10-second intervals along the tunnel 
+alignment, enabling high-resolution monitoring of tunneling operations. 
+To mitigate multicollinearity arising from nonlinear coupling between 
+cutterhead penetration rate and parameters such as total thrust and 
+cutterhead torque ( Lin et al., 2025 ), the penetration rate was excluded 
+during model construction to enhance generalization capability. The 
+ranges of the final input and output parameters are presented in Table 2 .
+3.2. Data preprocessing
+Following the data preprocessing pipeline described in Section 2.2 , a 
+visualization analysis of five shield tunneling state indicators was con -
+ducted, with the first 3,500 samples displayed for clarity (see Fig. 4 ). 
+Fig. 2. Flowchart of ABC-NSGA-III.
+C. Yang et al. Tunnelling and Underground Space Technology incorporating Trenchless Technology Research 171 (2026) 107457 
+5 
+After the removal of downtime data, a total of 30,000 valid samples 
+were retained for subsequent analysis.
+Then, outliers in key parameters were removed. As illustrated in 
+Fig. 5 , the bottom and top whiskers represent the minimum and 
+maximum values after outlier removal, the box corresponds to the IQR 
+capturing the middle 50% of the data, and the line within the box in -
+dicates the median. Black dots outside the whiskers denote outliers, 
+which were excluded to ensure dataset reliability. Subsequentially, the 
+missing values introduced by this process were subsequently imputed 
+using the RF method.
+Finally, DWT-based denoising was applied to enhance data fidelity. 
+As shown in Fig. 6 , comparison before and after denoising demonstrates 
+that the DWT can effectively suppress noise while preserving essential 
+signal characteristics. Through this data preprocessing pipeline, a 
+complete, structured dataset is generated.
+3.3. Data transmission and visualization
+The dataset from data preprocessing enables DT with perception and 
+optimization capabilities. Within the data interaction layer of the 
+framework, data dynamically collected from the physical layer are 
+managed using a time-series database. Simultaneously, the virtual layer 
+employs distributed storage systems to host geometric, behavior, and 
+rule models — each characterized by large data volumes, complex 
+structures, and high-frequency access requirements.
+Geometric models are developed to represent the shape, dimensions, 
+and spatial configuration of physical elements. As shown in Fig. 7(a) , a 
+high-fidelity geometric model of the slurry pressure balance shield 
+machine was constructed using SolidWorks. In current practice, DT are 
+predominantly developed by integrating Building Information Modeling 
+(BIM) with sensor data, serving to provide updated representations of 
+physical elements. The proposed framework retains these monitoring 
+capabilities while incorporating an advanced optimization algorithm, 
+thereby establishing a closed-loop architecture that integrates percep -
+tion, optimization, and feedback. The rule model encodes constraints 
+and control logic to ensure that the shield machine can adjust its posture 
+under different geological conditions, while the behavior model — driven 
+by the ABC-NSGA-III algorithm — enables adaptive control by dynami -
+cally tuning key operational parameters. Consequently, the proposed 
+framework enables a transition from passive monitoring to proactive 
+decision support.
+All data streams are integrated within the data interaction layer and 
+Fig. 3. Geological profile of the selected subsection.
+Table 2 
+Range of input and output parameter values.
+Parameter 
+type
+Parameter 
+name
+Max. Min. Ave. Unit
+Input 
+parameter
+Total thrust 54661.67 44061.14 49279.55 kN
+Cutterhead 
+speed
+1.08 0.75 0.92 r/min
+Cutterhead 
+torque
+4252.73 1482.49 2910.27 kN ⋅ m
+Thrust speed 51.84 17.12 35.81 mm/ 
+min
+Thrust cylinder 
+pressure-A
+70.14 12.48 39.25 bar
+Thrust cylinder 
+pressure-B
+68.05 10.91 34.77 bar
+Thrust cylinder 
+pressure-C
+115.56 75.04 98.79 bar
+Thrust cylinder 
+pressure-D
+122.47 77.33 98.79 bar
+Thrust cylinder 
+pressure-E
+118.66 77.51 98.28 bar
+Thrust cylinder 
+pressure-F
+74.39 9.85 40.25 bar
+Inlet slurry 
+density
+1.34 1.30 1.31 g/ 
+cm
+3
+Outlet slurry 
+density
+1.38 1.23 1.34 g/ 
+cm
+3
+Inlet slurry flow 
+rate
+1870 1349 1668 m
+3
+/h
+Outlet slurry 
+flow rate
+2169 1514 1867 m
+3
+/h
+Grouting 
+pressure
+7.12 2.37 4.43 bar
+Air cushion 
+pressure
+3.12 2.97 3.03 bar
+Slurry pressure 3.33 2.78 3.03 bar
+Internal friction 
+angle
+9.00 21.00 16.76
+。
+Soil cohesion 25.00 33.00 29.83 kPa
+Burial depth   15.19   34.17   25.38 m
+Output 
+parameter
+HDSH 13.52   20.86   1.63 mm
+HDST 45.95   38.25 4.06 mm
+VDSH   59.39   34.99   46.77 mm
+VDST 60.56   106.30   24.32 mm
+ROLL 1.16   2.34   0.46 mm/ 
+m
+PITCH   10.12   21.47   15.80 mm/ 
+m
+C. Yang et al. Tunnelling and Underground Space Technology incorporating Trenchless Technology Research 171 (2026) 107457 
+6 
+visualized through an interactive platform, as illustrated in Fig. 7(b) . 
+This platform displays the status and spatial locations of key parameters 
+within the shield machine, offering intuitive insights for on-site opera -
+tional guidance.
+3.4. Multi-objective optimization
+Model training and algorithm implementation were conducted in a 
+high-performance computing environment with the following configu -
+ration: Windows 11 (64-bit), Intel (R) Core (TM) i9-13900 K CPU @ 
+3.00 GHz, 64 GB RAM, using Python 3.6.13 as the programming 
+language.
+3.4.1. Feature importance analysis based on SHAP
+The SHAP method was employed to assess the contribution of 20 
+tunneling parameters to shield attitude outcomes. This method quan -
+tifies the marginal impact of each parameter on shield attitude, as 
+illustrated in Fig. 8 . The parameters were ranked based on their average 
+SHAP values.
+The pressures from the six sets of thrust cylinder pressure exert the 
+most significant influence on shield attitude. As primary actuators, these 
+pressures directly determine the thrust force and operational stability of 
+the shield machine. Their precise control is crucial for maintaining and 
+adjusting shield machine's attitude. Parameters such as cutterhead 
+speed, total thrust, thrust speed, cutterhead torque, air cushion pressure, 
+inlet slurry density, outlet slurry density, inlet slurry flow rate, outlet 
+slurry flow rate, and grouting pressure also play a vital role. Cutterhead 
+speed and cutterhead torque are directly associated with cutting per -
+formance and equipment loading, while total thrust and thrust speed 
+influence the advance trajectory. Parameters like air cushion pressure, 
+inlet slurry density, outlet slurry density, inlet slurry flow rate, outlet 
+slurry flow rate, and grouting pressure affect shield attitude indirectly 
+through their impact on soil disturbance, cutting resistance, and slurry 
+rheology.
+The importance of different parameter categories follows the order: 
+structural > geometric > geological. Owing to the limited variation of 
+geometric and geological parameters in the dataset, factors such as 
+slurry pressure, burial depth, soil cohesion, and internal friction angle 
+exhibit relatively minor influence, indicating their limited effect on 
+attitude control. Considering that geometric and geological parameters 
+are typically predetermined during the design phase and remain fixed 
+during operation, the study ultimately identified 16 key adjustable 
+Fig. 4. Variation curves of shield tunneling state indicators.
+C. Yang et al. Tunnelling and Underground Space Technology incorporating Trenchless Technology Research 171 (2026) 107457 
+7 
+parameters for optimization. These include the pressure of thrust cyl -
+inder pressure groups A – F, total thrust, thrust speed, cutterhead speed, 
+cutterhead torque, air cushion pressure, grouting pressure, inlet slurry 
+density, outlet slurry density, inlet slurry flow rate, and outlet slurry 
+Fig. 5. Outlier detection using boxplot analysis.
+Fig. 6. Signal characteristics before and after denoising.
+C. Yang et al. Tunnelling and Underground Space Technology incorporating Trenchless Technology Research 171 (2026) 107457 
+8 
+flow rate.
+After selecting the 16 most relevant parameters, further analysis was 
+performed to investigate how varying parameter subsets affect optimi -
+zation performance. Specifically, the study explored whether a “ fewer 
+parameters, better performance ” strategy could be viable. Based on their 
+average SHAP values, the parameters were grouped into three scenarios: 
+Scenario 1 includes only the top 50%, representing the most influential 
+parameters; Scenario 2 adds parameters up to the top 80%, covering 
+medium- to high-importance factors; and Scenario 3 includes all pa -
+rameters. The adjustable parameters included in each scenario are pre -
+sented in Fig. 9 . This stepwise expansion strategy provides a basis for 
+evaluating the trade-offs between model complexity and control 
+accuracy.
+3.4.2. Hyparameter setting of ABC-NSGA-III
+To balance convergence stability with global search capability, the 
+key hyperparameters of NSGA-III were determined through the grid 
+search procedure described in Section 2.3.2 . The full set of hyper -
+parameters is summarized in Table 3 .
+To ensure the feasibility and practicality of optimized solutions, a 
+rule-based model was established within the DT virtual layer. This 
+model defines the allowable value ranges for the 16 selected parameters 
+based on historical construction data, the Code for Construction and 
+Acceptance of Shield Tunneling (GB 50446 – 2017), and insights from 
+relevant studies ( Huang et al., 2022; Zhou et al., 2019 ). The constraint 
+rules serve to narrow the feasible domain of tunneling parameters, 
+thereby aligning algorithmic outputs with actual construction re -
+quirements. The detailed constraint ranges are presented in Table 4 .
+3.4.3. Comparative analysis of optimization results
+To evaluate the performance of ABC-NSGA-III across three distinct 
+operational scenarios, an optimization rate index was used to quantify 
+improvements in shield attitude-related objectives before and after 
+optimization. Each evaluation is based on the average results of 10 in -
+dependent runs. As shown in Table 5 , ABC-NSGA-III delivers strong 
+improvements across most deviation parameters, particularly in con -
+trolling VDSH, where the optimization rate reaches over 28.01%. 
+Moreover, the optimal attitudes obtained under each scenario illustrate 
+the correlation between the dimensionality of parameter optimization 
+and overall performance. As the number of optimized parameters in -
+creases, the overall optimization rate rises substantially, reaching 
+32.02% in Scenario 3. This indicates that a higher-dimensional param -
+eter space allows the algorithm to better exploit solution possibilities 
+and improve shield attitude control. Comparison of optimal solutions in 
+the Pareto sets shows that Scenario 3 outperforms Scenarios 1 and 2 
+across all objectives. This confirms that regulating all 16 tunneling pa -
+rameters simultaneously achieves the best attitude control. It also vali -
+dates the reliability of the parameter importance ranking from SHAP 
+analysis and highlights the feasibility of ABC-NSGA-III for shield attitude 
+control.
+Based on the results of Scenario 3, a high-performance set of Pareto- 
+optimal solutions was obtained (see Table 6 ). These solutions represent 
+various optimal combinations of shield tunneling parameters that bal -
+ance the multiple attitude-related objectives. Through analysis of solu -
+tion distributions, recommended control ranges for each parameter were 
+established. The optimal parameter combinations derived from the 
+MOO was then fed back through the data interaction layer to initialize 
+the control rules. The DT-based framework facilitated closed-loop 
+feedback, dynamically adjusting parameters based on the evolving 
+relationship between machine behavior and control settings. This en -
+ables continuous refinement of key parameters throughout the entire 
+tunneling process.
+4. Discussions
+4.1. Comparative performance analysis
+The performance of ABC-NSGA-III was further benchmarked against 
+the standard NSGA-III and PSO-NSGA-III. The evaluation was conducted 
+using six identical optimization models, which tasked with minimizing 
+six attitude deviations. The results, summarized in Table 7 , demonstrate 
+the superiority of ABC-NSGA-III. Compared with the standard NSGA-III, 
+ABC-NSGA-III exhibited enhanced global exploration and local exploi -
+tation capabilities. The average optimization magnitudes of HDSH and 
+VDSH improved by 6.12% and 17.13%, respectively, and the best-found 
+optimal values for HDSH and VDSH were enhanced by 4.74% and 
+14.98%. Compared with PSO-NSGA-III, ABC-NSGA-III yielded a 2.5% 
+and 8.14% increase in the average performance for HDSH and VDSH, 
+and a 2.21% and 7.34% improvement in their respective optimal values.
+To compare the convergence performance of the three algorithms 
+under the 100-ring operational dataset, a sliding-window approach was 
+employed. Convergence was defined as the condition in which fluctua -
+tions of the HV value over the most recent 20 generations fell below 1%, 
+and the slope of the fitted linear regression approximated zero. The re -
+sults are reported in Table 8 . From the perspective of near real-time 
+performance, ABC-NSGA-III demonstrates a distinct advantage in 
+convergence speed. The algorithm converges in approximately 900.5 s, 
+yielding a stable Pareto-optimal solution set, with the convergence 
+phase accounting for only 64% of the total computational time. By 
+contrast, the standard NSGA-III requires 993.6 s, with convergence 
+occupying 92% of its iteration time. Moreover, ABC-NSGA-III achieves 
+an HV value of 0.532, representing a 35% improvement over that of the 
+standard NSGA-III (0.394), thereby confirming its capability to produce 
+high-quality solutions within constrained timeframes. The intermediate 
+performance of PSO-NSGA-III, with a convergence time of 945.0 s and 
+an HV value of 0.482, highlights the effectiveness of the ABC search 
+Fig. 7. (a) Geometric model developed by SolidWorks; (b) User interface.
+C. Yang et al. Tunnelling and Underground Space Technology incorporating Trenchless Technology Research 171 (2026) 107457 
+9 
+strategy in achieving a balance between convergence performance and 
+solution quality.
+Regarding computational efficiency, the ABC–NSGA-III module re -
+quires approximately 900 s on average to complete optimization and 
+model updating, constituting the dominant share of the framework’s 
+total response time. In contrast, delays stemming from data acquisition 
+and communication—arising from 10-second sampling intervals and 
+roughly 500-millisecond transmission latency—can be negligible in the 
+overall workflow. In the case study project, according to the “Shanghai 
+Municipal Engineering Budget Quota Volume 1: Road, Bridge, and Tunnel 
+Fig. 8. SHAP analysis of tunneling parameters on shield attitude.
+C. Yang et al. Tunnelling and Underground Space Technology incorporating Trenchless Technology Research 171 (2026) 107457 
+10 
+Engineering (SHA1-31(01)-2016) ” , the construction cycle for a single 
+ring is 90 – 120 min (5400 – 7200 s). The time consumed by the optimi -
+zation process thus accounts for only 12.5%-16.7% of the total cycle. 
+This proportion confirms that the proposed framework can complete all 
+required computations within the available construction interval prior 
+to excavation of the subsequent tunnel segment, thereby supporting 
+dynamic control of tunnel construction.
+4.2. Prospection of DT in tunnel construction
+Using the Shanghai Airport Link Line project as a case study, this 
+study illustrates the efficacy of the proposed framework for optimizing 
+shield tunneling parameters. Unlike conventional approaches that rely 
+on operator experience ( Liu et al., 2021 ) and current DT applications 
+that remain largely limited to monitoring ( Zheng et al., 2024 ), the 
+proposed framework represents a step forward by integrating DT tech -
+nology with advanced optimization algorithms.
+The framework algorithmically generates optimal parameter 
+combinations in an interpretable form, providing a quantitative basis to 
+support operator decisions. Within this human – machine collaborative 
+mechanism, the framework performs MOO, while operators — drawing 
+on their judgment of complex conditions and expert knowledge -
+— evaluate the optimization results. This mechanism treats operator 
+expertise as a safeguard, filtering out abnormal outputs that may arise 
+from field uncertainties. In doing so, the framework fuses the compu -
+tational efficiency of data-driven models with the adaptive intelligence 
+of human expertise, which ensures its applicability under real-world 
+tunneling conditions.
+The hierarchical structure of the proposed framework provides a for 
+scalability and broader applicability. Future work may extend this 
+framework to more diverse geological conditions. In hard-rock strata, 
+for instance, the optimization objectives could be reformulated to bal -
+ance cutter wear and advance rate through integration with appropriate 
+geomechanical models; When passing through aquifer-bearing layers, 
+the framework could instead prioritize tunnel-face stability and surface- 
+settlement control. These extensions underscore the framework ’ s po -
+tential to incorporate context-specific objectives to meet the needs of 
+different tunneling projects.
+5. Conclusion
+This paper proposes a framework for optimizing shield tunneling 
+parameters by integrating DT technology with an improved NSGA-III. 
+The framework facilitates the transmission of data from the physical 
+layer to the data interaction layer, thereby supporting digital modeling 
+and optimization decision-making. Within the application service layer, 
+key tunneling parameters are identified using SHAP method. These 
+parameters are then grouped into multiple optimization scenarios based 
+on their influence on tunneling performance. A MOO process is carried 
+out using ABC-NSGA-III to improve global search diversity and solution 
+quality. The optimized parameter sets are subsequently transmitted 
+back through the data interaction layer to guide physical shield 
+tunneling operations.
+The feasibility and effectiveness of the proposed framework were 
+validated using real-world project data. Six shield attitude indicators 
+were optimized across three defined parameter scenarios. Through 
+SHAP analysis, 16 critical tunneling parameters were identified. In the 
+full-parameter optimization scenario, the framework achieved an 
+overall optimization rate of 32.02%. Compared with the standard NSGA- 
+III and PSO-NSGA-III algorithms, ABC-NSGA-III demonstrated faster 
+Fig. 9. Parameters adjusted in each scenario.
+Table 3 
+Configurations of ABC-NSGA-III.
+Algorithm module Parameter Value
+NSGA-III Number of objective functions 6
+Population size 200
+Crossover probability 0.7
+Mutation probability 0.01
+Maximum number of iterations for NSGA-III 300
+Number of bees 200
+ABC Number of iterations for ABC 50
+Nectar collection limit (abandonment threshold) 100
+Table 4 
+Range of tunneling parameters.
+Parameter Range Unit
+Thrust cylinder pressure-A [12.48, 70.14] bar
+Thrust cylinder pressure-B [10.91, 68.05] bar
+Thrust cylinder pressure-C [75.04, 115.56] bar
+Thrust cylinder pressure-D [77.33, 122.47] bar
+Thrust cylinder pressure-E [77.51, 118.66] bar
+Thrust cylinder pressure-F [9.85, 74.39] bar
+Total thrust [44061.14, 54661.67] kN
+Thrust speed [17.12, 51.84] mm/min
+Cutterhead speed [0.75, 1.08] r/min
+Cutterhead torque [1482.49, 4252.730] kN ⋅ m
+Inlet slurry density [1.30, 1.34] g/cm
+3
+Outlet slurry density [1.23, 1.38] g/cm
+3
+Inlet slurry flow rate [1349, 1870] m
+3
+/h
+Outlet slurry flow rate [1514, 2169] m
+3
+/h
+Air cushion pressure [2.97, 3.12] bar
+Grouting pressure [2.37, 7.12] bar
+Table 5 
+Comparison of optimal values in different scenarios.
+Optimization objective Scenario
+Average 
+monitoring 
+value
+Scenario 
+1
+Scenario 
+2
+Scenario 
+3
+HDSH 
+(mm)
+Optimal value 
+(Optimization 
+rate)
+2.79 2.63 
+(5.73%)
+2.36 
+(15.41%)
+2.21 
+(20.79%)
+HDST 
+(mm)
+Optimal value 
+(Optimization 
+rate)
+12.72 11.86 
+(13.56%)
+10.35 
+(24.56%)
+9.47 
+(30.98)
+VDSH 
+(mm)
+Optimal value 
+(Optimization 
+rate)
+46.77 33.67 
+(28.01%)
+30.44 
+(34.92%)
+27.76 
+(40.65%)
+VDST 
+(mm)
+Optimal value 
+(Optimization 
+rate)
+29.36 26.39 
+(10.12%)
+23.65 
+(19.45%)
+22.41 
+(23.67%)
+ROLL 
+(mm/ 
+m)
+Optimal value 
+(Optimization 
+rate)
+0.53 0.52 
+(1.89%)
+0.44 
+(16.98%)
+0.39 
+(26.42)
+PITCH 
+(mm/ 
+m)
+Optimal value 
+(Optimization 
+rate)
+15.81 14.33 
+(9.36%)
+14.06 
+(11.07%)
+13.24 
+(16.26%)
+Overall optimization rate   20.97% 28.31% 32.02%
+C. Yang et al. Tunnelling and Underground Space Technology incorporating Trenchless Technology Research 171 (2026) 107457 
+11 
+convergence and higher solution quality, reducing shield attitude de -
+viation by 2.21%–17.13%. These results confirm the practical viability 
+and performance advantages of the proposed framework in tunnel 
+construction.
+Future studies can further enhance the practical applicability of the 
+proposed framework in complex tunnel construction. First, while this 
+study employed the DWT to mitigate measurement noise, ongoing ad -
+vances in sensing technologies offer opportunities to improve data fi -
+delity at the source. Second, techniques such as transfer learning hold 
+promise for strengthening the model’s generalization capability across 
+different geological conditions. Finally, training programs for operators 
+should be established to deepen their understanding of the proposed 
+framework and facilitate its effective implementation in field 
+operations.
+CRediT authorship contribution statement
+Congzhen Yang: Writing – original draft, Software, Methodology. 
+Zhikun Ding: Writing – review & editing, Supervision. Tianrui Liu: 
+Visualization, Software. Zezhou Wu: Writing – review & editing, 
+Visualization. Ke Chen: Writing – review & editing, Supervision, 
+Funding acquisition, Conceptualization.
+Declaration of competing interest
+The authors declare that they have no known competing financial 
+interests or personal relationships that could have appeared to influence 
+the work reported in this paper.
+Acknowledgement
+This study is supported by National Natural Science Foundation of 
+China (U21A20151), and Open Research Fund of Key Laboratory of 
+Coastal Urban Resilient Infrastructures (Shenzhen University), Ministry 
+of Education (CURI-G202402).
+Data availability
+Data will be made available on request.
+Table 6 
+Pareto optimal tunneling parameters and their control ranges in Scenario 3.
+Parameter 
+name
+Max. 
+value
+Min. 
+value
+Ave. 
+value
+Optimal 
+solution
+Recommended 
+control range
+Thrust 
+cylinder 
+pressure- 
+A 
+(bar)
+42.57 34.11 38.59 37.54 34.11 ~ 42.57
+Thrust 
+cylinder 
+pressure- 
+B (bar)
+63.67 55.79 59.44 60.49 55.79 ~ 63.67
+Thrust 
+cylinder 
+pressure- 
+C 
+(bar)
+114.75 77.98 107.94 103.22 77.98 ~ 
+114.75
+Thrust 
+cylinder 
+pressure- 
+D 
+(bar)
+117.67 90.13 101.50 107.07 90.13 ~ 
+117.67
+Thrust 
+cylinder 
+pressure- 
+E 
+(bar)
+115.09 79.92 95.49 88.42 79.92 ~ 
+115.09
+Thrust 
+cylinder 
+pressure- 
+F (bar)
+63.17 26.01 41.23 54.03 26.01 ~ 63.17
+Total thrust 
+(KN)
+51607.89 46545.95 49154.79 46670.20 46545.95 ~ 
+51607.89
+Thrust 
+speed 
+(mm/ 
+min)
+35.87 19.05 24.45 29.88 19.05 ~ 35.87
+Cutterhead 
+speed 
+(r/min)
+1.08 0.79 0.89 0.84 0.79 ~ 1.08
+Cutterhead 
+torque 
+(KN ⋅m)
+3021.98 2225.52 2671.54 2583.61 2225.52 ~ 
+3021.98
+Inlet slurry 
+density 
+(g/cm
+3
+)
+1.34 1.30 1.32 1.34 1.30 ~ 1.34
+Outlet 
+slurry 
+density 
+(g/cm
+3
+)
+1.38 1.24 1.28 1.31 1.24 ~ 1.38
+Inlet slurry 
+flow rate 
+(m
+3
+/h)
+1693.83 1651.35 1675.14 1680.39 1651.35 ~ 
+1693.83
+Outlet 
+slurry 
+flow rate 
+(m
+3
+/h)
+2144.39 1742.44 1915.28 1935.48 1742.44 ~ 
+2144.39
+Air cushion 
+pressure 
+(bar)
+3.10 2.96 3.02 2.99 2.96 ~ 3.10
+Grouting 
+pressure 
+(bar)
+6.68 2.77 4.78 4.86 2.77 ~ 6.68
+Table 7 
+Comparison between the average and optimal values of the objective function.
+Evaluation indexes ABC- 
+NSGA-III
+NSGA-III 
+(Improvement 
+degree)
+PSO-NSGA-III 
+(Improvement 
+degree)
+HDSH (mm) Ave. 2.30 2.45 
+(6.12%)
+2.36 
+(2.50%)
+Opt. 2.21 2.32 
+(4.74%)
+2.26 
+(2.21%)
+HDST (mm) Ave. 9.58 11.36 
+(15.67%)
+10.28 
+(6.81%)
+Opt. 9.47 10.95 
+(13.52%)
+9.98 
+(5.11%)
+VDSH (mm) Ave. 28.34 34.20 
+(17.13%)
+30.85 
+(8.14%)
+Opt. 27.76 32.65 
+(14.98%)
+29.96 
+(7.34%)
+VDST (mm) Ave. 22.62 26.48 
+(14.58%)
+24.25 
+(6.72%)
+Opt. 22.41 25.30 
+(11.42%)
+23.68 
+(5.36%)
+ROLL (mm/ 
+m)
+Ave. 0.41 0.46 
+(10.87%)
+0.44 
+(6.82%)
+Opt. 0.39 0.42 
+(7.14%)
+0.41 
+(4.88%)
+PITCH (mm/ 
+m)
+Ave. 13.63 14.93 
+(8.71%)
+14.18 
+(3.88%)
+Opt. 13.24 14.67 
+(9.75%)
+13.75 
+(3.71%)
+Table 8 
+Comparison of computational efficiency and optimization effectiveness.
+Algorithm Computation time (s) HV value
+NSGA-III 993.6 0.394
+PSO-NSGA-III 945.0 0.482
+ABC-NSGA-III 900.5 0.532
+C. Yang et al. Tunnelling and Underground Space Technology incorporating Trenchless Technology Research 171 (2026) 107457 
+12 
+References
+Barata, J., Kayser, I., 2024. How will the digital twin shape the future of industry 5.0? 
+Technovation 134, 103025. https://doi.org/10.1016/j.technovation.2024.103025.
+Barjasteh, A., Seyyed, H., Malihe, H., 2024. A hybrid model based on discrete wavelet 
+transform (DWT) and bidirectional recurrent neural networks for wind speed 
+prediction. Eng. Appl. Artif. Intel. 127, 107340. https://doi.org/10.1016/j. 
+engappai.2023.107340.
+Chang, J., Huang, H., Thewes, M., Zhang, D., Wu, H., 2024. Data-based postural 
+prediction of shield tunneling via machine learning with physical information. 
+Comput. Geotech. 174, 106584. https://doi.org/10.1016/j.compgeo.2024.106584.
+Chen, H., Liu, J., Shen, G.Q., Martínez, L., Deveci, M., Chen, Z.-S., Liu, Y., 2024. 
+Multisource information fusion for real-time optimization of shield construction 
+parameters. Knowl.-Based Syst. 286, 111413. https://doi.org/10.1016/j. 
+knosys.2024.111413.
+Cui, Z., Chang, Y., Zhang, J., Cai, X., Zhang, W., 2019. Improved NSGA-III with selection- 
+and-elimination operator. Swarm Evol. Comput. 49, 23–33. https://doi.org/ 
+10.1016/j.swevo.2019.05.011.
+Deb, K., Jain, H., 2014. An evolutionary many-objective optimization algorithm using 
+reference-point-based nondominated sorting approach, part I: solving problems with 
+box constraints. IEEE Trans. Evol. Comput. 18 (4), 577–601 .
+Deb, K., Pratap, A., Agarwal, S., Meyarivan, T., 2002. A fast and elitist multiobjective 
+genetic algorithm: NSGA-II. IEEE Trans. Evol. Comput. 6 (2), 182–197. https://doi. 
+org/10.1109/4235.996017.
+Fan, Z., Zheng, Z., Xu, B., Li, W., Zhang, Y., Hao, Z., 2022. Performance optimization of 
+hard rock tunnel boring machine using multi-objective evolutionary algorithm. 
+Comput. Ind. Eng. 169, 108251. https://doi.org/10.1016/j.cie.2022.108251.
+Feng, Z., Wang, J., Liu, W., Li, T., Wu, X., Zhao, P., 2024. Data-driven deformation 
+prediction and control for existing tunnels below shield tunneling. Eng. Appl. Artif. 
+Intel. 138, 109379. https://doi.org/10.1016/j.engappai.2024.109379.
+Fu, K., Qiu, D., Xue, Y., Zhang, W., Shao, T., 2025. Optimization of TBM tunneling 
+parameters for deep buried tunnel based on rock cluster grading and strata 
+intelligent identification. Rock Mech. Rock Eng. 58 (3), 2607–2633. https://doi.org/ 
+10.1007/s00603-024-04210-z.
+Fu, K., Xue, Y., Qiu, D., Peng Wang, P., Lu, H., 2026. Multi-channel fusion prediction of 
+TBM tunneling thrust based on multimodal decomposition and reconstruction. Tunn. 
+Undergr. Sp. Technol. 167, 107061. https://doi.org/10.1016/j.tust.2025.107061.
+Grieves, M.W., 2005. Product lifecycle management: the new paradigm for enterprises. 
+Int. J. Prod. Dev. 2 (1–2), 71–84. https://doi.org/10.1504/ijpd.2005.006669.
+Guo, D., Meng, F., Wu, H., Yang, X., Chen, R., 2025. Risk assessment of shield 
+construction adjacent to the existing shield tunnel based on improved nonlinear 
+FAHP. Tunn. Undergr. Sp. Technol. 155, 106154. https://doi.org/10.1016/j. 
+tust.2024.106154.
+Huang, H., Chang, J., Zhang, D., Zhang, J., Wu, H., Li, G., 2022. Machine learning-based 
+automatic control of tunneling posture of shield machine. J. Rock Mech. Geotech. 
+Eng. 14 (4), 1153–1164. https://doi.org/10.1016/j.jrmge.2022.06.001.
+Huang, H., Ruan, B., Wu, X., Qin, Y., 2024. Parameterized modeling and safety 
+simulation of shield tunnel based on BIM-FEM automation framework. Autom. 
+Constr. 162, 105362. https://doi.org/10.1016/j.autcon.2024.105362.
+Hussain, S.F., Pervez, A., Hussain, M., 2020. Co-clustering optimization using Artificial 
+Bee Colony (ABC) algorithm. Appl. Soft Comput. 97, 106725. https://doi.org/ 
+10.1016/j.asoc.2020.106725.
+Ibrahim, A.O., Elfadel, E.M.E., Hashem, I.A.T., Syed, H.J., Ismail, M.A., Osman, A.H., 
+Ahmed, A., 2025. The artificial bee colony algorithm: a comprehensive survey of 
+variants, modifications, applications, developments, and opportunities. Arch. 
+Comput. Meth. Eng. https://doi.org/10.1007/s11831-025-10269-w.
+Kim, J., Noh, G., 2025. Surrogate-assisted Kriging training utilizing boxplot and 
+correlation coefficient for large-scale data. Comput. Methods Appl. Mech. Eng. 435, 
+117665. https://doi.org/10.1016/j.cma.2024.117665.
+Kritzinger, W., Karner, M., Traar, G., Henjes, J., Sihn, W., 2018. Digital twin in 
+manufacturing: a categorical literature review and classification. IFAC-PapersOnLine 
+51 (11), 1016–1022. https://doi.org/10.1016/j.ifacol.2018.08.474.
+Lai, C., Chiu, C., Chen, T., 2025. A nondominated sorting simplified swarm optimization 
+with local search mechanisms for multi-objective vehicle routing problems with time 
+windows. Appl. Soft Comput. 174, 112989 .
+Lei, H., Shi, L., Hu, Y., Zheng, G., Zhang, T., Jia, R., 2024. Ground movement and 
+settlement prediction induced by double-track curvature shield tunneling. Acta 
+Geotech. 19 (9), 6179–6193. https://doi.org/10.1007/S11440-023-02144-4.
+Li, J., Jing, L., Zheng, X., Li, P., Yang, C., 2019. Application and outlook of information 
+and intelligence technology for safe and efficient TBM construction. Tunn. Undergr. 
+Sp. Technol. 93, 103097. https://doi.org/10.1016/j.tust.2019.103097.
+Li, P., Dai, Z., Rui, Y., Ling, J., Liu, J., Zhai, Y., Fan, J., 2024. Generative adversarial 
+network for optimization of operational parameters based on shield posture 
+requirements. Autom. Constr. 165, 105553. https://doi.org/10.1016/j. 
+autcon.2024.105553.
+Lin, R., Xu, Z., Yu, L., Wei, T., 2025. EABC-AS: Elite-driven artificial bee colony algorithm 
+with adaptive population scaling. Swarm. Evol. Comput. 94, 101893. https://doi. 
+org/10.1016/j.swevo.2025.101893.
+Liu, B., Wang, Y., Zhao, G., Yang, B., Wang, R., Huang, D., Xiang, B., 2021. Intelligent 
+decision method for main control parameters of tunnel boring machine based on 
+multi-objective optimization of excavation efficiency and cost. Tunn. Undergr. Sp. 
+Technol. 116, 104054. https://doi.org/10.1016/j.tust.2021.104054.
+Luo, T., Qu, J., Cheng, S., 2025. Technological opportunity discovery based on VERGM 
+and random forest model. Expert Syst. Appl. 293, 128712. https://doi.org/10.1016/ 
+j.eswa.2025.128712.
+Priyadarshi, R., Kumar, R.R., 2025. Evolution of swarm intelligence: a systematic review 
+of particle swarm and ant colony optimization approaches in modern research. Arch. 
+Comput. Meth. Eng. 32 (6), 1–42. https://doi.org/10.1007/s11831-025-10247-2.
+Qiao, S., Li, H., Thomas Ng, S., Tan, J., Tang, Y., Cheng, B., 2024. XGBoost-based global 
+sensitivity analysis of ground settlement caused by shield tunneling in dense karst 
+areas. Adv. Eng. Inf. 62, 102928. https://doi.org/10.1016/J.AEI.2024.102928.
+Shang, K., Ishibuchi, H., He, L., Pang, L., 2021. A survey on the hypervolume indicator in 
+evolutionary multiobjective optimization. IEEE Trans. Evol. Comput. 25 (1), 1–20. 
+https://doi.org/10.1109/tevc.2020.3013290.
+Shen, S., Elbaz, K., Shaban, W.M., Zhou, A., 2022. Real-time prediction of shield moving 
+trajectory during tunnelling. Acta Geotech. 17 (4), 1533–1549. https://doi.org/ 
+10.1007/S11440-022-01461-4.
+Sugimoto, M., Sramoon, A., 2002. Theoretical model of shield behavior during 
+excavation. I: Theory. J. Geotech. Geoenviron. Eng. 128, 138–155. https://doi.org/ 
+10.1061/(asce)1090-0241(2002)128:2(138).
+Tharwat, A., Schenck, W., 2021. A conceptual and practical comparison of PSO-style 
+optimization algorithms. Expert Syst. Appl. 167, 114430. https://doi.org/10.1016/j. 
+eswa.2020.114430.
+Wang, G., Li, X., Gao, L., Li, P., 2021. Energy-efficient distributed heterogeneous welding 
+flow shop scheduling problem using a modified MOEA/D. Swarm Evol. Comput. 62, 
+100858. https://doi.org/10.1016/j.swevo.2021.100858.
+Wu, X., Wang, J., Feng, Z., Chen, H., Li, T., Liu, Y., 2024. Multisource information fusion 
+for real-time prediction and multiobjective optimization of large-diameter slurry 
+shield attitude. Reliab. Eng. Syst. Saf. 250, 110305. https://doi.org/10.1016/j. 
+ress.2024.110305.
+Xu, C., Liu, X., Wang, E., Zheng, Y., Wang, S., 2018. Rockburst prediction and 
+classification based on the ideal-point method of information theory. Tunn. Undergr. 
+Space Technol. 81, 382–390. https://doi.org/10.1016/j.tust.2018.07.014.
+Ye, Z., Ye, Y., Zhang, C., Zhang, Z., Li, W., Wang, X., Wang, L., 2023. A digital twin 
+approach for tunnel construction safety early warning and management. Comput. 
+Ind. 144, 103783. https://doi.org/10.1016/j.compind.2022.103783.
+Yin, M., Jiang, H., Jiang, Y., Sun, Z., Wu, Q., 2018. Effect of the excavation clearance of 
+an under-crossing shield tunnel on existing shield tunnels. Tunn. Undergr. Sp. 
+Technol. 78, 245–258. https://doi.org/10.1016/j.tust.2018.04.034.
+Zhao, L., Zhang, W., Liu, X., 2024. Grid search with a weighted error function: Hyper- 
+parameter optimization for financial time series forecasting. Appl. Soft Comput. 154, 
+1

@@ -1,0 +1,1064 @@
+Vol.:(0123456789)
+Environment Systems and Decisions (2025) 45:40 
+https://doi.org/10.1007/s10669-025-10035-0
+Digital twin representation of socio‑technical systems 
+through a distributed co‑simulation approach for crisis management
+Till Martini1,2 · Maurizio Boigk1,3 · Faruk Catal1,4 · Steffen Dietze1,5 · Michael Gerold1,5 · Eridy Lukau1,4 · 
+Michael Monteforte1,3 · Stefan Neuhäuser1,2 · Sascha Peitzsch1,4 · Windy Phung1,5 · Stefan Pfennigschmidt1,4 · 
+Maik Simon1,3 · Joanna Zarah Vetter1,2 · Nils Winter1,6 · Gabriel Adams1,5 · Jörg Finger2 · Julia Rosin2
+Accepted: 24 June 2025 / Published online: 8 July 2025 
+© The Author(s) 2025
+Abstract
+The increasing frequency and severity of significant risks to public safety posed by natural disasters or human-induced events 
+have underscored a critical need for evaluating the vulnerability of urban regions with a focus on their essential infrastruc-
+tures. This paper presents a novel methodology for the virtual representation of infrastructure vulnerabilities and functional 
+impairments during hazard situations. Thereby, focus is on the mapping of interdependencies among critical infrastructure 
+systems and the cascading effects that can arise from failures within these heterogeneous sectors by means of a digital twin 
+representation. An integration of simulation models for urban infrastructure components, particularly in relation to the 
+built environment and emergency response systems is introduced. Leveraging a modular co-simulation architecture, the 
+framework facilitates the analysis of cascading effects across multiple infrastructure systems, such as water, electricity, gas, 
+and telecommunications. As a proof-of-concept example, urban flooding due to heavy rainfall is considered to illustrate the 
+framework’s capabilities in predicting system states and assessing structural impacts on critical infrastructures as well as 
+consequential ramifications for emergency relief units. The findings contribute valuable insights, thereby advertising the 
+utilization of the presented methodology in decision-making and training resources aiding the enhancement of the resilience 
+of urban environments against both natural and intentional threats.
+Keywords Digital Urban Twin · Socio-technical systems · Distributed co-simulation · Crisis management
+1 Introduction
+Evaluating the susceptibility of urban regions and their 
+essential infrastructure to both natural disasters—like floods, 
+intense rainfall, as well as severe storms—and human-
+induced events—such as terrorist attacks—has become a 
+vital area of research in recent years. This is largely due to 
+the global rise in the frequency and severity of these inci-
+dents. Failures or disruptions in critical infrastructure can 
+lead to serious consequences, including ongoing shortages 
+and major threats to public safety. Of particular concern are 
+the hidden interdependencies and unexpected cascading 
+effects among various critical infrastructure systems, which 
+may endanger citizens.
+To improve the resilience of urban areas and their criti-
+cal infrastructure, it is crucial for policymakers, agencies, 
+governments, and infrastructure providers to gain a deep 
+understanding of not only the vulnerabilities and failure risks 
+of individual infrastructures but also the potential impacts 
+Maurizio Boigk, Faruk Catal, Steffen Dietze, Michael Gerold, Eridy 
+Lukau, Michael Monteforte, Stefan Neuhäuser, Sascha Peitzsch, 
+Windy Phung, Stefan Pfennigschmidt, Maik Simon, Joanna Zarrah 
+Vetter, Nils Winter: These authors contributed equally to this work 
+and are listed in alphabetical order.
+ * Till Martini 
+ till.martini@emi.fraunhofer.de
+1 Fraunhofer Center for the Security of Socio-Technical 
+Systems SIRIOS, Berlin, Germany
+2 Fraunhofer Institute for High-Speed Dynamics, 
+Ernst-Mach-Institute, EMI, Freiburg, Germany
+3 Fraunhofer IVI, Institute for Transportation and Infrastructure 
+Systems, Dresden, Germany
+4 Fraunhofer Institute for Open Communication Systems 
+FOKUS, Berlin, Germany
+5 IOSB-AST, Fraunhofer Institute of Optronics, System 
+Technologies and Image Exploitation IOSB, Ilmenau, 
+Germany
+6 Fraunhofer Institute of Optronics, System Technologies 
+and Image Exploitation IOSB, Karlsruhe, Germany
+ Environment Systems and Decisions (2025) 45:40
+40 Page 2 of 21
+that the breakdown of one infrastructure can have on others. 
+Previous research efforts have identified risks and hazards 
+associated with cascading effects in interconnected infra-
+structure systems. The authors of Koliou et al. (2018) sum-
+marize the current state of knowledge and challenges related 
+to community resilience and system interdependencies.
+1.1 Research gap
+Although researchers have documented some interdepend -
+encies among critical infrastructure systems, these findings 
+have rarely been applied to integrate simulations of the 
+components within an urban system. Some projects have 
+created tools like SAT (Severity Assessment Tool) (Hayes 
+et al. (2022)) and CReDo (Climate Resilience Demonstrator) 
+(Wang et al. (2022)) to assess and visualize these interde-
+pendencies for decision-making purposes. However, specific 
+functionalities of different critical infrastructures and the 
+built environment are typically modeled through data-driven 
+methods rather than engineering approaches, which may fail 
+to recognize the complexity of cascading effects in disas-
+ter scenarios. Furthermore, coupled simulations primarily 
+focus on essential infrastructures like water, electricity, and 
+gas networks (e.g., Deshmukh et al. ( 2011); Praks et al. 
+(2015), while interdependencies with the built environment 
+and emergency response systems are often neglected. In 
+this context, there is a need for simulation frameworks that 
+facilitate the integration and communication among inter -
+disciplinary simulation environments. Previous efforts, such 
+as the Interdependent Networked Community Resilience 
+Modeling Environment (IN-CORE) (Lindt et al. (2023)), 
+mandate the integration of various services, e.g., including 
+analyses of buildings with fragility curves and simulations 
+of infrastructure networks under various hazard scenarios. 
+However, the methods used for simulation are not discussed 
+comprehensively, and emergency response systems, which 
+are critical for effective training, are omitted.
+Regarding the efficient realization of interdisciplinary 
+co-simulations, Restel (2023) introduces the concept of 
+SimulationOps that proposes a collaboration process (from 
+creating and combining simulation components to deploy -
+ing, configuring, and running simulations). This process uti-
+lizes the concept of distributed “as-a-service” platforms to 
+achieve its objectives. Numerous co-simulation models and 
+platforms have been proposed. The most widely recognized 
+concept is the High Level Architecture (HLA), publicly 
+available as a set of standards (IEEE (2010)). This concept 
+describes a federated system of multiple simulators, along 
+with a common runtime infrastructure to facilitate com-
+munication and synchronization. One example of a simula-
+tion platform that uses the HLA approach in the domain 
+of mobility and communication is Eclipse Mosaic (Schrab 
+et al. (2023)). HLA-based systems synchronize the steps for 
+a simulation in a global fashion but lack something like an 
+event stream approach allowing for each service to execute 
+its next step independently if the necessary input is avail-
+able, which can boost runtime performance. The Functional 
+Mock-up Interface (FMI) (Modelica Association (2025)) is a 
+standard for exchanging models for tightly coupled co-sim-
+ulations based on XML and the C programming language. 
+Maestro (Thule et al. (2019)) is one example utilizing FMI 
+for co-simulating cyber-physical systems. However, FMI 
+does not provide the development and deployment flexibil-
+ity to support the iterative development, deployment, and 
+usage process. The Cybersecurity & Information Systems 
+Information Analysis Center’s approach to “Modeling & 
+Simulation as a Service” (MSaaS) (Siegfried et al. (2018)) 
+emphasizes the use of cloud computing and service-oriented 
+architectures to deliver modeling and simulation capabilities 
+effectively. “As-a-service” refers to a self-service approach, 
+where users can access and use services on-demand. Gütlein 
+and Djanatliev (2020) presents an architecture for MSaaS, 
+which focuses on Apache Kafka for communication between 
+and coordination of components participating in a simula-
+tion. In summary, the existing “simulation-as-a-service” 
+approaches already address distribution, on-demand usage, 
+or using diverse programming languages, but do not support 
+the event streaming approach envisioned here.
+1.2 Innovation
+To fill these gaps, a new methodology has been established 
+to enable the virtual representation of infrastructure vulner-
+ability and functional impairments in urban districts during 
+hazard situations. It is built upon the concepts presented in 
+Martini et al. (2024). Its modular architecture and integra-
+tion with the Fraunhofer Open Source SensorThings API 
+Server (FROST) (Hertweck et al. (2019)) make it adaptable 
+and capable of being expanded to include additional hazard 
+scenarios and infrastructure components. This versatility 
+enables various applications, such as decision-support tools 
+for authorities and infrastructure operators, as well as train-
+ing resources in public safety.
+The framework integrates multiple simulation modules 
+for different critical infrastructures and services, including 
+water, electricity, gas, and telecommunications to form a 
+comprehensive digital twin representation of key infrastruc-
+tures in urban areas. Each module is built on engineering 
+models that are based on physical principles, standards, or 
+(georeferenced) real-world data, allowing for reliable pre-
+dictions about the modeled system’s state under certain 
+conditions. Analyses of scenario-specific building damage 
+using probabilistic engineering models as well as an agent-
+based simulation of emergency operations, modeling the 
+rapid responses of emergency units to critical incidents are 
+also integrated in the framework. This combination allows 
+Environment Systems and Decisions (2025) 45:40 
+ Page 3 of 21 40
+for a structural assessment of critical infrastructure and an 
+exploration of cascading effects that could hinder emergency 
+response efforts.
+The co-simulation platform emphasizes a strict separation 
+of the various development and operation responsibilities 
+as well as an extensive flexibility in forms of deployment. 
+It furthermore facilitates an event streaming approach to 
+orchestrate the services involved in running a simulation.
+To illustrate the performance of the presented framework 
+a scenario of urban flooding resulting from heavy rainfall, 
+addressing aspects of gas, water, power supply, communica-
+tion networks, emergency services, and building structures 
+is considered as an example application to demonstrate how 
+the developed methodology can provide valuable insights 
+before, during, and after disasters, enhancing the under -
+standing of cascading effects and chain reactions triggered 
+by significant impacts on critical infrastructure from severe 
+natural events or intentional attacks.
+This article is structured as follows. The co-simulation 
+framework enabling the coupled simulation of several criti-
+cal infrastructures is introduced in section  2. The construc-
+tion of a digital twin representation of an urban environ-
+ment by means of the distributed co-simulation framework 
+is discussed in section 3. The simulation modules needed for 
+the modeling of the respective individual infrastructures and 
+services are described in subsection  3.1, while the imple-
+mentation of their interfaces is detailed in subsection  3.2. 
+As a proof-of-concept of the newly introduced framework, 
+a first use-case example of cascading infrastructure failures 
+in urban environments is considered and the results of this 
+example application are showcased in subsection  3.3. Sec-
+tion  4 comprises the conclusion and highlights future out-
+look and prospects of the presented methodology.
+2 Co‑simulation framework
+The following section presents the design of a distributed co-
+simulation framework that has been developed to facilitate 
+interdisciplinary research and development.
+2.1 Design objectives
+The primary objective of the development effort is to estab-
+lish a framework which enables time-based co-simulation 
+in a distributed environment. The framework is designed 
+to support the development and utilization of simulation 
+components by an interdisciplinary team of researchers and 
+developers. Integrating existing simulator systems, each with 
+its own user interfaces, simulation control, and communica-
+tion facilities poses a major challenge.
+The framework is designed to be scalable and flexible, 
+possessing the following key characteristics: (i) simplicity 
+of use and extensibility, (ii) capability for the development 
+of complex simulation scenarios, and (iii) support for the 
+execution of such scenarios on local machines, cloud-based 
+infrastructures, or hybrid environments.
+The initial considerations have been based on existing 
+approaches such as serverless (stateful functions), event-
+driven, and service-based architectures. A central objective 
+is to completely separate application and platform function-
+ality. Core data processing functionality is to be separated 
+from the following aspects.
+• Control flow: simulators are required to surrender, for 
+instance, time control facilities, so that they could be 
+controlled from the outside.
+• Data flow: simulators are to relinquish control of data 
+exchange to facilitate their seamless integration into flex-
+ible data processing pipelines.
+• Communication technology: a simulator’s algorithmic 
+component needs to be separated from any integrated 
+communication mechanisms, to facilitate its deployment 
+in diverse runtime environments.
+• Deployment specifics: a simulator’s functionality needs 
+to enable cross-platform execution, allowing it to run on 
+various environments, including local machines, cloud 
+services, and hybrid configurations.
+2.2 Framework components
+The framework comprises four major types of components: 
+(i) processing units, (ii) services, (iii) applications, and (iv) 
+orchestrator(s).
+Processing units implement simulation algorithms or 
+other data processing tasks as passive and independent 
+building blocks providing a common Application Program-
+ming Interface (API) to facility controlling their execution 
+from the outside. Processing units can be written in diverse 
+programming languages.
+Services encapsulate processing units and provide life 
+cycle management and inter-process communication inter -
+faces. They offer mechanisms for creating unit instances, 
+initializing them for a simulation run, and invoking their 
+functions to apply external data, execute subsequent steps, or 
+query their state. This enables running multiple simulation 
+algorithms in a coordinated manner in distributed environ-
+ments and allows processing units to participate in multiple 
+concurrent simulations for various users, objectives, and 
+parameter sets.
+Applications describe simulation scenarios. In a typi-
+cal co-simulation scenario, services are interdepend-
+ent, i.e., the output of one service serves as the input of 
+another. Figure  1 illustrates this principle in form of a 
+block diagram based on Fundamental Modeling Concepts 
+(FMC) (Knöpfel et al. (2006)) using an example of four 
+ Environment Systems and Decisions (2025) 45:40
+40 Page 4 of 21
+interdependent services collectively executing the steps 
+of a simulation run. Applications specify the required 
+simulation services, their dependencies, initial state con-
+figurations, and simulation parameters, including model 
+time, simulation duration, step widths, and other relevant 
+settings.
+Orchestrators accept application descriptions and initiate 
+and execute corresponding simulation runs. Consequently, 
+an orchestrator establishes connections to the requisite ser -
+vices and invokes them sequentially (until the application’s 
+termination condition is met), while ensuring that data nec-
+essary for a service to execute a specific step are retrieved 
+and provided in a timely manner.
+Given that the present research primarily focuses on con-
+necting simulators from diverse domains, the following sec-
+tions concentrate on how the concept of processing units can 
+be used to implement the necessary functionalities.
+2.3 Processing units
+Processing units are designed to implement simulation algo-
+rithms as self-contained, passive components that are inde-
+pendent of a specific execution environment. At its core, 
+a unit is essentially a function f (stateti−k
+, ti) ↦ stateti
+ (step 
+function) that takes a model state and a corresponding point 
+in model time and produces a subsequent state. There is a 
+well-defined interface for initializing and retrieving model 
+data and for applying external events to a model state, ena-
+bling the units to be used in a cooperative environment. A 
+processing unit instance manages its own local model inde-
+pendently of any other unit. It may use external resources 
+such as databases to store and retrieve its model data. Units 
+may also use shared read-only resources such as lookup ser-
+vices. Units can be written in any programming language 
+that has a language binding to the framework; currently this 
+includes JavaScript, Python, Java, Kotlin, and C#.
+A processing unit implements the following API.
+• init (options): initializes the state of the unit with 
+the given options.
+• apply (time, data): applies the given external 
+data to the state of this unit for the given point in model 
+time.
+• step (time): computes state changes for the given 
+point in model time.
+• query (time, filter): queries the state for the 
+given point in model time using a unit-specific query/
+filter expression.
+• release (): releases all resources held by this unit.
+An API contract exists that stipulates additional conditions 
+under which a unit’s functions are executed. For instance, 
+the init function is called at most once before any other 
+function; the apply function may be called between 0 and n 
+times per time step directly before the corresponding step 
+function; the step function is called exactly once for a time 
+step; the query function is called at most once per pair 
+(time/filter); and the release function is executed at most 
+once after any other API call.
+Depending on data flow patterns, processing units can be 
+classified into three types.
+• Generators produce data, they, however, do not accept 
+external events. Examples include clocks, replay, inter -
+polator, or control units.
+• Collectors accept external events, however, do not pro-
+duce any data. Examples include consoles, archives, dis-
+plays, or monitors.
+• Transformers do both, they accept external events and 
+produce data. Examples include simulators, filters, and 
+data converters.
+2.4 Unit interaction
+Processing units are self-contained, that is, they have the 
+freedom to model and represent data internally without 
+external constraints. However, to facilitate data exchange 
+with other units, a common data model must be established 
+or a mechanism has to be provided for converting data 
+between different models.
+Fig. 1 Service dependencies in a co-simulation environment. The 
+labeled boxes represent the state of services at a time t; information 
+flows along the arrows through channels (represented as circles); the 
+unlabeled boxes represent synchronization points, to illustrate that a 
+service waits for all input to be available before proceeding with its 
+own next step
+Environment Systems and Decisions (2025) 45:40 
+ Page 5 of 21 40
+Additionally, modeling and communicating metadata 
+(e.g., data source identification, valid time, transaction 
+time) is crucial for facilitating rejection or validation of data 
+records being applied. To address the latter issue generi-
+cally, the framework encourages the use of the CloudEvent 
+model (CloudEvents Authors (2024)) to encapsulate data for 
+exchange between simulators. CloudEvents offer a stand -
+ardized metadata structure and well-defined methods for 
+encoding data for a variety of formats and communication 
+protocols.
+The remaining challenge of managing different data mod-
+els can be resolved by employing converter units. When two 
+units are using a common model, data can be exchanged 
+directly, as demonstrated in the following program fragment.
+In most cases, particularly when simulators cover diverse 
+domains or have been developed by distinct teams, data con-
+version is indispensable. Data converters are specialized 
+transformer units that accept data from one model and con-
+vert it to a target model. The following fragment illustrates 
+the flow of data between simulators in a schematic manner.
+The descriptions thus far have focused on the interaction 
+between processing units, i.e., on communication inside a 
+simulator network. To effectively use the outcome of a simu-
+lation, however, a simulator network requires mechanisms 
+for communication with external systems. This is achieved 
+through the use of peripheral units, such as generators or 
+collectors.
+Figure  2 depicts an example simulator network that com-
+municates with an external user interface system. The but-
+tons of the User Interface (UI) are used to pause or resume 
+the simulation through a clock control unit, which subse-
+quently generates clock events. Simulator 1 depends on the 
+clock ticks and the results of simulator 3; simulators 2 and 3, 
+in turn, depend on the results of simulator 1. An additional 
+converter unit is employed to convert data between simula-
+tor units 1 and 2. The simulation results of units 2 and 3 are 
+collected to be displayed in the UI.
+3 Digital twin representation 
+of an urban environment with coupled 
+interdependent infrastructures
+To demonstrate the capabilities of the developed frame-
+work, the ramifications of a heavy rainfall event in an urban 
+environment and subsequent consequences on critical infra-
+structures are to be studied as an example application in 
+Fig. 2 Schematic FMC representation of units interacting in and outside a simulator network
+ Environment Systems and Decisions (2025) 45:40
+40 Page 6 of 21
+subsection  3.3. The scenario under consideration takes place 
+in an urban area of a large German city, which is primarily 
+characterized by residential buildings. In addition, there are 
+schools, an ambulance station, a hospital, and two power 
+substations in this area. To model those infrastructures 
+together with their mutual dependencies, a digital twin rep-
+resentation of the urban environment is constructed with a 
+focus on interconnected infrastructure models through the 
+presented co-simulation framework. Figure  3 depicts a pos-
+sible exemplary configuration: Reconnaissance modules like 
+audibility and visibility analyses, information from sponta-
+neous volunteers or drones are incorporated as generator 
+units providing the input for the coupled simulation. Rel -
+evant interdependent critical infrastructures are represented 
+by coupled simulator units which can process the received 
+input and can interact by means of the co-simulation frame-
+work. The outputs of those coupled simulations are gathered 
+by dedicated collector units for visualization and analyses 
+(see Winter et al. (2024)). The implementation and modeling 
+of the respective units constituting the digital twin repre-
+sentation are detailed in subsection  3.1. The realization of 
+interactions among the individual simulators are outlined in 
+subsection  3.2.
+3.1 Model overview
+Digital models with simulation capabilities of the distinct 
+components of infrastructure networks present in the con-
+sidered urban area—namely gas, power supply, drinking 
+water, and telecommunications—alongside emergency 
+response and building vulnerability, constitute the build-
+ing blocks of a digital twin representation of critical infra-
+structure in urban contexts for evaluating its interdepend-
+ent functionality and resilience. Consequently, a dedicated 
+simulation tool is required for each component, tailored to 
+fulfill its specific requirements and operational functions. 
+Here, modeling of supply infrastructure operations and 
+assessment of the building vulnerability is based on physi-
+cal principles like mechanics, thermodynamics, electrody -
+namics, and hydrodynamics as well as derived engineer -
+ing models. For the dynamic simulation of the emergency 
+response, an agent-based modeling approach is employed. 
+Reconnaissance is exemplified by input gathered through 
+spontaneous volunteers, while a suitable visualization 
+dashboard is introduced. Each tool operates autonomously, 
+serving as an independent simulation instrument, which 
+will be detailed in the subsequent sections for all compo-
+nents. This subsection also serves as a demonstration of 
+the framework’s capability of and flexibility in incorporat -
+ing and connecting versatile, heterogeneous, interdiscipli-
+nary building blocks, based on specifically developed or 
+existing tools. Hence, operational and implementational 
+details, underlying theoretical footing as well as required 
+embedding and inputs together with provided outputs are 
+summarized for each individual unit to be employed in 
+this exemplary multilateral modeling of the urban con-
+figuration in question. In particular, focus is placed on 
+similarities in physically grounded modeling of supply 
+infrastructure systems (e.g., mapping of gas, power, and 
+water network elements to edges and nodes of graph-based 
+descriptions) as well as conceptually different approaches 
+of, e.g., agent-based modeling of response unit dynam-
+ics. The development of the individual building blocks 
+might require considerable amounts of effort—depend-
+ing on their respective degree of novelty. The following 
+subsections cover their most relevant aspects suitable to 
+underline the aforementioned deliberations, whereas the 
+building blocks based on newly developed tools are intro-
+duced in a bit more detail.
+Fig. 3 Coupled simulations 
+example
+
+Environment Systems and Decisions (2025) 45:40 
+ Page 7 of 21 40
+3.1.1 Simulation of extreme contingencies in urban gas 
+distribution networks
+Numerical simulation of natural gas grid operation can pro-
+vide useful aid for decision support in economic as well 
+as safety considerations. Within current energy sectors, 
+natural gas infrastructures still play a prominent role while 
+offering a potential vantage point for hydrogen expansion, 
+e.g., by step-wise hydrogen blending. Concomitant with its 
+importance, the safety of gas supply has particularly been 
+shifted into focus due to acts of sabotage as well as political 
+sanctions.
+The hydraulic gas-network simulation module employed 
+in the presented co-simulation framework is developed as a 
+Python module predicated on Ganter et al. (2023) as follows.
+Natural gas grids can be represented as networks com-
+prising nodes—indicative of sources, consumers, junctions, 
+etc.—that are interconnected by directed, one-dimensional 
+edges symbolizing pipeline segments, compressors, regula-
+tors, and valves. The resulting network graph, enriched with 
+operational parameters such as source pressures, consumer 
+demands, and the characteristics of compressors, regulators, 
+and valves, as well as pipeline attributes including lengths, 
+diameters, inclinations, and roughness values, constitutes the 
+input for the gas module. The dynamics governing natural 
+gas, a mixture of gaseous hydrocarbons, are dictated by the 
+principles of thermodynamics and hydrodynamics, ensuring 
+the conservation of mass and momentum under the influ-
+ences of inertia, friction, gravity, and external forces from 
+components such as compressors (Ganter et al. (2023)). 
+Applying these principles to each pipeline section and each 
+node, a system of coupled nonlinear algebraic equations that 
+delineate the system state in terms of the average flow rate 
+through each section and the pressure at each node can be 
+derived (cf. Ganter et al. (2023)).
+Upon receiving an attributed gas-network graph as input, 
+the gas module automatically constructs the corresponding 
+system of nonlinear algebraic equations based on the topol-
+ogy and attributes of the input graph. To ensure mathemati-
+cal solvability, the viability of the input graph is scrutinized, 
+and the flow-regulator concept introduced by Ganter et al. 
+(2023) is employed to facilitate physical solutions that may 
+diverge significantly from design-point operations. For 
+enhanced robustness, the solution is derived through an 
+iterative linearization process combined with a least-squares 
+optimization method.
+The incorporation of the gas-network simulation module 
+into the co-simulation framework builds on the deliberations 
+presented in Martini et al. (2024). The module is imple-
+mented as a simulator unit transforming gas-network-graph 
+data to corresponding numerical values for the hydraulic 
+quantities describing the flow characteristics within the net-
+work (i.e., flow rates and pressures). Hence, specific data 
+converter units are required when connecting the gas-net-
+work simulation module to other interdependent simulation 
+modules in order to, e.g., interpret received data on power 
+supply in terms of the operational state attributes of power-
+dependent gas-network elements or to map the resulting 
+numerical values of the gas-flow characteristics to the sup-
+ply status of gas consumers.
+3.1.2 Simulation of urban power distribution grids
+The simulation of electrical power grids requires granular 
+modeling of their network components to detect critical 
+infrastructure contingencies due to damaged power assets 
+or insufficient power supply. In the context of power system 
+analysis, the network is modeled as nodes (bus bars) that 
+host generators and consumers, along with edges (branches) 
+that represent lines and transformers. To determine volt-
+age amplitudes and angles, from which the power flows 
+and system losses can be derived, this configuration can 
+be expressed as a mathematical problem known as the load 
+flow problem. In this context, power flow equations define 
+the balance between power injections and consumptions at 
+each bus bar. In addition to the interdependencies of the 
+individual elements, other relevant parameters, such as the 
+impedance and length of the lines and the nominal power 
+of transformers and generators, are incorporated into these 
+equations (cf. Grainger et al. (2016)).
+The variety of analysis and simulation tools for power 
+systems capable of solving the load flow problem is reviewed 
+in Martini et al. (2024). The presented power grid module 
+uses Pandapower (Thurner et al. (2018)) for its easy integra-
+tion into existing Python code and performance in complex 
+networks (Grishin et al. (2024)). In addition, Pandapower 
+has a standard type library for common elements of the 
+power grid with standard type parameters.
+The power grid module either uses a Pandapower network 
+model as initial input or generates one based on geodata. To 
+create a computable network model, the geodata must meet 
+specific requirements: (i) The data must represent a coherent 
+network model in which all nodes and edges are connected. 
+(ii) Consumption must be covered either by generators or 
+external networks. (iii) All type parameters of the elements, 
+such as nominal power, resistance, and reactance, must be 
+clearly defined. (iv) There must be a defined slack bus bar 
+that serves as a reference point for the voltage and power 
+balance.
+The power system is simulated in an event-oriented way, 
+allowing for the representation of load changes and grid 
+topology adjustments. After each modification, a load flow 
+calculation is performed with a subsequent check for com-
+ponent overloads and voltage band violations, adjusting the 
+network as needed until all boundary conditions are met.
+ Environment Systems and Decisions (2025) 45:40
+40 Page 8 of 21
+To interact with the co-simulation framework, data con-
+verters provide the required data that imply modifications to 
+the power network. This input data can include event infor-
+mation on damaged and repaired infrastructural assets, along 
+with generator and load scaling changes. For outputs, data 
+can be queried either for damaged power assets or the power 
+consumption of infrastructural assets. Various data convert-
+ers are utilized for translating information to the stack of 
+infrastructure components that depend on the power system.
+3.1.3 Simulation of drinking water networks
+Drinking water distribution networks are complex systems 
+composed of interconnected components. These networks 
+can be represented as directed graphs, where the nodes cor-
+respond to infrastructure elements, such as junctions, reser-
+voirs, and tanks, while the links represent pipeline sections, 
+pumps, and valves that connect the nodes. Each network 
+component has specific parameters, such as flow rates, pres-
+sure levels, and diameters, which are essential for simulat-
+ing the system’s behavior. Hydraulic simulations are used 
+to accurately model and optimize the performance of these 
+networks. The goal of these simulations is to model water 
+flow and calculate key parameters, like pressure, velocity, 
+and flow rate at different points. These simulations are based 
+on fluid dynamics principles, where the flow through each 
+pipe follows the laws of conservation of mass and energy.
+Sophisticated computational models are employed to sim-
+ulate hydraulic conditions, with one of the most widely used 
+tools being EPANET (Rossman et al. (2020)). EPANET is an 
+open-source software that models both the hydraulic behav-
+ior and water quality dynamics of drinking water distribution 
+systems. It solves nonlinear algebraic equations based on 
+flow equations and applies hydraulic principles to simulate 
+the steady-state and dynamic behavior of the network.
+EPANET serves as the computational engine for vari-
+ous water network simulation platforms. Tools like WNTR 
+(Klise et al. (2017)) and QGISRed (Martínez Alzamora et al. 
+(2019)) extend EPANET’s capabilities; however, they come 
+with limitations, such as the lack of usability for non-pro-
+grammers or the requirement to operate within specific envi-
+ronments (Martini et al. (2024)). HydroDyn Map was devel-
+oped to overcome these challenges, combining EPANET’s 
+computational strength with .NET and C# technologies to 
+provide a more accessible and user-friendly interface. The 
+tool also integrates spatial data by enabling the assignment 
+of geographic coordinates to EPANET elements within a 
+specific Spatial Reference System (SRS) (Chang (2018)). 
+This integration enhances simulation accuracy by incor -
+porating real-world geographical data, enabling advanced 
+spatial analyses, such as including population density in 
+the simulation to assess the system’s efficiency in serving 
+different areas. Additionally, HydroDyn Map supports the 
+storage of network data and parameters in a PostGIS data-
+base (PSC & OSGeo (2023)), making it easier to manage, 
+query, and integrate with other data sources. By bridging 
+hydraulic simulations with spatial data, this tool provides 
+a more seamless and comprehensive approach to modeling 
+drinking water distribution networks.
+Although initially developed for Windows, the software 
+can be adapted to run on any platform compatible with the 
+.NET framework. By offering the option to deploy Hydro-
+Dyn Map within a Docker container, it ensures complete 
+independence from the user’s host architecture. Furthermore, 
+the software wrapper supports a range of standard interfaces, 
+enhancing interoperability and ease of integration.
+The water module in the co-simulation framework uti-
+lizes HydroDyn Map as a tool to simulate drinking water 
+networks. The simulation module can receive information 
+about the operational state of network elements and send 
+parameters, such as head, pressure, demand, and demand 
+deficit, as output. In order to connect with other modules, 
+data converter units are required to enable the water module 
+to interpret modifications to its network introduced by other 
+modules and to return the updated state of the drinking water 
+network.
+3.1.4 Simulation of (LTE/5 G) cellular network coverage 
+in disaster‑stricken areas
+The cellular network communication module aims to 
+simulate cellular communication outage based on critical 
+infrastructure failure. Cellular networks are a fundamental 
+component of modern urban infrastructure, serving critical 
+roles for individuals, essential services, and public systems. 
+Citizens depend on cellular networks (in the absence of 
+Wi-Fi) for receiving warnings, initiating emergency calls, 
+and accessing crucial disaster-related information. Criti-
+cal infrastructure systems, such as distributed electricity or 
+water networks as mentioned before, rely on these networks 
+for remote operations and management, ensuring continuous 
+functionality even during disruptions. Critical infrastructure 
+operators face significant disruptions in the absence of reli-
+able cellular communication, as they rely on it to coordinate 
+field staff and ensure seamless operations.
+Network simulation is a commonly known methodology 
+that is adopted not only in research but also widely in the 
+private/public sector. It is therefore beneficial for novel co-
+simulation approaches to include and integrate scientifically 
+validated approaches and tools. This includes, next to sci-
+entifically evaluated network-validation approaches (Wru-
+lich et al. (2008)), the real-world impact on network models 
+and protocols, such as discussed in Jardosh et al. (2005) 
+and Hahn et al. (2015). Notably, the simulation of cellu-
+lar networks has been variously explored in prior research, 
+encompassing link-level and system-level analyses in Rupp 
+Environment Systems and Decisions (2025) 45:40 
+ Page 9 of 21 40
+et al. (2016) or Virdis et al. (2014) based on OMNeT++, as 
+well as system-level approaches as presented in Ikuno et al. 
+(2010) and Johnson (1999) utilizing MATLAB. However, all 
+of these methods are not bound to one specific tool but are 
+rather tool-agnostic. Further, coupling various simulation 
+tools in an integrated manner to investigate communication 
+protocols, networks, and network coverage is not a novel 
+approach and has been a successful simulation approach, 
+such as in V-to-X related research (Protzmann et al. (2017)), 
+next to other research domains. The here-presented network 
+simulation module calculates the effects on cellular network 
+coverage in the target area that arise from critical infra-
+structure failure, such as a large-scale power outage, cable 
+destruction, or destruction of buildings. Based on this input, 
+the module generates geographical forecasts that resemble 
+the remaining coverage within the disaster-stricken area 
+and additionally evaluates the citizens’ remaining ability to 
+either receive public alerts and warnings or initiate emer -
+gency calls (Lukau et al. (2023)) using their cell phones.
+The simulation module itself is implemented in a system-
+of-systems architecture with multiple integrated subsystems, 
+databases, and submodules bound to specific tasks. The sub-
+module that is bound to network calculations is the core 
+element of the module and includes a code-level variation of 
+the NS-3-based discrete-event simulation framework (Riley 
+and Henderson (2010)). This submodule recreates the net-
+work topology based on real-world infrastructure data that 
+contains the positions and configurations of each mobile 
+base station in the target area. The source-code variation 
+of the NS-3 framework enables the dynamic integration, 
+load-balancing, and scalability as well as parallelization 
+of large scenarios. It further enhances each simulation run 
+with a specific simulation state. This provides the ability to 
+dynamically simulate various scenarios and changing net-
+work topologies of the public cellular network infrastructure 
+and also enables dynamic establishment of the network sce-
+narios and signal processing calculations based on chang-
+ing scenario requests. The LTE architecture modules and 
+signaling models as well as functionalities that are used in 
+the NS-3 variation have been introduced and validated in 
+Giuseppe et al. (2012) and Baldo et al. (2011).
+Integrated into the co-simulation framework, the module 
+is implemented as a processing unit with its subservices and 
+submodules as self-contained and masked components. It 
+is initialized with an internal database of buildings, base 
+stations, and their configurations that equally resemble 
+their real-world position and configuration in the simulated 
+scenario. The simulated base stations are then configured 
+with the respective height (with respect to building height), 
+transmission power, frequency bands, bandwidth, and cor -
+responding frequency channels. In a running co-simulation 
+(i.e., the simulation of a blackout in the target area), the 
+processing unit internally monitors the power supply state 
+at each base station. Upon receiving new power supply 
+information the current internal simulation state is applied, 
+altering functioning/non-functioning base stations. Since the 
+base stations atop the buildings are supplied by the build-
+ing’s own power supply system, the power outage directly 
+influences the antennas on the roof. As this information 
+originates from different processing units (i.e., simulation 
+of power distribution grids), it may have been altered by an 
+external co-simulation framework converter that translates 
+simulation results from electricity-related to communica-
+tion-related domains. The applied topological change in 
+the network is recalculated by a single internal simulation 
+run, resulting in an updated coverage area as a new simula-
+tion result. To determine the new coverage area or size of 
+each cell per base station, the uplink and downlink between 
+simulated user equipment (i.e., smartphones) and function-
+ing/non-functioning base stations in the area is simulated. 
+The calculated Received Signal Strength Indication (RSSI) 
+measured at each user equipment, as well as the simulated 
+cell-selection process of each user equipment, define the 
+geographical coverage area in which users are predicted to 
+either have service or not. The simulation results are served 
+back into the co-simulation framework toward coupled pro-
+cessing units through dedicated data converter units.
+3.1.5 Simulation of the emergency response
+In the presented framework, most of the components 
+describe different technical systems that are quite entan-
+gled with one another, but there is another important aspect 
+when modeling failures in the critical infrastructure in order 
+to understand their impact on society and daily life. While 
+some failures are fixed automatically or can be resolved 
+remotely by the operators, other failures must be resolved 
+by humans, either because of their complexity or quantity. 
+Incorporating this human interaction into the co-simulation 
+framework allows for a more comprehensive description of 
+the socio-technical systems.
+Human interaction involves repairing and maintaining 
+parts of the critical infrastructure and affiliated machines as 
+well as the work of authorities and organizations responsible 
+for public safety. Their simulation is typically achieved with 
+Discrete-Event Simulations (DES) or Agent-Based Simula-
+tions (ABM).
+Discrete-event simulations examine the behavior of 
+complex systems by modeling a set of events (e.g., failures, 
+emergency calls) that interact with the system at specified 
+time points. These simulations operate along a timeline 
+of discrete time steps, generating a system state for each 
+time step (Mahdiraji et al. (2022)). Agent-based simula-
+tions focus on replicating individual behaviors through 
+parameterized agents (e.g., people, vehicles) that act as 
+state machines by perceiving, processing, and reacting to 
+ Environment Systems and Decisions (2025) 45:40
+40 Page 10 of 21
+their environment (Andrae and Pobuda (2021)). This agent-
+level perspective enables a detailed analysis of microscopic 
+processes in a complex system, such as compliance with 
+response time targets (Bandyopadhyay and Singh (2016)).
+There are various simulation tools available for this task: 
+The simulation software MATSim (MATSim Contributors 
+& MATSim Association ( 2025)) is a multi-agent simula -
+tion framework designed for traffic simulation in urban 
+areas. It can be used to estimate emergency response times 
+based on underlying traffic conditions (Koch et al. (2020)). 
+Similarly, SUMO (Alvarez Lopez et al. ( 2018)) is a traf -
+fic simulation tool that can be applied to simulate traffic 
+incidents and emergency service vehicles (Li et al. (2024)). 
+Other agent-based simulation frameworks are provided with 
+AnyLogic, NetLogo, and Repast (The AnyLogic Company 
+(2025); Wilensky (1999); Argonne National Laboratory 
+(2022)). Anylogic is a framework which allows to replicate 
+the procedural steps of systems, for example the patient flow 
+in an emergency department (Murtaza Sara et al. (2024)). 
+NetLogo provides agent-based simulations as a black box, in 
+which a patient flow can be modeled through an emergency 
+department (Godfrey et al. (2023)). Repast Suite enables 
+the agent interaction in a domain-specific point of view to 
+reproduce the behavior in certain scenarios (Cabrera et al. 
+(2012)).
+The emergency response simulation was developed as a 
+discrete-event simulation to handle incidents with unknown 
+entry time combined with an agent-based simulation 
+approach for dynamic representations of first responders, 
+vehicles, detectors, etc., and a domain-specific agent defi-
+nition of a control center. It is implemented in the Kotlin 
+programming language in a domain-driven design (figure 4). 
+Incidents stand for failures, accidents, or other events. They 
+are detected by some kind of sensors or humans. These 
+detectors report the incident to a control center at which 
+a number of tactical units are dispatched to resolve the 
+incident.
+Incidents can be generated within the emergency response 
+simulation or are received from other modules of the co-sim-
+ulation framework. The detectors obey different policies and 
+logic ranging from simple automated alarms to humans call-
+ing the emergency hotline. When the incidents are reported 
+to the control center, there is a different set of policies and 
+logic dealing with them and dispatching available units on 
+operations to resolve the incidents. All simulation logic must 
+be adapted to the designated modeled area and the applied 
+policies.
+The emergency response simulation is a processing unit 
+as described above. It receives inputs in the form of cloud 
+events with information about new incidents, namely their 
+properties and locations. The output comprises updated 
+information of its entities: incidents, operations, tactical 
+units, and depots.
+Exemplary, in the application in section  3.3, a heavy 
+storm leads to structural problems of buildings and criti-
+cal infrastructure, buildings get flooded, streets and bridges 
+are impassable, and the electricity and communication net-
+work fails in certain areas. Additionally, there are weather-
+unrelated incidents which emerge within the emergency 
+response simulation based on calibration data of the mod-
+eled area. The incidents due to the heavy storm are received 
+from external co-simulation modules. For example, flooded 
+buildings and impassable streets trigger a set of police, fire, 
+and medical emergency units. These tactical units drive to 
+the incidents based on current road conditions and possible 
+road blocks, then they work on the incidents with their indi-
+vidual policies and logic. When the incidents are resolved, 
+the units drive back, bring injured people to hospitals or get 
+assigned to new operations.
+The emergency response simulation allows studying sev-
+eral different aspects in a scenario. It can vary by
+• different initial conditions, e.g., time of day and spatio-
+temporal availability and distribution of resources and 
+forces,
+• different policies and logic of the simulation agents 
+(detectors, control center, units), e.g., from fixed pro-
+cesses, control theory, or reinforcement learning,
+• different inputs from the other co-simulation modules.
+Studying simulations under varying conditions enables a 
+better understanding and forecasting of the crisis situation. 
+It also helps to evaluate and improve disaster management 
+plans, distribution of resources and staff planning, and can 
+be used in training environments for staff in operational 
+headquarters.
+Fig. 4 Implementation concept of the emergency response simulation with the main entities incidents, detectors, control centers, and tactical 
+units
+Environment Systems and Decisions (2025) 45:40 
+ Page 11 of 21 40
+3.1.6 Hazard vulnerability assessment of the built 
+environment
+Flood hazard assessment of buildings and structures com-
+prises various methods and approaches. A comprehensive 
+overview that summarizes the current state of the art and 
+provides detailed information about the methods is presented 
+in Martini et al. (2024); Vetter et al. (2024); Neuhaeuser 
+et al. (2024); Rosin et al. (2024).
+In the present research, an approach is developed that 
+enables the site- and building-specific quantification of flood 
+damages and building vulnerabilities. This is accomplished 
+using categorizable, generalizable, and scalable physical 
+damage models tailored for extensive urban structures but 
+applied at the building level. A key aspect of the solution is 
+the development of generic building models that reflect typi-
+cal characteristics related to structure, materials, and con-
+struction methods, thus eliminating the need for specific data 
+and calculations for each individual building. This facili-
+tates a more efficient assessment of flood impacts on urban 
+environments. Vulnerability is assessed for a representative 
+building drawn of a portfolio of structures with similar char-
+acteristics. The urban mixed-use pattern is categorized into 
+various buildings classes, such as typical 19th/20th century 
+masonry residential buildings or reinforced concrete admin-
+istrative structures built after 1945 (Vetter et al. ( 2024)). 
+Variability in geometry, material strength, and other relevant 
+parameters within each class is incorporated into the analy-
+sis through probabilistic distributions (Neuhaeuser et al. 
+(2024)).
+The assessment framework comprises three sequential 
+modules presented in figure  5. The first module utilizes 
+open geodata to categorize buildings and develop geomet-
+ric models, while literature research addresses data gaps. 
+A parametric modeling approach is employed for simula-
+tion-based probabilistic analyses, starting with automated 
+identification of building types and the generation of para-
+metric base models which are then modified for structural 
+analyses (Vetter et al. (2024)). The second module prepares 
+structural models for probabilistic analyses and conducts 
+the analyses (Neuhaeuser et al. (2024)). The module allows 
+for various loading scenarios, including standard loads and 
+those resulting from hazardous events, such as flooding, by 
+varying flood height and flow velocity. Structural models 
+representing specific building classes are derived by con-
+sidering uncertainty and adjusting input parameters accord-
+ing to statistical distributions. The third module collects and 
+evaluates results to derive fragility curves, describing the 
+probability of reaching or exceeding certain damage levels 
+based on intensity measures (Neuhaeuser et al. (2024)). All 
+developed software tools are fully integrated, enabling auto-
+matic execution of modules for seamless integration into the 
+co-simulation framework. This semi-automated procedure 
+facilitates the development of fragility curves for assessing 
+building vulnerability in urban contexts, as exemplified in 
+Rosin et al. (2024).
+To integrate into the co-simulation framework, georef-
+erenced classifications of buildings and respective fragil-
+ity curves for the building types are submitted. The latter 
+are then overlaid with water levels within the co-simulation 
+framework. As a result, the damage probability is deter -
+mined spatially and event-dependently for each building 
+type using the corresponding fragility curve.
+3.1.7 Integration of situation data via spontaneous 
+volunteers
+The here-presented co-simulation requires external input 
+data: the state of the simulated infrastructure at the begin-
+ning of the simulation serves as the initial conditions and 
+further information at later times can be used to update 
+and recalibrate the co-simulation. This recalibration is 
+necessary since the co-simulation will naturally diverge 
+from the real state of the infrastructure with increasing 
+simulation time, reducing its predictive power. In par -
+ticular, probabilistic and non-deterministic simulation 
+components yield non-trivial result spaces of possible 
+Fig. 5 Concept of building vulnerability assessment with specifi-
+cation of software (in italic): Rhino (Robert McNeel & Associates 
+(2024)) and Grasshopper (Rutten (2024)) for geometric building 
+modeling, RFEM (Dlubal Software (2024)) for structural modeling 
+and analyses, Python for automated workflow and integration, figure 
+adapted from Rosin et al. (2024)
+ Environment Systems and Decisions (2025) 45:40
+40 Page 12 of 21
+simulation solutions. Additionally, initial conditions 
+might not be exactly known, making assumptions neces-
+sary and adding further ambiguity.
+Technical monitoring systems based on sensors and 
+self-reporting might be insufficient to provide this input 
+data in cases of large-scale, cascading infrastructure dam-
+ages when infrastructure components, on which monitor -
+ing systems depend, are affected. Moreover, many critical 
+infrastructures, such as most built structures and road net-
+works, are not monitored by automated technical systems.
+Spontaneous volunteers, i.e., volunteers that are not 
+part of an organized disaster response organization, can 
+not only help with physical labor but also by submitting 
+situational information, increasing the situational aware -
+ness of disaster managers (Fathi and Fiedrich (2023)). 
+Information crowdsourcing can yield fast, reliable, and 
+low cost results as well as give access to previously 
+unavailable information (Steed et al. (2019); Bayazidy-
+Hasanabad et al. (2021); Mirbabaie et al. (2016)).
+Information crowdsourcing is arguably already applied 
+routinely for supply infrastructure: consumer reports 
+using phone calls, apps, or dedicated websites are a com-
+mon way of detecting damages to supply infrastructure 
+close to the consumers, as for example, in low-voltage 
+electricity networks (Al-Kanj et al. (2023)). Crowd-
+sourced information gathering has been, for example, 
+studied for weather data (Barras et al. (2019); Kempf and 
+Wetterdienst (2021); Kox et al. (2021)), various natural 
+disaster events (Bayazidy-Hasanabad et al. (2021); Yuan 
+and Liu (2018); Castanhari et al. (2016); Feichtinger 
+et al. (2020); Dharmapuri Sridhar (2017)), supply and 
+transport infrastructure (Mao et al. ( 2020 ); Sun et al. 
+(2016); Rapousis et al. (2015); Shoemaker et al. (2021); 
+Schnebele et al. (2014)), the structural stability of built 
+structures (Tsai et al. ( 2020)), and even social and psy -
+chological issues of the population (Biegert et al. ( 2019)).
+In this work, the usage of volunteer-submitted informa -
+tion as input data for the co-simulation is explored. The 
+crowdsourcing is modeled after the setup of smartphone 
+apps for volunteer coordination (e.g., Betke et al. (2024); 
+Holzhüter et al. (2024)): spontaneous volunteers receive 
+dedicated information retrieval tasks and submit situa-
+tional information using the app. The volunteer-submitted 
+information is collected, processed, optionally visualized, 
+and incorporated into the co-simulation.
+The volunteer module is triggered when a task for 
+information retrieval for an area is received. This task is 
+broken down into individual subtasks for each volunteer 
+in the corresponding area. Data converter units map the 
+reported information accordingly to be used as input for 
+other downstream modules.
+3.1.8 Data filtering, aggregation, and visualization
+The simulation models presented above generate huge 
+amounts of data, especially in complex simulation scenarios, 
+where multiple critical infrastructures are interconnected. 
+While this extensive output is rich in information, it can 
+be overwhelming and hinder timely decision-making. To 
+manage this complexity effectively, the data need to be bro-
+ken down into manageable and relevant subsets. Through 
+targeted data aggregation, data filtering and processing, and 
+user-specific visualization, stakeholders can filter out key 
+insights from the extensive data generated by simulations, 
+enabling them to make informed decisions quickly and effi-
+ciently (Winter et al. (2024)).
+In a complex co-simulation, all simulation modules pro-
+duce valuable data that can be used for both external and 
+internal purposes. The first step in managing these data is 
+internal filtering, which is based on specific domain knowl-
+edge and determines what information should be shared. 
+This process ensures that only relevant data contributes to 
+the creation of a comprehensive digital twin that represents 
+the complex simulation scenario. Naturally, the available 
+data vary, as each simulation module produces its individual 
+output formats. The use of a common data model, the OGC 
+SensorThings API (Liang et al. (2021)), a well-established 
+open-source data model, overcomes the hurdles of different 
+data formats. A dedicated data collection unit, based on the 
+FROST API Server (Hertweck et al. (2019)), is responsi-
+ble for aggregating all available data. This unit also acts 
+as a storage system that provides a complete representation 
+of the simulated scenario. However, this extensive collec-
+tion often contains excessive information that is not neces-
+sary for various use cases. Further processing is therefore 
+essential to generate customized visualizations and enable 
+targeted information transfer. This is achieved through vari-
+ous visualization tools that can be seamlessly integrated into 
+the presented framework or used as complementary tools to 
+ensure that users receive the most relevant insights for their 
+specific needs.
+The web-based information system ELD (Elektronische 
+Lagedarstellung, engl. Electronic Situation Dashboard) is 
+already available within this framework. It links a wide 
+range of data to support decision-making and is specifically 
+designed to assist staff in crisis management by provid-
+ing the necessary tools for effective analysis and response. 
+Based on open standards, the ELD enables easy integration 
+of external data sources and facilitates the collection, man-
+agement, and visualization of raw data, thereby increasing 
+its versatility (Fraunhofer IOSB (2025, 2022)). Within the 
+co-simulation, the ELD serves as a visualization tool, as 
+one of its strengths is its support for data with spatial refer -
+ences for integration and visualization on maps. This capa-
+bility ensures that users can effectively visualize complex 
+Environment Systems and Decisions (2025) 45:40 
+ Page 13 of 21 40
+scenarios and make informed decisions during critical situ-
+ations. Interfaces to the OGC SensorThings API and FROST 
+are already implemented in the ELD, enabling easy integra-
+tion and visualizati

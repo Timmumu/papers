@@ -21,4 +21,17 @@ Road maintenance remains one of the most resource-intensive and hazardous operat
 | Yes | Yes | Yes | Tier 2 - Digital Shadow (one-way physical to virtual) | 0 | 0 | 1 | Design for Safety (DfS) | None | Perception / Computer Vision | Multi (two or more data types) | Single case study | 4 | Design for Safety |
 
 **Key evidence (AG):** Digital twin-driven system for road maintenance (TECNALIA): UAV + AMR integration for automated inspection and measurement of road assets; data fusion and real-time synchronisation between field agents and centralised DT; retro-reflectivity monitoring of signage, obstacle/vegetation detection; supports data-driven maintenance planning; case study on Italian highway network. One-way monitoring→DT→maintenance planning; no actuation and no learning loop.
+
+
+**Strength & gap filled (AH):** Demonstrates an operational UAV plus AMR inspection workflow synchronized with a cloud digital twin: a UAV with YOLOX detection, UPerNet segmentation, and LiDAR retro-reflectivity analysis covers vertical signage and vegetation, while an AMR measures horizontal markings, with MQTT and Node-RED data fusion into ontology-based KPI dashboards, validated at the A24 motorway Gran Sasso Nord site in central Italy, with sub-10-cm AMR navigation repeatability.
+
+**Deficiencies & future work (AI):** Validated only in clear daylight conditions, with sensor accuracy unproven in rain, fog, or low light and the Jetson Orin GPU running near capacity, limiting model complexity; EU regulation 2022/1426 currently bars fully autonomous AMR operation on open roads, and the twin only reports conditions without actuation. Future work covers sensor redundancy, adverse-weather training, predictive maintenance, automated work orders, and compliance-by-design.
+**Fusion depth (AC1):** Aligned
+
+**Fusion evidence (AC2):**
+- **Data streams:** UAV YOLOX detections, UPerNet segmentation, LiDAR retro-reflectivity (vertical assets) + AMR measurements of horizontal markings (A24 Gran Sasso Nord).
+- **Integration mechanism:** field agents are synchronised with the centralised DT and fused into ontology-based KPI dashboards with sub-10-cm AMR repeatability; no joint inference beyond KPIs is described.
+- **Why this code:** streams share the georeferenced ontology frame while analytics stay per asset, so Aligned (torn with Fused, lower level chosen per rule 5).
+
+**Confidence (AC3):** Medium - the data-fusion-into-dashboards description is explicit; joint computation depth is limited.
 (full-text source: Endnote)

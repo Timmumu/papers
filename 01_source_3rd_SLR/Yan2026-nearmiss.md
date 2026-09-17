@@ -21,3 +21,16 @@ Purpose This paper aims to develop a proactive construction safety management fr
 | Yes | Yes | Yes | Tier 2 - Digital Shadow | 0 | 1 | 0 | Design for Safety (DfS) | None | Transformer / Large Language Model (LLM) | Multi (two or more data types) | Single case study | 4 | Predictive analytics / decision support |
 
 **Key evidence (AG):** Computer-vision-based digital twin framework for proactive near-miss prediction (Harbin IT): integrates real-time worker trajectories, postures and interactions into a dynamic 3D construction-site model; non-autoregressive transformer predicts future movement sequences (human motion model trained on Human3.6M dataset, inverse kinematics for joint angles) + collision detection identifies potential near-misses with early warnings; field-validated in three high-risk zones (forklift paths, floor openings, material lifting). One-way perception to prediction to early warning for safety managers; no actuation and no self-improvement loop (model is offline-trained).
+
+**Strength & gap filled (AH):** Extends near-miss management from 2D detection to in-process 3D prediction: YOLOv5, SGBM, DeepSORT and MediaPipe keypoints feed a non-autoregressive transformer that forecasts worker trajectories (ADE 0.134) and postures (ADE 0.501), reconstructed by an LBFGS inverse-kinematics solver in Unreal Engine, predicting near-misses with 93.32% precision and 96.08% recall across forklift, floor-opening, and material-lifting zones.
+
+**Deficiencies & future work (AI):** The motion prediction model is trained on the Human3.6M laboratory dataset, creating a generalization gap to real construction postures; occlusions, lighting variability, and camera positioning limit reliability, and validation covered only three relatively simple high-risk zones. Future work adds more sensor types, lightweight edge-distributed architectures, domain-adaptive learning, and broader site validation.
+
+**Fusion depth (AC1):** Fused
+
+**Fusion evidence (AC2):**
+- **Data streams:** camera-based trajectories and postures + BIM-anchored Unreal scene (forklift, floor-opening, material-lifting zones).
+- **Integration mechanism:** the transformer forecasts trajectories (ADE 0.134) and postures (ADE 0.501), an LBFGS inverse-kinematics solver reconstructs them in the twin, and collision checks predict near-misses (93.32% precision, 96.08% recall).
+- **Why this code:** prediction output depends on perception data and scene geometry simultaneously, so Fused.
+
+**Confidence (AC3):** High - the pipeline is explicit.

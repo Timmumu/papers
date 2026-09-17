@@ -21,3 +21,16 @@ Structural health monitoring (SHM) is critical for ensuring the safety of infras
 | Yes | Yes | Yes | Tier 2 - Digital Shadow | 0 | 0 | 1 | DfS | Implemented | Other / Mixed (LightGBM + clustering + FEM calibration) | Single | Single case study | 4 | Predictive analytics / decision support |
 
 **Key evidence (AG):** Railway-bridge SHM DT: low-cost wireless MEMS accelerometers, on-prem edge + cloud analytics. Seven-step methodology: characterisation, deployment, preprocessing, unsupervised learning of normal vibration clusters, FE-model calibration, synthetic damage generation, supervised LightGBM (validation ROC-AUC 0.9999), and continuous learning via periodic retraining on accumulated data. Two-year in-service pilot, no maintenance required. Learning loop is implemented (scheduled retraining) but no convergence analysis. One-way physical-to-virtual only: warnings go to humans, no actuation.
+
+**Strength & gap filled (AH):** Demonstrates an operational digital twin for railway bridge SHM: low-cost wireless accelerometers (about EUR 300), hybrid edge-cloud processing with real-time FFT, unsupervised clustering of normal vibration, FEM-calibrated synthetic damage data, and a LightGBM classifier reaching ROC-AUC 0.9999 on two years of in-service vibration data from a bridge in the Basque Country.
+
+**Deficiencies & future work (AI):** Detection is anomaly-based rather than damage localization or quantification, which the authors list as future work; validation is limited to one short-span bridge pilot, and analytics still rely on middleware plus cloud, with plans to move FFT and inference onto energy-harvesting edge sensors and to extend to wind towers and broader production deployments.
+
+**Fusion depth (AC1):** SINGLE
+
+**Fusion evidence (AC2):**
+- **Data streams:** wireless-accelerometer ambient-vibration time series (two years, Basque Country bridge).
+- **Integration mechanism:** none - clustering of normal vibration plus a LightGBM classifier (ROC-AUC 0.9999) operate on the one measured type; FEM-calibrated synthetic damage data are model-generated training labels, not a second measured data type.
+- **Why this code:** only one data type is used, so SINGLE (AC=Single).
+
+**Confidence (AC3):** High - the single vibration modality is explicit.

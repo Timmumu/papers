@@ -13,3 +13,7 @@ With the rapid development of underground space, the issue of safety in construc
 | Yes | Yes | Yes | Yes | Yes | **Include** |
 
 **Note:** DT intelligent safety analysis of large underground space construction
+
+## Step-3 Deep-Read Coding — PENDING
+
+Full text not available (MDPI Gold OA but Access-Denied from this network; no Endnote PDF). Step-3 coding pending.

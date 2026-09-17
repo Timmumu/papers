@@ -1,0 +1,1259 @@
+Cluster Computing (2026) 29:146 
+https://doi.org/10.1007/s10586-025-05908-7
+  Do Hyeun Kim
+kimdh@jejunu.ac.kr
+Sa Jim Soe Moe
+sajim22@stu.jejunu.ac.kr
+Anam Nawaz Khan
+Akhan59@utk.edu
+Anh Tuan Nguyen
+tuan.na@stu.jejunu.ac.kr
+1 Department of Computer Engineering, Jeju National 
+University, Jeju 63243, Republic of Korea
+2 Bigdata Research Center, Jeju National University, 
+Jeju 63243, Republic of Korea
+3 Department of Industrial and Systems Engineering, 
+University of Tennessee, Knoxville, TN 37996, USA
+Abstract
+Federated learning (FL) is compelling for construction safety because sensitive, site-specific data can remain on devices; 
+however, hyperparameter optimization (HPO) in FL is often impractical on resource-constrained edge nodes due to multi-
+round tuning and communication overhead. Existing FL-HPO approaches (e.g., weight sharing and server-only selection) 
+either incur iterative client-server loops or underutilize client heterogeneity, thereby raising privacy and governance concerns. 
+We propose an asynchronous, one-shot local Bayesian optimization on each client using a small data subset, followed by 
+loss-weighted aggregation of client-proposed hyperparameters on the server to produce a single global set for collaborative 
+training. The pipeline is training-method agnostic and integrated into a Digital Twin (DT) platform for device registration, 
+orchestration, and telemetry. Across public datasets (MNIST, EEGEyeState, Weather) and a private worker-safety dataset, our 
+approach improves convergence and accuracy/MAE relative to simple averaging and reduces response time on Raspberry Pi 
+clients, yielding an average improvement of 6.44% in end-to-end performance while remaining deployable on constrained 
+AIoT hardware. In safety prediction, faster convergence and lower error enable earlier and more reliable hazard indicators, 
+with on-device inference supporting near–real-time alerts to supervisors and wearables. We also discuss scalability, privacy 
+of shared hyperparameters, and task complexity as directions for future work in safety-critical FL.
+Keywords Artificial intelligence of things · Construction safety · Federated learning · Hyperparameter optimization · 
+Worker safety
+Received: 16 April 2025 / Revised: 30 October 2025 / Accepted: 25 December 2025
+© The Author(s) 2026, modified publication 2026
+Optimizing Federated Learning based on Weighted Hyperparameter 
+Aggregation in Energy-constrained Building Construction
+Sa Jim Soe Moe1 · Anam Nawaz Khan3 · Anh Tuan Nguyen1 · Do Hyeun Kim1,2
+passes over the dataset), batch size (updates per mini-
+batch), and learning rate (parameter update magnitude) [12, 
+57]. The goal of hyperparameter optimization (HPO) is to 
+find the hyperparameter set λ that minimizes the validation 
+error E of a learning algorithm A trained on data Dt and 
+evaluated on Dv :
+λ∗ = arg min
+λ ∈λ n
+;ED v
+[
+AD t(λ)
+]
+. (1)
+In real deployments, data are often non-independent and 
+non-identically distributed (non-IID), reflecting hetero -
+geneous and imbalanced sources [ 49]. Training seeks pat -
+terns from such data [ 41], and HPO refines performance 
+by exploring candidate hyperparameters using methods 
+ranging from grid/random search [ 8] to more sophisticated 
+approaches.
+1 Introduction
+Hyperparameters are critical configurations in machine 
+learning that shape learning dynamics and model perfor -
+mance. Key examples include the number of epochs (full 
+1 3
+ 146 Page 2 of 20
+Cluster Computing (2026) 29:146 
+In construction safety, sites combine dynamic hazards 
+(fall risks, struck-by equipment, heat, and weather expo -
+sure) with heterogeneous sensing (wearables, tool teleme -
+try, location beacons, environmental and structural sensors) 
+[21]. Data are privacy-sensitive (worker physiology/loca -
+tion) and highly non-IID across crews, sites, and shifts [ 34, 
+40]. Practical systems must deliver low-latency risk scor -
+ing for preventive alerts, yet edge devices (e.g., Raspberry 
+Pi class) face tight compute, memory, and power budgets 
+[50]. These constraints directly motivate FL with on-device 
+inference but make hyperparameter selection especially 
+costly: repeated, communication-heavy tuning can delay 
+deployment, and exchanging intermediate model states 
+may raise privacy or governance concerns within contrac -
+tors and unions. Effective FL-HPO for safety must therefore 
+minimize rounds, protect privacy, and remain robust under 
+heterogeneous devices and data [46]. However, current FL-
+HPO methods either require iterative, multi-round coordina-
+tion or centralize key decisions, which are misaligned with 
+edge constraints and can underuse client heterogeneity. This 
+creates a practical gap for safety-critical, resource-limited 
+deployments.
+This study focuses on continuous safety-index prediction 
+(site- and worker-level risk scoring) rather than on Personal 
+Protective Equipment (PPE) compliance checks or unsafe 
+behavior detection. The model takes in three input catego -
+ries: (i) Weather – wind speed, temperature, precipitation; 
+(ii) Building/structural – load, strain, inclination; and (iii) 
+Worker/physiological & location – heart rate and position. 
+The predicted safety index supports threshold-based alerts 
+for wearables and dashboards. Other safety functions (e.g., 
+PPE detection, video analytics) are beyond the scope of this 
+paper.
+While HPO is well explored in centralized settings, it 
+is challenging in FL, where data remain distributed across 
+clients [27]. Exhaustive or iterative HPO can be resource-
+intensive due to repeated training and communication [ 61]. 
+Simple, parallelizable strategies (e.g., random search) are 
+therefore strong baselines in FL [35], aligning with practical 
+constraints in emerging applications (e.g., transportation). 
+Related work in FL spans algorithmic advances, heterogene-
+ity handling, personalization, fairness, systems, and privacy 
+[62]. However, comparatively fewer studies focus squarely 
+on FL-HPO [ 25]. Federated Bayesian Optimization (FBO) 
+[13] leverages cross-client information to improve a single 
+participant, rather than yielding global hyperparameters for 
+a collaborative model. Other efforts adjust specific hyper -
+parameters such as the learning rate in SGD-based FL [42]. 
+FedEx draws on NAS weight-sharing to guide hyperparam-
+eter selection under successive halving [ 28], and FLoRa 
+explores single-shot, server-side HPO [65].
+Limitations of existing FL-HPO: Current FL-HPO 
+approaches leave three practical gaps for safety-critical, 
+edge deployments. First, many rely on iterative, multi-
+round tuning (e.g., Bayesian optimization loops or suc -
+cessive halving), which increases client–server traffic and 
+latency. Second, weight-sharing/NAS-style methods (e.g., 
+FedEx) often assume SGD-centric pipelines and exchange 
+model artifacts that may be undesirable for privacy/gover -
+nance. Third, server-only single-shot schemes (e.g., FLoRa) 
+reduce communication but can neglect client-side heteroge-
+neity during proposal, yielding suboptimal global settings 
+under non-IID data. These gaps motivate a design that (i) 
+performs lightweight client-local search once, (ii) aggre -
+gates proposals without exposing model weights, and (iii) 
+remains optimizer-agnostic and heterogeneity-aware. We 
+next categorize prior approaches to situate our method in 
+context. We group prior work into four categories. (A) Cen-
+tralized HPO (grid, random, BO, evolutionary; multi-fidelity 
+Hyperband/BOHB). Highly effective with full data access, 
+but their iterative evaluations become impractical under 
+FL’s communication and privacy constraints. (B) FL with 
+NAS/weight sharing (e.g., FedEx and derivatives). Reduce 
+search cost by sharing weights/architectures, yet typi -
+cally assume SGD-centric training and require exchanging 
+model artifacts, which elevates privacy/governance risk and 
+device overhead. (C) Adaptive/learning-based HPO for FL 
+(RL, meta-learning, per-client tuning, clustering, encrypted 
+aggregation). These approaches tailor hyperparameters to 
+clients or rounds, but often retain multi-round communica -
+tion and, in many cases, rely on model access or heavier 
+control logic that strains edge devices. (D) Single-shot or 
+server-focused HPO for FL (e.g., FLoRa). Cuts communica-
+tion by collapsing to server-side selection; however, it can 
+underuse client-side heterogeneity during proposal and may 
+inherit privacy concerns from shared hyperparameters.
+In contrast to these, our approach is training-method 
+agnostic (applicable to SGD and non-SGD) and aims to 
+minimize communication and on-device compute by con -
+solidating client proposals into a single global hyperparam-
+eter set. We propose asynchronous, one-shot local Bayesian 
+optimization on each client using a small local subset, and 
+a loss-weighted, Top-K aggregation at the server to produce 
+one global configuration without sharing model weights. 
+The pipeline is operationalized in a Digital Twin (DT) plat-
+form for device registration, orchestration, and telemetry. 
+1 3
+Page 3 of 20 146 
+Cluster Computing (2026) 29:146 
+Experiments on Raspberry Pi hardware and multiple data -
+sets, including a worker-safety use case, show consistent 
+gains over simple averaging with low overhead; clients use 
+only a subset of local data during HPO, and the aggregated 
+hyperparameters are then used for federated training.
+We study FL hyperparameter optimization for worker-
+safety index prediction under (i) non-IID data, (ii) strict 
+privacy/governance, and (iii) constrained edge devices. The 
+goal is a single global hyperparameter set that improves 
+convergence and accuracy/MAE while keeping client com-
+putation and communication low. The main contributions of 
+this paper are: 
+1. An asynchronous one-shot local BO for FL-HPO on con-
+strained clients, tuning on small local subsets to reduce 
+compute and rounds.
+2. Loss-weighted, Top-K hyperparameter aggregation that 
+yields a single global set, improving convergence and 
+accuracy/MAE over simple averaging.
+3. DT-orchestrated FL pipeline that registers devices, 
+schedules HPO/training, and monitors telemetry on real 
+Raspberry Pi clients.
+4. Empirical study across IID/non-IID partitions and 
+multiple datasets (including a worker-safety use case), 
+showing consistent improvements and near-real-time 
+inference on devices.
+The remainder of the paper is organized as follows: Section 
+2 summarizes related studies. Section 3 details the proposed 
+weighted hyperparameter aggregation mechanism. Sections 
+4 and 5 present implementation and performance results. 
+Section 6 concludes with limitations and future research 
+directions.
+2 Related work
+2.1 Digital twin and sensing for construction safety
+Construction sites are dynamic, hazard-rich environments, 
+making them a natural target for DT-enabled monitoring. 
+Prior work has linked IoT and DT platforms to track the 
+state and location of workers in real time via RFID/BLE 
+infrastructures [64]. Wearable DT systems using IMUs have 
+captured posture and movement and delivered immediate 
+feedback (e.g., via AR) to reduce unsafe kinematics [ 4]. 
+DT-driven behavioral simulations have been used to study 
+how workers respond to safety interventions and to inform 
+training design [ 17]. Closed-loop DT frameworks [ 47] 
+that integrate machine learning and case-based reasoning 
+have been explored for proactive safety control during live 
+projects. Task-specific DT applications, such as for crane/
+hoisting operations, have modeled spatiotemporal risk and 
+visualized evolving hazards on site [37]. Together, these ini-
+tiatives show that DTs have great potential for safety man -
+agement; however, many systems target narrow use cases, 
+operate at limited scale, or rely on centralized processing 
+that raises privacy and latency concerns in outdoor, multi-
+worker contexts. Our study complements this line of work 
+by focusing on on-device safety-index prediction under fed-
+erated training, and by proposing an FL-HPO mechanism 
+that respects privacy, bandwidth, and heterogeneity con -
+straints common to construction deployments.
+2.2 Classic hyperparameter optimization 
+techniques in centralized settings
+HPO is indispensable for system enhancement when objec-
+tive functions are non-analytical, non-convex, or non-dif -
+ferentiable. It involves tuning hyperparameters, set prior 
+to training, that significantly impact model performance. 
+In centralized learning, common HPO techniques include 
+grid search [ 5], random search (RS) [ 18], Bayesian Opti -
+mization (BO) [ 55], and evolutionary optimization [ 29]. 
+These methods, while effective, rely on iterative trial-and-
+error processes to strike a balance between exploration 
+and exploitation, making them computationally expensive. 
+Model-free approaches, such as grid search and RS, explore 
+predefined configurations without relying on parameter 
+models, offering simplicity but often with lower efficiency. 
+In contrast, model-based methods like BO leverage surro -
+gate models to approximate the objective function, resulting 
+in more efficient search processes [48]. The primary distinc-
+tions among these approaches lie in the choice of surrogate 
+models and their strategies for selecting subsequent evalua-
+tion points [22, 36]. Evolutionary algorithms (EAs), includ-
+ing differential EAs [2, 52], iteratively refine populations to 
+achieve optimal performance.
+The high computational costs associated with training 
+deep neural networks on large datasets make full-fidelity BO 
+evaluations impractical. To mitigate this, researchers often 
+employ strategies such as training on smaller data subsets or 
+reducing the number of iterations to balance accuracy and 
+computational efficiency. Hyperband [ 33], using the Suc -
+cessive Halving Algorithm (SHA) [23], exemplifies a multi-
+fidelity approach by iteratively refining configurations. 
+1 3
+ 146 Page 4 of 20
+Cluster Computing (2026) 29:146 
+However, SHA’s random selection of initial candidates 
+limits optimization precision. Integrating BO with Hyper -
+band, as demonstrated by [ 16], enhances search efficiency 
+by leveraging insights from prior SHA results. In AutoML, 
+comparative studies have simplified the assessment of HPO 
+methods and improved reproducibility [ 20]. Tools like 
+HPO-B [9] facilitate the evaluation of transfer-HPO tech -
+niques, while HPOBench [15] addresses the need for multi-
+fidelity HPO benchmarks, offering a robust framework for 
+method comparison. Although FL is becoming important in 
+improving worker safety in outdoor construction situations, 
+most HPO benchmarks center on centralized models, there-
+fore ignoring the challenges of distributed settings.
+2.3 Hyperparameter optimization in federated 
+learning
+At a high level, prior FL-HPO work falls into four buckets: 
+(A) NAS/weight sharing (e.g., FedEx and derivatives), (B) 
+adaptive/learning-based HPO (RL/meta-learning, per-client 
+tuning, clustering/offloading such as FedCust), (C) single-
+shot/server-side selection (e.g., FLoRa), and (D) other 
+decentralized or proxy schemes. In FL, the decentralized 
+nature of training amplifies the communication overhead 
+of traditional HPO: methods effective centrally (e.g., BO) 
+become costly due to iterative client–server loops [54]. Sev-
+eral decentralized/proxy approaches (e.g., HyperDistill [32]) 
+aim to adapt hyperparameters rapidly with limited data, but 
+they still incur high communication costs in privacy-sen -
+sitive settings. Meta-learning (e.g., MAML [ 10]) likewise 
+struggles with iteration and privacy in FL. (A) NAS/weight 
+sharing. FedEx-style wrappers [ 26] reduce search cost by 
+sharing weights/architectures, but typically assume SGD-
+centric pipelines and exchange model artifacts, which can 
+raise privacy/model-access concerns [ 56, 63]. Offline NAS 
+variants [ 58, 66] also incur heavy client–server exchange 
+and limit client participation. (B) Adaptive/learning-based 
+HPO. Works such as Auto-FedRL [19], FedHPO [30], Fed-
+Tune [60], and Genetic CFL [ 3], and clustering/offloading 
+frameworks like FedCust [ 59] adjust hyperparameters per 
+round/client or group; they can reduce convergence time 
+but often retain multi-round control traffic and may require 
+model/state access. Privacy-preserving variants (e.g., PRIV-
+TUNA [39]) mitigate leakage but add cryptographic over -
+head. (C) Single-shot/server-side. FLoRa [ 65] aggregates 
+client hyperparameters into a server loss surface and selects 
+a single global setting, sharply reducing rounds. However, it 
+relies on default search spaces and shared HPs that can leak 
+information; it also underutilizes client-side heterogeneity 
+during proposal.
+Despite these advances, many approaches remain com -
+munication-heavy, assume access to model artifacts, or 
+are brittle on constrained AIoT devices. In contrast, our 
+method is designed for edge-constrained, privacy-sensitive 
+deployments:
+ ● One-shot local BO on each client: tune on a small lo -
+cal subset (no multi-round loops) to keep client compute 
+and uplink traffic low.
+ ● Loss-weighted Top-K aggregation of hyperparameters 
+(not weights): consolidate only the best proposals into 
+a single global HP set, preserving client specialization 
+during proposal while avoiding model-artifact exchange.
+ ● DT-assisted orchestration: a lightweight control surface 
+to register devices, schedule HPO/training, and collect 
+telemetry–no additional learning logic on the server.
+Compared with NAS/weight sharing (FedEx), we avoid 
+model-artifact exchange and SGD-specific wrappers; com -
+pared with adaptive RL/meta approaches, we avoid multi-
+round control and model access; compared with server-only 
+single-shot (FLoRa), we retain client heterogeneity during 
+proposal yet still commit to one global HP via robust, loss-
+aware aggregation.
+In short, existing FL-HPO methods tend to be commu -
+nication-heavy, require model artifacts, or underuse client 
+heterogeneity. Our design targets edge constraints by one-
+shot local BO and loss-weighted Top-K HP aggregation (no 
+weight sharing), coordinated via a lightweight DT layer.
+3 Proposed methodology
+The conceptual framework for the proposed weighted 
+hyperparameter aggregation mechanism aimed at enhanc -
+ing model prediction in federated learning is depicted in 
+Figure 1. The process includes two phases: the HPO phase 
+and the FL phase. The HPO phase begins with each client 
+initializing its hyperparameter search space and defining an 
+objective function, typically based on performance metrics 
+like loss. Clients then apply Bayesian optimization to deter-
+mine optimal local hyperparameters. Upon finding these, 
+clients evaluate their local model performance and transmit 
+both the optimized hyperparameters and corresponding loss 
+values to the federated server.
+The server aggregates the hyperparameters and loss val -
+ues from all clients, assigns weights based on the loss val -
+ues, and selects the top K clients. We use K = ⌈0.3· N ⌉ 
+unless noted; Sec. 5 keeps K fixed per experiment. The 
+hyperparameters from these top K clients are aggregated 
+1 3
+Page 5 of 20 146 
+Cluster Computing (2026) 29:146 
+to form a global hyperparameter set, which is distributed 
+to all clients. The FL phase begins with clients using these 
+global hyperparameters to train their local models on their 
+respective data. After training, they send model updates to 
+the server, which aggregates these using federated averag -
+ing (FedA VG) to construct a global model. Training iterates 
+with FedAvg; hyperparameters remain fixed after the HPO 
+phase.
+Hyperparameters control key aspects of a machine learn-
+ing model’s learning process. These include setting the num-
+ber of epochs (iterations over the dataset), batch size (data 
+processed per update), learning rate (adjustment speed), 
+and activation function (introducing non-linearity). Choos -
+ing these hyperparameters directly impacts model accuracy 
+and efficiency, making HPO essential. In centralized learn-
+ing, HPO selects the optimal hyperparameters λi ∈ λ(n )
+i to 
+minimize a loss function L. However, in FL, clients with 
+system and statistical heterogeneity collaborate to train a 
+global model, which complicates hyperparameter tuning. 
+Traditional centralized HPO approaches don’t work due to 
+the decentralized nature of FL and data privacy concerns. 
+To tackle this, we need a method that actively optimizes 
+hyperparameters in a decentralized, privacy-preserving way 
+to enhance global model performance.
+Our proposed method addresses this challenge by incor -
+porating a weighted aggregation approach in the HPO phase. 
+Initially, as stage 1, each client i independently performs 
+HPO using Bayesian optimization with some trials [ 48, 
+51] to determine its local best hyperparameters λ∗
+i and the 
+corresponding loss value L∗
+i (Mean Squared Error, MSE). 
+Next, each client i sends their λ∗
+i and L∗
+i to the server. The 
+detailed steps of finding the local-best hyperparameters can 
+be found in Algorithm 1.
+Fig. 1 Conceptual design of weighted hyperparameters aggregation based on enhanced model prediction in federated learning for worker safety
+ 
+1 3
+ 146 Page 6 of 20
+Cluster Computing (2026) 29:146 
+Algorithm 1 Hyperparameter optimization on clients with bayesian optimization
+Fig. 2 Procedural diagram of weighted hyperparameter aggregation in FL
+ 
+Afterward, for stage 2 in the HPO phase, pairs from 
+each client (λ∗
+i ,L∗
+i ) are received on the server. The server 
+then calculates a weight wi from the loss L∗
+i (lower loss → 
+higher weight):
+w i = 1
+L ∗
+i + ϵ, (2)
+where ϵ>0 prevents division by zero.
+Upon completion of weight calculation, the server selects 
+the Top-K clients by descending wi. Let S denote the indi -
+ces of the selected clients (or, equivalently, the selected 
+pairs {(λ∗
+i ,w i)}i∈S ). Numeric HPs use the weighted mean 
+(rounded if integer); categorical HPs use the weighted 
+mode (ties broken by lower L∗
+i , then client ID). These 
+1 3
+Page 7 of 20 146 
+Cluster Computing (2026) 29:146 
+hyperparameters are aggregated with normalized weights to 
+produce global hyperparameters λagg:
+˜w i = w i∑
+j∈S w j
+,λ agg =
+∑
+i∈S
+˜w i λ ∗
+i . (3)
+We set K via a simple rule: default K = ⌈0.3N ⌉ (min K=3) 
+kept fixed per experiment. A robust variant (useful under non-
+IID) keeps all clients with w i ≥ median(w)+0 .5·IQR(w )
+. Finally, the server broadcasts λagg to all clients for the FL 
+training phase (Algorithm 2).
+Algorithm 2 Weighted hyperparameter aggregation on server
+In the FL phase, federated learning proceeds using the 
+global hyperparameters obtained from stage 2 of the HPO 
+phase. Each client i adopts these global hyperparameters 
+λagg and trains its local model on its local dataset {Di}N
+i=1. 
+The objective of the local training for each client i is:
+w(r+1)
+i = arg min
+w i
+Li(wi;λagg ) (4)
+where Li is the local loss function with parameters wi and 
+global hyperparameters λagg .
+After local training, clients send their updated model 
+parameters w(r+1)
+i to the server. The server consolidates 
+these local model parameters using the FedA VG algorithm 
+[38]:
+w(r+1)
+global = 1
+N
+N∑
+i=1
+w(r+1)
+i (5)
+This iterative process continues for a predetermined num -
+ber of rounds R or until the global model converges to a 
+satisfactory performance level. By utilizing the globally 
+optimized hyperparameters, the training process is expected 
+to be more efficient and result in a more accurate and gener-
+alized global model. This two-phase approach ensures that 
+the federated learning process benefits from both local opti-
+mizations and global coherence, leading to improved over -
+all model performance. The following Algorithm 3 provides 
+an abstract representation of the detailed procedure.
+1 3
+ 146 Page 8 of 20
+Cluster Computing (2026) 29:146 
+Algorithm 3 Federated learning process using FedA VG
+5. Collaborative Training: After receiving the global hyper-
+parameters, each node starts the collaborative training, 
+and the following steps fall into the FL configuration.
+The following Fig. 3 shows the layer-wise process flow of 
+weighted hyperparameter aggregation in FL integrated with 
+DT. DT technology [6] has rapidly advanced and evolved, 
+particularly in the context of Industry 4.0. A DT is a vir -
+tual representation of a physical object or system, enabling 
+real-time monitoring, simulation, and optimization. This 
+technology is pivotal in various sectors, including manufac-
+turing, healthcare, smart cities, and energy systems [53].
+The top layer is the Digital Twin (DT) platform, which 
+manages the workflow: it registers physical devices (FL cli-
+ents), creates their virtual twins, activates them, and estab -
+lishes two-way communication to form the digital twin 
+network (DTN). During the HPO phase for clients, each 
+defines its hyperparameter search space, generates candi -
+dates, and runs a one-time local Bayesian optimization on a 
+small local subset. The best local configuration (HP, loss) is 
+sent back to the server. Only hyperparameters and the asso-
+ciated loss are shared–no model weights. During the HPO 
+phase for the server, the federated server collects all client 
+proposals, calculates loss-based weights, ranks candidates, 
+and selects the Top-K. These hyperparameters are then com-
+bined (loss-weighted) into a single global hyperparameter 
+The following Fig. 2 explains the detailed procedural dia-
+gram of weighted hyperparameter aggregation in FL. 
+1. Select Hyperparameter Candidates: This first step 
+involves identifying different hyperparameters to tune, 
+including activation functions (A), number of epochs 
+(E), batch size (B), learning rate (Lr), and optimizer (Op).
+2. Define Hyperparameter Space: Here, a range of values 
+for each hyperparameter is defined. For instance, activa-
+tion functions could range from A1 to An, epochs might 
+vary logarithmically from 1 to n, batch sizes from 1 to 
+n, learning rates from 0.0001 to n, and optimizers from 
+Op1 to Opn.
+3. Initialize Model/Run Local HPO/Send to Server: In this 
+phase, clients initialize their model and perform local 
+HPO. They use a Hyperopt Tuner to determine the best 
+combination of hyperparameters and associated loss, 
+which is then uploaded to the FL server house in the DT 
+platform.
+4. Aggregate Hyperparameters: On the server, the hyper -
+parameters’ weights are computed, potentially based on 
+their Mean Squared Error (MSE) performance metrics. 
+The Top-K hyperparameter sets (HP1, HP2, HP3) are 
+selected and aggregated. The aggregated hyperparam -
+eters are sent back to the clients from the server.
+1 3
+Page 9 of 20 146 
+Cluster Computing (2026) 29:146 
+set, which is broadcast to all clients. In the FL phase for cli-
+ents, each adopts the global hyperparameters, initializes the 
+local FL setup, and trains the model on their full local data-
+sets for the specified local epochs. After each local training 
+cycle, clients send only their model updates to the server. 
+In the FL phase on the server, the coordinator combines the 
+received model updates (FedAvg) to create the global model 
+and broadcasts it back to clients for the next training round, 
+completing the HPO to FL pipeline under DT supervision.
+Fig. 3 Layer-wise process flow of 
+weighted hyperparameter aggrega-
+tion in FL-based DT
+ 
+Table 1 Detailed development specification of the environment in the 
+DT and federated server
+Feature Description
+Hardware 
+(Desktop)
+OS Windows 10 Pro 64bit
+CPU Intel®coreTM i9-11900F 2.5GHz
+Memory 64 GB
+Storage 1000 GB
+Software Programming 
+Language
+Python3.8, HTML5, CSS3, 
+JavaScript
+Application (IDE) VS Code
+Libraries, and 
+Frameworks
+Keras 2.6, TensorFlow 2.6, 
+Flask 2.2.2,
+Django 4.2.7, NumPy 1.19.5,
+Requests 2.28
+Database MySQL Workbench 8.0
+Table 2 Detailed development environment of AIoT device
+Feature Description
+Raspberry Pi 
+4 (Client)
+OS Ubuntu 20.04 64bit
+CPU Quad-core 64-bit SoC @ 
+1.5GHz
+Memory 4 GB
+Storage 32 GB
+Software Programming 
+Language
+Python3.8
+Application (IDE) VS Code (Remote SSH)
+Libraries, and 
+Frameworks
+Keras 2.6, TensorFlow 2.6, 
+Flask 2.2.2,
+NumPy 1.19.5, Requests 2.28
+1 3
+ 146 Page 10 of 20
+Cluster Computing (2026) 29:146 
+4 Implementation environment and results
+The environment in the DT and federated server’s compre-
+hensive development specification is displayed in Table 1. 
+A Django framework-based edge server is configured on a 
+high-performance machine to develop an optimal inference 
+model for outdoor construction environments by training 
+data using the DNN learning model and applying the feder-
+ated learning technique.
+Fig. 5 Virtualization capabilities of 
+the physical devices created in the 
+DT platform
+ 
+Fig. 4 Physical client devices used 
+to form AIoT network for hyperpa-
+rameters aggregation in DT-based 
+FL environment
+ 
+1 3
+Page 11 of 20 146 
+Cluster Computing (2026) 29:146 
+The AIoT device’s development environment is dis -
+played in Table 2. As an FL client, we use a Raspberry Pi 
+4 equipped with a quad-core 1.5GHz 64-bit CPU, a 32GB 
+MicroSD card running Ubuntu 20.04 64-bit, and 4GB of 
+RAM. Frameworks such as TensorFlow, Django, and Flask 
+for services that are programmed based on the Python lan -
+guage in the Visual Studio Code (VS Code) IDE. Python 
+version 3.8 serves as the Python interpreter, and it comes 
+pre-installed on the Ubuntu 20.04 OS. Additionally, we 
+have installed the NumPy 1.19.5, requests 2.28, and Keras 
+2.6 libraries to meet the project requirements.
+The client devices utilized in an experiment on hyper -
+parameter aggregation in DT-based federated learning 
+for worker safety are depicted in Fig. 4. Raspberry Pi 4B 
+devices serve as FL clients, which are designed to be intel -
+ligent through machine learning, thereby facilitating model 
+training and prediction. These devices are referred to as 
+AIoT due to their capacity to make decisions for specific 
+purposes. Six Raspberry Pi 4B devices are employed in this 
+experiment to establish a testbed for the primary objective 
+of HPO. Subsequently, a worker safety dataset is employed 
+to conduct machine learning tasks. It is essential for the 
+integrity of this research that actual physical devices be 
+employed to provide a genuine experimental experience.
+Figure 5 shows six physical Raspberry Pi 4B clients and 
+their six virtual twins. In this work, the DT platform serves 
+as a lightweight control layer around the FL+HPO pipeline 
+rather than a separate research contribution. It provides 
+just the minimal services we needed to run and observe the 
+experiments:
+ ● Device onboarding & status. Register Raspberry Pi cli -
+ents, record basic metadata (CPU, memory, local dataset 
+size), and show active/inactive state.
+ ● Job orchestration (experiment control). Launch per-
+client HPO jobs, collect each client’s (HP, loss) pairs, 
+run the loss-weighted aggregation on the server module, 
+and broadcast the resulting global hyperparameters to 
+clients; then trigger FL rounds using those settings.
+ ● Basic monitoring. Display per-device and aggregate te -
+lemetry needed for the study (validation loss/accuracy 
+or MAE and per-round time) and show train/inference 
+results for each device card.
+ ● Simple UI hooks. Start/stop training or inference from 
+the device cards shown in Fig. 5.
+Fig. 6 Virtualization of DT 
+enabling synchronization of physi-
+cal devices with their virtual twins
+ 
+1 3
+ 146 Page 12 of 20
+Cluster Computing (2026) 29:146 
+These functions let us coordinate experiments across het -
+erogeneous, UI-less devices and verify outcomes; a full 
+DT feature set or evaluation is outside our scope and not 
+required for the claims of this paper.
+Figure 6 illustrates how the DT platform mirrors six 
+physical AIoT clients (Raspberry Pi 4B, Ubuntu Server, 
+SSH-only) with one-to-one virtual twins. Because these 
+edge devices have no native UI, the DT provides a simple 
+web surface that (i) lists basic hardware/status (device name, 
+CPU, memory), (ii) shows local data summaries (e.g., num-
+ber of samples/features), and (iii) exposes minimal control 
+actions. From each twin card, an operator can activate/
+deactivate the device and trigger study-specific tasks such 
+as local HPO, starting/stopping training, and running infer -
+ence for safety-index prediction. The Digital Twin Network 
+maintains this mapping and relays these lightweight com -
+mands and status updates; it does not replace the FL/HPO 
+algorithms but offers a practical access point for coordinat -
+ing SSH-only devices during experiments.
+5 Performance evaluation
+5.1 Datasets, model and evaluation metrics
+The worker safety dataset, provided by the research center 
+at Jeju National University, consists of 30,000 rows used 
+for training and validation. The data is distributed across six 
+devices, each representing a worker in an outdoor construc-
+tion environment. The target variable is the worker safety 
+index, with input features including weather (temperature, 
+wind, precipitation), building conditions (strain, inclinom -
+eter, load), and worker status (location, heart rate).
+For the extended experiments purpose, three publicly 
+available datasets are used: the MNIST [ 14], EEGEyeState 
+[45], and Weather datasets [ 24]. The MNIST dataset con -
+tains 70,000 grayscale images of handwritten digits (0–9), 
+each 28x28 pixels, commonly used for image classification 
+tasks. The EEGEyeState dataset includes 14,980 EEG sig -
+nal readings with 14 continuous features, used to classify 
+whether a subject’s eyes are open or closed. Additionally, 
+the Weather dataset comprises daily meteorological data, 
+including temperature, humidity, wind speed, and weather 
+conditions, making it suitable for predictive modeling and 
+weather analysis tasks.
+Deep Neural Networks (DNNs) [ 31] are machine learn -
+ing models that consist of multiple layers of interconnected 
+neurons that enable to learn complex patterns from large 
+datasets. They have been widely used for various tasks, 
+including image recognition, natural language process -
+ing, and predictive analytics due to their high accuracy and 
+adaptability. Worker safety is predicted and trained using 
+a DNN model. Two hidden layers with 64 and 32 neurons 
+each, as well as an input layer, are all part of this multilay -
+ered neural network. The model considers a number of input 
+factors, including location, inclinometer measurements, 
+wind, temperature, precipitation, load, strain, and heart rate. 
+A safety index, which is produced from 2,689 parameters in 
+total, is the model’s output.
+Model performance is evaluated using Mean Square 
+Error (MSE) and Mean Absolute Error (MAE) for regres -
+sion [ 43], and Accuracy, Binary Crossentropy [ 11], and 
+Sparse Categorical Crossentropy for classification tasks [7]. 
+MSE (Mean Squared Error) quantifies the average squared 
+difference between actual and predicted values, commonly 
+used in regression tasks:
+MSE = 1
+n
+n∑
+i=1
+(yi − ˆyi)2 (6)
+Table 3 Result tables of averaging hyperparameters mechanism
+Local Best Candidate Hyperparameters on Six Nodes
+Devices Activation Optimizer Learning_rate Batch_size Epochs Loss
+1 tanh Adam 0.000410 27 10 0.0245
+2 relu Adam 0.011492 54 11 0.0202
+3 tanh Adam 0.000409 49 8 0.0283
+4 relu Adam 0.003446 16 12 0.0213
+5 sigmoid SGD 0.014278 60 9 0.0206
+6 relu SGD 0.003087 22 7 0.0233
+Final Global Hyperparameters
+tanh Adam 0.005520 38 9
+Fig. 7 Loss evaluation using simple hyperparameters averaging 
+mechanism
+ 
+1 3
+Page 13 of 20 146 
+Cluster Computing (2026) 29:146 
+MAE (Mean Absolute Error) measures the average absolute 
+difference between actual and predicted values, disregard -
+ing the direction of the errors:
+MAE = 1
+n
+n∑
+i=1
+|yi − ˆyi| (7)
+Accuracy evaluates classification models by calculating the 
+ratio of correct predictions to the total number of predictions:
+Accuracy = Correct Predictions
+Total Predictions (8)
+Binary Crossentropy, used in binary classification, com -
+pares predicted probabilities against actual binary labels:
+Binary Crossentropy = − 1
+n
+n∑
+i=1
+[yi log(ˆyi)+( 1 − yi) log(1− ˆyi)] (9)
+Sparse Categorical Crossentropy, applied in multi-class 
+classification, works with integer labels and avoids one-hot 
+encoding, making it more efficient:
+Sparse Categorical Crossentropy = − 1
+n
+n∑
+i=1
+log(ˆyi,yi ) (10)
+5.2 Performance evaluation on worker safety 
+dataset
+Table 3 presents the results of the simple averaging mecha-
+nism. Each node underwent 5 evaluations using the Hyper -
+opt framework for local Bayesian-based HPO. The table 
+details the optimal local hyperparameters optimizer, activa-
+tion function, learning rate, epochs, and batch size from each 
+Table 4 Result tables of weighted hyperparameters aggregation mechanism
+Local Best Candidate Hyperparameters on Six Nodes
+Devices Activation Optimizer Learning_rate Batch_size Epochs Loss
+1 tanh Adam 0.001947 59 11 0.0245
+2 tanh Adam 0.013658 27 9 0.0202
+3 relu SGD 0.022289 45 10 0.0223
+4 relu SGD 0.057119 38 11 0.0229
+5 tanh SGD 0.001025 61 8 0.0207
+6 relu Adam 0.007807 17 10 0.0233
+Weighted Candidate Hyperparameters Sets
+Top HP Activation Optimizer Learning_rate Batch_size Epochs Loss
+1 tanh Adam 0.013658 27 9 0.0202
+2 tanh SGD 0.001025 61 8 0.0207
+3 relu SGD 0.022289 45 10 0.0223
+Final Global Hyperparameters
+tanh SGD 0.012324 44 9
+Fig. 10 MSE of the final global model after FL training, comparing 
+simple vs. loss-weighted HP aggregation
+ 
+Fig. 9 MAE of the final global model after FL training, comparing 
+simple vs. loss-weighted HP aggregation
+ 
+Fig. 8 Loss evaluation using weighted hyperparameters averaging 
+mechanism
+ 
+1 3
+ 146 Page 14 of 20
+Cluster Computing (2026) 29:146 
+node. The final row shows the aggregated global hyperpa -
+rameter set, computed by averaging the local sets received 
+by the server. The loss values presented in this table are the 
+validation losses from the HPO phase; they do not represent 
+the ultimate performance metrics for FL.
+Figure 7 illustrates the loss evaluation in the collabora -
+tive training model on each node over 20 rounds by using 
+the global HP resulting from the simple hyperparameters 
+averaging mechanism. The mean squared error (loss) nota -
+bly decreases in the initial rounds on each node, but diver -
+gence and convergence fluctuate in the following rounds on 
+each node. The fluctuation of divergence and convergence 
+in the training model occurs at each node because all nodes 
+share and train the same model. As the number of rounds 
+increases, the loss steadily decreases.
+Table 4 presents the results of the FL weighted hyper -
+parameter aggregation mechanism during the HPO phase. 
+Each node, representing a constrained device monitor -
+ing environmental and physiological data (e.g., heart rate, 
+strain, weather conditions), locally optimized hyperparam -
+eters such as optimizer, activation function, learning rate, 
+epochs, and batch size are key factors affecting prediction 
+accuracy. After evaluating each node five times using the 
+Hyperopt framework with Bayesian-based HPO, the top 
+three hyperparameter sets, ranked by loss, were selected. 
+The server aggregated these sets through weighted averag -
+ing to produce the final global hyperparameter set, which 
+is then deployed across all nodes for the FL phase, thereby 
+improving the global model’s performance in predicting 
+safety hazards. Loss values in this table are HPO-phase 
+validation losses used to weight candidates; they are not the 
+final FL performance metrics.
+Figure 8 illustrates the evaluation of loss in the collabora-
+tive training model on each node over 20 rounds by using 
+the global HP resulting from the Weighted Hyperparameters 
+Aggregation Mechanism. The mean squared error (loss) sig-
+nificantly decreases in the initial rounds on each node, but 
+there is a fluctuation between divergence and convergence 
+in the following rounds on each node. As the number of 
+rounds increases, the loss slowly decreases.
+Figure 9 compares the MAE of the global model using 
+Averaged and Weighted Hyperparameter Aggregation 
+mechanisms. The Averaged HPO shows slow convergence, 
+requiring more rounds to stabilize, indicating suboptimal 
+hyperparameter selection. In contrast, the Weighted HPO 
+converges faster and identifies optimal hyperparameters. 
+From the second round onward, Weighted HPO consistently 
+achieves lower error, enhancing the model’s accuracy in 
+predicting safety hazards, improving its relevance and per -
+formance in the worker safety use case.
+Figure 10 compares the MSE for the global model using 
+Averaged and Weighted Hyperparameter Aggregation 
+mechanisms across seven server rounds in the worker safety 
+prediction task. Accurate and fast convergence is critical in 
+predicting safety risks, as delays or inaccuracies may lead 
+to dangerous conditions. The Averaged HPO mechanism 
+exhibits slow convergence, stabilizing after five rounds, sug-
+gesting suboptimal hyperparameter selection for the safety 
+task. In contrast, the Weighted HPO mechanism converges 
+within one round, efficiently identifying optimal hyperpa -
+rameters. This rapid convergence and improved predictive 
+performance are essential for timely and precise safety haz-
+ard predictions. The Weighted HPO consistently achieves 
+lower error from the second round onward, enhancing the 
+model’s predictive accuracy and ensuring effective real-time 
+risk mitigation in dynamic worker safety environments.
+5.3 Empirical analysis
+In order to assess the effectiveness of our proposed method, 
+we conducted extensive experiments using public datas -
+ets as case studies. We utilized the EEGEyeState, MNIST, 
+and Weather datasets to provide a balanced assessment 
+Table 5 Performance Comparison between Averaged and Weighted 
+Mechanisms in IID setting
+Dataset Domain Metric Clients Simple-A VG Weighted-
+AV G
+EEG-
+EyeState
+Tabular Accu-
+racy
+6 0.9695 0.9847
+10 0.9594 0.9738
+15 0.9469 0.9653
+MNIST CV Accu-
+racy
+6 0.9691 0.982
+10 0.9491 0.9544
+15 0.9361 0.9517
+Weather Tabular MAE 6 0.1312 0.1228
+10 0.1374 0.1285
+15 0.1426 0.1305
+Safety Tabular MAE 6 0.0252 0.0231
+10 0.0325 0.0264
+15 0.0391 0.0309
+Table 6 Performance Comparison between Averaged and Weighted 
+Mechanisms in non-IID setting
+Dataset Domain Metric Clients Simple-A VG Weighted-
+AV G
+EEG-
+EyeState
+Tabular Accu-
+racy
+6 0.8846 0.8925
+10 0.8418 0.8509
+15 0.7379 0.8055
+MNIST CV Accu-
+racy
+6 0.9195 0.9254
+10 0.9029 0.9197
+15 0.8987 0.9027
+Weather Tabular MAE 6 0.1889 0.1753
+10 0.2086 0.1821
+15 0.2389 0.2178
+Safety Tabular MAE 6 0.0562 0.0482
+10 0.0611 0.0571
+15 0.0709 0.0689
+1 3
+Page 15 of 20 146 
+Cluster Computing (2026) 29:146 
+across different machine-learning problems. Specifically, 
+we focused on two datasets (MNIST and EEGEyeState) 
+for classification and two datasets (Weather and Safety) for 
+regression. Tables 5 and 6 present a comprehensive com -
+parison of the Averaged HP and Weighted HP aggregation 
+mechanisms in both IID and non-IID scenarios. To simu -
+late various data heterogeneity settings, we employed the 
+Dirichlet distribution method [ 44], with the degree of het -
+erogeneity controlled by α = 0.5. Our experiments encom -
+passed simulations with different numbers of clients (6, 10, 
+and 15) to assess scalability within the constrained environ-
+ment. All evaluations were conducted on the actual test -
+bed depicted in Figure 4. The results demonstrate a clear 
+correlation between the number of participating clients 
+and model performance: as the client count increases, we 
+observe a corresponding decrease in model performance. 
+This highlights the challenges of maintaining model qual -
+ity in larger federated learning networks, particularly under 
+non-IID conditions.
+Unless noted otherwise, results are from a single end-to-
+end run per setting (fixed random seed controlling Dirichlet 
+partition, initialization, and HPO proposal order) to reflect 
+the behavior on our constrained testbed.
+Figures 11 and 12 display the loss, accuracy, and MAE 
+assessments for each dataset in the IID setting. Specifically, 
+Fig. 11(a) through (d) compare the loss evaluation between 
+the Averaged and Weighted mechanisms, while Fig. 12(a) 
+through (d) compare the accuracy and MAE for three public 
+datasets (MNIST, EEGEyeState, and Weather) and the pri -
+vate Worker Safety dataset. Figure 11(a), using the MNIST 
+Fig. 12 Accuracy and MAE-based 
+comparative evaluation of aver-
+aged and weighted hyperparam-
+eters aggregation mechanisms
+ 
+Fig. 11 Loss comparison between 
+averaged and weighted hyperpa-
+rameters aggregation mechanisms
+ 
+1 3
+ 146 Page 16 of 20
+Cluster Computing (2026) 29:146 
+dataset, shows that the Weighted mechanism converges 
+faster and achieves lower loss values compared to the Aver-
+aged mechanism. Similarly, Figure 11(b), based on the 
+EEGEyeState dataset, reveals that the Weighted mechanism 
+achieves lower loss values and faster convergence, whereas 
+the Averaged mechanism reaches similar loss levels at later 
+epochs. In Figure 11(c), the Weather dataset results high -
+light that while both mechanisms achieve similar final loss 
+values, the Weighted mechanism stabilizes more quickly. 
+Lastly, Figure 11(d), which uses the private Worker Safety 
+dataset, indicates that the Weighted aggregation leads to 
+improved convergence behavior with slightly higher peaks 
+in fluctuations but ultimately lower loss compared to the 
+Averaged aggregation.
+The accuracy results align with the loss comparisons. 
+Figure 12(a), using the MNIST dataset, demonstrates that 
+the Weighted mechanism achieves higher accuracy more 
+quickly compared to the Averaged mechanism. Similarly, 
+Figure 12(b), based on the EEGEyeState dataset, shows that 
+the Weighted mechanism reaches a higher and more stable 
+accuracy, while the Averaged mechanism exhibits more 
+significant fluctuations. The MAE comparisons follow a 
+similar trend. Figure 12(c), for the Weather dataset, shows 
+that both mechanisms achieve similar final MAE values, but 
+the Weighted mechanism converges and stabilizes faster. 
+Finally, Figure 12(d), using the private Worker Safety data-
+set, reveals that the Weighted aggregation achieves lower 
+MAE values with fewer but slightly more pronounced fluc-
+tuations compared to the Averaged aggregation.
+Across all datasets, the Weighted curve (blue) shows:
+ ● consistently lower training loss than Simple-AVG (or -
+ange) throughout training (Fig. 11a–d);
+ ● faster rise to high accuracy on MNIST/EEGEyeState 
+(Fig. 12a–b), with fewer early-epoch oscillations; and
+ ● lower/stabler MAE on Weather and Safety (Fig. 12c–d).
+These plots illustrate the trajectory-level effect (earlier sta -
+bilization and better end values) under IID; complemen -
+tary non-IID outcomes are summarized numerically in 
+Tables 5 and 6.
+Despite the IID nature of the datasets, fluctuations dur -
+ing training are observed in both mechanisms. This behav -
+ior arises from the aggregation process in FL, where model 
+parameters from all clients are averaged during each round, 
+which can introduce variability in the updates. The observed 
+fluctuations during training can be attributed to the inherent 
+dynamics of FL, where aggregated updates from distributed 
+clients are averaged during each round. This process intro -
+duces variability, particularly in the early epochs, as clients 
+have different data distributions and optimization progress. 
+Fluctuations primarily occur due to heterogeneous dataset 
+sizes, varying local convergence rates, and client-specific 
+optimization landscapes. Clients with smaller datasets may 
+converge faster, while those with larger datasets contribute 
+more substantial updates, leading to inconsistencies in global 
+model aggregation. Additionally, the method of hyperpa -
+rameter averaging (simple vs. weighted) impacts stability, 
+as weighted averaging prioritizes clients differently, influ -
+encing convergence speed. To address fluctuations in feder-
+ated learning, client selection based on performance during 
+model updates can prioritize reliable participants, while 
+clustered aggregation groups clients with similar data dis -
+tributions to stabilize training. Excluding underperforming 
+clients could further enhance robustness, even in the pres -
+ence of heterogeneous and non-IID data.
+Table 7 presents a head-to-head performance compari -
+son across four datasets under both IID and non-IID parti -
+tions. We evaluate our Weighted top-K aggregation method 
+against two baselines: Simple-A VG (unweighted averag -
+ing) and ServerSingleShot, a FLoRa-style proxy that selects 
+the single client hyperparameter set with the lowest local 
+Table 7 Comparison of hyperparameter aggregation strategies (10 cli-
+ents)
+Dataset Part. Metric Simple-A VG ServerS-
+ingleShot† 
+Weighted 
+(ours)
+EEG-
+EyeS-
+tate
+IID Acc 0.9594 0.9663 0.9738
+EEG-
+EyeS-
+tate
+non-
+IID
+Acc 0.8418 0.8512 0.8509
+MNIST IID Acc 0.9491 0.9511 0.9544
+MNIST non-
+IID
+Acc 0.9029 0.9085 0.9197
+Weather IID MAE 0.1374 0.1317 0.1285
+Weather non-
+IID
+MAE 0.2086 0.1964 0.1821
+Safety IID MAE 0.0325 0.0281 0.0264
+Safety non-
+IID
+MAE 0.0611 0.0595 0.0571
+†FLoRa-style proxy: server picks the single client-proposed HP with 
+the lowest HPO loss; no Top-K, no weighting, no model sharing
+Fig. 13 R2 comparison between FL with HPO and FL without HPO
+ 
+1 3
+Page 17 of 20 146 
+Cluster Computing (2026) 29:146 
+validation loss. Our proposed weighted approach consis -
+tently outperforms the baselines, achieving a measurable 
+“Gain vs. Simple” through increased classification accuracy 
+and decreased Mean Absolute Error (MAE). These results 
+demonstrate the robustness of loss-based weighting for 
+hyperparameter aggregation in federated settings.
+Furthermore, to evaluate the robustness of the global 
+model resulting from the proposed approach towards worker 
+safety, we assessed the performance of the inference model 
+for predicting worker safety using real-time unseen data. 
+Figure 13 depicts the R2 assessment comparison between 
+FL without HPO and with HPO. The results demonstrate 
+that FL with HPO consistently outperforms FL without 
+HPO across most rounds of global iteration, indicating that 
+the proposed method effectively enhances worker safety.
+5.4 Worker safety monitoring result and discussion
+The increasing urban population, expanding by 200,000 
+individuals per day, is exerting a profound influence on the 
+global construction industry [ 1]. As cities grow and con -
+struction projects surge, ensuring worker safety becomes 
+more challenging due to the dynamic and intricate nature 
+of construction sites. Relying solely on physical monitor -
+ing can lead to misleading assessments, especially under 
+fast-changing on-site conditions. In response, decentralized 
+training (FL with HPO) enables continuous safety moni -
+toring and adaptive responses without constant physical 
+observation.
+To demonstrate this approach, we conducted a case study 
+aimed at predicting and monitoring worker safety. Utilizing 
+a globally trained model, optimized with the globally tuned 
+hyperparameter (HP) set derived through a weighted aggre-
+gation method, we simulated a one-hour-ahead prediction of 
+a worker’s safety status. Data for inference was gathered at 
+20-second intervals, resulting in 180 total observations. The 
+comparison between the actual and predicted safety indices, 
+as illustrated in Figure 14, highlights the model’s perfor -
+mance across the collected data points.
+The global model runs on-device and outputs a safety 
+index every 20 s. The DT page only displays per-worker 
+indices and relays basic notifications; inference and thresh-
+olding occur on the device. 
+Table 8 Per-device RTT (ms) for on-device safety-index inference
+Device Min Median Mean Max
+Pi#1 342 361 372 458
+Pi#2 340 365 370 450
+Pi#3 338 363 368 445
+Pi#4 340 364 371 447
+Pi#5 343 368 378 453
+Pi#6 335 360 365 435
+Fig. 15 RTT (ms) across 20 consecutive inference samples per device 
+class
+ 
+Fig. 14 Comparison between the 
+actual and predicted safety index of 
+the worker on a device
+ 
+1 3
+ 146 Page 18 of 20
+Cluster Computing (2026) 29:146 
+(i) Wearables. If the index falls below a threshold τ or its 
+rate of change exceeds ρ, the device triggers a brief 
+haptic/audio alert (with a 30-second cooldown to avoid 
+fatigue).
+(ii) Supervisor view. The DT page consolidates indices, 
+highlights the lowest-K workers, and displays contrib-
+uting signals (e.g., wind/strain spikes, elevated heart) 
+rate).
+(iii) Escalation. If a low index persists for T minutes or 
+multiple nearby workers fall below au, the DT sends 
+a high-priority alert (via SMS/app) to the supervisor.
+For this study, we used a single global threshold τ per target 
+and a 30 s cooldown; policy tuning is site-specific and out -
+side our scope.
+Table 8 reports per-device round-trip time (RTT) statis -
+tics corresponding to Fig. 15. Median RTTs are ≤ 368 ms on 
+all nodes, with maximum RTT ≤ 458 ms, supporting near–
+real-time alerts at a 20 s sampling interval.
+Latency depends on (a) model size and layer types; (b) 
+input window length and feature count; (c) batch size (we 
+use batch=1 on the device); (d) preprocessing costs (e.g., 
+normalization); and (e) device load and runtime libraries 
+(e.g., NEON, threading). In our setup, we keep architec -
+ture, windowing, and batch size constant across methods, so 
+differences in RTT mainly result from system noise rather 
+than architectural changes. Optimizations like quantization 
+or operator fusion are separate considerations and will be 
+addressed in future work.
+Section 5 compares Weighted and Simple aggregation 
+across datasets and IID/non-IID conditions (Tables 5, 6, 
+Figs. 11, 12); Figure 13 further contrasts FL with and with-
+out HPO for the safety case. Additional comparisons (e.g., 
+different architectures or quantized variants) would mainly 
+examine inference-time trade-offs rather than the proposed 
+HP aggregation itself and are noted as future work.
+6 Conclusions
+In conclusion, hyperparameters play a crucial role in the 
+machine learning process, influencing the model’s learning 
+and performance. While centralized machine learning has 
+extensively explored HPO, FL presents unique challenges 
+for HPO due to the decentralized nature of the data. The 
+limitations of conventional HPO approaches in FL settings 
+stem from the need for more access to the complete dataset 
+and the high communication and training costs associated 
+with training numerous models for various hyper-parameter 
+configurations. One-shot local Bayesian Optimization is 
+used to identify optimal hyperparameters for each client 
+using a fraction of the dataset. Initially, FL clients determine 
+and transmit their optimal hyperparameters to a central 
+server, which uses a weighted consolidation strategy to cre-
+ate and distribute a global hyperparameter set. This method 
+improves model performance and convergence, ensuring 
+scalable federated learning deployments in worker safety-
+critical applications. Across different datasets, client distri -
+butions, and evaluation metrics (accuracy for classification 
+and MAE for regression), the weighted hyperparameter 
+consolidation method demonstrates an overall improvement 
+of approximately 6.44% across all datasets and client counts 
+(increased accuracy for classification; decreased MAE for 
+regression, each normalized and averaged) compared to the 
+simple averaging approach. Despite the significance of HPO 
+in FL, there remains ample opportunity for further explo -
+ration and application across diverse domains. Our study, 
+which mainly focused on worker safety data, underscores 
+the importance of addressing these challenges to maximize 
+the benefits of FLHPO in real-world scenarios.
+The proposed mechanism enhances FL by optimizing 
+hyperparameters through a weighted consolidation strategy, 
+improving model performance and scalability in worker 
+safety applications. However, privacy risks arising from 
+exchanging unprotected hyperparameters highlight the need 
+for approaches that safeguard information while enabling 
+collaborative tuning. Additionally, addressing communica -
+tion overhead in large-scale networks and benchmarking 
+against advanced HPO methods remain key areas for future 
+research to maximize FLHPO’s real-world impact.
+Limitations and future work. Our evaluation involves 
+up to 15 clients on Raspberry Pi–class devices; behavior at 
+larger scales still needs investigation. The loss-weighted 
+aggregation assumes honest, fairly calibrated client valida -
+tion losses, and although only hyperparameters (not model 
+weights) are shared, some basic information leakage is pos-
+sible. We present results from a single seed per setting and 
+focus on non-visual, tabular, and temporal signals. Vision 
+tasks (e.g., PPE detection) and additional baselines beyond 
+Simple-A VG and a server single-shot proxy are planned for 
+future work. Moving forward, we will explore larger client 
+populations (such as partial participation and lightweight 
+multi-fidelity search), improve robustness against noisy or 
+misreported losses (e.g., with robust weighting and secure 
+aggregation), and combine the method with lightweight 
+vision models.
+Acknowledgements This research was supported by the Regional 
+Innovation System & Education (RISE) program through the Jeju 
+RISE center, funded by the Ministry of Education (MOE) and the Jeju 
+Special Self-Governing Province, Republic of Korea (2026-RISE-17-
+001), this work was supported by the National Research Foundation 
+of Korea (NRF) grant funded by the Korea government (MSIT) (No. 
+RS-2024-00405278), and this work was supported by the National 
+Research Foundation of Korea (NRF) grant funded by the Korea 
+government (MSIT) (No. RS-2024-00346238). Any correspondence 
+1 3
+Page 19 of 20 146 
+Cluster Computing (2026) 29:146 
+related to this paper should be addressed to DoHyeun Kim.
+Author contributions Conceptualization, S.M., and A.-N.K.; valida -
+tion, S.M., and A.T.N.; investigation, S.M., and A.-N.K.; resources, 
+A.-N.K., and D.-H.K.; data curation, S.M., and A.T.N.; writing—origi-
+nal draft preparation, S.M.; writing—review and editing, A.-N.K., and 
+D.-H.K.; supervision, D.-H.K.; project administration, D.-H.K.; All 
+authors have read and agreed to the published version of the manu -
+script.
+Data availability No datasets were generated or analysed during the 
+current study.
+Declarations
+Competing interests The authors declare no competing interests.
+Open Access This article is licensed under a Creative Commons 
+Attribution-NonCommercial-NoDerivatives 4.0 International License, 
+which permits any non-commercial use, sharing, distribution and 
+reproduction in any medium or format, as long as you give appropri -
+ate credit to the original author(s) and the source, provide a link to the 
+Creative Commons licence, and indicate if you modified the licensed 
+material. You do not have permission under this licence to share 
+adapted material derived from this article or parts of it. The images or 
+other third party material in this article are included in the article’s Cre-
+ative Commons licence, unless indicated otherwise in a credit line to 
+the material. If material is not included in the article’s Creative Com -
+mons licence and your intended use is not permitted by statutory regu-
+lation or exceeds the permitted use, you will need to obtain permission 
+directly from the copyright holder. To view a copy of this licence, visit 
+http:// creativ ecommon s.org /licenses/by-nc-nd/4.0/.
+References
+1. 68% of the world population projected to live in urban areas by 
+2050, says UN. Available: h t t p s : / / w w w . u n . o r g / d e v e l o p m e n t / d e s a 
+/ e n / n e w s / p o p u l a t i o n / 2 0 1 8 - r e v i s i o n - o f - w o r l d - u r b a n i z a t i o n - p r o s p 
+e c t s . h t m l (2018). Accessed 22 Oct 2024 [Online]
+2. Adriaensen, S., Biedenkapp, A., Shala, G., et al.: Automated 
+dynamic algorithm configuration. Journal of Artificial Intelli -
+gence Research 75, 1633–1699 (2022)
+3. Agrawal, S., Sarkar, S., Alazab, M., et al.: Genetic cf

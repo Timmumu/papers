@@ -21,3 +21,16 @@ The stable and safe operation of Trailing suction hopper dredger (TSHD) is one o
 | Yes | Yes | Yes | Tier 2 - Digital Shadow | 0 | 1 | 1 | Design for Safety (DfS) | None | Other / Mixed | Multi (two or more data types) | Single case study | 4 | Predictive analytics / decision support |
 
 **Key evidence (AG):** DT-driven virtual sensor (DTDVS) for construction safety of a trailing suction hopper dredger (Tianjin Dredging Co.): real SCADA data (793 dims) + Lasso/random-forest feature selection; 4 ML algorithms predict torsional vibration in mechanical failure (R2 > 0.9), best DBN model acts as virtual sensor; residual between physical and virtual sensor used to diagnose construction behavior and accurately pre-warn faults, improving time utilization and construction safety. Digital twin structure (physical model / digital model / data link) with virtual-sensor prediction and pre-warning to operators; data flow is monitoring/prediction one-way, no actuation and no stated online self-improvement loop.
+
+**Strength & gap filled (AH):** Addresses the vulnerability of physical sensors in dredger construction safety control: a digital twin-driven virtual sensor trained on real SCADA data (793 dimensions) from the Tongcheng hopper dredger at Tianjin Port, using Lasso plus random forest feature selection and Savitzky-Golay filtering, with DBN (R2 0.987) outperforming LSTM, XGBoost and SVR, and residual-based warning within a 99 percent confidence interval to diagnose torsional vibration faults.
+
+**Deficiencies & future work (AI):** Models are trained offline on historical data without stated online updating, only torsional vibration is validated as a fault type, and warning thresholds rely on statistical residuals rather than any closed-loop actuation of the dredger. Follow-up work should investigate internal relations and interaction mechanisms among different types of mechanical faults.
+
+**Fusion depth (AC1):** Fused
+
+**Fusion evidence (AC2):**
+- **Data streams:** real SCADA telemetry (793 dimensions, Lasso/random-forest feature selection) + DBN virtual-sensor predictions (R2 0.987, best of LSTM/XGBoost/SVR).
+- **Integration mechanism:** the residual between physical and virtual sensor is computed continuously and used within a 99% confidence interval to diagnose torsional-vibration faults and pre-warn operators.
+- **Why this code:** the diagnostic output depends on measured and predicted streams simultaneously, so Fused (virtual-real residual comparison).
+
+**Confidence (AC3):** Medium - the residual mechanism is explicit; both streams originate from one SCADA acquisition system.

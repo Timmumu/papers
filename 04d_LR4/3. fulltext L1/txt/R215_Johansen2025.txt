@@ -1,0 +1,905 @@
+Knowledge graph exploitation to enhance the usability of risk assessment in 
+construction safety planning
+K.W. Johansen
+a
+, C. Schultz
+b
+, J. Teizer
+a , *
+a
+Department of Civil and Mechanical Engineering, Technical University of Denmark, Denmark
+b
+Department of Electrical and Computer Engineering, Aarhus University, Denmark
+ARTICLE INFO
+Keywords:
+Construction safety, hazards, and risk 
+assessment
+Construction safety design and planning
+Cross-domain knowledge exploitation
+Digital twin for construction safety
+Knowledge graph representation
+Ontology for construction safety
+ABSTRACT
+Construction projects and their dynamic and yet hazardous work environments face significant challenges. 
+Despite advancements, many proposed solutions for information extraction and utilization remain impractical 
+due to complexity and lack of interoperability. Information is often siloed in proprietary formats, making it 
+difficult to integrate. This issue is evident in the construction safety domain, where advanced risk analysis tools 
+provide detailed insights to hazards but can be overwhelming. Similar challenges exist in cost estimation, 
+schedule evaluation, progress monitoring, and quality compliance checking. Decision-making in construction 
+scheduling struggles to assess how changes impact site safety due to insufficient information and knowledge 
+extraction capabilities, especially when it comes to cross-domain knowledge extraction. This study aims to make 
+safety information accessible to safety and planning professionals. By leveraging Digital Twins, automated safety 
+analysis, and knowledge representation, we enable decision-makers to gain deeper insights into their domain and 
+understand the interplay between project planning and safety. We propose a framework for knowledge extrac -
+tion, an ontology for capturing knowledge, and query building blocks to transform natural language questions 
+into actionable queries. These methods are tested in a case study, revealing valuable insights into the cross- 
+domain impact of decisions.
+1. Introduction
+The construction industry is experiencing thought-provoking hazard 
+statistics compared to other industries [ 1 ]. The high number of hazards 
+highlighted by these statistics is due to the production environment 
+constantly changing, which makes safety planning labor-intensive. 
+Automated safety analysis and prevention strategies such as [ 2 – 6 ] can 
+identify and plan mitigation to prevent hazards, with greatly increased 
+spatial and temporal resolution beyond what is achieved through the 
+current manual practices of safety analysis. Despite promising results of 
+automated safety analysis being demonstrated in research settings, 
+construction practitioners have not yet been convinced to adopt the 
+automated approaches in the industry. The reasons for this include the 
+lack of integration of automated methods into current workflows, the 
+complexity of correctness assessment, and the placement of re -
+sponsibility [ 7 , 8 ]. Thus, the exploitation of automatically created safety 
+plans must be investigated further to convince the practitioners about 
+their relevance, applicability, and additional insight.
+4D CAD was introduced more than two decades ago [ 9 ] and has been 
+advancing towards 4D BIM (3D BIM and schedules) and later into Digital 
+Twins, which are foreseen to capture planned and real information to 
+improve construction planning, execution, and maintenance [ 10 ]. 
+Automated safety planning, inspection, tracking, and training are also 
+part of the Digital Twins for Construction Safety (DTCS) [ 11 ]. However, 
+the exploitation of the information and knowledge captured in the 
+comprehensive analysis results is not yet clear. When safety analysis is 
+performed in these automated approaches, it considers every planned 
+change (i.e., part of the schedule) and analyses the impact of these to 
+extract potential hazards and their prevention. The increased temporal 
+and spatial resolution is necessary for identifying complex hazards but, 
+at the same time, results in a large amount of complex information that 
+is difficult to digest and assess for humans.
+Over the last decade there has been a major and intensive effort in 
+the research domain on developing smart and AI-enabled construction 
+safety-enhancing solutions [ 5 , 12 – 14 ]. The application of these AI-based 
+tools is based on the extraordinary amounts of real-time information 
+that are now being extracted from the construction site. However, cur -
+rent workflows are not geared towards handling and disseminating 
+* Corresponding author.
+E-mail address: teizerj@dtu.dk (J. Teizer). 
+Contents lists available at ScienceDirect
+Advanced Engineering Informatics
+journal homepag e: www.else vier.com/loc ate/aei
+https://doi.org/10.1016/j.aei.2025.103305
+Received 4 July 2024; Received in revised form 25 February 2025; Accepted 4 March 2025 
+Advanced Engineering Informatics 65 (2025) 103305 
+Available online 23 April 2025 
+1474-0346/© 2025 The Author(s). Published by Elsevier Ltd. This is an open access article under the CC BY license ( http://creativecommons.org/licenses/by/4.0/ ). 
+construction site information in a way where the full potential of this 
+information is exploited. On the contrary, practitioners are over -
+whelmed with the vast amount of data and information that is now 
+available to them [ 12 , 15 ]. Examples of the information that is becoming 
+available are temporary mitigation equipment [ 16 ], personal protection 
+equipment recommendations [ 17 ], safety incidents from video and 
+location processing [ 18 ], noise level analysis [ 19 ], etc. When all this 
+information is shared with the users, it is done through individual ap -
+plications and interfaces, which is not viable when additional pieces of 
+information start to add up. Therefore, the research presented in this 
+paper aims to capture safety insights that are generated from AI solu -
+tions and then present this information to stakeholders in a less 
+comprehensive way, thereby reducing the cognitive load experienced by 
+stakeholders in processing complex information [ 20 ] and elevating the 
+captured data and information into knowledge [ 21 ].
+Besides the complexity of safety-related information and its inte -
+gration with the safety of responsible persons on the construction site, 
+this work is motivated by considering safety from a planning point of 
+view. Current practices of construction planning do not allow overall 
+planning and safety planning to be performed simultaneously [ 22 ], but 
+that will have to change in the future DT-enabled construction industry 
+[ 10 , 23 ]. Therefore, design, scheduling, and safety information need to 
+be compiled into a single, unified knowledge representation to extract 
+the combined knowledge from different points of view, and to achieve 
+next-level cost, duration, and safety-optimized construction.
+In recent years, Large Language Models (LLMs) have been employed 
+for effective BIM model querying and analysis [ 24 – 26 ] and construction 
+site analysis including safety engineering [ 27 – 29 ]. A major advantage of 
+LLMs is that they provide a natural query interface for users (i.e. natural 
+language) and can exploit data in the form of BIM models, natural lan -
+guage documentation (e.g. safety regulations [ 30 ]), and with appro -
+priate prompt engineering and user training offer a distinct approach to 
+automated safety engineering compared with existing methods. In the 
+context of safety analysis, LLMs can be used to identify hazards and 
+propose mitigation measures in the form of “ answers ” to a query. A 
+primary concern, especially in the context of safety, is establishing the 
+veracity of LLM query results: are they sound (i.e. all identified hazards 
+and mitigation measures correct) and complete (i.e. no important haz -
+ards and mitigation measures are omitted).
+The research presented in this paper aims to complement existing 
+efforts in the application of LLM by providing a data model (in the form 
+of a knowledge graph ) for which mathematical properties can be formally 
+proven and precise queries can be specified ( Fig. 1 ). LLM-based in -
+terfaces can subsequently used to rapidly translate from natural lan -
+guage into the target formal model in which properties can be rigorously 
+proven. This approach is adapted from the decades of cyber-physical 
+systems research on model-based safety engineering in other sectors 
+such as automotive, avionics, manufacturing and others [ 31 – 33 ]. As 
+such, an investigation into the efficacy of LLMs in safety engineering is 
+not within the scope of the present paper, and rather this paper focused 
+on the development of the knowledge graph data representation and 
+corresponding query features.
+The work investigates how to request such knowledge through 
+queries that are sent to a specialized safety analysis reasoning engine 
+(through the proposed knowledge base) to improve the exploitation and 
+utilization of safety analysis results in the planning efforts and vice 
+versa. This research relies on previously studied automated safety 
+analysis tools [ 34 , 35 ] and captures their output in the proposed 
+knowledge graph that stakeholders can query to extract knowledge 
+within and outside the safety domain. The study examines the following 
+research questions: 
+RQ 1: How regular BIM and safety analysis results be captured to 
+facilitate cross-domain/cross-responsibility collaboration and con -
+siderations in decision-making?
+RQ 2: How can such knowledge representation give safety engineers 
+increased insight into site safety level, crew exposures, and required 
+personal protective equipment?
+RQ 3: How can such knowledge representation be used to reveal the 
+impact of delivery delays and crew reassignment on safety resource 
+allocation and future tasks?
+The investigation of RQ1-RQ3 leads to the following contributions 
+C1-C3 in construction research and the current construction industry 
+practices. 
+C 1: A series of query “ building blocks ” are identified and categorized 
+to facilitate generalized natural language question-to-query trans -
+formation, utilized in our example (Q1-Q7).
+C 2: A set of nodes and relations are identified and described to 
+capture safety analysis components ’ and building components ’ 
+connections to schedule information such as tasks and crews.
+C 3: Showcasing the knowledge representation capabilities to obtain 
+novel cross-domain knowledge that facilitates improved insight 
+while decisions are made during the planning and execution of a 
+construction project.
+Many critical factors and aspects of construction sites are required to 
+be addressed to develop a complete end-to-end digital pipeline for safety 
+analysis. This research focuses on developing and investigating a formal 
+data model of construction safety (i.e. ontology, knowledge graphs and 
+structured query services). Other fundamental construction site factors 
+that are beyond the scope of the present study include: how construction 
+site sensor data is collected, transmitted, processed, stored and managed 
+(IoT and related aspects); optimizing user interfaces (UI), and refining 
+the UI to be fit for on-site application (i.e. as investigated through us -
+ability studies); handling uncertain and dynamic aspects of real con -
+struction sites, including misapplication of technology on-site; and 
+incorporating image and other on-site sensor data e.g. via drones 
+equipped with sensors, scanners, cameras. Computer vision-based 
+methods and data-driven AI-based safety analysis [ 18 , 36 – 39 ] is com -
+plementary to our approach where the output of such AI-based methods 
+can be used to populate a safety knowledge graph, and as such are not 
+within the scope of the present study.
+Fig. 1. Model-Based approach to automated construction safety engineering that leverages both the convenience and power of LLMs, and the mathematical rigor of 
+formal analysis and theorem proving.
+K.W. Johansen et al. Advanced Engineering Informatics 65 (2025) 103305 
+2 
+2. Related work
+2.1. Knowledge representation in construction
+Different knowledge representations have been proposed with the 
+increasing interest and research of Digital Twins for construction. 
+Several large research projects in Europe are ongoing (e.g., COGITO 
+[ 40 ] and BIM2TWIN [ 41 ]), each developing an ontology to represent 
+their captured knowledge and needs. While the different representations 
+share the same objective (i.e., to capture the historical, planned, and 
+future state of the construction situation to facilitate an improved con -
+struction industry), the approaches still vary slightly. Some strategies 
+invite unprocessed data, and some prefer information and knowledge (i. 
+e., processing data elevates it to information and combinations if in -
+formation creates knowledge [ 23 ]). Ontologies capture the relevant 
+classes and relations that are specific enough to represent the data, in -
+formation, and knowledge but general enough for similar use cases. 
+Many ontologies exist for different purposes, and reuse of both ontol -
+ogies and schemas should be considered when creating new ones, as is 
+the case with the Digital Twin Construction Ontology (DTCO) [ 42 ], 
+which relies on, e.g., Building Topology Ontology [ 43 ] and Building 
+Element Ontology [ 44 ]. However, DTCO does not represent safety- 
+related classes and relationships.
+Within the domain of safety in construction, previous work has been 
+investigating ontologies to capture and represent safety-related classes 
+and their relationships to other classes within and outside of the safety 
+domain. Among others, [ 4 ] presented an ontology that connected the 
+potential hazards (i.e., the new class of the safety ontology) to building 
+elements through job steps, activities, and tasks (i.e., classes of existing 
+ontologies). The safety ontology also captured the potential hazards and 
+their relation to mitigation and safety regulation. In [ 45 ], the safety 
+ontology presented in [ 4 ] was extended with the capabilities to repre -
+sent potential hazards to define hazard spaces, represented as spatial 
+artifacts. [ 34 ] extended and detailed the spatial artifacts to cover falls- 
+from-heights and struck-by-falling objects hazards in 4D.
+While ontologies are available for capturing construction project 
+information and others for safety information, they must be merged to 
+exploit interdisciplinary knowledge. This also means that additional 
+classes and relations are needed to connect the domains. Thus, this study 
+will reuse and extend the existing ontologies to incorporate these con -
+nections and additional safety-related perspectives.
+There is a growing body of research that investigates the integration 
+of knowledge graphs, ontologies and LLMs [ 46 , 47 ]. Key areas of inte -
+gration include using knowledge graphs as a form of structure training 
+data [ 48 ], and using LLMs for constructing knowledge graphs [ 49 ]. 
+Towards exploiting such an integration in the construction safety 
+domain, the research presented in this paper focuses on establishing an 
+conceptually-rich ontology and data model of construction safety that 
+can complement the growing role of LLMs in construction site analysis.
+2.2. Digital Twins and related technologies
+Digital twins represent a significant advancement in the construction 
+industry, offering real-time monitoring and integration capabilities that 
+surpass traditional methods such as 4D BIM and SPARQL-based query 
+engines. While 4D BIM integrates time-related information with 3D 
+models to enhance project scheduling and visualization, digital twins 
+extend this by creating dynamic, real-time representations of physical 
+assets. This allows for continuous monitoring and optimization 
+throughout the project lifecycle [ 10 ].
+4D BIM, which combines 3D models with the time dimension, has 
+been instrumental in improving project planning and visualization. 
+However, it lacks the real-time data integration and dynamic updating 
+capabilities of digital twins [ 9 ]. SPARQL-based query engines are 
+effective for querying structured data but do not support the dynamic, 
+real-time updates required for construction safety management [ 50 ].
+The proposed framework leverages the strengths of digital twins to 
+enhance safety planning by integrating real-time data and enabling 
+more effective cross-domain knowledge exploitation. This integration 
+allows for the continuous updating of safety information, providing 
+decision-makers with timely and actionable insights. Recent studies 
+have highlighted the transformative potential of digital twins in con -
+struction management, emphasizing their ability to enhance real-time 
+monitoring, improve stakeholder collaboration, and optimise project 
+planning and execution [ 51 , 52 ].
+By combining digital twins with knowledge graphs, our approach 
+uniquely enables the seamless integration of safety and planning data, 
+facilitating more informed decision-making and improving overall 
+project safety and efficiency.
+2.3. Technologies for improved safety in construction
+As it is described in DTCS [ 53 ], safety should be considered con -
+cerning four main responsibilities: 1) planning (Prevention through 
+Design and Planning), 2)inspection (conformance checking), 3) right- 
+time identification and mitigation of arising hazards in the production 
+(proactively), and 4) improving work crews’ safety performance 
+(training), which all require data and creates information that can 
+improve the safety situation in construction.
+Different strategies have been proposed in the planning domain to 
+automate identifying and mitigating construction hazards in 3D BIM 
+models, e.g., [ 2 , 5 , 54 ]. Some studies extend the functionality to consider 
+the schedule in combination with the 3D BIM model (i.e., 4D BIM or 
+Digital Twins, where geometry and schedule are also represented) 
+[ 4 , 34 , 55 ] or semantic analysis, e.g., [ 7 , 56 , 57 ]. Recent research high -
+lights the transformative potential of Digital Twins in construction 
+management, emphasizing their ability to enhance real-time moni -
+toring, improve stakeholder collaboration, and optimize project plan -
+ning and execution [ 51 , 52 ]. For instance, Digital Twins have been 
+shown to increase the transparency of information and provide real-time 
+feedback, which is critical for effective safety management [ 51 ]. How -
+ever, the connection between safety, construction elements, and 
+schedules still must be captured.
+Spreadsheet-based checklists (e.g. via Excel) are an effective tool in 
+construction safety engineering owing to their simplicity and familiarity 
+by many users [ 58–60 ]. The main advantage of knowledge graphs over 
+only generating checklists is enhanced comprehensibility through vi -
+sualizations, semantic richness, verifiability and automation: such 
+checklists can be automatically generated if one has access to a knowl -
+edge graph; 3D visualizations and 2D diagrams can be automatically 
+generated from knowledge graph linked to a BIM model; knowledge 
+graphs can be formally verified (i.e. assessed in terms of geometry, 
+soundness and completeness, and so on).
+3D models can be complex and challenging to assess upfront. 
+Therefore, manual procedures often only perform short-term look -
+aheads, which means information about the total amount of safety 
+material and where to apply it is rarely available [ 22 ]. Furthermore, 4D 
+models can be represented as a sequence of evolving 3D models, which 
+increases the complexity and, therefore, the time consumption for 
+manual approaches. The complexity of the problem is also rising for 
+automated systems, but the impact of necessary manual labor input and 
+costs related to safety planning is constant. However, the complexity of 
+interacting with the results of automated safety planning is increasing 
+when the planning is performed for longer durations and for additional 
+hazard types..
+Even though efforts in safety planning are becoming increasingly 
+accurate, the reality might deviate from the plan. There are several 
+reasons for temporarily removing the mitigation measures to access 
+workspaces, and sometimes, these are forgotten to be replaced. Equip -
+ment can also be worn out due to the rough environment or even 
+incompliant installations from the beginning. The safety-responsible 
+person(s) must traverse the job site frequently to ensure continued 
+K.W. Johansen et al. Advanced Engineering Informatics 65 (2025) 103305 
+3 
+compliance, which is labor-intensive, especially when large sites have 
+high activity in several locations and issues gradually evolve. Re -
+searchers investigated different strategies to support compliance 
+checking (a.k.a safety inspection), including computer vision from 
+different perspectives [ 3 ] and point clouds in combination with deep 
+learning [ 61 ]. However, these methods all produce information about 
+compliance but cannot fix the issues themselves. Therefore, humans 
+must be brought into the loop, and the identified compliance issues must 
+be presented clearly and concisely to the practitioners to avoid over -
+whelming them.
+While the details of BIM models and schedules are improving, it is 
+still impossible to foresee all hazard incidents solely based on these. 
+Therefore, identification and mitigation of safety incidents, besides 
+compliance issues, during the execution of the construction project are 
+necessary. Those cases are referred to as dynamic incidents, e.g., over -
+head crane swings or pedestrian workers not using the designated paths, 
+machine-to-machine- and pedestrian-to-machine-incidents. Identifying 
+these kinds of incidents requires additional sensor techniques to record 
+where the entities are and how they interact. [ 62–67 ] are all examples 
+where location tracking technologies are used to identify dynamic 
+hazards, and some, in combination with the cloud, enable them to 
+operate in Digital Twin settings. Similarly, these incidents have to be 
+presented to the stakeholders to increase awareness and improve safety 
+behavior. However, presenting long lists of dynamic safety incidents to 
+the practitioners is overwhelming and does not allow them to act easily 
+to improve the situation.
+Besides acting directly on the construction site, the safety insights 
+about hazards and increased model details facilitate the creation of 
+realistic training scenarios for the workers in Virtual Reality (VR). The 
+virtual training allows the workers to be trained in environments rep -
+resenting the concrete construction site at the concrete state where the 
+current progress is considered (i.e., as built) [ 68–70 ]. The training im -
+pacts the workers’ behavior and awareness, and the training perfor -
+mance can be used in the planning when the crew allocation is decided.
+The many technology-driven approaches to improve the construc -
+tion safety situation all produce information that needs to be assessed by 
+human stakeholders. However, if this information is not provided in 
+format that is easy to understand and exploitable then it ends up over -
+whelming practitioners, resulting in critical safety information being 
+lost. Additionally, there are cases where information produced from 
+individual tools can be even more useful if it is combined with other 
+pieces of information and delivered to stakeholders as knowledge. As the 
+safety planning domain is the most developed and streamlined 
+compared to other domains, such as safety inspection and safety 
+behavior monitoring, this work focuses on capturing and representing 
+that information.
+2.4. Construction scheduling
+Construction scheduling plays a vital role in successfully executing 
+construction projects. The main objective of scheduling is to estimate the 
+cost and time of completion and organize the workflow to fulfill de -
+pendencies [ 71 ]. Planning a complete construction project is a highly 
+time-consuming task, which motivates the efforts of automated con -
+struction scheduling and planning. These automated approaches include 
+case-based reasoning [ 72 ], knowledge-based [ 73 ], model-based [ 74 ], 
+constraint-based [ 75 ], genetic algorithms [ 76 ], expert systems [ 77 ], 
+neural networks [ 78 ], and other methods [ 79 ]. The decision-makers 
+must select the most desirable one from a selection of automatically 
+generated schedules based on some Key Performance Indicators (KPIs), 
+such as duration, cost, and planning risk assessment of critical path [ 80 ]. 
+However, automated construction scheduling that considers Lean prin -
+ciples and incorporates automated safety planning is still unavailable for 
+decision-makers when selecting the desired construction schedule. 
+Therefore, it has yet to be possible to identify the impact that a changed 
+construction task sequence will have on the safety situation on site. 
+While the construction planning domain has been investigated to assist 
+practitioners in planning procedures, there is still not a lot of focus on 
+integrating safety planning into the broader construction planning 
+domain. One reason is the lack of maturity of automated safety analysis 
+and the lack of support for stakeholders in their interaction with safety 
+analysis results. The lack of maturity is evident as the tools are not yet 
+widely implemented in current practices due to a lack of trust, lack of fit 
+to current workflows[ 81 ], lack of support by regulation, and lack of 
+organizational commitment [ 82 ]. Additionally, there is a lack of stan -
+dardization in the automated approaches, which also covers the stan -
+dardization of how to capture the safety analysis results, meaning that it 
+is hard for the construction planning community to incorporate the 
+safety information in their approaches [ 81 ]. This work also attempts to 
+define the integration of safety analysis results in construction plans.
+3. Methodology
+While the domains of construction safety and construction planning 
+are pushed forward individually in academia, they remain disconnected, 
+as also pointed out in the previous section. This is also the case for the 
+solutions that are already adopted and applied in the industry as pointed 
+out in the introduction. Therefore, this work investigates how the 
+knowledge within an automatically created safety plan can benefit other 
+domains of construction management, such as construction planning. 
+Fig. 2 illustrates the proposed framework, capturing the steps that will 
+be performed and their outcome. The remainder of this document will 
+follow the structure presented in this figure.
+The first step is to identify domain-relevant questions to ensure that 
+the solution is relevant to the industry and the practitioners. The ques -
+tions have been identified through interactions with practitioners on 
+construction sites in Germany, Spain, and Finland, which ensures a wide 
+perspective within Europe. The practitioners are domain experts in 
+construction management with years of experience working on different 
+aspects of construction management. Subsequently, these questions are 
+sorted based on query category and the current availability of infor -
+mation in the safety plan (i.e., the information that is extractable with 
+the safety analysis tool used). The query categories (i.e., Entity, Exis -
+tential, Relationship, Exploratory, Attribute, Comparative, List, Count 
+search (further explained in Table 3 )) are used to determine the nature 
+of the query, which can identify the expected result type.
+Two things must be in place before the query engine can be used to 
+answer the questions. First, the natural-language-formulated questions 
+need to be transformed into queries that a query engine can interpret 
+using the query building blocks ( Table 3 ). The query building blocks can 
+ease the later transformation in this study, but also in the longer term, 
+where others have to extend the solution. The other is to define an 
+ontology to capture the BIM, schedule, and safety analysis result infor -
+mation in a knowledge graph that can be queried for extraction of 
+domain knowledge. The two tasks are interdependent as the queries 
+must be formed such that they are using the proposed ontology. It has 
+been chosen to capture the knowledge graph in the ontology that was 
+described [ 42 ], which captures the construction elements, processes, 
+and tasks. However, the previous ontology does not describe the safety- 
+related components which have been added on top using the safety 
+ontology proposed previously by the authors [ 34 ]. This is further 
+described in the following section 4.2.
+After defining the ontology and queries, a knowledge graph needs to 
+be populated for validation. For this study, it has been decided to cap -
+ture the graph in a local database of Prolog facts, consisting of mainly 
+two types of predicates, called node and edge. The primary reason for 
+selecting Prolog [ 83 , 84 ] is that, owing to its foundations in mathemat -
+ical logical, it is tailored for domain-specialised knowledge representa -
+tion and reasoning, which aligns well with our aim to capture 
+construction safety knowledge, and to make safety analysis more readily 
+accessible to stakeholders, which we accomplish via Prolog’s native 
+querying engine. Moreover, Prolog is a suitably powerful programming 
+K.W. Johansen et al. Advanced Engineering Informatics 65 (2025) 103305 
+4 
+language (i.e. Turing complete) and has been proven to be stable and 
+reliable in many application domains. This is also why it is among the 
+most popular declarative languages in research and commercial prod -
+ucts. Its query engine allows for fast interaction with a domain captured 
+as facts, which allows for fast lookups and recursions that allow tracing 
+through (logical) relations. Other options for representing knowledge 
+graphs exist (e.g., Neo4J [ 85 ], GraphDB [ 86 ], or other declarative op -
+tions [ 87 – 89 ]).
+Neo4j offers robust performance for large-scale graph data but may 
+require more complex query syntax for certain logical operations. 
+SPARQL, while powerful for querying RDF data, lacks the native support 
+for recursive queries and logical reasoning provided by Prolog. Our 
+performance tests indicate that Prolog executes queries in less than one 
+second for the case study graph, consisting of approximately 3,800 
+nodes and 20,000 edges. This efficiency makes Prolog a suitable choice 
+for our framework, balancing performance and ease of use. Therefore, as 
+this study does not aim to identify the better options to represent the 
+graph, it has been decided to move forward with the Prolog approach, 
+which has low overhead, a large and active development community, 
+and a knowledge base that is easy to share.
+To address concerns about query efficiency and scalability, we con -
+ducted additional tests to evaluate the framework ’ s performance with 
+larger datasets. Our findings indicate that while the current imple -
+mentation handles the case study graph efficiently, performance bot -
+tlenecks may arise with significantly larger graphs. To mitigate this, 
+several approaches can be employed: 
+• Limiting the Query Space: By filtering queries based on relevance, 
+such as introducing spatial details like quadrant and level, the query 
+space can be significantly reduced, improving efficiency.
+• Distributing Workload: Implementing distributed computing solu -
+tions can help manage larger datasets by spreading the workload 
+across multiple processors, thereby increasing computational power.
+• Optimizing the Graph: Further optimization of the graph using 
+various algorithms can enhance performance. This approach be -
+comes particularly relevant as the graph size increases.
+Translating questions into queries might still be too technical and 
+challenging for the average construction manager. However, researchers 
+have been investigating the topic to facilitate and ease translation (e.g., 
+[ 90 – 92 ]). Moreover, the drastic recent improvement of large language 
+model capabilities (e.g., [ 93 ]) makes it reasonable to exclude generic 
+query translation, besides the examples that are brought forward, from 
+the scope of this work. Additionally, some LLMs aim to transform nat -
+ural language-formulated questions into SPARQL queries in a given 
+context, i.e., the ontology [ 94 ].
+4. Safety knowledge exploitation
+This section will present a set of domain questions, and their domain 
+relevance will be reasoned. Subsequently, the ontology will be formed 
+and described, and a knowledge graph will be populated for validation. 
+In the end, the section will briefly describe the translation of the natural- 
+language question into formal queries that the query engine and the 
+query engine can answer using the knowledge graph.
+4.1. Identification of domain questions
+As mentioned in the research questions, this study investigates both 
+questions that relate to the individual domains (i.e., RQ 2) and cross- 
+domain (i.e., RQ 3). The first part ensures better exploitation within 
+the safety domain, and the second part ensures that the solution can also 
+move the boundaries in the more advanced cross-domain impact esti -
+mation and optimization situation. Even though the questions in the 
+safety domain consider the effect of the schedule (safety analysis has 
+been based on 4D BIM), the answers do not consider changes and, thus, 
+become specifically safety-related. On the other hand, the cross-domain 
+questions consider the impact of safety changes on the construction plan 
+and, vice versa, the impact of the construction plan changes on the safety 
+situation.
+The following questions (Q1 to Q7 in italics ) have been identified in 
+situations where the practitioners have been presented with safety 
+planning of a scheduled construction situation, captured in 4D BIM. 
+Thus, the safety analysis is performed automatically each time the 
+construction site was planned to change (i.e., completion of construction 
+tasks). Additionally, the questions have been inspired by the reasons that 
+have been identified to be the source of real incidents, such as the ac -
+cident in Ludwigshafen, Germany [ 95 ], and in Hamburg, Germany [ 96 ], 
+which in both cases involved poor planning of hazard mitigation and 
+synchronization between stakeholders. The questions will represent 
+domain-specific variables with “ # ” followed by a letter (e.g., #X or #Y ), 
+and their rationale is presented in the following:
+Q1: “ Which hazards are work crew #X exposed to while they complete 
+task #Y? ” .
+Knowing which kinds of hazards have been identified to expose a 
+crew during the task makes them more aware of what to pay extra 
+attention to, and in some cases, it is even worthwhile for them to learn or 
+refresh their mind on how to act in these situations. Eventually, this 
+learning can be performed in a VR environment as proposed in [ 68 – 70 ], 
+where the selected training scenarios are based on the specific hazards 
+exposing the crew during their task(s).
+Q2: “ Are hard hats required while performing task #X? ” .
+Similarly, the stakeholders are interested in particular hazard types, 
+e.g., if the crew is exposed to struck-by falling object hazards and must 
+wear hard hats while performing a certain task. Current practice on the 
+construction site is to make a site-level requirement of wearing the hard 
+hat, which in some cases is not reasonable. Still, the only option for 
+safety planning with the manual approaches does not practically allow 
+safety planning in high enough resolution to separate specific areas. This 
+leads to safety fatigue, and the workers think there is no reason to 
+comply with the requirements, even though the dangers are luring 
+around the site. This situation can be avoided if the workers were given a 
+concrete reason to wear hard hats, and the requirement can be lifted 
+when there was no reason to uphold it. However, it should be mentioned 
+that automated safety tools at this stage still need further testing and 
+improvements of scheduled activities (i.e., only planned tasks can be 
+automatically safely assessed). For this reason, the tools should only be 
+considered as assisting measures.
+Fig. 2. Research framework capturing the steps required to extract cross-domain knowledge.
+K.W. Johansen et al. Advanced Engineering Informatics 65 (2025) 103305 
+5 
+Q3: “ Are any guard rails installed for shorter than #X number of days? ” .
+There are situations where the falls-from-height hazards appear for 
+only a short duration of time, e.g., when a slab element has been placed 
+and the wall elements are placed immediately after. For these cases, it 
+does not make sense to install guardrails, especially if there are no other 
+tasks planned in the area between the slab installation and wall instal -
+lation, i.e., the only crew that would be presently exposed to the fall 
+hazards would be the crew removing the guardrails to install the wall. In 
+this case, it is beneficial to identify if the fall hazard remains longer than 
+a practical duration and if any other crews are planned in that area in the 
+meantime. If that is the case, it is more profitable and safe to fence off 
+access to the slab and instruct the wall installation crew to use harnesses 
+instead of installing and removing guardrails. This is also part of com -
+mon practices nowadays, but this work enables the construction man -
+ager to list all the situations and retrieve formal arguments for the 
+verdict. Additionally, it allows the construction manager to gain further 
+insight into the impact of different durations.
+Q4: “ How is the overall safety situation be affected if crew #X is swapped 
+for crew #Y? ” .
+If historical information about the construction crews ’ safety per -
+formance is available, it can be used to improve the crew assignment and 
+obtain improved safety. The information can be collected based on a 
+combination of safety training performance and records of loss of con -
+trol events [ 55 ]. With this information available, it is possible to identify 
+cases where swapping two crews could lead to a lower overall hazard 
+exposure for the construction workers. Additionally, it will have a more 
+significant impact if the scheduled tasks can be swapped, but that would 
+require capturing scheduling dependencies in the knowledge graph to 
+know the available options and that the planning is performed itera -
+tively between general planning and safety analysis. This way, sched -
+uling constraints can remain fulfilled while the wiggle room is exploited 
+to improve the safety of the construction site.
+Q5: “ How much guardrail must be installed and removed tomorrow? ” .
+Foreseeing how much hazard mitigation equipment to install and 
+remove the following day, in three days, or during the next week enables 
+the safety management to plan the workforce needed to install it. 
+Additionally, this knowledge can be used by the planning team to 
+consider the local transportation of the equipment. Moving the equip -
+ment closer to the application point must be planned in the crane 
+schedule to ensure optimal utilization and avoid disturbance of the other 
+planned crane activities. Therefore, it is useful from a site logistic 
+perspective and safety perspective to ensure that the required amount of 
+guardrailing is available on the site and in the right area of the con -
+struction site or building story in the building when needed.
+Q6: “ How much guardrail is needed to keep the site safe? ” .
+In the initial planning stage, the safety management must ensure that 
+the necessary mitigation equipment is available to keep a site compliant 
+with the regulation. Extracting the amount directly from the safety plan 
+eliminates the need to estimate and guess the amount, affecting the site ’ s 
+storage and continued availability. Capturing the number is, however, 
+more complex as there might be varying reuse policies based on the 
+equipment location and temporal overlap (i.e., different combinations of 
+the installed and removed amount).
+Q7: “ How is the project be affected if delivery truck #X is postponed by 
+one day? ” .
+In a situation where the construction management is informed about 
+a delivery truck being delayed for an unforeseen reason and needs to 
+quickly know how this affects the construction project regarding plan -
+ned safety. It depends on the truckload, but based on a list of delayed 
+building elements, it can be identified if and which hazard spaces and 
+mitigation equipment the elements would replace and the crews to 
+inform about the delay. The crews must be informed that those pieces of 
+safety mitigation equipment are to be kept even though they may appear 
+in their plan to be removed. Consequently, it improves the ability to plan 
+day-to-day activities more agile and adapt to unforeseeable situations 
+that are part of the nature of the construction industry.
+4.2. Capturing the knowledge graph
+This section describes the ontology proposed to answer the questions 
+identified in the previous section 3 (the ontology is shared at [ 97 ]). It 
+has been decided to split the visual representation of the ontology into 
+two figures based on the hazard type, i.e., Fig. 3 and Fig. 4 . However, the 
+two hazard types are captured in the same graph, referred to as the 
+knowledge graph (KG) in the following, and consist of approximately 
+3.8 k nodes and 20 k edges. In addition to the graphical presentation of 
+the ontology, each type of node is detailed in Table 1 , and all the edges 
+are described in Table 2 .
+Fig. 3. Illustration of ontology focusing on falls-from-height hazards. The complete ontology is shared on GitHub [ 97 ].
+K.W. Johansen et al. Advanced Engineering Informatics 65 (2025) 103305 
+6 
+To capture the knowledge graph in Prolog, we use predicates where a 
+node is represented as a node(node_type, node_id) and edges are repre -
+sented as an edge(edge_type, from_node, to_node) . Additionally, we cap -
+ture a node ’ s attributes with a predicate in the form of attr 
+(attribute_type, node_id, attribute) and mapping from local to global 
+variable (e.g., local to global identifier) with mapping(mapping_type, 
+local, global).
+When working with a graph, finding related nodes through one or 
+more hops (i.e., edges) is often helpful. To simplify the following code 
+listings, we create a predicate that allows us to formulate a recipe of 
+edges and directions to follow. Lines 1 to 4 in the code snippet below 
+denote a base case that is used when there is only one element in the list 
+(also the case when the end of the list is reached). Also, there is the 
+recursive step (lines 6 – 10), which takes the head (i.e., the first element 
+of the list), follows the edge in the direction (i.e., the tuple ( Edge , Dir )), 
+and calls the predicate again using the tail (i.e., the remaining part of the 
+list) and the node identified in the previous call. There are two versions 
+of this predicate, the one shown and a simplified one that assumes the 
+direction to be to. ( Listing 1 ) .
+We use two kinds of relations: (1) extracted during the analysis 
+procedure and (2) inferred relations identified and added through Pro -
+log queries. From Fig. 3 and Fig. 4 , one may notice that some of the In - 
+relations are visualized with a stamped line. This is an example of one of 
+the inferred relations identified run time. However, storing these in 
+inferred relationships in memory using the table functionality of Prolog 
+is possible. The additional inferred relations are introduced in this study 
+Fig. 4. Illustration of the ontology focusing on struck-by falling object hazards. The complete ontology is shared on GitHub [ 97 ].
+Table 1 
+an overview of objects (nodes) in the ontology [ 97 ] with descriptions and references to the origin and additional information on the node object types.
+Node type Description Shown in Origin
+State A State node represents a planned state of the construction site. A state node is added to the graph for each time step in the 
+set of unique task ’ s planned end times.
+Fig. 3 & 
+Fig. 4
+[ 42 ]
+Task A Task node represents a planned construction task. A task node is created for each individual task of the construction 
+schedule.
+Fig. 3 & 
+Fig. 4
+[ 42 ]
+Crew A Crew node represents a crew that is planned to perform work on the construction site. The crews are captured from the 
+construction schedule.
+Fig. 3 & 
+Fig. 4
+[ 42 ]
+BIM object A BIM object node represents a planned BIM element of the BIM model. A BIM object node is added for each BIM element of 
+the BIM model.
+Fig. 3 & 
+Fig. 4
+[ 42 ]
+Fall space A Fall space node represents the identified fall spaces that are identified by the automated safety planning algorithm. The 
+fall spaces, and the following spatial artefact, are identified in each state, which means there might be replicas or changed 
+versions of the same space (these connections are inferred later). It models where workers or objects can drop more than the 
+regulation allows.
+Fig. 3 [ 54 ]
+Movement space A Movement space node represents the spatial artifact of type movement space that was identified by the automated safety 
+algorithm. It captures where workers can move around.
+Fig. 4 [ 54 ]
+Fall hazard space A Fall hazard space node represents a spatial artifact, that is identified by the automated safety planning algorithm. It 
+captures where workers can access fall spaces from movement spaces.
+Fig. 3 [ 54 ]
+Work space A Work space node represents the spatial artifact that capture, where workers are expected to be present, when they perform 
+a task. These spatial artifacts are also identified by the automated safety planning algorithm.
+Fig. 4
+Struck-by falling object 
+hazard space
+A Struck-by falling object hazard space node represents the spatial artifact that captures a cone-formed exposure of getting 
+struck by an object dropped from a higher workspace. The automated safety algorithm identifies these spatial artifacts.
+Fig. 4
+K.W. Johansen et al. Advanced Engineering Informatics 65 (2025) 103305 
+7 
+to simplify the subsequent queries. A concrete example of the inferred 
+In -relations is the one from Fall Hazard space nodes to the state that they 
+exist in. The relation is inferred through the existing relation and uses a 
+combination of relation searches (see Table 3 ). The example is shown 
+below, which follows the move_exposed → move_on → build → in relations 
+to infer the new edge explicitly. ( Listing 2 ).
+The same edges can be identified using the previously defined fol -
+low_edges -predicate, where the route is defined in the list (lines 3 – 5). 
+( Listing 3 ).
+Additionally, we infer edges that capture the continuation of the 
+spatial artifacts. In lines 2 and 3 of the below, two movement spaces (i.e., 
+MS1 and MS2) are identified, then line 4 identifies a connection between 
+Table 2 
+An overview of the relations (edges) in the ontology [ 97 ] with descriptions and usage exemplifying the nodes that are connected by the relation.
+Edge type Description Usage
+Next The Next edge is used to refer to the next state in the sequence of planned construction states. (State) → (State)
+Previous The Previous edge is used to refer to the previous state in the sequence of planned states. (State) → (State)
+In The In edge is used to connect tasks to the state that they are ending in. The connection captures which tasks that have been 
+completed in the specific state. To capture all the completed tasks at a state, one must accumulate the tasks of all previous states 
+following the previous edges.
+(Task) → (State)
+Perform The Performs edge connects the crew that is performing the task to the task. This connection captures the assignment of the crews 
+to the tasks in the schedule.
+(Crew) → (Task)
+Build The Build edge connect the task to the BIM object(s) that it is the result of performing the task. The connection is captured from the 
+schedule.
+(Task) → (BIM object)
+Fall onto The Fall onto edge is used to connect the fall space to the BIM object that a worker or object is falling onto if they are present in the 
+space i.e., the BIM object catching the dropping worker.
+(Fall space) → (BIM object)
+Fall from The Fall from edge is used to connect the fall space to the BIM object where the fall space is a worker or object is falling onto if they 
+are present in the space.
+(Fall space) → (BIM object)
+Move on The Move on edge connect the movement space to the BIM object from which the movement space emerges, i.e., the surface which 
+the worker will be moving on e.g., a slab
+(Movement space) → (BIM 
+object)
+Obstacle The Obstacle edge connect the movement space to BIM objects that interrupts the movement space, e.g., a wall standing on a slab (Movement space) → (BIM 
+object)
+Fall to The Fall to edge connects the fall hazard space to the fall space, which is contributing to the creation of the fall hazard (Fall hazard space) → (Fall 
+space)
+Move 
+exposed
+The Move exposed edge connects the fall hazard space to the movement space that is exposed to the fall hazard (Fall hazard space) 
+→ (Movement space)
+Work on The Work on edge connects the work space to the BIM object that is worked on when the work space is occupied (Work space) → (BIM object)
+Work from The Work on edge connects the work space to the BIM object that is worked from when the work space is occupied (Work space) → (BIM object)
+Creates The Creates edge, connects the work space that is creating the struck-by hazard to the hazard node (Work space) → (Struck-by 
+space)
+Exposes The Exposes edge connects the works space that is exposed by the existence of a struck-by hazard (Struck-by space) → (Work 
+space)
+Listing 1. Recursive follow-edges predicate.
+Table 3 
+Query categories with examples, where ( bold ) refers to a particular node, ( italic ) refers to a variable, and underscore refers to an anonymous variable.
+Query category Example Prolog query Returns
+Relation Entity search Find a node (Crew) of type crew . ?-node( crew ,Crew). Node
+Existence search Are there any states (S) after the current state ( s ) ?-edge(next, s ,_). Bool
+Relation search What kind of relationship ( RS ) do Work space ( ws ) and BIM object ( bo ) have? ?-edge(RS, ws , bo ). Type
+Explorative search Find a node (N) in the neighbourhood of BIM object ( bo )? ?-edge(_,N, bo );edge(_, bo ,N). Node
+Attribute Attribute search What is the length ( L ) of the railing needed to prevent a particular fall hazard space ( fhs )? ?-attr(railing_length, fhs ,L). Value
+Comparative Search Does one fall hazard space ( fhs1 ) require more railing than another ( fhs2 )? ?-attr(railing_length, fhs1 ,L1),attr 
+(railing_length, fhs2 ,L2), 
+L1 > L2. 
+Bool
+List List search Which tasks ( T ) are in a state( s )? Return in list ( L ) ?-findall(T,edge(in,T, s ),L). List
+Count search What is the count ( C ) of objects in a list ( L )? ?-length( L ,C). Value
+K.W. Johansen et al. Advanced Engineering Informatics 65 (2025) 103305 
+8 
+subsequent states. Lines 5 and 6 make sure that MS1 and MS2 belong to 
+the subsequent states, and lines 7 and 8 make sure that the same BIM 
+object creates the movement spaces. If all these in conjunction (i.e., 
+Boolean and captured with “ , ” ) are satisfiable, we identify the connec -
+tion. ( Listing 4 ).
+In a similar approach, the same is done for the fall spaces. The dif -
+ference is that we identify fall spaces in lines 2 and 3, and the edge from 
+the spaces is fall_to instead of move_on .
+The previously identified changed_to edges identified for movement 
+spaces and fall spaces are used when the changed_to edge is captured for 
+fall hazard spaces. In a similar approach, shown in the following listing, 
+two fall hazard spaces in subsequent states are identified in lines 2 to 6. 
+Also, it is checked if the fall hazard space exposes a movement space that 
+has the changed_to connection and that the fall hazard space would fall_to 
+has the same changed_to connection. Consequently, we add the change -
+d_to connection between these fall hazard spaces. ( Listing 5 ).
+4.3. Translation of questions
+To initiate the translation efforts, a set of query “ building blocks ” has 
+been identified and described to exemplify how different objectives can 
+be achieved and their results. These can also be combined to construct 
+more sophisticated queries, as shown in the following examples. Table 3
+presents each query block with an explanation and example of its use in 
+the KG of this work. The following queries are commented with the 
+query category (e.g., “ entity search ” and “ relation search ” ) to show the 
+usage in query construction.
+Q1: “ What hazards are work crew #X exposed to while they complete 
+task #Y? ” .
+Fig. 5 illustrates how to retrieve the exposure of a crew while they 
+perform a task. Firstly, we must decide if we want to identify a crew 
+automatically, i.e., allowing the engine to replace the crew variable. 
+Alternatively, we can bind the crew variable, forcing the query engine to 
+search for solutions involving that crew. This is general for the 
+remaining nodes in this and other queries, but this example is generally 
+about Crews, Tasks, BIM objects, etc Fig. 5 .
+The crew is identified with an entity search, which is only limited to 
+the type of crew. Having a crew assignment allows the engine to identify 
+one of the tasks they are performing (#1), and having the task allows the 
+engine, through a relation search, to find the state where the task is 
+performed (#2). As Q1 is generally talking about hazards, we are 
+interested in struck-by hazards OR fall hazards, and from here, we follow 
+two different routes to identify if the hazards are exposing the crew. The 
+two routes arise from the different nature of the hazards and their re -
+lations to the remaining nodes. If the hazard node is a struck-by hazard 
+(i.e., left path #3), then we follow the exposed relation (#3.1) and find 
+the BIM object that is worked on (#6). If the BIM object worked on is 
+also built by the task (#7) identified in the first step (#1), then the query 
+has identified an exposure of a struck-by hazard to the crew.
+Similarly, if the entity search identifies a fall hazard, we perform a 
+relationship search to find the exposed movement space (#4.1). Based 
+on the movement space ’ s relations, we need to find the existing BIM 
+object (#4.2) from which the work is performed (#4.3). As the routes 
+merge from step #4.3 and on the queries, they use the same technique to 
+identify the exposure of a crew. Having the exposures of a crew 
+enumerated allows one to do an entity search to find out whether hard 
+hats are required (i.e., Q2) or to find the hazard source (task and crew), 
+allowing the management to do comparative searches to facilitate de -
+cision making that can potentially improve the safety on the site (i.e., 
+Q4). The reader is referred to Appendix A for comparison and additional 
+technical details.
+Listing 2. In-edge predicate.
+Listing 3. In-edge predicate using follow-edges predicate.
+Listing 4. Changed to-edge predicate for movement spaces.
+Listing 5. In-edge predicate for fall hazard spaces.
+Fig. 5. Graphical representation of query Q1, extracting crew exposures. The 
+numbers prepended to the relations are for references in the text and capture 
+the sequence.
+K.W. Johansen et al. Advanced Engineering Informatics 65 (2025) 103305 
+9 
+5. Interpretation of query results
+In this section, we perform the queries on a high-rise construction 
+project (model and schedules have been shared in [ 34 ]), which has been 
+safety assessed. While the case study presented focuses on a high-rise 
+construction project, the proposed framework is adaptable to various 
+construction scenarios, including bridge construction and industrial fa -
+cilities. The underlying principles of knowledge graph construction and 
+query formulation remain consistent across different project types. For 
+instance, in bridge construction, the framework can integrate safety 
+analysis with structural health monitoring data to provide real-time 
+insights into potential hazards. Similarly, in industrial facilities, the 
+framework can be used to monitor safety compliance and optimise 
+maintenance schedules.
+The BIM model, schedule, and safety analysis information have been 
+captured in the proposed knowledge graph, the example queries are 
+showcased, and the query results are interpreted and explained.
+Q1: “ What hazards are work crew #X exposed to while they complete 
+task #Y? ” .
+In the previous section, the question was turned into a query, which 
+was then wrapped in the following predicate:
+exposures_of_crew_doing_task(Crew_id,Task_id,List_of_exposures).
+Based on the usage, the query engine returns different solutions. If 
+the input is kept as variables (i.e., starting with an uppercase letter), the 
+engine seeks and returns combinations of values that satisfy the body of 
+the rule. If one or more variables are fixed (e.g., replacing Crew_id with 
+the number 1), the engine only returns the combination where crew id is 
+1, which satisfies the body.
+The following resembles the exact use case that is asked in Q1 where 
+crew ID is captured in X and task in Y (only two first solutions separated 
+with “ ; ” ): ( Listing 6 ).
+From this example, it can be determined that crew 1 is exposed to a 
+struck-by hazard while they perform the task with ID ’ 42c5bcd5-ed45- 
+11ec-bd6c-f40228892bcc ’ . Additionally, the node ID of the hazard is 
+returned along with the hazard type. Fixing the task can be used to 
+identify which crew is exposed, doing that task, and fixing the crew can 
+identify the tasks where the specific crew is exposed to hazards. The 
+query returns false if the combination is not represented or there are no 
+hazards exposing the combination. As the hazards are identified, it be -
+comes possible to make dedicated training for the task, select the most 
+hazardous tasks, and even check if the crews have performed the specific 
+training and give them clearance similar to other industries, where 
+safety and security have a high impact.
+Q2: “ Are hard hats required while performing task #X? ” .
+This more concrete question checks whether a task is exposed to 
+struck-by hazards. In this example, we test the query with a task ID that 
+was identified in the previous query, which shows that the struck-by 
+exposure means that the workers should wear a hard hat while they 
+are carrying out the task: ( Listing 7 ): The predicate can also retrieve a list 
+of all the tasks that require hard hats. This can be achieved with the 
+setoff functionality or asking for additional solutions with the task ID as 
+a variable.
+Q3: “ Are any guard rails installed shorter than #X number of days? ”” .
+With this query, it is possible to identify hazard nodes that exist 
+shorter than a specified number of states. The query engine will identify 
+hazard nodes that appear and disappear within the number of states. It 
+will return the hazard nodes that satisfy the rule, which allows the safety 
+manager to make decisions such as instructing the workers to use har -
+nesses instead of installing the guardrail. However, this also means that 
+the area should be fenced off, and signage should be applied. To identify 
+the affected area, one could follow the expose move and move on relations 
+to identify the affected BIM object. Additionally, it is possible to identify 
+the task and crew from the BIM object through the build and performs - 
+relations, respectively. ( Listing 8 ).
+Q4: “ How is the overall safety situation be affected if crew #X is swapped 
+for crew #Y? ” .
+In the following, we utilize the crew tasks-query in combination with 
+a selection of the state and a mapping to the crew IDs reflected in the 
+schedule. From the schedule, we know that both crews 3 and 4 are 
+construction walls, so the two can be swapped. It can be seen from th

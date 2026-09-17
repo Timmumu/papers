@@ -21,3 +21,16 @@ Managing underground utility tunnels (UUT) poses challenges such as safety risks
 | Yes | Yes | Yes | Tier 1 - Digital Model | 0 | 0 | 1 | Design for Safety (DfS) | None | Digital Twin platform (no machine learning) | Single (one data type) | Single case study | 3 | Design for Safety |
 
 **Key evidence (AG):** VR-based UUT management training simulator (Korea ETRI): digital twin of an underground utility tunnel modeled once from high-precision LiDAR scans, integrated with a 4-DoF motor motion platform; visual (HMD) + kinematic (fall, micro-vibration) feedback with cybersickness-reduction acceleration control; scenario content (facility installation, inspection, device repair); evaluated with 17 participants for cybersickness vs existing VR. Static reconstructed training replica — no live data link from a real asset and no learning loop; worker-safety training motivation.
+
+**Strength & gap filled (AH):** Fills the worker safety and training gap in underground utility tunnel management: a LiDAR-modeled UUT digital twin in Unreal is coupled with a four-degree-of-freedom motion platform, visual and kinematic acceleration control, and treadmill velocity thresholding to reduce cybersickness; SSQ-based tests with 17 participants show significantly reduced headaches and motion sickness, with MANOVA confirming the technique effect.
+
+**Deficiencies & future work (AI):** The UUT model is a one-time static LiDAR scan with no live facility data link, and the four-degree-of-freedom platform cannot support yaw or sway motions required by diverse VR applications; cybersickness symptoms still vary by age, and only 17 participants were tested. Extending the platform toward five degrees of freedom with a rotary drive for 360-degree yaw is underway.
+
+**Fusion depth (AC1):** SINGLE
+
+**Fusion evidence (AC2):**
+- **Data streams:** one-time LiDAR-scanned UUT geometry.
+- **Integration mechanism:** none - visual (HMD) and kinematic (motion platform) feedback act on the single reconstructed model; SSQ tests with 17 participants evaluate cybersickness.
+- **Why this code:** SINGLE (AC=Single).
+
+**Confidence (AC3):** High.

@@ -21,3 +21,16 @@ Bridges are critical infrastructure assets that face a variety of stressors thro
 | Yes | Yes | Yes | Tier 2 - Digital Shadow | 0 | 0 | 1 | Design for Safety (DfS) | Implemented | Bayesian / probabilistic | Multi (two or more data types) | Single case study | 4 | Predictive analytics / decision support |
 
 **Key evidence (AG):** System digital twin (SDT) for life-cycle risk assessment of bridge networks: Bayesian network (BN) integrates multi-source data (NBI bridge inspections, FDOT traffic/AADT, USGS river gage) to update bridge failure risk (superstructure + scour) over time via automated Bayesian inference (indicator matrix for annual updates; network risk profile trends up as data update reduces uncertainty). Miami-Dade County case: 1,034 bridges, 6,478 nodes, 10,584 edges; 3 flexibility scenarios (new bridge, decommissioning, climate-change flood with CPT recalibration). Updating is implemented Bayesian inference — but authors state framework "has not yet been validated"; CPT refits are manual, no autonomous learning loop.
+
+**Strength & gap filled (AH):** Proposes a Bayesian-network system digital twin for county-scale life-cycle risk assessment of bridge networks, fusing NBI inspection ratings, traffic monitoring and river gage data across 1,034 bridges, 1,261 traffic stations and 10 river gages in Miami-Dade County, with a 6,478-node, 10,584-edge graph capturing component, system and cross-system correlations for scenario-based risk updating.
+
+**Deficiencies & future work (AI):** The framework has not yet been validated with field or laboratory tests, and its large Bayesian network demands 97,484.8 MB of memory just to store conditional probability tables, limiting practical scale-up. Future work includes custom Bayesian networks to cut computation, validation through field coring and lab testing, and adding restoration and resilience modelling.
+
+**Fusion depth (AC1):** Fused
+
+**Fusion evidence (AC2):**
+- **Data streams:** NBI inspection ratings, AADT traffic monitoring, river-gage flow data (Miami-Dade County, 1,034 bridges).
+- **Integration mechanism:** the BN is the joint inference engine - its risk output depends on inspection, traffic and gage data simultaneously, with an indicator matrix for annual updating.
+- **Why this code:** one probabilistic model whose output depends on multiple data types, so Fused.
+
+**Confidence (AC3):** High.

@@ -21,3 +21,16 @@ The increasing frequency of extreme climate events poses significant risks to sl
 | Yes | Yes | Yes | Tier 2 - Digital Shadow | 0 | 0 | 1 | Design for Safety (DfS) | None | Perception / Computer Vision | Multi (two or more data types) | Single case study | 4 | Perception / Computer Vision |
 
 **Key evidence (AG):** Anomaly-enhanced digital twin (AEDT) for intelligent inspection of slope/SWC infrastructure (central Taiwan): multiview UAV imagery + SfM 3D reconstruction + CNN for automated anomaly classification (erosion/spalling/siltation/collapse, macro-F1 0.81 on 2000 annotated images, 3 severity levels); anomalies semantically embedded into an interactive GIS-compatible DT platform linking geometry + damage attributes + historical maintenance records for lifecycle management; field deployment cut inspection time ~63%. One-way inspection→semantic DT for maintenance scheduling and risk-based prioritisation; CNN offline-trained, no actuation and no online learning loop (edge-AI real-time inference is future work).
+
+**Strength & gap filled (AH):** Fills the gap between geometric UAV reconstructions and semantically understood damage: the AEDT framework fuses multiview UAV imagery, SfM 3D reconstruction and a MobileNetV2-based CNN with 81 percent test accuracy and macro F1 0.81 into a GIS-compatible interactive twin of a Taiwan soil and water conservation structure, cutting on-site inspection time from 3.5 to 1.3 hours and linking anomalies to maintenance records.
+
+**Deficiencies & future work (AI):** Detection relies on RGB imagery so vegetation-hidden or subsurface defects are missed, lighting variation and UAV motion degrade robustness, siltation-B and collapse-B classes reach only 0.60 accuracy with signs of overfitting, and validation covers a single site without live sensing; the authors plan multispectral and thermal sensors, LiDAR and edge AI inference.
+
+**Fusion depth (AC1):** Fused
+
+**Fusion evidence (AC2):**
+- **Data streams:** multiview UAV imagery + SfM 3D reconstruction + CNN classifications (macro-F1 0.81 on 2000 annotated images).
+- **Integration mechanism:** the CNN runs on the reconstructed imagery and anomalies are embedded into the 3D twin linked with maintenance records, cutting inspection time from 3.5 to 1.3 hours on a Taiwan SWC structure.
+- **Why this code:** the semantic-twin output depends on imagery, geometry and model inference simultaneously, so Fused.
+
+**Confidence (AC3):** High - the embedding pipeline is explicit.

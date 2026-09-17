@@ -21,4 +21,17 @@ Traditional electrical resistivity tomography (ERT) inversion for dam leakage de
 | Yes | Yes | Yes | Tier 2 - Digital Shadow (one-way physical to virtual) | 0 | 0 | 1 | Design for Safety (DfS) | Implemented | Other / Mixed | Single (one data type) | Simulation | 4 | Predictive analytics / decision support |
 
 **Key evidence (AG):** Topology-guided Fourier Neural Operator (TG-FNO) with decoupled geometric parameterization for dam leakage detection (Chongqing Jiaotong U/HKUST): FNO replaces numerical solver for forward potential-field simulation (345x speedup, mean rel error 3.18%); decoupled geometric parameterization separates deterministic defect from stochastic background; Navigator network extracts coarse topological priors to initialize parallel multi-hypothesis workflow; 99.7% avg inversion success rate, 89.3% high-fidelity reconstruction, 72x overall acceleration vs FEM; robust to 20% noise and 50% data loss, detects unseen low-contrast early leakages, OOD generalization without retraining. One-way ERT->inversion->leakage localization for safety monitoring; implemented operator-learning surrogate (offline-trained), no actuation.
+
+
+**Strength & gap filled (AH):** Overcomes the conflict between smoothness priors and sharp leakage boundaries in ERT dam monitoring: a topology-guided Fourier neural operator with decoupled geometric parameterization and a Navigator warm start localizes dam leakage with 99.7% success and 89.3% high-fidelity rates, accelerating forward modeling 345-fold and inversion 72-fold versus finite element methods, while remaining stable under 20% noise and 50% data loss.
+
+**Deficiencies & future work (AI):** Evaluation is entirely numerical on synthetic 2D datasets with single circular anomalies; the parameterization restricts detection to predefined shapes, spectral truncation distorts geometry, and the simulation-to-reality gap leaves field deployment untested. Future work adopts level-set representations, synchrosqueezed wavelet transforms, and libraries of condition-specific operators.
+**Fusion depth (AC1):** SINGLE
+
+**Fusion evidence (AC2):**
+- **Data streams:** ERT potential-field measurements (synthetic 2D datasets with single circular anomalies).
+- **Integration mechanism:** none - one modality feeds the Fourier neural operator (345x forward speedup, 99.7% inversion success, robust to 20% noise / 50% loss).
+- **Why this code:** SINGLE (AC=Single).
+
+**Confidence (AC3):** High.
 (full-text source: Endnote)

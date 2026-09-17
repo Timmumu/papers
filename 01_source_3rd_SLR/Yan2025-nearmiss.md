@@ -21,3 +21,16 @@ To enhance on-site safety management, detecting near-misses in a timely and accu
 | Yes | Yes | Yes | Tier 2 - Digital Shadow | 0 | 1 | 0 | Design for Safety (DfS) | None | Computer Vision / CNN / object-detection | Multi (two or more data types) | Single case study | 4 | Perception / Computer Vision |
 
 **Key evidence (AG):** Real-time digital-twin-driven 3D near-miss detection at construction sites: drones + binocular cameras feed YOLOv5 detection + Deep SORT tracking + SGM stereo-matching into an Unreal Engine 5.1 DT (BIM static elements + dynamic worker/material/machinery models); collision of user-set protection envelopes (worker cylinder r=1.5 m) triggers 3D near-miss visualisation and an early-warning alert (Heinrich-law threshold 300). Pilot at Foshan steel-beam hoisting site: 1,300 near-misses/month, 1,181 detected (precision 93.8%, recall 96.6%; robust >90%/>95% under exposure tests). One-way monitoring→human warning, no actuation and no learning loop.
+
+**Strength & gap filled (AH):** Fills the gap of three-dimensional near-miss detection at construction sites: drone imagery builds a BIM-based static scene and binocular cameras feed YOLOv5 target recognition, DeepSORT tracking, and SGM stereo matching into an Unreal Engine digital twin with protective envelopes and early warnings, detecting 1181 of 1300 near-misses (93.80% precision, 96.64% recall) in a one-month Foshan steel-hoisting pilot.
+
+**Deficiencies & future work (AI):** Overlapping personnel and machinery cause incomplete information capture, extreme lighting degrades stability (Type S3 precision fell to 73.97% under overexposure), and the vision system works only within about 20 meters, excluding high-rise and large buildings; future work adds multiple perspectives against occlusion and tests update frequencies.
+
+**Fusion depth (AC1):** Fused
+
+**Fusion evidence (AC2):**
+- **Data streams:** binocular-camera detections (YOLOv5 + DeepSORT + SGM stereo) + BIM-anchored 3D scene (one-month Foshan steel-hoisting pilot).
+- **Integration mechanism:** trajectories and postures are mapped into the twin with protective envelopes, and the transformer predicts future sequences whose collision checks detect near-misses (93.80% precision, 96.64% recall, 1181 of 1300).
+- **Why this code:** near-miss output depends on live perception and scene geometry simultaneously, so Fused.
+
+**Confidence (AC3):** High - the perception-to-twin-to-prediction chain is explicit.

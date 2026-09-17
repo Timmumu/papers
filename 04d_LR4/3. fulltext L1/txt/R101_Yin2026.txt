@@ -1,0 +1,1328 @@
+Research Article
+Topology guided fourier neural operator with decoupled geometric 
+parameterization for dam leakage detection
+Chaoheng Yin
+a , b
+, Yue Liang
+a , *
+, Xiao Pan
+b , c , d , **
+, Bin Xu
+a
+, Bin Zhang
+a
+a
+National Engineering Research Center for Inland Waterway Regulation, Chongqing Jiaotong University, Chongqing 400074, China
+b
+Department of Civil and Environmental Engineering, The Hong Kong University of Science and Technology, Clear Water Bay, Hong Kong SAR, China
+c
+Guangzhou HKUST Fok Ying Tung Research Institute, Guangzhou, China
+d
+HKUST Shenzhen - Hong Kong Collaborative Innovation Research Institute, Shenzhen, China
+ARTICLE INFO
+Keywords:
+Electrical resistivity tomography
+Operator learning
+Leakage detection
+Earth dams
+Safety monitoring of infrastructure
+ABSTRACT
+Traditional electrical resistivity tomography (ERT) inversion for dam leakage detection faces heavy computa -
+tional loads and smoothness priors that fail to localize anomalies. This study introduces the Topology-Guided 
+Fourier Neural Operator framework. A Fourier Neural Operator replaces the numerical solver based on the 
+governing equations, speeding up forward potential field simulations. To easily locate anomalies, a decoupled 
+geometric parameterization separates the deterministic defect from the stochastic background. A Navigator 
+network extracts coarse topological priors to initialize a parallel multi-hypothesis workflow. Tested across 
+multiple trials, the framework achieves a 99.7% average success rate and an 89.3% high-fidelity reconstruction 
+rate. It accelerates forward modeling by 345 times and overall inversion by 72 times compared to finite element 
+methods. The method detects unseen low-contrast early leakages and remains stable under 20% measurement 
+noise and 50% data loss. This approach provides the efficiency and reliability requisite for routine safety 
+monitoring and operational digital twins.
+1. Introduction
+Internal leakage represents a leading factor in earth dam failures, a 
+risk exacerbated by increasingly extreme hydro-climatic events ( ICOLD, 
+2019 ; Moreno-Rodenas et al., 2025 ; Nasser et al., 2025 ). While methods 
+such as Ground Penetrating Radar (GPR) ( Bekele et al., 2024 ; Dong 
+et al., 2020 ) and Distributed Optical Fiber Temperature Sensing (DTS) 
+( Bekele et al., 2024 , 2025 ) characterize internal structures effectively, 
+they are operationally complex for routine monitoring. Electrical Re -
+sistivity Tomography (ERT) offers a practical alternative. Electrical 
+conductivity is a sensitive indicator of structural integrity ( Guo et al., 
+2022 ; Xiao et al., 2024 ; Zhang et al., 2026 ), highly responsive to mois -
+ture variations and leakage. The technique operates by injecting direct 
+current through source electrodes and measuring the resulting potential 
+differences to reconstruct the internal conductivity distribution. 
+Reconstructing this distribution requires solving a highly non-linear, 
+ill-posed inverse problem constrained by the Poisson equation ( Loke & 
+Barker, 1996 ). Conventional methods typically enforce smoothness 
+constraints to stabilize the inversion ( Constable et al., 1987 ; Liu et al., 
+2021 ). However, this regularization tends to smooth out the sharp 
+boundaries of early-stage leakage and masks high-contrast anomalies. 
+Despite recognition of this topological mismatch ( Chan & Tai, 2004 ; 
+Ishizu et al., 2025 ), accurately resolving such distinct targets within 
+heterogeneous backgrounds remains difficult, especially when using 
+reduced-order parameterizations.
+To mitigate the computational burden of stochastic inversion for 
+earth dams, recent research has focused on two main directions: algo -
+rithmic acceleration and surrogate modeling. Fast direct solvers expe -
+dite Jacobian matrix calculations ( Ambikasaran et al., 2013 ; Saibaba & 
+Kitanidis, 2012 ); however, high-fidelity probabilistic characterization 
+remains expensive due to the cumulative demand of repeated forward 
+simulations. Standard surrogate modeling frameworks project 
+high-dimensional parameters onto truncated linear subspaces, often 
+employing the Karhunen-Lo `eve (KL) expansion ( Ghanem & Spanos, 
+1991 ) combined with shallow regressors such as Gaussian Processes 
+( Rasmussen & Williams, 2006 ). Nevertheless, dependence on global 
+* Corresponding author at: National Engineering Research Center for Inland Waterway Regulation, Chongqing Jiaotong University, Chongqing 400074, China.
+** Corresponding author at: Department of Civil and Environmental Engineering, The Hong Kong University of Science and Technology, Clear Water Bay, SAR 
+Hong Kong, China.
+E-mail addresses: liangyue2560@163.com (Y. Liang), cexiaopan@ust.hk (X. Pan). 
+Contents lists available at ScienceDirect
+Computer-Aided Civil and Infrastructure Engineering
+journal homep age: www.science direct.co m/journal/co mputer-aid ed- 
+civil-and-infra structure -engineering
+https://doi.org/10.1016/j.cacaie.2026.100073
+Received 12 January 2026; Accepted 29 March 2026 
+Computer-Aided Civil and Infrastructure Engineering 48 (2026) 100073 
+Available online 11 May 2026 
+1093-9687/© 2026 The Authors. Published by Elsevier Inc. This is an open access article under the CC BY license ( http://creativecommons.org/licenses/by/4.0/ ). 
+basis functions presents limitations. The Kolmogorov n-width exhibits a 
+slow decay rate in these scenarios ( Lee & Carlberg, 2020 ). Such linear 
+projections fail to resolve sharp and high-contrast discontinuities found 
+in internal leakage, inevitably blurring localized anomalies and 
+compromising topological fidelity in reduced-dimensional spaces.
+Deep learning provides a powerful tool for inverse modeling and 
+structural health assessment. Recent studies demonstrate that data- 
+driven models successfully evaluate structural conditions and predict 
+physical responses, even under data scarcity or unsupervised settings 
+( Amezquita-Sanchez et al., 2018 ; Entezami et al., 2026 ; Javadinasab 
+Hormozabad et al., 2021 ; Rafiei & Adeli, 2018 ). While standard network 
+architectures are effective for parameter estimation ( Quqa et al., 2023 ; 
+Taghizadeh et al., 2025 ; Xue et al., 2025 ; Zhang et al., 2026 ), they map 
+between fixed grids, making their performance heavily dependent on 
+the grid density used during training. This dependency limits general -
+ization capabilities ( Cha et al., 2024 ; Zhang et al., 2023 ). Raissi et al. 
+(2019) proposed Physics-Informed Neural Networks (PINNs) to incor -
+porate physical constraints by embedding partial differential equation 
+(PDE) residuals into the optimization objective. PINNs perform effec -
+tively in various fields ( Guo et al., 2023 ; Haghighat et al., 2021 ; Ji et al., 
+2024 ). Yet, because they function as solvers for specific instances rather 
+than learning the general solution operator, each new inversion task 
+mandates retraining from scratch. Furthermore, optimization frequently 
+fails from ill-conditioned loss landscapes ( Karniadakis et al., 2021 ; 
+Krishnapriyan et al., 2021 ; Wang et al., 2021 ). Operator learning 
+frameworks extend neural networks to infinite-dimensional function 
+spaces. Prominent examples include the Fourier Neural Operator (FNO) 
+( Li et al., 2021 ) and spectral graph networks ( Yin et al., 2026 ). The FNO 
+efficiently captures the global dependencies of the steady-state Poisson 
+equation by parameterizing the integral kernel within the frequency 
+domain. This spectral convolution ensures resolution-invariant forward 
+modeling, overcoming the grid-dependence of standard convolutional 
+networks ( Kaewnuratchadasorn et al., 2024 ; Kovachki et al., 2023 ). 
+Applying these operators to ill-posed inverse problems remains chal -
+lenging. Most existing neural-operator frameworks execute a direct, 
+unconstrained inverse mapping from measurements to physical prop -
+erties ( Long et al., 2025 ). This unparameterized approach inherently 
+diffuses sharp topological boundaries under the severe ill-posedness of 
+ERT ( Molinaro et al., 2023 ). While classical PDE optimization exten -
+sively employs geometric parameterizations to maintain sharp in -
+terfaces, integrating such explicit structural priors into data-driven 
+neural operator frameworks remains underexplored, particularly for the 
+severely ill-posed ERT inverse problem. The absence of topological 
+priors leaves gradient-based optimization vulnerable to local minima, 
+causing failures in identifying localized leakage anomalies.
+Within this context, a novel Topology-Guided Fourier Neural Oper -
+ator (TG-FNO) framework is presented for leakage anomaly detection in 
+earth dams. This framework integrates a decoupled geometric parame -
+terization to disentangle anomalies from stochastic soil backgrounds. A 
+lightweight Guided Network extracts coarse geometric priors directly 
+from electrical resistivity tomography (ERT) measurements to initialize 
+the inversion. Driven by a differentiable FNO surrogate, this topology- 
+guided workflow enables efficient gradient-based optimization, 
+bypassing the computational bottlenecks of conventional finite element 
+solvers. The overall architecture of the TG-FNO framework is shown in 
+Fig. 1 .
+The primary methodological contributions are: 
+1. Operator-Driven Inversion Framework: The TG-FNO framework ex -
+tends the application of Fourier neural operators from standard 
+forward modeling to complex geometric inversion, enabling the 
+resolution of anomalies in ERT.
+2. Decoupled Geometric Parameterization: A strategy is developed to 
+mathematically separate deterministic leakage defects from the sto -
+chastic background. This resolves the inherent conflict between 
+generic smoothness priors and the sharp topology of leakage 
+anomalies.
+3. Topology-Guided Optimization: A hierarchical initialization work -
+flow constrains the inversion search space using geometric priors 
+derived from the Navigator. This mitigates the local minima stag -
+nation typical of gradient-based solvers without requiring expensive 
+global search algorithms.
+4. Fast Differentiable Surrogate: An end-to-end differentiable pipeline 
+is established by replacing iterative finite element modeling with the 
+Fig. 1. Architecture of the TG-FNO framework for dam leakage anomaly detection. (a) Physical observation module illustrating the abstraction from real-world dam 
+scenarios to discrete ERT potential measurements; (b) Guided Network designed to infer coarse geometric priors for warm-start initialization; (c) Decoupled geo -
+metric parameterization strategy for mathematically disentangling deterministic anomalies from stochastic background heterogeneity; (d) FNO surrogate model 
+serving as a differentiable forward operator; (e) Iterative inversion workflow where the data misfit L
+data 
+drives the latent variable update via the Adam optimizer and 
+automatic differentiation.
+C. Yin et al. Computer-Aided Civil and Infrastructure Engineering 48 (2026) 100073 
+2 
+FNO surrogate. This acceleration provides the computational effi -
+ciency requisite for routine safety monitoring and operational digital 
+twins.
+2. Methodology
+The methodology establishes the Topology-Guided Fourier Neural 
+Operator (TG-FNO) framework for electrical resistivity tomography 
+(ERT) inversion. Formulated upon the steady-state ERT governing 
+equations ( Section 2.1 ), the inverse problem is resolved through a 
+differentiable pipeline. A Fourier Neural Operator (FNO) serves as the 
+forward surrogate to accelerate potential field simulations ( Section 2.2 ). 
+A decoupled geometric parameterization is established to disentangle 
+anomalies from the stochastic background ( Section 2.3 ). These compo -
+nents are integrated into a topology-guided inversion workflow, where a 
+Navigator network initializes the gradient-based optimization using 
+coarse geometric priors ( Section 2.4 ).
+2.1. Governing equations of steady-state ERT
+The ERT forward problem is governed by the steady-state Poisson 
+equation within a bounded domain Ω⊂ℝ
+2
+. Given a conductivity distri -
+bution σ ( x ) and a current source density I ( x ), the electric potential u ( x ) 
+satisfies: 
+  ∇ ⋅ ( σ ( x )∇ u ( x )) = I [ δ ( x   x
+A
+)   δ ( x   x
+B
+)] , x ∈ Ω (1) 
+where σ ( x ) denotes electrical conductivity (S/m); u ( x ) denotes the 
+electric potential (V); and I (A) represents current intensity. Source and 
+sink terms are modeled via Dirac delta functions δ ( ⋅ ) at injection location 
+x
+A 
+and extraction location x
+B
+. The domain boundaries ∂ Ω are divided 
+into Dirichlet ( Γ
+D
+) and Neumann ( Γ
+N
+), satisfying: 
+⎧
+⎨
+⎩
+u ( x ) = 0 , x ∈ Γ
+D
+σ ( x )
+∂ u
+∂ n
+= 0 , x ∈ Γ
+N
+(2) 
+where n denotes the unit vector normal to the surface, let A be the non- 
+linear forward operator mapping conductivity to the potential field. The 
+discrete observation vector d
+obs
+∈ ℝ
+m 
+contains m potential measure -
+ments. Accounting for uncertainty, the observation equation is defined 
+as: 
+d
+obs
+= A ( F ( σ )) + ϵ (3) 
+where ϵ ∈ ℝ
+M 
+represents additive noise in the measurements, this noise 
+follows a zero-mean Gaussian process.
+2.2. Fourier neural operator as forward surrogate
+To accelerate potential field calculations, a data-driven surrogate G
+θ 
+based on the FNO architecture replaces the conventional numerical 
+solver. This surrogate approximates the mapping from log-conductivity 
+a ( x ) = ln σ ( x ) to the potential field u ( x ). The architecture comprises a 
+lifting layer, stacked spectral integration layers, and a decoding layer. 
+The input a ( x ) is concatenated with the spatial coordinate grid. A lifting 
+layer P , implemented as a pointwise linear transformation, projects this 
+input to a high-dimensional latent representation v
+0
+( x ): 
+v
+0
+( x ) = P ( a ( x ) , x ) (4) 
+The latent features v
+0 
+propagate through L Fourier layers. The update 
+rule at layer l sums a local linear transform W
+l 
+and a global spectral 
+kernel K
+l
+: 
+v
+l + 1
+( x ) = ρ ( W
+l
+v
+l
+( x ) + ( K
+l
+v
+l
+)( x )) , l = 0 , … , L   1 (5) 
+where ρ ( ⋅ ) denotes the non-linear activation, the system computes the 
+kernel operator K
+l 
+within the frequency domain via the FFT algorithm: 
+( K v
+l
+)( x ) = F
+  1
+( R
+l
+⋅ F ( v
+l
+))( x ) (6) 
+where F and F
+  1 
+represent the forward and inverse Fourier transforms. 
+The term R
+l 
+stands for a trainable complex-valued tensor. Finally, a 
+decoding network Q projects the features v
+L 
+to the multi-channel output 
+potential field: 
+u ( x ) = Q ( v
+L
+( x )) , u ( x ) ∈ R
+N s
+(7) 
+where N
+s 
+is the number of source configurations. This design enables 
+simultaneous reconstruction of potential fields for all sources in a single 
+forward pass, preserving discretization invariance. Parameter updates 
+for θ are driven by the reduction of the mean relative L
+2 
+error across the 
+training dataset. The objective function is: 
+L ( θ ) =
+1
+N
+∑
+N
+i = 1
+‖ u
+i
+  ̂u
+i
+‖
+2
+‖ u
+i
+‖
+2
+(8) 
+where u
+i 
+is the ground truth potential field from the FEM solver, û
+i
+=
+G
+θ
+( a
+i
+) is the predicted field, and ‖ ⋅ ‖
+2 
+denotes the L
+2 
+norm over the 
+spatial domain and channels.
+2.3. Decoupled geometric parameterization
+To represent high-contrast localized anomalies within a heteroge -
+neous background, the parameter space is divided into a stochastic 
+background component and a deterministic anomaly component. A 
+unified latent vector is defined as z = [ z
+bg
+, z
+a
+] 
+⊤
+, where z
+bg 
+and z
+a 
+control 
+the background heterogeneity and the anomaly characteristics, respec -
+tively. The conductivity field σ ( x ) is constructed via a differentiable 
+composite model: 
+σ ( x ; z ) = [ 1   M ( x ; z
+a
+)] ⋅ exp
+ 
+Y
+ 
+x ; z
+bg
+))
++ M ( x ; z
+a
+) ⋅ σ
+val
+(9) 
+where Y ( x ) is the background log-conductivity field, and σ
+val 
+is the 
+conductivity magnitude of the anomaly. The term M ( x ) ∈ [0, 1] serves as 
+a topology mask. It defines the spatial extent of the anomaly. This 
+formulation yields sharp interfaces. It also preserves the differentiability 
+required for gradient-based inversion. A Gaussian Random Field (GRF) 
+describes the background heterogeneity to capture spatial correlations. 
+The truncated Karhunen-Lo `eve (KL) expansion parameterizes Y ( x ) 
+( Tang et al., 2020 ; Zhang & Lu, 2004 ): 
+Y
+ 
+x ; z
+bg
+)
+= μ ( x ) +
+∑
+N
+k
+i = 1
+̅̅̅ ̅
+λ
+i
+√
+ϕ
+i
+( x ) z
+i
+(10) 
+In this equation, μ ( x ) denotes the mean field. The terms λ
+i 
+and ϕ
+i 
+denote the principal eigenvalues and eigenfunctions derived from the 
+covariance kernel, respectively. The vector z
+bg 
+= [ z
+1
+, … , z
+Nk
+]
+⊤
+repre -
+sents the stochastic coefficients following a standard normal distribu -
+tion. The geometry of the anomaly is stored in the latent vector z
+a
+. This 
+geometry is defined via an implicit potential function Ψ ( x; z
+a
+), where the 
+interface corresponds to the zero-level set { x ∈ Ω | Ψ ( x ) = 0}. A radial 
+basis formulation is adopted to parameterize the potential: 
+Ψ ( x ; z
+a
+) = r
+2
+  ‖ x   c ‖
+2
+2
+(11) 
+where z
+a 
+= [ c
+⊤
+, r
+⊤
+]
+⊤
+contains the center and radius parameters, while 
+initial dam leakage is irregular, internal erosion typically expands 
+radially. Geotechnical practice models concentrated leak erosion using 
+an effective radius ( Bonelli & Brivois, 2008 ; Wan & Fell, 2004 ). Addi -
+tionally, volumetric diffusion in macroscopic field measurements blurs 
+complex defect boundaries into roughly circular signatures ( Bherde 
+et al., 2025 ; Xiao et al., 2024 ). Parameterizing the anomaly as an 
+equivalent circle prevents over-parameterization of the inverse problem. 
+This geometry directly captures the location and scale necessary for 
+early safety warnings. To allow for gradient-based optimization, the 
+C. Yin et al. Computer-Aided Civil and Infrastructure Engineering 48 (2026) 100073 
+3 
+sharp interface is relaxed into a continuous transition via a logistic 
+sigmoid mapping: 
+M ( x ; z
+a
+) =
+1
+1 + exp (   η ⋅Ψ ( x ; z
+a
+))
+(12) 
+where η > 0 is a scalar hyperparameter controlling interface sharpness. 
+As η →∞ , the mask approaches a Heaviside step function. This differ -
+entiable formulation allows gradients to backpropagate from the loss 
+function to the geometric latent variables.
+2.4. Topology-guided inversion workflow
+The inversion process performs a deterministic search for the latent 
+code z to minimize the discrepancy between measured and predicted 
+potentials. Geometric parameterization is highly sensitive to initial 
+conditions. Therefore, a parallel multi-hypothesis strategy is used to 
+ensure robust convergence. A candidate set Z = { z
+k
+} ( k = 1 … N ₕ ) is 
+defined, where N
+h 
+denotes the total number of parallel chains. The 
+initialization of each trajectory uses priors derived from the Navigator 
+network, N
+ϕ
+, combined with stochastic perturbations: 
+z
+( 0 )
+k
+= T ( h
+k
+) + ξ
+k
+(13) 
+Here, h
+k 
+is the k -th topological prior. It is extracted as the discrete 
+spatial index corresponding to the high-probability regions in the Nav -
+igator's output map. The operator T maps these discrete grid locations 
+into the continuous latent manifold. The term ξ
+k 
+represents random 
+perturbations sampled from a defined probability distribution to 
+encourage local exploration around the identified modes. Upon initial -
+ization, a gradient-based algorithm optimizes all candidates in Z 
+simultaneously. The optimization process targets the minimization of 
+the L
+2 
+data misfit for each hypothesis independently: 
+J ( z ) = ‖ d
+obs
+  Π ( G
+θ
+( ln σ ( ⋅ ; z ))) ‖
+2
+2
+(14) 
+where Π is the projection and masking operator mapping the predicted 
+continuous potential field to the discrete electrode observations, 
+implemented as a fixed binary tensor, Π assigns a value of zero to the 
+active injection and extraction electrodes. All remaining passive mea -
+surement entries retain a value of one. Gradients are computed via 
+backpropagation through G
+θ
+, allowing the parallel chains to converge 
+to their respective local optima. The final solution z ˆ corresponds to the 
+candidate yielding the minimum residual error: 
+̂z = argmin
+z ∈ Z
+J ( z ) (15) 
+3. Numerical experiments
+3.1. Dataset generation and experimental setup
+The numerical setup involved a 2D vertical dam profile Ω measuring 
+20 m × 20 m. A mesh of 128 × 128 uniform quadrilateral cells covers 
+this domain. Data acquisition simulated a cross-borehole configuration 
+with a 7 × 10 electrode array. The array yields horizontal and vertical 
+sensor spacings of 3.0 m and 2.0 m, respectively. Anomalies smaller than 
+this spacing generate weak electrical signatures. These limited potential 
+variations are readily masked by background heterogeneity, inherently 
+restricting the minimum detectable size. The conductivity field σ ( x ) 
+combines a stochastic background with a discrete anomaly. This 
+approach allows for independent control over background heterogene -
+ity and anomalous features, aligning with the decoupled inversion 
+framework. The Karhunen-Lo `eve (KL) expansion represented the back -
+ground heterogeneity as a Log-Normal Gaussian Random Field (GRF). 
+Key statistical settings defined the mean conductivity at 0.005S/m and 
+the standard deviation at 0.002S/m. The correlation length was 5.0 m. 
+To simulate seepage, a high-conductivity circular anomaly was 
+introduced, parameterized by its centroid c = ( c
+x
+, c
+y
+) and radius r . The 
+centroid was confined to the central region [5.0, 15.0] m to reduce 
+boundary effects, with the radius varying between 1.0 m and 3.0 m. A 
+log-normal distribution determined the anomaly conductivity. The 
+mean value stood at approximately 0.3 S/m. A sigmoid transition mask 
+smoothed the interface to maintain numerical stability. Latin Hypercube 
+Sampling ( Helton & Davis, 2003 ) generated 1000 independent samples, 
+split into 900 for training and 100 for testing. Forward modeling was 
+performed using the SfePy finite element library. To ensure a unique 
+solution for the Neumann problem, a single-node Dirichlet reference ( u 
+= 0) was enforced at the vertex (0,0). This anchor serves strictly as a 
+mathematical gauge-fixing condition. The Neumann boundary value 
+problem for the forward model is singular without a defined reference 
+potential. The anchor ensures the convergence of the finite element 
+solver. Relocating this anchor to an alternative node introduces a global 
+constant shift to the computed potential field. However, the observa -
+tional inputs for the inversion framework consist exclusively of potential 
+differences between electrode pairs. The constant shift perfectly cancels 
+out during the calculation of these differences. Therefore, the spatial 
+placement of the Dirichlet anchor exerts no influence on the final 
+inversion performance. A "5-stim" protocol was employed (see Fig. 2 ). 
+The acquired potentials were log-transformed to compress the dynamic 
+range. Key parameters are listed in Table 1 . All numerical simulations 
+were run on a standard desktop workstation powered by an Intel Core 
+i7 – 12,700 K CPU 4.9 GHz. The framework was implemented in Python 
+3.12.3, using the SfePy library (version 2025.1) for finite element 
+analysis ( Cimrman et al., 2019 ).
+3.2. Computational implementation
+3.2.1. Training of FNO surrogate and topology navigator
+The computational environment for all neural network training 
+relied on the PyTorch framework, with hardware acceleration provided 
+by a workstation equipped with an NVIDIA GeForce RTX 4070 Super 
+GPU. The FNO surrogate maps the log-conductivity field ln σ (x) to the 
+log-transformed potential fields. Exploiting the resolution-invariance of 
+Fig. 2. Illustration of the simulation geometry and experimental configuration. 
+The 20 m × 20 m domain is discretized into quadrilateral finite elements. 7 ×
+10 electrode array employing five distinct dipole injection schemes (Schemes 
+1 – 5). Γ
+D 
+denotes the single Dirichlet anchor at the origin ensuring uniqueness; 
+Γ
+N 
+denotes insulated external boundaries.
+C. Yin et al. Computer-Aided Civil and Infrastructure Engineering 48 (2026) 100073 
+4 
+operator learning, training was performed on a subsampled 64 × 64 
+grid. This reduces computational cost while allowing the learned oper -
+ator to be evaluated on the native 128 × 128 mesh or arbitrary resolu -
+tions without retraining. The FNO architecture consists of four Fourier 
+spectral layers ( L = 4) with a channel width of 32, preserving the lowest 
+12 frequency modes ( k
+max
+= 12). A padding ratio of 0.1 was applied to 
+reduce boundary artifacts. Parameter optimization was performed using 
+the Adam algorithm, initialized with a learning rate of 1 × 10
+– 3 
+that 
+decayed according to a cosine annealing schedule. Gaussian noise with a 
+standard deviation of 0.05 was injected into the ground-truth potential 
+data. The FNO training process was completed in approximately 508 s. 
+The GuideNet locates coarse anomalies using sparse electrode mea -
+surements. The input is a 5 × 10 × 7 tensor representing potential data 
+across 5 stimulation schemes on the 7 × 10 electrode array. The network 
+includes a Feature Reconstruction block that upsamples these sparse 
+inputs, followed by a classification block to localize the anomaly within 
+a specific grid resolution. Odd-numbered grids of 3 × 3, 5 × 5, and 7 × 7 
+are evaluated to maintain a geometric center cell that aligns with typical 
+internal defect distributions. The 3 × 3 grid achieves 80.0% Top-1 ac -
+curacy but yields sub-regions too coarse for effective downstream 
+gradient optimization. The 7 × 7 grid creates an overly fragmented 
+classification space for the initial guess. Adjacent grid cells produce 
+highly similar boundary signatures. This similarity increases class 
+confusion, reduces the Top-1 accuracy to 65.0%, and exacerbates mis -
+localization errors. The 5 × 5 grid yields optimal performance, achieving 
+81.0% Top-1 and 99.0% Top-3 accuracies. This resolution balances the 
+spatial sensitivity limits of the measurements with the requirement for a 
+constrained bounding area. The dual-scale initialization strategy applied 
+during the subsequent inversion phase explicitly mitigates potential 
+mislocalization cases at this chosen resolution. For this task, the AdamW 
+solver was employed to update the weights, configured with a constant 
+learning rate of 1 × 10
+– 3
+. Random Gaussian noise of the same magnitude 
+was added to the input potentials to simulate sensor noise. Training 
+finished in approximately 23 s.
+3.2.2. TG-FNO inversion configuration
+The inverse problem is formulated as an optimization task, wherein 
+the objective is to minimize the discrepancy between the acquired 
+electrode measurements and the potential fields predicted by the sur -
+rogate. Gaussian noise is added directly to the log-transformed poten -
+tials to simulate measurement uncertainty. This additive operation in 
+the logarithmic domain equates to applying multiplicative log-normal 
+noise in the linear domain. This approach physically models instru -
+mentation errors that scale with signal magnitude. Measurements 
+coinciding with active source and sink electrodes are excluded to avoid 
+singularity artifacts. To ensure robustness against local minima, a 
+topology-guided parallel search strategy is adopted. Specifically, the 
+number of parallel chains N
+h 
+is set to 16. These chains execute simul -
+taneously via GPU batch processing. A dual-scale initialization strategy 
+is implemented to mitigate potential misguidance from the neural prior 
+under severe noise. Among the 16 parallel chains, five are instantiated at 
+the Top-5 probability predictions extracted from the GuideNet as the 
+topological priors h
+k
+. These five chains are coupled with a standard 
+exploration jitter ξ
+k 
+sampled from (0, 0.05
+2
+) within the normalized 
+latent space. To compensate for guide mismatch, the remaining 11 
+chains are initialized around the Top-1 prediction but are subjected to a 
+fourfold larger exploration jitter sampled from (0, 0.20
+2
+). This config -
+uration balances the exploitation of topological priors with latent space, 
+preventing the optimization process from being trapped in misleading 
+local minima. The dimension of the background latent vector d
+bg 
+is set to 
+20. This truncation threshold is determined through an eigenvalue en -
+ergy spectrum analysis of the covariance kernel. For the baseline cor -
+relation length of 5.0 m, the first 20 modes capture 99.20% of the total 
+variance. Incorporating additional dimensions increases the optimiza -
+tion burden without meaningfully altering the physical representation of 
+the background field. The background latent variables z
+bg 
+are randomly 
+initialized from a normal distribution (0, 0.1
+2
+). The latent vectors are 
+updated deterministically over a fixed 100 iterations via the Adam 
+optimizer. To synchronize the convergence of background and anomaly 
+features, distinct learning rates of 0.01 and 0.05 are assigned to z
+bg 
+and 
+z
+a
+, respectively. The optimization process omits early stopping mecha -
+nisms, explicit gradient clipping, and supplementary regularization 
+terms. The geometric parameterization architecture inherently enforces 
+the physical bounds of the conductivity field. The final reconstruction is 
+selected from the optimization trajectory yielding the lowest data re -
+sidual. This data-driven inversion is highly efficient, achieving an 
+average runtime of approximately 2.39 s per case on the utilized 
+computational platform.
+3.3. Quantitative metrics
+The predictive accuracy of the forward surrogate is evaluated using 
+the relative L
+2 
+residual error, following the formulation in Eq. (8) . The 
+quality of the inverted conductivity fields is assessed via the Structural 
+Similarity Index (SSIM) ( Wang et al., 2004 ), which measures the 
+structural fidelity of the reconstruction against the ground truth. To 
+evaluate the detection capability regarding leakage anomalies, the 
+Intersection over Union (IoU) is used: 
+IoU =
+|
+̂
+M ∩ M |
+|
+̂
+M ∪ M |
+(16) 
+where M ˆ denotes the predicted topology mask, based on the IoU, two 
+threshold-based metrics are defined to quantify detection reliability: 
+Acc
+0
+, representing the Inversion Success Rate (percentage of samples 
+satisfying IoU > 0), and Acc
+0.5
+, representing the High-Fidelity Detection 
+Rate (percentage satisfying IoU > 0.5).
+4. Results and discussion
+4.1. Predictive performance of FNO surrogate
+The FNO surrogate was evaluated on an independent validation set 
+of 100 samples. Fig. 3 shows forward modeling results for five repre -
+sentative realizations (R1 – R5). The model accurately maps conductivity 
+fields ( Fig. 3 A1 – A5) to electric potential distributions ( Fig. 3 C1 – C5) 
+spanning diverse anomaly scenarios. It reproduces the equipotential line 
+distortions caused by leakage anomalies relative to the reference 
+( Fig. 3 B1 – B5 vs. C1-C5). Closer inspection of R4 (comparing Fig. 3 B4, 
+and C4) shows that while the anomaly center is correctly localized, the 
+circular geometry of the reference is distorted into an approximate el -
+lipse. This geometric distortion results from spectral truncation in the 
+FNO architecture, where retaining only dominant low-frequency modes 
+acts as a low-pass filter. Minor fluctuations near singularities and 
+domain boundaries are caused by the training strategy, where Gaussian 
+noise was added to target potentials for regularization. The model 
+demonstrated high global accuracy. It recorded a mean relative L
+2 
+error 
+Table 1 
+Geometric specifications and statistical parameters for the synthetic dataset 
+generation.
+Category Parameter Value / Range
+Domain Domain Size, Ω 20 m × 20 m
+​ Grid Resolution, N
+x 
+× N
+Y
+128 × 128
+Background KL Latent Dimension, d
+bg
+20
+​ Mean Conductivity, μ
+bg
+0.005 S/m
+​ Std. Deviation, σ
+bg
+0.002 S/m
+​ Correlation Length, l
+c
+5.0m
+Anomaly Latent Dimension, d
+a
+4
+​ Position Range, c [5.0, 15.0] m
+​ Radius Range, r [1.0, 3.0] m
+​ Conductivity, σ
+a
+≈ 0.3 S/m(Mean)
+C. Yin et al. Computer-Aided Civil and Infrastructure Engineering 48 (2026) 100073 
+5 
+of 3.18%. Additionally, the coefficient of determination R
+2 
+reached 
+0.9978 across the validation set. A channel-wise analysis verified 
+robustness across different current injection patterns. Performance was 
+consistent across all five protocols (Schemes 1 – 5), with relative errors of 
+3.37% ± 1.41%, 3.19% ± 1.20%, 3.28% ± 1.82%, 3.28% ± 1.05%, 
+2.80% ± 1.43%, respectively. Scatter plots ( Fig. 3 D1 – D5) support this 
+consistency: the alignment of clusters (S1 – S5) along the identity line 
+shows that accuracy is stable regardless of the injection scheme. Finally, 
+the FNO model reduces average inference time from 0.8287 s to 0.0024 s 
+per simulation. This 345 × speedup removes the computational bottle -
+neck for subsequent stochastic inversion, which requires extensive for -
+ward evaluations.
+4.2. Inversion performance of TG-FNO framework
+4.2.1. Baseline selection
+The proposed framework is benchmarked against two baselines to 
+evaluate its inversion performance and isolate architectural contribu -
+tions. The first baseline is a conventional stochastic inversion combining 
+the finite element method (FEM) with the Covariance Matrix Adaptation 
+Evolution Strategy (CMA-ES) ( Alkayem et al., 2018 ; Marty et al., 2023 ; 
+Tiprak et al., 2025 ). Preliminary evaluations detailed in Appendix A 
+justify the necessity of this derivative-free global optimizer. Standard 
+continuous inversion and unconstrained generative models struggle 
+with the extreme sparsity of cross-borehole measurements. As illustrated 
+in Fig. A1 and quantified in Table A1 , Total Variation-regularized pix -
+el-wise inversion produces over-smoothed conductivity fields, reducing 
+the high-fidelity localization metric Acc
+0.5 
+to near zero. Furthermore, 
+applying the Gauss-Newton algorithm directly to the decoupled 
+parameterization leads to severe local minima entrapment, while a 
+Conditional GAN introduces background artifacts. Given the poor 
+reconstruction metrics of these local gradient algorithms and 
+data-driven approaches, the robust global search capacity of CMA-ES 
+provides a suitable conventional benchmark. The second baseline is a 
+Random FNO configuration. This internal baseline shares the identical 
+frozen surrogate and continuous optimization scheme as the proposed 
+framework, differing only by relying entirely on random latent initiali -
+zation to explicitly isolate the performance contribution of the guide 
+network.
+4.2.2. Inversion results
+Fig. 4 illustrates the qualitative stability of TG-FNO (A1 – A5). By 
+explicitly optimizing the decoupled geometric latent variables, the 
+framework consistently resolves the anomaly locations. The alignment 
+between the reconstructed geometries and the ground truth confirms 
+that the topology-guided initialization prevents the optimization from 
+trapping in local minima. In contrast, the baseline FNO ( Fig. 4 B1 – B5) 
+demonstrates high sensitivity to initialization. This disparity in 
+Fig. 3. Performance of the FNO surrogate across various conductivity samples and injection protocols. (A1 – A5) Panels display conductivity distributions σ , labeled 
+R 1 through R 5; (B1 – B5) Reference or true electric potentials U
+TRUE 
+solved by FEM under corresponding injection schemes ( S 1 – S 5), for example, R 1 – S 1 – U
+TRUE 
+denotes the potential field of realization R 1 under injection scheme S 1; (C1 – C5) Electric potentials predicted by FNO U
+FNO 
+for the same realizations and schemes; 
+(D1 – D5) Scatter plots of U
+TRUE 
+versus U
+FNO 
+for each realization including data from all five injection schemes, showing R
+2
+coefficients consistently exceeding 0.99.
+C. Yin et al. Computer-Aided Civil and Infrastructure Engineering 48 (2026) 100073 
+6 
+localization success stems from the dependence of gradient-based 
+solvers on the initial guess. In failure cases, the optimization is trap -
+ped in local minima, yielding spurious anomalies or incorrect localiza -
+tions. The FEM approach ( Fig. 4 C1 – C5) frequently fails to converge to 
+the geometric parameters. Despite high computational costs, the 
+amplification of measurement noise results in detection failures (C1, C2, 
+C5) or positional deviations (C3). Quantitative analysis via success rate 
+curves ( Fig. 5 ) confirms this performance gap. The TG-FNO curve 
+maintains a stable high success rate across a wide range of IoU thresh -
+olds. Specifically, TG-FNO achieves an Inversion Success Rate Acc
+0 
+of 
+100%, eliminating the failures observed in the baseline FNO 
+( Acc
+0
+= 95%) and the FEM method ( Acc
+0
+= 76%). Regarding high-fidelity 
+reconstruction, TG-FNO maintains an Acc
+0.5 
+of 91%, surpassing the 
+baseline FNO ( Acc
+0.5 
+= 82%) and the FEM ( Acc
+0.5 
+= 69%). Beyond 
+localization accuracy, the overall structural fidelity was assessed using 
+the Structural Similarity Index (SSIM). As detailed in Table 2 , TG-FNO 
+achieves the highest SSIM of 0.9527, indicating superior preservation 
+of global texture. Notably, while the FEM method achieves a comparable 
+SSIM of 0.9410, its significantly lower Mean IoU of 0.4813 reflects a 
+critical deficiency in precise anomaly segmentation. Repeated trials 
+across multiple random seeds confirm the statistical robustness and the 
+overall accuracy improvement of the proposed approach. TG-FNO ach -
+ieves a mean Acc
+0 
+of 99.7% ± 0.6%, outperforming the baseline FNO 
+(93.0% ± 3.5%) and FEM (77.3% ± 6.0%). For high-fidelity recon -
+struction, TG-FNO reaches a mean Acc
+0.5 
+of 89.3% ± 2.1%. This dem -
+onstrates a clear accuracy gain and higher stability compared to the 
+baseline FNO (79.7% ± 6.8%) and FEM (65.7% ± 5.8%). This statistical 
+consistency confirms that topology-guided initialization mitigates opti -
+mization uncertainty. Computationally, TG-FNO requires an average 
+inference time of 2.39 s, matching the 2.38 s of the baseline FNO. 
+Conversely, the traditional FEM approach demands approximately 
+172.32 s per case. This comparison highlights the efficiency advantage 
+of the proposed framework, which achieves an acceleration of approx -
+imately 72 × relative to the conventional stochastic method while 
+delivering superior inversion accuracy. This efficiency is further 
+enhanced by a cross-resolution strategy: the surrogate model is trained 
+at a 64 × 64 resolution and deployed at 128 × 128 during inversion. This 
+approach reduces offline training time while maintaining high-fidelity 
+boundary evaluations.
+Fig. 4. Comparative inversion results of conductivity fields across five realizations ( R 1 – R 5). (A1 – A5) Inverted fields using the proposed TG-FNO framework; (B1 – B5) 
+Inverted fields using the FNO surrogate with random initialization; (C1 – C5) Inverted fields using conventional stochastic FEM inversion; red dashed contours denote 
+the True Anomaly, while white dashed contours denote the Reconstructed anomaly.
+Fig. 5. Quantitative comparison of detection reliability across the full test set. 
+Success rates plotted against IoU thresholds for the proposed TG-FNO, FNO 
+surrogate with random initialization, and conventional stochastic FEM inver -
+sion; vertical dotted line marks the high-fidelity detection threshold ( Acc 
+0.5
+).
+C. Yin et al. Computer-Aided Civil and Infrastructure Engineering 48 (2026) 100073 
+7 
+4.3. Ablation study
+The quantitative metrics for the ablation variants and the complete 
+TG-FNO framework are summarized in Table 3 . Replacing the decoupled 
+parameterization with a continuous grid inversion stabilized by total 
+variation regularization reduces the overall accuracy. This pixel-wise 
+baseline maintains an Acc
+0 
+of 78%, but its Acc
+0.5 
+decreases to 16%, 
+yielding a Mean IoU of 0.2423. This result indicates that directly 
+updating thousands of grid elements under incomplete measurements 
+remains ill-posed. The explicit geometric prior is necessary to stabilize 
+the anomaly segmentation. The initialization and search strategies 
+present a specific optimization trade-off. The random initialization 
+variant executes 16 parallel chains without topological guidance. This 
+stochastic search achieves an Acc
+0.5 
+of 82%. However, the absence of a 
+spatial prior leads to localization errors in certain cases, resulting in an 
+Acc
+0 
+of 95%. In contrast, the single-chain variant utilizes only the top 
+prediction from the Navigator. This data-driven warm-start guides the 
+optimizer to the general target area and improves the Acc
+0 
+to 98%. 
+Nevertheless, relying on a single trajectory limits local exploration. It 
+traps the solver in suboptimal minima near the true anomaly, which 
+reduces the Acc
+0.5 
+to 72%. Finally, replacing the FNO surrogate with a 
+conventional physical solver limits the inversion efficiency and accu -
+racy. Evaluated with a derivative-free optimizer, the physical solver 
+yields a Mean IoU of 0.4813. The complete TG-FNO framework in -
+tegrates all proposed components to achieve a 100% Acc
+0 
+and a 91% 
+Acc
+0.5
+.
+4.4. Robustness and generalization analysis
+4.4.1. Generalization to complex anomaly configurations
+Table 2 evaluates the model generalization on complex anomaly 
+configurations without parameter fine-tuning. The framework is 
+initially tested on low-contrast anomalies representing early-stage 
+leakage with weak electrical signatures. The model trained on a 
+contrast ratio of 60 is directly applied to new test sets with reduced 
+ratios of 25 and 10. The framework maintains a 100% Acc
+0 
+across both 
+groups. For the most challenging 10-fold contrast ratio, it achieves a 
+Mean IoU of 0.6804 and an Acc
+0.5 
+of 82%. This performance indicates 
+that the FNO surrogate approximates the physical mapping between 
+potential and conductivity instead of memorizing high-contrast training 
+patterns. To evaluate out-of-distribution inversion capabilities, the 
+framework is tested on two independent sets of 100 samples featuring 
+geometric distribution shifts: noncircular elongated profiles and multi -
+ple anomalies with varying intensities ( Fig. A2 ). While the training 
+dataset exclusively contains single circular anomalies, the solver adapts 
+to these unseen configurations. In scenarios with multiple defects, the 
+pronounced potential distortion from the primary leakage masks weaker 
+secondary signatures. Constrained by the single-circle parameterization, 
+the model prioritizes the dominant anomaly and reconstructs an 
+equivalent enclosing circle. Consequently, it locates the primary leakage 
+zones with an Acc
+0.5 
+of 100% for noncircular anomalies and 98% for 
+multiple anomalies. The Mean IoU values of 0.6892 and 0.6866 reflect 
+the geometric difference between the parameterized circle and the 
+actual irregular boundaries. These results confirm the robust out-of- 
+distribution generalization of the topology-guided search against geo -
+metric prior mismatches and masking effects.
+4.4.2. Robustness to adverse monitoring conditions
+To assess noise robustness, the model trained with a 0.05 noise level 
+is directly applied to test data featuring 0.10 and 0.20 noise intensities 
+without parameter fine-tuning. Under the 0.10 noise condition, the 
+framework maintains high accuracy, achieving an Acc
+0 
+of 98% and an 
+Acc
+0.5 
+of 72%. At the 0.20 noise intensity, the heightened uncertainty 
+reduces the Mean IoU to 0.4040 and the Acc
+0.5 
+to 44%. However, the 
+framework sustains a substantial detection success rate with an Acc
+0 
+of 
+86%. This indicates that the explicit geometric parameterization effec -
+tively regularizes the inverse problem, facilitating stable anomaly 
+identification even under significant signal interference. Hardware 
+failures and disconnected electrodes are simulated by randomly masking 
+observation entries. With a 25% data loss, the inversion performance 
+remains consistent with the baseline, delivering a Mean IoU of 0.7401 
+and an Acc
+0 
+of 100%. Under a severe 50% data loss condition, the 
+framework avoids localization failure, achieving a Mean IoU of 0.6129 
+and an Acc
+0.5 
+of 75%. An evaluation of this extreme sparsity reveals a 
+size-dependent detection threshold. The reduced sensor density directly 
+constrains the detectable anomaly size. Smaller defects approaching the 
+2.0-meter theoretical limit fall below the spatial resolution of the 
+degraded array. These targets become difficult to resolve and drive the 
+observed decrease in accuracy. Conversely, larger damages remain 
+accurately located. These results demonstrate the capability of the FNO 
+surrogate and the topology-guided search to reconstruct internal phys -
+ical fields from highly incomplete measurements. The framework is 
+tested against contact impedance issues, a chronic challenge in field ERT 
+Table 2 
+Quantitative inversion metrics for the standard baseline and various robustness 
+evaluation scenarios.
+Experimental 
+Setting
+Evaluation 
+Condition
+Mean 
+IoU
+Acc
+0
+Acc
+0.5
+SSIM
+Standard baseline TG-FNO 0.7400 100% 91% 0.9527
+​ FNO random 
+initialization
+0.6589 95% 82% 0.9484
+​ FEM stochastic 
+inversion
+0.4813 76% 69% 0.9410
+Complex anomaly 
+configurations
+Contrast ratio 10 0.6804 100% 82% 0.9474
+​ Contrast ratio 25 0.7214 100% 89% 0.9528
+​ Noncircular 
+anomalies
+0.6892 100% 100% 0.9418
+​ Multiple 
+anomalies
+0.6866 100% 98% 0.9278
+Adverse Monitoring 
+Conditions
+Noise level 0.10 0.5903 98% 72% 0.9381
+​ Noise level 0.20 0.4040 86% 44% 0.9112
+​ Sensor data loss 
+25%
+0.7401 100% 91% 0.9568
+​ Sensor data loss 
+50%
+0.6129 99% 75% 0.9430
+Prior Mismatch ​ ​ ​ ​ ​
+(TG-FNO) Correlation 
+length 3.0 m
+0.6942 97% 87% 0.9406
+​ Correlation 
+length 7.0 m
+0.7407 100% 92% 0.9560
+Note: All evaluation conditions incorporate a baseline 0.05 measurement noise 
+level unless explicitly modified in the adverse noise scenarios. Each configura -
+tion is evaluated on a set of 100 samples using the pre-trained TG-FNO frame -
+work without additional parameter fine-tuning.
+Table 3 
+Summarizes the quantitative metrics of four model variants evaluated on the 
+validation set to isolate the contribution of each proposed component.
+Model Variant Description Mean 
+IoU
+Acc
+0
+Acc
+0.5
+SSIM
+Pixel-wise Continuous grid 
+inversion with TV 
+regularization
+0.2423 78% 16% 0.9232
+Random 
+initialization
+Optimization without 
+Guide Network warm- 
+start
+0.6589 95% 82% 0.9527
+Single 
+optimization 
+chain
+Top-1 trajectory 
+search without 
+parallel evaluation
+0.6154 98% 72% 0.9434
+FEM forward 
+solver
+Conventional physics- 
+based solver with 
+CMA-ES
+0.4813 76% 69% 0.9410
+TG-FNO Complete framework 
+architecture
+0.7400 100% 91% 0.9527
+C. Yin et al. Computer-Aided Civil and Infrastructure Engineering 48 (2026) 100073 
+8 
+monitoring that introduces severe non-Gaussian noise. Poor electrode- 
+soil contact often generates extreme outliers that violate standard 
+Gaussian noise assumptions. This specific scenario is simulated by 
+introducing artificial signal amplification (five to ten times the standard 
+magnitude) into three randomly selected electrodes. Standard optimi -
+zation using an L2 norm (Mean Squared Error) objective fails under 
+these conditions, causing the Acc
+0 
+to drop to 47% due to severe gradient 
+disruption. Because the FNO forward surrogate is entirely decoupled 
+from the inversion objective function, the system easily adapts by 
+switching to an outlier-robust L1 norm (Mean Absolute Error) combined 
+with input signal clipping. This adjustment requires no retraining of the 
+neural networks and successfully neutralizes the abnormal gradients, 
+restoring the Acc
+0 
+to 96% and the Mean IoU to 0.6600. This modularity 
+allows the framework to dynamically accommodate severe local sensor 
+anomalies and non-Gaussian interference during operational 
+monitoring.
+4.4.3. Sensitivity to statistical prior mismatch
+The final phase of the robustness evaluation examines the sensitivity 
+to statistical prior mismatch. The baseline framework is trained exclu -
+sively on random background fields with a spatial correlation length of 
+5.0 m. This model is directly applied to two independent sets of 100 
+samples featuring unseen correlation lengths of 7.0 m and 3.0 m without 
+parameter fine-tuning. For the smoother background condition of 7.0 m, 
+the inversion metrics slightly exceed the standard baseline. The model 
+achieves a Mean IoU of 0.7407 and an Acc
+0.5 
+of 92%. This demonstrates 
+robust out-of-distribution generalization when transferring the model to 
+spatially simpler domains. The 3.0 m correlation length introduces 
+highly fragmented background heterogeneities. These intense spatial 
+variations generate background potential fluctuations that often mask 
+the actual leakage signals. Consequently, the high-fidelity detection rate 
+Acc
+0.5 
+decreases to 87%, and the Mean IoU drops to 0.6942. The 
+framework nevertheless maintains a 97% Acc
+0
+, successfully isolating the 
+general defect zone despite the severe background noise. These testing 
+outcomes reveal an asymmetric generalization behavior. The surrogate 
+model adapts readily to smoother environments but experiences a slight 
+precision loss in more chaotic physical fields. For practical field de -
+ployments, the training dataset should utilize smaller correlation lengths 
+to encompass severe background variations, ensuring optimal down -
+ward compatibility across diverse geological conditions. In real-world 
+dam monitoring scenarios, the latent dimension d
+bg 
+and correlation 
+length l
+c 
+strongly dictate the inversion difficulty. These geological priors 
+must not be arbitrarily assumed. They must be established through 
+historical design records and site-specific material sampling. This 
+empirical validation forms a reliable baseline prior to executing the 
+inversion algorithm.
+4.5. Computational and practical challenges in field deployment
+While transitioning to fully three-dimensional inversion is a logical 
+step for comprehensive dam monitoring, two-dimensional longitudinal 
+profiling remains the main and practical setup for routine, continuous 
+safety assessment of long embankments ( Rahimi et al., 2025 ). Extending 
+the proposed operator learning framework to 3D environments faces 
+significant mathematical and computational challenges, chiefly the 
+curse of dimensionality. The standard three-dimensional FNO architec -
+ture increases training time complexity to ( N
+3 
+log N ), which requires 
+large amounts of memory during network backpropagation on typical 
+engineering hardware ( Li & Ye, 2025 ). Additionally, capturing the 
+spatial variance of a 3D background field requires a vastly expanded 
+latent parameter space. Integrating this expanded representation with 
+3D geometric coordinates creates a highly complex, non-convex opti -
+mization landscape, significantly increasing the probability of local 
+minima entrapment. Maintaining the current sub-second inference ef -
+ficiency and localization accuracy in 3D necessitates more advanced, 
+memory-efficient operator architectures.
+Beyond dimensional extensions, field deployment faces a funda -
+mental simulation-to-reality gap related to boundary conditions. Neural 
+operators approximate Green's functions mathematically, making the 
+surrogate very sensitive to changes in boundary conditions. Achieving 
+out-of-distribution generalization across different cross-sections remains 
+a core challenge. However, operational dam monitoring generally in -
+volves static structural profiles and predictable environmental states. 
+Therefore, training a universal operator is unnecessary for this specific 
+use. A practical solution is to pre-train a small set of targeted operators 
+tailored to known seasonal or operational boundary conditions. Using 
+these condition-specific surrogates during field inspections effectively 
+overcomes the boundary mismatch issue at a minimal offline compu -
+tational cost. The proposed 2D framework provides a computationally 
+efficient and practical foundation for operational digital twins.
+5. Conclusion
+This study introduces the TG-FNO framework to address the conflict 
+between smoothness regularization and the sharp topological bound -
+aries of leakage anomalies in electrical resistivity tomography. By 
+combining decoupled geometric parameterization with a topology- 
+guided warm start, the method explicitly separates stochastic back -
+ground heterogeneity from deterministic structural defects. This repre -
+sentation aligns with structural health monitoring needs, which focus on 
+localizing anomalies against known geological backgrounds. The FNO 
+surrogate acts as a high-fidelity alternative to traditional finite element 
+methods. It accurately captures complex non-linear mappings with a 
+mean relative error of 3.18% and achieves a 345 × speedup in forward 
+modeling. This effectively removes computational bottlenecks in sto -
+chastic inversion. Guided by this surrogate and topological initializa -
+tion, TG-FNO overcomes the issue of local minima stagnation commonly 
+seen in baseline approaches. Repeated trials confirm its statistical sta -
+bility and accuracy. The framework achieves a mean Inversion Success 
+Rate ( Acc
+0
+) of 99.7% ± 0.6% and a high-fidelity reconstruction rate 
+( Acc
+0.5
+) of 89.3% ± 2.1%, outperforming conventional methods. Addi -
+tionally, it maintains an overall 72 × computational acceleration over 
+FEM-based inversion. This computational efficiency facilitates rapid 
+routine monitoring, a critical requirement for timely decision-making in 
+dam safety. The framework also shows robust out-of-distribution 
+generalization. Without retraining, it accurately resolves incipient 
+leakage signatures at a 10-fold contrast ratio and severe adverse con -
+ditions, including 0.20 Gaussian noise and 50% sensor data loss. This 
+confirms that the learned operator approximates the underlying physical 
+laws rather than merely memorizing statistical patterns. Current limi -
+tations define three primary research directions. First, explicit parame -
+terization restricts detection to predefined shapes. Future work will 
+adopt implicit representations, such as level set methods, for multi- 
+anomaly scenarios. Second, the underlying Fourier transform is sus -
+ceptible to spectral truncation. Integrating the synchrosqueezed wavelet 
+transform ( Li et al., 2017 ; Perez-Ramirez et al., 2016 ) will address this 
+by improving localized feature resolution. Finally, the 
+simulation-to-reality gap limits direct field deployment. Because neural 
+operators approximate Green's functions, they remain highly sensitive to 
+physical boundary variations. Future implementations must mitigate 
+this by developing libraries of condition-specific operators to accom -
+modate seasonal boundary shifts. Together, these advancements will 
+build a practical foundation for operational digital twins in structural 
+health monitoring.
+Data availability
+The dataset and source code supporting the findings of this study are 
+publicly available in the TG-FNO Zenodo repository at https://doi. 
+org/10.5281/zenodo.20305829 .
+C. Yin et al. Computer-Aided Civil and Infrastructure Engineering 48 (2026) 100073 
+9 
+Declaration of competing interest
+The authors declare that they have no known competing financial 
+interests or personal relationships that could have appeared to influence 
+the work reported in this paper.
+Acknowledgments
+The study was supported by the National Natural Science Foundation 
+of China (Grant Nos. 52379097, 52509138), the Water Conservancy 
+Science and Technology Project of Jiangxi Province (Grant No. 
+202426ZDKT27), the Guangzhou Association for Science and Technol -
+ogy (Grant No. QT-2025-049), and the Research and Innovation Pro -
+gram for Graduate Students in Chongqing (Grant No. CYB25282).
+Appendix
+Fig. A1. Reconstruction performance of alternative baseline algorithms on representative realizations (R3 and R4). (A1 – A3) Inverted conductivity fields for R3 using 
+a Conditional GAN, Total Variation (TV) regularized pixel-wise inversion, and the Gauss-Newton (GN) algorithm, respectively; (B1 – B3) Corresponding inverted fields 
+for R4. Red dashed contours denote the true anomaly, while white dashed contours represent the reconstructed anomaly.
+Table A1 
+Quantitative evaluation metrics of alternative baselines (CGAN, TV, and GN) justifying the baseline selection.
+Evaluation Condition Mean IoU Acc
+0
+Acc
+0.5
+SSIM
+Conditional GAN 0.0608 24% 0% 0.8952
+Total Variation 0.1379 67% 7% 0.8675
+Gauss-Newton 0.0629 40% 1% 0.8724
+Fig. A2. Generalization of the proposed framework to out-of-distribution complex anomaly configurations. (A1 – A4) True conductivity distributions featuring 
+noncircular elongated profiles (A1, A2) and multiple leakage anomalies (A3, A4); (B1 – B4) Corresponding inverted fields using the TG-FNO solver. Red dashed 
+contours delineate the primary true anomaly, while white dashed contours denote the equivalent enclosing anomaly parameterized by the model.
+C. Yin et al. Computer-Aided Civil and Infrastructure Engineering 48 (2026) 100073 
+10 
+References
+Alkayem, N. F., Cao, M., Zhang, Y., Bayat, M., & Su, Z. (2018). Structural damage 
+detection using finite element model updating with evolutionary algorithms: A 
+survey. Neural Computing and Applications, 30 (2), 389 – 411 .
+Ambikasaran, S., Li, J. Y., Kitanidis, P. K., & Darve, E. (2013). Large-scale stochastic 
+linear inversion using hierarchical matrices: Illustrated with an application to 
+crosswell tomography in seismic imaging. Computational Geosciences, 17 (6), 
+913 – 927 .
+Amezquita-Sanchez, J. P., Valtierra-Rodriguez, M., & Adeli, H. (2018). Wireless smart 
+sensors for monitoring the health condition of civil infrastructure. Scientia Iranica, 25 
+(6), 2913 – 2925 .
+Bekele, B., Song, C., Abualshar, B., & Hunde, A. (2025). Real-time seepage health 
+monitoring using spatial autocorrelation of distributed temperature data from fiber 
+optic sensor. Journal of Civil Structural Health Monitoring, 15 (4), 1101 – 1116 .
+Bekele, B., Song, C., Kim, S., & Eun, J. (2024). Seepage anomaly detection via Fiber optic 
+distributed temperature sensing: Insights from physical and numerical modeling. 
+Journal of Geotechnical and Geoenvironmental Engineering, 150 (6), Article 04024039 .
+Bherde, V., Balunaini, U., Kambhammettu, B. V. N. P., & Regonda, S. (2025). Infrared 
+thermography based seepage and erosion detection in earthen dams using laboratory 
+scale models. Scientific Reports, 15 (1), Article 23226 .
+Bonelli, S., & Brivois, O. (2008). The scaling law in the hole erosion test with a constant 
+pressure drop. International Journal for Numerical and Analytical Methods in 
+Geomechanics, 32 (13), 1573 – 1595 .
+Cha, Y.-J., Ali, R., Lewis, J., & Büyük ӧ ztürk, O. (2024). Deep learning-based structural 
+health monitoring. Automation in Construction, 161 , Article 105328 .
+Chan, T. F., & Tai, X.-C. (2004). Level set and total variation regularization for elliptic 
+inverse problems with discontinuous coefficients. Journal of Computational Physics, 
+193 (1), 40 – 66 .
+Cimrman, R., Luke ˇs, V., & Rohan, E. (2019). Multiscale finite element calculations in 
+Python using SfePy. Advances in Computational Mathematics, 45 (4), 1897 – 1921 .
+Constable, S. C., Parker, R. L., & Constable, C. G. (1987). Occam ’ s inversion: A practical 
+algorithm for generating smooth models from electromagnetic sounding data. 
+Geophysics, 52 (3), 289 – 300 .
+Dong, H., Li, X., Yeh, T.-C. J., & Ge, J. (2020). Diagnosis of concentrated leakage channel 
+embedded in dam base by means of hydraulic tomography. Bulletin of Engineering 
+Geology and the Environment, 79 (6), 2871 – 2881 .
+Entezami, A., Sarmadi, H., Kiarad, H., & Behkamal, B. (2026). Residual-informed deep 
+meta regressor for predicting modal frequencies of historical masonry buildings 
+under environmental and operational data scarcity. Mechanical Systems and Signal 
+Processing, 242 , Article 113675 .
+Ghanem, R., & Spanos, P. D. (1991). Stochastic finite elements: A spectral approach . New 
+York: Springer-Verlag. https://doi.org/10.1007/978-1-4612-3094-6
+Guo, Q., Zhao, Y., Lu, C., & Luo, J. (2023). High-dimensional inverse modeling of 
+hydraulic tomography by physics
