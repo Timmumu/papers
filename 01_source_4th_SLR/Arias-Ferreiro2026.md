@@ -13,3 +13,20 @@ Post-blast operations in tunnel construction represent a critical bottleneck due
 | Yes | Yes | Yes | Yes | Yes | **Include** |
 
 **Note:** Air-ground robotic post-blast tunnel ops under DT supervision
+
+## Step-3 Deep-Read Coding (Prompt B)
+| P DT-subject | Q DfS/DfQ | R codable | U Tier | V Design | W Constr | X Oper | Z DfX | AA Self-improve | AB Methodology | AC Modality | AD Validation | AE QA(0-5) | AF Cluster |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| Yes | Yes | Yes | Tier 3 - Digital Twin (bidirectional, two-way) | 0 | 1 | 0 | Design for Safety (DfS) | None | Perception / Computer Vision | Multi (two or more data types) | Simulation | 4 | Perception / Computer Vision |
+
+| AC1 fusion depth | AC2 fusion evidence | AC3 confidence |
+|---|---|---|
+| Fused | LiDAR, thermal and inertial streams are fused for SLAM, and robot statuses are fused in the DT orchestration layer. | Medium |
+
+**Key evidence (AG):** Integrated air-ground robotic system for autonomous post-blast operations (ACCIONA/CATEC/TECNALIA, Remote Sensing 2026): digital twin acts as central operational digital interface coordinating a UAV (LiDAR-thermal-inertial SLAM, maps 500 m tunnel <8 min in zero visibility) and an autonomous wheel loader for debris removal in GNSS-denied tunnels; shared coordinate frame handed to ground machinery; operations start 50-80% earlier, 100% elimination of human exposure, 8% daily time saving, ROI 1-7 months. Twin orchestrates autonomous machines (virtual-to-physical) -> Tier 3; validated in a realistic emulated tunnel environment (not production); no learning loop.
+
+*Full-text source: browser-oa*
+
+**AH — strength & gap filled:** DT-orchestrated UAV-AWL team starts post-blast operations 50-80% earlier and eliminates human exposure in GNSS-denied tunnels, with ROI of 1-7 months.
+
+**AI — deficiencies & future work:** Validated in an emulated realistic tunnel, not production blasting cycles; debris-removal autonomy details limited; comms in deep tunnels unaddressed.

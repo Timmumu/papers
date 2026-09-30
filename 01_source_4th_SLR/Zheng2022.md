@@ -14,7 +14,6 @@ The collapse of engineering structures can cause significant casualties and have
 
 **Note:** DT-based investigation of building collapse accident
 
-
 ## Step-3 Deep-Read Coding (Prompt B)
 | P DT-subject | Q DfS/DfQ | R codable | U Tier | V Design | W Constr | X Oper | Z DfX | AA Self-improve | AB Methodology | AC Modality | AD Validation | AE QA(0-5) | AF Cluster |
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|

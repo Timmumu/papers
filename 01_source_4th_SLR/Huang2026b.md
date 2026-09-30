@@ -13,3 +13,20 @@ Rockfill dams exhibit pronounced stage-dependent deformation during construction
 | Yes | Yes | Yes | Yes | Yes | **Include** |
 
 **Note:** Rockfill dam Bayesian surrogate DT; safety assessment
+
+## Step-3 Deep-Read Coding (Prompt B)
+| P DT-subject | Q DfS/DfQ | R codable | U Tier | V Design | W Constr | X Oper | Z DfX | AA Self-improve | AB Methodology | AC Modality | AD Validation | AE QA(0-5) | AF Cluster |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| Yes | Yes | Yes | Tier 2 - Digital Shadow (one-way physical to virtual) | 0 | 0 | 1 | Design for Safety (DfS) | Implemented | Bayesian / probabilistic | Multi (two or more data types) | Single case study | 4 | Predictive analytics / decision support |
+
+| AC1 fusion depth | AC2 fusion evidence | AC3 confidence |
+|---|---|---|
+| Fused | Monitoring data, copula-structured priors and FE-informed surrogate samples are fused in sequential Bayesian posterior updates. | High |
+
+**Key evidence (AG):** Lifecycle updating of rockfill dam deformation models (Wuhan U, CACAIE 2026): dependence-aware sequential Bayesian inference with Gaussian-Copula priors progressively assimilates monitoring data across construction/impoundment/operation stages; deep neural surrogate continually refined via posterior-guided FE samples, historical replay and Fisher-weighted regularisation; on the 303 m Lianghekou dam global relative settlement prediction error falls 37.4%->9.7% with 45.8% surrogate-updating cost reduction. Monitoring->updating->uncertainty-informed safety assessment (no actuation); continual surrogate learning implemented, no convergence criterion.
+
+*Full-text source: browser-oa*
+
+**AH — strength & gap filled:** Copula-dependence sequential Bayesian updating plus continual surrogate learning halves the surrogate cost and cuts dam settlement error from 37.4% to 9.7%.
+
+**AI — deficiencies & future work:** Single dam case; copula structure empirical; continual-learning forgetting bounds not proven; predictions for extreme future stages remain uncertain.

@@ -1,0 +1,904 @@
+Academic Editor: Sandro Carbonari
+Received: 26 June 2026
+Revised: 26 July 2026
+Accepted: 28 July 2026
+Published: 2 August 2026
+Copyright: © 2026 by the authors.
+Licensee MDPI, Basel, Switzerland.
+This article is an open access article
+distributed under the terms and
+conditions of the Creative Commons
+Attribution (CC BY) license.
+Article
+Digital Twin Model Reconstruction and Environmental Load
+Analysis of the Umbrella-Shaped Tensile Membrane Structure
+Based on 3D Point Clouds
+Qiu Yu 1,2
+ , Xin Zhang 3,*
+ , Zhiyang Jia 2,4
+ and Chen Peng 2,4
+1 School of Computer Science and Technology, China University of Mining and Technology,
+Xuzhou 221116, China; yuqiucumt@cumt.edu.cn
+2 School of Artificial Intelligence, China University of Mining and Technology, Xuzhou 221116, China;
+02232004@cumt.edu.cn (Z.J.); 02243532@cumt.edu.cn (C.P .)
+3 School of Information and Control Engineering, China University of Mining and Technology,
+Xuzhou 221116, China
+4 School of Mechanics and Civil Engineering, China University of Mining and Technology,
+Xuzhou 221116, China
+* Correspondence: zhangxin1994@cumt.edu.cn
+Abstract
+Actual construction errors and accumulated damage seriously affect the spatial structural
+form of the tensile membrane structure, making it difficult to characterize the full-life spatial
+form of the physical tensile membrane structure based on the original theoretical model.
+There are still significant challenges in achieving the virtual–real correspondence of digital
+twin results based on the original theoretical design model. It is necessary to propose a high-
+precision digital twin model construction method that adapts to the full life cycle of the
+tensile membrane structure. For this reason, a refined digital twin model reconstruction and
+morphological deviation visualization method for the umbrella-shaped tensile membrane
+structure combined with 3D point clouds, computational geometry algorithms, and 3D3S
+finite element simulation modeling is proposed in this paper. Firstly, three-dimensional
+point cloud data of the umbrella-shaped membrane structure test bench were acquired,
+and the point cloud data were accurately registered based on the Iterative Closest Point
+(ICP) algorithm. Secondly, the physical membrane surface reconstruction was obtained by
+applying the Screened Poisson Surface Reconstruction (SPSR) algorithm. Subsequently, the
+3D3S theoretical model of the umbrella-shaped tensile membrane structure was updated
+according to the contour of the measured membrane surface reconstruction model. Finally,
+global spatial geometric morphological deviation was compared among the theoretical
+models and the reconstructed physical model. Furthermore, different environmental
+load combinations were analyzed to support hazard warning of the refined digital twin
+model of the physical umbrella-shaped tensile membrane structure. The results show
+that the maximum spatial form deviation of the original theoretical model was 43.56 mm,
+whereas the maximum form deviation of the updated theoretical model was only 0.05 mm.
+The updated theoretical model accurately reflected the spatial form characteristics of the
+physical membrane structure and satisfied the requirement for digital twin physical–virtual
+consistency. In addition, the global stress distribution between the original/updated
+theoretical models differed markedly, and the updated theoretical model is more suitable
+for identifying weak areas and evaluating safety performance of the actual umbrella-shaped
+tensile membrane structure under different ultimate environmental loads.
+Appl. Sci. 2026, 16, 7658 https://doi.org/10.3390/app16157658
+Appl. Sci. 2026, 16, 7658 2 of 29
+Keywords: digital twin; 3D point cloud; three-dimensional model reconstruction;
+spatial geometric morphological deviation; environmental load analysis; tensile membrane
+structure
+1. Introduction
+A digital twin is a virtual counterpart of a physical entity that supports bidirec-
+tional and real-time data mapping and seamless switching between physical and virtual
+domains [1,2]. Grieves [1] first proposed a three-dimensional model integrating the phys-
+ical entity, the virtual entity, and their interactive connection. With the development of
+application demands, digital twin models have been continuously updated for different
+application scenarios [ 2]. Tao [ 3] proposed a five-dimensional digital twin model and
+systematically analyzed its application domains, levels, disciplines, dimensions, generality,
+and functions. Owing to its integrated monitoring, control, and prediction capabilities, dig-
+ital twin technology has become prominent in manufacturing [4]. Against the background
+of domestic intelligent development strategies, digital twin technology has gradually ex-
+panded from manufacturing to the construction industry and has become one of the key
+technologies supporting the transformation of traditional construction toward intelligent
+construction [5].
+Although research on digital twins in the construction field has grown rapidly, existing
+studies remain highly fragmented and regionally oriented [6]. Congiu [7] developed a digi-
+tal twin system framework to support facility managers in decision-making by effectively
+integrating Building Information Modeling (BIM) and Internet of Things (IoT). For intelli-
+gent construction services, Pan [5] developed a detailed digital twin framework containing
+physical models, virtual models, and connected data by integrating BIM, IoT, and data min-
+ing (DM) techniques. Oti [8] used laser scanners and cameras to acquire real-time building
+data and established a building energy-consumption feedback loop, which reduces the
+gaps between different building life-cycle stages through continuous correction of design
+and facility management in the digital twin environment. Yu [9] proposed an intelligent
+operation and maintenance scheme for urban roads based on multi-source spatiotemporal
+monitoring data. Song [10] developed a conceptual framework that integrates digital twins
+with BIM, aiming to extend BIM applications from design and construction stages to the en-
+tire life cycle of bridge engineering through real-time data interaction and intelligent asset
+management. Based on data integration, synchronization, and analysis, Lu [11] designed a
+building–city digital twin model to support anomaly detection, environmental monitoring,
+maintenance optimization, prioritization, and energy planning. Qi [12] proposed a digital
+twin framework for transmission towers by integrating BIM, IoT, and the Finite Element
+Method (FEM), which supports analysis of structural health monitoring and visual warning
+under wind loads and flood scouring. These studies indicate that the integration of digital
+twins with DM, IoT, BIM, and FEM can enable multi-source data fusion and in-depth data
+mining, and further reduce carbon footprints, improve indoor environmental quality, and
+enhance resource utilization and energy efficiency [13,14].
+Although existing studies show that digital twins are evolving from static BIM toward
+dynamic decision-support systems, simulation modeling methods remain central to their
+implementation. Digital modeling technology is a core method for virtual-environment
+modeling and is also a primary approach for digital twin modeling. Based on geometric
+modeling technology, a virtual mapping platform for physical entities can be established
+and formed as data carriers by constructing geometric models of various physical entities.
+Digital twins currently have moved from theoretical research to engineering applications,
+https://doi.org/10.3390/app16157658
+Appl. Sci. 2026, 16, 7658 3 of 29
+and their successful implementation depends on the construction of digital twin models
+adapted to specific objects [15]. Liu [16] proposed a digital twin modeling method based on
+biomimicry and realized adaptive construction of a multi-physics digital twin for machin-
+ing processes. Jian [17] proposed a STEP-based 3D model recommendation method that
+integrates quaternion semantic diffusion with parameter diffusion to improve the efficient
+exchange, retrieval, and reuse of digital twin models. Arvanitis [18] proposed a robust and
+computationally efficient 3D saliency mapping method that integrates spectral and geo-
+metric information to accurately identify significant geometric features in noisy industrial
+3D models. Achour [19] developed a collaborative semantic mapping framework that inte-
+grates asynchronous semantic maps generated by multiple mobile robots to incrementally
+update and synchronize digital twins of controlled indoor environments. Gopalakrish-
+nan [20] introduced process modeling and characterization technology to capture stress
+distributions in manufacturing processes and applied it to turbine-disk component design
+and digital twin life-cycle analysis. Hu [21] constructed an integral blisk digital twin model,
+and proposed a real-time calibration method for blisk dynamic characteristics. Liang [22]
+proposed a real-time displacement perception method, and constructed a theoretical dis-
+placement perception model based on multi-point camera observations, which enables one
+to drive the twin model to map the real state of the physical environment and supports
+intelligent algorithms for manufacturing-state prediction and control.
+Compared with conventional building structures, inspection and evaluation tech-
+nologies for the tensile membrane structure remain relatively underdeveloped, making it
+difficult to provide long-term and effective technical support for safe operation. Analysis
+of the above studies indicates that the primary task in implementing a digital twin is to
+create an accurate reconstructed digital twin model for the application object. An accurate
+structural twin model has become an indispensable tool for assessing load-bearing capacity,
+safety, and maintenance during the structural full life cycle [ 23,24]. In order to conduct
+reliable load-effect analysis and structural safety assessment for tensile membrane struc-
+tures, the key requirement is to establish an accurate reverse-modeled digital twin model
+that conforms to the spatial form of the real in-service structure. Up to now, a common
+problem in the design and construction of domestic tensile membrane structures is the
+disconnection between construction and structural design, which leads to serious accumu-
+lation of construction errors. In addition, environmental corrosion, material aging, load
+fatigue, and overload effects caused by emergencies may occur during service life, resulting
+in damage accumulation and resistance degradation and thus significantly affecting the
+structural spatial geometric form. Therefore, when structural performance analysis and
+safety inspection are carried out for a physical tensile membrane structure, the original
+theoretical design model can no longer adequately represent the physical structure. Digital
+simulation results based on the original theoretical design model may differ considerably
+from those of the actual structure, making it difficult to construct a high-fidelity model and
+achieve physical–virtual consistency. Therefore, it is necessary to use intelligent monitoring
+methods to perform refined reconstruction of the physical tensile membrane structure, and
+to support full-life-cycle morphology monitoring and safety inspection.
+To address these challenges, this paper integrates three-dimensional point clouds,
+3D3S modeling, geomagic modeling, and FEM environmental load analysis to investigate
+refined digital twin model reconstruction, spatial form deviation visualization, and nonlin-
+ear structural analysis under different load combinations for an umbrella-shaped tensile
+membrane structure. This work can provide a reference for the full-life-cycle monitoring of
+digital twins in tensile membrane structures. The main contributions are as follows:
+https://doi.org/10.3390/app16157658
+Appl. Sci. 2026, 16, 7658 4 of 29
+1. A digital twin model test platform for the umbrella-shaped tensile membrane structure
+was built in this work, achieving real-time acquisition of three-dimensional spatial point
+cloud data information of the physical umbrella-shaped tensile membrane structure.
+2. By integrating 3D point cloud scanning technology, ICP algorithm, SPSR algorithm,
+3D3S modeling, and Geomagic modeling methods, a refined digital twin model and an
+updated structural theoretical model for the umbrella-shaped tensile membrane struc-
+ture are constructed. This enables visualization of spatial geometric form deviations
+in the entire domain of the umbrella-shaped tensile membrane structure.
+3. Based on the original/updated theoretical model of the umbrella-shaped tensile mem-
+brane structure, the changes in the bearing capacity of the umbrella-shaped tensile
+membrane structure theoretical models under different load-combination conditions
+are investigated, which provides the possibility for realizing danger warning of the
+physical umbrella-shaped tensile membrane structure.
+2. Methodology
+The tensile membrane structure has the typical characteristics of a large-scale and
+complex configuration. Traditional measurement methods struggle to meet the data require-
+ments of full scale and high accuracy. 3D reverse modeling based on 3D point cloud can not
+only achieve fast and comprehensive spatial information collection, but also provide data
+support for structural construction quality control, deformation analysis, and structural
+health monitoring. It can efficiently generate digital twin reconstruction models that are
+consistent with physical entities, which provides a data foundation and model basis for
+performance evaluation and optimization design of existing structures.
+2.1. 3D Point Cloud Registration Methodology
+An independent three-dimensional coordinate system is established when an object
+is scanned using a laser scanning system. In this coordinate system, the laser scanner
+is generally taken as the coordinate origin o, the laser scanning direction is defined as
+the Y axis, the axis in the scanning plane perpendicular to the Y axis is defined as the X
+axis, and the Z axis is perpendicular to the scanning plane. α is the horizontal scanning
+angle, representing the rotation angle of the laser beam in the horizontal plane relative to
+a reference direction, and typically rotating about the vertical axis of the scanner. θ is the
+vertical scanning angle, representing the elevation or depression angle of the laser beam
+relative to the horizontal plane. The horizontal scanning angle and vertical scanning angle
+θ can then be obtained using a precision-clock-controlled encoder. Each coordinate point
+can be calculated as shown in Equation (1).
+
+
+
+X = R cos θ cos α
+Y = R cos θ sin α
+Z = R sin θ
+(1)
+where R is the slant distance between the point in the scanned object’s point cloud and the
+coordinate origin O.
+However, a single scanning station cannot capture structural full-scene three-
+dimensional point cloud information in most scenarios. Therefore, the laser scanner should
+be placed at multiple stations to collect structural global three-dimensional geometric infor-
+mation. In general, a denser three-dimensional point cloud acquired by the laser scanner
+provides a more complete representation of the scanned object. According to the laser
+scanning system principle described above, the point cloud data acquired from multiple
+scanner stations are located in different relative coordinate systems. Therefore, multiple
+groups of point cloud data should be registered to construct a complete and accurate point
+https://doi.org/10.3390/app16157658
+Appl. Sci. 2026, 16, 7658 5 of 29
+cloud model of the scanned object. As a commonly used precise point cloud registration
+method, the Iterative Closest Point (ICP) algorithm was proposed by Besl in 1992 [ 25].
+This method repeatedly searches for the nearest point correspondence between two sets
+of point clouds on the basis of existing 3D point cloud data, and estimates the optimal
+rigid body transformation, so that the source point cloud gradually approaches the target
+point cloud. As the mainstream rigid body registration algorithm for precise registration of
+flexible surface point clouds, the ICP algorithm is adapted to the rigid registration of the
+three-dimensional point cloud data of the umbrella-shaped tensile membrane structure.
+Define the source point cloud (local point cloud of the membrane surface to be spliced)
+as P =
+
+pi ∈ R3, i = 1, 2, . . . ,n
+ 
+and the target point cloud (reference membrane surface
+point cloud) as Q =
+
+qi ∈ R3, j = 1, 2, . . . ,n
+ 
+. The objective of the ICP algorithm is to solve
+for the optimal rotation matrix R ∈ SO(3) and translation vector t ∈ R3, and minimize the
+mathematical expression of the mean square error of the Euclidean distance corresponding
+to the two sets of point clouds, as shown in Equation (2). The corresponding target loss
+function is constructed as shown in Equation (3).
+E(R, t) =
+N
+∑
+i=1
+Rp i + t − qj
+2 (2)
+(R∗, t∗) = arg min
+R,t
+N
+∑
+i=1
+Rp i + t − qj
+2 (3)
+where R is the rotation matrix. t is the translation vector. Rp i + t is the new coordinate
+obtained by transforming the source point pi through the rotation matrix R and translation
+vector t. Rp i + t − qj is the three-dimensional error vector between the transformed source
+point and its corresponding target point. N is the number of valid corresponding point
+pairs participating in the current iteration. R∗ is the optimal rotation matrix, and t∗ is the
+optimal translation vector.
+The evaluation index based on three-dimensional point cloud rigid transformation
+estimation is mainly used to evaluate the accuracy between the point cloud obtained by
+rigid transformation and the true value. The commonly used evaluation index is root mean
+square error, which is mathematically expressed as Equation (4). The root mean square
+error represents the average absolute error between the true value and the predicted value.
+RMSE =
+s
+1
+m
+m
+∑
+i=1
+(yi − ˆyi)2 (4)
+where N is the number of corresponding point cloud data,yi is the transformed point cloud
+data, and ˆyi is the source point cloud data.
+2.2. Three-Dimensional Membrane Reconstruction Theory
+Membrane surface reconstruction of the umbrella-shaped tensile membrane structure
+is based on the three-dimensional point cloud geometric topology information of the phys-
+ical membrane surface to reconstruct the spatial geometric form characteristics. Poisson
+surface reconstruction algorithms are widely valued for high-fidelity scene reconstruction
+capabilities [26]. The main idea of the Poisson surface reconstruction algorithm is to estab-
+lish an intrinsic relationship between the scanned object point cloud sample set S and the
+scalar indicator function χ of the scanned object, so that the surface reconstruction can be
+transformed into a benign sparse dynamic Poisson equation solving problem, and then the
+reconstructed target object can be obtained by extracting the isosurface. Briefly, Poisson
+surface reconstruction algorithms transform the reconstruction into a global problem, and
+complete the spatial reconstruction of the directed point set by solving the Poisson function
+https://doi.org/10.3390/app16157658
+Appl. Sci. 2026, 16, 7658 6 of 29
+and extracting isosurfaces. When reconstructing the surface of the target object based on the
+Poisson surface reconstruction algorithm, an intrinsic relationship is established between
+the sample model point cloud set S and the implicit function χ to establish an isosurface
+threshold γ, as shown in Equation (5). The energy functional mathematical expression
+corresponding to the Poisson surface reconstruction algorithm is shown in Equation (6).
+S =
+n
+x ∈ R3 χ(x) = γ
+o
+(5)
+E(χ) =
+Z
+Ω
+∥∇χ(x) − V(x)∥2dx (6)
+The Poisson surface reconstruction method was first proposed by Kazhdan in 2006 [26].
+Afterwards, this team further improved the Poisson surface reconstruction algorithm and
+proposed the screened Poisson surface reconstruction (SPSR) algorithm [27]. Compared
+with the performance of the traditional Poisson surface reconstruction (TPSR) algorithm,
+the SPSR algorithm not only improved the processing speed, but also reduced the algorithm
+computational time complexity. The SPSR algorithm, as a subsequent improved version
+of the TPSR algorithm, explicitly adds point position constraints outside the Poisson
+smoothing term to improve the geometric fidelity of the reconstructed model and reduce
+the possibility of the reconstructed model deviating from the original sampling points
+due to excessive smoothing. Its corresponding energy function expression is shown in
+Equation (7). Therefore, the SPSR algorithm is adopted as the main algorithm for the
+three-dimensional reconstruction of the membrane surface in the umbrella-shaped tensile
+membrane structure in this paper, and the TPSR algorithm is applied as a comparison case.
+E(χ) =
+Z
+Ω
+∥∇χ(x) − V(x)∥2dx + λ
+N
+∑
+i=1
+wi(χ(pi) − ci)2 (7)
+where
+R
+Ω∥∇χ(x) − V(x)∥2dx is the smoothness term of the surface reconstruction algo-
+rithm, which is used to ensure the overall smoothness and normal consistency of the
+reconstructed curve. λ ∑N
+i=1 wi(χ(pi) − ci)2 is a positional constraint term used to constrain
+the implicit function to satisfy a given function value near the sampling point. λ is the
+filtering weight that controls the balance between fitting point clouds and smoothing curves.
+wi is the point weight, and ci is the implicit function value of the target corresponding to
+the sampling point.
+In terms of 3D reconstruction evaluation metrics, the point cloud coverage ratio, radius
+variation coefficient, and height standard deviation are commonly used as performance
+indicators to evaluate surface reconstruction algorithms. The point cloud coverage ratio
+represents whether the points in the input point cloud are covered by the reconstructed
+mesh surface. The coefficient of variation of the radius indicates that there is almost no ob-
+vious ellipticization, local convexity or boundary distortion at the edge of the reconstructed
+structure. The height standard deviation implies that the reconstructed structure has a
+smooth and stable edge, and the reconstruction algorithm does not produce significant
+fluctuations in Equation (9) and Equation (10), respectively.
+Ck = 1
+N
+N
+∑
+i=1
+[d(pi, SR) < k¯s] × 100% (8)
+CVτ = στ
+¯τ × 100% (9)
+https://doi.org/10.3390/app16157658
+Appl. Sci. 2026, 16, 7658 7 of 29
+σz =
+vuut 1
+N
+N
+∑
+i=1
+(zi − ¯z)2 (10)
+where N is the number of points participating in the evaluation in the input point cloud; pi
+is the i-th point in the input point clouds; SR is the reconstructed mesh surface; d(pi, SR)
+is the shortest Euclidean distance from the point to the reconstructed surface SR; ¯s is the
+average point spacing or average sampling spacing of the input point clouds; k is the
+dimensionless distance threshold coefficient; and k¯s is the distance threshold to judge
+whether the point cloud is effectively covered by the reconstructed surface. ¯r is the average
+of the radius of all edge sampling points, and στ is the standard deviation of the radius of
+edge sampling points. zi is the height of the i-th sampling point relative to the reference
+plane, and ¯z is the average height of all participating evaluation points.
+2.3. Finite Element Theoretical Model Modification Theory
+Finite element model modification is usually achieved by optimizing model param-
+eters to ensure that the predicted finite element results are consistent with the measured
+target results within the allowable deviation range. The model modification in classical
+structural dynamics is often based on modal test results such as frequency and mode shape.
+However, the large-span tensile membrane structure adopts coated fabric membrane mate-
+rials and auxiliary support structures to form a stress-controlled spatial structure through
+the tensioning method, as shown in Equation (11). From the perspective of structural
+mechanics, the core difference between tensile membrane structures and traditional rigid
+structures lies in their highly nonlinear mechanical characteristics of shape changing with
+stress. The spatial geometric configuration state of the membrane surface is an equilibrium
+form constrained by both prestress and boundary conditions. Therefore, the measured
+three-dimensional point cloud of the membrane surface is not only geometric data, but
+also indirectly reflects the comprehensive influence of various factors such as construction
+errors, material degradation, and prestress loss.
+As shown in Equation (12), the membrane surface reconstructed based on three-
+dimensional point clouds described in Section 2.2 does not actually have mechanical
+properties. Therefore, it is necessary to use 3D3S simulation software, Version 10 [ 28]
+combined with a membrane surface reconstruction model based on the 3D point cloud,
+in order to minimize the shape error between the theoretical model and the measured
+physical model, as shown in Equation (13). In response to the finite element theoretical
+model modification of the umbrella-shaped tensile membrane structure studied in this
+paper, the membrane surface coordinates reconstructed from the 3D point cloud were
+selected as the target data to modify the finite element model. The updated theoretical
+model is close to the spatial geometry of the membrane surface and satisfies the mechanical
+equilibrium of the tensile membrane structure. Compared to the original theoretical model,
+the stress distribution of the updated theoretical model is closer to the actual membrane
+surface of the umbrella-shaped tensile membrane structure.
+S0 = S(u0; δ0) (11)
+SR =
+n
+x ∈ R3 fθ(x) = 0
+o
+(12)
+δ∗ = arg min
+δ
+D[S0(δ), SR(x)] (13)
+where S0 is the initial theoretical membrane surface, which is the theoretical design mem-
+brane surface before correction; u0 is the initial displacement state vector; δ0 is the ini-
+tial model parameter vector; SR is the reconstructed membrane surface based on three-
+https://doi.org/10.3390/app16157658
+Appl. Sci. 2026, 16, 7658 8 of 29
+dimensional point clouds; x represents the position vector in three-dimensional space; fθ(x)
+is the continuous implicit scalar function reconstructed from the screened Poisson surface;
+θ is the parameter set of the implicit function fθ. δ∗ is the modified model parameter
+vector; D[] is the distance measure between the theoretical membrane surface model and
+the three-dimensional reconstructed membrane surface.
+2.4. Global Deviation Analysis Between the Theoretical Reference Model and the Physical
+Measurement Model
+Geomagic software, version 2014 has been widely used in research fields such as
+3D metrology, detection, and deviation quantification due to its powerful 3D computing
+capabilities. Geomagic software also developed software interfaces for CAD and CAM,
+which can achieve data sharing and fast processing between multiple software through
+setting plugins, and complete 2D or 3D geometric measurement graphic comparison.
+When conducting global deviation analysis on two models in Geomagic software, the
+essence is to analyze their geometric distance fields in three-dimensional space. When
+comparing the two models in three dimensions, geomagic software calculates a deviation
+value for each data point in the measurement data; that is, each measurement point has a
+measurement position Pm. By projecting the direction, the reference position Pr is found,
+and then the gap vector is obtained by pointing Pr to Pm. The deviation value of this point
+is then calculated, and the mathematical expressions are shown in Equations (14) and (15).
+In this work, Geomagic software is applied to quantitatively analyze and compare the
+spatial geometric deviations among the original theoretical model, the physically measured
+reconstruction model and the updated theoretical model of the umbrella-shaped tensile
+membrane structure.
+⃗gi = Pm,i − Pr,i (14)
+di = ∥⃗gi∥ (15)
+where Pm,i is the i-th sampling point on the measurement model; Pr,i is the corresponding
+position point on the reference model; ⃗gi is the gap vector; and di is the deviation value of
+the comparison sampling point.
+2.5. The Overall Technical Flowchart of the Proposed Method
+Construction errors and accumulated damage significantly affect the spatial geometric
+configuration of the tensile membrane structures. Consequently, digital simulation results
+based on the original theoretical design model are difficult to use for constructing a high-
+fidelity model, and physical–virtual consistency of the structural digital twin cannot be
+achieved. In this paper, an umbrella-shaped tensile membrane structure was used as the
+research object, and a digital twin test platform was established in this work. The refined
+membrane surface digital twin model reconstruction and hazard warning were investigated
+by integrating three-dimensional point cloud data, the ICP algorithm, the SPSR algorithm,
+Geomagic software, and 3D3S finite element nonlinear load analysis. The overall technical
+route of this paper is shown in Figure 1.
+https://doi.org/10.3390/app16157658
+Appl. Sci. 2026, 16, 7658 9 of 29
+Figure 1. Overall technical flowchart of the method proposed in this paper.
+3. Data Collection and Preprocessing
+3.1. Digital Twin Test Bench for the Umbrella-Shaped Tensile Membrane Structure and 3D Point
+Cloud Data Acquisition
+A Leica P30/P40 ultra-high-speed three-dimensional laser scanner (Leica Geosystems
+AG, Heerbrugg, Switzerland) was used to perform three-dimensional point cloud scanning
+of the umbrella-shaped tensile membrane structure. The technical parameters of the
+Leica P30/P40 ultra-high-speed three-dimensional laser scanner are shown in Table 1. In
+this paper, the rise span ratio of the umbrella-shaped tensile membrane structure built
+independently is 0.4, the top cap size is 300 mm, the longitudinal height is 380 mm, and
+the bottom side length of the square membrane surface is 950 mm. The original theoretical
+model and the built physical structure test bench of the umbrella-shaped tensile membrane
+structure are shown in Figure 2. The membrane material used in the umbrella-shaped
+tensile membrane structure test bench is 250T PVC membrane material, and the mechanical
+parameters of the membrane material are shown in Table 2.
+Table 1. Technical parameters of the Leica ultra-high-speed 3D laser scanner.
+Equipment
+Model
+Leica P30/P40 Ultra-High-Speed
+Three-Dimensional Laser Scanner
+Effective Scanning
+Distance
+270 m@34%
+Reflectivity
+Angle measuring
+accuracy 8” Laser category Class I
+Distance measuring
+accuracy 1.2 mm + 10 ppm Target acquisition accuracy 2 mm@50 m
+Scanning speed 1,000,000 points/s Airborne target acquisition range ≥75 m
+Noise accuracy 0.5 mm@50 m Precision biaxial
+compensation accuracy 1.5”
+https://doi.org/10.3390/app16157658
+Appl. Sci. 2026, 16, 7658 10 of 29
+(a)
+ (b)
+Figure 2. Schematic diagrams of the original theoretical model and the physical structure test bench
+of the umbrella-shaped tensile membrane structure. (a) The original theoretical design model test
+bench. (b) The built physical structure test bench.
+Table 2. Mechanical parameters of the 250T PVC membrane material.
+Material
+Category
+Thickness
+(mm)
+Areal
+Density
+(g/m2)
+Tensile Strength
+(kN/m)
+Elastic Modulus
+(N/mm) Poisson’s
+RatioWarp Direction Weft Direction Warp Direction Weft Direction
+250T 0.87 1046 112 94 996 840 0.2
+In terms of structural configuration, the umbrella-shaped tensile membrane structure
+was a special-shaped curved structure with an irregular spatial form. Owing to the per-
+spective limitation, its complete structural information could not be obtained from a single
+scan during three-dimensional point cloud acquisition. Therefore, different stations were
+arranged in a ring around the tensile membrane structure, and the structure was scanned in
+batches at specified angular intervals. Considering the structural scale of the experimental
+platform established in this paper, each acquisition station was arranged at every 45-degree
+interval around the umbrella-shaped tensile membrane structure, as shown in Figure 3.
+(a)
+ (b)
+Figure 3. Station design and field test for acquiring the three-dimensional point cloud of the umbrella-
+shaped tensile membrane structure. (a) Design scheme for eight scanning stations. (b) Field site of
+3D point cloud scanning.
+To ensure that the acquired point cloud data of the tensile membrane spatial struc-
+ture had the same shape and size and differed only in coordinate position, the scanning
+equipment was kept horizontally fixed throughout the acquisition process. This prevented
+https://doi.org/10.3390/app16157658
+Appl. Sci. 2026, 16, 7658 11 of 29
+shaking or movement and avoided non-rigid transformations among the scanned point
+cloud datasets, which could otherwise affect subsequent registration. The point cloud
+data of the umbrella-shaped tensile membrane structure acquired from eight different
+stations using the three-dimensional laser scanner were processed using Cyclone point
+cloud analysis software, Version 9.2.0 provided with the Leica scanner,(Leica Geosystems
+AG, Heerbrugg, Switzerland) as shown in Figure 4.
+(a)
+ (b)
+ (c)
+ (d)
+(e)
+ (f)
+ (g)
+ (h)
+Figure 4. Three-dimensional point cloud data of the umbrella-shaped tensile membrane structure
+from eight different stations. ( a) Station 1. ( b) Station 2. ( c) Station 3. ( d) Station 4. ( e) Station 5.
+(f) Station 6. (g) Station 7. (h) Station 8.
+3.2. Preprocessing of 3D Point Cloud Data for the Umbrella-Shaped Tensile Membrane Structure
+As shown in Figure 5, the initial three-dimensional point cloud data acquired from the
+eight stations effectively characterizes the spatial geometric form of the physical umbrella-
+shaped tensile membrane structure. However, a large amount of noise data was inevitably
+acquired during point cloud acquisition, including non-target point clouds from objects
+other than the observed umbrella-shaped tensile membrane structure, such as other labora-
+tory equipment, and moving objects. Noise points among the initial point cloud data were
+manually removed by using Cyclone software, and the membrane surface point cloud data
+of eight stations after data preprocessing are shown in Figure 5.
+(a)
+ (b)
+ (c)
+ (d)
+(e)
+ (f)
+ (g)
+ (h)
+Figure 5. Three-dimensional point cloud data of the umbrella-shaped tensile membrane structure
+from eight stations after data preprocessing. (a) Station 1. (b) Station 2. (c) Station 3. (d) Station 4.
+(e) Station 5. (f) Station 6. (g) Station 7. (h) Station 8.
+https://doi.org/10.3390/app16157658
+Appl. Sci. 2026, 16, 7658 12 of 29
+4. Experiment and Discussion
+4.1. 3D Point Cloud Data Registration of the Umbrella-Shaped Tensile Membrane Structure
+After the above point cloud data were obtained, point cloud registration was required
+to construct a complete three-dimensional point cloud model of the umbrella-shaped
+tensile membrane structure. In this paper, a point cloud registration method based on
+FPFH feature coarse registration, point-to-surface ICP registration, and pose map global
+optimization is adopted to achieve the stitching of multi-view membrane surface point
+clouds. The specific parameters and process of registering membrane surface point clouds
+using the ICP algorithm based on point-to-surface reconstruction are shown in Figure 6.
+Point cloud registrations were carried out based on the membrane surface point cloud
+dataset of the umbrella-shaped tensile membrane structure, and the visualization and
+registration indicator results are shown in Figure 7 and Table 3.
+Figure 6. Parameters and flowchart of the ICP algorithm adopted in this paper.
+https://doi.org/10.3390/app16157658
+Appl. Sci. 2026, 16, 7658 13 of 29
+(a)
+(b)
+Figure 7. Registration effect of the membrane surface point cloud of the umbrella-shaped tensile
+membrane structure. (a) Initial positions of the membrane surface point clouds at different sites before
+registration. (b) Spatial geometric shape of the membrane surface point cloud after registration.
+Table 3. Comparison of registration indicators for membrane surface point clouds at eight stations
+based on ICP algorithm.
+Station 1 & Station 2 Station 1 & Station 3 Station 1 & Station 4 Station 1 & Station 5
+Fitness RMSE Fitness RMSE Fitness RMSE Fitness RMSE
+0.6005 0.002050 0.8733 0.004422 0.6381 0.003400 0.9576 0.002800
+0.5900 0.001847 0.5379 0.002550 0.5142 0.002364 0.8717 0.002208
+Station 1 & Station 6 Station 1 & Station 7 Station 1 & Station 8 Station 2 & Station 3
+Fitness RMSE Fitness RMSE Fitness RMSE Fitness RMSE
+0.5964 0.002905 0.9436 0.003567 0.5875 0.002977 0.9032 0.002019
+0.5396 0.002178 0.7204 0.002411 0.5122 0.002167 0.8881 0.001831
+Station 2 & Station 4 Station 2 & Station 5 Station 2 & Station 6 Station 2 & Station 7
+Fitness RMSE Fitness RMSE Fitness RMSE Fitness RMSE
+0.9343 0.003471 0.8767 0.002790 0.9890 0.002865 0.8876 0.002959
+0.7492 0.002398 0.7860 0.002118 0.8796 0.002286 0.7845 0.002198
+Station 2 & Station 8 Station 3 & Station 4 Station 3 & Station 5 Station 3 & Station 6
+Fitness RMSE Fitness RMSE Fitness RMSE Fitness RMSE
+0.9783 0.003072 0.6076 0.002017 0.8895 0.004692 0.5697 0.002570
+0.8451 0.002278 0.5989 0.001843 0.4907 0.002508 0.5313 0.002218
+Station 3 & Station 7 Station 3 & Station 8 Station 4 & Station 5 Station 4 & Station 6
+Fitness RMSE Fitness RMSE Fitness RMSE Fitness RMSE
+0.9676 0.003241 0.5627 0.003092 0.8294 0.002037 0.8937 0.003672
+0.7763 0.002482 0.4847 0.002274 0.8145 0.001821 0.7049 0.002451
+Station 4 & Station 7 Station 4 & Station 8 Station 5 & Station 6 Station 5 & Station 7
+Fitness RMSE Fitness RMSE Fitness RMSE Fitness RMSE
+0.9531 0.002582 0.9334 0.002588 0.5527 0.002013 0.9316 0.003992
+0.9039 0.002353 0.8783 0.002278 0.5446 0.001832 0.6176 0.002520
+https://doi.org/10.3390/app16157658
+Appl. Sci. 2026, 16, 7658 14 of 29
+Table 3. Cont.
+Station 5 & Station 8 Station 6 & Station 7 Station 6 & Station 8 Station 7 & Station 8
+Fitness RMSE Fitness RMSE Fitness RMSE Fitness RMSE
+0.5716 0.002719 0.8883 0.002083 0.9676 0.003184 0.5683 0.002016
+0.5285 0.002311 0.8677 0.001820 0.8246 0.002287 0.5595 0.001831
+As shown in Figure 7 and Table 3, the point cloud data of each station has achieved
+good coincidence in the overall spatial position when the registration of membrane point
+cloud data obtained from different measurement stations is completed based on the ICP
+algorithm. The point cloud distribution in the main area of the membrane surface is
+continuous, and the outer boundary and central opening contour are clear. The spatial
+curvature and overall undulating shape of the membrane surface are well preserved in the
+lateral view. This also indicates that the ICP algorithm can effectively eliminate the initial
+position and pose differences between the clouds of multiple measurement stations, and
+the registered point cloud basically reflects the real spatial shape of the umbrella-shaped
+tensile membrane structure, which can provide a reliable data basis for the membrane
+surface reconstruction and morphological deviation analysis.
+It can also be found from Figure 7 that a small number of discrete points and reduced
+local coincidence can still be observed near the local edge, the central opening and the area
+with sparse point clouds of the membrane surface. The main reason for this phenomenon
+is the lack of complete neighborhood geometric constraints in the edge and opening area
+of the membrane surface, and the limited visible range and effective overlapping area of
+different stations at these positions. This makes it difficult for the ICP algorithm to establish
+a stable and unique point correspondence. Because the ICP algorithm relies on the nearest
+neighbor correspondence and aims to minimize the overall distance error, local low overlap,
+non-uniform density and abnormal points may make some point clouds converge to the
+local optimal position and present local discrete phenomena.
+4.2. Membrane Surface Reconstruction in the Umbrella-Shaped Tensile Membrane Structure
+After obtaining the complete point cloud data of the registered membrane surface, the
+three-dimensional model of the membrane surface is required to be reconstructed based
+on the spatial geometric features. The SPSR algorithm is adopted as the main algorithm
+for the three-dimensional reconstruction of the membrane surface in the umbrella-shaped
+tensile membrane structure in this paper. The corresponding parameter settings and
+membrane surface three-dimensional reconstruction process are shown in Figure 8. The
+TPSR algorithm and the SPSR algorithm were adopted to perform membrane surface
+reconstruction of the umbrella-shaped tensile membrane structure. The corresponding
+reconstruction results are shown in Figures 9 and 10 and Table 4.
+As illustrated in Figure 9, the TPSR algorithm can effectively reconstruct the spatial
+geometry of the membrane surface during 3D reconstruction, and the overall membrane
+surface reconstruction is relatively smooth and stable. However, the TPSR algorithm has
+certain shortcomings in expressing membrane surface boundaries and local details. Due to
+the emphasis on global smoothness in this method, it is easy to weaken the local geometric
+changes in the original membrane surface point cloud during the reconstruction process,
+which results in excessive smoothing of the membrane surface edge region, and incomplete
+preservation of some boundary undulations and local curvature features. It is worth noting
+that both boundary morphology and local curvature changes are important features for the
+umbrella-shaped tensile membrane structure, which reflect the spatial morphology of the
+membrane surface. Therefore, the TPSR algorithm has certain limitations in high-precision
+representation of the spatial geometric form of the membrane surface.
+https://doi.org/10.3390/app16157658
+Appl. Sci. 2026, 16, 7658 15 of 29
+Figure 8. Schematic diagram of the calculation process for the SPSR algorithm.
+Compared with the TPSR algorithm, the SPSR algorithm further introduces point
+cloud position constraints during the reconstruction process, making the reconstructed
+surface closer to the original sampling points while satisfying normal field consistency. As
+shown in Figure 10, the SPSR algorithm has a better reconstruction effect on the membrane
+surface spatial geometric form of the umbrella-shaped tensile membrane structure. The
+geometric features of the membrane surface bulge area, curvature transition area, and
+boundary droop area are more obvious, and the overall membrane surface reconstruction
+has a higher degree of compatibility with the original point cloud data. This indicates that
+the SPSR algorithm has better performance in preserving membrane surface details and
+restoring local morphology. Therefore, the SPSR algorithm can more effectively restore the
+spatial geometric features of the membrane surface while maintaining the overall continuity.
+https://doi.org/10.3390/app16157658
+Appl. Sci. 2026, 16, 7658 16 of 29
+The SPSR algorithm performs better in terms of original point cloud compatibility, local
+detail preservation, and boundary morphology expression, and is highly suitable for high-
+precision 3D reconstruction tasks of the membrane surface in the umbrella-shaped tensile
+membrane structure.
+(a)
+ (b)
+(c)
+ (d)
+Figure 9. Membrane surface reconstruction effect based on the TPSR algorithm. ( a) Side view 1.
+(b) Side view 2. (c) Side view 3. (d) Side view 4.
+(a)
+ (b)
+(c)
+ (d)
+Figure 10. Membrane surface reconstruction effect based on the SPSR algorithm. ( a) Side view 1.
+(b) Side view 2. (c) Side view 3. (d) Side view 4.
+In order to comparatively study the influence of different parameters in the SPSR
+algorithm on the membrane surface reconstruction quality, this paper adjusts the model
+depth to control the value in Equation (7), thereby governing the overall smoothness of
+the reconstructed membrane surface. Additionally, the point cloud sampling voxel size is
+tuned to reflect the value in Equation (7), which controls the overall fitting accuracy of the
+reconstructed membrane surface. The calculation results are presented in Table 5.
+https://doi.org/10.3390/app16157658
+Appl. Sci. 2026, 16, 7658 17 of 29
+Table 4. Surface reconstruction indicator comparison for membrane surface point clouds based on
+the TPSR algorithm and the SPSR algorithm.
+Algorithm Ck CVτ σε Computation Time
+TPSR algorithm 55.10% ± 0.14% 6.88% ± 0.10% 0.00698 ± 0.0008 32.5 s ± 0.24 s
+SPSR algorithm 100% ± 0.00% 1.13% ± 0.03% 0.00448 ± 0.00006 16.23 s ± 0.10 s
+Table 5. Parameter sensitivity analysis of membrane surface reconstruction performance based on
+the SPSR algorithm.
+Depth Voxel Size Ck CVr σz Computation Time
+10 0.005 100% 1.14% 0.00440 8.44 s
+11 0.005 100% 1.13% 0.00439 10.39 s
+12 0.005 100% 1.15% 0.00448 16.23 s
+13 0.005 100% 1.13% 0.00447 25.97 s
+14 0.005 100% 1.12% 0.00440 36.36 s
+0.002 12 100% 1.94% 0.00473 28.56 s
+0.003 12 100% 2.10% 0.00625 35.71 s
+0.004 12 100% 2.26% 0.00446 29.21 s
+0.005 12 100% 1.13% 0.00448 16.23 s
+0.006 12 100% 2.26% 0.00446 25.32 s
+As can be seen from Table 5, when the voxel size is fixed at 0.005, as the depth increases
+from 10 to 14, the point cloud coverage ratio remains 100% throughout, the radius variation
+coefficient fluctuates only within 1.12% to 1.15%, and the height standard deviation is
+also stable in the range of 0.00439–0.00448, indicating that the reconstruction accuracy
+is not sensitive to changes in the depth parameter. However, the train time increases
+significantly from 8.44 s to 36.36 s, suggesting that the computational efficiency is more
+sensitive to the depth parameter. In contrast, when the depth is fixed at 12, varying the
+voxel size from 0.002 to 0.006 also does not affect the reconstruction completeness, but
+the radius variation coefficient exhibits obvious fluctuations between 1.13% and 2.26%,
+and the height standard deviation increases to a maximum of 0.00625, indicating that the
+voxel size has a more pronounced effect on the reconstruction accuracy and stability of
+the membrane surface. Among the tested voxel sizes, a value of 0.005 yields a relatively
+low radius variation coefficient and height standard deviation, with a computation time of
+only 16.23 s. Therefore, considering reconstruction completeness, geometric accuracy, and
+computational efficiency comprehensively, a depth of 12 and a voxel size of 0.005 constitute
+the optimal parameter combination.
+Further comparison was made between the reconstructed membrane surface based
+on two surface reconstruction algorithms and the measured membrane surface 3D point
+cloud. The deviation distributions between the reconstructed membrane surface and the
+measured membrane surface point cloud are shown in Figure 11.
+From Figure 11a,c, it can be observed that the TPSR algorithm can effectively recon-
+struct the membrane surface of the umbrella-shaped tensile membrane structure with
+good continuity and smoothness. However, the overlap comparison with the original
+membrane surface point cloud shows that the TPSR algorithm has significant geometric
+deviations in the edge and top opening areas of the membrane surface, and local areas
+exhibit surface expansion and excessive smoothness. The reason for this phenomenon is
+that the TPSR algorithm mainly relies on global implicit functions for solving, emphasizing
+the overall continuity of the membrane surface, and has relatively insufficient constraint
+capabilities for open boundaries and local high-curvature areas. Therefore, although the
+TPSR algorithm can obtain a relatively complete three-dimensional surface model in the
+https://doi.org/10.3390/app16157658
+Appl. Sci. 2026, 16, 7658 18 of 29
+task of reconstructing the membrane surface of the umbrella-shaped tensile membrane
+structure, its ability to preserve the local geometric features of the original point cloud is
+limited, and there is still significant room for improvement in reconstruction accuracy and
+boundary fidelity.
+(a)
+ (b)
+(c)
+ (d)
+(e)
+ (f)
+Figure 11. Spatial geometry form comparison between 3D reconstructed membrane surface model
+and measured registered membrane surface point cloud. (a) Comparison between membrane surface
+reconstruction based on the TPSR algorithm and complete point cloud of the measured membrane
+surface. (b) Comparison between membrane surface reconstruction based on the SPSR algorithm
+and complete point cloud of the measured membrane surface. (c) Distance deviation between the
+reconstructed membrane surface based on the TPSR algorithm and measured membrane surface
+complete point cloud. (d) Distance deviation between the reconstructed membrane surface based on
+the SPSR algorithm and measured membrane surface complete point cloud. (e) Statistical histogram
+of distance deviation between the reconstructed membrane surface based on the TPSR algorithm and
+measured membrane surface complete point cloud. ( f) Statistical histogram of distance deviation
+between the reconstructed membrane surface based on the SPSR algorithm and measured membrane
+surface complete point cloud.
+From Figure 11b,d, it can be observed that the membrane surface model reconstructed
+based on the SPSR algorithm has a high degree of overlap with the original membrane
+surface point cloud. The overall surface shape of the reconstructed membrane surface
+is highly consistent with the actual spatial geometric features of the membrane surface
+of the umbrella-shaped tensile membrane structure. Compared to the TPSR algorithm,
+https://doi.org/10.3390/app16157658
+Appl. Sci. 2026, 16, 7658 19 of 29
+the SPSR algorithm further enhances the constraints on the top and bottom boundary
+positions of the original point cloud while maintaining surface continuity and smoothness,
+enabling the reconstructed membrane surface to more accurately fit the input point cloud
+data. Specifically, in the main area of the membrane surface, near the top opening, and
+in areas with significant curvature changes, the SPSR algorithm exhibits better geometric
+preservation ability and local fitting accuracy. Therefore, the SPSR algorithm has higher
+reconstruction accuracy and better morphological fidelity in the task of reconstructing the
+membrane surface of the umbrella-shaped tensile membrane structure.
+Comparisons among the original membrane point cloud data with a quantity of
+210,273 and the reconstructed membrane surface based on two surface reconstruction
+algorithms are completed in this paper. It can be observed from Figure 11e that the recon-
+structed membrane surface deviation based on the TPSR algorithm is mainly concentrated
+in the low-deviation range, with approximately 81,918 point cloud deviations distributed in
+the low-value range close to 0. At the same time, there are still approximately 10,943 point
+clouds distributed in the high-deviation range, with a maximum deviation close to 0.05,
+which indicates that there is a significant geometric deviation in the local area of the model.
+As shown in Figure 11f, it can be seen that when comparing the original membrane surface
+point cloud with a quantity of 210,273 and the reconstructed membrane surface based
+on the SPSR algorithm, approximately 209,468 point cloud deviations are concentrated in
+the low-value range close to 0, which implies a high degree of consistency between the
+two models in terms of overall spatial position. Compared with the results of the TPSR
+algorithm, the deviation distribution based on the SPSR algorithm is more concentrated,
+the degree of dispersion is lower, and the number of high-deviation points is significantly
+reduced, which indicates that the registration accuracy between models is higher and the
+overall geometric deviation is smaller. The very few high-deviation points mainly come
+from local noise, edge points, or non-overlapping areas. Therefore, the overall consistency
+of the reconstructed membrane surface based on the SPSR algorithm is superior to the
+TPSR algorithm based on the deviation distribution characteristics.
+4.3. Finite Element Theoretical Model Modification for the Umbrella-Shaped Tensile
+Membrane Structure
+3D3S is a piece of domestic engineering software dedicated to the analysis and design
+of spatial structures [28,29]. It offers capabilities for parametric modeling, automatic form-
+finding, and nonlinear finite element analysis of cable–membrane structures. The software
+can account for the tensile properties of membrane materials, the cable–membrane coupling
+effect, and structural large-deformation behavior. It is an ideal analytical tool for simulating
+the mechanical response of tensile membrane structures under prestress and external
+loads. In this study, a computational model of the umbrella-shaped tensile membrane
+structure is established using 3D3S software. Then, form-finding analysis and load-response
+analysis are carried out to verify the geometric rationality of the updated theoretical model
+and the mechanical performance of the umbrella-shaped tensile membrane structure.
+Three-dimensional point cloud scanning technology can effectively complete the three-
+dimensional form reconstruction of the umbrella-shaped tensile membrane structure. The
+theoretical model, the physical structure, and the three-dimensional point cloud model of
+the umbrella-shaped tensile membrane structure investigated in this paper are shown in
+Figure 12.
+As shown in Figure 12, it is worth noting that obvious deviations existed between
+the measured three-dimensional reconstructed model and the theoretical model of the
+umbrella-shaped tensile membrane structure. At this stage, only relying on the theoretical
+model could not accurately characterize the spatial form of the physical tensile membrane
+structure, nor could it be used to construct its digital twin model. Consequently, the spatial
+https://doi.org/10.3390/app16157658
+Appl. Sci. 2026, 16, 7658 20 of 29
+tensile-force characteristics of the tensile membrane structure itself would be difficult
+to analyze. Therefore, the theoretical model of the umbrella-shaped tensile membrane
+structure was updated in this paper. Based on the external contour features of the measured
+three-dimensional point cloud reconstructed model and the membrane material parameters
+listed in Table 2, membrane form-finding was performed again on the basis of the original
+3D3S theoretical form-finding framework. During the re-form-finding process, the external
+contour features of the measured three-dimensional point cloud reconstructed model were
+used as reference lines, so that the form-found theoretical membrane surface approached
+the external contour reference lines of the measured membrane surface. The full-field
+membrane stress distribution of the umbrella-shaped tensile membrane structure theoretical
+model after 3D3S form-finding was compared with that of the original theoretical model,
+as shown in Figure 13.
+(a)
+ (b)
+Figure 12. Comprehensive comparison of the original theoretical model and complete point cloud
+model of the membrane surface. (a) The original membrane surface theoretical model. (b) 3D point
+cloud of membrane surface after registration.
+As shown in Figure 13, the average membrane stress distribution of the umbrella-
+shaped tensile membrane structure original theoretical model is approximately2.8–3.3 MPa.
+The maximum membrane stress was approximately 4.3 MPa, and the maximum stress
+was distributed at the top of the umbrella-shaped tensile membrane structure. The overall
+membrane stress distribution was relatively uniform. After updating of the theoretical
+model, the average membrane stress distribution of the umbrella-shaped tensile membrane
+structure was approximately 2.3–3.5 MPa, the maximum membrane stress was approxi-
+mately 4.6 MPa, and the maximum stress was distributed at the four corner points of the
+structure. Overall, a relatively large difference between the original/updated theoretical
+models is observed in the global membrane stress distribution.
+Furthermore, comparison between the original/updated theoretical models of the
+membrane surface in the umbrella-shaped tensile membrane structure is illustrated
+in Figure 14.
+It can be seen from Figure 14 that the updated theoretical model is basically the same as
+the original theoretical design model in terms of the overall three-dimensional configuration
+and boundary form, but the local geometry has changed significantly. Compared with
+the original theoretical design model, the transition from the central high point of the
+updated theoretical model to the surrounding membrane surface is more gentle. At the
+same time, the fluctuation and sagging degree in the middle and near the boundary of
+the membrane surface also changed to some extent, and the overall membrane surface
+curve was more continuous and coordinated. These differences imply that the measured
+membrane surface shape deviates from the ideal design model due to the influence of
+https://doi.org/10.3390/app16157658
+Appl. Sci. 2026, 16, 7658 21 of 29
+membrane material flexibility, pretension application error, support position deviation
+and construction forming conditions during the actual construction process. Relatively
+speaking, the updated theoretical model based on the reconstructed contour can more
+accurately reflect the morphological characteristics of the actual umbrella-shaped tensile
+membrane structure.
+(a)
+(b)
+Figure 13. Stress distribution comparison between the original/updated theoretical models of the
+umbrella-shaped tensile membrane structure. (a) The original theoretical model. (b) The updated
+theoretical model.
+(a)
+ (b)
+Figure 14. Comparison between the original/updated theoretical models of the umbrella-shaped
+tensile membrane structure. (a) The original theoretical model. (b) The updated theoretical model.
+https://doi.org/10.3390/app16157658
+Appl. Sci. 2026, 16, 7658 22 of 29
+4.4. Global Form Deviation Analysis Between the Theoretical Design Model and the Actual
+Physical Model
+To investigate spatial geometric form deviation between the theoretical/physical mod-
+els, Geomagic software is used for verification. Firstly, the .stl file of the reconstructed
+membrane surface based on the SPSR algorithm was imported into Geomagic Studio.
+Subsequently, the encapsulated .stl file of the umbrella-shaped tensile membrane structure
+reconstruction model and the corresponding .stp file of the theoretical model were imported
+into Geomagic Control and placed in a unified coordinate system. Finally, the encapsulated
+.stl reconstruction model file of the umbrella-shaped tensile membrane structure was set
+as “TEST”, and the .stp theoretical model file was set as “REF”. The best-fit alignment and
+3D comparison functions in Geomagic Control were then used to complete the morpho-
+logical deviation analysis among the physical tensile membrane structure and the origi-
+nal/updated theoretical models. The comparison results are shown in Figures 15 and 16.
+Figure 15. Morphological deviation comparison between the measured three-dimensional point
+cloud reconstructed model and the original theoretical model of the membrane surface.
+Figure 16. Morphological deviation comparison between the measured three-dimensional point
+cloud reconstructed model and the updated theoretical model of the membrane surface.
+As shown in Figure 15, obvious deviations existed between the point cloud model and
+the original theoretical model of the umbrella-shaped tensile membrane structure in the
+middle and lower parts, and the deviations exhibited a paired distribution. The maximum
+deviation is 43.56 mm. According to the deviation color distribution map, the maximum
+deviation is located along one diagonal side of the umbrella-shaped tensile membrane
+structure. Analysis of the causes of the large deviation indicates that, during manual
+installation of the structure, the four gusset plates were installed along opposite diagonals.
+Because the corresponding threads of the gusset plates could not be guaranteed to be
+tighte

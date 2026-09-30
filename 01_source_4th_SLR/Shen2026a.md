@@ -14,7 +14,6 @@ As the service life of some buildings increases, some safety hazards may serious
 
 **Note:** Reverse DT envelope anomaly mapping; safety hazards
 
-
 ## Step-3 Deep-Read Coding (Prompt B)
 | P DT-subject | Q DfS/DfQ | R codable | U Tier | V Design | W Constr | X Oper | Z DfX | AA Self-improve | AB Methodology | AC Modality | AD Validation | AE QA(0-5) | AF Cluster |
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|

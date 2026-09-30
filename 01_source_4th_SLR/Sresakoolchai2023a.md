@@ -14,7 +14,6 @@ Railway maintenance is a complex and complicated task in the railway industry du
 
 **Note:** DRL + DT for railway maintenance efficiency
 
-
 ## Step-3 Deep-Read Coding (Prompt B)
 | P DT-subject | Q DfS/DfQ | R codable | U Tier | V Design | W Constr | X Oper | Z DfX | AA Self-improve | AB Methodology | AC Modality | AD Validation | AE QA(0-5) | AF Cluster |
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|

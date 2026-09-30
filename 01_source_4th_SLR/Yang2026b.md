@@ -13,3 +13,20 @@ Recent urban practice has highlighted the need for safe and efficient pedestrian
 | Yes | Yes | Yes | Yes | Yes | **Include** |
 
 **Note:** Campus DT for tactical pedestrian safety interventions
+
+## Step-3 Deep-Read Coding (Prompt B)
+| P DT-subject | Q DfS/DfQ | R codable | U Tier | V Design | W Constr | X Oper | Z DfX | AA Self-improve | AB Methodology | AC Modality | AD Validation | AE QA(0-5) | AF Cluster |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| Yes | Yes | Yes | Tier 1 - Digital Model (static, no live data) | 0 | 0 | 1 | Design for Safety (DfS) | None | Agent-based model (ABM) | Multi (two or more data types) | Single case study | 3 | Design for Safety |
+
+| AC1 fusion depth | AC2 fusion evidence | AC3 confidence |
+|---|---|---|
+| Fused | Campus geometry and pedestrian-flow data are fused into the agent-based simulation for intervention evaluation. | Medium |
+
+**Key evidence (AG):** Digital twin-based evaluation of tactical interventions for high-density pedestrian environments (Hanbat/York/UVic, Geo-spatial Information Science 2026): campus digital twin used as an urban simulation platform; agent-based simulation tests one-way sidewalk systems and building-entrance control for pedestrian spacing; interventions disperse pedestrians without major infrastructure disruption. Static campus twin + simulation (no live data link); no actuation, no learning loop; single-campus generalisability caveat acknowledged.
+
+*Full-text source: browser-oa*
+
+**AH — strength & gap filled:** Applies tactical urbanism inside a campus digital twin, showing one-way sidewalks and entrance control improve pedestrian spacing without capital upgrades.
+
+**AI — deficiencies & future work:** One campus only; agent parameters and demand data approximations; no real-world intervention follow-up measured.

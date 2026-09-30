@@ -14,7 +14,6 @@ The industrialisation of 3D concrete printing (3DCP) is impeded by the lack of u
 
 **Note:** Computational DT for adaptive 3D concrete printing quality
 
-
 ## Step-3 Deep-Read Coding (Prompt B)
 | P DT-subject | Q DfS/DfQ | R codable | U Tier | V Design | W Constr | X Oper | Z DfX | AA Self-improve | AB Methodology | AC Modality | AD Validation | AE QA(0-5) | AF Cluster |
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|

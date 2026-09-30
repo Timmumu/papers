@@ -13,3 +13,12 @@ Construction of disaster-resilient cities has attracted considerable attention. 
 | Yes | Yes | Yes | Yes | Yes | **Include** |
 
 **Note:** DT concepts for urban disaster resilience cycle
+
+## Step-3 Deep-Read Coding (Prompt B)
+| P DT-subject | Q DfS/DfQ | R codable | U Tier | V Design | W Constr | X Oper | Z DfX | AA Self-improve | AB Methodology | AC Modality | AD Validation | AE QA(0-5) | AF Cluster |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| No | Yes | No | Stage-2 Exclude |  |  |  |  |  |  |  |  |  |  |
+
+**Key evidence (AG):** Digital twin approach for enhancing urban resilience as a virtual-real cycle (CEA/USTB/Tsinghua, Resilient Cities and Structures 2024): a comprehensive summary of the authors' research-group endeavors covering data acquisition into virtual space, disaster simulation, and translation of virtual insights into prevention strategies for earthquake/fire/wind; showcases prior techniques rather than building/evaluating a new DT. P=No, R=No -> Stage-2 exclude.
+
+*Full-text source: browser-oa*

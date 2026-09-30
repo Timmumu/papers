@@ -14,7 +14,6 @@ Structural health monitoring (SHM) is critical for ensuring the safety of infras
 
 **Note:** Railway bridge SHM IoT with DT case study
 
-
 ## Step-3 Deep-Read Coding (Prompt B)
 | P DT-subject | Q DfS/DfQ | R codable | U Tier | V Design | W Constr | X Oper | Z DfX | AA Self-improve | AB Methodology | AC Modality | AD Validation | AE QA(0-5) | AF Cluster |
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|

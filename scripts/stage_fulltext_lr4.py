@@ -154,10 +154,11 @@ def verify_text(text, doi, ti):
     """Return (ok, method)."""
     if not text:
         return (False, '')
+    nt = norm(text)
     if doi:
         dn = norm(doi)
         dn = dn[2:] if dn.startswith('10') and len(dn) > 10 else dn
-        if len(dn) >= 12 and dn in text:
+        if len(dn) >= 12 and dn in nt:
             return (True, 'doi')
     ws = title_full(ti)
     n = len(hits_in(ws, text))
@@ -173,12 +174,13 @@ def verify_full(pdf_path, doi, ti):
         for pg in r.pages:
             parts.append(pg.extract_text() or '')
         t = re.sub(r'\s+', ' ', ' '.join(parts)).strip().lower()
+        nt = norm(t)
     except Exception:
         return (False, '')
     if doi:
         dn = norm(doi)
         dn = dn[2:] if dn.startswith('10') and len(dn) > 10 else dn
-        if len(dn) >= 12 and dn in t:
+        if len(dn) >= 12 and dn in nt:
             return (True, 'doi-full')
     ws = title_full(ti)
     n = len(hits_in(ws, t[:4000]))

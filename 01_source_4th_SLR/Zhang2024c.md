@@ -13,3 +13,20 @@ High traffic flow in a confined tunnel makes fire safety a critical issue. This 
 | Yes | Yes | Yes | Yes | Yes | **Include** |
 
 **Note:** AIoT digital twin for smart tunnel fire safety management
+
+## Step-3 Deep-Read Coding (Prompt B)
+| P DT-subject | Q DfS/DfQ | R codable | U Tier | V Design | W Constr | X Oper | Z DfX | AA Self-improve | AB Methodology | AC Modality | AD Validation | AE QA(0-5) | AF Cluster |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| Yes | Yes | Yes | Tier 2 - Digital Shadow (one-way physical to virtual) | 0 | 0 | 1 | Design for Safety (DfS) | None | Transformer / Large Language Model (LLM) | Multi (two or more data types) | Simulation | 3 | Design for Safety |
+
+| AC1 fusion depth | AC2 fusion evidence | AC3 confidence |
+|---|---|---|
+| Fused | Dynamic sensor data and simulation-trained Transformer outputs are fused in the 3D fire twin. | Medium |
+
+**Key evidence (AG):** AIoT-enabled digital twin system for smart tunnel fire safety management (PolyU/HKU, Developments in the Built Environment 2024): Transformer deep learning model trained on simulation data predicts real-time fire location and size from dynamic sensor data; integrated into a Unity 3D digital twin platform visualizing the 3D fire scene to support evacuation, firefighting and emergency rescue; demonstrated with numerical experiments and large-scale tunnel fire tests. Prediction + visualization, no actuation.
+
+*Full-text source: browser-oa*
+
+**AH — strength & gap filled:** Transformer-based fire source prediction validated on large-scale tunnel fire tests and visualized in a Unity 3D twin.
+
+**AI — deficiencies & future work:** Numerical + large-scale tests but no continuous live tunnel deployment described.

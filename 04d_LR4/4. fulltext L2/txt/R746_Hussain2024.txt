@@ -1,0 +1,958 @@
+1 
+Predicting degraded lifting capacity of aging tower cranes: A digital twin-driven 1 
+approach 2 
+Mudasir Hussaina, Zhongnan Yea, Hung-Lin Chib*, Shu-Chien Hsua3 
+a Department of Civil and Environmental Engineering, The Hong Kong Polytechnic University, Hong Kong 4 
+b Department of Building and Real-Estate, The Hong Kong Polytechnic University, Hong Kong 5 
+mudasir.hussain@connect.polyu.hk, zhong-nan.ye@connect.polyu.hk, hung-lin.chi@polyu.edu.hk, 6 
+mark.hsu@polyu.edu.hk 7 
+Corresponding Author: Hung-Lin Chi; Email: hung-lin.chi@polyu.edu.hk; ORCID ID: 0000-0003-0756-4864 8 
+Highlights 9 
+• A digital twin-driven (DTD) framework and model are developed for predicting degraded10 
+lifting capacity (LC) of aging tower cranes.11 
+• A DTD model predicted the degraded LC of a scaled-down prototype, achieving a mean-12 
+square error (MSE) of 0.2253 and a coefficient of determination (R2) of 0.9973.13 
+• A DTD model is validated using k-5 cross-validation with a prediction accuracy of 0.9714 
+(R2).15 
+• Degraded load charts assist operators in placing safe loads and preventing unexpected16 
+failures.17 
+Abstract 18 
+Aging tower cranes face an elevated risk of failure, primarily due to structural fatigue and 19 
+deterioration. Surprisingly, the degradation of aging-induced lifting capacity (LC) remains an 20 
+unexplored domain. In response to this research gap, this paper introduces a digital twin-driven 21 
+(DTD) framework and model to predict the degraded LC of aging tower cranes . This 22 
+framework combines theoretical and numerical analysis of fatigue and degradation behavior in 23 
+tower cranes with real-time vibration data obtained during cyclic load scenarios on the actual 24 
+cranes. Machine learning (ML) techniques are employed to develop a model that accurately 25 
+predicts the degraded LC caused by aging. A scaled-down tower crane prototype is adopted as 26 
+a demonstrative case to illustrate the feasibility and effectiveness of the DTD framework. The 27 
+DTD model predicts the degraded LC of the prototype with high accuracy, achieving a mean-28 
+square error (MSE) of 0.2253 and a coefficient of determination (R2) of 0.9973. The predicted 29 
+degraded load charts of the tested tower crane for each decade of usage from 0 to 70 years are 30 
+also presented to assist crane operators in applying safe loads, preventing unexpected failures 31 
+and damages, and enhancing workplace monitoring and safety. This study helps monitor the 32 
+safety conditions of tower cranes that are aging and susceptible to structural fatigue and 33 
+deterioration, facilitates the prediction of the deterioration of complex machines and systems 34 
+in the construction industry with real-time data, and highlights the potential of DTD approaches 35 
+in improving efficiency, safety, and decision-making. 36 
+Keywords: Tower crane, Digital twin, Lifting capacity, Safety monitoring, IoT system 37 
+38 
+https://doi.org/10.1016/j.aei.2023.102310
+This is the Pre-Published Version.
+© 2023. This manuscript version is made available under the CC-BY-NC-ND 4.0 license http://creativecommons.org/licenses/by-nc-nd/4.0/
+2 
+ 
+1. Introduction 39 
+Tower cranes are essential in modern construction projects, facilitating the lifting and 40 
+moving of hefty modules, equipment, and tools from lifting points to target locations on 41 
+construction sites [1]. Over prolonged periods of use, however, aging tower cranes may 42 
+experience structural fatigue, corrosion, and deterioration due to exposure to high -cycle and 43 
+variable-amplitude loads, harsh working environments, and improper operation and 44 
+maintenance, leading to degraded lifting capacity (LC) [2–8]. Such degradation can increase 45 
+the risk of accidents and jeopardize the safety of workers and nearby properties, resulting in 46 
+severe injuries or fatalities [9]. For instance, in 2022, the tower crane at the "S au Mau Ping" 47 
+construction site in Hong Kong collapsed and killed three workers, where the operator set the 48 
+manufacturer-specified load without considering the deteriorated load and /or capacity [10]. 49 
+Similar incidents have occurred worldwide, including a crane collapse that killed 18 people in 50 
+2016 in Dongguan, China [11], and another crane collapse that killed seven people and injured 51 
+dozens more in 2008 in New York City in the United States [12]. Thus, there is still a practical 52 
+need for real-time safety monitoring systems to detect and prevent accidents caused by aging 53 
+tower cranes with degraded LC. 54 
+Various safety monitoring systems have been developed and adopted in the construction 55 
+industry to address crane safety, including load moment indicators (LMIs) [13–16], anti-two-56 
+blocking (ATB) systems [17, 18], and crane cameras [19, 20]. LMIs measure the load on the 57 
+crane and provide a warning when the load is near or exceeds the crane's max imum LC [13]. 58 
+Anti-two-block systems prevent the crane from collapsing by limiting its operation when the 59 
+hook block is too close to the boom tip [18]. Crane cameras monitor the crane's movement and 60 
+detect unsafe behavior by recording a visual perspective [20]. However, while these systems 61 
+can improve safety on construction sites, they are generally not designed to address the specific 62 
+issue of aging tower cranes with degraded LC. For instance, LMIs, ATB systems , and crane 63 
+cameras do not consider the effects of wear and tear on crane components or the health level 64 
+of the crane and, thus, fail to predict the internal degradation in LC, which can result in 65 
+unexpected accidents due to unintentional over-loading. Furthermore, due to the unavailability 66 
+of historical data on crane operations, the complexity of the deterioration mechanism itself, and 67 
+the unpredictability of external deterioration-related factors, it remains an open question of how 68 
+to estimate and update the aging-induced LC degradation. 69 
+Many studies have been conducted to tackle the issues of data availability and deterioration 70 
+mechanism in understanding the degraded LC of tower cranes, which can be categorized into 71 
+two groups: (1) data-driven methods (DDM) and (2) model-based methods (MBM). DDM uses 72 
+real-time, historical, and maintenance data [21] to predict deterioration patterns [22]. Several 73 
+studies have used DDM to predict performance degradation in tower cranes [23]. However, 74 
+DDM is only effective when data are abundant, and without proper domain knowledge of the 75 
+deterioration mechanisms, it may be less reliable when applied practically. On the other hand, 76 
+MBM requires an understanding of failure mechanisms such as cracks, wear, deflection, 77 
+friction, and stress. One can estimate performance degradation by developing a mathematical 78 
+model that quantitatively describes the crane ’s degradation. However, extensive experiments 79 
+are required for parameter identification, varying from case to case. Due to the complex nature 80 
+3 
+ 
+of tower cranes, MBM may be less efficient. To overcome the limitations of DDM and MBM, 81 
+Liu et al. [24] proposed a hybrid approach that combines both methods (DDM -MBM). This 82 
+approach collects data from mu ltiple sensors since a single sensor cannot capture all the 83 
+relevant parameters that affect degradation. The use of multiple sensors may increase 84 
+complexity, but it results in more accurate predictions. Additionally, the mechanical model 85 
+used in MBM can simulate the structural performance of the tower crane, which increases the 86 
+interpretability of DDM. Therefore, a hybrid approach that integrates multi -sensor data with 87 
+an interpretable model could be a possible solution to enable real -time monitoring and 88 
+prediction of tower cranes’ safety conditions considering degraded LC. 89 
+As an instance of hybrid DDM -MBM methods, the digital twin-driven (DTD) approach 90 
+creates a replica of a physical system , aiming to enable real-time data acquisition, response 91 
+prediction, and human-machine interaction (HMI) [25]. The DTD approach has been widely 92 
+utilized across various studies f or various applications, including product design, 93 
+manufacturing, planning, maintenance, management, control, traceability, anomaly detection, 94 
+operational errors, and safety analysis [26–36]. For instance, in a study by Yang et al. [37], a 95 
+hybrid DTD approach was used to predict the performance degradation in the transmission unit 96 
+of CNC machines by incorporating damage indices with wear data from Achard wear theory. 97 
+Similarly, Tran et al. [23] predicted machine degradatio n by considering both the present 98 
+conditions of the machine and degradation indices based on a year of data. However, these 99 
+methods are time-consuming and primarily applicable only to those tools. Despite the extensive 100 
+use of DT in the degradation field, there is limited research exploring the potential of the DTD 101 
+approach in predicting the deterioration of complex machines and systems in the construction 102 
+industry using real -time data. Nevertheless, the mentioned examples from adjacent fields 103 
+highlight the flexibility and potential of the DTD approach in improving efficiency, safety, and 104 
+decision-making in various applications. 105 
+Aiming to address the real-time safety monitoring and alerting of aging tower cranes, this 106 
+study develops a DTD framework and model to predict degraded LC after different usage 107 
+periods. The framework integrates theoretical and numerical analyses of tower crane fatigue 108 
+and degradation behavior with real -time vibration data obtained during cyclic load scenarios 109 
+on the physical tower crane. Machine learning (ML) models, including Random Forest (RF) 110 
+and Support Vector Machine (SVM) , are employed for feature selection and LC prediction . 111 
+Specifically, a scaled -down tower crane prototype is adopted as a demonstrative case to 112 
+illustrate the feasibility and effectiveness of the DTD framework. The predicted degraded load 113 
+charts of the prototype for each decade of usage from 0 to 70 years are presented for validation 114 
+purposes. The proposed DTD framework allows for continuous monitoring of the crane's safety 115 
+performance considering the degradation in LC with real-time data and numerical model, 116 
+which is expected to significantly improve safety in construction sites with aging tower cranes. 117 
+This paper is structured as follows: Section 2 presents a comprehensive review of the 118 
+existing research and studies related to the topic ; Section 3 presents a DTD framework for 119 
+monitoring machine deterioration , explicitly focusing on the theoretical background of DTD 120 
+approaches and numerical analysis of tower crane fatigue accumulation and degradation in LC; 121 
+and Section 4 outlines the process of developing a DTD model for tower crane degradation 122 
+4 
+ 
+prediction. In Section 5, a case study is conducted using a physical prototype of a tower crane 123 
+to evaluate the accuracy, efficiency, and applicability of the DTD model. Section 6 discusses 124 
+the findings of the study . Finally, Section 7 provides concluding remarks, limitations, and 125 
+directions for future research. 126 
+2. Literature review 127 
+2.1. Crane safety in construction projects 128 
+Construction sites are widely recognized as challenging environments due to the 129 
+simultaneous and complex nature of multiple hazardous activities. These activities involve the 130 
+movement of laborers, heavy machinery, and construction materials, thereby amplifying the 131 
+associated risks [38]. Cranes, being a crucial piece of equipment in construction, not only play 132 
+a significant role but also pose substantial health and safety concerns for their operators. 133 
+Previous research has focused on understanding the causes of injuries and fatalities related 134 
+to various crane activities, including layout planning, installation/dismantling, erection, and 135 
+operations. These studies aimed to identify the key factors contributing to crane accidents. For 136 
+instance, Sulankivi et al. [39] investigated safety issues in crane layout planning, whereas Shin 137 
+[40] identified the primary factors influencing crane safety during installation and dismantling 138 
+processes. Chang et al. [41] used 3D simulation and visualization techniques to improve safety 139 
+during crane erection. Sadeghi et al. [42] developed a framework for ensemble risk analysis to 140 
+enhance the safety of crane operations. Shapira et al. [43] identified 20 factors associated with 141 
+crane safety, including project conditions, environmental factors, human factors, and safety 142 
+management. Finally, Lee et al. [9] found that most crane accidents occur because of human 143 
+error and crane-related issues. Crane-related problems include structural fatigue, wear and tear, 144 
+stress, strain, cracks, corrosion, deterioration, and the risk of structural collapse. These issues 145 
+arise from exposure to cyclic and varying loads, challenging working conditions, and 146 
+inadequate operation and maintenance practices. As a result, the LC of the cranes decreased 147 
+over time. Research studies are essential to identify and quantify the degradation of LC caused 148 
+by the aging of these cranes. 149 
+2.2. Analytical approach for crane degradation 150 
+Analytical methods use tools, models, mathematical equations, and formulas to address 151 
+complex problems. In crane assessment, these techniques are applied to evaluate and predict 152 
+factors such as structural integrity, LC, and overall safety. This approach involves 153 
+understanding failure mechanisms such as cracks, wear and tear, deflection, friction, and stress, 154 
+identifying critical components, considering environmental conditions, and analyzing 155 
+historical data. Relevant information regarding crane usage, environmental factors, and 156 
+material properties is collected and organized for analysis. Monitoring indicators of early 157 
+degradation throughout the crane's operational lifespan can help detect potential issues in 158 
+advance. 159 
+Researchers have studied various critical components of the crane to investigate specific 160 
+failure mechanisms. For instance, Vukelic et al. [44] investigated the failure mechanism of 161 
+crane gear damage, while Guerra -Fuentes et al. [45] studied the failure analysis of steel wire 162 
+ropes in overhead crane systems. Das et al. [7] reviewed the failure analysis of hooks, and Wu 163 
+5 
+ 
+et al. [46] developed models for fatigue damage accumulation in critical components exposed 164 
+to moving loads. Experimental and numerical methods are employed to examine component 165 
+behavior and identify the ro ot causes of failure. Experimental techniques involve visual 166 
+inspections, chemical composition analysis, mechanical properties, and hardness tests . 167 
+Numerical methods, such as finite element analysis (FEA), are utilized to calculate stress/strain 168 
+and load/deflection, providing insights into the structural performance of crane components. 169 
+However, it is essential to acknowledge that the analytical method has limitations. It requires 170 
+a comprehensive understanding of each parameter used in the model and extens ive 171 
+experimental work to comprehend the failure mechanisms of individual components. 172 
+Therefore, this method may be less effective for complex machines like cranes , as it relies on 173 
+assumptions and suppositions regarding various parameters. 174 
+2.3. Data-driven method for crane degradation 175 
+A data-driven method (DDM) analyzes and interprets data to address problems and make 176 
+informed decisions. It utilizes statistical, machine learning (ML), or artificial intelligence (AI) 177 
+techniques to collect and scrutinize relevant data related to the degradation of tower cranes. 178 
+The main goals of this approach are to monitor the operational state and performance of the 179 
+cranes, predict potential issues or failures, and optimize maintenance and operational strategies. 180 
+Various types of data are considered, including operational data ( e.g., load, usage, and 181 
+environmental conditions), sensor data (e.g., vibration and temperature), maintenance records, 182 
+and historical failure data. A thorough analysis of this data is conducted to identify patterns 183 
+and trends. 184 
+For example, Tran et al. [23] conducted a study where they employed a support vector 185 
+machine (SVM) to predict machine degradation and estimate the remaining useful life (RUL) 186 
+of machines. They incorporated monitoring and operational data, along with degradation 187 
+indices, to establish a failure threshold for decision -making. However, it is important to note 188 
+that the effectiveness of the DD M approach relies on having sufficient data available, and 189 
+without a solid understanding of the specific domain's deterioration mechanisms, its practical 190 
+application may be less reliable. Additionally, the data in this particular study was sourced 191 
+from only one or two sensors installed over the course of a year. 192 
+To overcome this issue, Roman et al. [22] introduced a hybrid data -driven fuzzy active 193 
+disturbance rejection control system for tower cranes. Similarly, Liu et al. [24] utilized hybrid 194 
+deep neura l networks to assess machine performance based on fatigue data. The hybrid 195 
+approach involves collecting data from multiple sensors, but it can result in complex and 196 
+computationally intensive modeling due to the increased data volume. This is where the digital 197 
+twin-driven (DTD) method comes into play, as it allows for real -time data acquisition, 198 
+prediction of responses, and interaction between humans and machines. 199 
+2.4. Digital twin-driven method for crane degradation 200 
+A digital twin -driven (DTD) approach utilizes digital twin technology to monitor the 201 
+operational condition, performance, and potential degradation of a complex physical system, 202 
+such as tower cranes. A digital twin is a virtual replica of the physical object created through 203 
+advanced data analytics, simulation, and modeling techniques. Researchers have applied DTD 204 
+6 
+ 
+technology to address various machine performance degradation problems. For instance, 205 
+Deebak et al. [26] used the DTD method for fault diagnosis in machining tool conditions . In 206 
+contrast, Zhu et al. [32] used it to control the machining process for thin -walled part 207 
+manufacturing. Zhang et al. [47] utilized DTD for surface roughness prediction, and Liu et al. 208 
+[29] employed it for traceability and dynamic control of machine processes. Zhuang et al. [48] 209 
+utilized DTD to predict wear in the turning process of machines. Jiang et al. [25] focused on 210 
+the stability analysis of the tower crane hoisting process by examining stress conditions during 211 
+various hoisting scenarios. Finally, Yang et al. [37] used DTD for performance degradation in 212 
+the transmission unit of CNC machine tools. However, their approach involved incorporating 213 
+damage indices with wear data from a specific model, making it time-consuming, complex, 214 
+and applicable only to that particular tool. Therefore, this stud y proposes a method for 215 
+predicting degradation in aging tower cranes based on real-time data, offering a more efficient 216 
+and versatile approach. 217 
+3. Methodology 218 
+3.1. A digital twin-driven framework for degradation in machines 219 
+The primary goal of this study is to use a DTD approach to predict degradation in machines, 220 
+such as tower cranes. A DTD framework is formulated based on the mapping between physical 221 
+and virtual machines, as illustrated in Fig. 1. This framework aims to (1) provide background 222 
+information, (2) highlight issues, (3) define data requirements, (4) simplify mapping problems 223 
+between virtual-physical spaces, (5) establish two-way communications between all parts, and 224 
+(6) make decisions and feedback for improvement. A DTD approach for degradation must have 225 
+five parts: physical space, virtual space, IoT-based connection, real-time database, and control 226 
+system [49–51]. Machine degradation is predicted by mapping or fusing the DTD components 227 
+using DT data. 228 
+7 
+ 
+ 229 
+Fig. 1. A digital twin-driven framework for predicting degradation in machines. 230 
+3.1.1. Physical space 231 
+The physical space module encompasses all the physical activities, operational processes, 232 
+and work environments contributing to degradation monitoring [25]. To enhance the accuracy 233 
+and effectiveness of the DTD model, it is crucial to collect data related to element 234 
+compositions, dynamics, failure mechanisms, and deterioration factors [31]. This requires the 235 
+installation of sensors and transducers with networking capabilities (such as Wi-Fi or Ethernet) 236 
+on the physical machine to collect real-time, multi-source, and heterogeneous data. The 237 
+physical machine may also have a built-in data logging system that records usage information 238 
+[52]. Section 4.1 will provide a detailed explanation of the various types of additional data 239 
+required to improve the quality of the DTD model, including static data (SD), specification 240 
+data (Sp-D), historical data (HD), environmental data (ED), and comprehensive data (CD) . 241 
+Once the necessary data from both the physical and virtual space is collected and a two -way 242 
+connection is established, decisions can be made, and feedback can be provided for machine 243 
+monitoring, control, safety, and improvement. The physical space module represents the 244 
+environment in which the tower crane operates, encompassing the crane structure, components, 245 
+and relevant sensors for data collection. The significance of this module is highlighted in its 246 
+role in capturing real-time operational data and physical conditions. 247 
+3.1.2. Virtual space 248 
+For a DTD approach, it is essential to have a CAD model or virtual representation that 249 
+accurately captures the machine’s features, geometry, materials, behaviors, physics, rules, 250 
+Control system for degradation in machines
+Real-time digital twin database
+De-noise, calibration, and 
+normalization Feature recognition and selection Prediction and optimization Feedback and decision-making
+Physical space Virtual space
+Data driven Data storage
+Data storageData storage
+Data-drivenValidateData-driven Feedback
+Process/OperationSimulation dataProcess/Operation Real-time sensor data
+IoT-based connection system
+Physical machine
+Static data (SD)
+Dynamic data (DD)
+Historical data (HD)
+Comprehensive data (CD)
+Specification data (Sp-D)
+Environmental data (ED)
+Virtual machine
+Virtual analysis
+Geometry + Materials
+Physics + Functions
+Associated parameters
+Behavior + Rules 
+Virtual environment
+8 
+ 
+functions, and environment [53, 54]. The level of detail (LOD) of the virtual model may vary 251 
+depending on the specific case and desired data fidelity [47, 55]. With high data fidelity from 252 
+the physical space, the static virtual body comes to life, reflecting the element composition, 253 
+dynamics, and real-time status of the physical machine in the virtual environment. Its primary 254 
+purpose is to provide a realistic description and dynamic simulation of physical entities and 255 
+processes across multiple dimensions and time scales [25]. The virtual body offers an open 256 
+interface for data-driven modeling (DDM), optimization, and the ability to predict the current 257 
+status and remaining useful life (RUL) of the physical machine [52]. In this module, digital 258 
+twin technology is employed to create a virtual replica of the tower crane. The significance of 259 
+this module has been clarified, emphasizing its role as a digital representation of the physical 260 
+crane. This representation allows for the simulation and analysis of the crane’s behavior under 261 
+various operating conditions. 262 
+3.1.3. IoT-based connection 263 
+In accordance with ISO/OSI communication standards, the communication system for the 264 
+DTD model can be implemented using either wired or wireless technologies [56]. To establish 265 
+real-time data transfer and parsing, an IoT-based connection is utilized. This connection serves 266 
+as a crucial link that facilitates two-way communication between physical and virtual spaces. 267 
+It ensures that all components of the DTD model are integrated and appropriately mapped to 268 
+detect and respond to real-time changes in the physical space, as well as to receive feedback 269 
+from the control system [28, 57]. Additionally, this module ensures secure connection and data 270 
+transmission between the physical machine and the virtual machine in both directions. Its 271 
+significance lies in establishing connectivity between the physical and virtual spaces, thereby 272 
+enabling seamless data flow and real -time synchronization between the physical tower crane 273 
+and its digital twin. 274 
+3.1.4. Real-time digital twin database 275 
+Real-time data from the digital twin is utilized to integrate the multi-dimensional and multi-276 
+scale virtual simulation model with the physical model and control system . Data serves as the 277 
+foundational concept of the DTD model, enabling the virtual model to execute operations and 278 
+make informed decisions. This module is crucial in interpreting, classifying, storing, pre -279 
+processing, maintaining, and testing data [26]. This module is responsible for storing and 280 
+managing the data collected from both the physical crane and its digital twin. The module ’s 281 
+significance has been detailed, highlighting its role in storing historical data, enabling 282 
+comparison and analysis, and suppor ting predictive maintenance decision -making. The DTD 283 
+model can effectively access and utilize the collected data for various tasks and processes by 284 
+leveraging this module. 285 
+3.1.5. Control system 286 
+The control system within the DTD model plays a vital role in regulating and predicting 287 
+degradation based on real -time data from the digital twi n. It represents the hybrid mode and 288 
+serves as the most fundamental phase of the DTD model. The control system is responsible for 289 
+analyzing, visualizing, making decisions, and providing feedback for improvement [47]. It 290 
+consists of two main components : (1) data pre-processing and (2) a functional module. The 291 
+9 
+ 
+data pre-processing component is primarily responsible for tasks such as online monitoring, 292 
+de-noising, calibration, normalization, analysis, statistics, and evaluation of raw and real-time 293 
+data collected from both physical and virtual spaces [31]. This module also includes feature 294 
+recognition and selection, which is crucial in identifying degradation factors [58]. The 295 
+functional module incorporates both prediction and visual display capabilities [52]. The 296 
+predicted results are utilized for decision -making and improvement of the physical machine 297 
+through feedback. Operators or decision -making teams can directly implement optimization 298 
+and adjustment plans based on the insights provided. The control system module forms the core 299 
+of the DTD framework. The crucial role of this module has been clarified by explaining that it 300 
+integrates data from the physical and virtua l spaces, performs real -time monitoring and 301 
+analysis, and enables decision -making and feedback loops for proactive maintenance and 302 
+performance optimization. 303 
+3.2. Fatigue behavior and deterioration in cranes 304 
+Tower cranes are considered to be structures prone to fatigue and are at risk of collapsing 305 
+during operation [24, 59]. In terms of fatigue behavior , tower cranes are classified as high-306 
+cycle and super-high-cycle fatigue structures based on the S-N curve, also known as the fatigue 307 
+curve or Wohler curve [60]. The fatigue curve represents the relationship between the cyclic 308 
+stress amplitude and the number of cycles until failure. To analyze fatigue behavior in tower 309 
+cranes, various approaches can be employed, including stress-life, strain-life, non-destructive, 310 
+fracture mechanics, and damage mechanics. 311 
+The stress-life approach involves plotting stress against the number of cycles until failure 312 
+[61]. However, this approach requires extensive experimental data, and a single stress-life plot 313 
+has limitations when it comes to predicting plasticity, deformation, and mean stress. Similarly, 314 
+the strain-life method entails plotting strain against the number of cycles until failure [62]. This 315 
+approach requires the stress-strain curve and consideration of plasticity nucleation to determine 316 
+the transition life between plastic and elastic regions under fatigue loading . Therefore, it is 317 
+mainly applicable when determining the crack initiation life of the crane structure. Non-318 
+destructive techniques can be used to study fatigue by measuring and analyzing inherent 319 
+properties such as cracks, strength reduction, and stiffness degradation [63]. However, this 320 
+method necessitates a comprehensive understanding of the relevant parameters and can be 321 
+challenging to cover all aspects [24]. In fracture mechanics, the focus is on pre-existing flaws 322 
+and micro-cracks in the structure [64]. The degradation rate is determined using a crack growth 323 
+law and stress intensity factor as a function of crack depth, shape factor, and stress range . 324 
+However, our study doesn't consider crane sections with pre-existing defects. Finally, damage 325 
+mechanics use appropriate assessment models, laws, and patterns to characterize damages, 326 
+residual stresses, and strain localization [60, 64–66]. Damage mechanics is a suitable approach 327 
+for addressing tower crane degradation as it encompasses critical factors that directly and 328 
+indirectly influence crane degradation. For example, micro-plastic strain is often overlooked in 329 
+low-cycle fatigue problems, but it must be considered in the case of high-cycle or super-high-330 
+cycle fatigue damage within the elastic range, as is the case with tower cranes. Macro-plastic 331 
+strain can result from such scenarios, leading to structural deterioration under long -term 332 
+operational loading. 333 
+10 
+ 
+While steel structures can have an infinite design life if the stress range is low, tower cranes 334 
+are prone to fatigue due to the cyclic and varied stress amplitudes experienced by their 335 
+components during operation. For instance, when a tower crane lifts a heavy load at full stretch 336 
+and lifting radius, it experiences a higher stress range. Additionally, the loads exerted on the 337 
+crane are cyclic and have varying amplitudes. As a result, e lastic deformation occurs in the 338 
+crane structure, generating stress and accumulat ing residual stresses over time. When the 339 
+residual stresses reach a critical threshold, cracks form, posing a collapse risk for the crane . 340 
+Therefore, measuring the loads and the associated deflection, deformation, and vibration of the 341 
+physical tower crane is crucial to predicting degradation accurately. 342 
+3.2.1. Fatigue damage accumulation analysis for cranes 343 
+There are two main approaches for evaluating fatigue damage: (1) constant amplitude 344 
+fatigue loading and (2) variable amplitude fatigue loading . In the case of a tower crane, the 345 
+loads it experiences are stochastic and cyclic, causing fatigue damage accumulation to vary 346 
+with each loading cycle. As a result, the traditional linear cumulative damage criterion is not 347 
+applicable in the context of tower cranes [67]. Instead, non-linear and double-linear damage 348 
+rules are used to account for variable amplitude loads [68]. 349 
+During the progression of variable amplitude fatigue loading, the tower crane structure 350 
+undergoes i rreversible deformation s and accumulates residual stress es. These factors 351 
+contribute to the initiation and propagation of cracks within the structure. The presence of 352 
+residual stresses causes cracks to propagate along a particular plane once initiated. These 353 
+irreversible local deformations and crack propagation significantly impact the overall stability 354 
+and reliability of the tower crane. 355 
+Various parameters can be employed to analyze the damage occurring in the tower crane 356 
+structure, including total strain, residual stress, stiffness degradation, strength degradation, heat 357 
+dissipation resulting from micro -cracking, crack propagation, and the speed of sound. In our 358 
+study, we simulate the mechanical response of the crane structure by considering stress, 359 
+displacement, and damage index while applying a moving load with variable amplitude. 360 
+Existing literature [24, 46, 60, 64–71] indicates that the damage rate in the tower crane is 361 
+influenced by multiple variables, as expressed in Eq. (1). These variables are used to determine 362 
+the damage rate of the tower crane structure. 363 
+𝑑𝐷 = 𝑓(𝜎𝑀, 𝜎̅, 𝐷, ∆𝜎)𝑑𝑁 (1) 
+ 364 
+where dD is the damage rate, 𝜎𝑀 is the maximum stress, 𝜎̅ is the mean stress, D is the current 365 
+damage state, ∆𝜎 is the stress spectrum in one cycle, and N is the number of cycles. 366 
+3.2.2. Finite-element analysis for degradation index and degradation rate 367 
+To assess the accumulation of fatigue damage in the crane structure over a 70 -year 368 
+operational period, we follow the procedure outlined in Fig. 2 . While the estimated life 369 
+expectancy of a tower crane is typically 50-60 years [46, 72], we have chosen to extend the 370 
+analysis to 70 years in order to enhance the quality and accuracy of the DTD model. 371 
+11 
+ 
+First, we developed a finite element model (FEM) that incorporates the geometric 372 
+specifications and material properties of the tower crane. This FEM model allows us to analyze 373 
+the structural performance of the crane under working conditions over a 70-year period. 374 
+Subsequently, we apply moving loads with variable amplitude to the crane cyclically, 375 
+considering the material’s damage accumulation behavior. This approach allows us to simulate 376 
+the mechanical response of the crane, including stress, displacement, and damage index. 377 
+Fig. 3 provides an example of the damage index contours for a simulated tower crane after 378 
+10, 20, 30, 40, 50, 60, and 70 years of operations. A damage index value of z ero indicates no 379 
+damage to the crane, While one suggests complete fatigue-induced damage to the crane model. 380 
+In this context, the degradation rate (dD) is determined by subtracting the damage index from 381 
+one, as indicated in Eq. (2). 382 
+𝑑𝐷 = 1 − 𝑑𝐼 
+ (2) 
+where dD denotes the damage rate, and dI denotes the damage index, which varies from 0 to 383 
+1. 384 
+ 385 
+Fig. 2. Numerical procedure for a tower crane's fatigue damage accumulation modeling. 386 
+Apply variable amplitude load
+Define material property
+Build geometric model
+Select damage accumulation law Update damage index field output
+Conduct moving mass simulation
+Calculate life-cycle deterioration index/degradation rate for the lifting capacity of a tower crane
+N cycles?
+FE model development Quasi-static Analysis
+Cyclic loading for damage accumulation evaluation
+Yes
+No
+12 
+ 
+ 387 
+Fig. 3. Fatigue damage accumulation analysis : (a) 10-Years, (b) 20-Years, (c) 30-Years, (d) 388 
+40-Years, (e) 50-Years, (f) 60-Years, and (g) 70-Years. 389 
+3.3. Data incorporation for degradation 390 
+In previous studies, Yang et al. [37] and Tran et al. [23] employed a hybrid model (DDM 391 
+and MBM) that fused damage in dices with real -time sensory data to predict machinery 392 
+performance degradation. In our proposed DTD model, cumulative residual stress values are 393 
+integrated as “damage indices” to assess the degradation of tower cranes under cyclic loads 394 
+over operational periods of 10 to 70 years. These damage ind ices were derived from virtual 395 
+simulations of tower crane behavior and seamlessly merged with real -time sensory data, 396 
+including crane vibrations and load information. The combined dataset is securely stored in a 397 
+real-time database, such as Firebase, facilitating continuous analysis and monitoring in real -398 
+time; stepwise details are included in Section 4. 399 
+Following data storage, the DTD model incorporates a pre-processing module that conducts 400 
+temporal analysis of the sensory data, encompassing time- and frequency-domain techniques 401 
+to extract relevant features capturing load-induced degradation in tower cranes. These features 402 
+precisely depict the relationships between load, deflection, and fatigue damage resulting from 403 
+cyclic loading. As the damage ind ices cover various aspects of the applied loads and their 404 
+corresponding deflections, ongoing data analysis uses stress-strain or load-deflection methods, 405 
+as outlined in Section 5. This involves a comparison of the stress concentrations resulting from 406 
+the loading cycles to those associated with structural failure. This evaluation allowed the DTD 407 
+model to train and test a machine learning (ML) model using labeled data . It establishes 408 
+10-Years
+Damage Index = 0.08
+Degradation Rate = 0.92
+20-Years
+Damage Index = 0.24
+Degradation Rate = 0.76
+30-Years
+Damage Index = 0.37
+Degradation Rate = 0.63
+40-Years
+Damage Index = 0.49
+Degradation Rate = 0.51
+50-Years
+Damage Index = 0.68
+Degradation Rate = 0.32
+60-Years
+Damage Index = 0.72
+Degradation Rate = 0.28
+70-Years
+Damage Index = 0.78
+Degradation Rate = 0.22
+(a) (b) (c) (d)
+(e) (f) (g)
+13 
+ 
+associations between sensory measurements (e.g., load magnitude, deflections, stress levels, 409 
+and cycle counts) and their corresponding damage indicators, indicating repetitive damage. 410 
+To ensure the reliability and accuracy of our predictive methodology, rigorous simulations 411 
+and real -world testing scenarios are conducted to validate its effectiveness. Detailed 412 
+discussions regarding the reliability and precision of our predictive approach can be found in 413 
+Sections 4 and 5. 414 
+4. A digital twin-driven model for degradation in cranes 415 
+This study aims to develop a DTD model for predicting degradation in LC of aging tower 416 
+cranes, enabling intelligent decision-making, and providing feedback for the lifting operation. 417 
+As illustrated in Fig. 4, a DTD model consists of five components described in Section 3.1. 418 
+These components are integrated through the use of DT data. Multi-source, heterogeneous, and 419 
+real-time data are collected from a scaled-down prototype of a tower crane. This data is then 420 
+stored in the Firebase real-time database, serving as the foundation for prediction and decision-421 
+making within the operational 422 
+ system. The control system includes pre-processing and functional modules that utilize the 423 
+collected data for analysis and decision -making. The outcomes and insights generated by the 424 
+DTD model are fed back to the physical tower crane , improving its performance and 425 
+monitoring system. Additionally, the control system analyzes and visualizes the collected data, 426 
+providing operators, decision-makers, and management teams with valuable information for 427 
+monitoring degradation in tower cranes. In summary, the proposed DTD model facilitates the 428 
+interaction and fusion of its components to effectively monitor degradation in tower cranes , 429 
+enabling intelligent decision -making and feedback mechanisms for th e lifting operation 430 
+process. 431 
+14 
+ 
+ 432 
+Fig. 4. A digital twin-driven model for predicting degradation in LC of aging tower cranes. 433 
+4.1. Physical tower crane 434 
+Tower cranes are tall structures commonly used in construction sites to lift heavy objects 435 
+from the lifting position to target locations. Over time, these cranes experience degradation due 436 
+to accumulating residual stresses caused by high-cycle and variable amplitude fatigue loads . 437 
+Researchers, such as Jiang et al. [25], have explored two main areas of study to examine the 438 
+structural mechanisms of tower cranes: (1) modeling and simulation and (2) scale models. 439 
+Modeling and simulation techniques, particularly the finite element method (FEM), have 440 
+proven to be highly effective in analyzing the internal mechanism, dynamics, and structural 441 
+behavior of tower cranes [46]. These approaches focus on critical aspects, design optimization, 442 
+and safety risk performance . On the other hand , the scale model provides another avenue for 443 
+studying the structural analysis and failure mechanism of tower cranes. Unlike numerical 444 
+models, physical scale model s allow for experimental testing of the crane’s operation and 445 
+control process. This enables easier detection of errors and deviations under various working 446 
+conditions. He et al. [52] suggested that integrated modeling, simulation, and scale models can 447 
+improve the structural analysis of tower cranes, predict failure modes, dynamic analysis, and 448 
+operation processes. This previous research serves as the basis for the proposed DTD model, 449 
+which employs integrated modeling, simulation, and scale modeling techniques in this study. 450 
+The scale model substitutes the large-size tower crane (STL420) structure. The construction 451 
+of the scale model is based on the principle of similarity, as indicated in Eq. (3). The scale 452 
+model contains the geometric attributes of all components, detailed in Table 1. The dimensions 453 
+Data collected by softwareData collected by hardware
+Data Preprocessing
+Industrial Network
+IoT-based connection or communication system
+Geometry
+Properties
+Names
+Materials
+Sensors data
+Built-in data
+Load charts
+Regulation
+Standard
+Inspection
+Monitoring
+Diagnosis
+Reports
+Wind speed
+Humidity
+Temperature
+Conditions
+Functions
+Statistics
+Analytics
+Other files
+Static Analysis
+Dynamic Analysis
+Moving Mass Analysis
+Force / Deflection
+Stress / Strain
+Fatigue damage analysis
+Lifting Capacities
+SD DD Sp-D HD ED CD
+Simulation dataReal-time digital Twin database
+Physical 
+Tower 
+crane
+Virtual 
+Tower 
+crane
+Control or service system
+Digital Twin 
+Database
+Control system for predicting degradation in lifting capacity
+Data preprocessing module
+• SVM-Based lifting capacity prediction
+Key features
+Mapping
+Mapping
+Data-drivenData-driven Feedback Feedback
+Data-driven Data storage Data-driven Data storage Data-driven Data storage
+Mapping
+Functional module
+Feature recognition Feature selection
+• Noise reduction
+• Normalization
+Time domain
+Frequency domain
+Time-frequency 
+domain
+Random Forest (RF)
+Training data
+Testing data
+Key features
+Input and output
+Optimize the hyper-
+parameter
+Train the SVM model
+Prediction results
+Verification + feedback + visualization + Display
+Industrial EthernetIndustrial WiFiPhysical tower 
+crane
+Virtual tower 
+crane
+15 
+ 
+of each part of the large-size tower crane are utilized to construct the corresponding scale-down 454 
+components, as illustrated in Fig. 5. While the large -size tower crane is built using stainless 455 
+steel, the scale model tower crane is fabricated using plastic materials. However, it is essential 456 
+to note that the DTD model is developed based on the scale model . Consequently, during the 457 
+FEM modeling process, the materials used for the scale model are defined as plastic. However, 458 
+if one intends to apply our approach to a real crane, it is crucial to carefully consider the actual 459 
+material and geometric properties. These factors play a pivotal role in addressing degradation-460 
+related issues effectively. 461 
+𝑆𝑔 = 𝐿𝑆
+𝐿𝑅
+= 𝑊𝑆
+𝑊𝑅
+= 𝐻𝑆
+𝐻𝑅
+ 
+ 
+(3) 
+where Sg is the geometric similarity factor, S is the scale model, R is the real model, and L, 462 
+W, and H are length, width, and height, respectively. 463 
+Table 1. Geometric similarity factors. 464 
+Structure Scale size (L, W, H; cm) Real size (L, W, H; cm) Scale factor 
+Mast (5.5, 5.5, 5.5) (240, 240, 240) 1/43.6 
+Jib L: 60 L: 6000 1/100 
+Counter jib L: 22 L: 850 1/38.6 
+Rope L: 122 L: 1650 1/13.5 
+Cross foundation L*H: 34*19 L*H: 800*800 1/23.5*1/42.1 
+Load 
+R (cm) 6000cm 500(gram) 1.089e+7 (gram) 1/21,772.4 
+ 465 
+16 
+ 
+ 466 
+Fig. 5. Scale model of the tower crane and its components and dimensions. 467 
+4.1.1. Fundamental data from the physical tower crane 468 
+Data is the most essential and fundamental concept in developing a DTD model. In addition 469 
+to sensors, other data types could be included to enhance the quality of a DT D model, 470 
+particularly in the degradation scenario . As illustrated in Fig. 6, the tower crane generates 471 
+multi-source heterogeneous data classified into six categories based on their type and nature: 472 
+static, dynamic, specification, historical, environmental, and comprehensive data. Static data 473 
+(SD) is data that does not change with time. Although SD does not directly influence 474 
+degradation, it can affect quality if altered. In contrast, dynamic data (DD) varies with time. 475 
+DD provides information about the crane's dynamics, lifting operation, degradation, and real -476 
+time operation status . DD is more important than other data types for developing the DT D 477 
+model. As a result, it requires high accuracy, quality, and timeliness. DD consists of sensors 478 
+and built-in data. Furthermore, specification data (Sp-D) includes knowledge, standards, and 479 
+load charts. Historical data (HD) refers to data from inspections, monitoring, and maintenance 480 
+reports during the service life. Besides this, environmental data (ED) refers to external working 481 
+conditions, such as temperature, wind, and humidity. Finally, comprehensive data (CD) is 482 
+additional data other than the previously mentioned data that provides essential and specific 483 
+information to the DTD model for enhancing prediction and decision-making. In addition, 484 
+simulation data is required for the DTD model, which we will explain in Section 4.2. Please 485 
+note that w e have developed a DTD model that utilizes real-time sensor data (DD data) and 486 
+incorporates other data types in specific tasks . This integration enhances the quality and 487 
+accuracy of assessing the degradation of tower cranes. 488 
+1
+2
+3 4 56
+9
+8 7
+10
+11 12
+1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+Foundation
+Mast
+Turn table
+Counter jib
+Counter weights
+Operator s cap
+Jib
+Trolley
+Hook block
+Apex
+Fore pendant
+Rear pendant 34 cm
+19 cm
+5 cm
+67 cm
+7 cm
+10 cm
+22 cm10 cm60 cm
+16 cm
+124 cm
+17 
+ 
+ 489 
+Fig. 6. Fundamental data for the DTD model and degradation. 490 
+4.2. Virtual tower crane 491 
+The virtual model of the tower crane serves as a simulation platform for analyzing its 492 
+structure and operation s. It accurately replicates the lifting operations of the actual crane, 493 
+considering factors such as deterioration over time. The ABAQUS software is utilized to create 494 
+a FEM model of the tower crane, enabling effective numerical simulations to determine the 495 
+capacity of its structural components in terms of load and deflection. The analysis takes into 496 
+account the working conditions of a scaled -down model, considering static, dynamic, and 497 
+moving mass on the crane. All factors relevant to the lifting operations and degradation are 498 
+incorporated as real-time external data in the virtual model. 499 
+The tower crane is connected to its foundation through a baseplate and anchor bolts, which 500 
+bear the bending moment and res trict movement in four nod al points and six degrees of 501 
+freedom (DOF). The connection between the mast and jib section is assumed to be rigid, while 502 
+the junction between the mast, tower cap, and pivoting support is consolidated. The jib and 503 
+counter jib are hinged to the mast. Finite element analysis (FEA) is performed using various 504 
+loads, including dead, service, wind, and concentrated loads. This analysis helps determine the 505 
+LC of the tower crane by examining a force/deflection or stress/strain curve. Additionally, a 506 
+fatigue damage accumulation analysis is conducted to assess the rate of damage and 507 
+degradation over a 70-year period. The ABAQUS software stores all relevant information 508 
+about the lifting operation, including component geometry, mechanical data, operation al 509 
+process, and environmental conditions. Finally, the degradation rate is integrated and used in 510 
+conjunction with real -time sensor data in the control system of the DT D model to predict 511 
+degradation in the LC of a tower crane, as explained in Section 3.3. 512 
+4.3. IoT-based connection and dataflow 513 
+The Internet of Things (IoT) system monitors the real-time status of a physical tower crane. 514 
+In the DTD model, the IoT plays a crucial role as both a source of real-time data and a source 515 
+of mechanism for transferring that data. As depicted in Fig. 7, this system is organized into five 516 
+layers: the object, sensing, communication, data management, and application. 517 
+The object layer consists of a scaled-down prototype of the tower crane, which generat es 518 
+real-time data through sensors, as discussed in Section 4.1.1. The sensing layer incorporates 519 
+Static data (SD) Comprehensive 
+data (CD)
+• Names
+• Units
+• Material properties
+Young s Modulus
+Poisson s ratio
+• Geometry
+Dynamic data 
+(DD)
+• IoT sensors
+• Built-in data
+• Other files
+• Business
+• Functions
+• Statistics
+• Analytical data
+Environmental 
+data (ED)
+• Wind speed
+• Temperature
+• Humidity
+• External working 
+conditions
+Specification data 
+(Sp-D)
+• Machine knowledge
+• Standards
+• Rules
+• Regulations
+• Policies
+• Load charts
+• Inspection report
+• Monitoring
+• Management
+• Accident documents
+• Diagnosis
+Historical data 
+(HD)
+Fundamental data for the DTD model and degradation in LC
+18 
+ 
+various sensors such as vibration, deformation, deflection, and load cell sensors. These sensors 520 
+are primarily used for data acquisition and control via different interfaces, such as OPC -UA. 521 
+The communication layer collects and transfers all types of data using serial port converters 522 
+and communication modules. It facilitates the seamless flow of data within the IoT system. The 523 
+data management layer includes a database that stores and integrates essential data translated 524 
+into different formats. This layer supports functions like perception, knowledge, and algorithms 525 
+to assist the application layer. Finally, the application layer is the fundamental component of 526 
+the IoT system. It allows communications between the OPC interface and the server. This layer 527 
+is for cleaning, association, mining, fusion, and analysis across all subsystems. 528 
+ 529 
+Fig. 7. IoT system and dataflow. 530 
+4.4. Real-time digital twin database 531 
+To effectively extract critical features related to LC degradation, advanced data conversion 532 
+technology is necessary. This technology enables the integration and manipula tion of sensor 533 
+data, fundamental data, and simulation data. The diverse nature of LC degradation necessitates 534 
+using multiple data formats and sources, each with its unique characteristics. 535 
+To address these challenges, a Firebase real-time database is employed. This database 536 
+encompasses all aspects of LC deterioration, providing a comprehensive solution. By 537 
+leveraging the capabilities of Firebase , the system can handle the complexities arising from 538 
+various factors influencing LC degradation and the heterogeneous nature of the data involved. 539 
+4.5. Control system for predicting degradation 540 
+Traditionally, operators and workers are mainly responsible for monitoring and controlling 541 
+lifting operations. A qualified individual follows the manufacturer's specifications and 542 
+FEM
+(Virtual tower crane)Web display
+Data interface
+Feedback
+Object layer
+Tower crane
+(Prototype)
+Sensing layer
+Vibration/
+deflection/
+deformation 
+sensors
+Load cell 
+sensors
+Communication layer
+Signal 
+reading
+Signal 
+resolver
+Data management layer
+Real-time 
+database
+Store data 
+types and 
+fused them 
+together
+Application layer
+Data 
+processing 
+and analysis
+#includeSoftwareSerial.h>
+ DFRobot_HX711_12C_ MyScale(&wire)
+ SoftwareSerial s(3,2);
+ Weight = MyScale.readweight ();
+#define VIBPin A0
+ Int vibs = analogRead(VIBPin);
+ Data1 = Serial.read();
+Firebase.RTDB.setFloat (&fbdo, LOAD_CELL/mass data1);
+Firebase.RTDB.setFloat (&fbdo, LOAD_CELL/vibrations veb1);
+#if defined(ESP8266)
+ fbdo.setBSSLBufferSize (2048, 2048);
+#endif
+ fbdo.setResponseSize (2048);
+ Firebase.begin (&config, &auth);
+ Firebase.reconnectWiFi (true);
+ Firebase.setDoubleDigits (5);
+ config.timeout.serverResponse = 10 * 1000;
+ delay(10);
+PinMode(VIBPin, INPUT);
+Serial.begin(9600);
+WiFi.begin(WIFI_SSD, WIFI_PASSWORD);
+Serial.print(connecting to Wi -Fi 
+While (WiFi.status() !=WL_CONNECTED
+19 
+ 
+directions to ensure a safe lifting operation. The manufacturer's rated loads for a crane are based 543 
+on ideal conditions. If an individual adheres to the manufacturer's loads for an extended period, 544 
+the tower crane may be damaged. Therefore, a hybrid and real-time approach is required to 545 
+illustrate the current status, predict the LC of a tower crane, and present the predicted LC in 546 
+updated load charts and graphs. The control system is thus designed and comprises (1) pre-547 
+processing and (2) functional modules. 548 
+The pre -processing module handle s data monitoring, analysis, and evaluation for LC 549 
+prediction. Sensor signals typically contain noise, which can adversely affect the accuracy of 550 
+LC prediction. Appropriate de-noising methods are commonly employed to mitigate this issue 551 
+and enhance the precision of the predictions. However, in the context of this study, unique de-552 
+noising methods were not utilized as they were not directly relevant to the Firebase database. 553 
+Instead, we employed two different steps to denoise the raw data . 1) We utilized a 554 
+communication protocol or interface, such as a Universal Asynchronous Receiver/Transmitter 555 
+(UART), to transfer data from ESP8266 to an Arduino. This step help ed in reducing noise 556 
+during the data transfer process. 2) We applied the Power Exponential Denoising (PED) 557 
+method specifically for the load cell. This technique effectively reduced the noise present in 558 
+the load cell data, further enhancing the accuracy of the predictions. Moreover, data 559 
+normalization is performed within this module. A feature recognition technique such as time-560 
+domain is applied to extract information from the signals. Subsequently, a features selection 561 
+method is utilized to identify the most relevant features. The dataset is then divided into training 562 
+and testing datasets for further processing. 563 
+In the functional module, important features influencing the LC of the tower crane are 564 
+selected. Real-time sensor data is utilized by the DTD technique to assess the current condition 565 
+of the lifting operation. However, real-time data alone cannot predict the degradation rate of 566 
+LC or how quickly the LC decreases over time. To address this limitation, FEA is conducted 567 
+to evaluate fatigue damage accumulation and degradation. The degradation rate obtained from 568 
+FEA is incorporated and manipulated in the database, as described in Section 3. An appropriate 569 
+machine learning (ML) model is employed to accurately predict degradation in the LC of the 570 
+tower crane . The high-precision findings are then fed back to the physical tower crane , 571 
+minimizing unexpected failures and damages while enhancing monitoring capabilities and the 572 
+overall safety of the lifting operation. 573 
+5. Case study 574 
+In this study, we utilized a scaled-down prototype of the “STL420” tower crane to evaluate 575 
+the accuracy, effectiveness, and applicability of the proposed DTD model . Although the 576 
+prototype has some flaws, none of them hinder our research objectives. For instance, the shape 577 
+of the foundation/baseplate differs from the actual crane, but the bending moment is restrained 578 
+to four nodes and six DOFs, mirroring real cranes. Furthermore, the prototype's mast consists 579 
+of only two sections, whereas the mast of the actual crane has more sections, varying in height. 580 
+However, t his discrepancy does not impact our model since we do not consider critical 581 
+components or joint failures in the degradation analysis. Finally, although the slewing unit and 582 
+climbing frame differ in shape, their functions remain identical. 583 
+20 
+ 
+5.1. Physical hardware setup 584 
+The scaled-down prototype is equipped with two direct -current (DC) motors that enable 585 
+horizontal rotation in both clockwise and counter -clockwise directions, trolley movement 586 
+inward and outward, as well as loading and unloading operations th rough a remote control. 587 
+Additionally, as shown in Fig. 8, two sensors, namely a load cell and a piezoelectric sensor, 588 
+are installed on the prototype to measure the load and deflection. The piezoelectric sensor is 589 
+positioned at the end of the jib where defl ection is higher, while the load cell is mounted 590 
+beneath the hook. The load cell is connected to the HX711 ADC, Arduino Uno, and NodeMCU 591 
+ESP8266 Wi -Fi module for data collection and storage . This configuration enables 592 
+bidirectional communication between the physical and virtual cranes. 593 
+ 594 
+Fig. 8. Physical hardware setup. 595 
+5.2. DTD model experimental platform 596 
+The main objective of the experimental platform is to conduct lifting operations. A scaled 597 
+model was constructed to achieve this, and lifting operations were carried out to generate and 598 
+collect data. In order to measure loads and deflection, a load cell and piezoelectric sensors were 599 
+installed. Additionally, the actual crane provided three load charts corresponding to 600 
+counterweights of 12, 18, and 24 tons, along with four jibs of lengths of 30m, 40m, 50m, and 601 
+60m attached to the mast. Following the principle of similarity, we utilized a scaled model with 602 
+a 60-meter jib and 24 tons of counterweights. The load chart for the actual cra ne is presented 603 
+in Table 2. Applying the scale factor, the load chart for the scaled-down tower crane is shown 604 
+in Table 3. 605 
+1
+2 3
+4
+51
+2
+3 4
+5Piezoelectric sensor
+Load cell sensor
+ADC Arduino Uno
+ESP8266
+Data collection
+Hardware setup
+21 
+ 
+Fig. 9 illustrates the scale model used, which features a jib length of 60 cm and a trolley 606 
+movement limited to a range of 15 cm to 50 cm. To determine the loads for different lifting 607 
+radii, we applied scaled -down factors and marked the corresponding radii on th e jib using a 608 
+black marker, as shown in Fig. 8. Each marked lifting radius was then assigned a calculated 609 
+load. For each point load, three operations were performed to measure load and deflection: (1) 610 
+loading and unloading, (2) clockwise and counterclockwi se rotation, and (3) rotation while 611 
+loading and unloading. Each point load experiment lasted 10 minutes, during which we 612 
+completed all three operations. Three tests were conducted for each point load, and the results 613 
+were averaged. This generated a dataset consisting of 54 experiments conducted at 18 different 614 
+locations. Simultaneously, the virtual environment simulated the hoisting process. The load 615 
+values calculated from Table 3 were used to establish the relationship between stress/strain or 616 
+load/deflection. As discussed in Section 3, residual stresses accumulate when loads are applied 617 
+cyclically over several years , leading to de

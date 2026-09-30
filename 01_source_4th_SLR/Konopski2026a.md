@@ -13,3 +13,12 @@ This study presents a comparative analysis of six DFS implementations representi
 | Yes | Yes | Yes | Yes | Yes | **Include** |
 
 **Note:** BIM/DT/AI/IoT dynamic fire evacuation comparative cases
+
+## Step-3 Deep-Read Coding (Prompt B)
+| P DT-subject | Q DfS/DfQ | R codable | U Tier | V Design | W Constr | X Oper | Z DfX | AA Self-improve | AB Methodology | AC Modality | AD Validation | AE QA(0-5) | AF Cluster |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| No | Yes | No | Stage-2 Exclude |  |  |  |  |  |  |  |  |  |  |
+
+**Key evidence (AG):** Structured narrative review + comparative case analysis (Sustainability 2026, Wroclaw/Poznan): PICo-based selection of six dynamic fire safety system (DFS) implementations from Scopus (2015-2026), scored with an original ten-criterion maturity rubric grounded in TRL/IRL/DT maturity frameworks (kappa-w 0.797); identifies regulatory gaps and proposes five normative recommendations for Poland/EU. No digital twin is built or evaluated by the authors - the six cases are analysed from published sources. P=No, R=No -> Stage-2 exclude.
+
+*Full-text source: browser-oa*

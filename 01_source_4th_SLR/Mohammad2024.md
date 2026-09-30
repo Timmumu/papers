@@ -13,3 +13,20 @@ The high accident rate in the construction industry has a major impact on how we
 | Yes | Yes | Yes | Yes | Yes | **Include** |
 
 **Note:** DT-CSTF construction safety training with AI/VR
+
+## Step-3 Deep-Read Coding (Prompt B)
+| P DT-subject | Q DfS/DfQ | R codable | U Tier | V Design | W Constr | X Oper | Z DfX | AA Self-improve | AB Methodology | AC Modality | AD Validation | AE QA(0-5) | AF Cluster |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| Yes | Yes | Yes | Tier 1 - Digital Model (static, no live data) | 0 | 1 | 0 | Design for Safety (DfS) | Mentioned only | Other / Mixed | Multi (two or more data types) | Simulation | 2 | Design for Safety |
+
+| AC1 fusion depth | AC2 fusion evidence | AC3 confidence |
+|---|---|---|
+| Fused | BIM, schedules, safety requirements and DT history data are fused to auto-generate VR training scenarios. | Low |
+
+**Key evidence (AG):** Digital Twin-based Construction Safety Training Framework (DT-CSTF) with AI (Data and Metadata 2024): Unity game engine builds a VR training environment prototype that incorporates BIM, construction schedules and safety requirements; user data on risks collected and tailored feedback provided; automated VR training scenarios generated from project intent/status/safety history. Evaluation is via effectiveness ratios (96.90%-99.25%) for training/cost/monitoring/behaviour/education; no live site link, no actuation.
+
+*Full-text source: browser-oa*
+
+**AH — strength & gap filled:** VR safety training prototype built in Unity that auto-generates scenarios from DT project intent/status/safety-history data, with reported effectiveness ratios above 95%.
+
+**AI — deficiencies & future work:** VR prototype evaluation percentages lack methodological detail; no live construction-site data link demonstrated.

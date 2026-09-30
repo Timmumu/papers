@@ -14,7 +14,6 @@ In traditional construction safety assessment, it is difficult to describe the s
 
 **Note:** DT modeling theory for tunnel construction safety assessment
 
-
 ## Step-3 Deep-Read Coding (Prompt B)
 | P DT-subject | Q DfS/DfQ | R codable | U Tier | V Design | W Constr | X Oper | Z DfX | AA Self-improve | AB Methodology | AC Modality | AD Validation | AE QA(0-5) | AF Cluster |
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|

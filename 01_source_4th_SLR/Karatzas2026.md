@@ -14,7 +14,6 @@ Purpose – Heritage building management serves as a potent catalyst for sustain
 
 **Note:** Heritage building DT with social dynamics; safety in scope
 
-
 ## Step-3 Deep-Read Coding (Prompt B)
 | P DT-subject | Q DfS/DfQ | R codable | U Tier | V Design | W Constr | X Oper | Z DfX | AA Self-improve | AB Methodology | AC Modality | AD Validation | AE QA(0-5) | AF Cluster |
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|

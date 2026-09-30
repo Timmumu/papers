@@ -1,6 +1,6 @@
 ---
 name: lr4-literature-review
-description: 'Repeat the AECO digital-twin literature review workflow for 04d_LR4 using 0.1a.Corpus_Merged-956 nos. v2.csv. Use when asked to do first screening from title, keywords, and abstract; extract Endnote full text for included papers; perform step-3 deep reading; rebuild SLR summary matrix step 1 and SLR summary matrix step 3; or keep 04d_LR4 aligned with the proven 04c_LR 3round structure.'
+description: 'Redo the LR4 AECO digital-twin literature-review exercise for 04d_LR4 using 0.1a.Corpus_Merged-956 nos. v2.csv. Use when asked to do first screening from title, keywords, and abstract; extract Endnote full text for Step-1 includes; study included full texts one by one; rebuild SLR summary matrix step 1 or step 3; continue LR4 coding; or keep 04d_LR4 aligned with the proven 04c_LR 3round workflow.'
 argument-hint: '[round folder or corpus path]'
 user-invocable: true
 ---
@@ -9,92 +9,115 @@ user-invocable: true
 
 ## Purpose
 
-Use this skill to rerun the established SLR workflow for a new corpus in `04d_LR4` while preserving the working style and deliverable structure proven in `04c_LR 3round`.
+Use this skill to rerun the full LR4 exercise in `04d_LR4` from the merged CSV through three concrete stages:
 
-Default target corpus:
-- `04d_LR4/2. vosviewer/0.1a.Corpus_Merged-956 nos. v2.csv`
+1. Step-1 screening from title, keywords, and abstract
+2. local Endnote full-text staging and verification for included papers
+3. paper-by-paper Step-3 deep reading and matrix rebuild
 
-Primary deliverables:
-- `04d_LR4/SLR summary matrix step 1.md`
-- verified staged full text files under the `04d_LR4` full-text folders
-- `04d_LR4/SLR summary matrix step 3.md`
+This skill is specifically for reproducing the proven `04c_LR 3round` workflow against the LR4 corpus while keeping the LR4 data stores, scripts, and outputs isolated.
+
+Use this full workflow skill when the user wants the end-to-end rerun. If the user wants only one phase, prefer the narrower companion skills `lr4-step1-screening` or `lr4-step3-deep-read`.
+
+## Default Targets
+
+- Corpus CSV: `04d_LR4/2. vosviewer/0.1a.Corpus_Merged-956 nos. v2.csv`
+- Step-1 output: `04d_LR4/SLR summary matrix step 1.md`
+- Step-3 output: `04d_LR4/SLR summary matrix step 3.md`
+- LR4 authoritative stores: `04d_LR4/5. SLR matrix/ss/corpus_lr4.json` and `04d_LR4/5. SLR matrix/ss/coverage_lr4.json`
 
 ## When To Use
 
-- User asks to repeat the literature review on a new merged CSV corpus.
-- User mentions `04d_LR4`, `0.1a.Corpus_Merged-956 nos. v2.csv`, `step 1 screening`, `Endnote full text`, `step 3 deep read`, or `SLR summary matrix`.
-- User wants the same folder logic, matrix logic, and coding discipline already used in `04c_LR 3round`.
+- User asks to do the LR4 exercise again from the merged 956-paper corpus.
+- User asks for first screening from title, author keywords, index keywords, and abstract.
+- User asks to extract full text for Step-1 included papers from the local Endnote library.
+- User asks to do detailed full-text study one paper at a time.
+- User asks to rebuild or continue `SLR summary matrix step 1.md` or `SLR summary matrix step 3.md` in `04d_LR4`.
 
-## Inputs
+## Workflow Outcome
 
-Expect the CSV to provide at least these fields, already confirmed in the LR4 corpus:
+The skill should produce or maintain:
+
+- a complete LR4 Step-1 screening matrix aligned with `04c_LR 3round/SLR summary matrix step 1.md`
+- verified staged PDFs and companion TXT extracts for included papers
+- a markdown summary list for papers with no matched or no verified full text
+- a Step-3 coded matrix aligned with `04c_LR 3round/SLR summary matrix step 3.md`
+- auditable LR4 source-of-truth files rather than manual markdown-only edits
+
+## Required Inputs
+
+Expect the LR4 CSV to contain these usable fields:
+
 - `Title`
-- `Year`
-- `DOI`
 - `Abstract`
 - `Author Keywords`
 - `Index Keywords`
+- `Year`
+- `DOI`
 - `Source`
 - `EID`
 - author fields
 
-Expected local full-text source:
-- Endnote attachment library on disk, not remote APIs
+Expected full-text source:
 
-## Default Assumptions
+- local Endnote attachment storage on disk
 
-- Reuse the same review scope as the completed `04c_LR 3round` study unless the user explicitly changes the research question.
-- Reuse the exact same Step-1 `G-H-I-J-K` screening logic as `04c_LR 3round/2 stage PRISMA guideline.md` Prompt A.
-- Reuse the full Step-3 coding framework and matrix shape currently used by `04c_LR 3round`.
-- Preserve the `AC1`, `AC2`, and `AC3` fusion-depth fields by default in every new round that follows this workflow.
-- Be conservative during screening: if the title/keywords/abstract do not clearly satisfy the criterion, code `No` and exclude.
-- Do not hand-edit the matrix as the source of truth. Keep an authoritative data store plus rebuild scripts.
-- Prefer extracting shared utilities for reusable LR workflows, while keeping round-specific data and outputs isolated so existing `04c` results remain untouched.
+## Proven LR4 Assets
 
-## Folder Expectations
+Use the existing LR4 implementation first, instead of inventing a new one.
 
-Keep `04d_LR4` structurally parallel to `04c_LR 3round` as far as practical.
+Primary scripts:
 
-At minimum preserve these working areas:
-- `04d_LR4/0. filter/`
-- `04d_LR4/1. papers retrieved/`
-- `04d_LR4/2. vosviewer/`
-- `04d_LR4/3. fulltext L1/`
-- `04d_LR4/4. fulltext L2/`
-- `04d_LR4/5. SLR matrix/`
+- `./scripts/lr4_parse_corpus.py`
+- `./scripts/screening_data_lr4.py`
+- `./scripts/rebuild_lr4_step1.py`
+- `./scripts/stage_fulltext_lr4.py`
+- `./scripts/rebuild_lr4_step3.py`
+- `./scripts/validate_lr4_step3.py`
+- `./scripts/append_step3_lr4_notes.py`
+- `./scripts/make_lr4_code_extracts.py`
+- `./scripts/peek_lr4.py`
 
-If intermediate artifacts are needed, create them under `04d_LR4/5. SLR matrix/ss/` or a clearly named sibling folder rather than scattering temporary files.
+Supporting Prompt definitions:
+
+- `04c_LR 3round/2 stage PRISMA guideline.md`
+
+## Core Rules
+
+- Default to a full rerun from scratch unless the user explicitly asks to continue from an existing LR4 baseline.
+- Reuse the same Step-1 `G-H-I-J-K` logic defined in Prompt A from `04c_LR 3round/2 stage PRISMA guideline.md`.
+- Reuse the same Step-3 full-text coding logic defined in Prompt B from that same file.
+- Be conservative: if title, keywords, or abstract do not clearly satisfy a criterion, code `No`.
+- Do not use the markdown matrices as the source of truth.
+- Keep LR4 outputs round-specific; do not point default scripts at `04c` outputs.
+- Preserve the existing LR4 fusion-depth fields `AC1`, `AC2`, and `AC3` unless the user explicitly changes the schema.
+- After Step 3, update only the consolidated LR4 outputs by default; do not append results back into per-paper notes unless the user asks.
 
 ## Procedure
 
-### 1. Inspect And Map The Corpus
+### 1. Prepare The LR4 Corpus Store
 
-1. Confirm the LR4 folder structure and locate the merged CSV.
-2. Read the CSV header and identify the fields needed for Step 1, full-text lookup, and Step 3 output.
-3. Define a stable record identifier for the new round.
-4. Decide whether to create LR4-specific scripts such as:
-   - `scripts/screening_data_lr4.py`
-   - `scripts/rebuild_lr4_step1_matrix.py`
-   - `scripts/step3_data_lr4.py`
-   - `scripts/rebuild_lr4_step3_matrix.py`
-5. Extract shared parsing, rebuilding, verification, and staging helpers when they can support future rounds.
-6. Keep round-specific data modules and output writers separate whenever shared code would otherwise risk overwriting prior work.
+1. Confirm the LR4 folder structure exists.
+2. Confirm the merged CSV exists at the default path unless the user provided another corpus.
+3. Parse the CSV into the LR4 authoritative store with `./scripts/lr4_parse_corpus.py`.
+4. Treat `04d_LR4/5. SLR matrix/ss/corpus_lr4.json` as the record-level source of truth.
+5. If slug collisions appear on Windows because of case-insensitive paths, resolve them in the LR4 corpus store before downstream staging.
 
-Decision rule:
-- Default to shared utilities for reusable mechanics such as CSV parsing, matrix rendering, Endnote matching, text extraction, and validation.
-- Keep review-round facts isolated in round-specific data stores, config values, and output targets.
-- Never point a shared script at `04c` outputs by default.
+Decision points:
 
-### 2. Build Step 1 Screening
+- If the corpus path changes, update only LR4-specific config or invocation, not shared `04c` outputs.
+- If CSV headers drift, fix parsing at the corpus-store layer before touching screening or rebuild logic.
 
-1. Parse each CSV record into an authoritative screening store.
-2. Screen using title, abstract, author keywords, and index keywords.
-3. Apply the same `G-H-I-J-K` logic used in `04c` Prompt A.
-4. Make the Step-1 decision from those criterion columns.
-5. Write a concise but auditable note for every record, especially for edge cases.
-6. Rebuild `04d_LR4/SLR summary matrix step 1.md` from the authoritative store.
+### 2. Run Step-1 Screening
 
-Minimum Step-1 output columns should remain consistent with the established matrix style:
+1. Screen each paper from title, abstract, author keywords, and index keywords only.
+2. Apply the `G-H-I-J-K` definitions exactly as frozen in Prompt A.
+3. Store screening judgments in the LR4 screening modules and aggregate them through `./scripts/screening_data_lr4.py`.
+4. Rebuild the markdown output with `./scripts/rebuild_lr4_step1.py`.
+5. Check that the resulting matrix matches the LR4 corpus row count.
+
+Expected Step-1 deliverable shape:
+
 - `ID`
 - `Author`
 - `Title`
@@ -109,126 +132,112 @@ Minimum Step-1 output columns should remain consistent with the established matr
 - `Note`
 - `DOI`
 
-Quality rules:
-- `Include` only when all required Step-1 criteria are satisfied.
-- `Unsure` is not a final category. Resolve conservatively to exclusion unless the existing review protocol says otherwise.
-- Notes must make the decision easy to verify from title/keywords/abstract alone.
+Decision rule:
 
-### 3. Stage Full Text From Endnote
+- Include only when all required Step-1 criteria pass.
+- Do not leave `Unsure` as a final state.
+- Notes must make the decision auditable from title, keywords, and abstract alone.
 
-1. Collect the Step-1 included set.
-2. Search the local Endnote attachment library for each included paper.
-3. Copy matched PDFs into the LR4 full-text staging area using a stable naming pattern.
-4. Extract companion text files from staged PDFs for downstream verification and coding.
-5. Verify staged files against metadata.
-6. Track included papers with no verified full text separately.
+### 3. Extract And Verify Full Text
 
-Verification rule hierarchy:
-- First choice: DOI match in front matter.
-- Fallback: strong title-signature match.
-- Last fallback: all major title words present when DOI is absent from front matter.
+1. Take the Step-1 included set as input.
+2. Search the local Endnote attachment library for candidate PDFs.
+3. Stage matched files into `04d_LR4/3. fulltext L1/` and downstream LR4 locations using `./scripts/stage_fulltext_lr4.py` and related verified helpers.
+4. Extract companion TXT files for downstream coding.
+5. Record coverage and verification status in `04d_LR4/5. SLR matrix/ss/coverage_lr4.json`.
+6. Keep unmatched, ambiguous, and unverified cases explicitly tracked.
+7. Emit a user-facing markdown summary list for papers with no matched full text or no verified full text.
+
+Verification hierarchy:
+
+- DOI evidence in front matter
+- strong normalized title match
+- last-resort major-title-word match only when DOI evidence is absent
 
 Guardrails:
-- Do not trust filename-only matching.
-- Treat local Endnote disk attachments as the primary source when network access is blocked.
-- Remove incorrect staged files instead of silently keeping ambiguous matches.
 
-### 4. Perform Step 3 Deep Reading
+- Never trust filename-only matching.
+- Remove false-positive staged files instead of carrying them forward.
+- Prefer local Endnote disk evidence over remote discovery when the task is to reproduce the LR4 workflow.
 
-1. Iterate through verified full-text papers one by one.
-2. Read the actual full text, not only metadata.
-3. Apply the established Prompt B coding framework used in `04c`.
-4. Store each coded decision in an LR4 Step-3 data module, not directly in markdown.
-5. Rebuild `04d_LR4/SLR summary matrix step 3.md` from the authoritative data.
-6. Keep missing-fulltext records in a clearly separated section if they cannot be coded.
+### 4. Perform Step-3 Deep Reading
 
-Unless the user overrides the schema, carry forward the current Step-3 structure including:
-- DT built/evaluated
-- DfS/DfQ scope
-- methodology
-- Stage-2 decision and exclusion reason
-- DT tier
-- lifecycle phase coverage
-- DfX focus
-- self-improvement
-- method
-- data modality
-- fusion depth, evidence, confidence
-- validation
-- QA score
-- cluster
-- detailed evidence
-- strengths and gap filled
-- deficiencies and future work
-- DOI
+1. Work through verified full-text papers one by one.
+2. Read the actual paper text, not metadata summaries.
+3. Apply the Prompt B coding framework from `04c_LR 3round/2 stage PRISMA guideline.md`.
+4. Store codes in LR4 data modules such as `step3_lr4_data.py`, `step3_lr4_extra.py`, and `step3_lr4_fusion.py` rather than editing markdown directly.
+5. Rebuild the markdown matrix with `./scripts/rebuild_lr4_step3.py`.
+6. Do not update per-paper notes by default.
+7. Use `./scripts/make_lr4_code_extracts.py` and `./scripts/peek_lr4.py` for coding extracts and spot-checks.
+8. Only use `./scripts/append_step3_lr4_notes.py` if the user explicitly asks to push Step-3 results back into paper notes.
 
-Deep-read quality rules:
-- Code only what is implemented or explicitly evidenced in the full text.
-- Keep evidence fields specific enough for later verification.
-- Separate conceptual claims from demonstrated system behavior.
-- When fusion depth is ambiguous, downgrade confidence rather than overstating integration.
+Minimum Step-3 expectations:
 
-### 5. Validate After Every Meaningful Batch
+- confirm Stage-2 inclusion from full text
+- code DT tier, lifecycle phase, DfX target, self-improvement, method, modality, validation, QA, cluster, and evidence
+- preserve LR4 fusion-depth coding and confidence fields
+- separate full-text-confirmed evidence from speculative claims
 
-After any substantive batch of edits or coding:
+### 5. Validate Immediately After Each Batch
 
-1. Run a narrow validation step immediately.
-2. Check matrix row counts against the authoritative store.
-3. Check required columns and allowed values.
-4. Check staged PDF and TXT pairing.
-5. Check full-text identity consistency.
-6. Check DOI formatting where available.
+After the first substantive change in a slice, run one focused validation before doing more editing.
 
 Preferred validation order:
-1. behavior-specific checker for the touched slice
-2. matrix rebuild for the target round
-3. focused verifier for LR4 outputs
-4. diff inspection only if no narrower executable check exists
 
-## Recommended Implementation Pattern
+1. rebuild the touched LR4 matrix
+2. run the focused LR4 checker for that slice
+3. inspect row counts and controlled values
+4. inspect diffs only if no narrower executable validation exists
 
-- Keep source-of-truth data in scripts or structured data files.
-- Generate markdown matrices from those sources.
-- Make idempotent updaters for note insertion or matrix rebuilds.
-- Validate immediately after the first substantive edit to a new script.
-- Use small reversible edits rather than broad rewrites.
+Concrete LR4 validation checks:
 
-## Quality Gates Before Declaring A Round Complete
+- Step 1: `./scripts/rebuild_lr4_step1.py`
+- Full-text staging: verify PDF and TXT pairing plus `coverage_lr4.json`
+- Step 3: `./scripts/validate_lr4_step3.py`, then `./scripts/rebuild_lr4_step3.py`
 
-- Step-1 matrix exists and row count matches the LR4 corpus.
-- Every Step-1 row has an auditable decision note.
-- Included papers have either a verified staged full text or an explicit missing-fulltext status.
-- Step-3 matrix is rebuilt from authoritative coded data, not manual markdown edits.
-- All controlled vocabularies used in Step 3 are internally consistent.
-- No orphan staged files remain.
-- The LR4 folder structure stays recognizable relative to `04c_LR 3round`.
+## Completion Gates
+
+Do not call the LR4 exercise complete until all of the following are true:
+
+- `SLR summary matrix step 1.md` exists and matches the corpus row count
+- every Step-1 row has an auditable note
+- every Step-1 include has either verified full text, explicit unverified status, or explicit no-candidate status
+- `SLR summary matrix step 3.md` is rebuilt from authoritative LR4 data stores
+- controlled vocabularies in Step 3 stay internally consistent with Prompt B
+- staged files and coverage records do not contain unresolved false positives
+
+## Known LR4 Baseline
+
+This workspace already established a completed LR4 baseline that can be reused or audited:
+
+- corpus size: 956 rows
+- Step-1 result: 244 includes and 712 excludes
+- verified full text: 151
+- unverified full text: 63
+- no candidate: 30
+- Step-3 coded rows: 151
+
+Treat those numbers as a reproducibility target unless the corpus or decision protocol changes.
 
 ## Ambiguities To Confirm With The User
 
-Confirmed defaults for this workspace:
+Current defaults for this workspace:
 
-1. LR4 reuses the exact same Step-1 `G-H-I-J-K` criteria and full Step-3 schema as `04c`.
-2. LR4 preserves the fusion-depth trio `AC1-AC3` by default.
-3. New automation should prefer shared reusable scripts for future review rounds, with round-specific data isolated from one another.
+1. Rerun LR4 from scratch unless the user explicitly requests continuation or audit-only behavior.
+2. Generate a markdown summary list for papers with unmatched or unverified full text, not only `coverage_lr4.json`.
+3. After Step 3, update only the consolidated LR4 matrix outputs unless the user explicitly requests note-level backfill.
 
-Open only if still unspecified in a future run:
-
-1. Where unmatched or missing-fulltext papers should be reported inside `04d_LR4`.
+Ask only if a future task overrides one of those defaults.
 
 ## Example Prompts
 
-- `/lr4-literature-review use 04d_LR4 and build Step 1 from 0.1a.Corpus_Merged-956 nos. v2.csv`
-- `/lr4-literature-review extract Endnote full text for all LR4 Step-1 includes and verify staged PDFs`
-- `/lr4-literature-review continue LR4 Step-3 deep reading and rebuild the matrix`
-- `/lr4-literature-review audit whether 04d_LR4 still matches the 04c round structure`
+- `/lr4-literature-review rebuild LR4 Step 1 from 04d_LR4/2. vosviewer/0.1a.Corpus_Merged-956 nos. v2.csv`
+- `/lr4-literature-review extract Endnote full text for all LR4 Step-1 includes and verify coverage`
+- `/lr4-literature-review code LR4 full texts one by one and rebuild Step 3`
+- `/lr4-literature-review validate whether current 04d_LR4 still reproduces the 04c workflow`
 
-## Related Assets To Reuse
+## Companion Skills
 
-- `04c_LR 3round/2 stage PRISMA guideline.md`
-- `04c_LR 3round/SLR summary matrix step 1.md`
-- `04c_LR 3round/SLR summary matrix step 3.md`
-- `scripts/screening_data.py`
-- `scripts/step3_data.py`
-- `scripts/step3_extra.py`
-- `scripts/step3_fusion.py`
-- full-text verification scripts already proven in the repository
+- `lr4-literature-review`: full rerun from scratch
+- `lr4-step1-screening`: Step 1 only
+- `lr4-step3-deep-read`: Step 3 only

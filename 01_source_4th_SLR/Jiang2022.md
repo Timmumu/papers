@@ -14,7 +14,6 @@ Unsafe hoisting behaviors are the fuse of tower crane overturning safety acciden
 
 **Note:** Scale-model DT for tower crane hoisting stability safety
 
-
 ## Step-3 Deep-Read Coding (Prompt B)
 | P DT-subject | Q DfS/DfQ | R codable | U Tier | V Design | W Constr | X Oper | Z DfX | AA Self-improve | AB Methodology | AC Modality | AD Validation | AE QA(0-5) | AF Cluster |
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|

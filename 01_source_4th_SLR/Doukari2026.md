@@ -14,7 +14,6 @@ Achieving the EU’s energy and decarbonisation goals requires more efficient ma
 
 **Note:** Renovation DT monitoring cost/schedule/quality/safety/environment
 
-
 ## Step-3 Deep-Read Coding (Prompt B)
 | P DT-subject | Q DfS/DfQ | R codable | U Tier | V Design | W Constr | X Oper | Z DfX | AA Self-improve | AB Methodology | AC Modality | AD Validation | AE QA(0-5) | AF Cluster |
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|

@@ -1,0 +1,1420 @@
+Research Article
+Lifecycle updating of rockfill dam deformation models via 
+dependence-aware sequential Bayesian inference with posterior-guided 
+continual surrogate learning
+Zhihong Huang
+a
+, Gang Ma
+a , b , c , *
+, Yi Zhang
+a
+, Guike Zhang
+d
+, Zhitao Ai
+a , b
+, Yifan Cui
+a
+, 
+Wei Zhou
+a , b , c
+a
+State Key Laboratory of Water Resources Engineering and Management, Wuhan University, Wuhan, 430072, China
+b
+Institute of Water Engineering Sciences, Wuhan University, Wuhan, 430072, China
+c
+Key Laboratory of Rock Mechanics in Hydraulic Structural Engineering of Ministry of Education, Wuhan University, Wuhan, 430072, China
+d
+Yalong River Hydropower Development Co Ltd, Chengdu, 610051, China
+ARTICLE INFO
+Keywords:
+Rockfill dams
+Digital twin
+Sequential Bayesian updating
+Copula-based dependence modeling
+Continual surrogate learning
+Uncertainty quantification
+ABSTRACT
+Rockfill dams exhibit pronounced stage-dependent deformation during construction, impoundment, and long- 
+term operation, requiring monitoring-updated deformation models for lifecycle prediction and digital twin- 
+based safety assessment. However, existing updating methods are often deterministic and stage-isolated, while 
+conventional probabilistic approaches insufficiently capture dependence among mechanically related constitu -
+tive parameters. For multi-stage lifecycle analysis, these methods also lack cross-stage adaptability and often 
+require repeated finite-element simulations or full surrogate retraining, leading to high computational cost. This 
+study proposes a dependence-aware sequential probabilistic framework with posterior-guided continual surro -
+gate learning for dynamic updating of rockfill dam deformation models. The framework progressively assimilates 
+monitoring data to track lifecycle parameter evolution, preserves empirical parameter dependence via Copula- 
+enhanced prior modeling within a sequential Bayesian updating scheme, and adaptively refines the surrogate 
+by concentrating new training samples in posterior-relevant regions while retaining historical deformation 
+knowledge. Application to the 303 m Lianghekou core-wall rockfill dam shows that the proposed method reduces 
+the global relative settlement prediction error from 37.4% to 9.7% and reduces the dominant computational cost 
+of lifecycle surrogate updating by 45.8% compared with full surrogate retraining. The updated model further 
+enables uncertainty-informed settlement prediction, spatiotemporal deformation reconstruction, and posterior- 
+informed diagnosis of safety-related deformation characteristics, providing an interpretable and efficient 
+approach for lifecycle deformation analysis and digital twin-based dam safety management.
+1. Introduction
+Rockfill dams are widely used in large hydraulic projects because of 
+their adaptability to complex geological conditions, use of locally 
+available materials, and favorable seismic performance ( Ma and Chi, 
+2016a ; Zhang et al., 2026 ). As large granular structures, their defor -
+mation behavior evolves markedly during staged construction, reservoir 
+impoundment, and long-term operation ( Sun et al., 2026 ; Yang et al., 
+2025 ). Settlement is mainly governed by self-weight loading and 
+compaction during construction, while wetting-induced deformation, 
+hydraulic loading, stress redistribution, and creep become increasingly 
+important after impoundment ( Fig. 1 ). For tall rockfill dams, such 
+lifecycle-dependent deformation is closely related to structural safety, 
+seepage stability, and operational reliability, making reliable deforma -
+tion assessment essential for dam safety management.
+Field monitoring provides direct information on the in-situ defor -
+mation response of rockfill dams, but monitoring data are usually 
+available only at discrete locations and cannot directly characterize the 
+full-field mechanical state. Finite element (FE)-based deformation 
+analysis provides a physics-based bridge between monitoring observa -
+tions and continuous deformation fields, making monitoring-driven FE 
+model updating an important approach for interpreting dam behavior, 
+* Corresponding author.
+E-mail address: magang630@whu.edu.cn (G. Ma). 
+Contents lists available at ScienceDirect
+Computer-Aided Civil and Infrastructure Engineering
+journal homep age: www.science direct.co m/journal/co mputer-aid ed- 
+civil-and-infra structure -engineering
+https://doi.org/10.1016/j.cacaie.2026.100169
+Received 30 April 2026; Received in revised form 5 July 2026; Accepted 3 August 2026 
+Computer-Aided Civil and Infrastructure Engineering 50 (2026) 100169 
+Available online 4 August 2026 
+1093-9687/© 2026 The Authors. Published by Elsevier Inc. This is an open access article under the CC BY license ( http://creativecommons.org/licenses/by/4.0/ ). 
+identifying material constitutive parameters, and supporting lifecycle 
+safety assessment. Driven by advances in sensing, the Internet of Things, 
+and artificial intelligence, civil infrastructure is evolving toward intel -
+ligent operation supported by digital twin (DT) technology ( Nav et al., 
+2025 ; Saif et al., 2024 ). For rockfill dams, a practical DT is not merely 
+a static replica or visualization tool, but an updatable computational 
+model that can assimilate monitoring data, evolve with the physical 
+dam, and support lifecycle performance assessment.
+Existing monitoring-driven deformation model updating methods 
+have improved dam behavior interpretation and deformation predic -
+tion, but several challenges remain for lifecycle applications. First, many 
+back-analysis methods are deterministic and stage-specific, identifying a 
+single optimal parameter set for a given period while providing limited 
+information on parameter uncertainty and prediction reliability ( Ai 
+et al., 2024 ; Li et al., 2024 ). Because rockfill materials are inherently 
+variable and monitoring data are limited and uncertain, uncertainty 
+quantification is important for assessing model confidence and sup -
+porting risk-informed decisions ( Chen et al., 2025 ; Dai et al., 2025 ). 
+Second, conventional probabilistic updating often assumes independent 
+prior parameters for simplicity ( Li et al., 2024 ; Zeng et al., 2024 ), 
+although rockfill constitutive parameters related to stiffness, volumetric 
+deformation, strength, and nonlinear response are commonly correlated 
+because of shared material properties, compaction conditions, stress 
+states, and testing procedures ( Ai et al., 2025 ; Yang et al., 2025 ). 
+Neglecting such dependence may reduce the interpretability of posterior 
+parameter evolution, especially when different parameter combinations 
+can reproduce similar settlement responses ( Huang et al., 2026 ). Third, 
+lifecycle updating requires repeated model evaluations as new moni -
+toring data become available and deformation mechanisms evolve. 
+Direct FE-based Bayesian inference is computationally expensive, while 
+conventional surrogate-assisted approaches are usually developed for a 
+single analysis stage or fixed parameter domain ( Yu et al., 2025 ; Zhang 
+et al., 2026 ). A surrogate trained in earlier stages may lose accuracy in 
+later stages, whereas full retraining requires additional FE samples and 
+increases cumulative computational cost. Continual learning provides a 
+potential solution by allowing the surrogate to incorporate new-stage 
+information while retaining previously learned knowledge ( Delange 
+et al., 2021 ; Kirkpatrick et al., 2017 ; Van De Ven et al., 2022 ).
+To address these issues, this study develops a dependence-aware 
+sequential probabilistic framework with posterior-guided continual 
+surrogate learning for lifecycle deformation model updating of rockfill 
+dams. The proposed framework treats constitutive parameters as stage- 
+wise effective material states and progressively updates their posterior 
+distributions as monitoring data are assimilated. A Gaussian Copula- 
+based dependence model is embedded into the posterior-to-prior prop -
+agation process, allowing posterior-informed marginal distributions 
+from the previous lifecycle stage to be reconnected through an empirical 
+dependence structure. To improve computational feasibility, a deep 
+neural network surrogate is continually refined using posterior-guided 
+FE samples, representative historical replay samples, and Fisher- 
+information-weighted regularization. This strategy enables the surro -
+gate to adapt to current-stage deformation characteristics while retain -
+ing historically learned response mappings.
+The main contributions of this study are summarized as follows: 
+(1) A lifecycle-oriented sequential probabilistic updating formula -
+tion is developed for rockfill dam deformation models. By 
+updating stage-wise effective constitutive parameter distribu -
+tions rather than a single deterministic parameter set, the 
+formulation enables progressive monitoring-data assimilation 
+and uncertainty-informed deformation assessment across con -
+struction, impoundment, and operation stages.
+(2) A dependence-preserving posterior-to-prior propagation strategy 
+is introduced for mechanically related rockfill parameters. By 
+reconnecting posterior-informed marginal distributions through 
+an empirical Gaussian Copula dependence structure, the pro -
+posed approach retains prescribed statistical dependence among 
+constitutive parameters and improves the interpretability of 
+posterior parameter evolution.
+(3) A posterior-guided continual surrogate learning strategy is pro -
+posed for efficient cross-stage model updating. The strategy uses 
+posterior information to guide incremental FE sampling and 
+combines response-stratified replay with Fisher-weighted regu -
+larization to balance current-stage adaptability and historical 
+knowledge retention.
+(4) The proposed framework is validated using the 303 m Lianghe -
+kou core-wall rockfill dam. The case study evaluates posterior 
+parameter evolution, independent settlement prediction, surro -
+gate updating performance, uncertainty decomposition, and 
+safety-oriented deformation diagnosis based on the posterior- 
+updated FE model, demonstrating its capability for lifecycle 
+performance assessment of tall rockfill dams.
+The remainder of this paper is organized as follows. Section 2 re -
+views related studies on monitoring-driven deformation model updating 
+and digital twin-enabled lifecycle assessment of rockfill dams. Section 3
+presents the proposed sequential probabilistic updating framework and 
+posterior-guided continual surrogate learning strategy. Section 4 in -
+troduces the Lianghekou dam case study and implementation details. 
+Section 5 presents the validation, comparative analysis, and discussion. 
+Section 6 concludes the paper.
+Fig. 1. Lifecycle deformation mechanisms and material evolution of rockfill dams.
+Z. Huang et al. Computer-Aided Civil and Infrastructure Engineering 50 (2026) 100169 
+2 
+2. Related works
+2.1. SHM-oriented FE deformation model updating of rockfill dams
+Deformation monitoring is a central component of structural health 
+monitoring (SHM) for rockfill dams ( Ma & Chi, 2016b ), because set -
+tlement and displacement responses directly reflect staged construction, 
+self-weight compaction, reservoir impoundment, wetting deformation, 
+and long-term creep. However, monitoring data are usually available 
+only at discrete locations and cannot directly describe the full-field 
+mechanical state of the dam. Therefore, an important task in 
+SHM-oriented safety assessment is to assimilate field observations into 
+finite element-based (FE-based) deformation analysis models, so that 
+monitored responses can be transformed into interpretable material 
+parameters, deformation fields, and safety-related indicators.
+FE-based deformation analysis provides the mechanistic basis for 
+interpreting dam behavior (K. Wang et al., 2024 ; W. Zhou et al., 2011 ). 
+By incorporating nonlinear constitutive models and simulating staged 
+construction, reservoir loading, wetting, and creep, FE models can 
+reproduce the main deformation characteristics of rockfill materials. 
+Monitoring-assisted parameter back-analysis is widely used to reduce 
+discrepancies between simulations and observations, while 
+optimization-based methods improve parameter identification effi -
+ciency for deformation prediction and safety assessment ( Jia & Chi, 
+2015 ; Z. Li et al., 2024 ).
+Recent studies have enhanced monitoring-driven model updating 
+through multi-source data integration, representative monitoring-point 
+selection, response reconstruction, and surrogate-assisted inverse anal -
+ysis, improving both reliability and computational efficiency ( Ai et al., 
+2024 , 2025 ; Huang et al., 2026 ). Meanwhile, probabilistic updating 
+methods have been introduced to quantify parameter and prediction 
+uncertainties by integrating prior information with monitoring data 
+( Coletti et al., 2024 ; Ding et al., 2025 ; L. Zhang et al., 2018 ). Repre -
+sentative SHM-oriented deformation analysis and model updating 
+studies are summarized in Table 1 .
+As summarized in Table 1 , existing studies have advanced from FE- 
+based mechanism interpretation to monitoring-driven model updating 
+and uncertainty-informed deformation assessment. However, lifecycle 
+SHM of rockfill dams still faces several limitations: many back-analysis 
+and surrogate-assisted methods remain deterministic; probabilistic 
+updating often neglects correlations among physically coupled 
+constitutive parameters; and most surrogate-assisted strategies are 
+developed for fixed domains or individual stages, whereas deformation 
+mechanisms and credible parameter spaces evolve continuously from 
+construction to long-term operation.
+2.2. Digital twin-enabled lifecycle performance assessment of rockfill 
+dams
+Digital twin technology is reshaping infrastructure management by 
+integrating physical assets, monitoring data, computational models, and 
+decision-support functions into an evolving cyber-physical system 
+( Talasila et al., 2026 ). Recent studies show that infrastructure assess -
+ment is moving from static visualization toward multi-source data 
+integration, dynamic state perception, uncertainty-aware prediction, 
+and lifecycle decision support ( Nakamura et al., 2025 ; X. Wang et al., 
+2025 ). Advances in physics-guided machine learning and 
+sparse-sensor response reconstruction further support the inference of 
+unobserved structural states from limited monitoring data ( Ai et al., 
+2026 ).
+This paradigm is particularly relevant to rockfill dams, whose 
+deformation behavior evolves under staged construction, reservoir 
+impoundment, wetting effects, stress redistribution, and long-term 
+creep. Thus, a practical digital twin for rockfill dams should go 
+beyond a virtual replica or monitoring dashboard, and should provide 
+an updatable deformation analysis model for tracking material-state 
+evolution, reconstructing spatial deformation characteristics, quanti -
+fying prediction uncertainty, and supporting lifecycle performance 
+assessment. Recent studies have explored digital twin applications for 
+deformation–seepage analysis, physics-constrained safety assessment, 
+and full-field deformation reconstruction of high earth-rock dams ( Ai 
+et al., 2026 ; Huang et al., 2026 ; Tian et al., 2025 ). However, most 
+existing studies remain oriented toward specific functions or represen -
+tative stages. The continuous linkage among monitoring data assimila -
+tion, deformation model evolution, and lifecycle safety assessment has 
+not yet been fully established, indicating the need for digital twin 
+models that can evolve consistently with the dam state throughout 
+construction, impoundment, and operation.
+3. Methodology for sequential probabilistic lifecycle updating
+3.1. Framework overview
+To support lifecycle deformation analysis of rockfill dams, this study 
+develops a sequential updating framework for probabilistically tracking 
+material parameters and adaptively refining deformation analysis 
+models. By progressively assimilating monitoring data from construc -
+tion to impoundment and operation, the framework enables 
+uncertainty-informed evaluation of deformation behavior and dam state 
+under evolving conditions. The overall workflow is shown in Fig. 2 .
+The framework starts from dam geometry, material properties, 
+environmental loads, and in situ deformation monitoring data. Based on 
+the dam geometry and loading conditions, a high-fidelity finite element 
+(FE) model is constructed to simulate the main deformation mechanisms 
+of rockfill dams, including staged construction, reservoir impoundment, 
+wetting deformation, and creep. By mapping constitutive parameters to 
+deformation responses, the FE model serves as the physical forward 
+model for assimilating monitoring data and updating the material 
+constitutive parameters that govern deformation behavior, thereby 
+supporting subsequent deformation assessment.
+At each lifecycle stage, the effective constitutive parameters are 
+updated through sequential probabilistic inference. The posterior dis -
+tribution from the previous stage is propagated as informative prior 
+knowledge, while newly acquired monitoring data further constrain the 
+current parameter distributions. A dependence-informed prior con -
+struction is introduced to retain prescribed statistical dependence 
+among mechanically related parameters, improving the interpretability 
+Table 1 
+Representative SHM-oriented deformation analysis and model updating studies 
+for rockfill dams.
+Category Representative 
+studies
+Contribution
+FE-based deformation 
+analysis and deformation- 
+mechanism interpretation
+Zhou et al. 
+(2011) ; 
+Zhou et al. 
+(2019); 
+Wang et al. 
+(2024)
+Simulated settlement behavior, 
+deformation mechanisms, and 
+safety-related responses.
+Optimization-based 
+parameter back-analysis
+Jia and Chi 
+(2015) ; 
+Ai et al. (2023); 
+Li et al. (2024)
+Calibrated constitutive 
+parameters using monitoring 
+data and optimization 
+algorithms.
+Multi-source monitoring 
+and surrogate-assisted 
+deterministic model 
+updating
+Ai et al. (2024 , 
+2025); 
+Ren et al. (2025) ; 
+Huang et al. 
+(2026)
+Improved deterministic 
+updating through multi-source 
+data, reconstruction, and 
+surrogate modeling.
+Probabilistic model 
+updating and uncertainty- 
+informed deformation 
+assessment
+Zhang et al. 
+(2018) ; 
+Coletti et al. 
+(2024) ; 
+Ding et al. 
+(2025)
+Quantified parameter and 
+prediction uncertainties 
+through probabilistic 
+calibration and monitoring- 
+data assimilation.
+Z. Huang et al. Computer-Aided Civil and Infrastructure Engineering 50 (2026) 100169 
+3 
+of stage-wise parameter evolution. The resulting posterior distribution 
+characterizes the current uncertainty of the effective material state and 
+supports probabilistic deformation prediction.
+The posterior distribution also guides surrogate evolution. New FE 
+samples are generated within the posterior high-probability region, 
+rather than repeatedly sampled from the original global parameter 
+domain, and are evaluated by the high-fidelity FE model. Together with 
+representative historical samples, these new samples are used to incre -
+mentally update the surrogate through the PG-CSL strategy. This allows 
+the surrogate to focus on the parameter region most relevant to the 
+current dam state while retaining previously learned deformation- 
+response mappings, thereby reducing unnecessary FE simulations and 
+avoiding full retraining at each stage.
+Through this monitoring-driven process, the framework enables 
+progressive uncertainty reduction, probabilistic deformation prediction, 
+and posterior-informed deformation assessment over the dam lifecycle. 
+The updated parameter distributions and reconstructed deformation 
+responses provide a computational basis for digital twin-enabled dam 
+management, including uncertainty tracking, deformation-state updat -
+ing, and safety-oriented decision support.
+3.2. Physics-based deformation forward model
+The deformation behavior of rockfill dams is governed by material 
+nonlinearity, staged construction, reservoir impoundment, wetting ef -
+fects, and long-term creep. To represent these mechanisms within the 
+proposed updating framework, a physics-based finite element (FE) 
+deformation model is established as the forward model that maps 
+constitutive parameters and loading conditions to deformation re -
+sponses ( Tomassini et al., 2025 ; W. Zhou et al., 2011 ).
+The deformation of rockfill dams is generally composed of static, 
+creep, and wetting deformation ( Cheng et al., 2023 ; T. Zhou et al., 2025 ; 
+W. Zhou et al., 2011 ), which act alternately or in combination during 
+construction, impoundment, and long-term operation, thereby govern -
+ing the overall deformation evolution of the dam. To represent these 
+mechanisms, constitutive models commonly used in engineering prac -
+tice are adopted to describe the nonlinear behavior of rockfill materials 
+under different conditions. Specifically, static deformation is modeled 
+by the Duncan – Chang E-B model (K. Wang et al., 2024 ), creep defor -
+mation by an exponential decay model (G. Li et al., 2004 ), and wetting 
+deformation by a three-parameter wetting model ( Jia et al., 2018 ). In 
+this study, these three constitutive models are jointly employed as the 
+governing equations of the deformation analysis model, and the asso -
+ciated parameters and their physical meanings are summarized in 
+Table 2 .
+Within the sequential updating framework, the constitutive param -
+eters of the deformation model are treated as stage-wise effective ma -
+terial parameters rather than fixed lifecycle constants. By assimilating 
+field deformation monitoring data, the probabilistic updating process 
+identifies parameter distributions that better represent the current me -
+chanical state of the prototype dam. The updated parameter distribu -
+tions quantify material-state uncertainty and provide the basis for 
+posterior deformation prediction, full-field response reconstruction, and 
+safety-oriented deformation assessment.
+Fig. 2. Lifecycle sequential updating framework for digital twin-enabled rockfill dam deformation analysis.
+Z. Huang et al. Computer-Aided Civil and Infrastructure Engineering 50 (2026) 100169 
+4 
+3.3. Dependence-aware sequential probabilistic updating
+3.3.1. Sequential Bayesian updating of constitutive parameters
+For lifecycle deformation analysis of rockfill dams, the FE model 
+establishes a physics-based mapping from constitutive parameters and 
+loading conditions to deformation responses. However, the effective 
+mechanical state of rockfill materials evolves with staged construction, 
+reservoir impoundment, wetting deformation, stress redistribution, and 
+long-term creep. Therefore, the parameters updated in this study are not 
+regarded as fixed intrinsic constants over the entire lifecycle, but as 
+stage-wise effective constitutive parameters that describe the apparent 
+material response under the current engineering condition.
+Let D
+t 
+= { y
+t ,1
+, y 
+t ,2
+, … , y
+t , n
+} denote the monitoring data newly 
+assimilated at lifecycle stage t , and let Y
+1 :t 
+= { D
+1
+, D
+2
+, … , D
+t
+} denote the 
+cumulative monitoring information up to this stage. The uncertain 
+effective parameter vector at stage t is denoted by θ
+t 
+= ( θ
+t ,1
+, θ
+t ,2
+, … , θ
+t , m
+), 
+and the residual model-discrepancy standard deviation is denoted by 
+σ
+res, t
+. The surrogate-predicted deformation response is expressed as 
+F
+surr
+( θ
+t
+).
+For the i -th monitoring observation at stage t , the monitoring- 
+prediction relationship is formulated as: 
+y
+i , t
+= F
+surr , i
+( θ
+t
+) + ε
+t , i
+(1) 
+Following Bayesian identification studies on the systematic treat -
+ment of uncertainty sources in model calibration ( Rappel et al., 2019 , 
+2020 ), the total response error ε
+t , i 
+is decomposed as: 
+ε
+t , i
+= ε
+obs , t , i
++ ε
+surr , t , i
++ ε
+disc , t , i
++ ε
+res , t , i
+(2) 
+where ε
+obs, t , i 
+denotes the observation error associated with the moni -
+toring instrument, ε
+surr, t , i 
+represents the surrogate approximation error, 
+ε
+disc, t , i 
+denotes the FE discretization error, and ε
+res, t , i 
+represents the 
+remaining response-level discrepancy caused by unresolved modeling 
+assumptions, such as constitutive idealization, simplified boundary 
+conditions, loading-history approximation, and material zoning simpli -
+fication. The observation error is assigned according to the corre -
+sponding instrument type, the surrogate error is estimated from 
+independent test-set performance following uncertainty-aware surro -
+gate modeling studies ( Deshpande et al., 2022 ), and the FE discretiza -
+tion error is specified using a quantity-of-interest-oriented conservative 
+estimate, since the sequential updating primarily relies on 
+settlement-related responses; following common engineering practice 
+for numerical uncertainty characterization ( Celik et al., 2008 ), this un -
+certainty is taken as approximately 1% – 2% of the maximum lifecycle 
+settlement response. The remaining discrepancy is treated as an un -
+known quantity and is estimated simultaneously with the constitutive 
+parameters during the Bayesian updating process.
+Assuming that the above error components are mutually indepen -
+dent and approximately Gaussian, the total variance of the i -th obser -
+vation is expressed as 
+σ
+2
+t , i
+= σ
+2
+obs , t , i
++ σ
+2
+surr , t , i
++ σ
+2
+disc , t , i
++ σ
+2
+res , t
+(3) 
+Accordingly, the likelihood function at lifecycle stage t is defined as 
+L
+ 
+D
+t
+⃒
+⃒
+θ
+t
+, σ
+res , t
+)
+=
+∏
+n
+i = 1
+1
+̅̅̅̅̅ ̅
+2 π
+√
+σ
+t , i
+exp
+{
+ 
+[
+y
+t , i
+  F
+surr , i
+( θ
+t
+)
+]
+2
+2 σ
+2
+t , i
+}
+(4) 
+This formulation separates explicitly quantifiable uncertainty sour -
+ces from the remaining unexplained discrepancy, thereby avoiding the 
+use of a single undifferentiated residual term. It also prevents surrogate 
+and numerical errors from being implicitly attributed to constitutive 
+parameters.
+At stage t , the posterior distribution is written as: 
+p
+ 
+θ
+t
+, σ
+res , t
+⃒
+⃒
+Y
+t
+)
+∝ L
+ 
+D
+t
+⃒
+⃒
+θ
+t
+, σ
+res , t
+)
+π
+t
+ 
+θ
+t
+, σ
+res , t
+)
+(5) 
+where π
+t 
+( θ
+t
+, σ
+res, t
+) is the prior distribution used at the current lifecycle 
+stage. For the first stage, the prior is specified from laboratory tests, 
+engineering experience, and the dependence-aware prior model 
+described in Section 3.3.2 . For subsequent stages, the current-stage prior 
+is constructed from the posterior information obtained at the previous 
+stage: 
+π
+t
+ 
+θ
+t
+, σ
+res , t
+)
+≈ T
+[
+p
+ 
+θ
+t   1
+, σ
+res , t   1
+⃒
+⃒
+Y
+1 : t   1
+)]
+(6) 
+where T [ • ] denotes the posterior-informed prior construction operator. 
+In this study, this operator carries forward the posterior marginal dis -
+tributions from stage t -1 and reconnects them through the Copula-based 
+dependence structure to form the joint prior for stage t , while keeping 
+the parameters within the physically admissible domain. Thus, the 
+previous posterior is not used to enforce an unchanged parameter vector 
+over the entire lifecycle; instead, it provides informative prior knowl -
+edge for updating the stage-wise effective parameter distribution when 
+new monitoring data become available.
+The resulting posterior distribution of θ
+t 
+characterizes the updated 
+uncertainty of the effective constitutive parameters, whereas the pos -
+terior distribution of σ
+res, t 
+quantifies the remaining response-level 
+discrepancy after accounting for observation, surrogate, and dis -
+cretization errors. The posterior samples are subsequently used for 
+deformation prediction, uncertainty propagation, and posterior-guided 
+surrogate updating.
+Because the posterior distribution is high-dimensional, nonlinear, 
+and affected by parameter dependence, it is sampled using the No-U- 
+Turn Sampler (NUTS). NUTS is an adaptive variant of Hamiltonian 
+Monte Carlo that automatically tunes the step size and trajectory length 
+during sampling, thereby avoiding manual parameter adjustment and 
+improving sampling efficiency compared with conventional random- 
+walk-based MCMC methods ( Coletti et al., 2024 ; Hoffman & Gelman, 
+2014 ). These features make it well suited for sequential Bayesian 
+updating of multi-parameter deformation models. In this study, NUTS is 
+used as an efficient posterior sampling tool, while the detailed sampling 
+configuration and convergence diagnostics are provided in Section 4.4.2 
+and Appendix B .
+3.3.2. Copula-enhanced prior modeling for parameter dependence
+The prior construction operator T [ • ] in Eq. (6) determines how 
+posterior information from one lifecycle stage is transferred to the next. 
+For rockfill dam deformation updating, this operation should retain the 
+monitoring-informed uncertainty learned from previous observations, 
+while allowing the effective constitutive parameters to evolve with 
+changing construction and operation conditions. It should also preserve 
+the dependence among mechanically related parameters, because stiff -
+ness, strength, and nonlinear deformation parameters are often affected 
+by similar material properties, compaction conditions, stress states, and 
+laboratory testing procedures.
+To this end, a dependence-preserving posterior-to-prior propagation 
+Table 2 
+Basic parameters and physical interpretation of the deformation analysis model.
+Constitutive model Parameter Description
+Duncan-Chang E-B model K, K
+b
+Tangent modulus and bulk 
+modulus coefficients
+n, m Exponents for tangent and bulk 
+moduli
+φ , Δ φ Friction angle and its reduction 
+rate
+c Cohesion of the material
+R
+f
+Failure ratio
+Exponential decay empirical 
+creep model
+α Rheological rate
+b, c, d Creep model parameters
+Three-parameter wetting 
+deformation model
+c
+w
+, n
+w
+, b
+w
+Wetting model parameters
+Z. Huang et al. Computer-Aided Civil and Infrastructure Engineering 50 (2026) 100169 
+5 
+strategy is adopted. At lifecycle stage t > 1, the posterior marginal dis -
+tribution of each updated parameter from stage ( t -1) is extracted and 
+used as the corresponding prior marginal distribution for stage t : 
+F
+prior
+t , j
+= M
+j
+[ p ( θ
+t   1
+| Y
+1 : t   1
+)] , j = 1 , 2 , … , m (7) 
+where F
+t , j
+prior 
+denotes the prior cumulative distribution function of the j - 
+th constitutive parameter at stage t , and M [ • ] denotes the marginali -
+zation operator for the j -th parameter. This operation propagates the 
+marginal uncertainty constrained by earlier monitoring data, rather 
+than transferring only posterior means or enforcing a time-invariant 
+parameter vector over the full lifecycle.
+After marginal propagation, mechanically related parameters are 
+reconnected through a Gaussian-Copula dependence structure ( Li et al., 
+2025 ; Yang et al., 2025 ). For a correlated parameter group g , a latent 
+Gaussian vector is introduced as: 
+z
+t , g
+∼ N
+ 
+0 , R
+g
+)
+(8) 
+where R
+g 
+is the empirical correlation matrix of group g . The latent var -
+iables are transformed into correlated uniform variables by: 
+u
+t , g , j
+= Φ
+ 
+z
+t , g , j
+)
+(9) 
+and the physical parameters are obtained through inverse marginal 
+transformation: 
+θ
+t , g , j
+=
+(
+F
+prior
+t , g , j
+)
+  1  
+u
+t , g , j
+)
+(10) 
+where Φ [ • ] is the standard normal cumulative distribution function. 
+This reparameterized formulation imposes dependence in the latent 
+Gaussian space while allowing each constitutive parameter to retain its 
+own marginal distribution in the physical parameter space. Therefore, 
+different forms of marginal uncertainty representations can be consis -
+tently incorporated within the same prior-construction framework.
+Equivalently, the joint prior density of correlated group g can be 
+expressed as 
+π
+t , g
+ 
+θ
+t , g
+)
+= c
+R g
+[
+F
+prior
+t , g , 1
+ 
+θ
+t , g , 1
+)
+, … , F
+prior
+t , g , d g
+ 
+θ
+t , g , d g
+)
+]
+∏
+d g
+j = 1
+f
+prior
+t , g , j
+ 
+θ
+t , g , j
+)
+(11) 
+where d
+g 
+is the dimension of group g, f
+t , g , j
+prior 
+and F
+t , g , j
+prior 
+are the mar -
+ginal probability density function and cumulative distribution function, 
+respectively, and c
+Rg 
+[ • ] is the Gaussian Copula density governed by R
+g
+. 
+The complete prior distribution is then obtained by combining the 
+Copula-based joint priors of all correlated parameter groups with the 
+marginal priors of the remaining independently modeled parameters, 
+forming the overall prior distribution of the full parameter vector at 
+stage t .
+For the initial lifecycle stage, the marginal priors are specified from 
+laboratory tests and engineering experience. Bounded uniform distri -
+butions are adopted when the available information mainly provides 
+physically admissible parameter ranges, whereas posterior-informed 
+marginal distributions are used in subsequent stages after monitoring 
+data have been assimilated. The correlation matrices R
+g 
+are estimated 
+from an empirical database of laboratory triaxial test results for rockfill 
+materials collected from 48 representative dams, covering concrete- 
+faced and core-wall rockfill dams with different heights, lithologies, 
+construction periods, and geographical regions. The project information 
+is summarized in Table A.1 in Appendix A , and the detailed parameter 
+data and statistical descriptions are provided by Huang et al. (2026) . 
+Considering the heterogeneity of the database and the monotonic but 
+not necessarily linear relationships among constitutive parameters, 
+Spearman correlation coefficients are used to quantify the empirical 
+parameter correlations. The resulting correlations provide practical 
+prior information for constructing the grouped Copula priors. As shown 
+in Fig. 3 , clear positive correlations are observed among several 
+mechanically related parameters, such as K and K
+b
+, φ
+0 
+and Δ φ , providing 
+practical prior information for constructing the grouped Copula priors.
+In this study, the Gaussian Copula is not used as a standalone static 
+prior, but as a correlation-reconnection mechanism in the sequential 
+updating process. It reconnects evolving posterior-informed marginal 
+distributions into a joint prior at each lifecycle stage, so that marginal 
+uncertainty can be progressively updated by field monitoring data while 
+prescribed empirical correlations among mechanically related parame -
+ters are retained. This strategy reduces the tendency of correlated pa -
+rameters to evolve in a decoupled manner because of compensation 
+effects in displacement-based back analysis, and leads to more stable 
+and physically interpretable parameter evolution during sequential 
+updating.
+The correlation matrices derived from the 48-dam database are used 
+as empirical prior information rather than exact project-specific mate -
+rial laws for the LHK dam. Project-specific deformation observations are 
+subsequently assimilated through the likelihood function at each life -
+cycle stage, allowing the posterior distributions to be updated by field 
+monitoring data. In addition, the Gaussian Copula primarily captures 
+monotonic dependence through correlation matrices and may have 
+limited capability in representing tail dependence or more complex 
+nonlinear dependence structures. More flexible models, such as t -Cop -
+ulas or vine Copulas, could potentially provide richer descriptions under 
+extreme safety states, although their reliable identification typically 
+requires larger databases or more project-specific observations. This 
+issue will be investigated in future work.
+The posterior samples generated from this sequential inference are 
+further used for uncertainty propagation and for defining the posterior 
+high-probability region that guides incremental FE sampling in the 
+continual surrogate learning strategy described in Section 3.4 .
+3.4. Posterior-guided continual surrogate learning strategy
+3.4.1. DNN surrogate modeling and Continual learning strategy
+In sequential probabilistic updating of rockfill dam deformation 
+models, repeated evaluations of the high-fidelity FE model are required 
+for likelihood calculation, posterior sampling, and uncertainty propa -
+gation. Directly embedding the nonlinear three-dimensional FE model 
+into Bayesian inference would lead to prohibitive computational cost ( Ai 
+et al., 2024 ; Yu et al., 2025 ). Therefore, a DNN-based surrogate model is 
+introduced to approximate the mapping from uncertain constitutive 
+parameters and spatiotemporal loading information to deformation 
+responses.
+The surrogate is formulated as a multi-output regression model 
+Fig. 3. Correlation coefficient matrix of constitutive parameters for rock -
+fill materials.
+Z. Huang et al. Computer-Aided Civil and Infrastructure Engineering 50 (2026) 100169 
+6 
+( Fig. 4 ). Its inputs include the updated constitutive parameters and the 
+corresponding spatiotemporal features of the monitoring or prediction 
+locations, while its outputs are the deformation responses at represen -
+tative monitoring points or structural locations. The network adopts a 
+fully connected feedforward architecture with batch normalization, 
+LeakyReLU activation, and dropout regularization, which improves 
+training stability and generalization under limited FE samples. Once 
+trained, the surrogate replaces the FE model during Bayesian sampling 
+and enables efficient posterior inference.
+However, a static surrogate trained only once is insufficient for 
+lifecycle deformation analysis. During construction, reservoir 
+impoundment, and long-term operation, the relevant parameter domain 
+and deformation response pattern change as the dominant mechanisms 
+evolve from self-weight compaction to wetting-induced deformation 
+and creep. A surrogate trained only on earlier-stage samples may lose 
+accuracy in later stages, whereas full retraining at every lifecycle stage 
+requires additional FE simulations and increases cumulative computa -
+tional cost.
+To address this issue, the surrogate is updated in a continual-learning 
+manner. Continual learning provides a feasible strategy for sequentially 
+incorporating new information while preserving previously learned 
+knowledge, aiming to balance model plasticity and stability ( Delange 
+et al., 2021 ; Parisi et al., 2019 ). In the context of lifecycle dam anal -
+ysis, this enables the surrogate to continuously adapt to newly generated 
+FE samples and evolving deformation patterns without losing predictive 
+capability for earlier stages. Specifically, the surrogate trained at the 
+previous lifecycle stage is inherited as the initial model for the current 
+stage and is incrementally updated to absorb newly available sample 
+information while maintaining consistency with previously learned 
+response characteristics. This strategy allows the surrogate to adapt to 
+current-stage deformation features while retaining previously learned 
+response mappings. The detailed implementation of this 
+lifecycle-adaptive updating strategy is described in Section 3.4.2 .
+3.4.2. Posterior-guided continual surrogate updating
+In the proposed framework, the posterior distribution obtained from 
+Bayesian updating is used not only for uncertainty quantification, but 
+also as an adaptive learning signal for surrogate evolution. Instead of 
+generating new FE samples from the original global parameter bounds, 
+the incremental sampling domain is defined by the posterior high- 
+probability region of the previous lifecycle stage. In this study, this re -
+gion is taken as the 90% credible interval of each updated parameter and 
+is restricted within the physically admissible parameter space. Latin 
+hypercube sampling (LHS) is then performed within this posterior- 
+defined domain to maintain space-filling coverage and avoid excessive 
+concentration around posterior modes. In this way, new FE simulations 
+are concentrated in the parameter region most relevant to the current 
+dam state, enabling local refinement of the surrogate with fewer addi -
+tional FE samples and reducing extrapolation risk during lifecycle 
+transitions.
+At lifecycle stage t , the incremental training dataset is constructed by 
+combining newly generated FE samples and representative replay 
+samples: 
+D
+inc
+t
+= D
+new
+t
+∪ D
+rep
+t
+(12) 
+where D
+t
+new 
+denotes the new FE samples generated from the posterior- 
+defined credible domain, and D
+t
+rep 
+denotes historical replay samples 
+selected from the sample repository. The new samples enable the sur -
+rogate to learn current-stage deformation features associated with 
+updated loading conditions, reservoir level, wetting effects, and creep 
+evolution, whereas the replay samples preserve historically validated 
+response mappings and mitigate catastrophic forgetting. To retain 
+representative historical information, the replay repository is con -
+structed using response-stratified sampling, in which samples are 
+selected from different deformation-response intervals.
+The surrogate model at stage t is initialized using the optimized 
+weights from stage t -1, thereby inheriting the previously learned map -
+ping between constitutive parameters and deformation responses. This 
+weight transfer provides a stable starting point for incremental learning 
+and reduces the need for extensive retraining. During incremental 
+training, the model is updated using the combined dataset D
+t
+inc
+, which 
+integrates newly generated samples reflecting current-stage conditions 
+and replay samples preserving historical knowledge. To balance adap -
+tation and retention, the objective function combines the regression loss 
+on D
+t
+inc 
+with a Fisher-information-weighted regularization term: 
+L
+t
+( w ) = L
+inc
+ 
+w ; D
+inc
+t
+)
++
+λ
+2
+∑
+i
+F
+i
+(
+w
+i
+  w
+∗
+i , t   1
+)
+2
+(13) 
+where w denotes the current network weights, w
+i,t -1
+* is the optimized 
+value of the i -th weight from the previous stage, F
+i 
+is the Fisher- 
+information-based importance of w
+i
+, and λ controls the strength of 
+historical-knowledge retention.
+In this formulation, the Fisher information serves as a quantitative 
+measure of parameter sensitivity with respect to previously learned 
+tasks, thereby guiding the selective preservation of critical knowledge 
+during incremental updating. Weights with larger F
+i 
+values are con -
+strained more strongly to preserve previously learned response map -
+pings, whereas less important weights remain more flexible for adapting 
+to new deformation features, enabling a balanced trade-off between 
+stability and adaptability across lifecycle stages.
+As illustrated in Fig. 5 , the proposed posterior-guided continual 
+surrogate learning (PG-CSL) strategy consists of three coupled modules: 
+posterior-driven sampling, historical information replay, and Fisher- 
+weighted incremental learning. The posterior distribution determines 
+where new FE information should be added, response-stratified replay 
+determines which historical samples should be retained, and Fisher- 
+weighted regularization controls how the network should be updated. 
+This enables the surrogate to continuously adapt across construction, 
+impoundment, and operation stages while maintaining historical pre -
+diction consistency with reduced FE-sample generation cost.
+4. Project case
+4.1. Project Overview
+The proposed framework is validated using the Lianghekou (LHK) 
+tall core-wall rockfill dam on the Yalong River in Sichuan Province, 
+China. The dam has a maximum height of 303 m, a crest elevation of 
+2878 m, and a crest width of 16 m. The normal and dead water levels are 
+2865 m and 2785 m, respectively, with a total reservoir capacity of 
+approximately 10.767 × 10
+9 
+m
+3
+. As shown in Fig. 6 (c), the dam adopts a 
+typical zoned configuration consisting of an impervious core, filter 
+layers, transition zones, and rockfill zones.
+Owing to its large height, staged construction process, and long-term 
+Fig. 4. Architecture of the deep neural network surrogate model.
+Z. Huang et al. Computer-Aided Civil and Infrastructure Engineering 50 (2026) 100169 
+7 
+exposure to reservoir fluctuations, the LHK dam exhibits pronounced 
+lifecycle-dependent deformation during construction, impoundment, 
+and operation. Its deformation behavior is governed by the combined 
+effects of static compaction, wetting-induced deformation, and creep, 
+making it a representative case for investigating deformation evolution 
+and uncertainty propagation in rockfill dams. A comprehensive moni -
+toring system has been established across several representative cross- 
+sections covering the key stress-bearing regions of the dam ( Fig. 6
+(b)). These sections include multiple instruments for measuring internal 
+settlement, horizontal displacement, and core-wall deformation, 
+providing reliable field data for deformation analysis, sequential 
+Bayesian updating, and uncertainty quantification.
+4.2. Finite element modeling and physics-based simulation
+A three-dimensional finite element (FE) model was developed in 
+ABAQUS to simulate the stress-deformation evolution of the LHK core- 
+wall rockfill dam during construction and operation. A user-defined 
+material subroutine (UMAT) was implemented to capture the 
+nonlinear constitutive behavior of rockfill materials. The model explic -
+itly represents the dam zoning, including the impervious core, filter, 
+transition, and rockfill zones. The computational domain consists of 
+150,776 elements and 146,691 nodes, primarily discretized using eight- 
+node hexahedral elements. Considering the nearly 300 m dam height, 
+complex zoned configuration, and representative monitoring sections 
+used for deformation updating, the adopted mesh resolution is consis -
+tent with the discretization level commonly used in large-scale three- 
+dimensional analyses of rockfill dams ( Ai et al., 2025 ; Ren et al., 2025 ; 
+Yu et al., 2025 ). The material zoning and FE mesh are shown in Fig. 6 (c) 
+and Fig. 7 (a), respectively.
+Boundary conditions were specified according to site constraints. 
+The foundation base was fully fixed to represent competent bedrock, 
+Fig. 5. Posterior-guided continual surrogate learning across lifecycle stages.
+Fig. 6. Overview of the Lianghekou project: (a) Aerial view of the rockfill dam; (b) 3D dam geometry with monitoring sections; (c) Typical cross-section and material 
+zoning of the dam.
+Z. Huang et al. Computer-Aided Civil and Infrastructure Engineering 50 (2026) 100169 
+8 
+while normal displacements along the lateral boundaries were 
+restrained to account for topographic confinement. The loading process 
+followed the documented construction and impoundment schedule. 
+Dam filling began in July 2016 and was completed in December 2021. 
+Initial reservoir impoundment started in October 2020, and normal 
+operation commenced in July 2023. Accordingly, 87 analysis steps were 
+defined, including 59 construction steps for layer-by-layer filling and 
+subsequent steps for staged impoundment and operational conditions.
+The FE model incorporates the static, creep, and wetting-induced 
+deformation components described in Section 3.2 . The initial constitu -
+tive parameters were derived from large-scale triaxial tests, as listed in 
+Table A.2 , and were used to provide a physically informed basis for 
+defining the initial prior parameter ranges in the Bayesian updating 
+process.
+4.3. Lifecycle staging and monitoring data partitioning
+To implement sequential probabilistic updating, the continuous dam 
+construction – operation process was divided into four representative 
+lifecycle stages according to the documented construction and 
+impoundment schedule of the LHK dam. Phase I (December 2019) cor -
+responds to a filling elevation of 2755 m, approximately three-quarters 
+of the dam height, when deformation was mainly governed by self- 
+weight loading and static compaction. Phase II (December 2021) rep -
+resents dam completion, with deformation still dominated by static 
+response. Phase III (July 2023) corresponds to the initial operation 
+period, during which reservoir impoundment induced wetting defor -
+mation in the upstream rockfill. Phase IV (October 2024) represents the 
+first attainment of the normal pool level, when sustained high-water 
+exposure led to coupled wetting and creep deformation.
+High-quality in situ monitoring data are essential for model updating 
+and uncertainty quantification (G. Ma et al., 2024 ). The monitoring 
+dataset used in this study consists of multi-source in situ deformation 
+measurements collected from embedded instruments distributed across 
+the main rockfill zones and the core wall. Before Bayesian updating, a 
+monitoring-data filtering procedure was applied to remove low-quality 
+or redundant records and retain measurements with higher informa -
+tion content for model updating ( Ai et al., 2024 ). Candidate monitoring 
+points were evaluated using quality and representativeness indicators, 
+and the selected monitoring points, together with their 
+instrument-specific nominal precisions used in the likelihood formula -
+tion, are summarized in Table 3 .
+To provide an independent benchmark for posterior predictive 
+evaluation, 10 monitoring points with complete lifecycle records were 
+reserved as validation data. These records were excluded from likeli -
+hood construction, parameter updating, and model calibration, and 
+were used only for subsequent comparative validation. The remaining 
+monitoring points were used for sequential Bayesian calibration.
+Fig. 7. Configuration of the FE-based simulation model: (a) FE mesh and representative sections; (b) Dam filling sequence; (c) Reservoir impoundment process.
+Table 3 
+Distribution of selected monitoring points and nominal instrument precisions.
+Material 
+partition
+Number of 
+points
+Monitoring instruments
+ESG 
+( ±
+3mm)
+SAA 
+( ±
+0.5mm)
+HOSG 
+( ±
+3mm)
+SDT 
+( ±
+0.01mm)
+Rockfill zone I 13 3 2 4 4
+Rockfill zone 
+II
+7 4 0 2 1
+Rockfill zone 
+III
+12 5 0 7 0
+Core wall 16 6 8 0 2
+Total 48 18 10 13 7
+Note: ESG (electromagnetic settlement gauge), SAA (shape-accel-array), HOSG 
+(hydraulic overflow settlement gauge), and SDT (soil displacement transducer). 
+The values in parentheses denote the nominal measurement precision of each 
+instrument.
+Z. Huang et al. Computer-Aided Civil and Infrastructure Engineering 50 (2026) 100169 
+9 
+4.4. Configuration of the sequential updating framework
+4.4.1. Surrogate model and continual learning settings
+A DNN-based surrogate was constructed to replace repeated high- 
+fidelity FE evaluations during sequential Bayesian inference. As shown 
+in Fig. 4 , the surrogate approximates the nonlinear mapping from 
+constitutive parameters to deformation responses at key monitoring 
+points across representative dam sections. For the four main material 
+zones of the LHK dam, the candidate uncertain parameters were selected 
+according to the deformation model in Section 3.2 and prior sensitivity 
+analyses (Y. Li et al., 2013 ), including φ
+0
+, Δ φ , K, n, K
+b
+, m, α , b, c
+creep
+, d, 
+c
+w
+, n
+w
+, and b
+w
+.
+To reduce dimensionality while retaining the structure of the 
+experimentally calibrated parameter groups ( Ai et al., 2025 ; Miao et al., 
+2025 ), two multiplicative scaling factors, λ
+creep 
+and λ
+wetting
+, were 
+introduced. The factor λ
+creep 
+jointly scales the creep-related parameters 
+( b, c
+creep
+, d ) in zones where creep deformation is considered, whereas 
+λ
+wetting 
+scales the wetting-related parameters ( c
+w
+, n
+w
+, b
+w
+) only in rockfill 
+zones subjected to wetting. The final updating vector therefore consisted 
+of nine parameters: φ
+0
+, Δ φ , K, n, K
+b
+, m, α , λ
+creep 
+and λ
+wetting
+. Their prior 
+ranges were determined from large-scale triaxial tests and engineering 
+experience ( Table A.3 ) and specified as broad physically admissible 
+intervals to support global initial sampling.
+In Phase I, 300 parameter sets were generated by Latin hypercube 
+sampling (LHS) and evaluated using the FE model to train the base 
+surrogate ( Miao et al., 2025 ). The DNN adopted a fully connected 
+feedforward architecture with three hidden layers of 256, 192, and 128 
+neurons, as determined by Bayesian hyperparameter optimization. This 
+base model was used for Phase I Bayesian updating and inherited as the 
+initial surrogate for later lifecycle stages. In Phases II – IV, the surrogate 
+was updated incrementally using posterior-guided FE samples and his -
+torical replay samples instead of being retrained from scratch.
+The dropout rates, EWC penalty coefficient, and replay ratio were 
+selected through preliminary sensitivity tests and validation-based 
+screening to balance current-stage adaptability and historical-stage 
+retention. The replay buffer was constructed from the historical FE 
+sample repository using response-stratified sampling, where the 
+response range was divided into 25 quantile bins to preserve diverse 
+deformation patterns. A replay ratio of 0.5 was used in Phases II-IV, 
+meaning that the number of replay samples was approximately 50% of 
+the newly generated FE samples at each incremental stage. The final 
+surrogate architecture and continual learning settings are summarized 
+in Table 4 .
+4.4.2. Implementation of sequential Bayesian updating
+The sequential Bayesian updating framework was implemented in 
+Pyro, with posterior inference performed using the No-U-Turn Sampler 
+(NUTS). At each lifecycle stage, the uncertain constitutive parameters 
+and residual model discrepancy were jointly sampled. The trained sur -
+rogate model was used for likelihood evaluation to avoid repeated direct 
+FE simulations during MCMC sampling, and automatic differentiation 
+was employed to compute the gradients required by NUTS.
+The likelihood variance incorporated four uncertainty components: 
+observation error, surrogate approximation error, FE discretization 
+error, and residual model discrepancy. The observation error was 
+assigned according to the nominal precision of each monitoring instru -
+ment, while the surrogate error was estimated from the independent 
+test-set performance of the surrogate model at each lifecycle stage. The 
+FE discretization error was specified as 50 mm, corresponding to a 
+conservative representative value of approximately 1%-2% of the 
+maximum lifecycle settlement response. The residual discrepancy was 
+treated as an unknown parameter and inferred jointly with the consti -
+tutive parameters.
+For each lifecycle stage, four independent Markov chains were run in 
+parallel. Each chain included 1000 warm-up steps and 2000 posterior 
+sampling steps. The target acceptance probability was set to 0.8, and the 
+maximum tree depth was set to 8. Sampling convergence was assessed 
+using the Gelman – Rubin statistic and effective sample size. The main 
+NUTS-MCMC settings and error-term definitions are summarized in 
+Table 5 .
+4.5. Lifecycle probabilistic model updating and deformation assessment
+4.5.1. Surrogate updating and posterior parameter inference
+The reliability of the proposed updating framework was first evalu -
+ated in terms of surrogate prediction accuracy, MCMC convergence, 
+posterior parameter evolution, and uncertainty-source decomposition. 
+These results provide the basis for subsequent lifecycle deformation 
+prediction and safety-oriented assessment.
+Table 6 summarizes the predictive performance of the DNN surro -
+gate across the four lifecycle phases using independent test samples that 
+were excluded from training, validation, and sequential updating. The 
+surrogate maintained high accuracy during lifecycle updating, with R
+2 
+increasing from 0.963 in Phase I to 0.988 in Phase IV, while RMSE and 
+MAE decreased from 8.3 cm and 6.4 cm to 5.6 cm and 4.2 cm, 
+Table 4 
+Configuration of the surrogate model architecture and continual learning 
+strategy.
+Category Item Specification / Value
+Network 
+architecture
+Model type Fully-connected feedforward neural 
+network
+Hidden layers 3 layers (Neurons: 256, 192, 128)
+Activation 
+function
+LeakyReLU ( α = 0.01)
+Regularization Batch Normalization + Dropout (0.2, 
+0.15, 0.1)
+Baseline training 
+(Phase I)
+Data splitting 70% Training / 20% Validation / 10% 
+Testing
+Optimizer Adam (Weight decay = 1 × 10
+-4
+)
+Loss function Mean Squared Error (MSE)
+Learning rate 1 × 10
+-3 
+with Cosine Annealing 
+schedule
+Training epochs 200
+Continual 
+Learning 
+(Phase II – IV)
+Algorithm Posterior-guided continual surrogate 
+learning
+EWC penalty ( λ ) 2000
+Fisher 
+information
+Diagonal approximation
+Replay ratio 0.5
+Replay sampling Stratified sampling (25 quantile bins)
+Incremental 
+epochs
+200
+Table 5 
+NUTS-MCMC settings and likelihood error-term definitions.
+Category Item Specification / Value
+Algorithm core Probabilistic framework Pyro
+Sampling method No-U-Turn Sampler (NUTS)
+Gradient Calculation Automatic Differentiation 
+(Autograd)
+Chain settings Number of chains 4
+Warm-up (Burn-in) steps 1000 per chain
+Sampling steps 2000 per chain
+Hyperparameters Target acceptance 
+probability
+0.8
+Max tree depth 8
+Convergence 
+diagnostics
+Gelman-Rubin statistic < 1.05
+Effective sample size 
+(ESS)
+> 1000
+Error-term settings Observation error σ
+obs
+Instrument accuracy (see 
+Table 3 )
+Surrogate error σ
+surr
+Independent validation
+FE discretization error 
+σ
+disc
+50 mm
+Residual discrepancy 
+σ
+res
+Jointly inferred by Bayesian 
+inference
+Z. Huang et al. Computer-Aided Civil and Infrastructure Engineering 50 (2026) 100169 
+10 
+respectively. As shown in Fig. 8 , the surrogate predictions agree well 
+with FE simulation results across all phases. Meanwhile, the number of 
+newly generated FE samples decreased from 300 in Phase I to 100 in 
+Phases III-IV, indicating that posterior-guided incremental learning 
+improves local surrogate accuracy while reducing additional FE 
+simulations.
+The convergence of Bayesian sampling was assessed using repre -
+sentative trace plots and posterior density distributions of the NUTS 
+chains. As shown in Fig. B.1 , the four parallel chains fluctuate around 
+stable levels without evident non-stationary drift, and the posterior 
+density estimates from different chains show strong overlap. The 
+quantitative diagnostics also satisfy the prescribed criteria, with the 
+Gelman-Rubin statistic below 1.05 and effective sample size exceeding 
+1000. These results indicate satisfactory chain mixing and support the 
+reliability of the posterior samples used for parameter interpretation and 
+uncertainty propagation.
+Figure 9 presents the marginal posterior distributions of represen -
+tative parameters across the four lifecycle phases, where the remaining 
+dimensions are implicitly marginalized through MCMC sampling. The 
+corresponding posterior means and standard deviations are summarized 
+in Table 7 . Overall, the posterior distributions become more concen -
+trated as monitoring data are progressively assimilated, indicating 
+reduced uncertainty in the identified effective material parameters. 
+Mechanically related parameters within the same material zone, such as 
+K, Kb , and φ
+0
+, exhibit coordinated evolutionary trends, suggesting that 
+the Copula-enhanced prior construction helps preserve prescribed 
+parameter dependence and improves the interpretability of posterior 
+parameter evolution.
+The uncertainty components in the likelihood function were further 
+decomposed to examine their lifecycle evolution. As shown in Fig. 10 , FE 
+discretization error, surrogate approximation error, and residual 
+discrepancy are the main uncertainty sources, whereas observation error 
+remains negligible because of the high precision of the monitoring in -
+struments. The contribution of surrogate error decreases from 54.5% in 
+Phase I to 26.3% in Phase IV, demonstrating the effectiveness of 
+sequential surrogate updating. The residual discrepancy σ
+res
+, which is 
+Table 6 
+Performance metrics of the surrogate model.
+Phase Description Incremental samples Cumulative samples R
+2
+RMSE (cm) MAE (cm)
+Phase I Construction 300 300 0.963 8.3 6.4
+Phase II Construction 150 450 0.970 8.2 6.3
+Phase III Initial Impoundment 100 550 0.984 6.1 4.5
+Phase IV Operation 100 650 0.988 5.6 4.2
+Fig. 8. Predictive performance of the continual learning surrogate model across lifecycle phases.
+Z. Huang

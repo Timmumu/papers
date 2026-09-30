@@ -13,3 +13,20 @@ Predictive maintenance is a key enabler of automated Structural Health Monitorin
 | Yes | Yes | Yes | Yes | Yes | **Include** |
 
 **Note:** AI-DT predictive maintenance of insulated rail joints
+
+## Step-3 Deep-Read Coding (Prompt B)
+| P DT-subject | Q DfS/DfQ | R codable | U Tier | V Design | W Constr | X Oper | Z DfX | AA Self-improve | AB Methodology | AC Modality | AD Validation | AE QA(0-5) | AF Cluster |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| Yes | Yes | Yes | Tier 1 - Digital Model (static, no live data) | 0 | 0 | 1 | Design for Safety (DfS) | None | Computer Vision / CNN / object-detection | Multi (two or more data types) | Simulation | 4 | Predictive analytics / decision support |
+
+| AC1 fusion depth | AC2 fusion evidence | AC3 confidence |
+|---|---|---|
+| Fused | DT-simulated displacement and gap time-frequency images are fused with physics-based health classes via CNN classifiers. | Medium |
+
+**Key evidence (AG):** AI-Digital Twin framework for automated predictive maintenance of bonded insulated rail joints (U Parma, AutCon 2026): high-fidelity physics-informed DT simulates coupled IRJ-sleeper behaviour under bolt-preload loss and support degradation, generating physically consistent labelled datasets; STFT-CNN, WT-CNN and decision-tree classifiers on time-frequency representations classify degradation states across six PdM scenarios with quantified detectability limits. Simulation-generated training plus classifier validation only (no field monitoring loop); no actuation, no learning loop.
+
+*Full-text source: browser-oa*
+
+**AH — strength & gap filled:** Physics-informed DT generates safe labelled degradation datasets that DCNNs leverage for automated IRJ condition classification with quantified detectability limits.
+
+**AI — deficiencies & future work:** No field monitoring data - classifiers trained only on simulated signals; generalization to real track noise and multiple line conditions unproven.

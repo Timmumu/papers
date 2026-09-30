@@ -13,3 +13,21 @@ It is crucial to assess the structural condition of reinforced concrete (RC) str
 | Yes | Yes | Yes | Yes | Yes | **Include** |
 
 **Note:** DT condition assessment of RC columns; safety
+
+
+## Step-3 Deep-Read Coding (Prompt B)
+| P DT-subject | Q DfS/DfQ | R codable | U Tier | V Design | W Constr | X Oper | Z DfX | AA Self-improve | AB Methodology | AC Modality | AD Validation | AE QA(0-5) | AF Cluster |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| Yes | Yes | Yes | Tier 2 - Digital Shadow (one-way physical to virtual) | 0 | 0 | 1 | Design for Safety (DfS) | Implemented | Finite Element Method / physics-based | Multi (two or more data types) | Single case study | 4 | Predictive analytics / decision support |
+
+| AC1 fusion depth | AC2 fusion evidence | AC3 confidence |
+|---|---|---|
+| Fused | Point-cloud geometry, rebar-scanner reinforcement layout, deflection/strain/crack-width test data and load-bearing metrics are fused through PSO-updated FE modelling and DS evidence theory into one condition level. | High |
+
+**Key evidence (AG):** Digital twin-driven multi-metrics condition assessment of eccentrically loaded RC columns (SWJTU/PolyU, Structure and Infrastructure Engineering 2026): laser-scanned point clouds and rebar scanning build a geometric DT; ABAQUS nonlinear FE with CDP and bond-slip becomes a mechanical DT through two-stage PSO updating against deflection, concrete strain and crack-width tests; updated parameters predict two validation columns with ultimate-load errors within 5%; fuzzy DS evidence theory fuses crack, deflection and load metrics into SLS/ULS condition levels, resolving threshold conflicts for serviceability and safety. One-way inspection/test data->updated twin->condition assessment; no physical actuation.
+
+*Full-text source: Endnote*
+
+**AH — strength & gap filled:** Integrates as-built geometry, reinforcement layout, loading-test responses and code-level assessment metrics into a single RC-column mechanical DT: PSO-updated ABAQUS/CDP models match Column C1 ultimate load almost exactly (620.4 vs 620.3 kN) and transfer to C2/C3 with ultimate-load errors within 5%, while DS evidence fusion resolves crack/deflection/load threshold conflicts for more sensitive SLS/ULS assessment.
+
+**AI — deficiencies & future work:** Laboratory RC-column programme only; geometry/rebar scanning may fail under occlusion or inaccessible areas; environmental degradation, wider loading conditions, additional cross-sections and in-service RC members with initial defects are left for future validation.

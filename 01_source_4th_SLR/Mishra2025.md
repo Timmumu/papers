@@ -13,3 +13,20 @@ Urban infrastructure, especially smart bridges, is growing rapidly, requiring ef
 | Yes | Yes | Yes | Yes | Yes | **Include** |
 
 **Note:** Edge-empowered DT for real-time SHM of smart bridges
+
+## Step-3 Deep-Read Coding (Prompt B)
+| P DT-subject | Q DfS/DfQ | R codable | U Tier | V Design | W Constr | X Oper | Z DfX | AA Self-improve | AB Methodology | AC Modality | AD Validation | AE QA(0-5) | AF Cluster |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| Yes | Yes | Yes | Tier 2 - Digital Shadow (one-way physical to virtual) | 0 | 0 | 1 | Design for Safety (DfS) | None | Other / Mixed | Multi (two or more data types) | Simulation | 3 | Predictive analytics / decision support |
+
+| AC1 fusion depth | AC2 fusion evidence | AC3 confidence |
+|---|---|---|
+| Fused | Edge-processed sensor streams and the autoencoder reconstruction are fused into one anomaly decision. | Low |
+
+**Key evidence (AG):** Edge-empowered digital twin architecture for real-time bridge SHM (Kalinga U, Archives for Technical Sciences 2025): IoT + edge + cloud decentralised scheme; autoencoder-based anomaly detection compares reconstructed vs measured sensor data at the edge to flag structural problems and initiate maintenance actions; evaluated on five indicators (accuracy, processing time, energy, scalability, false-alarm rate) and reported better than traditional SHM. Architecture-level evaluation without a full real-bridge deployment; no actuation, no learning loop.
+
+*Full-text source: browser-oa*
+
+**AH — strength & gap filled:** Edge placement of autoencoder anomaly detection lowers latency/energy and false alarms versus cloud-only SHM, with explicit five-indicator evaluation.
+
+**AI — deficiencies & future work:** Evaluation appears architectural/simulated without a full bridge deployment; autoencoder training data and false-alarm statistics limited.

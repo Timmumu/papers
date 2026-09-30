@@ -14,7 +14,6 @@ The lack of integration between the digital and physical world results in a lowe
 
 **Note:** DTs for construction sites concepts and LoD; quality/safety
 
-
 ## Step-3 Deep-Read Coding (Prompt B)
 | P DT-subject | Q DfS/DfQ | R codable | U Tier | V Design | W Constr | X Oper | Z DfX | AA Self-improve | AB Methodology | AC Modality | AD Validation | AE QA(0-5) | AF Cluster |
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|

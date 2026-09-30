@@ -13,3 +13,12 @@ Corrosion in infrastructure creates high-risk scenarios, and mitigation strategi
 | Yes | Yes | Yes | Yes | Yes | **Include** |
 
 **Note:** Corrosion lifecycle DT; civil infrastructure safety
+
+## Step-3 Deep-Read Coding (Prompt B)
+| P DT-subject | Q DfS/DfQ | R codable | U Tier | V Design | W Constr | X Oper | Z DfX | AA Self-improve | AB Methodology | AC Modality | AD Validation | AE QA(0-5) | AF Cluster |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| No | Yes | No | Stage-2 Exclude |  |  |  |  |  |  |  |  |  |  |
+
+**Key evidence (AG):** Perspective/overview paper (Corrosion and Materials Degradation 2025, U Maryland/USCG): advances the discourse on corrosion monitoring with AI analytics and digital twins, demonstrating non-parametric analysis of corrosion data and providing implementation recommendations. No digital twin is built or evaluated - DTs are discussed as supportive technology and recommendations for future work. P=No, R=No -> Stage-2 exclude.
+
+*Full-text source: browser-oa*

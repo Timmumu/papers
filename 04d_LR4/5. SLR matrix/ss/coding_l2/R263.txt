@@ -1,0 +1,93 @@
+R263 R263_Alghamdi2026 T: Hazard- and Fairness-Aware Evacuation with Grid-Interactive Energy Management: A
+Digital-Twin Controller for Life Safety and Sustainability A: The paper introduces a real-time digital-twin
+controller that manages evacuation routes while operating GEEM for emergency energy management during building
+fires. The system consists of three interconnected parts which include (i) a physics-based hazard surrogate
+for short-term smoke and temperature field prediction from sensor data (ii), a router system that manages path
+updates for individual users and controls exposure and network congestion (iii), and an energy management
+system that regulates the exchange between PV power and battery storage and diesel fuel and grid electricity
+to preserve vital life-safety operations while reducing both power usage and environmental carbon output. The
+DOI: 10.3390/su18010133 F:  Sustainability 2026, 18, 133 https://doi.org/10.3390/su18010133 Article Hazard-
+and Fairness-Aware Evacuation with Grid-Interactive Energy Management: A Digital-Twin Controller for Life
+Safety and Sustainability Mansoor Alghamdi 1,*, Ahmad Abadleh 1,*, Sami Mnasri 1,*, Malek Alrashidi 1, Ibrahim
+S. Alkhazi 2, Abdullah Alghamdi 2 and Saleh Albelwi 2 1 Department of Computer Sciences, Applied College,
+University of Tabuk, Tabuk 47512, Saudi Arabia; mqalrashidi@ut.edu.sa 2 Faculty of Computing and Information
+Technology, University of Tabuk, Tabuk 47731, Saudi Arabia; i.alkhazi@ut.edu.sa (I.S.A.) * Correspondence:
+malghamdi@ut.edu.sa (M.A.); aabadleh@ut.edu.sa (A.A.); smnasri@ut.edu.sa (S.M.) Abstract The paper introduces
+a real -time digital-twin controller that manages evacuation routes while operating GEEM for emergency energy
+management during building fires. The system consists of three interconnected parts which include (i) a
+physics -based hazard surrogate for short-term smoke and temperature field prediction from sensor data (ii) ,
+a router system that manages path updates for individual users and controls exposure and network congestion
+(iii), and an energy management system that regulates the exch ange between PV power and battery storage and
+diesel fuel and grid electricity to preserve vital life-safety operations while reducing both power usage and
+environmental carbon output. The system operates through independent modules that function autonomously to
+preserve operational stability when sensors face delays or communication failures , and it meets Industry 5.0
+requirements through its implementation of auditable policy controls for hazard penalties , fairness weight,
+and battery reserve floor settin gs. We evaluate the controller in co -simulation across multiple building
+layouts and feeder constraints. The proposed method achieves superior performance to existing AI/RL baselines
+because it reduces near -worst-case egress time ( 𝑇95 and worst -case exposure) and decreases both event
+energy 𝐸event and CO2-equivalent 𝐶𝑂₂event while upholding all capacity , exposure cap, and grid import limit
+constraints. A high -VRE, tight -feeder stress test shows how reserve management, flexible-load shedding, and
+PV curtailment can achieve trade -offs between unserved critical load 𝑈energy and emissions. The team delivers
+implementation details together with reporting templates to assist researchers in reaching reproducibility
+goals. The research shows that emergency energy systems , which integrate evacuation systems, achieve better
+safety results and environmental advantages that enable smart - city integration through digital thread
+operations throughout design, commissioning, and operational stages. Keywords: digital twin; emergency
+evacuation; fairness-aware routing; hazard-aware path planning; grid-interactive energy management Academic
+Editors: Francesco Riganti Fulginei and Pablo García Triviño Received: 2 October 2025 Revised: 15 December
+2025 Accepted: 18 December 2025 Published: 22 December 2025 Copyright: © 2025 by the authors. Licensee MDPI,
+Basel, Switzerland. This article is an open access article distributed under the terms and conditions of the
+Creative Commons Attribution (CC BY) license. Sustainability 2026, 18, 133 2 of 35
+https://doi.org/10.3390/su18010133 1. Introduction Digital twins (DTs) are reshaping building fire safety by
+closing the loop between sensing, simulation, and control. Early work on DT -enabled safety management has
+articulated end -to-end frameworks that fuse building information models, sensor networks, and control logic
+to support preparedness, response, and recovery [1]. Recent surveys emphasize that evacuation is a
+particularly promising DT application because it combines high-frequency state estimation (hazard fields,
+congestion) with rapid decision support for routing and signage [2]. Alongside these advances, the safety
+community continues to examine dynamic guidance, such as adaptive exit signage, and to catalog the operational
+pitfalls that accompany it (e.g., conflicting cues, latency, and human fac tors) [3], as well as scalable
+implementations for multi-floor, multi-exit facilities [4]. On the computational side, a large literature
+optimizes evacuation routes under evolving conditions. Studies span domain settings, from cruise ships to
+underground facilities, and propose real -time algorithms that balance path length, congestion, and safety
+penalties [5 –7], while more recent work explores reinforcement learning and simulation-assisted optimization
+to handle large state spaces and nonstationary dynamics [8,9]. For hazard realism, many engineering workflows
+still rely on high -fidelity fire/smoke simulators such as the Fire Dynamics Simulator (FDS) [10], often
+coupled, one- way or two-way, with agent-based egress models to evaluate performance-based designs [11–13].
+Reviews of agent -based evacuation underscore how fundamental diagram speed–density effects, social behaviors,
+and heterogeneity shape outcomes [14,15], and a growing body of literature integrates social -force dynamics
+with routing or learning components [16,17]. Despite this progress, two gaps remain salient for modern smart
+buildings. First, evacuee routing typically optimizes for efficiency or safety but only implicitly treats
+fairness. The protection of vulnerable populations whose mobility constraints or exposure sensitivity differ
+from those of the average occupant remains overlooked . Policy and empirical evidence show that disabled or
+mobility -impaired residents remain disproportionately at risk even in jurisdictions that have invested
+heavily in safety upgrades [18–21]. While a few transportation-oriented studies frame evacuation planning as a
+multi-objective problem that includes equity [22,23], these approaches rarely appear in building-scale, real-
+time controllers. Second, evacuation control rarely co-optimizes on- site energy during emergencies. In
+practice, a building’s ability to keep critical services online (communications, elevators reser ved for
+assisted egress, pressurization fans, and medical equipment) depends on photovoltaic generation, battery sta
+te of charge, grid import caps, and backup generation. Outside the building, emergency vehicle (EV) priority
+at signals also affects response time and coordination [24–26]. Treating egress and energy as separate
+problems can obscure important trade -offs: for instance, maintaining critical power under tight caps may
+demand choices that increase short -term emissions but reduce life-safety risk by preserving protected egress
+systems. The proposed method addresses the problem of designing a building-scale digital- twin controller
+that, in real time, (i) routes occupants to safe exits as hazards and congestion evolve, (ii) enforces
+accessibility constraints and an explicit fairness policy for vulnerable groups, and (iii) dispatches on-site
+energy resources to sustain critical services under grid and device limits, thereby making the life -safety
+versus sustainability trade - off explicit and controllable. The controller must operate with surr ogate
+hazard predictions faster than high -fidelity CFD, remain computationally feasible at sub -second to multi
+-second control periods , and expose policy knobs that let operators choose acceptable points on the
+efficiency–equity and safety–sustainability frontiers. Building on the DT foundations in ref. [1,2], we
+integrate three ingredients that are typically studied in isolation: (a) hazard - and congestion -aware
+routing on a building Sustainability 2026, 18, 133 3 of 35 https://doi.org/10.3390/su18010133 graph, informed
+by a physically motivated advection –diffusion–decay surrogate that approximates smoke/toxic propagation
+(complementary to the high -fidelity models used in [10 –13]); (b) a runtime fairness policy that prioritizes
+vulnerable occupants, tightens exposure thresholds, and slightly adjusts admission/throughput where capacity
+bottlenecks arise (motivated by evidence on mixed -ability risks [18 –21] and equity formulations in disaster
+logistics [22,23]); and (c) Grid-Interactive Emergency Energy Management that balances photovoltaic
+generation, battery storage, capped grid import, and optional backup generation to keep critical loads online
+during the event window. At the city edge, we read out an emergency -vehicle priority indicator consistent
+with the traffic-signal preemption literature and deployments [24 –26]. The system runs in a receding-horizon
+loop, continuously re -weighting edges by predicted hazard, density - dependent travel times, and policy
+terms, while a co -simulated dispatcher allocates energy subject to device and feeder constraints. Compared to
+prior work on dynamic signage and path optimization [3 –7], reinforcement-learning–based routing [8,9], and
+coupled fire–egress analysis [10–13], the proposed approach differs from the existing work in several points:
+(i) we jointly control

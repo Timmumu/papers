@@ -1,0 +1,92 @@
+R282 R282_Jing2026 T: Vision-Based Digital Twin and AI Agent Framework for Low-Cost, Explainable Indoor
+Building Inspection and Safety Assessment A: Aging residential buildings constructed under outdated design
+standards create an urgent need for scalable, evidence-based indoor safety assessment methods. Conventional
+manual inspections rely on subjective checklists, lack audit trails, and are impractical for widespread
+deployment. This study presents a vision-based digital twin and AI agent framework that converts a single
+continuous smartphone video into an explainable, evidence-constrained safety assessment. The pipeline employs
+MASt3R-SLAM to reconstruct a metric-scale 3D point cloud from monocular video, calibrated with AprilTag
+fiducials for absolute scale. SpatialLM parses the geometry to extract semantic entities and spatial relat
+DOI: 10.3390/s26154992 F: Academic Editor: Rocco Ditommaso Received: 29 May 2026 Revised: 20 July 2026
+Accepted: 23 July 2026 Published: 6 August 2026 Copyright: © 2026 by the authors. Licensee MDPI, Basel,
+Switzerland. This article is an open access article distributed under the terms and conditions of the Creative
+Commons Attribution (CC BY) license. Article Vision-Based Digital Twin and AI Agent Framework for Low-Cost,
+Explainable Indoor Building Inspection and Safety Assessment Zijian Jing 1, Liyi Zhu 2, Tianyi Chen 1 , Ludger
+Hovestadt 3 and Li Li 1,* 1 Key Laboratory of Urban and Architectural Heritage Conservation, School of
+Architecture, Southeast University, Nanjing 210096, China; 220230221@seu.edu.cn (Z.J.); e0348767@u.nus.edu
+(T.C.) 2 Group of Architects Co., Ltd. (GOA), 398 Tianmushan Road, Xihu District, Hangzhou 310058, China;
+zhu.liyi@goa.com.cn 3 Institute of Technology in Architecture (ITA), 8093 Zurich, Switzerland; ludger@ethz.ch
+* Correspondence: 101012053@seu.edu.cn Abstract Aging residential buildings constructed under outdated design
+standards create an urgent need for scalable, evidence-based indoor safety assessment methods. Conventional
+manual inspections rely on subjective checklists, lack audit trails, and are impractical for widespread
+deployment. This study presents a vision-based digital twin and AI agent framework that converts a single
+continuous smartphone video into an explainable, evidence-constrained safety assessment. The pipeline employs
+MASt3R-SLAM to reconstruct a metric-scale 3D point cloud from monocular video, calibrated with AprilTag
+fiducials for absolute scale. SpatialLM parses the geometry to extract semantic entities and spatial
+relationships. Risk guidelines are formalized into a computable Risk Prototype structure, unified within a
+hierarchical SceneState data structure that binds geometric measurements, semantic labels, image observations,
+and regulatory knowledge. A LangGraph-based AI agent conducts a dual-pathway assessment: an initial whole-
+dwelling scan followed by iterative follow-up queries invoking tool calls for measurement, knowledge
+retrieval, or visual cross-checking. In a pilot validation across five heterogeneous residences, with detailed
+manual comparison in two representative cases, the framework achieved risk recall rates of 77.8–100% and
+precision rates of 45.0–70.0% against the single-assessor manual reference. The average judgment closure rate
+was 71.7%, with spatial granularity enhancement of up to 2.2× in complex environments. These results suggest
+that the framework can achieve risk coverage comparable to manual checklist inspection while offering enhanced
+granularity in complex environments and quantitative precision in well-defined spaces. Keywords: digital twin;
+AI agent; residential safety assessment; 3D reconstruction; existing housing stock; age-friendly environment
+1. Introduction A substantial proportion of the global residential building stock is now several decades old,
+and much of it was designed and constructed under standards that paid limited attention to the fine-grained
+spatial safety conditions of everyday domestic life. In China, rapid urbanization since the 1980s produced an
+immense inventory of residen- tial units—apartment blocks, urban dwellings, and rural homes—that were built to
+meet Sensors 2026, 26, 4992 https://doi.org/10.3390/s26154992 Sensors 2026, 26, 4992 2 of 30 acute housing
+shortages, with design priorities centered on basic shelter, floor-area effi- ciency, and construction speed
+rather than on occupant safety in daily activities such as ambulation, transfer, reaching, and bathing [1,2].
+A significant share of this stock remains in active use today, yet its spatial configurations, dimensional
+relationships, and fixture installations were never systematically evaluated against the ergonomic and safety
+re- quirements of occupants across the life course [3]. As these buildings age, their inherent spatial
+deficiencies—narrow doorways, abrupt level changes, absence of support fixtures, inadequate illumination, and
+accumulations of household clutter in constrained circula- tion paths—compound into latent environmental
+hazards. The urgency of assessing and retrofitting this existing housing stock is magnified by the concurrent
+demographic reality of population aging: as of the end of 2024, the population aged 60 years and over in China
+reached 310.31 million, constituting 22.0% of the total national population, while those aged 65 and over
+numbered 220.23 million, or 15.6% [4]. Projections suggest that by 2050, the proportion aged 65 and above
+could exceed 26% [5]. National policy frameworks have explicitly endorsed a model of “home-based eldercare as
+the foundation, community-based support as the main support, and institutional care as a supplement” [6],
+which elevates the residential environment from a mere container of domestic life to a fundamental unit of the
+aging-in-place support system. The convergence of an aging building stock and an aging population thus creates
+a dual challenge: a vast inventory of homes whose latent spatial hazards were never designed to accommodate
+the diminished functional capacities of their elderly occupants. The ecological theory of aging provides a
+robust conceptual framework for under- standing why the spatial deficiencies of older housing stock become
+critical safety hazards for aging occupants. This theory posits that an individual’s functional ability is not
+solely a product of their intrinsic physiological and cognitive capacities but is co-determined by the
+interaction between these capacities and the demands of their surroundingenvironment [7]. As individuals age,
+they experience a progressive decline in key functional domains, in- cluding musculoskeletal strength, balance
+control, gait stability, visual acuity (particularly contrast sensitivity and dark adaptation), and reaction
+time [8]. These physiological changes effectively lower the threshold at which conventional spatial
+configurations and environ- mental features become hazardous. A residential environment that was once
+navigable and supportive can, in the context of diminished capacity, transform into a high-risk field for
+accidents. Empirical data underscores this vulnerability: over 70% of falls among older adults occur within
+the home or its immediate vicinity [ 9]. These incidents are rarely attributable to a single, isolated defect
+but are instead the result of a complex interplay between an individual’s declining abilities and specific
+environmental stressors. High-risk spatial units where this person-environment mismatch frequently manifests
+include thresh- olds and level changes, narrow circulation paths, wet areas like bathrooms and kitchens, and
+locations lacking adequate support for transfers and ambulation. Crucially, many of these hazardous spatial
+conditions are not random occurrences but are systematic features of housing built before age-friendly design
+principles were widely adopted, underscoring that the precise identification and characterization of
+environmental hazards in the existing building stock is not merely an architectural concern but a critical
+public health imperative, serving as the essential first step towards effective intervention and the
+restoration of a safe, supportive living environment. Despite the clear need for systematic residential safety
+evaluation, current practices remain heavily reliant on manual, subjective methodologies that are
+fundamentally ill- suited to the scale and complexity of the challenge. The dominant approach involves trained
+professionals—such as occupational therapists, social workers, or building in- spectors—conducting on-site
+visits to perform visual inspections against standardized https://doi.org/10.3390/s26154992 Sensors 2026, 26,
+4992 3 of 30 checklists or screening tools like HOME FAST or HAP [10]. While these methods can be effective in
+controlled settings, they suffer from several critical limitations. First, they are highly dependent on the
+expertise, experience, and subjective judgment of the assessor, leading to potential inconsistencies in risk
+identification, severity grading, and problem attribution across different evaluators [11]. Second, they are
+resource-intensive, requiring significant time and personnel, which makes them prohibitively expensive and
+logistically challenging to deploy at the community or national scale necessary to address the bur- geoning
+aging population, especially given the vast stock of existing, non-elderly-friendly housing [12]. Third, and
+perhaps most critically, the outputs of these assessments are often static snapshots in the form of a simple
+problem list or a scored checklist. They typically lack a stable, traceable organization of the underlying
+spatial evidence that led to each conclusion. This absence of an auditable evidence trail makes it difficult
+to verify findings, understand the specific conditions that constitute a risk, or support s

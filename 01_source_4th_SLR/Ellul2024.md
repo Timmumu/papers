@@ -14,7 +14,6 @@ Although digital twins have been established in manufacturing for a long time, t
 
 **Note:** Unreal Engine twins for H&S and progress monitoring
 
-
 ## Step-3 Deep-Read Coding (Prompt B)
 | P DT-subject | Q DfS/DfQ | R codable | U Tier | V Design | W Constr | X Oper | Z DfX | AA Self-improve | AB Methodology | AC Modality | AD Validation | AE QA(0-5) | AF Cluster |
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|

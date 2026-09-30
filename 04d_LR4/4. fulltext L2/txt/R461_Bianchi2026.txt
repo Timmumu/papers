@@ -1,0 +1,963 @@
+AI – Digital Twin framework for automated predictive maintenance of 
+bonded insulated rail joints
+G. Bianchi
+*
+, F. Freddi , F. Giuliani
+Department of Engineering and Architecture, University of Parma, 43121 Parma, Italy
+ARTICLE INFO
+Keywords:
+Artificial intelligence classifier
+Machine learning data analysis
+Deep learning time-frequency image analysis
+Railway track monitoring
+ABSTRACT
+Predictive maintenance is a key enabler of automated Structural Health Monitoring (SHM) for safety-critical 
+infrastructure, supporting reliable operation under increasing service demands. This paper presents an inte -
+grated Digital Twin – Artificial Intelligence (DT – AI) framework for the automated condition assessment of bonded 
+Insulated Rail Joints (IRJs) and adjacent sleepers. A high-fidelity Digital Twin is developed to simulate joint 
+behaviour under varying preload and support degradation scenarios, generating physically consistent datasets 
+across representative loading conditions. Deep Convolutional Neural Networks (DCNNs) and traditional Machine 
+Learning (ML) classifiers are trained on time – frequency representations of selected predictive indicators to 
+identify and classify degradation states. Results demonstrate that the proposed physics-informed DT-driven 
+framework achieves high diagnostic accuracy and strong generalization capability, with DCNNs models out -
+performing conventional classifiers. By integrating physics-based simulation with automated data analytics, the 
+proposed framework advances scalable, data-driven SHM and predictive maintenance strategies, for the intel -
+ligent automation of railway infrastructure management.
+1. Introduction
+Modern railway networks are advanced technological systems that 
+underpin sustainable mobility, fostering social cohesion, economic 
+growth, and regional integration [1] . By enhancing safety and capacity 
+while promoting a modal shift from road to rail, efficient rail systems 
+contribute to reduced congestion and greenhouse gas emissions, sup -
+porting circular economy objectives [2] . Achieving these goals requires 
+not only infrastructure expansion but also improved reliability, resil -
+ience, and optimized lifecycle management of critical assets.
+In this context, the digitalization of railway infrastructure, through 
+Digital Twins (DTs), the Internet of Things (IoT), and Artificial Intelli -
+gence (AI)-based predictive tools, represents a transformative paradigm 
+for asset management [3] . These technologies enable real-time moni -
+toring, automated anomaly detection, and Predictive Maintenance 
+(PdM), moving beyond traditional time-based scheduling. Their stra -
+tegic importance is reflected in large-scale national and European ini -
+tiatives, such as the Italian project MOST — Centro Nazionale per la 
+Mobilit `a Sostenibile [4] , Spoke 4 Railway Transport, funded under the 
+National Recovery and Resilience Plan (NRRP) and the Next Generation 
+EU (NGEU) programme [5] , which promote advanced digital solutions 
+for sustainable railway transport.
+Among safety-critical railway components, bonded Insulated Rail 
+Joints (IRJs) remain essential in conventional signalling systems until 
+the transition to European Rail Traffic Management System/European 
+Train Control System (ERTMS/ETCS) and Radio Block Center (RBC) 
+technologies, is fully completed. While ensuring electrical insulation 
+and mechanical continuity, IRJs introduce structural discontinuities 
+relative to continuous welded rail, making them inherently susceptible 
+to degradation. Failures may compromise signalling integrity, reduce 
+track stiffness, and adversely affect operational safety. Periodic 
+inspection-based maintenance is increasingly inadequate, as IRJ dete -
+rioration results from complex interactions among cyclic loading, bolt 
+preload loss, environmental effects, and support degradation [6] .
+Despite robust design, bonded IRJs are prone to progressive bolt 
+loosening, cracking, and wear. Loss of bolt preload increases vertical 
+deflection and may induce bolt – hole clearance undetectable until 
+cracking occurs [7] . Their reduced bending stiffness amplifies defor -
+mation under train passage, accelerating deterioration and increasing 
+maintenance costs [8,9] . Adjacent sleepers also play a critical role: 
+stiffness discontinuities around joints intensify impact loads and stress 
+concentrations [10] , contributing to ballast degradation [11] and 
+* Corresponding author.
+E-mail addresses: giovanni.bianchi@unipr.it (G. Bianchi), francesco.freddi@unipr.it (F. Freddi), felice.giuliani@unipr.it (F. Giuliani). 
+Contents lists available at ScienceDirect
+Automation in Construction
+journal homep age: www.el sevier.com/l ocate/autcon
+https://doi.org/10.1016/j.autcon.2026.107102
+Received 20 January 2026; Received in revised form 4 June 2026; Accepted 8 June 2026 
+Automation in Construction 190 (2026) 107102 
+Available online 12 June 2026 
+0926-5805/© 2026 The Authors. Published by Elsevier B.V. This is an open access article under the CC BY license ( http://creativecommons.org/licenses/by/4.0/ ). 
+potential cracking of prestressed concrete sleepers [12,13] . Although 
+previous studies have documented these degradation mechanisms 
+[14 – 16] , early-stage detection remains challenging with conventional 
+approaches.
+Physics-based Digital Twins integrated with data-driven models offer 
+a promising alternative for predictive maintenance [17,18] . While DTs 
+have been applied to railway bridges, switches, and rolling stock 
+[19,20] , and previous studies have examined bolt degradation, IRJ 
+behaviour, or sleeper stiffness separately, no work has systematically 
+integrated their coupled interaction within a unified DT – AI framework 
+for automated diagnostics. Traditional methods, such as isolated com -
+puter vision or conventional sensors, often rely on heuristic thresholds 
+and manual inspections, limiting scalability and real-time applicability.
+To address these limitations, the present study develops a high- 
+fidelity, physics-informed Digital Twin that reproduces the coupled 
+mechanical behaviour of IRJs and adjacent sleepers under both nominal 
+and controlled degradation scenarios that cannot be safely reproduced 
+in the field. DT-generated signals, specifically vertical displacement and 
+gap value. i.e. the longitudinal displacement between adjacent rails, are 
+transformed into time – frequency representations and analysed using 
+Deep Convolutional Neural Networks (DCNNs) and traditional Machine 
+Learning (ML) classifiers for automated condition assessment.
+The main contributions of this work are: 
+• A unified physics-informed Digital Twin reproducing the coupled me -
+chanical behaviour of bonded IRJs and adjacent sleepers under 
+varying bolt-preload and support-stiffness conditions.
+• A structured definition of structural health classes grounded in me -
+chanically interpretable degradation mechanisms.
+• A systematic comparative assessment of time – frequency-based deep 
+learning models (STFT-CNN and WT-CNN) and a traditional ML 
+decision-tree classifier across six predictive maintenance scenarios.
+• A methodology for quantifying the detectability limits of various 
+degradation modes, linking classification performance to underlying 
+mechanical phenomena and providing a foundation for future 
+maintenance prioritization.
+From an automation perspective, the proposed framework estab -
+lishes a closed-loop, decision-oriented monitoring workflow in which 
+DT simulations generate labelled degradation scenarios that are mapped 
+to measurable indicators through AI-based classifiers. By embedding 
+mechanical knowledge within the diagnostic logic, the methodology 
+reduces reliance on manual inspections and heuristic thresholds, 
+enabling scalable predictive maintenance aligned with digital trans -
+formation objectives. The decision-oriented monitoring workflow re -
+duces human dependency by automating the classification of 
+degradation states, thus enabling data-driven maintenance decisions 
+and mitigating operational bottlenecks throughout the infrastructure 
+lifecycle.
+The remainder of the paper is structured as follows: Section 1 pro -
+vides an overview of the relevant background literature, defines the 
+research gap, and positions the present study. Section 2 describes the DT 
+and AI modelling framework, shown in Fig. 1 . Section 3 presents the 
+case studies and comparative analyses, and Section 4 discusses the re -
+sults in the context of automated predictive maintenance and infra -
+structure digitalization.
+1.1. Digital twins and AI-driven predictive maintenance in railway 
+infrastructure
+Digital Twin technology is rapidly advancing in the Architecture, 
+Engineering and Construction (AEC) sector [21] , enabling high-fidelity 
+virtual representations of infrastructure under realistic operational 
+conditions. In railway systems, DTs support lifecycle optimization, sce -
+nario analysis, and risk assessment [17 – 20] . However, their full PdM 
+potential emerges when integrated with ML and DL techniques capable 
+of extracting patterns from large and heterogeneous datasets [22] . This 
+study introduces a novel integration of a physics-informed Digital Twin 
+with deep learning-based diagnostics, which offers a significant 
+advancement over prior work by addressing the coupled interaction of 
+IRJs and adjacent sleepers.
+A key advantage of physics-informed DTs is their ability to generate 
+controlled degradation scenarios that cannot be safely reproduced in the 
+field. Railway datasets are inherently unbalanced: healthy-condition 
+measurements are abundant, whereas severe or progressive damage 
+data are scarce. DT simulations enable systematic generation of labelled, 
+mechanically consistent degradation states, producing training datasets 
+with meaningful predictive content more efficiently than extensive 
+experimental campaigns. When combined with AI models, this capa -
+bility supports automated scalable SHM workflows while complement -
+ing conventional sensor- and vision-based approaches.
+AI techniques have demonstrated strong predictive performance 
+across multiple domains [23,24] and are increasingly adopted in railway 
+monitoring [25,26] . While interpretable ML methods provide structured 
+modelling of multimodal sensor data, CNN-based DL approaches enable 
+automatic feature extraction from high-dimensional signals, improving 
+scalability and reducing manual feature engineering. To ensure inter -
+pretability and operational reliability, we embed mechanical knowledge 
+into the DCNN framework, guiding the network with physically mean -
+ingful features.
+Large-scale implementations further demonstrate the potential of AI- 
+enhanced DTs in rail systems. For example, Siemens-supported projects 
+in China's high-speed rail network employed ML-augmented DT 
+frameworks to improve reliability and maintenance efficiency [27] . 
+Other studies explored Ground Penetrating Radar (GPR) and Interfero -
+metric Synthetic Aperture Radar (InSAR) data integration for predictive 
+maintenance [28] , HybridGAN architectures for defect detection under 
+low-quality imagery [29] , and UAV-based monitoring for safety 
+Fig. 1. Framework of the predictive SHM strategy, divided into 3 main inter -
+connected stages.
+G. Bianchi et al. Automation in Construction 190 (2026) 107102 
+2 
+enhancement [30] . Despite these advances, many studies treat simula -
+tion, sensing, and AI diagnostics as partially disconnected elements 
+rather than components of a fully integrated, physics-informed 
+workflow.
+1.2. Degradation mechanisms and monitoring of bonded IRJs and sleepers
+Historically, maintenance of bonded IRJs has relied on periodic in -
+spections and preventive routines [14] . However, IRJs remain vulner -
+able to bolt loosening, cracking, and material degradation. Reduced 
+bending stiffness amplifies dynamic response under loading [8,9] , while 
+preload loss increases vertical displacement and gap variation preceding 
+visible damage [7] . Stiffness discontinuities at joints intensify impact 
+forces on adjacent sleepers [10] , contributing to ballast degradation 
+[11] , increased rail-seat pressures, and potential cracking of prestressed 
+concrete sleepers [12,13] . The coupled interaction between joint flexi -
+bility and sleeper support conditions critically affects track durability 
+and geometry preservation.
+Modern monitoring methods, including axlebox acceleration-based 
+drive-by monitoring [31] , Fibre Bragg Grating (FBG)-based curvature 
+sensing [11] , acoustic emission techniques [32] , and non-destructive 
+evaluation approaches such as ultrasonics, infrared thermography, and 
+ML-enhanced vision systems [12,33] , provide valuable diagnostic in -
+formation. However, these techniques require extensive field instru -
+mentation and do not allow controlled reproduction of severe 
+degradation states for algorithm training.
+1.3. Time – frequency representations and CNN-based diagnostics
+Transforming time-series signals into time – frequency representa -
+tions, such as spectrograms (via Short-Time Fourier Transform, STFT) 
+and scalograms (via Wavelet Transform, WT), enables mapping struc -
+tural responses into image-like formats suitable for CNN analysis.
+Spectrogram-based CNNs have outperformed traditional feature- 
+engineering methods in bearing diagnostics [34] , pavement crack 
+detection [35] , and railway axle fault identification [36] . These ap -
+proaches demonstrate that time – frequency imaging allows CNNs to 
+capture subtle spectral signatures associated with incipient damage.
+For bonded IRJs, indicators such as vertical displacement and gap 
+value, i.e. the longitudinal displacement between adjacent rails, previ -
+ously identified as predictive of structural degradation [16,37] , exhibit 
+transient spectral characteristics during wheel passage. Converting these 
+signals into high-resolution time – frequency maps enables automated 
+extraction of degradation patterns that may remain undetectable in raw 
+time-domain analysis.
+1.4. Research gap and positioning of the present study
+DT modelling, FE simulation, and AI-based diagnostics are estab -
+lished in SHM [35,38] . In railway engineering, DT and AI approaches 
+are increasingly applied to individual subsystems [19,20] . Recent work 
+has proposed DT-based frameworks for enhancing the resilience of 
+cyber-physical systems [22] . Systematic reviews have synthesised ML 
+methods for predictive maintenance applications [23] , outlined the 
+foundations of AI for engineering practice [24] , and highlighted 
+emerging ML-driven approaches for SHM under high-dimensional data 
+environments [25] . More recently, railway-specific reviews have docu -
+mented the transition from conventional monitoring techniques toward 
+predictive maintenance strategies [26] . However, the coupled interac -
+tion between bonded IRJs and adjacent sleepers has not been investi -
+gated within a unified DT – AI framework designed for automated 
+condition assessment.
+Building on our previous work [16] , which combined a DT with a 
+decision-tree classifier under simplified assumptions, this study ad -
+vances modelling fidelity and automation by capturing IRJ – sleeper 
+coupling and exploiting full time-series signals transformed into 
+time – frequency representations for DCNN-based diagnostics.
+The proposed framework is designed as a physics-informed DT, 
+capable of generating mechanically consistent and systematically 
+labelled degradation states to address the scarcity of real failure data. 
+While the current validation is conducted on synthetic datasets, the 
+architecture is conceived for future integration with laboratory and field 
+measurements through transfer learning and hybrid virtual – physical 
+updating strategies. Unlike traditional FE models, this DT-oriented 
+framework is intended to integrate real-time data streams and provide 
+dynamic feedback for decision-making, bridging the gap between nu -
+merical simulation and operational predictive maintenance.
+The primary objective is the development and validation of a 
+coherent DT – AI synergy framework for automated predictive mainte -
+nance. The comparative evaluation of deep learning and traditional ML 
+classifiers serves to assess the robustness and scalability of this inte -
+grated architecture rather than to perform isolated algorithm bench -
+marking. The novelty lies in the systematic integration of validated 
+modelling and AI tools into a physics-informed, decision-oriented 
+workflow that supports scalable automation and future alignment be -
+tween virtual simulations and real-world railway operation.
+2. Materials and methods
+This section presents the integrated methodology underpinning the 
+proposed DT – AI framework, combining a physics-informed Digital Twin 
+for modelling the coupled behaviour of bonded IRJs and adjacent 
+sleepers ( Section 2.1 ) with DCNN-based time – frequency analysis for 
+automated predictive maintenance and condition classification ( Section 
+2.2 ).
+2.1. Digital Twin framework for bonded IRJ and sleeper modelling
+The proposed Digital Twin (DT) reproduces the coupled mechanical 
+behaviour of bonded Insulated Rail Joints (IRJs) and adjacent sleepers 
+under controlled degradation scenarios, including bolt-preload loss and 
+sleeper stiffness reduction. It generates physically consistent synthetic 
+data suitable for AI-driven diagnostics, supporting predictive mainte -
+nance without requiring exhaustive field measurements in the early 
+development stages. Previous work demonstrated that classifiers trained 
+on synthetic DT-generated signals generalize effectively to safe-field 
+experimental measurements, providing evidence that the Digital Twin 
+reproduces mechanically relevant responses that reliably enable AI- 
+driven diagnostics [16] .
+2.1.1. Geometrical configuration and modelling assumptions
+The DT of the suspended bonded IRJ was developed using the FE 
+platform Abaqus/CAE. The model provides a geometrically simplified 
+Fig. 2. Cross section of IRJ in orange box; digital twin of bonded IRJ and 
+two wheels.
+G. Bianchi et al. Automation in Construction 190 (2026) 107102 
+3 
+yet mechanically representative configuration of a 50 UNI rail profile 
+( Fig. 2 ), including joint components compliant with Rete Ferroviaria 
+Italiana (RFI) standards. Two 9 m rail segments are connected through 
+fishplates and four bolts, forming an 18 m assembly sufficient to 
+reproduce the global structural behaviour of a finite rail modelled as a 
+beam on an elastic foundation.
+Electrical insulation between the rails is represented by a 5 mm end 
+post located within the rail gap. Secondary insulating elements (bush -
+ings and fishplate interlayers) are omitted, as supplementary analyses 
+confirmed that their inclusion introduces significant numerical nonlin -
+earity while exerting negligible influence on global mechanical 
+response. The adopted configuration therefore preserves structural fi -
+delity while ensuring numerical robustness.
+The passage of two train wheels (diameter 920 mm, wheelbase 2700 
+mm) is simulated following established IRJ methodologies [39] . Wheel 
+loads are applied vertically and symmetrically along the rail axis, 
+consistent with straight-track conditions. Minor-axis bending and 
+torsional effects are neglected, as previous IRJ studies identified vertical 
+load-transfer mechanisms as the dominant contributors to gap formation 
+and rail-end displacement [40,41] .
+2.1.2. Material modelling, contact formulation, and loading strategy
+All structural components, rails, fishplates, bolts, wheels, and end 
+post, are explicitly modelled and assembled ( Fig. 2 ). Material properties 
+and cross-sectional parameters are derived from literature values for 
+standard rail steels and commonly adopted insulating materials (nylon, 
+polyurethane, epoxy – fibreglass composites) [42,43] .
+The analysis adopts a quasi-static formulation with geometric 
+nonlinearity enabled (Nlgeom option). Bolt preload and wheel loads are 
+applied incrementally to ensure numerical stability. Wheel passage is 
+simulated through prescribed translational motion at a temporal reso -
+lution equivalent to 1000 Hz.
+Rail – end post interfaces are defined via tie constraints [44] , while all 
+remaining interactions are governed by a general contact formulation 
+with a tangential penalty coefficient of 0.6, representative of dry 
+wheel – rail contact conditions [16,45] . This configuration captures the 
+dominant nonlinear contact phenomena influencing joint stiffness and 
+gap evolution.
+A constant wheel speed of 18 m/s ( ≈ 65 km/h) is adopted, repre -
+sentative of regional and suburban operating regimes in which bonded 
+IRJs remain widely deployed [37,46] . Within this moderate-speed 
+range, quasi-static modelling reproduces the primary stiffness- 
+governed response with limited deviation from fully dynamic peak in -
+dicators [47] , while maintaining computational efficiency compatible 
+with large parametric campaigns. Extension to variable-speed and dy -
+namic analyses is identified as a natural progression of the framework.
+2.1.3. Elastic foundation modelling and degradation parameterisation
+The rail is modelled as a beam supported by an elastic foundation 
+representing the combined stiffness of sleepers and ballast. Standard 
+monoblock sleepers are discretised into 240 mm × 135 mm support 
+segments at 600 mm spacing, resulting in 15 sleepers per rail (30 total) 
+[48] . The elastic foundation is calibrated from a representative track 
+stiffness of 21 N/mm
+2 
+for conventional ballasted systems [40,41] , 
+consistent with benchmark parameters adopted in previous track- 
+modelling studies [49] . This value corresponds to a total nominal 
+foundation stiffness per area of 0.39 N/mm
+3 
+distributed along the 18 m 
+rail length. Consistent with the adopted discretization into 30 sleeper 
+supports, this global stiffness is uniformly partitioned, resulting in an 
+equivalent per-sleeper foundation stiffness per area of 0.013 N/mm
+3 
+under intact conditions. Sleeper degradation is modelled as a reduction 
+in foundation stiffness per area. Sleeper degradation is modelled as a 
+50% reduction of this local support stiffness (0.0065 N/mm
+3
+), repre -
+senting significant but realistic deterioration associated with ballast 
+fouling, void development [11] , or moisture-induced softening docu -
+mented in railway engineering literature [12,13] . This value does not 
+represent a universal maintenance threshold; rather, it defines a me -
+chanically interpretable degradation magnitude enabling systematic 
+evaluation of detectability limits within the DT – AI framework.
+Sleepers are labelled sequentially (S1 – S30, Fig. 3 ), with particular 
+focus on those adjacent to the joint (S15 – S16) and those located near 
+mid-span regions (S8 and S23). This spatial configuration enables 
+investigation of degradation proximity effects on structural response.
+2.1.4. Bolt preload modelling and structural health states
+Bolt assemblies are represented through a simplified but mechani -
+cally consistent modelling strategy in which the bolt – nut – washer system 
+is treated as a unified preloaded component [40,43] . This approach 
+captures the dominant influence of clamping force on joint flexural 
+stiffness and contact pressure redistribution without introducing un -
+necessary local nonlinearities.
+A nominal preload of 75 kN represents standard assembly conditions. 
+Reduced preloads of 50 kN and 25 kN simulate progressive clamping- 
+force relaxation due to cyclic loading, embedment, and micro-slip phe -
+nomena observed in service conditions [7] . Missing-bolt configurations 
+represent extreme loss of mechanical continuity.
+These preload levels are not arbitrarily selected numerical partitions; 
+they correspond to mechanically distinct regimes characterised by 
+monotonic amplification of gap values and rail-end vertical displace -
+ment. Structural health states are therefore defined according to tran -
+sitions in load-transfer behaviour rather than abstract signal thresholds.
+2.1.5. Sensitivity-informed parameter selection
+The degradation parameters adopted in the Digital Twin are defined 
+following a sensitivity-informed strategy aimed at ensuring mechanical 
+representativeness and robustness of the diagnostic framework. 
+Parameter ranges are selected to span distinct regimes of load-transfer 
+behaviour, enabling clear discrimination of degradation-induced struc -
+tural responses rather than reproducing a single calibrated condition.
+The selected bolt preload levels (75 – 25 kN) reflect progressive 
+clamping-force loss mechanisms reported in bonded IRJs [16] . Simi -
+larly, the 50% reduction in sleeper support stiffness is consistent with 
+degradation scenarios associated with ballast fouling and void devel -
+opment [11] in railway track systems [12,13] . These values are there -
+fore interpreted as physically meaningful degradation states rather than 
+prescriptive thresholds.
+Targeted sensitivity checks indicate that the primary diagnostic in -
+dicators, namely gap value and vertical displacement, vary mono -
+tonically with stiffness degradation, while secondary modelling 
+parameters exert limited influence on global response patterns. This 
+behaviour is consistent with established vehicle – track interaction 
+studies, which identify support stiffness as the dominant factor gov -
+erning track response [50] . Consequently, class separability is driven by 
+intrinsic mechanical contrasts rather than specific parameter tuning.
+This parameterization provides a robust basis for DT-generated 
+training datasets, supporting future integration with experimental data 
+within hybrid virtual – physical monitoring frameworks.
+2.1.6. Numerical verification and experimental benchmarking
+A mesh convergence study was conducted by refining discretisation 
+in critical regions (rail ends, bolt interfaces, fishplate contacts) and 
+monitoring peak gap and vertical displacement under a 60 kN load. 
+Variations below 2% beyond the adopted C3D8R mesh confirmed 
+discretisation-independent global response. Reduced-integration 8-node 
+brick elements provide an effective balance between accuracy and 
+computational cost.
+The modelling framework builds upon established finite-element 
+formulations for bonded and mechanical rail joints, including analyses 
+of IRJ deflection behaviour under wheel loading [39,43] , bolt-preload 
+effects and stress concentrations in rail joints [40,41] , and train – track 
+interaction mechanisms associated with insulated joints [48] . Experi -
+mental validation of IRJ response through dedicated field measurement 
+G. Bianchi et al. Automation in Construction 190 (2026) 107102 
+4 
+campaigns has also been reported in the literature [15] , providing a 
+benchmark for assessing the mechanical fidelity of the adopted model -
+ling approach. In those studies, FE-predicted gap values during wheel 
+passage showed strong agreement with field measurements, with de -
+viations consistently remaining below critical tolerance levels across all 
+investigated load conditions. These results support the mechanical fi -
+delity of the adopted load-transfer representation.
+Furthermore, prior work demonstrated that a classifier trained 
+exclusively on DT-generated synthetic gap signals successfully general -
+ised to safe-field experimental measurements [16] , providing pre -
+liminary evidence of transferability from simulation to practice.
+2.1.7. Synthetic datasets as a structured baseline for automation
+The DT configuration remains consistent across all case studies 
+presented in Section 3 ; only degradation parameters (bolt preload and 
+sleeper stiffness) are varied. Simulation outputs, specifically gap value 
+and rail-end vertical displacement extracted at probe locations near the 
+joint and critical sleepers ( Fig. 3 ), are compiled into labelled datasets for 
+AI training and testing.
+The reliance on synthetic data is a deliberate methodological choice. 
+Severe degradation scenarios are inherently scarce, unsafe to reproduce 
+experimentally, and typically imbalanced relative to healthy conditions. 
+The Digital Twin provides a controlled, mechanically consistent envi -
+ronment in which primary degradation mechanisms can be systemati -
+cally isolated and parameterised.
+The present validation therefore establishes a physics-informed 
+upper-bound benchmark under controlled conditions. Environmental 
+variability, measurement noise, and operational uncertainty are not 
+explicitly modelled at this stage but are identified as part of ongoing 
+hybrid virtual – physical updating strategies aimed at progressively 
+enhancing robustness under real-world deployment conditions.
+In this context, the use of synthetic data is not intended to approxi -
+mate full operational complexity, but to establish a controlled, mecha -
+nistically interpretable learning baseline from which model behaviour 
+can be rigorously assessed before progressive exposure to real-world 
+variability.
+2.2. DCNN with time – frequency analysis
+Recent advances in AI-driven railway monitoring have demonstrated 
+the value of combining high-fidelity datasets with data-driven models 
+for damage detection and prognosis [25,26] . Similar trends have also 
+emerged in broader SHM applications [51,52] . Within this context, DTs 
+are particularly effective for SHM, as they provide physically consistent 
+data under both nominal and systematically degraded conditions. Since 
+no single AI technique is universally optimal, this study adopts and 
+compares multiple learning strategies to evaluate their suitability for 
+automated health assessment of bonded IRJs.
+Building on previous Machine Learning (ML) investigations on bolt 
+preload degradation in IRJs [16] , the present work extends the frame -
+work to Deep Learning (DL) approaches inspired by recent fault- 
+classification methodologies based on time – frequency imaging 
+[34 – 36] . The proposed methodology consists of three sequential stages: 
+(i) transformation of DT-generated time-domain signals into time -
+– frequency – energy representations, (ii) training of Convolutional Neu -
+ral Networks (CNNs) on the resulting image-based datasets, and (iii) 
+performance testing for automated classification of IRJ structural health 
+states.
+2.2.1. Training data and time – frequency feature construction
+Vertical displacement and gap value, defined as the relative longi -
+tudinal displacement between adjacent rails, were selected as primary 
+diagnostic variables. These indicators exhibit strong mechanical sensi -
+tivity to bolt preload loss and sleeper stiffness degradation, enabling 
+physically interpretable definition of structural health classes. Their 
+relevance is supported by previous numerical and experimental in -
+vestigations [15,16] and further demonstrated in Section 3 . Moreover, 
+both quantities are measurable in practice using modern sensing tech -
+nologies [53] , reinforcing the translational potential of the proposed 
+framework.
+For each of the six predictive maintenance case studies, DT outputs 
+were organised into labelled datasets representing discrete degradation 
+states. Each sample includes the corresponding wheel load, which is 
+explicitly incorporated into the neural architecture. This multimodal 
+configuration enables the classifier to distinguish load-induced varia -
+tions from degradation-induced effects, reducing the risk of mis -
+classifying high-load healthy states or low-load damaged states. Explicit 
+inclusion of operational load information avoids the need for substan -
+tially larger datasets to implicitly learn load effects from image features 
+alone.
+Each simulation covers 0.8 s, corresponding to wheel traversal of the 
+joint at 18 m/s. Signals were recorded at 1000 Hz, resulting in 800 time 
+samples per simulation. Time-domain responses were transformed into 
+time – frequency representations using both the Short-Time Fourier 
+Transform (STFT) and the Wavelet Transform (WT), generating spec -
+trograms and scalograms, respectively. Spectrograms provide fixed 
+resolution suitable for quasi-stationary components, while scalograms 
+exploit multi-resolution analysis to capture localized non-stationary 
+phenomena. These representations allow CNNs to automatically 
+extract degradation signatures without manual feature engineering.
+The STFT implementation employed a Hamming window of 
+approximately one quarter of the signal length with 50% overlap. The 
+FFT length was defined as the maximum between 256 and the next 
+power of two of the window size, ensuring adequate frequency resolu -
+tion while limiting spectral leakage. This configuration provided a 
+balanced compromise between temporal localisation of wheel – joint 
+Fig. 3. Frontal view of the bonded IRJ, with bolts numbered B1 – B4 and red probes marked on the surface. Sleepers near the IRJ, numbered S14 – S17, are highlighted, 
+with the full set numbered sequentially from S1 to S30. (For interpretation of the references to colour in this figure legend, the reader is referred to the web version of 
+this article.)
+G. Bianchi et al. Automation in Construction 190 (2026) 107102 
+5 
+interaction effects and frequency discrimination of stiffness-related 
+spectral shifts.
+For the WT-based scalograms, a filter bank was constructed for the 
+full 800-sample signal length. A discretisation of 12 voices per octave 
+was adopted to enhance frequency resolution while maintaining 
+computational efficiency. The analytic Morse wavelet was selected for 
+its robustness in capturing localized amplitude and frequency variations 
+in non-stationary mechanical signals. Boundary artefacts were mitigated 
+via signal reflection at the edges.
+Preliminary sensitivity checks were conducted on a reduced subset of 
+simulations by varying window length, overlap ratio, and analytic 
+wavelet selection within the same family. These variations did not 
+qualitatively alter class separability or relative model ranking, con -
+firming that diagnostic performance is not an artefact of singular 
+parameter tuning. Since the dataset is synthetically generated in a 
+controlled numerical environment without measurement noise, time -
+– frequency representations reflect exclusively the mechanically 
+modelled degradation mechanisms. The objective of this study is 
+therefore not optimisation of imaging parameters, but validation of a 
+physics-informed DT – AI integration framework. Extended sensitivity 
+analyses will become particularly relevant when synchronizing the DT 
+with laboratory and field measurements incorporating operational 
+variability.
+An 80/20 stratified split between training and testing datasets was 
+adopted for each case study, ensuring balanced representation of all 
+health classes. The total number of samples per scenario is reported in 
+Table 1 ( Section 3 ). The 20% hold-out subset was reserved exclusively 
+for evaluation on previously unseen data.
+The STFT and WT parameters were selected based on established 
+time – frequency analysis methodologies for non-stationary structural 
+signals [34 – 36] , balancing temporal and frequency resolution to capture 
+localized degradation effects while maintaining computational effi -
+ciency [54,55] . Preliminary sensitivity analyses confirmed that moder -
+ate variations in window length, overlap, and wavelet choice did not 
+materially affect class separability, consistent with prior studies on 
+vibration-based damage detection in railway components [56] .
+2.2.2. AI classification models
+All models were developed within the MATLAB ® environment, 
+which integrates signal processing, image analysis, and machine 
+learning toolboxes within a unified SHM-oriented workflow [57,58] . DT 
+simulation outputs were transformed into image-based representations 
+and processed using Deep CNN (DCNN) architectures designed to 
+accommodate both image inputs and operational features.
+The adopted network consists of an image input layer matching 
+spectrogram or scalogram dimensions, followed by a convolutional layer 
+with 5 × 5 kernels and 32 filters. Batch normalisation and a rectified 
+linear unit (ReLU) activation are applied to enhance convergence sta -
+bility. A fully connected layer with 50 neurons produces a compact 
+embedding of extracted features. The resulting feature vector, originally 
+in “ SSCB ” (spatial, spatial, channel, batch) format, is flattened, into “ CB ” 
+(channel, batch) format, and concatenated with the numerical wheel- 
+load input along the channel dimension. Final classification is per -
+formed through a fully connected layer with output size equal to the 
+number of health states, followed by a softmax layer to generate class 
+probabilities. A schematic representation is provided in Fig. 4 .
+Training was conducted using Stochastic Gradient Descent with 
+Momentum (SGDM) and cross-entropy loss. The training configuration 
+includes an initial learning rate of 1 × 10
+  4
+, mini-batch size of 15, and a 
+maximum of 20 epochs. Convergence stability was monitored during 
+training, and overfitting was mitigated through conservative hyper -
+parameter selection and balanced dataset partitioning. No adaptive 
+learning-rate scheduling was applied, as stable convergence was 
+consistently achieved under these settings.
+The architectural depth was intentionally limited. The objective of 
+this work is not benchmarking increasingly complex deep networks, but 
+validating a deployable DT – AI framework suitable for predictive 
+maintenance automation. Excessively deep architectures may increase 
+computational burden and reduce interpretability without proportion -
+ate diagnostic gains under mechanically structured datasets. The 
+selected configuration provides sufficient representational capacity to 
+capture localized degradation patterns while remaining computation -
+ally efficient and compatible with edge- or cloud-based monitoring 
+infrastructures.
+Two DL models were implemented using this architecture: STFT- 
+CNN and WT-CNN. In parallel, a supervised ML model was developed 
+using time-domain DT outputs. A medium-depth Decision Tree classifier 
+was selected as a transparent and computationally efficient baseline. 
+Because ML approaches require explicit feature engineering, gap value 
+and vertical displacement were directly used as input features. This 
+structured comparison enables assessment of feature-learning DL versus 
+feature-engineered ML within the same physics-informed dataset, sup -
+porting evaluation of scalability, interpretability, and automation 
+readiness rather than exhaustive classifier benchmarking.
+To further corroborate the robustness of the proposed framework, an 
+additional reference model based on a Support Vector Machine with 
+radial basis function (RBF) kernel was also implemented. The corre -
+sponding results are reported in Section 2 of Supplementary Material.
+2.2.3. Model validation strategy and generalization control
+Dataset partitioning followed an 80/20 stratified hold-out approach 
+for each predictive maintenance scenario. The testing subset was strictly 
+excluded from training and used solely for final generalization assess -
+ment on previously unseen data. Given the mechanically consistent 
+Table 1 
+Main characteristics of the six PdM case studies.
+Predictive 
+Model
+Objective Predictive Classes Predictive Parameters Wheel-loads 
+levels (kN)
+Dataset size 
+(samples)
+3.1 Model for predicting bolt preload conditions in a bonded IRJ 
+under 3 wheel-loading scenarios
+4 Classes based on bolt 
+preload conditions
+Gap Value 
+Vertical Displacement
+60/90/120 360
+3.2 Model for identifying bolt configurations in the “ warning ” 
+class of loosening
+5 Classes based on loosed bolt 
+configurations
+Gap Value 
+Vertical Displacement
+60 150
+3.3 Model for predicting SH conditions based on bolt loosening 
+and sleeper stiffness loss adjacent to the bonded IRJ
+6 Classes based on bolt 
+preload and/or sleeper 
+stiffness lost
+Gap Value 
+Vertical Displacement
+60/90 600
+3.4 Model for predicting the loss of sleeper stiffness in the 
+vicinity of the bonded IRJ
+6 Classes based on sleeper 
+stiffness lost
+Gap Value 
+Vertical Displacement
+60/90 480
+3.5 Model for predicting the loss of stiffness in Sleeper 8 by 
+measuring vertical displacement at 3 different positions
+2 Classes based on the loss of 
+stiffness in Sleeper 8
+Vertical Displacement 
+measured at sleepers 8, 11, and 
+14
+60/90 300
+3.6 Model for predicting the loss of stiffness in Sleeper 8 using 
+the vertical displacement profile of the entire railway 
+section at 5 different time instants
+2 Classes based on the loss of 
+stiffness in Sleeper 8
+Railway vertical displacement 
+Profile at 5 significant time 
+instants
+60/90 300
+G. Bianchi et al. Automation in Construction 190 (2026) 107102 
+6 
+nature of the DT simulations, the datasets exhibit high predictive 
+coherence and well-defined class separability, enabling stable conver -
+gence with moderate dataset sizes.
+Overfitting was mitigated through complementary strategies. For the 
+DCNN, a lightweight architecture was adopted (32 convolutional filters, 
+fully connected layer of size 50, MaxEpochs = 20, mini-batch size 15) to 
+balance representational capacity and computational efficiency. During 
+training, convergence behaviour was monitored using MATLAB's Vali -
+dationFrequency option, which evaluates model performance at fixed 
+intervals of 10 iterations (mini-batch updates). Importantly, these 
+evaluations are performed on mini-batches drawn from the training data 
+stream and are used exclusively for training diagnostics (i.e., tracking 
+loss and accuracy evolution). They do not constitute an independent 
+validation dataset and are not used for hyperparameter tuning or model 
+selection.
+Under this configuration, generalization is assessed through two 
+complementary mechanisms: (i) iterative monitoring of training dy -
+namics (loss and accuracy trends across mini-batches), ensuring stable 
+convergence without divergence or memorisation effects; and (ii) final 
+evaluation on the independent 20% hold-out test set, which provides an 
+unbiased estimate of predictive performance.
+For the decision-tree model, 5-fold cross-validation, consistent with 
+the approach adopted in [16] , was additionally implemented within 
+MATLAB's Classification Learner app to provide a standard robustness 
+check.
+A separate static validation set was not introduced as an additional 
+partition. In deep learning workflows, validation sets are primarily 
+required for hyperparameter optimisation and model selection [55,59] . 
+In the present study, model architecture and training parameters are 
+defined a priori and not iteratively tuned against validation perfor -
+mance. Moreover, the datasets are synthetically generated, physics- 
+informed, and noise-free, resulting in deterministic class structure and 
+reduced variance compared with typical data-driven applications. 
+Under these conditions, a two-way hold-out strategy provides a statis -
+tically consistent and computationally efficient framework for assessing 
+generalization without introducing unnecessary data fragmentation.
+The adopted 80/20 split remains consistent with established ma -
+chine learning practice for controlled datasets and provides an effective 
+balance between training sufficiency and unbiased evaluation [60,61] .
+Because the datasets are synthetically generated and noise-free, the 
+reported performance represents an upper-bound benchmark of intrinsic 
+mechanical separability. Equivalent performance under real operating 
+conditions cannot be assumed and will require progressive integration of 
+noise-contaminated and field-acquired data through hybrid virtual – -
+physical updating strategies.
+2.2.4. Performance testing
+Model performance was evaluated using standard classification 
+metrics, including accuracy (A), precision (P), recall (R), and F1-score 
+(F1), as defined in [16] . Accuracy quantifies overall correctness, preci -
+sion assesses reliability of positive predictions by limiting false positives, 
+recall measures detection completeness by minimizing false negatives, 
+and F1-score balances precision and recall.
+Performance assessment was further supported by confusion 
+matrices and receiver operating characteristic (ROC) curves. ROC 
+analysis illustrates the trade-off between true positive rate (TPR) and 
+false positive rate (FPR) across decision thresholds, while the area under 
+the curve (AUC) provides a scalar measure of discrimination capability, 
+with values approaching unity indicating superior separability [16] . 
+These evaluation criteria are widely adopted in SHM and related diag -
+nostic domains [35] .
+The integrated MATLAB ® workflow enables consistent preprocess -
+ing, training, and evaluation within the same computational environ -
+ment, ensuring methodological reproducibility and transparent 
+comparison between DL and ML approaches.
+3. Results
+The six case studies presented below progressively address 
+increasing levels of diagnostic complexity, from global bolt preload 
+assessment to coupled bolt – sleeper degradation and remote support 
+monitoring. The 6 predictive maintenance (PdM) strategies investi -
+gated, are summarized in Table 1 and detailed in the following sub -
+sections. They differ primarily in their PdM objectives: assessing joint 
+integrity under varying bolt preload conditions and evaluating sleeper- 
+stiffness degradation near the rail joint. Cases 3.1 and 3.2, which address 
+the PdM of bonded IRJs under variable bolt-preload conditions, 
+constitute a natural extension of the SHM framework originally intro -
+duced in [16] . Unlike the earlier formulation, where the DT was coupled 
+solely with a ML algorithm, these cases broaden the framework to 
+accommodate more complex operational scenarios.
+Following the development of the DT of the bonded IRJ ( Section 2.1 ), 
+FE simulations are performed to generate the datasets used in each 
+predictive approach. The number of simulations per model is reported in 
+Table 1 , with additional comments provided where relevant. Each 
+dataset is split into training (80%) and testing (20%) subsets, ensuring 
+balanced class distributions and wheel-load levels to support robust AI- 
+model training. In Cases 3.1 – 3.4, gap values and local vertical dis -
+placements near the joint serve as predictive indicators of structural 
+condition. In contrast, Cases 3.5 – 3.6 employ alternative monitoring 
+strategies that rely solely on vertical displacement.
+The resulting data are processed for labelling and conversion into 
+time-frequency representations, spectrograms and scalograms, used to 
+train and test the STFT-CNN and WT-CNN, respectively, or for pre -
+processing prior to input to the ML classifier. Table 1 also lists the 
+number of predictive classes and corresponding labels, which are fully 
+described in the individual subsections. Briefly, the safe class represents 
+IRJs with correct bolt preload and nominal sleeper conditions; classes 
+marked B* identify loosened-bolt configurations, while classes marked 
+S* denote sleepers with stiffness degradation ( Fig. 3 ).
+Model performance is evaluated using the metrics defined in Section 
+2.2.3 . Across all applications, the predictive models demonstrate high 
+accuracy, confirming both the maturity and practical relevance of the 
+proposed methodologies. These results further emphasize the strategic 
+importance of advancing digitalization and smart maintenance strate -
+gies for railway infrastructure. A comprehensive discussion of the results 
+is presented in Section 4 .
+Additional results obtained using an SVM – RBF reference model are 
+reported in Section 2 of Supplementary Material for completeness.
+Fig. 4. Schematic framework of the neural network.
+G. Bianchi et al. Automation in Construction 190 (2026) 107102 
+7 
+3.1. Bolt preload assessment under multiple wheel loads
+This case study investigates the capability of the proposed DT – AI 
+framework to identify progressive bolt-preload degradation in bonded 
+IRJs under varying operational loading conditions.
+3.1.1. Predictive objective and dataset preparation
+The model evaluates the structural health of bonded IRJs by ana -
+lysing bolt preload conditions under three wheel-loads (60, 90, and 120 
+kN). Digital Twin simulations yielded a balanced dataset of 360 samples 
+based on two predictive indicators: gap values and vertical displace -
+ments near the IRJ.
+Four structural health classes were defined based on mechanically 
+interpretable degradation states derived from the physics-informed 
+Digital Twin, consistent with the framework introduced in [16] . Class 
+boundaries were established by progressively reducing bolt preload and 
+analysing the resulting changes in joint stiffness, gap value, and vertical 
+displacement under wheel passage. The safe class corresponds to the 
+nominal assembly condition (75 kN preload per bolt). The warning and 
+risk classes represent controlled reductions to approximately 66.6% and 
+33.3% of nominal preload, respectively, modelling progressive 
+clamping-force loss and the associated reduction in joint flexural stiff -
+ness. The fault class represents severe degradation with two missing 
+bolts, producing marked alterations in load-transfer mechanisms.
+Multiple bolt layouts were analysed (e.g., central bolts B23, outer 
+bolts B14, alternating pairs B13/B24, individual-rail connections B12/ 
+B34, and the full set B1234). As supported by Table 3 , Figs. S1 – S2, and 
+the findings of [16] , these configurations produce similar feature sig -
+natures within each class, justifying their grouping. A more granular 
+classifier could detect specific loosened configurations but would 
+require additional training data, as explored in Section 3.2 .
+Digital Twin simulations revealed monotonic, mechanically 
+consistent amplification of gap values and vertical displacement with 
+decreasing preload, confirming progressive reduction of joint bending 
+stiffness and altered load-transfer mechanisms. These distinct response 
+patterns provide a robust basis for defining discrete structural health 
+classes suitable for supervised learning.
+Figs. 5 a and 6 a show representative gap and vertical displacement 
+responses under a 60 kN wheel load. Fig. 5 b – e presents spectrograms 
+and scalograms of gap values for safe and risk conditions, while Fig. 6 b – c 
+shows time – frequency analyses of vertical displacement in the safe case. 
+Numerical values at four critical wheel positions, P1 (first wheel on the 
+joint), P2 (wheels symmetric about the joint centreline), P3 (second 
+wheel on the joint), and P4 (residual displacement after both wheels at 
+0.7 s), are reported in Table 2 a – c and were used as ML training inputs 
+[16] . Both gap and vertical displacement increase monotonically with 
+decreasing preload, with the largest deviations occurring at P1 and P3 
+during direct wheel – joint interaction. At P2, the fault condition exhibits 
+distinct amplification relative to other classes.
+It is emphasized that the purpose of this classification is not to 
+establish field-ready maintenance thresholds, which would require 
+extensive experimental calibration and regulatory validation, but rather 
+to provide a structured and physically grounded representation of pro -
+gressive degradation states for DT – AI framework development.
+3.1.2. Evaluating predictive performance
+Classifier performance was evaluated using confusion matrices, 
+where diagonal entries indicate correct classifications [16,58] . Figs. 7 
+and 8 show matrices for STFT-CNN, WT-CNN, and Decision Tree clas -
+sifiers trained on gap values and vertical displacements, respectively, 
+while Table 3 a – b summarize associated performance metrics. Across all 
+models and inputs, predictive accuracy exceeds 90%, confirming both 
+the diagnostic relevance of the indicators and the robustness of the 
+DT – AI framework.
+Fig. 5. a Examples of gap value for the 4 structural health classes considering a wheel-load of 60 kN; b-e spectrograms and scalograms for safe and risk joints.
+G. Bianchi et al. Automation in Construction 190 (2026) 107102 
+8 
+Residual misclassifications occur exclusively between adjacent 
+health states (safe – warning and risk – fault), with no confusion between 
+mechanically distant conditions. For vertical displacement signals 
+( Fig. 8 ), confusion primarily arises from the limited structural influence 
+Fig. 6. a Examples of vertical displacement for the 4 structural health classes considering a wheel-load of 60 kN; b-c spectrogram and scalogram for a safe joint.
+Table 2 
+a – c Gap value and vertical displacement data, at significant positions of the wheels for the 4 structural health classes, considering a wheel-load of a 60 kN, b 90 kN, c 
+120 kN.
+Structural health classes Gap value [mm] Vertical displacement [mm]
+P1 P2 P3 P4 P1 P2 P3 P4
+Safe   0.170 0.079   0.186   0.006   2.040   0.567   2.241   0.054
+Warning   0.207 0.066   0.218   0.027   2.326   0.695   2.452   0.242
+Risk   0.237 0.064   0.251   0.040   2.528   0.671   2.646   0.313
+Fault   0.314 0.114   0.320   0.019   2.926   0.264   3.008   0.047
+Structural health classes Gap value [mm] Vertical displacement [mm]
+P1 P2 P3 P4 P1 P2 P3 P4
+Safe   0.352 0.063   0.351   0.074   3.600   1.163   3.717   0.429
+Warning   0.368 0.063   0.365   0.081   3.654   1.169   3.771   0.487
+Risk   0.406 0.109   0.401   0.065   3.952   0.743   3.994   0.295
+Fault   0.467 0.177   0.456   0.028   4.232   0.329   4.232   0.048
+Structural health classes Gap value [mm] Vertical displacement [mm]
+P1 P2 P3 P4 P1 P2 P3 P4
+Safe   0.452 0.090   0.447   0.095   4.751   1.528   4.790   0.555
+Warning   0.473 0.104   0.469   0.099   4.925   1.409   5.009   0.652
+Risk   0.534 0.175   0.515   0.062   5.199   0.771   5.189   0.213
+Fault   0.563 0.259   0.554   0.024   5.259   0.328   5.257   0.005
+Fig. 7. Confusion Matrix on Test Data of gap value for a STFT-CNN, b WT-CNN and c ML classifier.
+G. Bianchi et al. Automation in Construction 190 (2026) 107102 
+9 
+of outer bolts. Partial loosening (warning class) induces only marginal 
+amplification of quasi-static peaks associated with wheel – joint interac -
+tion (P1 and P3), producing time – frequency energy distributions closely 
+resembling those of the safe condition. Similarly, the risk-to-fault tran -
+sition mainly involves amplitude scaling rather than qualitative wave -
+form changes. Gap value signals ( Fig. 7 ) show comparable trends, where 
+separability is governed by monotonic variations in joint flexibility and 
+rail displacement.
+Most misclassifications appear above the main diagonal, indicating a 
+conservative tendency to overestimate degradation severity. Practically, 
+a safe joint classified as warning would trigger increased inspection, 
+whereas underestimation of severe damage is rare, and no fault condi -
+tion is misclassified as safe. This bounded error structure aligns with 
+predictive maintenance priorities, where avoiding missed critical de -
+fects outweighs occasional false alarms.
+ROC-curve analysis supports these observations: the STFT-CNN 
+achieves ideal performance (AUC = 1) for both indicators 
+( Figs. 9 – 10 ), while other models yield AUC values near unity, with 
+Fig. 8. Confusion Matrix on Test Data of vertical displacement for a STFT-CNN, b WT-CNN and c ML classifier.
+Table 3 
+a – b Testing performance indicators for classifiers based on a gap value, b vertical displacement data.
+Structural 
+health classes
+STFT-CNN WT-CNN ML
+Precision (%) Recall (%) F1-score (%) Precision (%) Recall (%) F1-score (%) Precision (%) Recall (%) F1-score (%)
+Safe 100 100 100 100 86.7 92.9 100 93.3 96.6
+Warning 100 100 100 83.3 100 90.9 93.3 93.3 93.3
+Risk 100 100 100 100 86.7 92.9 87.5 93.3 90.3
+Fault 100 100 100 93.8 100 96.8 93.3 93.3 93.3
+Accuracy (%) 100 93.3 93.3
+Structural 
+health classes
+STFT-CNN WT-CNN ML
+Precision (%) Recall (%) F1-score (%) Precision (%) Recall (%) F1-score (%) Precision (%) Recall (%) F1-score (%)
+Safe 100 100 100 92.9 86.7 89.7 100 93.3 96.6
+Warning 100 100 100 82.4 93.3 87.5 93.3 93.3 93.3
+Risk 100 100 100 100 80.0 88.9 93.3 93.3 93.3
+Fault 100 100 100 88.2 100 93.8 93.8 100 96.8
+Accuracy (%) 100 90.0 95.0
+Fig. 9. ROC curves for the tested a STFT-CNN, b WT-CNN and c ML classifier based on gap value data.
+G. Bianchi et al. Automation in Construction 190 (2026) 107102 
+10 
+operating points concentrated near (0,1). The fault class consistently lies 
+closest to this optimal region, demonstrating robust identification of 
+critical conditions. These results highlight the superior diagnostic 
+capability of DL models, which autonomously extract discriminative 
+features, while traditional ML approaches require more extensive 
+feature engineering [16] .
+3.1.3. Misclassification analysis and physical interpretation
+A qualitative analysis of classification errors confirms that mis -
+classifications arise from physically meaningful sources rather than 
+algorithmic deficiencies. Adjacent-class errors reflect the subtle impact 
+of partial bolt loosening and amplitude differences between neigh -
+bouring degradation levels. The Digital Twin generates mechanically 
+ordered degradation regimes, enabling classifiers to establish physically 
+interpretable decision boundaries.
+From a safety perspective, the error structure is predominantly 
+conservative, with rare underestimation of severe damage. False posi -
+tives (overestimating degradation) trigger precautionary inspection, 
+while false negatives (underestimating damage) are minimal. This 
+conservative bias ensures the framework's suitability for automated 
+predictive maintenance in safety-critical infrastructure, maintaining a 
+clear prioritization of operational safety over occasional inspection 
+redundancy.
+3.1.4. Transferability and robustness under real-world uncertainty
+The near-perfect classification performance reported in Sections 
+3.1.2 – 3.1.3 is an upper-bound benchmark, reflecting mechanically 
+consistent, noise-free Digital Twin simulations. Real-world variability, 
+including sensor noise, placement tolerances, material heterogeneity, 
+environmental effects, and vehicle – track interaction fluctuations, may 
+partially reduce feature separability and increase misclassification rates, 
+particularly for adjacent degradation states (e.g., safe vs. early- 
+warning).
+Nevertheless, the primary degradation mechanisms, bolt preload loss 
+and associated stiffness reduction, are well-established drivers of IRJ 
+deterioration and are accurately reproduced by the validated Digital 
+Twin. Prior experimental studies [16] demonstrate that classifiers 
+trained on such synthetic data retain predictive relevance under real 
+measurements, providing initial evidence of transferability.
+The Digital Twin thus serves as a structured baseline for physically 
+interpretable, systematically labelled training, enabling robust feature 
+learning before exposure to operational uncertainties. Future de -
+velopments will integrate laboratory and field measurements via hybrid 
+virtual – physical updating and transfer-learning strategies, progressively 
+introducing noise and environmental variability. This staged approach is 
+expected to enhance model generalization while preserving mechanical 
+interpretability.
+Accordingly, the results presented in this section demonstrate 
+intrinsic separability of degradation states under controlled conditions, 
+providing a reproducible benchmark for subsequent field validation and 
+operational deployment.
+3.2. Identification of bolt-loosening configurations within the warning 
+class
+This case study extends the analysis to finer-grained diagnostics by 
+evaluating the ability of the framework to discriminate among different 
+bolt-loosening configurations within the same degradation class.
+3.2.1. Predictive objective and dataset preparation
+The model targets a finer-grained diagnosis within the warn

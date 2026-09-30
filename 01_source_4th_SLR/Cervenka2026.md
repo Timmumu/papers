@@ -14,7 +14,6 @@ Artificial Intelligence (AI), with particular emphasis on Artificial Neural Netw
 
 **Note:** ANN surrogate DT for bridge SHM; safety info
 
-
 ## Step-3 Deep-Read Coding (Prompt B)
 | P DT-subject | Q DfS/DfQ | R codable | U Tier | V Design | W Constr | X Oper | Z DfX | AA Self-improve | AB Methodology | AC Modality | AD Validation | AE QA(0-5) | AF Cluster |
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|

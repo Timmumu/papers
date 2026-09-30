@@ -13,3 +13,20 @@ Offshore high-pile wharves operate under harsh, variable loads that can mask the
 | Yes | Yes | Yes | Yes | Yes | **Include** |
 
 **Note:** Offshore high-pile wharf SHM with physics DT; safety
+
+## Step-3 Deep-Read Coding (Prompt B)
+| P DT-subject | Q DfS/DfQ | R codable | U Tier | V Design | W Constr | X Oper | Z DfX | AA Self-improve | AB Methodology | AC Modality | AD Validation | AE QA(0-5) | AF Cluster |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| Yes | Yes | Yes | Tier 2 - Digital Shadow (one-way physical to virtual) | 0 | 0 | 1 | Design for Safety (DfS) | Implemented | Other / Mixed | Multi (two or more data types) | Single case study | 4 | Predictive analytics / decision support |
+
+| AC1 fusion depth | AC2 fusion evidence | AC3 confidence |
+|---|---|---|
+| Fused | VAE anomaly scores are fused with CNN-GNN classifier outputs into window-level damage probabilities, and diagnostics are assimilated with physics via EKF into one twin state. | High |
+
+**Key evidence (AG):** Closed-loop SHM digital twin for offshore high-pile wharves (Islamic Azad U/WSSET, Future Cities and Environment 2026): 12-month field deployment instrumented six piles with triaxial accelerometers and strain gauges (GPS-synchronised, 100 Hz); unsupervised VAE anomaly score fused with CNN-GNN classifier for window-level damage probabilities and pile-by-elevation localisation; DT assimilates diagnostics via weighted least squares + EKF with model-uncertainty-derived covariance; what-if simulations quantify repair consequences; F1 0.95, AUC-ROC 0.98, false-alarm 2-5%, median detection latency ~45 s; online updating reduces frequency bias 4.8%->0.9% and raises mode-shape MAC 0.81->0.92. Monitoring->diagnostics->risk-informed maintenance planning (no actuation); online model updating implemented, no convergence criterion.
+
+*Full-text source: browser-oa*
+
+**AH — strength & gap filled:** Closes the loop between multimodal DL diagnostics and continuous physics-based model updating on a real operating wharf: EKF assimilation with field-derived uncertainty cuts frequency bias to 0.9% and lifts MAC to >=0.92, with 45 s median detection latency and 2-5% false alarms.
+
+**AI — deficiencies & future work:** Single wharf deployment; VAE-CNN-GNN fusion weights and EKF tuning details partially reported; what-if repair scenarios are diagnostic, not actuated; long-term drift under extreme storms unverified.

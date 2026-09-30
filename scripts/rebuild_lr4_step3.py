@@ -127,6 +127,8 @@ def miss_reason(r):
     v = cov.get(str(r), {})
     if not v:
         return 'not staged'
+    if v.get('status') == 'verified':
+        return 'full text retrieved (Step-3 coding pending)'
     if v.get('status') == 'no-candidate':
         return 'no matching PDF in Endnote library'
     if v.get('status') == 'unverified':

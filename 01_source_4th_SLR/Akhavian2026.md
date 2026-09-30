@@ -13,3 +13,20 @@ This paper introduces BIM2RDT (Building Information Models to Robot-Ready Constr
 | Yes | Yes | Yes | Yes | Yes | **Include** |
 
 **Note:** BIM2RDT robot-ready DT; safety monitoring + path planning
+
+## Step-3 Deep-Read Coding (Prompt B)
+| P DT-subject | Q DfS/DfQ | R codable | U Tier | V Design | W Constr | X Oper | Z DfX | AA Self-improve | AB Methodology | AC Modality | AD Validation | AE QA(0-5) | AF Cluster |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| Yes | Yes | Yes | Tier 2 - Digital Shadow (one-way physical to virtual) | 0 | 1 | 0 | Design for Safety (DfS) | None | Other / Mixed | Multi (two or more data types) | Simulation | 4 | Perception / Computer Vision |
+
+| AC1 fusion depth | AC2 fusion evidence | AC3 confidence |
+|---|---|---|
+| Fused | BIM geometry, UGV visual observations and IoT/HAV sensing are fused in the twin, with semantic activity layers written to IFC. | Medium |
+
+**Key evidence (AG):** BIM2RDT pipeline (SDSU/UCSD, AutCon 2026): transforms static BIM into robot-ready construction digital twins; Semantic-Gravity ICP uses LLM-guided semantic reasoning to assign BIM-family-specific upright priors for low-feature scan-to-BIM registration (RMSE reduced 60-97% in high-noise controlled experiments); YOLOE open-vocabulary detection conditions perception; HAV vibration sensing written into IFC-compatible twin (IfcEvent/IfcTask) feeds context-aware cost maps for safety-aware robot path planning. Sensing->twin->planning loop with IFC updates, but robot actuation not demonstrated (navigation constraints proposed); controlled experiments only; no learning loop.
+
+*Full-text source: browser-oa*
+
+**AH — strength & gap filled:** Semantic-Gravity ICP with LLM-inferred upright priors cuts registration RMSE by 60-97% in low-feature scenes, and the BIM2RDT loop writes sensor-detected safety activities (HAV) into IFC for context-aware robot planning.
+
+**AI — deficiencies & future work:** Controlled experiments without real construction-site robots; LLM orchestration is narrow/bounded (no long-horizon autonomy); actuation not demonstrated; generalisation across site types untested.

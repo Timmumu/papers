@@ -13,3 +13,12 @@ Engineer-to-order manufacturing, characterized by highly customized products and
 | Yes | Yes | Yes | Yes | Yes | **Include** |
 
 **Note:** DT design for ETO prefab warehouse optimization and safety
+
+## Step-3 Deep-Read Coding (Prompt B)
+| P DT-subject | Q DfS/DfQ | R codable | U Tier | V Design | W Constr | X Oper | Z DfX | AA Self-improve | AB Methodology | AC Modality | AD Validation | AE QA(0-5) | AF Cluster |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| No | Yes | No | Stage-2 Exclude |  |  |  |  |  |  |  |  |  |  |
+
+**Key evidence (AG):** Design methodology for a warehouse digital twin in engineer-to-order manufacturing (Focchi S.p.A., Applied Sciences 2024): in-depth stakeholder/user-requirement analysis of the Focchi warehouse defines how BIM + IoT + AI would support outdoor warehouse optimization and worker safety, but the paper states preliminary testing results are not yet available - no DT is implemented or evaluated. P=No, R=No -> Stage-2 exclude.
+
+*Full-text source: browser-oa*

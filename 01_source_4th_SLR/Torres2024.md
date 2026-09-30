@@ -14,7 +14,6 @@ Construction sites are highly unpredictable environments involving a wide variet
 
 **Note:** Building DT platform automating site management incl. OHS/QC
 
-
 ## Step-3 Deep-Read Coding (Prompt B)
 | P DT-subject | Q DfS/DfQ | R codable | U Tier | V Design | W Constr | X Oper | Z DfX | AA Self-improve | AB Methodology | AC Modality | AD Validation | AE QA(0-5) | AF Cluster |
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|

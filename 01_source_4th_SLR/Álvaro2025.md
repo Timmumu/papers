@@ -14,7 +14,6 @@ This paper describes the implementation of a digital twin for buildings to enhan
 
 **Note:** GUIDE2FR firefighter tower DT; emergency safety
 
-
 ## Step-3 Deep-Read Coding (Prompt B)
 | P DT-subject | Q DfS/DfQ | R codable | U Tier | V Design | W Constr | X Oper | Z DfX | AA Self-improve | AB Methodology | AC Modality | AD Validation | AE QA(0-5) | AF Cluster |
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|

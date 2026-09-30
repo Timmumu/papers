@@ -13,3 +13,20 @@ The paper introduces a real-time digital-twin controller that manages evacuation
 | Yes | Yes | Yes | Yes | Yes | **Include** |
 
 **Note:** Hazard-aware evacuation DT controller; life safety
+
+## Step-3 Deep-Read Coding (Prompt B)
+| P DT-subject | Q DfS/DfQ | R codable | U Tier | V Design | W Constr | X Oper | Z DfX | AA Self-improve | AB Methodology | AC Modality | AD Validation | AE QA(0-5) | AF Cluster |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| Yes | Yes | Yes | Tier 3 - Digital Twin (bidirectional, two-way) | 0 | 0 | 1 | Design for Safety (DfS) | None | Other / Mixed | Multi (two or more data types) | Simulation | 4 | Design for Safety |
+
+| AC1 fusion depth | AC2 fusion evidence | AC3 confidence |
+|---|---|---|
+| Fused | Predicted hazard fields, congestion estimates and energy states are fused in one receding-horizon routing-plus-dispatch controller. | Medium |
+
+**Key evidence (AG):** Hazard- and fairness-aware evacuation digital-twin controller with grid-interactive emergency energy management (U Tabuk, Sustainability 2026): physics-based advection-diffusion-decay surrogate predicts smoke/temperature fields from sensor data; router manages per-user path updates with exposure caps and fairness weights for vulnerable occupants; receding-horizon energy dispatcher regulates PV/battery/diesel/grid to sustain life-safety loads; auditable policy knobs; co-simulation across layouts outperforms AI/RL baselines on T95/worst-case exposure and event energy/CO2 while meeting all constraints. Twin actively dispatches energy resources (virtual-to-physical control) -> Tier 3; co-simulation validation only; no learning loop.
+
+*Full-text source: browser-oa*
+
+**AH — strength & gap filled:** Jointly optimises evacuation routing fairness and emergency energy dispatch with an auditable surrogate-based controller that beats AI/RL baselines on worst-case egress and event emissions.
+
+**AI — deficiencies & future work:** Co-simulation only (no hardware/real building); surrogate fidelity vs FDS not fully quantified; human compliance with routing guidance assumed.

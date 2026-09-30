@@ -13,3 +13,12 @@ Advanced rail transit systems (ARTS), including high-speed rail and maglev train
 | Yes | Yes | Yes | Yes | Yes | **Include** |
 
 **Note:** Digital shadows to DTs for rail transit SHM survey
+
+## Step-3 Deep-Read Coding (Prompt B)
+| P DT-subject | Q DfS/DfQ | R codable | U Tier | V Design | W Constr | X Oper | Z DfX | AA Self-improve | AB Methodology | AC Modality | AD Validation | AE QA(0-5) | AF Cluster |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| No | Yes | No | Stage-2 Exclude |  |  |  |  |  |  |  |  |  |  |
+
+**Key evidence (AG):** Comprehensive literature survey on digital shadows and digital twins for structural health monitoring of advanced rail transit systems (Advanced Engineering Informatics 2024): reviews enablers, capabilities, benefits and bottlenecks, and proposes a DT-based monitoring framework for ARTS, but builds/evaluates no DT itself. P=No, R=No -> Stage-2 exclude.
+
+*Full-text source: browser-oa*

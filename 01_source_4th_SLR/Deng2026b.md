@@ -13,3 +13,20 @@ Effective management and safe operation of tunnel infrastructure are critically 
 | Yes | Yes | Yes | Yes | Yes | **Include** |
 
 **Note:** Vision-driven tunnel DT for situation/emergency awareness
+
+## Step-3 Deep-Read Coding (Prompt B)
+| P DT-subject | Q DfS/DfQ | R codable | U Tier | V Design | W Constr | X Oper | Z DfX | AA Self-improve | AB Methodology | AC Modality | AD Validation | AE QA(0-5) | AF Cluster |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| Yes | Yes | Yes | Tier 2 - Digital Shadow (one-way physical to virtual) | 0 | 0 | 1 | Design for Safety (DfS) | None | Transformer / Large Language Model (LLM) | Single (one data type) | Single case study | 4 | Perception / Computer Vision |
+
+| AC1 fusion depth | AC2 fusion evidence | AC3 confidence |
+|---|---|---|
+| Fused | CCTV vision feeds both the TRIM tracking and the fire-detection module in one platform (single modality, multi-task). | High |
+
+**Key evidence (AG):** Vision-driven dynamic tunnel digital twin (PolyU, Underground Space 2026): leverages existing CCTV networks to synchronously update a high-fidelity virtual tunnel; Tunnel Re-identification Model (TRIM, transformer-based) achieves state-of-the-art mAP@10 0.684 for cross-camera vehicle tracking, outperforming CNNs and standard ViT backbones; coupled vision fire-detection module localises and visualises emergent tunnel fires in the twin. Explicitly a data-fusion/perception layer rather than a fully automated closed-loop twin; one-way vision->situational awareness for operators; no actuation, no learning loop.
+
+*Full-text source: browser-oa*
+
+**AH — strength & gap filled:** Reuses existing CCTV with a transformer Re-ID (mAP@10 0.684) and vision fire detection to keep the tunnel twin synchronised, avoiding hardware redevelopment and improving operator situational judgment.
+
+**AI — deficiencies & future work:** Perception layer only - no automated control; Re-ID validated on datasets with deployment described rather than benchmarked; fire module performance metrics partial.

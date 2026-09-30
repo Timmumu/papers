@@ -13,3 +13,20 @@ Disasters, both natural and man-made, pose significant challenges that necessita
 | Yes | Yes | Yes | Yes | Yes | **Include** |
 
 **Note:** DT common operating picture for seismic disaster response
+
+## Step-3 Deep-Read Coding (Prompt B)
+| P DT-subject | Q DfS/DfQ | R codable | U Tier | V Design | W Constr | X Oper | Z DfX | AA Self-improve | AB Methodology | AC Modality | AD Validation | AE QA(0-5) | AF Cluster |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| Yes | Yes | Yes | Tier 2 - Digital Shadow (one-way physical to virtual) | 0 | 0 | 1 | Design for Safety (DfS) | None | Digital Twin platform (no machine learning) | Multi (two or more data types) | Single case study | 3 | Lifecycle / governance |
+
+| AC1 fusion depth | AC2 fusion evidence | AC3 confidence |
+|---|---|---|
+| Fused | BIM models and seismic hazard assessments are fused with real-time sources in the COP twin. | Medium |
+
+**Key evidence (AG):** Digital twin as a common operating picture for seismic disaster management (Gebze Technical University, ISPRS IJGI 2024): 3D core model of Kocaeli integrates BIM and seismic hazard assessments with real-time data from various sources; DT-COP framework enhances situational awareness and resource allocation during response; challenges in data accuracy, integration and interoperability acknowledged. Decision-support orientation, no actuation.
+
+*Full-text source: browser-oa*
+
+**AH — strength & gap filled:** DT-COP integration for the Kocaeli case shows enhanced situational awareness and resource allocation for seismic response.
+
+**AI — deficiencies & future work:** Challenges in data accuracy/integration/interoperability acknowledged; quantitative evaluation limited.

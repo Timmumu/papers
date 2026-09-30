@@ -1,0 +1,903 @@
+1
+A Knowledge-Based Approach to UAV Path Planning for 
+Bridge Maintenance in a Digital Twin Environment
+Naufal Budi Laksono1, Yusuf Latief1, Bambang Trigunarsyah2, Kim 
+Sunkuk3, Nyoman Suaryana4
+1Department of Civil Engineering, University of Indonesia, Jakarta Indonesia
+2School of Property and Project Management, RMIT University, Melbourne Australia
+3School of Architecture Kyung Hee University, South Korea
+4Institut of Road Engineering Ministry of Public Works and Housing Indonesia
+Abstract: Unmanned aerial vehicles (UAVs) are increasingly used for bridge inspection to reduce hazardous 
+access and improve scalability. Routes are often manual or coverage-driven, and the collected imagery is not 
+always comparable or aligned with maintenance decision needs. This study proposes a knowledge-based UAV 
+path planning approach that converts maintenance intent into executable and repeatable inspection routes. The 
+method integrates element-level maintenance knowledge from field inspection and maintenance records encoded 
+as priority weights and viewing requirements with BIM derived bridge geometry to generate candidate viewpoints 
+and element specific inspection patterns for substructure and superstructure. Viewpoints are evaluated using a 
+maintenance-weighted utility function. A case study on a conventional concrete box-girder toll-road bridge 
+compares the approach with three baselines manual rule-of-thumb, a coverage only planner, and a robustness 
+oriented feasibility proxy. Results show routes that remain traceable to maintenance priorities and support cycle-
+to-cycle repeatability for continuous inspection planning. 
+Keywords: Bridge Inspection; Bridge Maintenance; UAV Path Planning; Knowledge-Based Planning; BIM; 
+Digital Twin; Viewpoint Selection; Repeatable Inspection Routes
+I.Introduction
+Bridges are critical components of transportation networks, and their long-term performance 
+strongly depends on effective inspection and maintenance strategies. Aging infrastructure, increasing 
+traffic demand, and environmental exposure have significantly intensified the need for reliable and 
+timely bridge condition assessment (Agredo Chávez et al., 2024; Mishra et al., 2022). Conventional 
+bridge inspections are predominantly based on manual visual surveys, which are time-consuming, 
+costly, and often limited by accessibility and safety constraints, particularly for hard-to-reach 
+components such as bridge decks, girders, bearings, and piers (Gucunski et al., 2015; Ye, 2020, 2022).
+In recent years, unmanned aerial vehicles (UAVs) have emerged as a promising alternative for bridge 
+inspection, offering improved accessibility, reduced inspection time, and enhanced safety for inspectors 
+(Aliyari, 2022; Ayele, 2020). Equipped with high-resolution cameras and stabilized platforms, UAVs 
+enable close-range visual inspection without the need for scaffolding, traffic closures, or specialized 
+access equipment (Ameli, 2022; Biscarini, 2020). Consequently, UAV-based inspection has been 
+increasingly adopted in both research and practice for bridge condition assessment and monitoring.
+Alongside the growing use of UAVs, significant research efforts have focused on automated damage 
+detection using computer vision and artificial intelligence techniques. Deep learning-based methods 
+have demonstrated strong capabilities in detecting cracks, spalling, corrosion, and other surface defects 
+from UAV-acquired images (Hu et al., 2024; Kao, 2023; Luciw et al., 2024). While these approaches 
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=6239751
+Preprint not peer reviewed
+2
+have substantially improved post-processing and interpretation of inspection data, they largely assume 
+that inspection data are already available and of sufficient quality. The flight planning process that 
+determines where and how inspection data are collected often remains manual or only loosely defined.
+Existing UAV flight planning strategies for infrastructure inspection are commonly based on generic 
+coverage path planning or viewpoint optimization principles originally developed for mapping, 
+photogrammetry, or robotic exploration tasks (Aela, 2024; Fang, 2024; Hildmann & Kovacs, 2019). 
+These methods typically aim to maximize surface coverage or minimize flight time and energy 
+consumption. Although effective for geometric data acquisition, such approaches do not explicitly 
+account for bridge maintenance objectives, such as the prioritization of critical structural components 
+or the need for consistent inspection viewpoints across multiple inspection cycles (Falorca, 2021; Ri, 
+2024).
+More recent studies have attempted to tailor UAV path planning to bridge inspection scenarios by 
+considering environmental constraints, complex geometries, or specific structural configurations. For 
+example, research has addressed UAV navigation under bridge decks with limited GNSS availability 
+(Shults et al., 2023), wind-aware path planning for long-span bridges (Xu, 2021), and surface-specific 
+inspection of bridge substructures (Omar & Nehdi, n.d.). Despite these advances, most existing 
+approaches remain predominantly geometry-driven, focusing on obstacle avoidance and surface 
+coverage rather than inspection relevance from a maintenance perspective.
+Parallel to developments in UAV inspection, the field of bridge maintenance has seen increasing 
+interest in knowledge-based systems and decision support tools. Knowledge graphs, ontologies, and 
+data-driven frameworks have been proposed to organize maintenance knowledge, defect characteristics, 
+and decision rules in a structured manner (Gao et al., 2024; Hoang, 2021). More recently, advanced 
+reasoning frameworks integrating large language models with bridge maintenance knowledge graphs 
+have demonstrated the potential to support expert-level maintenance decision-making (Wang et al., 
+2026). These studies highlight the importance of domain knowledge in guiding maintenance actions but 
+generally focus on diagnosis and recommendation rather than the operational execution of inspections.
+As a result, a critical gap remains between maintenance knowledge and UAV-based inspection 
+planning. Current UAV inspection workflows rarely incorporate maintenance knowledge, such as 
+component criticality, historical damage patterns, or inspection requirements, into the path planning 
+process. Consequently, inspection routes are often inconsistent across inspection cycles, limiting their 
+usefulness for long-term monitoring and maintenance planning (Yeum & Dyke, 2015).
+To address this gap, this study proposes a knowledge-based approach to UAV path planning for 
+bridge inspection and maintenance. The proposed approach integrates maintenance knowledge with 
+bridge geometry to define inspection objectives and generate UAV flight paths that are inspection-
+oriented, maintenance-relevant, and repeatable. By shifting the focus from generic coverage to 
+knowledge-informed inspection planning, the proposed framework aims to support continuous bridge 
+inspection and provide a practical foundation for long-term maintenance-oriented UAV deployment.
+II.Background and Related Work
+2.1 UAV-Based Bridge Inspection in a Maintenance Context
+ Over the last five years, UAV-based bridge inspection has increasingly been discussed not only 
+as a safer alternative to conventional access methods, but also as a pathway to make inspections faster 
+and more scalable. Recent application reviews report that drones can capture close-range imagery for 
+components that are otherwise difficult to access—such as the underside of decks, substructures, and 
+elevated superstructure elements—while reducing the need for traffic closures or risky manual access 
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=6239751
+Preprint not peer reviewed
+3
+(Panigati et al., 2025). This gradual shift from ad hoc deployment toward more routine use is reflected 
+in the recent trajectory of the field, where attention has moved from demonstrating feasibility to 
+improving consistency and operational readiness (see Figure 1).
+Fig. 1. Evolution of UAV-based bridge inspection over the last five years
+At the same time, the literature makes it clear that inspection value is determined by more than the 
+mere availability of drone imagery. Several studies emphasize that UAV inspection outcomes can vary 
+widely because of differences in flight execution, camera-to-surface distance, viewing angles, and 
+lighting conditions, particularly around shaded regions or complex geometries (Hou et al., 2022; 
+Panigati et al., 2025). These findings highlight a practical challenge that is often understated in 
+technology-driven demonstrations: unless data acquisition is performed in a consistent manner, it 
+becomes difficult to compare condition information across inspection cycles and to use UAV outputs 
+reliably for maintenance planning.
+A parallel stream of research has focused on image-based defect interpretation, where deep 
+learning and related computer vision techniques are used to identify cracks and surface damage from 
+captured imagery. This line of work has produced promising results and continues to mature rapidly 
+(Aliyari et al., 2021). However, these advances typically assume that the input imagery already satisfies 
+inspection needs in terms of resolution, visibility, and coverage. In practice, the quality and relevance 
+of the data depend heavily on how the drone is guided during inspection, including whether the UAV 
+repeatedly captures comparable viewpoints and meets inspection-specific viewing requirements. As a 
+result, recent reviews increasingly point to flight planning and operational standardization as limiting 
+factors for turning UAV inspection from a one-off assessment into a repeatable maintenance-support 
+workflow (Hou et al., 2022; Panigati et al., 2025).
+In maintenance settings, repeatability and prioritization become especially important. Unlike 
+exploratory surveys, bridge inspections are expected to support consistent condition tracking over time 
+and to focus effort where it matters most for maintenance decisions. The emerging consensus is that 
+UAV inspection will be most valuable when it can consistently capture comparable viewpoints and 
+sufficiently detailed observations for maintenance-critical components, rather than simply maximizing 
+generic surface coverage (Hou et al., 2022; Toriumi et al., 2022). This maintenance perspective 
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=6239751
+Preprint not peer reviewed
+4
+motivates the need for planning approaches that move beyond manual route definition and toward more 
+systematic, objective-driven flight planning—an evolution that the 2021–2025 literature increasingly 
+anticipates and that this study addresses through a knowledge-based planning perspective (Figure 1).
+2.2 UAV Path Planning for Bridge Inspection
+Research on UAV path planning for bridge inspection has grown alongside the wider adoption 
+of drones in infrastructure monitoring. Much of this work starts from a practical observation: even when 
+a drone platform and camera are suitable for inspection, the usefulness of the collected data depends 
+strongly on where the UAV flies, how it approaches each component, and how consistently viewpoints 
+can be reproduced. As a result, many recent studies formulate path planning as a combination of 
+viewpoint selection and route optimization, typically aiming to reduce redundant observations while 
+maintaining adequate coverage and feasible maneuvering around complex bridge geometries (Li et al., 
+2025).
+Several contributions have emphasized coverage- and efficiency-oriented planning, where the 
+primary objective is to maximize inspected surface area or minimize flight time and path length. This 
+direction is often motivated by limited battery endurance and the need to complete inspections within 
+operational constraints. In bridge contexts, the focus has been placed on distributing viewpoints to 
+reduce overlap and avoid unnecessarily sharp turns, which can improve both flight stability and practical 
+field execution (Li et al., 2025). Such approaches provide important foundations for operational 
+feasibility, especially when inspection tasks are framed as surface coverage problems.
+Another line of work has sought to address bridge-specific operational challenges that cannot be 
+captured by generic coverage formulations. Environmental disturbance, particularly wind effects, has 
+been incorporated into planning and evaluation to improve route realism for long-span bridges and 
+exposed conditions (Xu & Dai, 2024). In addition, the GNSS shadowing that frequently occurs beneath 
+bridge decks and near substructures has motivated planning strategies that account for navigation 
+limitations and operational modes, recognizing that feasible inspection routes may require different 
+behaviors under degraded positioning conditions (Wang, 2024). These studies improve robustness by 
+acknowledging that bridges are not open, ideal environments for UAV navigation.
+2.3 Knowledge-Based Bridge Maintenance, Gaps, and Research Positioning
+Bridge maintenance research increasingly uses knowledge graphs and ontologies to structure 
+components, defects, inspection records, and maintenance actions for more consistent retrieval and 
+decision support (Zhang et al., 2023). Recent studies extend this by enriching maintenance knowledge 
+from textual records and formalizing actionable preservation rules, while LLM-assisted reasoning has 
+been introduced to emulate expert workflows over maintenance knowledge graphs (Gao et al., 2024; 
+He et al., 2024; Wang et al., 2026). However, these approaches still largely produce diagnosis or 
+recommendations rather than executable inspection actions. This leaves a clear gap in translating 
+maintenance knowledge into inspection objectives and repeatable UAV routes for continuous 
+inspection and maintenance planning, as summarized in Table 1. 
+Table 1. Systematic Mapping of Recent Studies and the Research Gap
+Cluster Representative 
+studies Primary focus Mechanism
+Key limitation for 
+maintenance-oriented UAV 
+planning
+UAV bridge 
+inspection practice 
+& reviews
+Panigati et al. 
+(2025); Toriumi 
+et al. (2022)
+Workflows, 
+limitations, 
+adoption
+Review synthesis
+Repeatable routing and 
+maintenance linkage not fully 
+formalized
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=6239751
+Preprint not peer reviewed
+5
+UAV + vision-based 
+defect analysis
+Aliyari et al. 
+(2021)
+Defect detection 
+from UAV 
+imagery
+Deep learning
+Assumes “good” inspection 
+data; planning stage often 
+external/manual
+Bridge 
+coverage/viewpoint 
+optimization
+Li et al. (2025)
+Reduce 
+redundancy & 
+improve 
+efficiency
+Viewpoint 
+optimization + 
+routing
+Maintenance intent 
+(criticality/requirements) not 
+explicit
+Environmental-
+aware path planning Xu & Dai (2024) Wind effects on 
+feasible routes
+Wind-aware cost 
+modeling
+Mostly feasibility/efficiency-
+driven; limited maintenance 
+prioritization
+GNSS-denied 
+substructure 
+inspection
+Kim & Youn 
+(2025)
+Under-bridge 
+GNSS shadowing
+Operational-mode 
+planning
+Focus on navigation feasibility; 
+inspection objectives still 
+generic
+Bridge maintenance 
+knowledge base 
+(KG)
+Zhang et al. 
+(2023)
+Structuring 
+maintenance 
+knowledge
+Knowledge graph
+Focus on 
+representation/retrieval; not 
+tied to UAV execution
+Knowledge-driven 
+maintenance 
+decisions
+Jiang et al. 
+(2023)
+Holistic 
+maintenance 
+support
+Semantic reasoning 
++ ML links
+Operational inspection 
+execution not addressed
+LLM-assisted 
+maintenance 
+reasoning
+Wang et al. 
+(2026)
+Expert-like 
+reasoning over 
+maintenance KG
+KG + LLM CoT 
+reasoning
+Emphasis on recommendation 
+rather than executable UAV 
+inspection plans
+Maintenance-
+informed UAV path 
+planning
+Laksono et al. 
+(2026)
+Knowledge-
+based UAV path 
+planning for 
+bridge 
+inspection and 
+maintenance
+Maintenance 
+knowledge → 
+inspection 
+objectives; 
+geometry-informed 
+inspection 
+patterns; 
+repeatable route 
+generation
+Addresses the translation gap 
+by producing executable, 
+repeatable UAV inspection 
+paths aligned with 
+maintenance priorities
+UAV inspection and planning studies have improved feasibility and robustness in bridge 
+environments, addressing factors such as wind, GNSS shadowing, and viewpoint redundancy, and some 
+work has linked UAV trajectories to digital-twin or bridge management workflows (Bono et al., 2022). 
+However, these approaches rarely formulate planning as the translation of maintenance knowledge into 
+explicit inspection objectives, so routes are still largely derived from geometric and operational 
+considerations while maintenance knowledge remains separate. Taken together, the literature points to 
+a gap in connecting knowledge-based maintenance systems with UAV path planning through an explicit 
+pipeline that maps component criticality, inspection requirements, and condition history into executable 
+and repeatable routes. This study addresses that gap through a knowledge-based planning approach that 
+uses maintenance intent to define inspection objectives and combines it with bridge geometry and UAV 
+constraints to generate feasible, element-appropriate routes that remain consistent across inspection 
+cycles.
+III. PROPOSED FRAMEWORK
+3.1 Framework Overview 
+This study proposes a knowledge-based framework for UAV path planning that is intended to 
+support bridge inspection as a repeatable input to maintenance planning. The framework is designed 
+around a simple premise: inspection routes should not be derived solely from geometric coverage or 
+operational convenience, but should reflect maintenance intent by prioritizing maintenance-critical 
+components and meeting inspection-specific viewing requirements. Figure 2 illustrates the overall 
+workflow and the information flow between its main elements.
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=6239751
+Preprint not peer reviewed
+6
+Fig. 2. Overview Proposed Framework 
+The framework takes three primary inputs. First, it requires a representation of bridge geometry 
+that enables element-level inspection planning, such as decks, girders, piers, and other substructure 
+regions. This geometry can be obtained from different sources depending on data availability, including 
+a simplified structural model, a surface model derived from point clouds, or geometry extracted from a 
+BIM environment; the framework does not depend on a single data format as long as the geometry can 
+be represented in an inspection-relevant way. Second, the framework incorporates maintenance 
+knowledge as prior information that captures inspection priorities and requirements. In practice, this 
+includes component criticality, historical condition or damage patterns, and element-specific 
+requirements related to camera-to-surface distance, viewing angle, and expected observation quality. 
+Third, UAV operational constraints are considered to ensure field feasibility, including stand-off 
+distance for safe operation, sensor field-of-view limits, endurance, and any site-specific operational 
+restrictions.
+Based on these inputs, the framework produces two outputs that are directly relevant to 
+maintenance-oriented inspection. The first is a set of inspection viewpoints that are explicitly tied to 
+bridge elements and their inspection requirements, rather than being selected purely for generic 
+coverage. The second is an executable UAV route that connects these viewpoints while respecting 
+operational constraints. A key design requirement is repeatability: the framework is intended to generate 
+inspection paths that remain consistent across inspection cycles unless maintenance knowledge 
+indicates a justified change in inspection priorities. This is essential for longitudinal comparability, 
+allowing inspection outcomes to be interpreted not as isolated observations but as part of a continuous 
+monitoring process that informs maintenance planning over time.
+3.2 Knowledge-based planning workflow
+Building on the overview in Section 3.1, this subsection explains how maintenance knowledge is 
+used to shape UAV inspection planning in a way that remains practical for field deployment and useful 
+for maintenance decision-making. The workflow begins by translating maintenance intent into explicit 
+inspection objectives, rather than treating the bridge as a generic surface to be covered. This emphasis 
+reflects recent observations that UAV inspection outcomes can be inconsistent across cycles when route 
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=6239751
+Preprint not peer reviewed
+7
+definition is largely manual or guided only by geometric convenience (Hou et al., 2022; Panigati et al., 
+2025).
+Fig. 3. Knowledge-based UAV path planning framework for bridge inspection and maintenance
+The first step is to interpret maintenance knowledge into element-level priorities and inspection 
+requirements. Each bridge element is associated with a priority level that reflects maintenance 
+relevance, for example based on component criticality, historical condition patterns, or known 
+vulnerability to specific deterioration mechanisms. In addition, each element is assigned basic viewing 
+requirements that define what constitutes an acceptable inspection observation, such as a desired 
+camera-to-surface distance, a preferred range of viewing angles, and minimum expectations for 
+visibility and coverage. Together, these attributes determine not only which elements should be 
+inspected first, but also how strictly the inspection should be performed for each element.
+The second step uses bridge geometry to generate inspection patterns that are appropriate for 
+different structural elements. Instead of relying on a single coverage strategy, the workflow adopts 
+element-specific inspection logic. For instance, deck undersides are naturally suited to longitudinal or 
+strip-like passes that maintain stable stand-off distance under shaded conditions, while girders can be 
+inspected through guided sweeps aligned with their dominant direction. Piers and substructures may 
+require orbital or circumferential viewpoints to ensure that occlusions are minimized and multiple faces 
+are observed. The role of geometry in this step is therefore not limited to collision avoidance; it provides 
+the spatial context needed to translate inspection requirements into feasible candidate viewpoints.
+The third step selects candidate viewpoints and constructs an executable route under UAV 
+operational constraints. Candidate viewpoints are evaluated based on their ability to satisfy element-
+specific viewing requirements while contributing to the inspection objectives defined by maintenance 
+knowledge. The route is then formed by connecting the selected viewpoints in a feasible order that 
+respects practical constraints such as stand-off distance, field-of-view limits, endurance, and site-
+specific restrictions. At this stage, efficiency remains important, but it is treated as a constraint-aware 
+planning consideration rather than the sole objective.
+IV. Results
+This study adopts a methodology that links maintenance intent to executable UAV 
+inspection routes through a knowledge-based planning workflow. The methodology is 
+organized into sequential stages that begin with preparing bridge and maintenance inputs, 
+proceed through objective formulation and route generation, and end with evaluation against 
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=6239751
+Preprint not peer reviewed
+8
+practical baselines. The overall process is designed to support repeatable inspections so that 
+outputs can be compared across cycles and used for maintenance planning.
+Fig. 4. Research Framework
+4.1 Knowledge-to-objective mapping
+Let ℰ = {𝑒1,…,𝑒∣ℰ∣}denote the set of bridge elements to be inspected (e.g., deck underside, girders, 
+piers). Each element 𝑒is assigned a maintenance-informed priority weight 𝑃𝑒∈ [0,1], derived from 
+criticality and historical condition information and updated after each inspection cycle (Zhang et al., 
+2023; Gao et al., 2024). A simple update rule can be written as
+𝑃(𝑡+1)𝑒 = clip[0,1](𝛼𝑃(𝑡)𝑒 + (1 ― 𝛼) 𝑃(𝑡)𝑒 ),
+where 𝑃(𝑡)𝑒 is a priority estimate from the latest condition evidence and 𝛼 ∈ [0,1]controls stability 
+over time.
+Each element is also assigned viewing requirements 𝑅𝑒, including a stand-off distance range 
+[𝑑𝑚𝑖𝑛𝑒 ,𝑑𝑚𝑎𝑥𝑒 ]and a viewing angle range [𝜃𝑚𝑖𝑛𝑒 ,𝜃𝑚𝑎𝑥𝑒 ]. For a candidate viewpoint 𝑣with camera position 𝑥𝑣
+and element reference point 𝑥𝑒, define
+𝑑(𝑣,𝑒) =∥ 𝑥𝑣― 𝑥𝑒∥ ,𝜃(𝑣,𝑒) = arccos  ⁣(
+𝑛⊤𝑒(𝑥𝑒― 𝑥𝑣)
+∥ 𝑥𝑒― 𝑥𝑣∥ ),where 𝑛𝑒is the outward normal (or 
+nominal observation direction) of element 𝑒. Distance and angle compliance can be modeled with 
+bounded scores:
+𝑆𝑑(𝑣,𝑒) = {
+1, 𝑑𝑚𝑖𝑛𝑒 ≤ 𝑑(𝑣,𝑒) ≤ 𝑑𝑚𝑎𝑥𝑒 ,
+exp  (−
+∣𝑑(𝑣,𝑒) ― Π[𝑑𝑚𝑖𝑛𝑒 ,𝑑𝑚𝑎𝑥𝑒 ](𝑑(𝑣,𝑒))∣
+𝜎𝑑 ), otherwise,
+𝑆𝜃(𝑣,𝑒) = {
+1, 𝜃𝑚𝑖𝑛𝑒 ≤ 𝜃(𝑣,𝑒) ≤ 𝜃𝑚𝑎𝑥𝑒 ,
+exp  (−
+∣𝜃(𝑣,𝑒) ― Π[𝜃𝑚𝑖𝑛𝑒 ,𝜃𝑚𝑎𝑥𝑒 ](𝜃(𝑣,𝑒))∣
+𝜎𝜃 ), otherwise,
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=6239751
+Preprint not peer reviewed
+9
+where Π[𝑎,𝑏]( ⋅ )projects a value onto [𝑎,𝑏], and 𝜎𝑑,𝜎𝜃> 0are softness parameters.
+Let 𝑆vis(𝑣,𝑒) ∈ {0,1}indicate line-of-sight visibility (1 if unobstructed, 0 otherwise). The 
+viewpoint quality is then
+𝑄(𝑣,𝑒) = 𝑆vis(𝑣,𝑒) ⋅ 𝑆𝑑(𝑣,𝑒) ⋅ 𝑆𝜃(𝑣,𝑒).
+The maintenance-weighted inspection utility of viewpoint 𝑣 becomes
+𝑈(𝑣) =
+𝑒∈ℰ
+𝑃𝑒 𝑄(𝑣,𝑒),which makes maintenance intent explicit and avoids purely geometry-
+driven objectives (Hou et al., 2022; Panigati et al., 2025).
+4.2 Viewpoint Selection and Route Generation
+Candidate viewpoints are generated using bridge geometry and element-specific inspection 
+patterns. Deck undersides are sampled through strip-like passes, girders through directional sweeps, and 
+piers through multi-face viewpoints to reduce occlusion. Viewpoints are filtered for feasibility under 
+UAV constraints, then associated with utility 𝑈(𝑣)and travel cost 𝐶(𝑣𝑖,𝑣𝑗). Route generation selects and 
+orders viewpoints to maximize inspection utility under a flight budget, which is naturally framed as a 
+prize-collecting or orienteering-type problem rather than a shortest-path task. A practical 
+implementation uses a two-stage procedure: viewpoints are selected using a utility-to-cost criterion, 
+then ordered using a lightweight routing heuristic to reduce travel cost while preserving inspection 
+value. Repeatability is supported through deterministic viewpoint sampling and stable element anchors, 
+with knowledge updates triggering local refinements rather than full route regeneration (Hou et al., 
+2022; Toriumi et al., 2022).
+4.3 Evaluation Metrics and Baseline Comparisons
+Evaluation considers maintenance usefulness alongside operational feasibility. Maintenance 
+usefulness is measured through critical-element coverage (the proportion of high-priority elements 
+meeting minimum viewing requirements) and viewpoint compliance (distance/angle satisfaction). 
+Operational feasibility is assessed through path efficiency (flight distance or estimated time), while 
+repeatability is quantified through route similarity across cycles and consistency in inspected elements 
+and compliant viewpoints. Baselines include a manual rule-of-thumb plan, a geometry-driven coverage 
+route without maintenance weighting, and a feasibility-oriented robust plan (e.g., wind- or GNSS-
+aware) that does not encode maintenance priorities. These comparisons isolate the contribution of 
+knowledge-driven objectives, geometry-informed inspection patterns, and repeatability design (Hou et 
+al., 2022; Panigati et al., 2025).
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=6239751
+Preprint not peer reviewed
+10
+V. Case Study and Experimental Setup
+5.1 Study Area and Bridge Model
+The case study considers a conventional concrete box-girder highway bridge on a toll road. The 
+bridge is modeled at the element level using a BIM-based geometry source, which enables consistent 
+identification of inspection targets and supports repeatable planning across inspection cycles. In this 
+study, the bridge geometry is organized into maintainable components aligned with the project work 
+breakdown structure (WBS), separating substructure and superstructure elements. This element-
+level representation is used to (i) define inspection elements ℰ, (ii) assign maintenance priorities and 
+viewing requirements per element, and (iii) generate geometry-informed candidate viewpoints and 
+executable UAV inspection routes. 
+ 
+(a) (b)
+Fig. 5. (a) Field view of the concrete box-girder toll-road overpass; (b) BIM-derived bridge model
+The WBS-based element grouping also provides a practical interface for maintenance teams, 
+ensuring that the planning outputs remain traceable to maintenance packages and reporting conventions 
+used in bridge asset management as shown as in table 2.
+Table 2. Work Breakdown Structure (WBS) for concrete box-girder bridge maintenance
+WBS Level 1 WBS Level 2 WBS Level 3 WBS Level 4
+Pile FoundationFoundations
+Pile Cap
+Pier/Abutment Wall
+Pier Head
+Piers & Abutments
+Pier Drainage
+Embankment Fill Approach Embankment Fill
+Retaining Structure Wing Wall
+Substructure
+Road Pavement Flexible Pavement 
+Approach Slab
+Main Girders (Box Girder)
+Diaphragm
+Girders
+Girder Drainage
+Deck StructureDeck System
+Deck Surfacing / Wearing 
+Course
+Asphaltic Expansion JointExpansion Joint
+Elastomeric Component
+Concrete Bridge 
+Maintenance Project
+Superstructure
+Road User Safety Railing / Barrier System
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=6239751
+Preprint not peer reviewed
+11
+5.2 Maintenance Knowledge and Inspection Requirements
+The maintenance knowledge used in this case study was derived from field inspection 
+documentation and maintenance records obtained for the concrete box-girder toll-road overpass 
+described in Section 5.1. These records were consolidated at the element level and aligned with the 
+bridge WBS so that condition information and maintenance intent can be linked directly to executable 
+UAV inspection planning. The resulting knowledge representation is summarized in Table 2, which 
+reports the inspection elements ℰ, their priority weights, and the viewing requirements adopted for route 
+generation.
+Two complementary components are defined for each element 𝑒 ∈ ℰ. The first is a maintenance-
+informed priority weight 𝑃𝑒∈ [0,1], which reflects how strongly the inspection should focus on element 
+𝑒from a maintenance perspective. In practical bridge maintenance settings, 𝑃𝑒is driven by factors such 
+as component criticality, historical condition patterns, and recent inspection findings. To preserve 
+consistency across inspection cycles while allowing priorities to respond to new evidence, the study 
+adopts a smoothed update formulation,
+𝑃(𝑡+1)𝑒 = clip[0,1](𝛼𝑃(𝑡)𝑒 + (1 ― 𝛼)𝑃(𝑡)𝑒 ),
+where 𝑃(𝑡)𝑒 represents the evidence-informed priority estimate derived from the most recent 
+inspection outcomes and 𝛼controls the stability of the prioritization over time. This design supports 
+repeatable inspection planning while accommodating maintenance-driven changes when new condition 
+information becomes available.
+The second component is the element-specific set of viewing requirements 𝑅𝑒, which defines the 
+minimum conditions for an observation to be considered inspection-valid for that element. In this study, 
+𝑅𝑒is specified through stand-off distance limits [𝑑𝑚𝑖𝑛𝑒 ,𝑑𝑚𝑎𝑥𝑒 ]and admissible viewing angle limits 
+[𝜃𝑚𝑖𝑛𝑒 ,𝜃𝑚𝑎𝑥𝑒 ], together with basic line-of-sight feasibility. These requirements are intended to reflect 
+inspection practicality and data sufficiency. For example, under-deck and box-girder observations 
+typically demand tighter distance control and more stable viewing angles to ensure comparable surface 
+detail, whereas pier observations can tolerate broader viewpoints due to multi-face accessibility.
+The element priorities and requirements are then mapped into the viewpoint scoring model used 
+for planning. For a candidate viewpoint 𝑣, the element-level quality score is defined as
+𝑄(𝑣,𝑒) = 𝑆vis(𝑣,𝑒) ⋅ 𝑆𝑑(𝑣,𝑒) ⋅ 𝑆𝜃(𝑣,𝑒),
+where 𝑆𝑑and 𝑆𝜃capture compliance with the distance and angle requirements, and 𝑆visrepresents 
+visibility feasibility. Viewpoint utility is aggregated across elements using the maintenance-informed 
+priorities,
+𝑈(𝑣) =
+𝑒∈ℰ
+𝑃𝑒 𝑄(𝑣,𝑒),
+so that the planning objective reflects maintenance intent rather than generic geometric coverage. 
+Table 3 provides the element-level 𝑃𝑒and 𝑅𝑒values used in this case study and serves as the primary 
+input to the viewpoint selection and route generation procedures described in Section 4. Data handling 
+and traceability. The field records were mapped to BIM-defined elements to ensure that priorities and 
+requirements remain traceable to maintainable components and to facilitate consistent route 
+regeneration across cycles. Route outputs are exported as waypoint sequences for operational use and 
+for repeatability assessment in subsequent inspections.
+Table 3. WBS-based bridge elements and maintenance trend indicators.
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=6239751
+Preprint not peer reviewed
+12
+ElementID WBS_L4 ElementType Criticality ConditionIndex DefectSeverity Slope_Severity P_e
+E12 Deck 
+structure
+deck High 76.012 0.361 0.070 0.699
+E09 Main girders 
+(box girder)
+box_girder High 79.134 0.346 -0.016 0.589
+E03 Pier/abutment 
+wall
+pier High 74.273 0.199 0.008 0.542
+E04 Pier head pier_head High 81.925 0.221 -0.002 0.538
+E15 Elastomeric 
+component
+bearing High 61.889 0.175 0.005 0.527
+E02 Pile cap foundation High 78.814 0.118 0.003 0.502
+E01 Pile 
+foundation
+foundation High 88.929 0.093 -0.011 0.487
+E11 Girder 
+drainage
+drainage Medium 62.914 0.233 0.029 0.407
+E06 Wing wall retaining Medium 86.918 0.217 0.021 0.388
+E10 Diaphragm diaphragm Medium 72.397 0.282 -0.008 0.383
+E08 Approach 
+slab
+approach_slab Medium 83.765 0.174 0.024 0.376
+E16 Railing / 
+barrier system
+railing Medium 75.920 0.148 0.026 0.369
+E14 Asphaltic 
+expansion 
+joint
+joint Medium 58.552 0.184 0.016 0.368
+E05 Pier drainage drainage Medium 70.076 0.173 -0.005 0.339
+E17 Lighting 
+system
+lighting Low 76.684 0.158 0.021 0.230
+E07 Flexible 
+pavement 
+(approach)
+approach Low 75.463 0.102 -0.002 0.176
+E13 Wearing 
+course / 
+surfacing
+surfacing Low 87.739 0.066 0.010 0.176
+In addition, the BIM model was used to visualize inspection-target elements through a priority 
+heatmap, where the color scale transitions from green to red to indicate low to high inspection priority. 
+The heatmap is generated (as shown as in figure 6) by mapping element-level maintenance weights 
+(e.g., 𝑃𝑒) onto the corresponding BIM components, so that the bridge’s inspection intent becomes 
+explicit at the geometric level rather than remaining as a purely tabular attribute. This visualization 
+serves as a practical sanity check that the prioritization logic is consistently linked to the correct 
+structural elements, particularly for components that are visually similar or spatially adjacent in the 
+superstructure and substructure. It also provides a shared visual language for stakeholders, enabling 
+engineers, UAV operators, and maintenance planners to interpret the intended inspection emphasis in 
+the same way, verify that critical components receive adequate attention, and communicate route 
+planning outputs more consistently across inspection cycles.
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=6239751
+Preprint not peer reviewed
+13
+Fig. 6. BIM visualization of inspection priorities (green = low, red = high).
+5.3 UAV Platform and Operational Constraints
+To ensure that the generated inspection routes remain executable in real bridge environments, this 
+study defines UAV capabilities and operational constraints that bound both viewpoint feasibility and 
+route construction. The UAV is treated as a multirotor inspection platform equipped with a stabilized 
+RGB camera, reflecting typical bridge inspection practice where hovering and controlled stand-off 
+distances are required. Rather than binding the method to a single manufacturer model, constraints are 
+expressed in a platform-agnostic form, so that the framework can be reproduced for different UAVs 
+provided comparable sensing and endurance envelopes are available.
+Operational constraints are imposed in three layers: sensing validity, safety feasibility, and mission 
+budget. At the sensing level, each candidate viewpoint 𝑣must satisfy element-specific requirements 𝑅𝑒
+defined in Table 2, particularly the admissible stand-off distance [𝑑𝑚𝑖𝑛𝑒 ,𝑑𝑚𝑎𝑥𝑒 ]and viewing angle range 
+[𝜃𝑚𝑖𝑛𝑒 ,𝜃𝑚𝑎𝑥𝑒 ]. At the safety level, the viewpoint must also respect a minimum clearance from the bridge 
+geometry, expressed as
+𝑑(𝑣,Γ) ≥ 𝑑safe,
+where Γdenotes the bridge surface model and 𝑑safeis the prescribed operational clearance. 
+Viewpoints outside allowed flight regions (e.g., exclusion buffers above traffic lanes or restricted areas) 
+are removed using a hard feasibility filter 𝑔𝑘(𝑣) ≤ 0for all relevant constraints 𝑘.
+At the route level, feasibility is governed by a mission budget that approximates endurance limits. 
+For a route 𝜋 = {𝑣1,…,𝑣𝑚}, the travel cost is defined as
+Cost(𝜋) =
+𝑚―1
+𝑖=0
+𝐶(𝑣𝑖,𝑣𝑖+1),𝑣0= HOME,
+with a corresponding budget constraint Cost(𝜋) ≤ 𝐵. In the base formulation, the transition cost can 
+be expressed as Euclidean travel distance,
+𝐶(𝑣𝑖,𝑣𝑗) =∥ 𝑥𝑣𝑖― 𝑥𝑣𝑗∥ ,
+or converted to time using nominal cruise speed 𝑠, 𝐶𝑡(𝑣𝑖,𝑣𝑗) = 𝐶(𝑣𝑖,𝑣𝑗)/𝑠. These constraints enforce 
+that the selected viewpoints yield a route that is not only inspection-valid but also realistically flyable 
+within battery and operational limits.
+To reflect common field challenges around bridges, a robust feasibility variant is also considered as 
+a baseline, where transitions are penalized in operationally unfavorable regions such as GNSS-
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=6239751
+Preprint not peer reviewed
+14
+shadowed under-deck spaces or wind-exposed corridors near deck edges. In this case, the transition cost 
+is modified as
+𝐶rob(𝑣𝑖,𝑣𝑗) = 𝐶(𝑣𝑖,𝑣𝑗)(1 + 𝜆 𝜓(𝑣𝑖,𝑣𝑗)),
+where 𝜓( ⋅ )is a bounded penalty function and 𝜆controls its influence. This design captures the 
+practical reality that routes may remain feasible in pure geometric terms but still be undesirable due to 
+navigation robustness or environmental exposure.
+The impact of these operational assumptions is illustrated by comparing the planned routes across 
+the proposed method and baseline strategies. Figure 7 visualizes four representative routes: a manual 
+rule-of-thumb route, a coverage-only baseline, a robust feasibility baseline, and the proposed 
+knowledge-based route. While the baselines tend to reflect either ad hoc operational choices (manual) 
+or generic geometric preferences (coverage-only), the proposed route is shaped by maintenance-
+weighted inspection value under the same mission budget, resulting in a pattern that remains comparable 
+across cycles while explicitly emphasizing maintenance-critical regions. In the next subsection, these 
+route differences are quantified using coverage, compliance, efficiency, and repeatability metrics.
+Fig. 7. comparison of UAV inspection routes
+To make the comparison between the proposed approach and the baselines explicit, each route 
+generator can be described using a common budgeted selection form, where a route 𝜋 ⊆ 𝒱is constructed 
+from candidate viewpoints 𝒱under a mission budget 𝐵. In the coverage-only baseline, the objective is 
+to maximize generic inspection utility without maintenance weighting. Let 𝑄(𝑣)denote the mean 
+element quality at viewpoint 𝑣, computed as
+𝑄(𝑣) = 1
+∣ℰ∣ 𝑒∈ℰ
+𝑄(𝑣,𝑒).
+The coverage-only baseline can then be expressed as
+max 𝜋⊆𝒱𝑣∈𝜋
+ˉ
+𝑄 (𝑣)s.t.Cost(𝜋) ≤ 𝐵.
+This formulation encourages routes that perform well on average across elements but does not 
+encode maintenance intent, so high-value maintenance targets are not necessarily emphasized when 
+trade-offs arise.
+The robust feasibility baseline follows the same generic coverage objective but modifies the budget 
+constraint through a robustness-aware travel cost to proxy navigation and environmental challenges 
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=6239751
+Preprint not peer reviewed
+15
+around bridges. Using the penalized transition cost 𝐶rob( ⋅ )defined previously, the robust baseline is 
+written as
+max 𝜋⊆𝒱𝑣∈𝜋
+ˉ
+𝑄 (𝑣)s.t.Costrob(𝜋) =
+𝑚―1
+𝑖=0
+𝐶rob(𝑣𝑖,𝑣𝑖+1) ≤ 𝐵.
+In this case, the route is biased away from proxy “risk zones” by inflating travel cost, but the 
+inspection objective remains maintenance-agnostic.
+The manual rule-of-thumb baseline represents common practice where the route is defined 
+heuristically to cover major components using operator judgment rather than an explicit objective 
+function. It can be interpreted as selecting a predefined subset 𝜋manbased on simple rules (e.g., “visit 
+deck underside strips, at least one pier orbit, and one pass near joints”) and then ordering the selected 
+points using a short routing heuristic. While this baseline is operationally plausible, it typically lacks a 
+consistent mapping from maintenance knowledge to viewpoint choice, which can reduce comparability 
+across inspection cycles.
+In contrast, the proposed knowledge-based method replaces the generic coverage score with 
+maintenance-weighted inspection utility 𝑈(𝑣), where
+𝑈(𝑣) =
+𝑒∈ℰ
+𝑃𝑒 𝑄(𝑣,𝑒).
+The planning objective is then
+max 𝜋⊆𝒱𝑣∈𝜋
+𝑈(𝑣) s.t.Cost(𝜋) ≤ 𝐵,
+which ensures that viewpoint selection and route construction are driven by element-level 
+maintenance priorities under the same feasibility constraints. This explicit formulation clarifies that the 
+key difference is not route optimization alone, but the integration of maintenance intent into the 
+objective function, which is expected to improve maintenance-critical coverage and cycle-to-cycle 
+repeatability.
+Taken together, these formulations provide a unified basis for comparison: all generators operate on 
+the same candidate viewpoint set 𝒱and are constrained by an equivalent mission budget 𝐵, while 
+differing primarily in how inspection value is defined and how feasibility is encoded. This makes it 
+possible to attribute performance differences to the presence (or absence) of maintenance intent in the 
+planning objective, rather than to unequal operational assumptions. In particular, the coverage-only and 
+robust feasibility baselines reflect two common priorities in practice—maximizing generic inspection 
+usefulness and improving operational robustness—yet both remain maintenance-agnostic by 
+construction. The manual baseline, while field-realistic, illustrates how heuristic planning can introduce 
+variability that limits cross-cycle comparability. Against this backdrop, the proposed method is 
+evaluated as a mechanism for translating element-level maintenance priorities into route-level decisions 
+under the same constraints, with the expectation that improvements will be most visible in maintenance-
+critical coverage and repeatability metrics reported in the subsequent evaluation.
+VI. Results & Discussion
+This section evaluates whether translating maintenance intent into route-level decisions leads to 
+inspection plans that are not only feasible, but also more useful for maintenance-oriented monitoring. 
+The comparison uses the same candidate viewpoint pool 𝒱, the same mission budget 𝐵, and the same 
+feasibility constraints across methods. The only deliberate difference is the planning objective and cost 
+model (Table X), which allows performance differences to be interpreted as the effect of maintenance 
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=6239751
+Preprint not peer reviewed
+16
+knowledge integration rather than unequal operational assumptions. The resulting route patterns are 
+visualized in Figure 7, which contrasts the proposed knowledge-based plan with three baselines: manual 
+rule-of-thumb, coverage-only, and a robust feasibility proxy.
+Figure 7 shows that the manual baseline produces a plausible route but tends to reflect operator 
+heuristics (e.g., “hit the main components once”), which can make emphasis and viewpoint geometry 
+drift across cycles as site conditions and operator judgment change. This limitation aligns with the 
+broader observation in drone bridge inspection reviews that operational execution variability (distance, 
+angle, lighting, and path repeatability) strongly influences whether UAV imagery can support reliable 
+condition tracking over time (Toriumi et al., 2022; Panigati et al., 2025). The coverage-only baseline, 
+by construction, favors viewpoints that perform reasonably well on average, but it does not consistently 
+“spend” the flight budget where maintenance decision-making is most sensitive. Similar tendencies can 
+be observed in geometry-driven or efficiency-driven coverage planning studies, where viewpoint 
+redundancy reduction and maneuver efficiency are the primary targets, while maintenance intent 
+remains implicit (Li et al., 2025). The robust feasibility baseline improves operational realism by 
+discouraging transitions through proxy risk zones, reflecting concerns that under-deck or edge-exposed 
+regions can be operationally challenging. This is consistent with recent bridge inspection planning work 
+that explicitly considers wind effects or GNSS shadowing to improve feasibility (Xu & Dai, 2024; Kim 
+et al., 2025). However, feasibility-oriented robustness alone does not guarantee that the best viewpoints 
+for maintenance-critical components are selected when trade-offs arise under limited endurance.
+Against these baselines, the proposed method visibly concentrates viewpoint allocation around 
+maintenance-priority elements while preserving a flyable route within the same budget (Figure 7). This 
+behavior is expected from the objective 𝑣∈𝜋𝑈(𝑣)with 𝑈(𝑣) =
+𝑒∈ℰ𝑃𝑒𝑄(𝑣,𝑒), which explicitly 
+rewards viewpoints that satisfy viewing requirements for high-priority elements. In practical terms, the 
+route is less about “maximum surface coverage” and more about achieving repeatable, inspection-valid 
+observations where maintenance decisions are most affected. This emphasis is aligned with the growing 
+direction of integrating inspection activities into broader asset management and digital twin workflows 
+(Bono et al., 2022), but with a clearer operational bridge between maintenance knowledge and 
+executable route generation.
+Table 4. Quantitative Comparison of Route-Planning Methods
+Method CEC VRC Cost 
+(m)
+Cost 
+(min)
+Robust cost 
+(m) #Views # High-priority 
+elements
+Proposed (knowledge-
+based) 1.00 0.157 288.4 1.60 355.7 121 5
+Manual (rule-of-
+thumb) 1.00 0.164 116.5 0.65 147.7 30 5
+Coverage-only 1.00 0.151 303.2 1.68 368.9 126 5
+Robust feasibility 
+(proxy) 1.00 0.166 260.3 1.45 323.1 114 5
+To make the comparison auditable, the study reports four complementary metric groups in Table 
+4 (recommended): (i) maintenance relevance through critical element coverage (CEC), (ii) data quality 
+feasibility through viewpoint requirement compliance (VRC), (iii) operational efficiency through total 
+distance/time, and (iv) repeatability using a spatial similarity score across cycles (e.g., average nearest-
+neighbor distance between waypoint sets and overlap in inspected elements). The intention is to separate 
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=6239751
+Preprint not peer reviewed
+17
+“being able to fly” from “collecting comparable and maintenance-useful observations,” which is a 
+recurring gap noted in UAV inspection practice reviews (Panigati et al., 2025; Toriumi et al., 2022). In 
+many geometry-driven planning approaches, better efficiency can be achieved by reducing redundant 
+viewpoints and sharp maneuvers, but the metrics most directly tied to maintenance interpretation—such 
+as consistent compliance with viewpoint requirements for the same elements across cycles—are not 
+always foregrounded (Li et al., 2025). This is precisely where a maintenance-weighted objective is 
+expected to show value: not necessarily by producing the shortest route, but by improving maintenance-
+critical coverage and the repeatability of observation geometry under the same budget.
+To help readers quickly interpret trade-offs, a compact visualization such as Figure 7 
+(recommended) can summarize Table 4 using a bar chart comparing methods on CEC, VRC, and cost. 
+This style of reporting is consistent with recent tool-focused and workflow-oriented contributions that 
+stress operational comparability and quality control across UAS inspection deployments (Bartczak et 
+al., 2025). If you include the robust baseline, it is useful to report both standard cost and robustness-
+penalized cost (as implemented in your Colab), because it clarifies whether “robustness” is gained by 
+simply avoiding risky regions at the expense of maintenance relevance.
+Recent studies increasingly move beyond “UAVs can inspect bridges” toward “how UAV 
+inspection can be operationalized as a repeatable program.” Reviews emphasize that adoption barriers 
+are often practical—standardization, comparability, and integration with decision processes—rather 
+than purely sensing capability (Bolourian, 2020; Bono, 2022). Methodologically, several strands 
+address parts of this puzzle. Coverage path planning and viewpoint optimization reduce redundancy 
+and improve flight smoothness (Li et al., 2022), wind-aware planning improves realism in exposed 
+environments (Xu & Dai, 2024), and GNSS-shadow-aware substructure planning improves feasibility 
+under decks (Kim et al., 2023). Digital-twin-linked approaches define reference trajectories and connect 
+UAV inspection to bridge management workflows, which strengthens integration at the system level 
+(Bono et al., 2022). Practical flight planning toolkits also show that “optimized routing” can be 
+embedded in repeatable workflows when geometry is available (Fatemidokht et al., 2021). At the same 
+time, adaptive inspection strategies increasingly exploit prior information to trigger detailed inspections 
+in areas likely to contain defects (Chen et al., 2023), but these approaches still often treat maintenance 
+knowledge as an auxiliary cue rather than a formal objective that controls viewpoint validity and cross-
+cycle repeatability.
+Within this landscape, the distinguishing contribution demonstrated here is the explicit mapping 
+of maintenance intent into inspection objectives and then into executable routing decisions under a 
+shared budget. The proposed method is not positioned as replacing robustness- or coverage-focused 
+advances; instead, it complements them by making “maintenance relevance” the primary planning 
+signal while keeping feasibility filters compatible with wind/GNSS or other operational constraints. 
+This integration is important because bridge maintenance decisions depend on consistent, comparable 
+observations of the same critical elements over time, not simply on the availability of UAV imagery. 
+The heatmap visualization in the BIM environment (Figure 6) further supports this positioning by 
+showing that the element priorities driving the route are traceably mapped onto geometry, enabling 
+transparent communication between maintenance engineers and UAV operators.
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=6239751
+Preprint not peer reviewed
+18
+VII. Conclusion
+This paper presented a knowledge-based approach to UAV path planning for bridge inspection and 
+maintenance, motivated by the practical need to make UAV inspections not only feasible, but also 
+repeatable and directly useful for maintenance decision-making. The key idea is to translate 
+maintenance intent into explicit inspection objectives by assigning element-level priorities and viewing 
+requirements, and then to generate executable routes by selecting and ordering candidate viewpoints 
+under a mission budget. By embedding maintenance weighting into the planning objective, the 
+framework shifts route design from generic surface coverage toward inspection plans that target 
+maintenance-critical components with inspection-valid viewpoints.
+The case study on a conventional concrete box-girder toll-road bridge demonstrated that the 
+proposed planner can operate within standard UAV operational constraints while producing routes that 
+are clearly distinguishable from manual and geometry-driven baselines. Under the same budget 
+assumptions, all compared methods achieved full coverage of high-priority elements (CEC = 1.0), 
+indicating that the bridge-scale inspection scope was achievable across strategies. Differences emerged 
+more clearly in route structure and compliance-oriented indicators, where the proposed method provides 
+a transparent mechanism to maintain consistent inspection intent across cycles rather than relying on 
+operator heuristics or average-coverage optimization. The integration of BIM-based visualization 
+further strengthened traceability by confirming that element priorities driving the route are correctly 
+mapped onto the bridge geometry, enabling clearer communication between maintenance teams and 
+UAV operators.
+From a research perspective, the contribution of this work lies in making the maintenance-to-
+execution link explicit: maintenance knowledge is operationalized as a route planning objective, rather 
+than remaining a post-processing or decision-support artifact. This positioning complements recent 
+advances in geometry-driven coverage optimization and robustness-aware navigation by providing a 
+planning layer that can incorporate those feasibility improvements while preserving maintenance 
+relevance. In practical deployments, this approach supports continuous inspection by enabling 
+comparable viewpoints over time and allowing routes to adapt selectively when maintenance priorities 
+change, rather than requiring complete re-planning from scratch.
+Several limitations provide clear directions for future work. First, the current feasibility modeling 
+uses simplified proxies for environmental and navigation effects; integration with higher-fidelity wind 
+fields, GNSS-denied localization models, and obstacle-aware planning would strengthen operational 
+realism. Second, viewpoint validity is defined through interpretable distance and angle requirements, 
+but future studies should link these criteria more directly to measurable data quality outcomes such as 
+crack detectability limits, photogrammetric reconstruction accuracy, or uncertainty in defect 
+quantification. Third, although element priorities were derived from maintenance records and mapped 
+to BIM, broader validation across multiple bridge types and inspection regimes is needed to establish 
+generalizability and to refine how priorities and requirements should be standardized across agencies.
+Overall, the proposed knowledge-based planning framework provides a practical step toward 
+maintenance-oriented UAV inspection programs, where flight routes are not only flyable, but also 
+repeatable, traceable to maintenance intent, and suitable for long-term condition tracking and 
+maintenance planning.
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=6239751
+Preprint not peer reviewed
+19
+VIII. Declaration
+Author Contributions
+The following statements should be used: 
+Conceptualization, N.B.L. and Y.L.; methodology, N.B.L.; software, N.B.L.; validation, N.B.L., Y.L., and 
+B.T.; formal analysis, N.B.L.; investigation, N.B.L.; resources, Y.L. and B.T.; data curation, N.B.L.; writing—
+original draft preparation, N.B.L.; writing—review and editing, Y.L., B.T., K.S., and N.S.; visualization, N.B.L.; 
+supervision, Y.L., B.T., and K.S.; project administration, Y.L.; funding acquisition, Y.L. and B.T.
+Data Availability Statement
+The data presented in this study are available from the corresponding author upon reasonable request. 
+The data are not publicly available due to confidentiality, privacy, and ethical restrictions associated with the 
+project.
+Funding
+This research was funded by the Hibah Publikasi Terindeks Internasional (PUTI) Q1, Fiscal Year 2025–
+2026, under Assignment Agreement Number PKS-286/UN2.RST/HKP.05.00/2025. 
+Acknowledgements
+Acknowledgments are a place to recognize any contributions made to the paper that do not meet the criteria 
+for authorship. This may include technical support, gifts received, or organizational assistance. There are few 
+restrictions on what should be included, with the primary exception that anyone who meets the criteria for authors 
+must be included as an author and not only acknowledged. Personal acknowledgements (e.g., of family members) 
+are acceptable. This section should be kept relatively short, typically up to 100 words. 
+Conflicts of Interest
+The authors declare no conflict of interest. 
+ 
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=6239751
+Preprint not peer reviewed
+20
+References
+Aela, P. (2024). UAV-based studies in railway infrastructure monitoring. Automation in Construction, 167(Query 
+date: 2026-01-27 11:49:48). https://doi.org/10.1016/j.autcon.2024.105714
+Agredo Chávez, A., Gonzalez-Libreros, J., Wang, C., & Sas, G. (2024). Bridge condition index: A review of 
+methodologies used in Bridge Management Systems. In Jensen J.S., Frangopol D.M., & Schmidt J.W. 
+(Eds.), Bridge Maint., Saf., Manag., Digit. Sustain. - Proc. Int. Conf. Bridge Maint., Saf. Manag. (pp. 
+1130–1137). CRC Press/Balkema. Scopus. https://doi.org/10.1201/9781003483755-131
+Aliyari, M. (2022). Hazards identification and risk assessment for UAV–assisted bridge inspections. Structure 
+and Infrastructure Engineering, 18(3), 412–428. https://doi.org/10.1080/15732479.2020.1858878
+Ameli, Z. (2022). Impact of UAV Hardware Options on Bridge Inspection Mission Capabilities. Drones, 6(3). 
+https://doi.org/10.3390/drones6030064
+Ayele, Y. Z. (2020). Automatic crack segmentation for uav-assisted bridge inspection. Energies, 13(23). 
+https://doi.org/10.3390/en13236250
+Biscarini, C. (2020). UAV photogrammetry, infrared thermography and GPR for enhancing structural and 
+material degradation evaluation of the Roman masonry bridge of Ponte Lucano in Italy. NDT and E 
+International, 115(Query date: 2026-01-27 11:49:48). https://doi.org/10.1016/j.ndteint.2020.102287
+Bolourian, N. (2020). LiDAR-equipped UAV path planning considering potential locations of defects for bridge 
+inspection. Automation in Construction, 117(Query date: 2026-01-27 11:49:48). 
+https://doi.org/10.1016/j.autcon.2020.103250
+Bono, A. (2022). Path Planning and Control of a UAV Fleet in Bridge Management Systems. Remote Sensing, 
+14(8). https://doi.org/10.3390/rs14081858
+Chen, J.-H., Su, M.-C., Lin, S.-K., Lin, W.-J., & Gheisari, M. (2023). Smart bridge maintenance using cluster 
+merging algorithm based on self-organizing map optimization. Automation in Construction, 152. Scopus. 
+https://doi.org/10.1016/j.autcon.2023.104913
+Falorca, J. F. (2021). New tren

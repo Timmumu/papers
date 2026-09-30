@@ -13,3 +13,20 @@ Challenges in the extraction and use of earth resources and spaces are encounter
 | Yes | Yes | Yes | Yes | Yes | **Include** |
 
 **Note:** DT for underground stations construction lifecycle; geotechnical safety
+
+## Step-3 Deep-Read Coding (Prompt B)
+| P DT-subject | Q DfS/DfQ | R codable | U Tier | V Design | W Constr | X Oper | Z DfX | AA Self-improve | AB Methodology | AC Modality | AD Validation | AE QA(0-5) | AF Cluster |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| Yes | Yes | Yes | Tier 1 - Digital Model (static, no live data) | 0 | 1 | 0 | Design for Safety (DfS) | None | Digital Twin platform (no machine learning) | Multi (two or more data types) | Single case study | 3 | Lifecycle / governance |
+
+| AC1 fusion depth | AC2 fusion evidence | AC3 confidence |
+|---|---|---|
+| Fused | GIS, geological interpretation, excavation modelling and multi-LOD BIM are fused via the interoperability platform. | Medium |
+
+**Key evidence (AG):** BIM-driven multi-module digital twin for underground stations (Monash/Nottingham, Australian Geomechanics 2022): IFC schema extension for station systems; parametric multi-LOD BIM instantiation (ground, excavation, station parts, support systems); automatic BIM-geotechnical-analysis information exchange bridging information and numerical modelling; preliminarily verified on Melbourne Metro Tunnel stations. Interoperability platform prototype without live data connection.
+
+*Full-text source: browser-oa*
+
+**AH — strength & gap filled:** IFC extension plus automated BIM-to-geotechnical-analysis exchange verified on Melbourne Metro Tunnel stations.
+
+**AI — deficiencies & future work:** Preliminary verification; interoperability tested on selected use cases; live monitoring absent.

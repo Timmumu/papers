@@ -1,0 +1,1068 @@
+Academic Editor: Pierluigi Siano
+Received: 8 November 2025
+Revised: 6 January 2026
+Accepted: 10 January 2026
+Published: 18 February 2026
+Copyright: © 2026 by the authors.
+Licensee MDPI, Basel, Switzerland.
+This article is an open access article
+distributed under the terms and
+conditions of the Creative Commons
+Attribution (CC BY) license.
+Article
+Tackling the Complexity of Emergency Response Systems:
+Creating Transport-Focused Digital Twins
+Fabian Schuhmann *
+ , Moritz Sturm
+ , Till Zacher
+ and Markus Lienkamp
+Institute of Automotive Technology, Department of Mobility Systems Engineering, TUM School of Engineering
+and Design, Technical University of Munich, 85748 Garching, Germany
+* Correspondence: fabian.schuhmann@tum.de
+Highlights
+What are the main findings?
+• The proposed framework builds transport-focused digital twins of emergency response
+systems, combining multiple data sources. The combination of real-time traffic data,
+GPS data from emergency vehicles (EVs), and road network information enables precise
+network analysis, e.g., identifying bottlenecks where EVs are affected by traffic. Our
+data shows that more favorable traffic conditions and more spacious road structures are
+positively associated with improved EV progress in urban environments.
+• The agent-based, mesoscopic model of the Munich Fire Department shows good results
+in validation compared to historical incident data.
+What is the implication of the main finding?
+• Digital twins can be used to assess the impact of the transport system on the emergency
+response system and to systematically simulate future ‘what-if’ scenarios.
+• Our data suggests that the transition to sustainable mobility can have a positive impact
+on emergency services. However, additional datasets and research are needed to develop
+specific recommendations for action.
+Abstract
+Providing medical and technical assistance to people in life-threatening situations requires
+the coordinated cooperation of numerous actors within the emergency response system.
+The efficiency of the emergency response system is thereby influenced by the transport
+infrastructure and the traffic conditions. Organizations and authorities with safety respon-
+sibilities are increasingly faced with the challenge of assessing the impact of changes to the
+transport system on the overall system’s effectiveness. The overall objective of this paper is
+to develop an efficient and cost-effective simulation and analysis platform for generating
+transport-focused digital twins, enabling organizations and authorities to monitor the
+current emergency response system and digitally analyze various ‘what-if’ scenarios for
+future planning. Our model combines various data sources, including real-time traffic data,
+recorded GPS data from emergency vehicles (EVs), and the road network. The data serves
+as the foundation for the indicator-based network analysis and the system model. The main
+actors in the emergency response system are modeled in the agent-based model to analyze
+the spatiotemporal impact of changes in the transport system on the system’s effectiveness.
+The developed simulation and analysis platform is applied to a case study of the Munich
+Fire Department, Germany. First, a network analysis using regression of EV speed on
+reported real-time traffic speed helps identify problematic areas where EVs are affected
+by traffic. Secondly, the agent-based model of the Munich fire department demonstrates
+good validation results against historical incident data, with recorded trajectory data used
+Smart Cities 2026, 9, 36 https://doi.org/10.3390/smartcities9020036
+Smart Cities 2026, 9, 36 2 of 22
+for model calibration. Our work contributes to efficient, data-driven planning for future
+emergency response systems.
+Keywords: emergency response system; emergency service; digital twin; GPS trajectory
+analysis; agent-based emergency model
+1. Introduction
+The transition to sustainable mobility is changing the current status quo of our trans-
+port system and challenging existing norms and circumstances [1]. The mobility transition
+introduces various changes, such as the implementation of 30 km
+h zones and modal filters,
+redesigned intersections [2], and the reduction of the number of traffic lanes. These changes
+affect emergency vehicles (EVs) as they respond to incidents in various ways, e.g., through
+reduced driving speed , additional delays at intersections , altered or restricted turning
+maneuvers, and potential bottlenecks on single-lane roads without passing opportunities.
+Nevertheless, it must be ensured that help reaches patients immediately.
+From the perspective of emergency service operators, three key questions arise in the
+context of the mobility transition: (i) What impact do traffic conditions and road cross-
+section characteristics have on the driving speed of EVs? (ii) Which edges in the road
+network require expert assessment as critical situations arise frequently? (iii) How do
+changes in average speeds and accessibility influence the emergency response system on a
+system level?
+A primary challenge in addressing these questions is the lack of practical, data-driven
+tools for monitoring and planning, which currently limits the empirical impact assessments
+of transport system changes on the emergency response system. Recent smart-city research
+is increasingly using data-driven models to enhance urban emergency operations. For in-
+stance, recent work optimizes emergency distribution systems explicitly targeting spatial eq-
+uity in communities with differing mobility characteristics [3], while another work demon-
+strates algorithmic allocation of emergency resources in a fire-following-earthquake sce-
+nario [4]. Additionally, Sadler [5] highlights the importance of geographically fine-grained
+planning. Together, these perspectives underscore the need for transport-focused digital
+twins capable of quantifying how network-level design and operational changes influence
+the emergency response system.
+Our work aims to develop an efficient and cost-effective simulation and analysis
+platform for creating transport-focused digital twins of emergency response systems. This
+toolchain is designed to support authorities and organizations with safety responsibilities in
+analyzing the current system and in developing data-driven plans for future configurations.
+Our solution is based on linking open data with locally collected information, such as GPS
+data. Thereby, EVs are used as mobile sensors to collect the necessary model parameters.
+Our framework addresses the three key questions mentioned above by (i) performing a
+regression analysis between real-time floating car data and EV GPS data, (ii) defining a
+combined criticality indicator, and (iii) developing an agent-based model for system simula-
+tion. The contribution of this work to the state of the art lies in its practical and data-driven
+support for transport-related monitoring and planning of emergency response systems.
+The developed framework is applied in a case study with the Munich Fire Department.
+Recorded trajectory data is analyzed to identify problem areas in the road network using
+regression analyses and the defined criticality indicator. Additionally, a dynamic system
+model is calibrated and validated using historical incident data.
+https://doi.org/10.3390/smartcities9020036
+Smart Cities 2026, 9, 36 3 of 22
+The remaining parts of this paper are structured as follows: Section 2 outlines the
+current state of the art and highlights the research gap. Section 3 describes the methodology
+behind the analysis framework, the data acquisition, the developed indicators, and the
+agent-based model. Section 4 presents the case study, the results of which are presented in
+Section 5. Section 6 discusses the developed framework and its findings.
+2. State of the Art
+Various models have been developed in the literature to investigate the effects of
+changes and extreme situations on the emergency response system, such as the model
+presented in [6]. These models differ in terms of the level of detail they use in modeling the
+transport. The following chapter first provides an overview of recent research work that
+uses detailed open-source transport models, followed by an examination of studies that
+focus on GPS-based data analysis for EVs.
+2.1. Emergency Service Specific Extensions in Transport Simulation Models
+Bieker-Walz et al. [7] implemented special rights for EVs in SUMO [8] (e.g., passing
+red lights, cars forming an emergency lane) and compared simulated EV driving behavior
+to real-world data. The focus of the work is on modeling an EV’s interaction with traffic at
+a detailed level for a single intersection, finding that the simulation lets ambulances pass
+intersections slightly faster than in reality.
+Soni and Weronek [9] modeled an EV with surrounding traffic on a busy street in
+Frankfurt, Germany, with various traffic signal preemption strategies as well as lane closure
+scenarios using SUMO [8]. They used the EV travel times and delays as key metrics. By
+comparing the baseline versus several scenarios, they found that giving the EV signal
+priority on their test corridor significantly reduced total trip time.
+Capodieci et al. [ 10] extended MATSim [ 11] to simulate a smart city scenario in
+which cars are equipped with Advanced Driver Assistance Systems (ADAS) and have
+the ability to communicate via vehicle-to-vehicle (V2V) and vehicle-to-infrastructure (V2I)
+connections. They modeled traffic accidents and tested various mitigation strategies. In
+their simulations, connected and semi-autonomous vehicles were guided to yield or reroute,
+which improved emergency response times to incidents. Their findings indicate that when
+cars have different communication capabilities, EVs reach incident sites faster.
+Koch et al. [12] simulated ambulance dispatch in New Windsor (NY) under disaster
+conditions, such as road network disruptions. Their agent-based model examined how the
+loss of key road links (e.g., due to floods) slows overall emergency response. A key finding
+from their data was that certain roads are critical: removing them (network disruptions)
+led to an increase in the city’s overall response times.
+Bandyopadhyay and Singh [13,14] developed an agent-based simulation for Allahabad
+city using GPS-based EV driving data to calibrate the road network. The multi-agent system
+is implemented in GAMA [15]. A multi-criteria weighted road network is used for routing
+EVs and the agent-based model comprises fire station, EVs, and incidents. The validation
+is performed by comparing simulated and actual response times. An experimental analysis
+is performed at the system level, focusing on an organizational change in [14].
+Our previous work [16] presents a strategic model to enable dynamic infrastructure
+planning by emergency services based on the SUMO traffic simulation by modeling in-
+cidents and emergency service structures at the city scale. The simulation model allows
+infrastructure and capacity scenarios to be simulated in order to systematically compare
+their effects on accessibility and quality of service.
+Wachter et al. [ 17] conduct a time comparison between simulated ground-based
+ambulances and calculated horizontal flight paths of eVTOLs in the Stavanger metropolitan
+https://doi.org/10.3390/smartcities9020036
+Smart Cities 2026, 9, 36 4 of 22
+region and its surrounding islands using a calibrated, microscopic SUMO traffic model.
+They systematically evaluate ambulance travel times from the hospital to all possible
+locations within the simulation area, using a predefined grid.
+Mínguez et al. [18] present SEMSIM, a simulation tool methodologically comparable
+to [16], which is based on SUMO and was designed to optimize the location selection of
+ambulances and their deployment configuration in the Terres de l’Ebre region of Catalonia.
+Building on a microscopic SUMO simulation, external tools are used to simulate ambulance
+journeys. As part of the validation process, four stations with four ambulances are modeled
+and validated against real data.
+The state of the art for emergency service specific extensions in transport simulation
+models is summarized in Table 1.
+Table 1. Literature classification ( Legend: = not available, = low, = medium,
+= high, = comprehensive; Use Case Type: R = regular operation, D = disaster;Emergency Service:
+A = Ambulance, FD = Fire Department, VFD = V oluntary Fire Department,† = conceptionally).
+Source Year Region
+Number of Stations
+Emergency Service
+Use Case Type
+Level of Detail:
+Emergency Data
+Agent-Based
+System Model
+Level of Detail:
+Transport Model
+Capability:
+System Monitoring
+Applicability
+by Operators
+[7] 2018 Brunswick, DE n.a. n.a. R
+[9] 2023 Frankfurt, DE n.a. n.a. R
+[10] 2021 Modena, IT n.a. A R
+[12] 2020 New Windsor, US 1 A D
+[13,14] 2016/2018 Allahabad, IN 1 FD D
+[17] 2024 Stavanger, NO 1 A R
+[16] 2024 Munich, DE 10 FD R
+[18] 2025 Catalonia, ES 4 A R
+This Work 2025 Munich, DE 10 FD, A, VFD † R
+2.2. Commercially Available Software
+In addition to scientific work, commercial software solutions also provide digital twins
+for emergency response systems, e.g., [19] or [20]. However, the underlying methodology
+is generally not publicly disclosed, which limits the application of commercial software in
+academic environments. To the best of our knowledge, agent-based models for simulating
+the holistic dynamic response of the emergency response system have not been reported.
+2.3. GPS-Based Data Analysis for EVs
+The speed at which EVs travel in urban and rural areas is a subject of ongoing re-
+search. The following provides an overview of existing studies and the parameters that
+have been examined to date. Bandyopadhyay and Singh [ 13] provide mean speeds and
+standard deviations of fire EVs for different classes of road segments within the Indian city
+Allahabad. The study is based on a total of 35 recorded GPS trajectories. Lupa et al. [21]
+analyzed GPS records from 300 ambulances in Lesser Poland to derive real ambulance
+speed characteristics and examine how factors such as time of day, traffic, built-up areas,
+and the use of sirens affect travel times. Pappinen and Nordquist [22] compared ambulance
+driving speeds in urgent and non-urgent situations in Finland, using GPS data from 2018,
+and analyzed them against normal and winter speed limits. Bieker-Walz et al. [23] exam-
+ined GPS data from the Brunswick Fire Department, which was recorded by 24 EVs over a
+https://doi.org/10.3390/smartcities9020036
+Smart Cities 2026, 9, 36 5 of 22
+period of five years. In particular, they analyzed the spatial and temporal distribution as
+well as the duration and length of the emergency trips. Additionally, various parameters
+that influence the route selection of EVs were examined. Steinvoord [24] analyzes a data set
+of GPS recordings from the German emergency medical service stations in Bad Oldesloe
+and Reinfeld. The data was collected over a period of two months at a frequency of 1 Hz
+and evaluated in terms of location, road category, and vehicle category. In [ 25] we first
+presented our study for data recording, now covering 18 months of data from the Munich
+Fire Department. In our previous work, we have examined system parameters, speeds by
+road category, and the route selection parameters of EVs.
+2.4. How rescuePY Stands out
+Despite the availability of several scientific publications and commercial systems, to
+the best of our knowledge, there are still gaps in research: (i) There is no open, expandable
+end-to-end simulation and analysis platform that supports monitoring and analyzing the
+interaction between the transport system and the emergency response system, as well
+as the prediction of system-wide impact. (ii) Existing simulation models focus either on
+emergency medical services or fire departments, i.e., one sub-area of the overall emergency
+response system. Volunteer organizations have not been sufficiently considered in simula-
+tion approaches, and a holistic, agent-based system model is currently lacking. (iii) Data
+sets describing the emergency trips made by EVs in urban (European) environments are
+rare. While the average speed and spatial distribution have already been studied, there has
+been no analysis of the dependence on surrounding traffic using floating-car data (FCD),
+nor has there been any indicator for identifying critical road segments in the network based
+on the records.
+To overcome these limitations, rescuePY has been developed as a holistic, open-source-
+based data analysis and simulation platform that integrates heterogeneous data sources
+(e.g., GPS, IMU, real-time floating car data, and land-use information), combines indicator-
+based evaluation with agent-based simulation in a two-level analytical framework, provides
+a modular open-source architecture, and supports system-scale scenario analyses.
+3. Methods
+In previous work, relevant components for the simulation and analysis platform
+have already been developed and published. The idea for the simulation model and a
+first implementation is presented in [16,26]; the GPS data analysis is presented in [25,27],
+focused on route choice modeling and general route characteristics, including average
+speeds. This publication aims to establish the relationship between the various components
+and significantly expand the simulation model and data analysis.
+Our framework integrates various data sources to assess the relationship between
+the transport system and the emergency response system and evaluate potential future
+scenarios. Figure 1 shows the overall architecture of the developed framework. The core of
+the data analysis framework is the automated collection and historization of data sources
+such as real-time traffic data [28,29], GPS measurements, land use and street network [30]
+and emergency response system data. This data is imported into a consolidated data model
+based on PostGIS [ 31] and forms the basis for further analysis. Using pgRouting [ 32]
+for static and dynamic network analyses and SUMO [8] for dynamic system models, the
+current system and future planning scenarios can be evaluated. Using SUMO [ 8] as the
+basis for the transport simulation has the advantage that proven tools for data processing
+can be used, the simulation can be easily visualised, and mesoscopic and microscopic traffic
+models can be integrated. The underlying software architecture is modular and scalable,
+enabling it to meet varying requirements and ensuring easy expansion. All parameters
+https://doi.org/10.3390/smartcities9020036
+Smart Cities 2026, 9, 36 6 of 22
+can be adjusted manually via the user interface, allowing for simple adaptation to local
+requirements. Our model is (partially) open source and available [33].
+AutomaticImport and Historisation
+Data Model
+Street Network
+GPS Data
+ERS - Data
+Real-Time Traffic Data
+Land Use
+User InterfaceAnalysis and Simulation
+Dynamic 
+System 
+Modeling
+Based on: 
+Static and Dynamic 
+Network Analyses 
+Based on:
+Logger
+Control 
+Center
+Figure 1. Architecture of the rescuePY platform (adapted from our own figure previously published
+in [ 34]; Map: created with OpenFreeMap ©OpenMapTiles and data from OpenStreetMap [ 30];
+mobilithek: [28]; SUMO: [8]; pgRouting: [32]).
+3.1. Data Analysis
+This subsection consists of two parts. The first section describes the data analysis
+pipeline that enables the recorded data to be referenced with the network. The second
+section defines the indicators to be analysed.
+3.1.1. Data Analysis Pipeline
+The data analysis pipeline is described in detail in [27]. The pipeline is summarized
+below and is shown graphically in Figure 2:
+• Step 1—Calibration: Transformation of IMU data into the vehicle coordinate system
+according to [35], supplemented by smoothing.
+• Step 2—Preparation: Aggregation of GPS points to emergency trips (speed > 1 m
+s ).
+Short interruptions of up to 180 s, e.g., due to tunnels or traffic jams, are permitted and
+will be taken into account.
+• Step 3—MapMatching: Since EVs have special privileges (driving against the direc-
+tion of traffic, exceeding speed limits, ignoring turn restrictions), the approach of [36]
+was adapted for our use case. The result is a sequence of edges that were traversed by
+the EV .
+• Step 4—Assignment: Assignment of GPS points to edge sections based on geometric
+criteria (next edge < 30 m, same direction, and ensuring that the projection lies within
+the edge). The chosen two-step process ensures quality and efficiency.
+• Step 5—Filter: Filtering by signal quality (number of satellites, DOP), start at the
+station, end at the location of incident/operation, and comparison with the control
+center protocol logs.
+The resulting trajectories consist of edge-referenced GPS measurement points. Based
+on the referenced GPS measurement points, average speeds per edge and time losses at
+junctions can be calculated.
+https://doi.org/10.3390/smartcities9020036
+Smart Cities 2026, 9, 36 7 of 22
+.
+Analysis
+IMU (1) Calibration (4) Assignment
+Logger 
+(GPS) Logger 
+(IMU -Sensor)
+=
+Historical 
+Traffic Data
+rescuePY Vector
+Traffic Information
+Matching Routing
+GPS (5) Filter
+(3) MapMatching(2) Preparation (4) Assignment
+Route 
+Choice 
+Criticality
+Indicator
+Regression
+Analysis of 
+Intersections and 
+Road Sections
+Regression 
+Analysis
+vEmergency
+vTraffic
+Figure 2. Data Analysis Pipeline of rescuePY.
+3.1.2. Definition of Indicators
+In urban environments, monitoring large road networks is complex, and identifying
+potentially critical road sections can be difficult. To support the road network monitoring
+by emergency services, we propose two indicators, which are presented below:
+Criticality Indicator: To identify potentially critical edges within the network for EVs,
+multiple indicators are used to analyze the recorded data of the data logger. Individual
+road sections are evaluated based on the frequency of critical events xcrit relative to the
+total number of passings n, as shown in Equation (1):
+RRoadsegment = ∑ xcrit
+∑ n . (1)
+The indicator xcrit is a compound indicator that aggregates multiple individual indica-
+tors, which are adapted from literature into one comprehensive location-fixed indicator.
+As outlined in Equation (2), the indicator is set to 1 if any of the individual indicators are
+triggered; otherwise, it is set to 0.
+xcrit =
+
+
+
+1, if |v| ≤ 2 m
+s ∨ ax ≥ 3 m
+s2 ∨ ay ≥ 3 m
+s2 ∨ | ˙ax| ≥ 10 m
+s3 ∨
+ ˙ay
+ ≥ 10 m
+s3
+0, else.
+(2)
+The thresholds in Equation (2) are used as conservative limits. Several reference values
+originate from passenger-car studies. We transfer them as a lower bound for criticality. EVs
+are heavier, often have a higher center of gravity, and may carry sensitive cargo, which
+typically reduces the acceptable acceleration and jerk range. Thus, maneuvers that reach
+passenger-car “aggressive” or “near-crash” levels are likely to be critical. This conservative
+setup reduces false positives when flagging segments, but it may under-detect less extreme
+maneuvers that could still matter for emergency operations. Therefore, our model is fully
+adaptable, allowing thresholds to be set on an individual level.
+The first indicator captures low speed events where the vehicle’s speed drops below
+a critical threshold vcrit. We selected a threshold of 2 m
+s , as going below this speed is
+https://doi.org/10.3390/smartcities9020036
+Smart Cities 2026, 9, 36 8 of 22
+generally not expected in normal traffic conditions and thus signals a hindrance to the
+EV’s progress. The second and third indicators capture acceleration peaks in the longitu-
+dinal and lateral directions, respectively. As described by the US NHTSA, a near-crash
+situation is characterized by a rapid evasive maneuver, indicated by an acceleration or
+deceleration that approaches the limits of the vehicle’s capabilities [ 37]. They consider
+longitudinal accelerations of ax ≥ 4.9 m
+s2 and lateral accelerations of ≥3.9 m
+s2 as near-crash
+situations [37]. Johnson and Trivedi identified that the average peak lateral acceleration
+during non-aggressive left and right turns is approximately 0.30 g and therefore remains
+below ay < 3 m
+s2 [38]. Serre et al. measured that accelerations inside an ambulance during
+emergency driving are below a = 3 m
+s2 for 98.6 % of the time and investigated anything
+above that as a potential hazard [39]. Based on these findings, we set the thresholds for
+our indicators to ax ≥ 3 m
+s2 and ay ≥ 3 m
+s2 . As Bagdadi identified, high jerk values as a strong
+indicator for near-crashsituations [40], we also include a jerk value as part of our compound
+indicator. Jerk measures the rate of change in acceleration [40]. Previous work has used
+jerk thresholds of 10 m
+s3 [40] to identify critical situations. In line with previous research we
+choose jerk values of | ˙ax| ≥ 10 m
+s3 and
+ ˙ay
+ ≥ 10 m
+s3 as thresholds for criticality.
+Regression Analysis: In addition to the kinematics-based criticality indicators, we also
+suggest a traffic speed regression indicator. As shown in previous research, the interaction
+between EVs and other traffic is a key factor in determining the overall response time
+of an EV [21,41,42]. Interactions may include the evasive behavior of other vehicles and
+the effects of traffic jams on the speed of the EV . To capture these effects, we propose
+a regression analysis (see Figure 3), in which we correlate the EV’s speed for a specific
+section of road with the nearest available reported average speed of all other vehicles over
+several journeys on the same section of road. A positive association between the EV’s
+speed and the surrounding traffic speed would be consistent with the EV being constrained
+by ambient traffic conditions. We therefore treat such segments as candidates for manual
+review. We estimate a linear regression on each road segment using a Theil–Sen regressor.
+This estimator is chosen for its robustness against outliers. To quantify the correlation, we
+use the Pearson correlation coefficient r. We define street segments as relevant for manual
+review, having a Pearson correlation coefficientr > 0.2 that is statistically significant at the
+5% level and a slope m > 0.5.
+.
+CurrentTraffic 
+Situation 
+(FCD Data)
+GPS Data
+Spatialand Temporal Referencing
+?T?TrafficvTraffic
+vEmergency
+Figure 3. Referencing the current traffic situation and GPS-based EV speed.
+3.2. Dynamic System Model
+Profound changes in accessibility within the city necessitate a comprehensive assess-
+ment that considers the entire emergency response system and its dynamic response to
+incidents. To enable this, our simulation and analysis platform includes a dynamic system
+model. The model follows an agent-based approach: each actor of the emergency response
+https://doi.org/10.3390/smartcities9020036
+Smart Cities 2026, 9, 36 9 of 22
+system is modeled as an independent agent with specific attributes and state transitions.
+The system dynamics result from the interaction of these agents.
+3.2.1. Modeled Agents, Additional Components and Their Properties
+The simulation replicates the real process by assigning specific tasks to each type
+of emergency service: career firefighters, volunteer firefighters and emergency medical
+services. All emergency services follow a similar basic sequence: gearing up, traveling
+along a realistic route, responding on site, and then returning to their station. Volunteer
+firefighters first drive from their homes to the station, while ambulances may drive to the
+nearest hospital before returning to the station. Once an EV has left the scene, it is available
+for the next incident.
+In expert discussions, the entities to be modeled and their essential characteristics were
+defined. The relevant services include career fire departments, volunteer fire departments,
+and emergency medical services.
+Modeled Agents:
+• Hospital: A hospital treats patients arriving by ambulance. The hospitals are charac-
+terized by a defined capacity and a fixed location.
+• Fire station: Fire stations are responsible for managing the allocation of crew members
+to specific roles and vehicles. They also serve as the home base for all EVs. Each fire
+station has a defined location, and every EV is assigned to exactly one station, to which
+it returns after each operation. Stations are assigned specific emergency capabilities.
+• Dispatch Agent: The dispatch agent becomes active when an incident occurs. The
+dispatch logic corresponds to the real system. Based on predefined zones and the
+pre-calculated order of fire stations, it is determined which station should respond,
+given the current status of the EVs and the required resources. The incident is then
+assigned accordingly.
+• Emergency Vehicles: EVs are vehicle-agents. Every EV has a home base, to which
+it returns after completing an operation. They each have a type, which indicates
+different capabilities. This is needed to assign the required EV for each emergency
+type. Ambulances are specifically designed to receive and transport a single patient.
+Each EV has a list of currently assigned personnel and a status reflecting its current
+position/task. The most important statuses can be described as follows: In status 2,
+the EV is at its base. Once assigned to an emergency and ready for deployment, it
+enters status 3 and proceeds to the incident location. Upon arrival and engagement, it
+is in status 4. After completing the operation, it switches to status 1 and returns to its
+home base.
+Additional Components:
+• Incident: An incident is an emergency event defined prior to the simulation run, which
+is triggered at a predefined time. Each incident has a location and a classification.
+• Person: A person can either be a member of an EVs crew or a patient. Crew members
+possess a set of roles they are qualified to perform, as well as an active role they
+currently fulfill. If a crew member belongs to a volunteer fire station, an additional
+parameter is defined: a radius indicating the distance from which the member can be
+randomly dispatched to the station in case of an emergency.
+• Log Entry: Every status change of an EV , as well as every trip, generates a log entry
+that can be used for a more detailed analysis of the simulation results.
+• Zones: The simulated area of interest is divided into multiple smaller zones, which
+are required for the station order. These zones must be generated or provided as input
+before executing the simulation.
+https://doi.org/10.3390/smartcities9020036
+Smart Cities 2026, 9, 36 10 of 22
+• Station Order: The station order defines, based on the zone in which an emergency
+occurs, the order of the nearby stations to respond to an emergency in that zone.
+The first available station with the required equipment from the calculated order is
+selected. This configuration must be defined prior to running the simulation.
+• Alarm and Dispatch Order: The alarm and dispatch order specifies the required num-
+ber and type of equipment and personnel for each type of incident. This configuration
+must be defined before the simulation begins.
+3.2.2. Implementation of the Transport Model
+The basic modeling and interaction with the SUMO simulation [8] is taken from [16].
+A mesoscopic SUMO simulation is used to simulate emergency response journeys. Vehicles
+in motion (on their way to or from the scene) and at the scene are represented in the
+SUMO simulation. Vehicles on standby at the station are not included in the simulation.
+The interaction logic with the traffic simulation is implemented in TraCi. The driving
+speeds of EVs are determined based on average speed values from the GPS data. To
+enable a city-wide simulation with reasonable compute time, surrounding vehicles are not
+explicitly simulated, but their effects are taken into account via reduced average speeds.
+This reduction can be modeled on a section-by-section basis or by road category. The
+present simulation model covers public traffic areas accessible to passenger cars. It focuses
+on the movement of EVs in the road space, starting with their departure from the station
+and ending with their arrival at the scene of the emergency, defined as the parking of
+the vehicle in the public road space. Missing turn relationships, which exist due to the
+connection of edges and nodes but for which no connection exists, are supplemented for
+EVs using netconvert. The routing method used for EVs is the logic described in [27], but
+for reasons of efficiency, it is limited to the fastest route only.
+3.2.3. Modeled Processes
+As soon as an incident occurs during the simulation, the relevant EVs are immediately
+dispatched. The selection of EVs depends on the incident type, the alarm and dispatch order,
+and the location of the incident. The dispatching can be configured to follow either a static
+or dynamic method. In the static method, stations are prioritized based on calculated focal
+points of the operational areas, considering activation time depending on station type. In
+the dynamic method, the simulation selects the vehicle that can reach the incident location
+fastest in terms of travel time. Once selected, the EVs are activated and proceed through
+their respective operational workflows. For professional fire departments, personnel first
+put on their gear before departure, then vehicles follow a realistic route to the incident,
+which is handled by the SUMO traffic simulation. After an on-scene operation, they become
+available for the next incident and return to their station. Volunteer fire departments follow
+a similar procedure, but their personnel must first travel from distributed home locations to
+the station before gearing up, and return home conceptually after the mission. Ambulances
+also include preparation time before departure, provide on-scene treatment, and then
+transport the patient to a hospital, typically the nearest available one, unless capacity or
+special care requirements necessitate a different destination. After delivering the patient,
+the ambulance returns to its base and becomes available for further incidents.
+4. Case Study: Munich Fire Department
+The presented simulation and analysis platform from Section 3 is now applied to a
+case study with the Munich Fire Department. The following software versions were used
+for this research: PostGIS 3.5.2, pgRouting 3.7.3, and SUMO 1.21.0.
+https://doi.org/10.3390/smartcities9020036
+Smart Cities 2026, 9, 36 11 of 22
+Data recording: Fire Station Four of the Munich Fire Department was recorded from
+February 2024 to May 2024 and Fire Station One was recorded from June 2024 to May 2025.
+At both fire stations the standard formation of the Munich Fire Department consisting of a
+command vehicle (CV), two fire engines (FE), a turntable ladder (TL) and an ambulance
+(A) are included in the recording. Additionally, the vehicles of the operations control
+service and an additional ambulance at Fire Station One were also recorded. The EVs can
+be divided into a small vehicle class (CV and A) and a large vehicle class (FE and TL).
+For recording purposes, the vehicles were equipped with a data logger connected to the
+vehicle’s OBD port, which recorded both GPS information and the IMU signal. Each data
+logger consists of an ESP-32 microcontroller, a MAX-M8W GNSS module from ublox, and
+an external GNSS antenna [27]. The extent of the recorded data can be seen in Figure 4.
+Road network: The road network was exported from [30]. The data was afterwards
+converted to a car-only SUMO network using netconvert of [ 8]. Frequently used street
+segments not included within the initial export were added manually. The road network
+was further enriched by labeling the streets’ mobility-transition-related attributes that may
+influence EVs. The type of cycling infrastructure and the presence of dedicated special
+lanes, such as tram tracks that can be driven on, were manually classified into the following
+categories based on aerial photographs and road surveys:
+• Cycling infrastructure: Presence of cycle lanes accessible to cars without a curb
+• Separation of traffic directions: no structural separation (only markings); structural
+separation (guard rails, central reservation);
+• Special lanes: special lanes are available and accessible to EVs (e.g., bus lanes).
+Traffic data: Traffic data is obtained on a minute-by-minute basis from [ 28,29] and
+archived in the database. The traffic data is referenced using a geometric assignment in
+which equidistant points are generated at intervals of 10 m along the internal network
+edges. For each of these points, the nearest external network link within a comparably small
+threshold is determined, accounting for both distance and travel direction. An assignment
+is only valid if the point lies within the link and the distance as well as directional deviation
+are below a defined threshold value.
+The quality of the matching was ensured and checked using the user interface.
+Figure 4. Edges with recorded data are shown in blue. Fire Stations One and Four are marked as red
+circles (updated version of own figure from [27]).
+5. Results
+This section presents the results of the case study. The section is divided into the
+results of the data analysis and the simulation case study.
+https://doi.org/10.3390/smartcities9020036
+Smart Cities 2026, 9, 36 12 of 22
+5.1. Results of the Data Analysis
+The data collected in our case study (see Section 4) was processed using the approach
+described in Section 3 to calculate the previously defined indicators RRoadsegment and
+perform a regression analysis to determine the relationship between the speed of EVs and
+the average traffic speed on each road segment.
+In the following subsections, first the indicators are discussed to demonstrate the
+plausibility and their feasibility for identifying problematic edges. Second, the influence of
+the structural separation between the driving directions is discussed. Finally, five different
+road cross-sections are discussed in detail.
+5.1.1. General Indicator Analysis
+First, we descriptively examine the regressions introduced in Section 3.1.2 for all street
+segments. Figure 5 summarizes the resulting distributions of slope, intercept and EV speed
+advantage for large vehicles (LV , FE/TL class) in Figure 5a–c and small vehicles (SV , CV/A
+class) in Figure 5d–f. For both classes, the slope distribution is predominantly positive
+and below 1. The LV slope distribution is visibly shifted to higher values than the SV
+distribution. The intercept distributions—formally the model’s EV speed at vTraffic = 0
+should be interpreted with caution because observations with low observed traffic speeds
+are rare. They serve primarily to position the regression line. Finally, the EV speed
+advantage vEV ,adv= vEV
+vTraffic
+is almost always above 1 but widely dispersed for both classes,
+reflecting heterogeneous local conditions. The advantage is larger and more stable for
+SV than for LV . The plausibility of the compound criticality indicator was reviewed with
+domain experts, who confirmed that locations flagged align with known operational
+bottlenecks. The segment highlighted in Figure 6 exhibits, for example, a high criticality.
+As shown by the street-level image in (b), construction work reduces the carriageway to a
+barrier-bounded one-lane corridor.
+5.1.2. Discussion of the Influence of Structural Separations Between Traffic Directions
+This section investigates whether the physical separation of opposite driving directions
+increases the likelihood of low-speed occurrences (v < 2 m
+s ) on two-lane roads. To ensure
+data quality and comparability, the first and last 20 s of each trajectory were truncated
+to avoid start and stop effects for this analysis. Only two-lane road segments with a
+minimum length of 10 m were considered, and segments with drivable bicycle lanes were
+excluded. Furthermore, a minimum of 10 valid measurements per segment was required
+for inclusion in the analysis. The probability of critical events was compared between road
+segments with and without physical separation of driving directions visible in Figure 7.
+Performing a Mann–Whitney U test reveals a statistically significant difference between
+the two groups for both vehicle classes. These results indicate that road segments with
+physically separated driving directions exhibit a lower probability of low-speed events than
+those without separation. Additionally, the regression analysis presented in Section 3.1.2
+was conducted to investigate whether the speed of EVs and the reported average speed
+of surrounding traffic vary depending on the type of separation. For both conditions,
+Theil-Sen regression models were fitted, and slopes and intercepts were compared. The
+strength of the linear relationship was quantified using Pearson’s r. The distribution of
+these regression parameters for large vehicles and for small vehicles is shown in Figure 8.
+Similar patterns are evident in the slope and intercept distributions for both vehicle classes.
+Where oncoming traffic is physically separated, the slopes are higher and the intercepts
+lower. Taken together, our data shows that on edges with direction separation the associ-
+ation of the speed of EVs and surrounding traffic is stronger. Additionally, the relationship
+is stronger for the large vehicle class.
+https://doi.org/10.3390/smartcities9020036
+Smart Cities 2026, 9, 36 13 of 22
+−1 0 1 2
+Slope m [-]
+0.0
+0.5
+1.0
+1.5
+2.0
+Density [-]
+µ=0.401, σ2=0.285
+Median = 0.311
+(a) Slope (LV)
+0 20 40 60 80
+Intercept b [ km
+h ]
+0.00
+0.02
+0.04
+0.06
+Density [-]
+µ=33.1, σ2=290
+Median = 33.2 (b) Intercept (LV)
+0 1 2 3
+vEV,adv [-]
+0.0
+0.5
+1.0
+1.5
+2.0
+Density [-]
+µ=1.73, σ2=0.129
+Median = 1.74 (c) EV Speed Advantage (LV)
+−1 0 1 2
+Slope m [-]
+0.0
+0.5
+1.0
+1.5
+Density [-]
+µ=0.343, σ2=0.31
+Median = 0.227
+(d) Slope (SV)
+0 20 40 60 80
+Intercept b [ km
+h ]
+0.00
+0.01
+0.02
+0.03
+0.04
+Density [-]
+µ=42.6, σ2=487
+Median = 43.2 (e) Intercept (SV)
+0 1 2 3
+vEV,adv [-]
+0.0
+0.5
+1.0
+1.5
+2.0
+Density [-]
+µ=1.96, σ2=0.201
+Median = 1.92 (f) EV Speed Advantage (SV)
+Figure 5. Distributions for regression analysis indicators. (Legend:L V = large vehicles; SV = small vehicles).
+(a)
+ (b)
+Figure 6. Most critical recorded link in (a) Network (Source: [8]) and (b) Street-level Image (Source:
+authors) representation.
+https://doi.org/10.3390/smartcities9020036
+Smart Cities 2026, 9, 36 14 of 22
+Yes No
+Directions Separated
+0.0
+0.2
+0.4
+0.6
+0.8
+RRoadsegment [-]
+U=579.00,
+p=0.0221
+(a) Risk of getting stuck (LV)
+Yes No
+Directions Separated
+0.0
+0.2
+0.4
+0.6
+0.8
+RRoadsegment [-]
+ U=632.00,
+p=0.0482
+Mean (b) Risk of getting stuck (SV)
+Figure 7. Relative Criticality Index RRoadsegment focusing on low-speed occurrences ( v < 2 m
+s ) by
+road segment attributes (Legend: LV = large vehicles; SV = small vehicles).
+Yes No
+Directions separated
+−1
+0
+1
+2
+Slope m [-]
+Median
+(a) Slope (LV)
+t = 2.28, p = 0.025
+Yes No
+Directions separated
+0
+20
+40
+60
+80Intercept b [ km
+h ]
+Median
+(b) Intercept (LV)
+t = −1.99, p = 0.050
+Yes No
+Directions separated
+−1
+0
+1
+2
+Slope m [-]
+Median
+(c) Slope (SV)
+t = 2.05, p = 0.043
+Yes No
+Directions separated
+0
+20
+40
+60
+80Intercept b [ km
+h ]
+Median
+(d) Intercept (SV)
+t = −2.18, p = 0.032
+Figure 8. Regression analysis for small and large EVs. (Legend:L V = large vehicles; SV = small vehicles).
+5.1.3. Discussion of Various Road Cross-Sections
+Finally, five different road sections with many records will be examined in detail. The
+results are shown in Table 2. For each section, we perform a regression of the EV speed
+against the nearest available reported average traffic speed and indicate the slope, the
+intercept, the sample size N, and the observed range of reported traffic speeds. Across
+all sections, N is large enough to provide stable Theil-Sen estimates, and the width of
+the traffic speed range indicates the range of traffic conditions under which the data for
+this link was collected. Across the five representative cross-sections, a consistent pattern
+emerges. Where evasion options are structurally limited, i.e., where there are no passable
+https://doi.org/10.3390/smartcities9020036
+Smart Cities 2026, 9, 36 15 of 22
+cycle lanes and no usable opposite lanes, as in Sections 3 and 5, the coupling between the
+speed of EVs and background traffic is stronger, which is reflected in higher slopes and
+larger Pearson correlation coefficients r. This limitation is even more pronounced for the
+LV class. In contrast, cross-sections that offer usable evasion space, such as Section 1 with a
+passable opposite lane and passable cycle lanes, show very low gradients for both classes.
+Table 2. Comparison of slope, intercept, number of measurements (N), FCD width and bootstrap
+analysis between small and large vehicles for each road cross-section. Bootstrap column shows
+median slope, 95% CI, and bootstrap p-value. (Legend: * = p < 0.05).
+Road Section
+Small Vehicles Large Vehicles
+m b N Range
+vTraffic
+Pearson
+r
+Bootstrap
+˜m, CI, p m b N Range
+vTraffic
+Pearson
+r
+Bootstrap
+˜m, CI, p
+30
+0.10 45.98 208 11–34 −0.036
+0.100,
+[−0.115,
+0.305],
+0.344
+−0.07 47.42 254 12–34 −0.092
+−0.043,
+[−0.283,
+0.227],
+0.752
+30
+0.28 46.93 212 10–34 0.113
+0.320,
+[0.087,
+0.566],
+0.008
+0.07 49.58 252 11–34 −0.025
+0.085,
+[−0.152,
+0.335],
+0.436
+50
+0.78 34.57 91 11–42 0.247 *
+0.797,
+[0.168,
+1.378],
+0.008
+0.82 28.20 121 10–45 0.357 *
+0.856,
+[0.528,
+1.341],
+0.000
+30
+0.19 43.25 65 13–35 −0.059
+0.239,
+[−0.310,
+0.804],
+0.360
+0.06 44.18 101 12–35 −0.071
+0.085,
+[−0.187,
+0.317],
+0.496
+30
+0.80 26.51 95 14–34 0.243 *
+0.823,
+[0.388,
+1.450],
+0.000
+0.99 20.81 141 9–32 0.338 *
+1.005,
+[0.638,
+1.502],
+0.000
+The results of the data analysis can be summarised as follows: More favorable traffic
+conditions are associated with improved progress of EVs. In addition, road geometry also
+plays a role: undivided roads are associated with a lower likelihood of low-speed events.
+Our analysis further indicates that physically separated corridors exhibit a stronger associ-
+ation between surrounding traffic speed and EV speed. These findings are observational
+and should not be interpreted as causal effects.
+5.2. Results of the Dynamic System Model
+In the following section of this paper, the case study with the developed agent-based
+model is presented. In the first step, the model is evaluated on its overall quality, with a
+particular focus on the temporal accuracy of EV trips and dispatch performance. This is
+followed by a sensitivity analysis to show the effects of the network parameterization on
+the model. The underlying system setup is applied as shown in Figure 9 and described in
+Section 4. The model includes the ten Munich Fire Stations and all public hospitals (based
+on the OSM tags amenity = hospital and emergency = yes) in Munich exported from [30]. The
+reference control center data set is March 2024. The alarm and dispatch order was derived
+based on the most frequently dispatched vehicle configuration for each incident keyword.
+https://doi.org/10.3390/smartcities9020036
+Smart Cities 2026, 9, 36 16 of 22
+Figure 9. Setup for system validation (Legend: red triangle = Fire Station, green triangle = Hospital).
+5.2.1. Validation
+In a first step the dynamic system model is validated against observed travel times.
+To evaluate the temporal accuracy of the model, the analysis focuses on the first-arriving
+large EV . Historical data from the control center protocol is frequently used for strategic
+planning. Accordingly, the validation step compares the simulated travel times with the
+recorded travel times (status 3 to status 4) derived from the control center protocol. Prior to
+validation, the data set was checked and filtered to ensure its plausibility and relevance for
+the validation data set, e.g., by removing empty or incorrect entries that may occur due
+to radio-based reporting. The validation results for time-critical incidents are shown in
+Figure 10. The regression line in Figure 10a exhibits a slope of 0.9194 and an intercept of
+11.23 s. It shows that the model slightly underestimates the travel times of the first-arriving
+EVs for longer trips. The mean absolute percentage error (MAPE) of the overall simulation
+is 21.91%, while the mean absolute error (MAE) is 42.61 s. The error analysis grouped by
+real world trip duration shows that short trips (t < 180 s) have a MAPE of 25.19% and a
+MAE of 30.49s. Medium trips (180 ≤ t < 420 s) exhibit a MAPE of 19.50% and an MAE of
+49.12 s , while long trips (t ≥ 420 s ) have a MAPE of 17.17% and an MAE of 102.29 s . In
+85.3% of all cases, the simulation correctly predicts the first-arriving large EV , as a result of
+dispatching and simulation. In 14.7%, the first-arriving large EV differs from reality.
+The observed deviations in travel time can be attributed to two causes, among others:
+(i) missing roads in the underlying road network, which is cars-only, leading to unreal-
+istic routes in areas with pedestrian zones and access restrictions, and (ii) local incorrect
+estimates of travel speeds and junction time losses due to the use of average values for
+parameterization. Especially, (i) leads to spatially clustered delays in travel time.
+While we have recorded GPS data for network calibration for Fire Stations One and
+Four, it is not available for all other fire stations. Figure 10b shows the validation result for
+Fire Station Seven using the average historical speeds. This shows (to a certain extent) that
+average speeds measured at one station can be transferred to another and used to produce
+a suitable model.
+https://doi.org/10.3390/smartcities9020036
+Smart Cities 2026, 9, 36 17 of 22
+0 200 400 600
+Measured time [s]
+0
+100
+200
+300
+400
+500
+600Simulated time [s]
+y = 0.9194x + 11.23
+R² = 0.7648
+(a) All stations
+0 200 400 600
+Measured time [s]
+0
+100
+200
+300
+400
+500
+600Simulated time [s]
+y = 1.0394x + -17.21
+R² = 0.8452 (b) Fire Station Seven
+Figure 10. Validation results of the dynamic system model.
+5.2.2. Sensitivity Analysis
+The following section focuses on examining the sensitivity of the system response to
+locally altered speeds. Motivated by the conducted data analysis, which shows the strategic
+role of main urban roads for EVs, we generate three interruption scenarios by randomly
+selecting 20% of all main-road segments in Munich and reducing the EV travel speed on
+those links by 50%. Selections are independent across scenarios and may affect links on
+the way to the incident or to the hospital. No modal filters or closures are introduced. The
+outcomes in Table 3 show a system-wide sensitivity. Across all interruption scenarios, both
+the medians and the mean values increase for response time of large EVs to incidents and
+the total travel time of ambulances to the hospital.
+In short, even modest, spatially scattered speed reductions on main roads propagate
+into system-wide response-time increases. These findings underscore the need to monitor
+and analyze planned speed reductions, narrowings, or construction phases specifically
+against established EV corridors, for example by using the indicators in Section 3.1.2.
+Table 3. Travel and Response Times: Incident and Hospital.
+Scenario
+Response Time
+of Large EVs to Incidents [s]
+Total Travel Time
+to Hospital [s]
+Median Mean Median Mean
+Base Scenario 244 297 576 662
+Interruption 1 277 337 658 749
+Interruption 2 270 330 660 744
+Interruption 3 271 332 647 739
+6. Discussion
+The framework was developed to support emergency services during the transition
+to sustainable mobility to handle the challenges that come with it. Although the results
+show clear benefits of our method in monitoring the current emergency response system
+and planning future scenarios, there are still limitations and priorities for future work.
+The following section deals with the most important limitations:
+• Firstly, the underlying data set is limited. Our analysis is based on a limited observa-
+tion window from two out of ten stations of the Munich Fire Department. Although
+this data set is comprehensive and detailed compared to the literature, it nevertheless
+https://doi.org/10.3390/smartcities9020036
+Smart Cities 2026, 9, 36 18 of 22
+represents only a snapshot of a single city. The transferability of the results to other
+urban contexts needs to be verified by applying the framework to other fire stations
+and cities.
+• Secondly, the regression analysis is sensitive to the quality of the input data. Both
+network-to-network referencing and the data, e.g., the FCD-reported average speed
+used as an indicator for the traffic condition, itself introduce errors. Future data
+collection should supplement the logger data with actual scene recordings, for exam-
+ple, through ego-perspective, geo-referenced camera recordings. This would enable
+a precise reconstruction of the traffic situation including traffic light states and the
+observed behavior of the surrounding road users encountered by the EV . This would
+allow driving behavior and conflict situations to be modeled more accurately, and the
+causes for observed values to be investigated. The regression-based speed-coupling
+indicator was designed as a simple, edge-wise and univariate measure. Therefore,
+multicollinearity is not of concern here. Heteroskedasticity is handled by reporting
+bootstrapped uncertainty for the Theil–Sen slope, including confidence intervals.
+Some spatial dependence between adjacent links is expected in road networks, how-
+ever, the indicator is computed separately for each topologically defined link. We
+therefore treat link-to-link tests as descriptive.
+• Thirdly, the current assessment is based on geometric simplifications. To reduce distor-
+tions, future work should take into account lane width, geometry at lane level, and
+the exact intersection layouts. Therefore, the detailed relationship between structural
+design decisions and operational safety, including the perspective of vulnerable road
+users, remains an open question.
+• Fourthly, the simulation model offers an accessible, end-to-end approach for realisti-
+cally simulating ground-based rescue operations at the system level; however, it is not
+yet complete. Air medical services have not been integrated, which limits coverage of
+the emergency response system to ground-based vehicles. Processes and interactions
+at the scene, such as extrication in road-traffic collisions, are currently out of scope,
+even though they can materially influence both duration and outcomes. The target
+variable in the present validation is arrival at the presumed incident location; in prac-
+tice, arrival at the actual patient location is more relevant and should be reflected in
+future versions. A comprehensive validation and application in the context of a case
+study for volunteer fire departments remains outstanding and should be completed to
+ensure robustness across organizational types.
+• Fifthly, the simulation model uses a mesoscopic traffic model that does not explicitly
+simulate surrounding traffic. Therefore, it does not consider congestion caused by
+bottlenecks or the redistribution of traffic within the network. Nevertheless, detailed
+simulations under changed traffic conditions require a microscopic simulation of
+surrounding traffic to capture diversion and congestion effects. While this can be
+achieved with tools such as hybridPY and the microscopic fire brigade model [16,43], it
+presupposes an underlying traffic demand model. Incorporating such an assignment
+where warranted will improve fidelity for scenario analyses that include widespread
+speed changes, construction phases, or modal filters.
+• Finally, the model has been tailored to the Bavarian context; its applicability to other
+countries has not yet been tested and will likely require adapting institutional rules,
+dispatch logic, and infrastructure constraints. In order to transfer the model to other
+cities, the underlying database can be derived from publicly available data and specific
+data from emergency service operators, e.g., station locations and incident data, can be
+integrated to perform initial analyses. Detailed data, e.g., GPS measurements for traffic
+https://doi.org/10.3390/smartcities9020036
+Smart Cities 2026, 9, 36 19 of 22
+analysis, can then be added in a second step. Thus, the model centres on globally
+transferable components enriched with city-specific data.
+In summary, the framework already enables data-driven analysis and planning. How-
+ever, more comprehensive data sets, richer environmental sensing, more detailed geometry,
+advanced process modelling, and assignable traffic dynamics are the levers to strengthen
+validity, portability, and decision value.
+7. Conclusions
+This paper presents a holistic, open-source-based, and modular simulation and anal-
+ysis platform that enables emergency services to monitor the interaction between the
+transport system and the emergency response system and efficiently investigate ‘what-if’
+scenarios. The platform links heterogeneous data sources—real-time traffic data, GPS
+recordings from EVs and an OSM-based road network [ 30]—in a data model and uses
+pgRouting [32] for indicator-based network analyses and SUMO [8] for mesoscopic, agent-
+based simulations. The agent-based system replicates all relevant ground-based actors in
+the emergency response systems. The presented framework helps organizations to identify
+road sections that require manual inspection and investigate changes at the system level,
+whether due to changes to the transport system or organizational measures.
+The case study with the Munich Fire Department demonstrates the practical applica-
+bility of the framework. Within this case study, critical road sections are identified using the
+combined criticality indicator. In a second step, the influence of road geometry and physical
+separation on the progress of EVs in urban environments is discussed. More favorable
+traffic conditions are associated with improved progress of EVs and undivided roads are
+associated with a lower likelihood of low -speed events. Our data further indicates that
+physically separated corridors exhibit a stronger association between the surrounding traf-
+fic speed and the EV speed.The developed agent-based model shows promising validation
+results when compared to historical incident data.
+Nevertheless, several limitations remain. Air medical services are not yet included,
+processes at the scene are simplified, and the transferability to other regions needs to be
+verified. Future work should extend the underlying data set, add additional data such as
+ego-perspective video, and incorporate richer geometric detail where needed. Overall, the
+framework provides a solid basis for data-driven decision-making in emergency response
+system planning.
+Author Contributions: Conceptualization, F.S.; methodology, F.S.; software, F.S., M.S. and T.Z.;
+validation, F.S. and T.Z.; formal analysis, F.S.; investigation, F.S.; resources, M.L.; data curation, F.S.
+and T.Z.; writing—original draft preparation, F.S., M.S. and T.Z.; writing—review and editing, F.S.,
+M.S. and T.Z.; visualization, F.S. and T.Z.; supervision, M.L.; project administration, F.S.; funding
+acquisition, M.L. All authors have read and agreed to the published version of the manuscript.
+Funding: This project was funded by the Federal Ministry of Research, Technology and Space
+(BMFTR) as part of the M-Cube Cluster (Clusters4Future) within the project DatSim2.0 (grant no.
+03ZU2105HA).
+Data Availability Statement: The underlying SUMO networks originate from freely accessible and
+usable OpenStreetMap data extracts. The historical traffic data used in this study were obtained from
+the City of Munich and are currently accessible via mobilithek.
+Acknowledgments: The authors would like to thank the Munich Fire Department (Branddirektion
+München) for the support and the discussions.
+Conflicts of Interest: The authors declare no conflicts of interest.
+https://doi.org/10.3390/smartcities9020036
+Smart Cities 2026, 9, 36 20 of 22
+Abbreviations
+A Ambulance
+CV Command vehicle
+EV Emergency vehicle
+eVTOL Electric vertical take-off and landing aircraft
+FCD Floating car data
+FD Fir
