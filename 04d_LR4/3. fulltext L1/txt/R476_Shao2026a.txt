@@ -1,0 +1,1262 @@
+Lightweight graph retrieval-augmented generation agent for safety 
+monitoring digital twins in small- and medium-scale hydropower projects
+Chenfei Shao
+a , b , c
+, Xiangnan Qin
+d
+, Xing Li
+e
+, Meng Yang
+e
+, Dongyang Yuan
+f
+, Sen Zheng
+a , b , c , *
+a
+College of Water Conservancy and Hydropower Engineering, Hohai University, Nanjing 210098, China
+b
+The National Key Laboratory of Water Disaster Prevention, Hohai University, Nanjing 210098, China
+c
+National Engineering Research Center of Water Resources Efficient Utilization and Engineering Safety, Hohai University, Nanjing 210098, China
+d
+School of Water Conservancy and Transportation, Zhengzhou University, Zhengzhou 450001, China
+e
+Nanjing Hydraulic Research Institute, Nanjing 210029, China
+f
+School of Infrastructure Engineering, Nanchang University, Nanchang 330031, China
+ARTICLE INFO
+Keywords:
+Hydropower project
+Safety monitoring
+Digital twin system
+Lightweight agent assistant
+GraphRAG
+ASR correction
+KG maintenance
+ABSTRACT
+Intelligent agent assistants are becoming essential for efficient interaction in safety monitoring digital twin (DT) 
+systems. However, their deployment in small- and medium-scale hydropower projects remains limited by 
+complex modules, inefficient interaction, and constrained computing resources. To bridge this gap, this paper 
+proposes a lightweight agent assistant for DT systems that integrates graph retrieval-augmented generation 
+(GraphRAG)-enabled task-oriented context construction with Gemma-based large language model (LLM) 
+response generation. Graph-constrained automatic speech recognition (ASR) correction improves intent recog -
+nition and hands-free operation. Additionally, a conflict resolution and dynamic update strategy supports 
+lightweight knowledge graph (KG) maintenance. Ultimately, field validation in a practical medium-scale hy -
+dropower project DT system demonstrates that the agent assistant reduces users' operational cognitive load and 
+ensures response accuracy. As a result, this paper provides a lightweight, low-cost, and portable DT interaction 
+solution for safety monitoring and intelligent management in resource-constrained hydropower projects, while 
+supporting human-machine collaboration in DT systems.
+1. Introduction
+In recent years, development of hydropower project safety moni -
+toring DT systems has made significant advancements in terms of high- 
+fidelity visual rendering and fusion of multi-source data [1] . A hydro -
+power project is defined as an integrated system for water retention, 
+water conveyance, power generation, and discharge regulation. It 
+mainly consists of the reservoir, dam, spillway, intake structure, water 
+conveyance structures, powerhouse, tailrace, slopes, and associated 
+monitoring facilities [2] . The schematic of a hydropower project is 
+illustrated as Fig. 1 . Safety monitoring in hydropower projects is an 
+undeniable necessity for the timely detection of abnormal structural 
+characteristics, slope instability, or equipment malfunction. These 
+problems may threaten structural safety, downstream communities, 
+power-generation reliability, and the surrounding environment [3] .
+On the basis of the general concept of DT as virtual representations of 
+physical systems supported by data connection, model updating, and 
+decision-support functions [4,5] , in this study, a hydropower project 
+safety monitoring DT system is defined as a data-model-knowledge- 
+integrated cyber-physical system that links the physical hydropower- 
+station project with its virtual counterpart. It supports real-time state 
+representation, monitoring analysis, safety assessment, early warning, 
+and operational decision-making [6] . The development of these systems 
+is critical to guarantee the high-efficiency and reliable operation of 
+hydropower projects. Various functions of the system have been devel -
+oped for a broad range of applications, such as safety monitoring in -
+formation management, 2D and 3D integrated visualization, 
+comprehensive monitoring analysis, safety assessment, early warning 
+management, and so on [7,8] . According to recent studies, the core 
+functions of hydropower-station safety monitoring DT systems are 
+summarized in Fig. 2 .
+As illustrated in Fig. 2 , modern safety monitoring DT systems of 
+* Corresponding author at: College of Water Conservancy and Hydropower Engineering, Hohai University, Nanjing 210098, China.
+E-mail addresses: shao_chen_fei@hhu.edu.cn (C. Shao), qin_xn2015@zzu.edu.cn (X. Qin), xingli@nhri.cn (X. Li), ymym_059@126.com (M. Yang), dyyuan@ncu. 
+edu.cn (D. Yuan), zheng_sen@hhu.edu.cn (S. Zheng). 
+Contents lists available at ScienceDirect
+Automation in Construction
+journal homep age: www.el sevier.com/l ocate/autcon
+https://doi.org/10.1016/j.autcon.2026.107041
+Received 22 December 2025; Received in revised form 13 May 2026; Accepted 15 May 2026 
+Automation in Construction 188 (2026) 107041 
+Available online 18 May 2026 
+0926-5805/© 2026 Elsevier B.V. All rights are reserved, including those for text and data mining, AI training, and similar technologies. 
+hydropower projects primarily encompass seven functional modules. (1) 
+Multi-dimensional perception & acquisition module serves as the foun -
+dation of the system, responsible for automatic data acquisition, digital 
+visual inspection, multi-source heterogeneous data fusion [9] . (2) Data 
+management & quality control module acts as the system's “ filter ” to 
+ensure data availability and reliability [10,11] . (3) Visualization & 
+interaction module provides the system with visualization information 
+and interactive way, highlighting the DT capabilities [12,13] . (4) 
+Analysis & modeling module is responsible for characteristic interpre -
+tation based on calculation and computation [14,15] . (5) Evaluation & 
+diagnosis module is utilized in determining the health status of dam 
+[16] . (6) Warning & response module supports for risk warning and 
+closed-loop warning management [17] . (7) Operations & maintenance 
+management module is adopted in full lifecycle management of hydro -
+power project with the aim of safety operation [18,19] . Above all, the 
+multi-dimensional and tightly coupled functional modules exhibit sig -
+nificant domain specificity and complexity.
+As a result, the complexity of the system functional architecture has 
+limited system adoption in daily applications [20,21] . Specifically, a 
+significant mismatch exists between current interaction paradigms and 
+increasingly intricate system functionalities, thereby constraining 
+application efficiency. Traditional graphical user interfaces (GUIs) 
+mainly rely upon the WIMP (Windows, Icons, Menus, Pointer) meta -
+phor, which imposes a high cognitive load and requires extensive 
+operational proficiency [22] . Accordingly, the primary challenges of the 
+system function application lies in inefficient information retrieval and 
+navigation bottlenecks. Traditional interaction modes impose high 
+cognitive loads and steep learning curves, while lacking intuitive, nat -
+ural language-based control capabilities, making it difficult to meet on- 
+site demands for immediate response. The inadequacy of intelligent 
+Human-Computer Interaction (HCI) remains a significant bottleneck in 
+the development of digital twin fidelity and the evolution of the system 
+maturity level [23,24] . Therefore, constructing an agent assistant 
+equipped with intelligent human-computer interaction capabilities and 
+rapid response mechanisms holds scientific significance for overcoming 
+current application bottlenecks of safety monitoring DT system. In this 
+study, an agent assistant refers to an execution-capable intelligent 
+interface embedded in the DT system, which supports three core func -
+tions: instruction execution, information response, and information 
+retrieval and visualization. Specifically, it is designed to understand user 
+intent, retrieve domain knowledge, invoke valid system functions, and 
+present relevant information within the DT system [25,26] .
+To date, in other research domains, the evolution of agent-based 
+technology has provided a novel paradigm for achieving intelligent 
+interaction and substantial progress has been made. Meng [27] and 
+Motlaghzadeh et al. [28] have utilized game-theoretic approaches to 
+model stakeholder interactions in ecological governance and climate 
+adaptation. Bahrami et al. [29] and Aydin & Keles ¸ [30] integrated 
+evolutionary algorithms to optimize resource allocation and supply 
+scheduling under uncertainty. However, despite their efficacy in specific 
+scenarios, these traditional multi-agent systems (MAS) heavily rely on 
+predefined rules and fixed strategic frameworks. This reliance on 
+deterministic logic limits their practical applicability in complex system 
+operation. In an effort to transcend the rigidity of conventional rule- 
+based approaches, the convergence of LLMs and Retrieval-Augmented 
+Generation (RAG) has become a hot issue in enabling intelligent sys -
+tem interaction [31,32] . Specifically, this paradigm leverages LLMs to 
+provide agents with robust semantic comprehension and dynamic 
+reasoning, and combines with RAG to ensure the factual consistency and 
+operational accuracy of the system. For example, question answering 
+(QA) systems, serving as the cornerstone of intelligent human-machine 
+interaction, have undergone rapid technological development. The 
+integration of LLMs and RAG has been widely utilized in optimizing 
+interaction efficiency [33,34] , demonstrating early efficacy in sectors 
+like e-commerce [35] and healthcare [36,37] . Notably, 
+´
+Alvaro & Bar -
+reda [38] exploited RAG to reduce computational costs. Uhm et al. [39]
+developed a high-performance RAG-GPT model to generate accurate 
+construction safety information. To surpass the limitation, Graph- 
+Augmented Retrieval (GraphRAG) has emerged as a promising 
+approach for enhancing the robustness and precision of interactive 
+systems [40,41] . Unlike traditional relational databases, knowledge 
+graphs (KGs) explicitly represent concepts, entities, and their relation -
+ships [42] . This structure provides richer semantic representation and 
+greater flexibility in knowledge organization and expression [43,44] . By 
+linking heterogeneous information through semantic relations, KGs can 
+also improve information retrieval and support more context-aware 
+knowledge access [45,46] . For instance, Yan et al. [47] constructed a 
+KG to capture domain knowledge regarding the state prediction of hy -
+draulic systems. Effectively integrating the structured knowledge into 
+the architecture of intelligent agent assistant to enhance system inter -
+active capabilities remains a critical research frontier. In view of this, 
+Zhang et al. [48] have leveraged GraphRAG with LLMs to establish the 
+QA system for engineering safety management. Similarly, Yang et al. 
+[49] designed a multi-agent system based on the GraphRAG framework, 
+successfully facilitating project operation and management decision- 
+making. Miao et al. [50] have proposed a GraphRAG-based fault diag -
+nosis method for high-speed train bogies based on GraphRAG. The 
+validation results demonstrated that the method successfully balances 
+high accuracy with strong interpretability.
+In summary, significant strides have been made in developing agent 
+assistants and interactive Q & A systems on the basis of LLMs and 
+GraphRAG [51,52] . However, a critical gap still remains in their prac -
+tical deployment for hydropower project safety monitoring. Existing 
+GraphRAG-based agent systems are typically resource-intensive and 
+Reservoir
+Intake 
+structure
+Spillway
+Dam
+Water conveyance 
+structures
+Powerhouse
+Slopes
+Monitoring 
+facilities
+Fig. 1. Schematic of a hydropower project.
+C. Shao et al. Automation in Construction 188 (2026) 107041 
+2 
+relatively static, making them unsuitable for small- and medium-scale 
+projects that face strict constraints on computational hardware, 
+domain expertise, and maintenance budgets. Merely applying general- 
+purpose models is insufficient. Instead, a tailored and lightweight ar -
+chitecture is required to bridge the gap between advanced AI capabil -
+ities and the resource-constrained reality of field operation.To address 
+this gap, this study is guided by the following central research question: 
+How can a lightweight, execution-grounded, multimodal agent assistant 
+be designed and integrated into a DT system for hydropower project 
+safety monitoring to support reliable and efficient human-computer 
+interaction in small- and medium-scale projects?
+To answer this question, three specific sub-questions are further 
+considered: (RQ1) How can domain knowledge about executable DT 
+system functions, domain entities, and operational logic be formally 
+organized to support reliable grounding of agent reasoning and action 
+execution? (RQ2) How can GraphRAG and multimodal interaction 
+mechanisms be combined within a lightweight framework to improve 
+command understanding, professional question answering, and robust -
+ness to noisy speech input? (RQ3) To what extent can the proposed as -
+sistant improve response efficiency, retrieval accuracy, and operational 
+usability when deployed in a real safety monitoring DT system?
+To address these questions, this paper proposes a lightweight, 
+multimodal agent assistant specifically designed for DT-based safety 
+monitoring. The specific contributions are as follows: 
+(1) By leveraging the Gemma LLM and incorporating domain- 
+specific operational logic and professional knowledge, a system- 
+function-oriented knowledge graph (SFOKG) is constructed to 
+explicitly represent executable system functions, domain entities, 
+and operational logic. A conflict-resolution-based incremental 
+update strategy is further proposed to support lightweight dy -
+namic maintenance of the KG, avoiding full graph reconstruction 
+and service interruption during field deployment. This design is 
+particularly suitable for small- and medium-scale hydropower 
+projects with limited computing resources, maintenance budgets, 
+and technical support.
+(2) On the basis of SFOKG, a lightweight GraphRAG-enabled agent 
+assistant is developed. This framework integrates a perception- 
+cognition-execution loop, enabling the agent assistant to 
+reliably translate user intents into valid system commands and 
+provide precise professional Q & A services under resource- 
+constrained conditions of small- and medium-scale projects. 
+Meanwhile, the proposed framework effectively mitigates hallu -
+cinations via KG-grounded action constraints.
+(3) With the aim of enhancing the multimodal perception and 
+execution accuracy of the agent assistant, a SFOKG-constrained 
+ASR error correction method is proposed. This method maps 
+noisy speech inputs to valid system-function nodes and domain 
+concepts in the SFOKG, thereby preventing invalid command 
+triggering. (4) The proposed agent assistant is deployed in a real 
+DT safety monitoring system, demonstrating improved response 
+efficiency and retrieval accuracy, as well as reduced user burden 
+in complex workflows. As a result, a new paradigm of efficient 
+human-machine synergy in DT system is provided. The results 
+further demonstrate that the proposed method has strong prac -
+tical potential for lightweight deployment and application in 
+small- and medium-scale hydropower projects.
+The remainder of this paper is organized as follows: Section 2 in -
+troduces the overall architecture and core functionalities of the hydro -
+power project safety monitoring DT system and analyzes the functional 
+requirements that motivate the research problem addressed in this 
+study. Section 3 presents the construction of the lightweight, execution- 
+grounded, multimodal agent assistant with GraphRAG-guided knowl -
+edge grounding developed to address these requirements. Section 4
+evaluates the proposed approach through deployment in a practical 
+medium-scale hydropower project, with emphasis on its effectiveness in 
+improving response efficiency, retrieval accuracy, and intelligent 
+human-computer interaction. Section 5 summarizes the main conclu -
+sions and outlines future research directions.
+2. Overview of the developed safety monitoring DT system and 
+functional requirements of the agent assistant
+This section introduces the system context and integration strategy of 
+the proposed agent assistant in the safety monitoring DT system. It first 
+introduces the layered architecture and functional modules of the DT 
+system, followed by an analysis of the deployment constraints and 
+Fig. 2. Core functions of safety monitoring DT system.
+C. Shao et al. Automation in Construction 188 (2026) 107041 
+3 
+interaction requirements of small- and medium-scale hydropower pro -
+jects. Finally, the core functional requirements and integration archi -
+tecture of the agent assistant are defined and presented.
+2.1. Overall system architecture and functionality
+In terms of technical architecture, the digital twin-based hydropower 
+project safety monitoring system can be organized into five hierarchical 
+layers: the information infrastructure layer, the data resource layer, the 
+system service layer, the API interface layer, and the application pre -
+sentation layer. The layered architecture effectively enhances system 
+development efficiency and supports scalability and maintainability. 
+The overall technical framework of the system is illustrated in Fig. 3 .
+As illustrated in Fig. 3 , the architecture follows a bottom-up support 
+logic and a top-down service delivery logic. Specifically, the DT-based 
+hydropower project safety monitoring system is organized into five hi -
+erarchical layers, namely the information infrastructure layer, the data 
+resource layer, the system service layer, the API interface layer, and the 
+application presentation layer. This layered design clarifies the func -
+tional division of the system and improves its scalability, modularity, 
+and maintainability. At the bottom, the information infrastructure layer 
+provides the physical foundation for system operation, including 
+monitoring and perception equipment, communication network equip -
+ment, and computing and storage equipment. Built upon this founda -
+tion, the data resource layer provides the underlying data and resource 
+support required for upper-layer services and applications.
+The system service layer provides the service support for various 
+business applications within the system, enabling resource reuse across 
+modules. This layer is composed of the data service layer, the founda -
+tional service layer, and the business service layer. 
+(1) Data service layer
+This layer encompasses data reading and writing, stored procedures, 
+data aggregation, file services, caching services, and data backup. By 
+interfacing directly with the data resource layer, it supplies essential 
+data support for both the foundational services and business services. 
+(2) Foundational service layer
+This layer includes identity authentication, single sign-on, exception 
+handling, and utility services, providing the core logical foundation 
+required by the system's basic functions. 
+(3) Business service layer
+This layer consists of domain-specific functional modules, including 
+monitoring point management, data management, safety monitoring, 
+numerical simulation, slope stability analysis, knowledge graph, risk 
+analysis, rehearsal plan generation, comprehensive evaluation, and 
+report generation. It also supports customized service deployment ac -
+cording to operational needs. The specific functionalities implemented 
+by these modules are detailed in Table 1 and support further customized 
+development.
+Modern hydropower project safety monitoring systems always inte -
+grate specialized modules, resulting in low information retrieval effi -
+ciency and heightened error rates, especially during time-critical tasks 
+that require fast response. Consequently, to overcome barriers caused by 
+complex functional designs, the system needs to transition from a 
+traditional imperative interaction paradigm (where the user dictates 
+every step via clicks) to a declarative interaction paradigm. The pro -
+posed agent assistant serves as the essential human-system interface 
+layer, allowing users to communicate their goals and intentions via 
+natural language. This design will significantly enhance response speed, 
+reduce execution errors, and promote a genuine state of human-machine 
+synergy.
+Application presentation layer
+Mobile application
+ Web application
+ Large screen application
+API interface layer
+API gateway
+ Load balancing
+ Access Control
+ Integration
+System service layer
+Monitoring point management
+ Data management
+ Safety monitoring
+Numerical simulation
+ Risk analysis
+ Rehearsal plan
+Business service layer
+Identity authentication
+ Single sign-on
+Exception handling
+ Utility services
+Foundational service layer
+Data read/write
+ File services
+Caching services
+Data service layer
+Data resource layer
+Structured database
+ Unstructured database
+ Knowledge base
+Information infrastructure layer
+Monitoring and perception 
+equipment
+Communication network
+equipment
+Computing and storage
+equipment
+Comprehensive evaluation
+Knowledge graph
+Report generation
+Slope stability
+Data backup
+Fig. 3. Overall architecture of the hydropower project safety monitoring DT system.
+C. Shao et al. Automation in Construction 188 (2026) 107041 
+4 
+2.2. Scenario characteristics and design implications for small- and 
+medium-scale hydropower projects
+Although safety monitoring DT systems share a common technical 
+foundation across hydropower projects, small- and medium-scale hy -
+dropower projects present a set of operational constraints that distin -
+guish them from large flagship projects and directly affect the design of 
+intelligent interaction mechanisms. In practice, such projects are often 
+characterized by more limited computing resources, tighter mainte -
+nance budgets, and reduced availability of specialized personnel for 
+long-term system operation and knowledge graph maintenance. At the 
+same time, they still require timely access to monitoring information, 
+engineering knowledge, warning interpretation, and function invoca -
+tion in daily operation and emergency response. As a result, a practical 
+tension exists between increasingly integrated DT system functionalities 
+and the resource-constrained reality of field deployment.
+In this scenario, the challenge lies not only in the complexity of the 
+DT system itself, but also in the mismatch between complex functional 
+modules and the operational capacity of end users. As shown in Table 1 , 
+the DT system integrates multiple domain-specific modules, including 
+data management, safety monitoring, numerical simulation, slope sta -
+bility analysis, knowledge graph management, risk analysis, rehearsal 
+planning, comprehensive evaluation, and report generation. For users in 
+small- and medium-scale projects, many routine tasks are highly goal- 
+oriented and time-sensitive, such as querying the latest monitoring 
+status, locating abnormal indicators, calling specific analytical func -
+tions, interpreting warning information, and switching to the relevant 
+visualization view. Under conventional GUI-based interaction, these 
+operations usually require multi-step navigation across different mod -
+ules, which increases cognitive burden and raises the risk of operational 
+errors, especially in scenarios requiring rapid response.
+Therefore, the target scenario of this study calls for an agent assistant 
+with several specific design requirements. First, the assistant should 
+support lightweight deployment, so that it can operate under limited 
+computing and maintenance conditions without relying on large-scale 
+model infrastructures. Second, it should be execution-grounded, mean -
+ing that natural language interaction must be reliably mapped to valid 
+system functions, domain entities, and operational logic rather than 
+unconstrained text generation. Third, it should provide knowledge- 
+grounded information support and function guidance, so that users 
+can obtain accurate project-related answers and function guidance from 
+structured domain knowledge rather than from general-purpose re -
+sponses alone. Fourth, it should support robust multimodal interaction, 
+especially in practical environments where speech input may be noisy 
+and user commands may be incomplete or ambiguous. These re -
+quirements together explain why a lightweight, system-function- 
+oriented agent assistant with GraphRAG-guided knowledge grounding 
+is particularly needed in small- and medium-scale hydropower project 
+safety monitoring DT systems.
+2.3. Functional requirements of agent assistant
+Based on the scenario characteristics and design implications dis -
+cussed above, the core functionalities of the agent assistant for small- 
+and medium-scale safety monitoring DT systems consist of three cate -
+gories (as depicted in Fig. 4 ): 
+(1) Instruction execution
+For explicit user operational commands (e.g., “Switch to a different 
+project viewpoint”), the agent assistant possesses deterministic action 
+mapping capabilities. By parsing action slots and object parameters 
+within natural language inputs, it directly invokes underlying APIs to 
+execute user instructions. 
+(2) Information response
+For user queries about project specifications, monitoring status, or 
+engineering interpretation (e.g., “What is the dead water level of the 
+project?”), the agent assistant provides knowledge-grounded informa -
+tion support. It retrieves relevant context from the SFOKG and, when 
+necessary, accesses the monitoring database to obtain grounded project- 
+specific information, thereby generates coherent natural language 
+responses. 
+(3) Information retrieval and visualization
+Addressing user demands for querying real-time states or specific 
+scenarios (e.g., “Show the current slope deformation cloud map”), the 
+agent assistant integrates information retrieval, view navigation, and 
+rendering capabilities. This enables automatic viewpoint transitions 
+within the digital twin environment, dynamic chart loading, and scene 
+rendering, realizing the joint visualization of monitoring data and 3D 
+scenes.
+The three task categories do not correspond to three isolated tech -
+nical pipelines; instead, they share a unified GraphRAG-enabled cogni -
+tion backbone. As depicted in Fig. 5 , the proposed agent assistant adopts 
+a front-end/back-end collaborative architecture. The back end of agent 
+assistant consists of three layers, namely input processing, a shared 
+GraphRAG-enabled cognition backbone, and downstream task branches, 
+while the DT front end is responsible for interaction, execution, and 
+rendering. Specifically, after a user request reaches the back end, the 
+system first performs input processing, including ASR correction and 
+intent classification, and then carries out graph-constrained entity 
+Table 1 
+Specific functionalities implemented by the system modules.
+Functional module Specific functions
+Monitoring point 
+management
+Manage the registration, encoding, positioning, and 
+status of monitoring points, including the digital 
+management of installation, calibration records, and 
+maintenance history for monitoring equipments.
+Data management
+Responsible for the access, cleaning, storage, and 
+integration of multi-source heterogeneous data (e.g., 
+real-time, historical, environmental, model data), 
+ensures unified data quality and consistency.
+Safety monitoring
+Conduct real-time acquisition, processing, and analysis of 
+monitoring data, including threshold alarming, anomaly 
+detection, trend forecasting, and automated early 
+warning for exceedance data.
+Numerical simulation
+Perform simulation calculations for physical processes 
+like structural stress, seepage field, and temperature 
+field, based on engineering models and monitoring data, 
+used for back analysis and forecasting structural 
+responses under various conditions.
+Slope stability analysis
+Incorporate numerical analysis methods and calculate 
+the factor of safety enabling quantitative assessment and 
+analysis of slope stability.
+Knowledge graph
+Establish a dynamic domain knowledge base that 
+supports both autonomous updates and manual 
+modifications, allowing for the querying and expansion 
+of the domain ontology.
+Risk analysis
+Integrate systematic risk assessment methodologies to 
+conduct a multi-dimensional evaluation and quantitative 
+analysis of engineering risks.
+Rehearsal plan 
+generation
+Simulate and analyze the entire evolution process of 
+engineering hazards, automatically generate tailored 
+emergency response plans, thereby significantly 
+enhancing engineering emergency response efficiency 
+and decision-making capabilities.
+Comprehensive 
+evaluation
+Integrate safety monitoring results, numerical 
+simulations, and regulatory standards to perform 
+quantitative and qualitative assessments of the overall 
+safety status, generates safety level and risk evaluation 
+reports.
+Report generation
+Automatically or semi-automatically generate periodic 
+reports (daily, monthly, annual) and thematic reports, 
+support data visualization and customized report output.
+C. Shao et al. Automation in Construction 188 (2026) 107041 
+5 
+identification, function-node matching, and relational context retrieval 
+based on the SFOKG. On this basis, different downstream branches are 
+activated according to the task type. For information response tasks, the 
+GraphRAG-retrieved context is provided to the LLM model to generate a 
+natural-language answer. When the query involves real-time or histor -
+ical monitoring values, the monitoring database is further accessed to 
+support grounded answer generation. For instruction execution tasks, 
+after the relevant function nodes and invocation relations are identified, 
+the retrieved context is transformed into a standardized command 
+payload, and the command type, operation target, and parameters are 
+returned to the DT front end for subsequent execution. For information 
+retrieval and visualization tasks, the system further accesses monitoring 
+databases and visualization metadata based on the GraphRAG output, 
+organizes node IDs, chart requests, cloud-map parameters, or scene 
+configuration instructions, and returns them to the DT front end for 
+rendering, scene updating, and result presentation. In this way, the DT 
+front end serves as the interaction, execution, and rendering terminal, 
+whereas the agent assistant back end undertakes cognition, reasoning, 
+retrieval, database access, and command generation.
+3. Lightweight GraphRAG-enabled agent assistant construction 
+method
+The proposed lightweight agent assistant is designed as an intelligent 
+interaction layer for the DT-based hydropower project safety monitoring 
+system. As illustrated in Fig. 6 , it aims to transform the traditional menu- 
+dependent interaction mode of complex systems into a more efficient 
+human-machine synergy mode. The agent assistant adopts a three-layer 
+architecture, consisting of the perception layer, the cognition layer, and 
+the execution layer, thereby forming an end-to-end closed loop from 
+multimodal input understanding to knowledge-grounded reasoning and 
+system action execution. It supports instruction execution, information 
+response, and information retrieval and visualization within the safety 
+monitoring DT system.
+In the perception layer, speech and text inputs are processed through 
+ASR, natural language pre-processing, and intent recognition. A graph- 
+constrained ASR correction module is introduced to reduce ambiguity 
+in spoken commands. In the cognition layer, the SFOKG serves as the 
+shared knowledge backbone, while a conflict resolution and dynamic 
+update strategy supports incremental graph optimization. Meanwhile, 
+Fig. 4. Categories of agent assistant functional requirements.
+User
+DT front end
+User 
+interaction
+(Text/voice)
+Request 
+transmission/
+Result return
+Agent assistant back end
+Level 1: Input processing
+ASR 
+correction
+Intent
+classification
+Level 2: Shared GraphRAG-enabled
+cognition backbone 
+Level 3: Downstream task branches
+BERT-based
+intent classifier
+API schema
+SFOKG
+(Neo4j)
+Monitoring
+database
+Visualization
+metadata
+Chart/cloud
+map/node 
+highlighting/
+scene update Gemma-3-4B
+model
+Function-node
+matching
+Entity
+identification
+Relational context
+retrieval
+Task-oriented
+context construction
+Instruction
+execution
+Information
+retrieval and
+visualization
+Information
+response
+FastAPI
+Orchestration
+layer
+Chat/Interaction
+window
+3D scene 
+rendering
+Chart loading
+Cloud map 
+display
+Viewpoint 
+navigation
+Text
+input
+Vo i c e
+input
+Fig. 5. Overall architecture of the agent assistant and its integration with the DT system.
+C. Shao et al. Automation in Construction 188 (2026) 107041 
+6 
+GraphRAG enables knowledge-grounded retrieval and reasoning. In the 
+execution layer, the retrieved context is transformed into different 
+downstream outputs according to the task type, including natural- 
+language responses for information response tasks, standardized com -
+mand payloads for instruction execution tasks, and rendering-oriented 
+outputs for information retrieval and visualization tasks. When neces -
+sary, the back end further accesses monitoring databases and visuali -
+zation metadata to support grounded response generation and front-end 
+rendering.
+3.1. Construction of a multimodal perception layer with graph- 
+constrained ASR correction method
+The multimodal perception layer serves as the critical input channel 
+for human-agent interaction, primarily dedicated to parsing user- 
+provided text or voice commands. The core function involves extract -
+ing the user's intent and key operational instructions, integrating them 
+with system state data, and relaying this context to the decision layer to 
+trigger system operations. The system is engineered to support robust 
+voice input, significantly enhancing the convenience and operational 
+efficiency of human-computer interaction. Addressing the challenge of 
+potential professional terminology misrecognition or semantic deviation 
+introduced by the Automatic Speech Recognition (ASR) process, this 
+study proposes a novel voice command correction method grounded in a 
+domain knowledge graph constraint. Specifically, this method leverages 
+the functional knowledge graph of the hydropower project safety 
+monitoring system as a rigorous constraint to perform semantic 
+matching and calibration on the ASR candidate results, thereby ensuring 
+the accurate perception and high fidelity of user instructions.
+Inspired by recent works in knowledge-augmented ASR, we imple -
+ment a post-processing correction mechanism. While standard ASR 
+models struggle with domain-specific terms, prior studies have demon -
+strated that incorporating phonetic and semantic information from an 
+external knowledge base can significantly reduce error rates. Therefore, 
+we define a hybrid scoring function based on phonetic similarity and 
+semantic relevance.
+ASR errors are predominantly characterized by acoustic ambiguities, 
+typically manifesting as homophones or near-homophones. Conse -
+quently, direct character-level comparison between the ASR output and 
+the knowledge graph entities is insufficient for accurate error detection. 
+To address this phonological error pattern, we employ a Grapheme-to- 
+Phoneme (G2P) conversion strategy. Specifically, G2P tools are uti -
+lized to transform both the ASR-recognized text T
+asr
+and the candidate 
+entities from the knowledge graph E
+graph 
+into standardized phoneme 
+sequences. Crucially, these sequences are normalized to be tone-agnostic 
+to maximize robustness against variations in speech prosody and accent. 
+For example: 
+T
+asr
+=
+‘
+洋压力
+’
+→ [
+‘
+yang
+’
+,
+‘
+ya
+’
+,
+‘
+li
+’
+] (1) 
+E
+graph
+=
+‘
+扬压力
+’
+( means uplift pressure ) → [
+‘
+yang
+’
+,
+‘
+ya
+’
+,
+‘
+li
+’
+] (2) 
+The Levenshtein distance (LD) algorithm is employed to quantify the 
+minimum number of single-character edits required to transform one 
+phoneme sequence p
+1 
+into the other p
+2
+. This raw edit distance, denoted 
+as LD ( p
+1
+, p
+2
+), is subsequently subjected to normalization, converting the 
+distance metric into a similarity score ranging from 0 to 1, where a score 
+of 1 indicates maximum phonetic similarity. 
+S
+phonetic
+( p
+1
+, p
+2
+) = 1  
+LD ( p
+1
+, p
+2
+)
+max ( L ( p
+1
+) , L ( p
+2
+) )
+(3) 
+where S
+phonetic 
+is the phonetic similarity score, L ( p
+i
+) denotes the length of 
+two phoneme sequences. Because the two phoneme sequences T
+asr 
+and 
+E
+graph 
+are identical, S
+phonetic
+= 1.
+However, pure phonetic matching is susceptible to failure due to 
+accented speech or ASR omissions. Therefore, semantic compensation is 
+required, which is achieved by further comparing the vector embed -
+dings of the ASR text and the knowledge graph entities. We leverage a 
+pre-trained domain-specific Embedding model to map the two text 
+segments into high-dimensional vectors: 
+V
+asr
+= Encoder ( T
+asr
+) (4) 
+V
+entity
+= Encoder
+ 
+E
+graph
+)
+(5) 
+Subsequently, the semantic proximity is quantified by computing the 
+cosine of the angle between these two vectors, yielding the vector's 
+Cosine similarity S
+semantic
+: 
+Fig. 6. Overall architecture of the proposed lightweight agent assistant.
+C. Shao et al. Automation in Construction 188 (2026) 107041 
+7 
+S
+semantic
+ 
+T
+asr
+, E
+graph
+)
+= cos
+ 
+v
+asr
+, v
+entity
+)
+=
+v
+asr
+⋅ v
+entity
+‖ v
+asr
+‖
+⃦
+⃦
+v
+entity
+⃦
+⃦
+(6) 
+This semantic evaluation serves as a robust mechanism for fault 
+tolerance. For example, even if ASR incorrectly recognizes the phonet -
+ically different term “ yang ya li ” ( 洋压力 ) instead of the correct domain 
+term “ yang ya li ” ( 扬压力 ), the strong co-occurrence of the shared term 
+“ pressure ” ( 压力 ) ensures their embeddings remain close in the vector 
+space, resulting in a high similarity score and successful correction.
+Finally, a hybrid weighted approach is implemented to fuse the re -
+sults from the two similarity metrics: the phonetic similarity score 
+S
+phonetic 
+and the semantic cosine similarity score S
+semantic
+.The overall 
+combined similarity score S
+com 
+is computed as a weighted sum: 
+S
+com
+= α S
+phonetic
++ β S
+semantic
+(7) 
+In the context of ASR error correction, phonetic similarity typically 
+holds greater discriminative power. Therefore, a higher weight is 
+assigned to the phonetic component. This weighted combination allows 
+the model to leverage both the high precision of phonetic matching and 
+the robustness of semantic compensation for instruction correction. The 
+final score S
+com 
+is utilized to make a definitive decision on entity 
+correction and matching. A stringent threshold is applied to filter valid 
+matches. When the calculated combined similarity score falls below this 
+threshold, the system concludes that the knowledge graph contains no 
+corresponding entity that is sufficiently aligned with the ASR output in 
+terms of phonetic or semantic similarity. In such instances, the system is 
+designed to reject the input and prompt the user for re-clarification of 
+the instruction to ensure operational reliability.
+The fusion weights α and β in Eq. (7) , together with the acceptance 
+threshold τ are not arbitrary. The above parameters and threshold are 
+chosen to reflect the error mechanism of domain ASR and to balance 
+correction effectiveness with operational safety. In hydraulic monitoring 
+commands, ASR errors are predominantly driven by acoustic ambiguity, 
+which makes phonetic similarity more discriminative than semantic 
+similarity for correction. However, phonetic matching alone may 
+degrade under accented speech or partial omissions; therefore, semantic 
+similarity is incorporated as a fault-tolerant complement, leading to α >
+β . The determination of parameters and thresholds for the graph- 
+constrained ASR correction module is analyzed in detail in the case 
+study of Section 4 .
+These parameters are tunable rather than fixed across projects. For 
+new projects with different acoustic environments, dialects, or com -
+mand vocabularies, ( α , τ ) can be re-calibrated using a small set of project- 
+specific voice commands or via automated search.
+3.2. Cognition layer construction for intent classification and high-level 
+task planning
+This section introduces the SFOKG construction and GraphRAG 
+retrieval mechanism of the proposed agent assistant. It first describes 
+how system-function knowledge is extracted, normalized, and stored as 
+a graph. It then explains how the graph supports intent classification, 
+local or global retrieval, and downstream task routing for response 
+generation, instruction execution, and visualization.
+3.2.1. Construction and clustering method of system function execution KG
+To construct the system function execution KG serving the intelligent 
+interactive agent assistant, this study utilizes LLM-based knowledge 
+extraction aimed at efficiently transforming unstructured documenta -
+tion (detailing system functions, operational logic, and implicit associ -
+ations) into structured knowledge.
+The key technical steps and aspects of this pipeline are detailed as 
+follows: 
+(1) Semantic unit segmentation and operational entity identification: 
+The corpus is first segmented into semantically complete text chunks 
+to optimize LLM inference efficiency. Subsequently, we designed a 
+domain-specific few-shot prompting strategy to guide the LLM. As 
+illustrated in Table 2 , the prompt consists of three components: (1) A 
+role definition assigning the LLM as a “ hydropower project expert ” . 
+(2) A schema definition explicitly listing target entity types and 
+relation types. (3) A set of few-shot examples covering typical edge 
+cases. This structure ensures the LLM precisely identifies core en -
+tities such as functional modules and critical monitoring parameters 
+while concurrently generating their normalized node attributes.
+(2) Operational logic relation and dependency extraction: Building 
+upon entity identification, the LLM further extracts structured se -
+mantic relations. We emphasize both the hierarchical “ Contains ” 
+relations in the system structure and the logical correlations in 
+function invocations. Accordingly, we extract functional de -
+pendencies, action-object associations, and operational sequences 
+and represent them as triples (entity-relation-entity) to explicitly 
+map the system call logic.
+For instance, given the instruction “ Enable the contour map in data 
+display mode, ” the model not only extracts the entities but also con -
+structs a hierarchical triplet: (Data Display, Contains, Show Contour 
+Map). This structured output directly corresponds to the topological 
+structure of the knowledge graph, ensuring that the agent accurately 
+comprehends the subordination relationships and invocation paths of 
+system functions. In parallel, for domain-specific queries, the model 
+extracts semantic dependencies to support knowledge reasoning. Taking 
+the aforementioned query regarding monitoring instruments as an 
+example, the model constructs the relational triplet: (Slope Deformation, 
+Monitored_By, Monitoring Instruments). Leveraging this topological 
+structure, the system performs multi-hop retrieval within the KG to 
+precisely locate specific device nodes such as “ Inclinometer ” , “ GNSS ” 
+and “ machine vision ” . Consequently, it generates an accurate response 
+stating, “ Slope deformation monitoring instruments include: Inclinom -
+eter, GNSS and machine vision ” . This structured mapping mechanism 
+ensures that the intelligent agent is capable of not only executing 
+operational instructions but also conducting professional domain- 
+Table 2 
+Example of the few-shot prompt design for knowledge extraction.
+Prompt 
+component
+Content/Template
+Role definition
+“ You are an AI assistant specialized in hydropower project safety 
+monitoring systems. Your task is to extract structured entities and 
+relations from the provided technical documentation. ”
+Schema 
+definition
+Target Entities: [View Mode], [System Function], [Monitoring 
+Data], [Instrument Type], [Monitoring Category], [Located_In]
+Target Relations: [Contains], [Alias], [Triggers], [Related_To], 
+[Monitored_By]
+Few-shot 
+examples
+Input: “ Switch to the dam view and enable the 3D Gaussian 
+splatting effect. ”
+Output: { “ Entities ” : [( “ Dam View ” , “ View Mode ” ), ( “ Enable 
+Gaussian Splatting ” , “ System Function ” )], “ Triples ” : [( “ Platform 
+View ” , “ Contains ” , “ Dam View ” ), ( “ Settings ” , “ Contains ” , 
+“ Enable Gaussian Splatting ” )]}
+Input: “ Show the monitoring point value and the contour map for 
+the reservoir. ”
+Output: { “ Entities ” : [( “ Monitoring Point Value ” , “ Monitoring 
+Data ” ), ( “ Show Contour Map ” , “ System Function ” )], “ Triples ” : 
+[( “ Show Monitoring Points ” , “ Contains ” , “ Monitoring Point 
+Value ” ), ( “ Data Display ” , “ Contains ” , “ Show Contour Map ” )]}
+Input: “ Please tell me what are the slope deformation monitoring 
+instruments. ”
+Output: { “ Entities ” : [( “ Slope Deformation ” , “ Monitoring 
+Category ” ), ( “ Monitoring Instruments ” , “ Instrument Type ” )], 
+“ Triples ” : [( “ Slope Deformation ” , “ Monitored_By ” , “ Monitoring 
+Instruments ” )]}
+Constraints
+“ Output the result in valid JSON format. Map extracted terms to 
+the standard node names defined in the KG ”
+C. Shao et al. Automation in Construction 188 (2026) 107041 
+8 
+specific Q & A based on graph knowledge. 
+(3) Entity normalization and graph quality assurance: To guarantee 
+the accuracy and consistency of the KG, entity normalization is 
+performed in both the initialization and maintenance stages. 
+During seed graph construction, candidate entities and relations 
+extracted by the LLM are reviewed against the predefined 
+ontology, and ambiguous or semantically equivalent expressions 
+are manually aligned to standard node names under expert su -
+pervision. This expert-involved curation is particularly important 
+for executable function nodes, whose semantics must remain 
+consistent with actual system functions and callable interfaces. 
+After deployment, graph quality is further maintained through 
+the automated conflict resolution and semantic-similarity-based 
+deduplication strategy detailed in Section 3.4 . In this way, the 
+initialization-stage expert curation and the operation-stage 
+lightweight maintenance mechanism jointly support the reli -
+ability of the SFOKG.
+(4) KG construction and embedded storage: Finally, the extracted 
+knowledge is organized into the SFOKG. The constructed SFOKG 
+is instantiated and stored in the Neo4j graph database, which 
+supports efficient retrieval and complex topological querying. 
+Entities and their vector embeddings are saved, and a lightweight 
+graph index is generated to fully support the subsequent Graph -
+RAG application for command inference and function retrieval by 
+the agent assistant. The KG construction process for the safety 
+monitoring DT system with LLM-based knowledge extraction is 
+illustrated in Fig. 7 . On this basis, a custom Python-based 
+GraphRAG pipeline is implemented to connect the SFOKG with 
+the downstream reasoning and execution modules of the agent 
+assistant. In the present implementation, Neo4j serves as the 
+graph backend, while Cypher queries and the Neo4j Python 
+Driver are employed for graph retrieval and neighborhood 
+traversal.
+To enhance the semantic organization efficiency and local retrieval 
+capability within the large-scale graph, GraphRAG integrates a hierar -
+chical community partitioning mechanism during the graph optimiza -
+tion stage. The Leiden algorithm is applied to perform multi-level 
+clustering on the entity-relation graph. This algorithm uses the struc -
+tural connectivity strength among nodes to recursively optimize the 
+partition. It ensures that entities within the same community are tightly 
+connected, while inter-community connections remain relatively sparse. 
+To accurately measure the partition quality and avoid the resolution 
+limit problem faced by traditional methods, the Leiden algorithm uti -
+lizes the Constant Potts Model (CPM) as its objective function, which can 
+be written as: 
+H =
+∑
+c
+[
+e
+c
+  γ
+(
+n
+c
+2
+) ]
+(8) 
+where H represents the objective function of CPM, which is utilized to 
+measure the quality of community partitioning, with a higher value 
+indicating tighter intra-community connectivity, e
+c 
+denotes the actual 
+number of edges within community c , n
+c 
+is the number of nodes in 
+community, and γ is the resolution control parameter, 
+(
+n
+c
+2
+)
+represents 
+the total number of possible edges within the community.
+In our implementation, we set γ = 1 . 0 as the base resolution and limit 
+the maximum community size to max cluster size = 10. Through this 
+hierarchical approach, the knowledge graph is successfully partitioned 
+into non-overlapping “ semantic communities, ” providing an efficient 
+structural foundation for subsequent localized retrieval and graph 
+summarization tasks. After the community hierarchy is established, the 
+system generates summaries for each level, serving as the graph's 
+community-level semantic representations.
+It is vital to note that this hierarchical clustering is a periodically 
+executed optimization process. For high-frequency incremental updates 
+(discussed in Section 3.4 ), the system maintains the existing community 
+structure and only dynamically updates the attributes or local connec -
+tions of affected nodes, thereby avoiding the computational overhead of 
+real-time re-clustering.
+3.2.2. Knowledge graph retrieval and augmented generation
+To enable the robust inference of complex instructions and guarantee 
+execution accuracy, the agent assistant employs a GraphRAG-enabled 
+reasoning mechanism. In the present implementation, the GraphRAG 
+module is realized as a custom Python-based lightweight pipeline. 
+Specifically, the SFOKG is stored in Neo4j as the graph backend, while 
+Cypher queries and the Neo4j Python Driver are employed for graph 
+retrieval and neighborhood traversal. Semantic embeddings are gener -
+ated using BGE-M3, and community partitioning together with graph 
+summarization is implemented using the Leiden algorithm via the 
+igraph and leidenalg libraries. The retrieved graph context is subse -
+quently routed to different downstream modules according to the 
+identified task type. For information-response tasks, it is provided to the 
+Gemma-3-4B large language model, which is deployed with PyTorch 
+and the Hugging Face Transformers framework, for knowledge- 
+grounded answer generation. For instruction-execution tasks, it is 
+transformed into a standardized command payload for schema-guided 
+action mapping and DT system invocation. For information retrieval 
+and visualization tasks, it is further combined with monitoring data -
+bases and visualization metadata to construct rendering-oriented 
+outputs.
+To support lightweight deployment, 4-bit quantization is adopted via 
+bitsandbytes, and FastAPI is used to orchestrate the interaction among 
+graph retrieval, LLM reasoning, and downstream execution modules. It 
+should be noted that the SFOKG in this study was not initialized in a fully 
+automatic manner. Instead, a human-in-the-loop construction strategy 
+was adopted to ensure structural correctness and execution reliability in 
+the safety monitoring scenario. Specifically, seed operational 
+Fig. 7. Hydropower project safety monitoring system KG construction process 
+using LLM-based knowledge extraction.
+C. Shao et al. Automation in Construction 188 (2026) 107041 
+9 
+instructions and function descriptions were first collected from system 
+manuals, interface operation documents, help pages, and API specifi -
+cations. These raw expressions were then manually normalized and 
+rewritten into canonical command templates, and subsequently mapped 
+to a predefined ontology schema. During this initialization stage, 
+semantically equivalent expressions and functionally overlapping nodes 
+were merged under expert supervision to improve graph consistency and 
+avoid ambiguity in downstream retrieval and execution. Therefore, the 
+SFOKG was not generated in a purely one-shot automatic manner; 
+rather, its seed graph was carefully curated before being further 
+expanded by the automated conflict resolution and incremental update 
+strategy described in Section 3.4 . The specific tools and their roles are 
+described in Table 3 .
+The whole technical workflow is depicted in Fig. 8 .
+The agent assistant first subjects the input instruction to a BERT- 
+based classifier implemented in the Transformers framework to deter -
+mine the instruction's specific intent type, distinguishing between 
+operational commands and informational inquiries. Based on this cate -
+gorization, it dynamically triggers either a local or global search 
+mechanism rooted in the GraphRAG paradigm and implemented in the 
+custom Python-based retrieval pipeline. 
+(1) Local retrieval (for specific queries): For explicit, atomic in -
+structions (e.g., ‘Query monitoring point No. 3 ’ or ‘Switch to dam 
+viewpoint ’ ), a local retrieval is executed. In the current imple -
+mentation, this process is realized through Cypher-based 
+traversal over the target node and its 1-hop associated relations 
+in Neo4j, so as to acquire specific attributes, parameter values, or 
+function-level contextual information.
+(2) Global retrieval (for macro queries): Conversely, for macro-level 
+commands (e.g., ‘analyze hydropower project safety status ’ or 
+‘generate comprehensive report ’ ), a global retrieval is initiated. 
+This process aggregates pre-generated community summaries 
+derived from Leiden-based graph partitioning, together with real- 
+time incremental graph updates, to construct a comprehensive 
+global context across multiple functional modules. The corre -
+sponding retrieval context is assembled in Python and then 
+organized into a structured prompt for downstream reasoning.
+The resulting retrieved graph context, serving as crucial task- 
+oriented evidence, is subsequently routed to different downstream 
+modules according to the identified intent. For information response 
+tasks, it is provided to the LLM to generate a natural-language answer, 
+with additional access to the monitoring database when grounded real- 
+time or historical values are required. For instruction execution tasks, it 
+is transformed into a standardized command payload for schema-guided 
+action mapping and DT system invocation. For information retrieval and 
+visualization tasks, it is further combined with monitoring databases 
+and visualization metadata to construct rendering-oriented outputs, 
+such as node IDs, chart requests, cloud-map parameters, or scene 
+configuration instructions.
+3.3. Execution layer for logic transformation and functional realization
+The execution layer constitutes the final stage of the agent assistant 
+and is responsible for translating the structured outputs of the cognition 
+layer into three forms of downstream results: executable system com -
+mands, grounded natural-language responses, and rendering-oriented 
+visualization instructions. To ensure precision and reliability in high- 
+stakes hydropower project safety scenarios, this layer incorporates two 
+core modules: 
+(1) Schema-guided action mapping (for operational tasks). Specif -
+ically for control-oriented intents, this module performs the 
+deterministic translation of natural language intents into 
+executable system commands via a retrieval-augmented 
+approach:
+1) API schema retrieval: the module queries the knowledge graph to 
+retrieve the specific application programming interface (API) 
+schema for the target function. This schema provides strict defi -
+nitions for interface names, parameter data types, and constraint 
+logic.
+2) Context-aware parameter extraction: based on the retrieved 
+function context and the API schema, the module extracts or 
+completes the required arguments (e.g., temporal ranges, device 
+IDs) through schema-guided parsing and constraint checking, 
+ensuring alignment with the retrieved schema structure.
+3) Standardized command generation: upon validation, the module 
+synthesizes a standardized command payload in JSON format (e. 
+g., { “ action ” : “ set_alarm ” , “ target_id ” : “ S01 ” , “ threshold ” : 50}), 
+rendering it ready for system consumption.
+(2) Closed-loop interactive feedback. This module completes the 
+interaction cycle by converting digital commands or text outputs 
+into observable system behaviors and user confirmations:
+1) Multimodal response rendering: the digital twin front-end engine 
+parses the JSON payload to drive specific interface operations, 
+such as navigating to monitoring scenes, isolating data on charts, 
+or initiating simulation workflows. For knowledge queries, it 
+renders the generated expert response in the dialogue window or 
+via voice synthesis.
+2) Interaction closure: to ensure operational safety, the system 
+provides immediate visual or haptic feedback (e.g., a confirma -
+tion dialogue for critical controls), thereby closing the loop from 
+the initial voice input to the final functional execution or infor -
+mation delivery.
+3.4. Lightweight KG maintenance method based on conflict resolution and 
+incremental update strategy
+To address the resource constraints of small- and medium-scale hy -
+dropower projects, this section introduces a lightweight KG mainte -
+nance method. By utilizing conflict resolution to eliminate topological 
+redundancy and employing localized GAT embedding updates to bypass 
+expensive global retraining, this mechanism effectively circumvents the 
+dependency on high-performance computing clusters and enables agile 
+deployment on standard hardware servers.
+Table 3 
+Technical stack of the GraphRAG-enabled lightweight agent assistant.
+Module Tool / Framework Role in the system
+Programming 
+environment
+Python
+Overall implementation and 
+orchestration of the agent assistant
+Large language 
+model
+Gemma-3-4B
+Knowledge-grounded answer 
+generation and reasoning support for 
+information-response tasks
+LLM inference 
+framework
+PyTorch + Hugging 
+Face Transformers
+Model loading and inference
+Lightweight 
+deployment
+bitsandbytes (4-bit 
+quantization)
+Reducing memory footprint for 
+lightweight deployment
+Graph database Neo4j
+Storage and topological querying of 
+the SFOKG
+Graph access 
+interface
+Neo4j Python Driver 
++ Cypher
+Neighborhood traversal and graph 
+retrieval
+Intent 
+classification
+BERT-based 
+classifier
+Distinguishing different task types
+Embedding model BGE-M3
+Semantic representation of graph 
+entities and contexts
+Community 
+detection
+igraph + leidenalg
+Leiden-based graph partitioning and 
+summarization
+Backend service FastAPI
+Orchestration of retrieval, reasoning, 
+and execution modules
+Output format JSON
+Standardized command payload and 
+rendering instructions
+C. Shao et al. Automation in Construction 188 (2026) 107041 
+10 
+3.4.1. Mechanism of entity relationship deduplication and fusion
+As the system operates continuously, newly ingested descriptions (e. 
+g., ‘the rightmost gate ’ ) may result in entity redundancy or referential 
+conflicts with pre-existing knowledge (e.g., ‘Gate No. 1 ’ ). To address 
+this, a conflict resolution strategy is introduced. By leveraging semantic 
+similarity calculations to achieve entity alignment and normalization, 
+this strategy facilitates the high-quality construction and dynamic 
+scalability of the KG. The specific process steps of the conflict resolution 
+strategy are detailed as follows: 
+(1) Entity alignment strategy
+For any pair of entities e
+i 
+and e
+j 
+within the candidate entity set, their 
+semantic vector embeddings, denoted as h ( e
+i
+) and h ( e
+j
+), are computed. 
+Subsequently, the similarity metric Sim( h ( e
+i
+), h ( e
+j
+)) is calculated. If the

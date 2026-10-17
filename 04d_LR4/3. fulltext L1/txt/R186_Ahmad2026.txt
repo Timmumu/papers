@@ -1,0 +1,1083 @@
+22846 IEEE INTERNET OF THINGS JOURNAL, VOL. 13, NO. 11, 1 JUNE 2026
+Historical Prediction Attention Mechanism-Based
+Trajectory Forecasting for Proactive Work Zone
+Safety in a Digital Twin Environment
+Minhaj Uddin Ahmad
+ , Mizanur Rahman
+ , Senior Member, IEEE, Alican Sevim
+ , David Bodoh,
+Sakib Mahmud Khan, Li Zhao, Nathan Huynh, and Eren Erman Ozguven
+Abstract—Proactive safety systems aim to mitigate risks by
+anticipating future potential conﬂicts between vehicles and
+enabling early intervention to prevent work-zone-related crashes.
+This study presents an infrastructure-enabled proactive work
+zone safety warning system that leverages a digital twin (DT)
+environment, integrating real-time multisensor data, detailed
+high-deﬁnition (HD) maps, and a trajectory prediction model
+based on a historical-prediction attention mechanism (AM).
+Speciﬁcally, the contributions of this study are in twofolds:
+1) developing an infrastructure-enabled vehicle trajectory pre-
+diction framework that leverages the historical prediction
+network (HPNet) model integrated with Lanelet2 HD maps and
+2) developing a proactive safety warning generation application
+that incorporates probabilistic conﬂict modeling and vehicle
+bounding-box representations. The development and eﬀectiveness
+demonstration of the presented trajectory prediction model and
+proactive warning system is conducted using a cosimulation
+environment integrating simulation of urban mobility (SUMO)
+and CAR learning to act (CARLA) simulators. To evaluate the
+accuracy of predicted trajectories (PTs), we use two standard
+metrics: joint average displacement error (ADE) and joint
+ﬁnal displacement error (FDE). Our analyses revealed that
+the infrastructure-enabled HPNet model demonstrates superior
+performance on the work zone datasets generated from the
+cosimulation environment, achieving a minimum joint FDE of
+0.3228 m and a minimum joint ADE of 0.1327 m, lower
+than the benchmarks on the Argoverse (minimumJoint FDE:
+1.0986 m, minimumJoint ADE: 0.7612 m) and INTERACTION
+(minimumJoint FDE: 0.8231 m, minimumJoint ADE: 0.2548 m)
+datasets. In addition, our proactive safety warning generation
+application demonstrates its ability to issue alerts for potential
+vehicle conﬂicts.
+Received 29 August 2025; revised 10 February 2026; accepted
+13 February 2026. Date of publication 2 March 2026; date of current version
+25 May 2026. This work was supported by the Federal Motor Carrier
+Safety Administration under Award 69A3602341311MHP0NE. (Correspond-
+ing author: Minhaj Uddin Ahmad.)
+Minhaj Uddin Ahmad and Mizanur Rahman are with the Department
+of Civil, Construction and Environmental Engineering, The University of
+Alabama, Tuscaloosa, AL 35487 USA (e-mail: mahmad12@crimson.ua.edu;
+mizan.rahman@ua.edu).
+Alican Sevim and Eren Erman Ozguven are with the Department of
+Civil and Environmental Engineering, FAMU-FSU College of Engineer-
+ing, Tallahassee, FL 32311 USA (e-mail: as24cq@fsu.edu; eozguven@
+eng.famu.fsu.edu).
+David Bodoh and Sakib Mahmud Khan are with MITRE Corpo-
+ration, McLean, V A 22102 USA (e-mail: dbodoh@mitre.org; mahmud.
+sakib@gmail.com).
+Li Zhao and Nathan Huynh are with the Department of Civil and Envi-
+ronmental Engineering, University of Nebraska–Lincoln, Lincoln, NE 68583
+USA (e-mail: lizhao@unl.edu; nathan.huynh@unl.edu).
+Digital Object Identiﬁer 10.1109/JIOT.2026.3669235
+Index Terms —Conﬂict prediction, digital twin (DT), high-
+deﬁnition (HD) maps, proactive safety, trajectory prediction,
+work zone safety.
+I. I NTRODUCTION
+R
+OADW AY safety remains a critical issue, particularly
+within work zones where vehicle dynamics and driver
+behavior signiﬁcantly vary due to altered roadway conﬁgura-
+tions and proximity to workers. Work zones pose unique risks
+as drivers navigate narrowed lanes, altered traﬃc patterns, and
+speed limit changes, often in close proximity to roadway work-
+ers. Work-zone-related crashes have consistently presented
+higher fatality rates compared with other roadway segments
+[1]. A 2022 Bureau of Transportation Statistics report shows
+a 14-year-high crash record of 856 fatal crashes in work zones
+[2]. A 2022 nationwide study on highway work zone safety
+by the Associated General Contractors of America (AGC)
+found that two-thirds of highway contractors have encountered
+work zone crashes. In addition, over one-third (38%) reported
+project delays due to crashes, and 5% reported worker fatalities
+[3]. To address these persistent challenges, proactive safety
+strategies have emerged as a promising solution. A proactive
+system that anticipates vehicle movements can be a potent tool
+for reducing the likelihood of collisions and enhancing overall
+safety.
+Unlike reactive approaches that respond after an incident,
+proactive methods leverage sensor technologies, real-time data,
+and predictive analytics to anticipate and mitigate risks before
+they escalate. To develop such a proactive safety application,
+digital twin (DT) technologies oﬀer a necessary framework. A
+DT is a real-time, synchronized virtual representation of assets
+and systems in the real world [4]. The ﬂow of information
+can occur in both the directions, from physical to virtual and
+from virtual to physical, in a DT system. In the context of
+transportation, such a system is referred to as a transportation
+DT (TDT), where the physical components or processes of the
+transportation system have a real-time, synchronized, virtual
+representation. Among the many types of TDT, predictive DT
+(PDT) is a class of systems that go beyond representing the
+real-time state of a physical object; it uses complex modeling
+to simulate possible future states of the objects [5], [6].
+In this study, we leverage a PDT framework to develop a
+proactive safety system tailored to complex, dynamic work
+2327-4662 © 2026 IEEE. All rights reserved, including rights for text and data mining, and training of artiﬁcial intelligence and
+similar technologies. Personal use is permitted, but republication/redistribution requires IEEE permission.
+See https://www.ieee.org/publications/rights/index.html for more information.
+Authorized licensed use limited to: CITY UNIV OF HONG KONG. Downloaded on September 30,2026 at 15:44:35 UTC from IEEE Xplore. Restrictions apply. 
+AHMAD et al.: HISTORICAL PREDICTION ATTENTION MECHANISM-BASED TRAJECTORY FORECASTING 22847
+zone scenarios. The goal is not merely to replicate the present
+state of traﬃc ﬂow and vehicle behavior, but to anticipate
+potential future crashes before they materialize and enable
+timely interventions.
+This study presents an infrastructure-enabled proactive work
+zone safety warning system that leverages a PDT framework,
+integrating real-time multisensor data, detailed high-deﬁnition
+(HD) maps, and a trajectory prediction model based on a
+historical prediction attention mechanism (AM). Speciﬁcally,
+the contributions of this study are in twofolds: 1) developing an
+infrastructure-enabled vehicle trajectory prediction framework
+that leverages the historical prediction network (HPNet) [7]
+model integrated with Lanelet2 HD maps and 2) developing a
+proactive safety warning generation application that incorpo-
+rates probabilistic conﬂict modeling and vehicle bounding-box
+representations. HPNet is a deep neural network architec-
+ture designed to learn from multimodal trajectory data while
+accounting for spatiotemporal interactions among vehicles. By
+capturing both individual vehicle dynamics and intervehicle
+dependencies, HPNet generates future trajectory predictions
+with high temporal consistency and spatial precision, aligning
+well with the prediction capability requirements of a PDT
+system. Notably, to the best of our knowledge, this study
+is the ﬁrst to adopt HPNet for infrastructure-based trajec-
+tory prediction, demonstrating that a self-driving car-based
+trajectory prediction algorithm can be eﬀectively repurposed
+to operate from the vantage point of roadside infrastructure-
+mounted sensors. In addition, our proactive safety warning
+generation application validates the eﬀectiveness of the PDT
+framework in issuing alerts for potential vehicle conﬂicts.
+For the development and evaluation of the PDT, we leverage
+a cosimulation approach that tightly integrates simulation
+of urban mobility (SUMO) with the CAR learning to act
+(CARLA) simulator. This cosimulation approach allows us to
+synthesize diverse, realistic vehicle trajectory datasets across
+varied traﬃc conditions, roadway conﬁgurations, and driver
+behaviors commonly observed in work zones.
+II. R ELATED WORK
+This section is divided into twofolds: 1) infrastructure-based
+vehicle trajectory prediction and 2) proactive safety warning
+generation and risk estimation.
+A. Infrastructure-Based Vehicle Trajectory Prediction
+Vehicle trajectory prediction is imperative for many safety-
+critical applications. The premise of the trajectory prediction
+problem is that given past motion states of a vehicle, estimate
+the future positions of that vehicle. These motion states typi-
+cally include kinematic variables, such as position, velocity,
+and acceleration. The prediction algorithms may also use
+other relevant information, such as historical driving behavior
+or a detailed map of road geometry. Recent studies have
+highlighted that infrastructure-based trajectory prediction is
+tightly coupled with the quality of upstream vehicle track-
+ing and trajectory reconstruction [8], [9]. For large-scale
+roadside deployments, raw trajectories are often fragmented
+by sensor noise, occlusions, and handovers between sensing
+regions. Recently, Liu et al. [8] proposed a multiaccess edge
+computing (MEC)-based framework that performs real-time
+trajectory calibration, cross-sensor fusion, and short-term tra-
+jectory prediction. Short-term prediction typically refers to
+3–6 s of prediction horizon in the context of vehicles [10].
+This framework demonstrates the scalability and feasibility of
+infrastructure-based tracking and short-term prediction.
+There are several diﬀerent approaches to predict vehicle
+trajectories, which can be broadly classiﬁed into data-driven
+approaches [11] using machine learning and deep learning,
+probabilistic models [12], Kalman ﬁlters and Bayesian esti-
+mators, and physics-based kinematic models [13]. In this
+study, we refer to the kinematic and probabilistic models as
+traditional approaches to trajectory prediction.
+Traditional approaches typically overlook intervehicle inter-
+actions that inﬂuence driver behavior [14]. Another important
+factor guiding the vehicle’s trajectory is the road geometry.
+The geometry of the road inﬂuences drivers as they negotiate
+roadway curves and turns. Considering the road geometry
+and how vehicles interact with the road shape and topology
+provides important cues for the prediction model. A few
+traditional approaches consider road geometry as boundary
+conditions; however, they lack semantic understanding of a
+roadway network [15].
+Early data-driven methods used recurrent neural networks
+(RNNs), such as long short-term memories (LSTMs), to model
+trajectories [16], leveraging their strength in modeling tempo-
+ral dependencies. Temporal convolutional networks (TCNs),
+an architecture that adapts convolutional neural networks
+(CNNs) for sequential data and integration with an AM [17],
+have shown improvements in trajectory prediction [18]. An
+AM in neural networks allows the model to focus on the
+most relevant parts of the input rather than treating all parts
+equally. The ability to focus on relevant parts of the input
+allows neural networks to achieve “contextual understanding,”
+which has led to their use and integration with a wide range of
+deep-learning-based models [19].
+In addition to sequential or temporal modeling, recent
+data-driven deep learning approaches often incorporate map
+information to improve understanding of road geometry and
+provide useful contextual cues. Two diﬀerent approaches
+that include map information in trajectory prediction models
+are: 1) rasterized representations of roadway sections and
+2) detailed vectorized maps that encode lane topology as
+a graph structure. Early eﬀorts in this area used CNNs on
+rasterized roadway images, with vehicle trajectories encoded
+in the image. These methods demonstrated improved pre-
+diction accuracy compared with models that rely solely on
+sequential trajectory data [20]. More recent approaches lever-
+age HD vector maps [21] that provide rich geometric and
+topological information, such as lane boundaries, connections,
+and traﬃc rules. These vector maps are typically encoded
+as graph structures, where lane segments are nodes, and
+their connections, including merging, branching, and priority
+relationships, are edges. Graph structure makes it compelling
+to apply graph neural networks (GNNs) and graph convolu-
+tional networks (GCNs) to trajectory prediction. The trajectory
+prediction model LaneGCN, introduced by Liang et al. [22],
+Authorized licensed use limited to: CITY UNIV OF HONG KONG. Downloaded on September 30,2026 at 15:44:35 UTC from IEEE Xplore. Restrictions apply. 
+22848 IEEE INTERNET OF THINGS JOURNAL, VOL. 13, NO. 11, 1 JUNE 2026
+is built on this idea and has shown improved trajectory
+prediction, providing a foundation for subsequent studies.
+Studies such as VectorNet [23], QCNet [24], and HiVT [25]
+have demonstrated signiﬁcant advances in trajectory prediction
+by leveraging HD vector maps, AMs, and GCNs. In addi-
+tion, increased industry partnerships and benchmark datasets,
+such as Waymo [26], Argoverse [27], and INTERACTION
+[28], have accelerated the development of better-performing
+trajectory prediction models and mechanisms for comparing
+model results. Despite the beneﬁts of incorporating HD map
+context in state-of-the-art trajectory prediction models, most
+existing infrastructure-based prediction studies continue to rely
+primarily on temporal modeling formulations. Representative
+approaches include recurrent or hybrid temporal models for
+roadside multiagent forecasting [29], [30], transfer-learning-
+based predictors adapted for roadside deployment [31], and
+transformer-based models that emphasize interaction modeling
+without explicit lane-level map encoding [32]. As a result,
+the rich map-centric representations that have driven recent
+advances in trajectory prediction remain comparatively under-
+explored in current infrastructure-based prediction pipelines.
+Most trajectory prediction benchmark datasets primarily
+target self-driving vehicle applications, where a vehicle must
+anticipate the movements of surrounding vehicles to support its
+path-planning module and safety. This incentivizes the devel-
+opment of sophisticated trajectory prediction models, which
+are predominantly evaluated in self-driving contexts. It is also
+important to distinguish trajectory prediction from trajectory
+planning, as these two problems are often conﬂated in the liter-
+ature. Trajectory planning methods aim to generate a feasible
+and optimal future path for an ego vehicle under dynamic
+conditions and safety constraints, assuming known intent
+and controllability. For example, the road obstacle-involved
+trajectory planner (ROITP) explicitly incorporates road obsta-
+cles, vehicle rollover dynamics, and stability constraints
+to generate safe trajectories for autonomous trucks using
+optimization-based formulations [33]. While such planning-
+oriented approaches are critical for autonomous driving, they
+diﬀer fundamentally from trajectory prediction, which seeks
+to infer the future motion of surrounding vehicles whose
+intentions and control inputs are unobserved.
+Recently, HPNet [7] ranked ﬁrst on the INTERACTION
+dataset in the trajectory prediction task, due to its novel
+triple-factorized attention and the use of historical predictions
+to improve temporal consistency. However, the advances in
+prediction model architectures are also applicable to other
+domains, particularly roadside infrastructure-based trajectory
+prediction for safety applications. A key strength of HPNet’s
+multimodal output is its ability to capture the inherent vari-
+ability in human driving behavior. Human drivers exercise free
+will, often making subtle, discretionary choices that result
+in slightly diﬀerent yet equally plausible trajectories. For
+instance, a driver may choose to navigate a work zone by
+slightly adjusting their path or speed, with each choice having
+a comparable likelihood. Chen et al. [34] point out the variabil-
+ity introduced by human behavior and diﬀerent driving styles
+in decision-making environments. HPNet’s multimodal predic-
+tions reﬂect this by generating multiple trajectory hypotheses,
+each adhering to physical constraints and map context, such
+as lane boundaries and temporary signage. These trajectories,
+while distinct, show high agreement due to the constrained
+nature of work zone environments, where variability is subtle
+and bounded by roadway geometry and traﬃc rules. This bal-
+ance allows HPNet to model the nuanced decision-making of
+human drivers while maintaining temporal coherence and spa-
+tial consistency across predictions. The primary contribution
+of this study is to demonstrate the feasibility and eﬀectiveness
+of using HPNet for infrastructure-based trajectory prediction
+in a roadway work zone setting.
+B. Risk Estimation and Proactive Warning Generation
+Accurate estimation of vehicle conﬂict risk and its trans-
+lation into eﬀective warnings remain central challenges in
+proactive transportation safety systems. To this end, recent
+research has increasingly adopted probabilistic modeling
+frameworks to address the uncertainties inherent in vehicle tra-
+jectories, driver behaviors, and dynamic traﬃc contexts such as
+highway work zones. A foundational principle in modern risk
+estimation is trajectory-level probabilistic modeling. Gaussian
+processes and hidden Markov models have been combined to
+predict vehicle motion under uncertain conditions, producing
+collision risk estimates that generalize beyond ﬁxed assump-
+tions of linearity or constant speed [35]. Similar probabilistic
+approaches have been applied in pedestrian-vehicle contexts,
+where Gaussian process regression and maneuver likelihoods
+allow for granular conﬂict quantiﬁcation with lower computa-
+tional costs than deep learning models [36]. These frameworks
+outperform traditional surrogate safety measures (SSMs), such
+as time-to-collision (TTC), which often rely on rigid motion
+assumptions.
+Although postencroachment time (PET) and TTC remain
+fundamental to SSM approaches, many researchers have
+enhanced their predictive capability by integrating these indi-
+cators within probabilistic modeling frameworks that better
+capture traﬃc’s inherent randomness. Among these, extreme
+value theory (EVT) has emerged as a powerful tool for
+quantifying rare but critical safety events [37], [38], [39],
+[40], [41], [42], [43]. Alozi and Hussein [44] analyzed large-
+scale A V-pedestrian interaction datasets from platforms, such
+as Motional and Lyft, using PET and TTC to derive risk
+proﬁles. Their ﬁndings indicated an elevated risk of collisions
+in the early stages of autonomous vehicle deployment, with
+an estimated 4–5.5 collisions per million vehicle-kilometers
+traveled (VKT). When contextual variables were added, this
+range narrowed to 2.3–3.7 per million VKT, oﬀering greater
+statistical conﬁdence. Their results underscore how EVT-based
+probabilistic models can accommodate behavioral variability
+and provide scalable risk metrics in rapidly evolving trans-
+portation systems. A recent framework integrates backward
+and stochastic forward reachable sets to distinguish guar-
+anteed safe states from probabilistically risky ones, thereby
+enhancing both safety guarantees and precision in dynamic
+conﬂict identiﬁcation [45]. Such hybrid techniques help miti-
+gate overconservatism in earlier reachability analyses, while
+supporting conﬁdence-aware risk predictions essential for
+real-world deployment. On the other hand, Jiao et al. [38]
+Authorized licensed use limited to: CITY UNIV OF HONG KONG. Downloaded on September 30,2026 at 15:44:35 UTC from IEEE Xplore. Restrictions apply. 
+AHMAD et al.: HISTORICAL PREDICTION ATTENTION MECHANISM-BASED TRAJECTORY FORECASTING 22849
+developed a probabilistic model that characterizes traﬃc con-
+ﬂicts as context-sensitive extremes in road-user behavior.
+Unlike conventional SSM approaches that use static thresholds
+based on conﬂict type, their method reframes conﬂict risk
+estimation as a statistical learning problem, in which extreme
+value inference enables more adaptive detection. To develop a
+proactive safety application, we leverage a probabilistic model
+that characterizes traﬃc conﬂicts and present a mathematical
+framework for predicting pairwise vehicle conﬂicts based on
+multistep trajectory forecasts.
+III. PDT F RAMEWORK
+Fig. 1 presents a PDT framework for proactive work zone
+safety using roadside sensor data, which comprises three
+layers: 1) physical world; 2) PDT; and 3) communication
+gateway. The physical world serves as the bottom layer and
+encompasses all the transportation-related physical objects,
+such as vehicles, work zone road segments, workers, and
+roadside sensors. The top layer represents the PDT, which
+consists of digital shadow, digital sibling, and real-time
+proactive safety applications. The top and bottom layers are
+connected via the communication gateway, enabling real-time
+data exchange between them. Roadside infrastructure can be
+equipped with computing devices and sensors (e.g., cameras,
+radar, and LiDAR) to precisely detect vehicles and workers
+and continuously generate their trajectories within the work
+zone roadway segment. PDT layer consists of digital shadow,
+digital sibling, and proactive safety applications. In the context
+of PDT, a digital shadow is a digital replica of vehicles’
+and workers’ trajectories. Digital shadows can be created and
+updated in real-time by aggregating, synchronizing, and fusing
+data from the physical world. Digital shadow receives sensor
+data from the physical world, processes it, and stores the
+processed data in the digital sibling database, but it cannot
+transmit information back to the physical world.
+Digital sibling has four basic components: 1) database;
+2) Lanelet2 HD Map; 3) HPNet trajectory prediction model;
+and 3) predicted trajectories (PTs) for all vehicles and maneu-
+ver scenarios. The prediction model can predict all plausible
+vehicle trajectories, each with a diﬀerent probability. Finally,
+the proactive safety application module calculates conﬂict
+probability for all combinations of PT pairs and uses a
+conﬂict decision threshold to generate proactive safety alerts.
+Sections III-A–III-C detail the development pipeline, predic-
+tion model, and proactive safety application.
+A. Integration of Simulation, Prediction, and Warning
+Generation
+This study presents a comprehensive pipeline for developing
+a proactive warning system for work zones within a PDT
+framework, integrating scenario design, cosimulation, model
+training, and warning generation, as illustrated in Fig. 2. The
+process begins with the design stage, where road networks and
+traﬃc scenarios are created using tools, such as RoadRunner
+[46] and Commonroad Scenario Designer [47]. These generate
+OpenDrive and Lanelet2 HD maps, along with SUMO network
+and route ﬁles, and support microscopic traﬃc ﬂow models
+tailored for realistic simulations. At the cosimulation stage, the
+SUMO and CARLA simulators interact to exchange vehicle
+and traﬃc-light states, creating a realistic environment for
+data collection and testing that mirrors real-world implemen-
+tation processes. The prediction model training stage involves
+generating trajectory datasets from simulations, preprocessing
+them, and training a trajectory prediction model. Finally, the
+proactive warning generation stage uses the trained model for
+online inference, enabling real-time deployment by predicting
+future trajectories and generating proactive warnings using
+vehicle data.
+B. Trajectory Prediction of All Plausible Future
+Maneuverings
+In this study, we used HPNet, developed by Tang et al.
+[7]. The key contribution of the authors is the development
+of temporally consistent trajectory prediction of all plausible
+future maneuvers. Many conventional trajectory prediction
+models treat each future timestep independently, leading to
+temporally incoherent predictions where the sequence of pre-
+dicted positions lacks smoothness or dynamic feasibility. Such
+framewise decoupling results in discontinuities in velocity and
+heading, particularly under multimodal settings where multiple
+hypotheses are generated. HPNet mitigates this issue through
+a hierarchical decoder that models future trajectories as tem-
+porally dependent sequences. Let the observed trajectory of a
+vehicle be denoted as X1:Tobs ={x1, x2, . . . ,xTobs}, where Tobs is
+the number of historical timesteps, and xt∈ R2 represents the
+2-D position at time t. The goal is to predict K plausible future
+trajectories{ ˆY
+(k)
+}K
+k=1, where each ˆY
+(k)
+={ˆy(k)
+1 , ˆy(k)
+2 , . . . ,ˆy(k)
+Tpred} is
+a temporally ordered sequence of future positions. Speciﬁcally,
+the model autoregressively decodes future positions, where
+the prediction at timestep t + 1 is conditioned not only
+on the historical context X1:Tobs but also on the predictions up
+to timestep t, i.e., ˆY1:t. This design enforces internal temporal
+consistency and ensures that trajectory evolution follows phys-
+ically plausible motion patterns. Moreover, HPNet’s multihead
+attention modules, such as historical and mode attention, allow
+the model to selectively focus on salient temporal cues and
+disambiguate agent intent across the full prediction horizon.
+The HPNet model was originally developed for an ego-
+centric self-driving vehicle that needs to assess the future
+trajectories of surrounding vehicles. Unlike its initial appli-
+cation with onboard sensors, our implementation adopted
+HPNet architecture for roadside infrastructure equipped with
+stationary LiDAR, radar, and/or camera sensors in a work zone
+scenario. HPNet uses a hierarchical, spatial–temporal deep
+learning framework to extract and model complex interactions
+and movement patterns. At its core, the network integrates
+GNNs, speciﬁcally using graph attention networks (GATs),
+to encode spatial and temporal interactions between vehicles
+and the roadway section. It processes the HD Map as a vector
+graph with attention modules. This graph-based representation
+enables HPNet to dynamically emphasize relevant spatial
+relationships and temporal dependencies, thereby improving
+the model’s predictive performance. Multiple attention layers
+dynamically weight spatiotemporal features, which enables
+Authorized licensed use limited to: CITY UNIV OF HONG KONG. Downloaded on September 30,2026 at 15:44:35 UTC from IEEE Xplore. Restrictions apply. 
+22850 IEEE INTERNET OF THINGS JOURNAL, VOL. 13, NO. 11, 1 JUNE 2026
+Fig. 1. PDT framework for proactive work zone safety.
+multimodal trajectory predictions that account for inherent
+uncertainties in future vehicle movements.
+AM [17] is a core component of the model. AMs enable
+the model to selectively focus on relevant parts of the input
+Authorized licensed use limited to: CITY UNIV OF HONG KONG. Downloaded on September 30,2026 at 15:44:35 UTC from IEEE Xplore. Restrictions apply. 
+AHMAD et al.: HISTORICAL PREDICTION ATTENTION MECHANISM-BASED TRAJECTORY FORECASTING 22851
+Fig. 2. Framework integrating simulation, prediction, and warning generation
+under a PDT framework.
+data when generating predictions, signiﬁcantly enhancing pre-
+dictive accuracy and contextual awareness. The AM operates
+on three fundamental parameters: query (Q), key (K), and
+value (V). Their roles are as follows: query (Q) repre-
+sents the elements seeking information. Key (K) represents
+the actual information content provided in response to the
+queries, weighted by relevance, determined by query–key dot-
+product similarity. The input information is tokenized by the
+embedding process and used as the K, Q, and V matrices.
+The model inputs include vehicle trajectories (sequences of
+position, heading, and velocity), which are encoded by a
+multilayer perceptron (MLP) into location-dependent vehicle
+feature embeddings (E_a). In addition, static attributes, such
+as vehicle length, width, and type, are incorporated to enrich
+the representation. Map attributes, including lane boundaries
+and center lines, are encoded into map feature embeddings
+(E_m). Relative features, capturing spatial relationships, such
+as distances, angles, and heading, and diﬀerences between
+agents and map elements, are encoded into relative feature
+embeddings (E_e).
+The model architecture, as depicted in Fig. 3, processes the
+inputs through a series of attention-based layers to generate
+and reﬁne multimodal trajectory predictions. The process
+begins with learnable mode tokens, representing K possible
+future trajectories for each agent, which act as queries in AMs.
+Temporal attention uses multihead cross-attention, with mode
+tokens as queries and vehicle/relative embeddings (E_a, E_e)
+as keys and values, to capture historical vehicle dynamics
+over time. Spatial attention uses cross-attention with mode
+tokens as queries and map/relative embeddings (E_m, E_e)
+to integrate roadway context, aligning predictions with lane
+constraints. Mode attention further reﬁnes predictions through
+three sublayers: agent attention (P
+a) models interagent inter-
+actions using self-attention on prediction embeddings (P) and
+relative features; historic prediction attention (P hp) ensures
+temporal coherence by capturing dependencies within PT;
+and mode attention disambiguates multiple plausible trajectory
+hypotheses by modeling interactions across modes.
+The trajectory prediction process unfolds in two stages:
+proposal generation and reﬁnement. In the proposal stage,
+an MLP (traj_propose) decodes mode embeddings
+(m_embs) into initial multimodal trajectory proposals
+(traj_propose) in global coordinates, with shape
+[(N1, . . . ,Nb), H, K, F, 2], where N1, . . . ,Nb denote agents
+per batch, H is the historical timestep, K is the mode, F is
+the future timestep, and 2 represents 2-D coordinates. These
+proposals deﬁne anchor points by selecting the middle future
+timestep (F//2) to compute anchor positions (n_position)
+and headings (n_heading), which are transformed into local
+coordinates and encoded into anchor embeddings (n_embs)
+using an MLP (proposal_to_anchor). In the reﬁnement
+stage, anchor embeddings undergo another temporal
+attention stage to integrate historical agent data, a spatial
+attention stage to incorporate map context, and a mode
+attention stage to reﬁne interactions across agents, historical
+steps, and modes. An MLP (traj_refine) generates a
+correction term (traj_refine), which is added to the initial
+trajectory proposal and transformed back to global coordinates
+using transform_traj_to_global_coordinate,
+yielding the ﬁnal output (traj_output). This two-stage
+approach ensures contextually informed and temporally
+consistent predictions, overcoming the limitations of
+framewise decoupled models.
+C. Proactive Safety Warning Generation
+In this section, we present a mathematical framework for
+predicting pairwise vehicle conﬂicts based on multistep tra-
+jectory forecasts. Each vehicle is represented geometrically as
+a rigid rectangular bounding box situated in a 2-D Euclidean
+space. The center of the vehicle is denoted by a time-indexed
+sequence of predicted positions ( x(k)
+i , y(k)
+i ), accompanied by an
+orientation angle ψ(k)
+i , where k indicates the prediction step
+and i indexes the vehicle within the set of vehicles present in
+a given time frame. The shape of each vehicle is deﬁned by
+parameters for length, l, and width, w, and the corresponding
+bounding box is constructed by applying a planar rotation
+matrix to a predeﬁned set of local coordinates to represent the
+Authorized licensed use limited to: CITY UNIV OF HONG KONG. Downloaded on September 30,2026 at 15:44:35 UTC from IEEE Xplore. Restrictions apply. 
+22852 IEEE INTERNET OF THINGS JOURNAL, VOL. 13, NO. 11, 1 JUNE 2026
+Fig. 3. Historical trajectory prediction model architecture with multistage attention for temporally consistent trajectory prediction.
+corners and midpoints of the vehicle’s physical envelope. The
+transformation into the global coordinate system is performed
+by rotating these points using ψ(k)
+i and translating them to
+the global position ( x(k)
+i , y(k)
+i ). This transformation for a point
+(u, v) in the vehicle’s local coordinate frame is expressed as
+(x(k)
+i , y(k)
+i ) +R(ψ(k)
+i )· (u, v)T , whereR(ψ) denotes the standard
+2-D rotation matrix. The notation (u, v)T denotes the column
+vector form of a point deﬁned in the vehicle’s local coordinate
+frame. While (u, v) represents a 2-D point as a row vector, its
+transpose (u, v)T =
+u
+v
+
+is required for matrix multiplication
+with the 2 × 2 rotation matrix R(ψ). This transformation
+rotates the local point according to the vehicle’s orientation ψ
+to be accurately mapped into global coordinates
+R
+
+ψ(k)
+i
+u
+v
+
+=
+cos ψ − sin ψ
+sin ψ cos ψ
+ u
+v
+
+=
+u cos ψ− v sin ψ
+u sin ψ + v cos ψ
+
+. (1)
+For each discrete time frame and prediction step k, we
+evaluate all the unique unordered pairs of vehicles (vi, vj), with
+i < j, to estimate the likelihood of a conﬂict. The minimum
+Euclidean distance between any pair of transformed bounding-
+box points associated with vi and vj is computed and denoted
+as d(k)
+i j
+d(k)
+i j = min
+a,b
+p(k)
+ia − p(k)
+jb
+
+2
+(2)
+where p(k)
+ia and p(k)
+jb are the transformed global coordinates of
+the ath and bth bounding-box points for vehicles i and j,
+respectively. In a conﬂict hierarchy, the closer the proxim-
+ity between approaching road users (e.g., vehicles), the less
+safe they are and the higher the probability of a potential
+collision [38]. Hence, the scalar distance d(k)
+i j is subsequently
+transformed into a proximity-to-risk map via an exponential
+decay function of the form
+P(k)
+i j = exp
+ 
+−
+d(k)
+i j
+λ
+!
+(3)
+where λ > 0 is a decay constant governing the rate at which
+conﬂict likelihood diminishes with spatial separation. This
+function handles the conﬂict probability approaching unity as
+the separation approaches zero and decaying asymptotically
+toward zero as the distance increases, while providing a
+smooth, diﬀerentiable risk measure based on physical proxim-
+ity. Pairwise interaction of vehicles is monitored for potential
+conﬂicts if the distance d(k)
+i j falls below a distance threshold
+δd. As conﬂict risk is continuously calculated, a proactive
+warning is generated if risk estimation exceeds a conﬁdence
+threshold τ∈ (0, 1). The exponential model provides a deci-
+sion surface where τ and λ parameters jointly determine a
+clearance contour, which delineates the boundary between
+safe and potentially conﬂicting vehicle interactions. The τ
+is treated as a warning-generation sensitivity parameter, λ
+controls the decay scale of the exponential model, and δd
+Authorized licensed use limited to: CITY UNIV OF HONG KONG. Downloaded on September 30,2026 at 15:44:35 UTC from IEEE Xplore. Restrictions apply. 
+AHMAD et al.: HISTORICAL PREDICTION ATTENTION MECHANISM-BASED TRAJECTORY FORECASTING 22853
+serves as a reference clearance for labeling a conﬂict case.
+These parameters provide a mechanism for calibrating decision
+policy and enable sensitivity or stability analysis. SUMO’s
+built-in SSM device logs time- and position-stamped “close-
+call” events based on standard SSM indicators (e.g., TTC,
+hard-braking event) during simulation runtime, which provide
+a principled starting point deﬁning reference clearance level
+δd and for calibrating the (δ d, λ, τ) parameter set.
+The computational process iterates over all time frames
+and prediction horizons, maintaining a structured record for
+each evaluated vehicle pair: their geometric separation, the
+associated conﬂict probability, and whether the pair meets
+the criteria for conﬂict or high-risk designation. It has direc-
+tional sensitivity in conﬂict modeling. For example, vehicles
+approaching each other head-on or at acute angles may present
+higher conﬂict risk despite moderate centroidal distances.
+The alignment of bounding-box surfaces implicitly captures
+such conﬁgurations for a more accurate detection of spatial
+convergence zones. This is especially critical in environments
+with complex maneuvers, such as work zones, intersections,
+or lane merges, where lateral and angular interactions are
+dominant. From a mathematical standpoint, bounding-box
+distances generalize center-based metrics by reducing to the
+latter in the degenerate case where vehicle dimensions reduce
+to zero. As such, they preserve the analytical simplicity of
+Euclidean norms while enriching the geometric expressiveness
+of the model.
+IV. SUMO-CARLA E XPERIMENTAL SETUP
+In this study, we use the SUMO and CARLA simula-
+tors, widely accepted open-source tools for traﬃc, vehicle
+dynamics, and sensor simulation. SUMO provides realis-
+tic large-scale traﬃc simulation capabilities using standard
+microscopic traﬃc ﬂow models and is particularly adept at
+simulating detailed merging behavior in constrained envi-
+ronments, such as work zones [48]. In this study, CARLA
+complements SUMO by providing high-ﬁdelity sensor simu-
+lation, including lidar, radar, and camera sensors. We adjusted
+the car-following and lane-changing models in SUMO to
+closely match observed real-world driver behavior within
+work zones. These behaviors include realistic acceleration,
+deceleration, and merging maneuvers validated by traﬃc ﬂow
+studies [49].
+The merging behavior approaching a lane closure is partic-
+ularly important in work zone scenarios. By default, SUMO
+uses the LC2013 [50] lane-changing model to make a decision
+to change lane at every simulation step. This model considers
+four diﬀerent motivations to make lane changes, namely: 1)
+strategic change; 2) cooperative change; 3) tactical change;
+and 4) regulatory change. The lane change due to the lane
+closure ahead is a strategic change. The default behavior of this
+lane-changing model in SUMO is that lane change happens
+in an instant. When the model satisﬁes all the criteria for
+changing lanes, the vehicle moves to the target lane in an
+instant. Instant lane changes are prohibitive as it is necessary
+to capture the lane-changing dynamics for our application.
+To better suit our study, we use SUMO’s sublane model,
+an extension of the LC2013 lane-changing logic that allows
+continuous lateral movement across the width of a lane rather
+than abrupt, instantaneous jumps. This sublane model, referred
+to as SL2015, provides a more realistic representation of lane-
+changing behavior by allowing vehicles to gradually shift
+their lateral positions over time. In the sublane model, a
+road is conceptually divided into many ﬁne-grained lateral
+subdivisions (sublanes), allowing vehicles to occupy fractional
+positions within a lane or between lanes. This enables mod-
+eling lane changes as a time-dependent process inﬂuenced by
+vehicle dynamics rather than as a discrete event. To activate
+the sublane model, SUMO requires to be conﬁgured with
+the -lateral-resolution <FLOAT> parameter set to
+a value smaller than the lane width, which is 0.25 m in our
+case. With the sublane model enabled, SUMO switches the
+lane-changing model from the default LC2013 to the SL2015
+model, which can use lane subdivisions for smoother, more
+realistic transitions. Once enabled, the vehicles can initiate
+a lane change by steering toward the target lane, and the
+movement unfolds gradually over multiple simulation steps.
+In addition to LC2013 model parameters, the trajectory and
+duration of this lateral transition are governed by additional
+vehicle parameters, such as lcSublane, lcAssertive, lcPushy,
+lcImpatience, lcTimeToImpatience, lcAccelLat, latAlignment,
+and lcMaxSpeedLatStanding. These parameters together shape
+how vehicles behave during lane changes. For instance, lcSub-
+lane controls the vehicle’s preference for staying aligned
+laterally within a lane, while lcAssertive and lcPushy deter-
+mine how willing a vehicle is to accept tighter gaps or
+initiate lane changes in partially blocked spaces. lcImpatience
+dynamically scales the assertive and pushy tendencies as
+time progresses, and lcTimeToImpatience measures the time it
+takes to reach peak impatience. lcAccelLat restricts the lateral
+acceleration to reﬂect realistic dynamics, and latAlignment
+allows vehicles to aim for speciﬁc oﬀsets within the lane (e.g.,
+center, left, or right). Finally, the parameters lcMaxSpeedLat-
+Standing and lcMaxSpeedLatFactor control the lateral speed
+envelope, scaling lateral velocity based on vehicle speed to
+prevent unrealistic side movements. Together, these parameters
+enable nuanced, gradual, and context-aware lateral maneuvers
+that are critical for simulating realistic merging behavior in
+work zones where vehicles should respond to upstream lane
+closures. This modeling enhancement is especially useful
+because it allows us to accurately capture the interactions
+between merging vehicles and through tra ﬃc, as well as
+model behaviors such as hesitation, courtesy yielding, and
+multivehicle negotiations near the taper zone of the work
+zone. In addition, the continuous, dynamics, and time-evolving
+lateral motion representation allows for better integration with
+trajectory prediction algorithms, which requires smooth and
+physically plausible vehicle motions.
+The road network for SUMO-CARLA cosimulation is cre-
+ated using MathWorks Roadrunner software, following manual
+on uniform traﬃc control devices (MUTCDs) guidelines for
+lane closure in a work zone, including speed reduction and
+taper lengths [51]. Fig. 4 shows a portion of the work zone map
+created in Roadrunner. The map geometry can be exported
+in the OpenDrive (map.xodr) HD Map format, which is a
+direct input to the CARLA simulator. CARLA supports native
+Authorized licensed use limited to: CITY UNIV OF HONG KONG. Downloaded on September 30,2026 at 15:44:35 UTC from IEEE Xplore. Restrictions apply. 
+22854 IEEE INTERNET OF THINGS JOURNAL, VOL. 13, NO. 11, 1 JUNE 2026
+Fig. 4. Work zone scenario with lane closure and taper designed in RoadRunner.
+Fig. 5. Map conversion workﬂow from OpenDRIVE to SUMO and Lanelet2
+formats.
+parsing of OpenDrive-format road networks. CARLA uses the
+ﬁle and constructs corresponding 3-D meshes for the road
+topology and renders in 3-D simulation environment. However,
+the SUMO simulator cannot take an OpenDrive map as input.
+It uses its own XML format for network deﬁnitions. On the
+other hand, the trajectory prediction module uses another HD
+Map format, Lanelet2. Fig. 5 illustrates how the map has been
+converted to be used by SUMO, CARLA, and the trajectory
+prediction module.
+To facilitate SUMO-CARLA cosimulation, SUMO’s
+netconvert tool was used for converting OpenDrive maps
+into SUMO-compatible networks. Netconvert parses the
+road geometry and attributes from the XODR format and
+generates an equivalent network topology interpretable by
+SUMO. The “net.xml” ﬁle serves as the road network for
+SUMO, enabling us to simulate traﬃc and synchronize it
+with CARLA through our cosimulation bridge. This allows
+us to simulate traﬃc interactions, including vehicle behavior
+through the work zone. Realistic traﬃc modeling is performed
+by SUMO, while CARLA provides a realistic 3D environment
+so that the environment can be perceived by sensors such as
+LiDAR, radar, and camera.
+The adopted HPNet model has a module that parses the
+Lanelet2 format HD Map to create its internal vector graph
+representation of the map. We converted the OpenDrive format
+map into Lanelet2 using the open-source tool Commonroad
+Scenario Designer [47]. Commonroad provides a common
+abstraction for elements commonly found in diﬀerent HD Map
+standards, which in turn enables seamless conversion between
+standard map formats.
+V. D ATA GENERATION
+Vehicle trajectories are derived from infrastructure-mounted
+LiDAR, radar, and camera sensors using oﬀ-the-shelf detection
+and tracking components. Camera-based vehicle detection is
+performed using a YOLO-11 object detector, LiDAR point
+clouds are processed using standard Euclidean-clustering-
+based detection, and radar provides complementary range
+and radial velocity measurements. Camera detections are pro-
+jected onto the roadway using a planar homography under
+a locally planar road assumption, while LiDAR and radar
+detections are transformed into a common stationary world
+coordinate frame via rigid extrinsic calibration. All the world-
+frame coordinates are expressed in a projected metric system
+using the universal transverse mercator (UTM) projection to
+ensure global-coordinate consistency across sensors, trajecto-
+ries, and HD maps. Following spatial alignment, detections
+are temporally associated using a SORT-based multiobject
+tracking algorithm, and trajectory-level fusion is performed
+using an extended Kalman ﬁlter (EKF) to jointly estimate
+vehicle position, velocity, and heading over time. The result-
+ing fused trajectories are preprocessed to match HPNet’s
+input format, including ﬁxed-length historical sequences, agent
+attributes, and alignment with the Lanelet2 HD map, enabling
+infrastructure-based trajectory prediction. All three sensor
+modalities collect data at a frequency of 10 Hz, which facili-
+tates high temporal resolution and continuous vehicle tracking.
+In our simulation setup, we also collect ground-truth data for
+all vehicles at 10 Hz (0.1-s time interval), which we use to
+train the HPNet model.
+The structure of the INTERACTION dataset [28] served
+as a reference when building our dataset from simulation
+data. The dataset consists of comma-separated-value (CSV)
+ﬁles, each containing a 4-s-long scenario. Since the data
+are recorded at 10 Hz, and there are 18–22 vehicles at any
+given time in the simulation, each CSV ﬁle has approximately
+800 rows of data. Data snapshots recorded at 10 Hz (100-ms
+intervals) are referred to as a frame. So, a 4-s scenario has
+40 frames, where the ﬁrst ten frames are considered as input
+and the subsequent 30 frames are ground-truth labels. A total
+of 20 000 s of driving simulation data were generated, which
+results in 5000 individual cases, each stored as a separate
+CSV ﬁle. These cases collectively represent approximately
+5.56 h of continuous simulated driving. The CSV ﬁles are
+indexed by “case
+id” (e.g., trajectory data case 10.csv).
+The description of the data ﬁelds is provided in Table I.
+VI. E VALUATION OUTCOMES
+A. Evaluation Metrics
+To evaluate the accuracy of PTs, we use two standard
+metrics widely used in the literature: average displacement
+error (ADE) and ﬁnal displacement error (FDE). Let yt =
+(xt, yt) denote the ground-truth position at time step t, and let
+ˆyt = ( ˆxt, ˆyt) represent the predicted position at the same time
+Authorized licensed use limited to: CITY UNIV OF HONG KONG. Downloaded on September 30,2026 at 15:44:35 UTC from IEEE Xplore. Restrictions apply. 
+AHMAD et al.: HISTORICAL PREDICTION ATTENTION MECHANISM-BASED TRAJECTORY FORECASTING 22855
+TABLE I
+DESCRIPTION OF COLUMNS IN THE T R A J E C T O R Y_D A T A_C A S E_X X X.C S V FILE
+step. Given a prediction horizon of T time steps, the metrics
+are deﬁned as follows:
+ADE = 1
+T
+TX
+t=1
+ˆyt− yt
+
+
+2 (4)
+FDE =
+ˆyT− yT
+
+
+2 . (5)
+The ADE measures the average Euclidean distance (L2 norm)
+between the predicted and ground-truth positions over the
+entire prediction horizon, providing a holistic view of the
+model’s performance over time. In contrast, the FDE focuses
+solely on the Euclidean distance at the ﬁnal prediction
+time step, capturing the model’s accuracy in estimating the
+vehicle’s ultimate destination. These metrics jointly capture
+both spatial consistency and endpoint-oriented accuracy. A low
+value of ADE and FDE is desired for a trajectory prediction
+model.
+B. Training and Testing of Trajectory Prediction Model
+We trained the HPNet model for 60 epochs using the Adam
+optimizer with an initial learning rate of 5e −4, decayed by a
+factor of 1e−4 after four warmup epochs. As shown in Fig. 6,
+the training loss drops sharply during the ﬁrst ten epochs, from
+over 37 down to approximately 0.39, before decaying more
+gradually to a ﬁnal value of 0.06. The validation loss follows
+a very similar trajectory, decreasing from an initial 31 to 0.08
+by epoch 60. The close alignment of the two curves, especially
+beyond epoch 15, indicates that the model converges reliably
+without signiﬁcant overﬁtting. The vertical axis of Fig. 6 is in
+logarithmic scale to capture the rapid initial convergence and
+the later ﬁne-scale improvements.
+We further evaluate predictive accuracy using two standard
+trajectory-prediction metrics: ADE and FDE. Fig. 6 also illus-
+trates that the minJointADE decreases from roughly 14.0 m
+at epoch 1 to 0.13 m at epoch 60, while the minJointFDE
+falls from about 32 m down to 0.322 m over the same
+training horizon. Both the metrics stabilize after epoch 30,
+conﬁrming that the model’s improvements plateau once the
+network has suﬃciently learned the underlying motion patterns
+in the dataset.
+Overall, the parallel decline in training and validation losses,
+combined with the monotonic reduction in ADE and FDE,
+Fig. 6. Training and validation loss with ADE/FDE trends across epochs.
+TABLE II
+HPN ET PERFORMANCE ON DIFFERENT DATASETS
+demonstrates that HPNet eﬀectively captures vehicle motion
+characteristics. The absence of a widening gap between train-
+ing and validation losses, along with the smooth decay of
+displacement errors, suggests generalization and supports the
+choice of training schedule and associated hyperparameters.
+JointADE is the measure of the average L2-norm distance
+across all vehicles’ predicted and actual trajectories, while
+minimum joint ADE (minJointADE) indicates the closest
+mode (of 6) to the ground truth. On the other hand, minimum
+joint ADE (minJointADE) measures the average L2-norm
+distance at the ﬁnal time step for all vehicles. These metrics
+are widely used to benchmark trajectory prediction perfor-
+mance. Table II shows comparison of these metrics from
+our infrastructure-based work zone simulation dataset with
+Authorized licensed use limited to: CITY UNIV OF HONG KONG. Downloaded on September 30,2026 at 15:44:35 UTC from IEEE Xplore. Restrictions apply. 
+22856 IEEE INTERNET OF THINGS JOURNAL, VOL. 13, NO. 11, 1 JUNE 2026
+Fig. 7. Predicted versus ground-truth trajectories for individual vehicles.
+the Argoverse and Interaction datasets. The HPNet model
+demonstrates superior performance on the work zone sim-
+ulation dataset, achieving a minJointFDE of 0.3228 m and
+a minJointADE of 0.1327 m, signiﬁcantly lower than the
+benchmarks on the Argoverse (minJointFDE: 1.0986 m,
+minJointADE: 0.7612 m) and Interaction (minJointFDE:
+0.8231 m, minJointADE: 0.2548 m) datasets. This perfor-
+mance disparity can be attributed to the diﬀerences in dataset
+complexity. The benchmark datasets, Argoverse and Interac-
+tion, are derived from real-world data and capture the diverse
+and unpredictable behavior of human drivers. In contrast, the
+work zone simulation dataset, while instrumental in developing
+and testing the entire pipeline and designed to be as realistic
+as possible, relies on an underlying microscopic traﬃc ﬂow
+model. This model inherently lacks the full spectrum of
+variability observed in real-world human drivers, which may
+lead to more predictable trajectories and improved model
+performance. On the other hand, the improved results may
+stem from the advantages of our roadside infrastructure-based
+setup, which oﬀers a more favorable viewpoint with reduced
+occlusion compared with a self-driving car. This enhanced
+visibility likely contributes to the model’s lower ADE and
+FDE, highlighting the potential of infrastructure-based systems
+for trajectory prediction.
+In addition, the HPNet model was trained and evaluated
+on CARLA Town 06, which features a mid-density urban
+environment with multiple intersections and more diverse
+interaction scenarios than the work zone setup. As reported in
+Table II, the model achieves comparable performance on the
+CARLA town simulation dataset, indicating that the learned
+representations are not overly specialized to a single scenario.
+This consistency across environments suggests a reasonable
+level of generalization and supports the applicability of the
+proposed infrastructure-based prediction framework beyond a
+single work-zone conﬁguration.
+Fig. 7 illustrates the PTs for selected individual vehicles
+over a 4-s horizon, plotted alongside ground-truth tracks.
+Fig. 7 also covers both the in-lane driving and lane-changing
+cases. The predictions align closely with actual vehicle paths,
+capturing both the temporal evolution and the spatial curva-
+ture of motion. The multimodal nature of the prediction is
+TABLE III
+CONFUSION MATRIX FOR CONFLICT WARNING GENERATION UNDER
+BASELINE CONFIGURATION (δd, λ, τ) = (7, 7, 0.7)
+TABLE IV
+PERFORMANCE METRICS DERIVED FROM CONFUSION MATRIX
+Fig. 8. Conﬂict probability trends between two selected target vehicles across
+future prediction steps approaching a work zone area. (a) Full distribution of
+pairwise conﬂict probabilities at all predicted time horizons, illustrating how
+risk evolves over distance. (b) Filtered view showing only instances where
+the minimum bounding-box distance falls below 7 m, highlighting high-risk
+interactions within safety-critical proximity.
+evident in the closely clustered trajectories, which reﬂect
+subtle variations in potential driving behavior under the con-
+straints imposed by work zone geometry.
+C. Evaluation of Proactive Safety Warning Generation
+The conﬂict risk estimation framework discussed earlier
+in Section III-C is applied to predicted vehicle trajectories
+generated over successive time horizons. A critical component
+of this application involved selecting appropriate decision
+parameter values to classify interactions as potential conﬂicts
+and to issue proactive driver warnings. The performance of
+this warning-generation module is evaluated by aggregating
+decisions across all time steps for 60 test cases comprising a
+total of 1800 predicted data frames. Under baseline operating
+conﬁguration (δd, λ, τ) = (7, 7, 0.7), determined through empir-
+ical tuning and reﬁned by sensitivity analysis, the confusion
+matrix and the derived performance metrics are presented in
+Tables III and IV, respectively.
+The conﬂict prevalence, deﬁned as the proportion of frames
+containing a conﬂict event in the dataset, is π = 0.03,
+indicating that conﬂicts occur in approximately 3% of frames.
+This class imbalance reﬂects the inherently rare nature of
+safety-critical interactions in realistic traﬃc streams. Due to
+this imbalance, a hypothetical system that never issues warn-
+ings would achieve 97% accuracy simply by exploiting the
+Authorized licensed use limited to: CITY UNIV OF HONG KONG. Downloaded on September 30,2026 at 15:44:35 UTC from IEEE Xplore. Restrictions apply. 
+AHMAD et al.: HISTORICAL PREDICTION ATTENTION MECHANISM-BASED TRAJECTORY FORECASTING 22857
+Fig. 9. Joint sensitivity of detection performance across the (λ, τ) parameter space.
+class imbalance, while completely failing its safety function.
+Accuracy is, therefore, a misleading metric for this problem.
+Performance should instead be assessed using metrics such as
+precision, recall, and false-positive rate (FPR), which sepa-
+rately assess how the system handles conﬂict and nonconﬂict
+cases between vehicles.
+At the τ = 0.7 threshold, the system achieves a precision
+of 0.333, meaning roughly one-third of issued warnings prove
+correct. This reﬂects a deliberate design tradeoﬀ. The system
+prioritizes avoiding false alarms over catching every potential
+conﬂict, as shown by the low FPR of 0.014. When no conﬂict
+is developing, the system incorrectly warns only 1.4% of the
+time. This restraint is critical for acceptance among drivers,
+since excessive warnings lead to alert fatigue and driver
+disregard of the system. The conservative strategy comes with
+a tradeoﬀ: a recall (sensitivity) of 0.222 and a false-negative
+rate of 0.778. A lower threshold would raise more potential
+conﬂict warnings but would also generate many more false
+alarms. Subsequent analysis explores this tradeoﬀ by varying
+values of the threshold τ.
+Fig. 8 illustrates the relationship between the distance
+between vehicle pairs and the corresponding conﬂict proba-
+bility across the future prediction window. Fig. 8(a) highlights
+how risk increases as a vehicle approaches another, while the
+ﬁltered view in Fig. 8(b) emphasizes the interactions occur-
+ring within the reference clearance distance deﬁned by δd.
+This visualization demonstrates that high-risk interactions are
+naturally concentrated in close-proximity regimes, validating
+the use of the clearance threshold δd as a reference scale rather
+than a collision indicator.
+Fig. 9 summarizes the joint sensitivity of detection perfor-
+mance across the (λ, τ) parameter space under the reference
+clearance, δd. Each panel visualizes how key metrics evolve as
+the decay scale λ and the decision threshold τ are varied. Core
+detection quality metrics (precision, recall, and F1-score) are
+presented alongside error-related measures (i.e., FNR, FPR,
+and speciﬁcity) and derived decision metrics (i.e., false discov-
+ery rate (FDR), Youden’s J statistic, and balanced accuracy)
+together revealing the eﬀect of τ and λ on conﬂict detection.
+The FDR represents the proportion of warnings that turn out
+to be false alarms, providing an alternative view of precision
+(FDR = 1 – Precision). Youden’s J statistic combines sensitiv-
+ity and speciﬁcity (J = Sensitivity + Speciﬁcity−1), providing
+a single measure that balances detection of conﬂicts and avoid-
+ance of false alarms, with values ranging from 0 (no better
+than random) to 1 (perfect classiﬁcation). Balanced accuracy
+averages performance across conﬂict and nonconﬂict classes,
+ensuring the evaluation is not dominated by the majority class.
+Color intensity denotes metric magnitude, highlighting regions
+of stability, degradation, and tradeoﬀ across the parameter
+space. Fig. 9 shows that performance varies smoothly across
+parameter ranges (λ = 5, 7, 9; τ = 0.5, 0.6, 0.7, 0.8), with the
+dominant sensitivity arising from τ, while changes in λ pri-
+marily adjust the sharpness of the proximity-to-risk mapping
+exponential function without introducing abrupt degradation
+or instability. A higher λ value causes the risk to decay more
+slowly with distance, making the system more sensitive to
+very close interactions while being less reactive to moderate
+separations. Importantly, broad regions of stable performance
+are observed, indicating that the decision surface is not brittle
+with respect to physical or probabilistic parameterization. The
+baseline conﬁguration (λ = 7, τ = 0.7) sits in a stable region
+where small parameter perturbations do not cause dramatic
+performance shifts.
+Authorized licensed use limited to: CITY UNIV OF HONG KONG. Downloaded on September 30,2026 at 15:44:35 UTC from IEEE Xplore. Restrictions apply. 
+22858 IEEE INTERNET OF THINGS JOURNAL, VOL. 13, NO. 11, 1 JUNE 2026
+Fig. 10. Threshold-conditioned concentration patterns across multiple performance tradeoﬀ spaces.
+Fig. 10 provides a complementary view by illustrating
+threshold-conditioned concentration patterns across multiple
+performance tradeoﬀ spaces. Each panel is a scatter plot,
+with each point representing a tested parameter conﬁguration.
+Points are colored by threshold value τ, ranging from yellow
+(τ = 0.80, conservative) to blue (τ = 0.50, aggressive).
+The shaded regions show where parameter conﬁgurations
+create clusters. The precision–recall plot shows the funda-
+mental tradeoﬀ. Precision is the fraction of correct warnings,
+while recall is the fraction of conﬂicts detected. The FPR
+versus FNR plot shows this sa

@@ -1,0 +1,1106 @@
+Digital twin-based multiscale fatigue crack life prediction of rib-to-deck 
+weld joints
+Yang Ye
+a , b
+, You-Lin Xu
+a , b , *
+, Wulve Lao
+a , b
+, Chuang Cui
+a , b
+, Qinghua Zhang
+a , b
+a
+Department of Bridge Engineering, School of Civil Engineering, Southwest Jiaotong University, Chengdu, China
+b
+State Key Laboratory of Bridge Intelligent and Green Construction, Southwest Jiaotong University, Chengdu, China
+ARTICLE INFO
+Keywords:
+Digital twin
+OSD
+RTD weld joints
+Fatigue crack propagation
+Multiscale model
+CPFEM
+Fracture mechanics
+Dynamic Bayesian network
+ABSTRACT
+Fatigue cracks are prone to initiate in rib-to-deck (RTD) weld joints of orthotropic steel decks (OSD) under traffic 
+loading, posing a serious threat to functionality and safety of bridge structures. To achieve accurate fatigue crack 
+life prediction of RTD weld joints of OSD, a digital twin-based multiscale fatigue crack life prediction framework 
+from microcrack initiation and propagation to macrocrack propagation is proposed. Eccentric tensile fatigue tests 
+as a physical entity are first conducted to obtain test data on fatigue crack propagation. A multiscale crack 
+propagation model coupling crystal plasticity finite element model with fracture mechanics is then established as 
+a virtual entity to describe microcrack initiation and propagation as well as macrocrack propagation. A dynamic 
+Bayesian network integrated with a particle filter algorithm is finally introduced to fuse the test data from the 
+physical entity with the numerical results from the virtual entity, enabling real-time updating of key model 
+parameters and crack propagation states as well as quantitative uncertainty assessment and digital twin con -
+struction. The results from this study demonstrate that the proposed digital twin effectively suppresses model 
+uncertainty and significantly improves the prediction accuracy of crack propagation process and remaining fa -
+tigue life.
+1. Introduction
+Orthotropic steel decks (OSD) have been widely adopted in long- 
+span bridges owing to their favorable mechanical performance. Never -
+theless, under long-term traffic loading, rib-to-deck (RTD) weld joints of 
+OSD are highly susceptible to fatigue cracks and compromise the func -
+tionality and safety of bridge structures [1] . Therefore, an accurate fa -
+tigue life prediction of RTD weld joints of OSD is of great significance, as 
+it will facilitate the early identification of potential fatigue damage and 
+provide a scientific basis for condition assessment and maintenance 
+strategies during the bridge operation.
+The fatigue life of RTD weld joints can generally be divided into the 
+stages of microcrack initiation, microcrack propagation, and macro -
+crack propagation. Among these stages, the microcrack initiation and 
+propagation usually account for a dominant proportion of the total fa -
+tigue life. The microcrack initiation and propagation are primarily 
+determined by the microstructural characteristics of the material. The 
+welded joints are heterogeneous, consisting of weld metal, heat-affected 
+zone (HAZ), and base metal. Previous studies have shown that both weld 
+metal and base metal can exhibit significant cyclic plasticity under fa -
+tigue loading conditions [ 2 ]. The HAZ has been widely reported as a 
+preferential region for plastic strain concentration [3] . Even when the 
+nominal stress is below the macroscopic yield strength of the material, 
+fatigue crack initiation is primarily governed by localized cyclic plastic 
+deformation at stress concentration regions rather than uniform plastic 
+deformation, as local stress-strain incompatibilities at geometric dis -
+continuities or stress concentration regions can induce such localized 
+deformation, promoting the formation of slip bands and initiating fa -
+tigue microcracks [4] . Under cyclic loading, the welded joints exhibit 
+typical mixed-mode crack characteristics, in which both normal and 
+shear stress components act simultaneously at the crack tip. The tran -
+sition from microcrack initiation and propagation to macrocrack prop -
+agation is associated with the evolution of the local crack tip stress field 
+and the progressive accumulation of damage [5] . During cyclic loading, 
+microcracks propagate and coalesce. Once the local stress intensity 
+factor or energy release rate reaches critical threshold, crack propaga -
+tion proceeds in accordance with fracture mechanics principles [6] .
+As a powerful analytical tool, the finite element method is capable of 
+* Corresponding author at: Department of Bridge Engineering, School of Civil Engineering, Southwest Jiaotong University, Chengdu, China.
+E-mail addresses: yy@my.swjtu.edu.cn (Y. Ye), ceylxu@swjtu.edu.cn (Y.-L. Xu), swjtu_lwl@my.swjtu.edu.cn (W. Lao), ccui@swjtu.edu.cn (C. Cui), swjtuzqh@ 
+126.com (Q. Zhang). 
+Contents lists available at ScienceDirect
+Journal of Constructional Steel Research
+journal homepag e: www.else vier.com/loc ate/jcsr
+https://doi.org/10.1016/j.jcsr.2026.110443
+Received 27 February 2026; Received in revised form 14 April 2026; Accepted 30 April 2026 
+Journal of Constructional Steel Research 244 (2026) 110443 
+Available online 8 May 2026 
+0143-974X/© 2026 Elsevier Ltd. All rights are reserved, including those for text and data mining, AI training, and similar technologies. 
+simulating crack initiation and propagation of steel bridge structures 
+[7,8] . At the microscale, the material in the weld zone is significantly 
+affected by welding heat input, resulting in complex grain size, 
+morphology, and orientation distributions which play a critical role in 
+the microcrack initiation and propagation [9] . Zhou et al. [10] per -
+formed numerical simulation of fatigue microcrack initiation and 
+propagation in weld zone based on crystal plasticity finite element 
+model (CPFEM) implemented in ABAQUS. CPFEM explicitly accounts 
+for grain randomness, thereby enabling effective simulation of the 
+microscale mechanical response of materials under cyclic loading and 
+capturing localized stress-strain states. At the macroscale, the S-N curve 
+method is a commonly used approach for fatigue life assessment but 
+cannot be used to simulate the crack propagation process. The fracture 
+mechanics-based methods, and damage mechanics-based methods are 
+often used to estimate macrocrack propagation [11] . Among these, 
+fracture mechanics-based methods can describe crack propagation 
+behavior with relatively higher efficiency and accuracy than other two 
+methods. Luo et al. [12] combined ABAQUS and Franc3D to establish a 
+macrocrack propagation model for steel bridges based on fracture me -
+chanics theory, through which the propagation behavior of macrocrack 
+in RTD weld joints were systematically investigated.
+However, the application of CPFEM in numerical simulations re -
+quires solving complex nonlinear constitutive relations at each inte -
+gration point, which leads to a high computational cost. Consequently, 
+this method is generally applicable only to the stages of microcrack 
+initiation and early propagation, and it is difficult to simulate crack 
+propagation at macroscale. In contrast, the fracture mechanics-based 
+methods have difficulty in accurately characterizing the mechanical 
+behavior of materials subjected to pronounced plastic deformation. The 
+predictions are highly sensitive to the assumed initial crack size, thereby 
+limiting their predictive capability during the microcrack propagation 
+stage. Despite these limitations, fracture mechanics-based methods can 
+simplify complex crack propagation phenomena into relationships 
+determined by a limited number of key model parameters, thereby 
+enabling the computationally efficient modeling of macrocrack propa -
+gation. Therefore, it is necessary to establish a multiscale numerical 
+model to achieve accurate prediction of the entire fatigue crack propa -
+gation process from microcrack initiation and propagation to macro -
+crack propagation while maintaining computational efficiency.
+It is also noted that in the prediction of fatigue crack propagation 
+process using either CPFEM or fracture-mechanics-based methods, the 
+results always exhibit a strong dependency on key model parameters. On 
+the other hand, adopting a fixed set of key model parameters without 
+dynamic updating often fails to fully capture the inherent randomness 
+and uncertainties of crack propagation observed during fatigue tests. As 
+a key emerging technology, digital twin (DT) is capable of efficiently 
+fusing multi-source test data with high-fidelity numerical simulation 
+models, characterized by continuous evolution and adaptive updating 
+capabilities. Owing to its advantages in real-time perception, online 
+parameter updating, and life-cycle management, DT provides a novel 
+technical pathway for the intelligent operation and maintenance of 
+bridge structures [13] . Specifically, Zeng et al. [14] proposed a 
+sequential DT framework that integrates corrosion information and load 
+data of concrete beams to construct multi-level DTs for parameter 
+optimization, achieving high prediction accuracy. Lao et al. [15] utilized 
+DT to fuse microcrack characterization data with CPFEM to dynamically 
+eliminate model uncertainties, thereby realizing the fatigue life pre -
+diction of weld microcracks. Cheok et al. [16] established a DT based on 
+strain interfaces, combining Bayesian inference and Gaussian process 
+regression to achieve real-time diagnosis of weld crack propagation and 
+remaining life prediction. Peng et al. [17] developed a data-driven DT 
+method using dynamic Bayesian networks(DBN) for online updating of 
+crack propagation parameters, which, coupled with the weight function 
+method, enabled high-accuracy fatigue life prediction.
+This study therefore proposes a digital-twin based multiscale nu -
+merical model to achieve accurate prediction of the entire fatigue crack 
+propagation process from microcrack initiation and propagation to 
+macrocrack propagation of RTD weld joints while maintaining compu -
+tational efficiency. The remainder of this paper is organized as follows. 
+Section 2 presents the overall framework of the digital twin-based fa -
+tigue crack propagation and life prediction approach. Section 3 briefly 
+introduces the design of eccentric tensile specimens and describes the 
+corresponding fatigue test program and the obtained test data. Section 4
+details the development of the virtual entity, which is established based 
+on a multiscale crack propagation model combining microcrack and 
+macrocrack propagation models. Section 5 elaborates on the construc -
+tion of the DT using a DBN, where test data and multiscale numerical 
+simulation results are fused to update key model parameters. Section 6
+presents the prediction results of crack propagation process and 
+remaining fatigue life of the test specimens based on the established DT. 
+Finally, Section 7 summarizes the main conclusions of this study.
+2. A framework for digital twin-based approach
+A DT normally consists of four interrelated components [18] : (a) a 
+physical entity and its test data acquisition; (b) a virtual entity and its 
+simulation data; (c) the DT construction through data fusion; and (d) the 
+application and prediction of the DT. Specifically, the DT proposed in 
+this study integrates fatigue test data and multiscale numerical simula -
+tion results within a DBN framework, by which fatigue crack states are 
+inferred, estimated, and updated online and thereby the real-time 
+updating of the entire fatigue crack propagation and the probabilistic 
+prediction of remaining fatigue life are realized. The overall framework 
+of the proposed DT is illustrated in Fig. 1 , and its key components are 
+described as follows:
+(a) Physical entity and test data acquisition: A novel eccentric tensile 
+specimen is designed and fabricated to simulate the realistic stress state 
+of RTD weld joints. Systematic fatigue tests are conducted with 
+continuous monitoring of fatigue crack propagation process. Crack 
+length is obtained and serves as reliable observation information for step 
+(c).
+(b) Virtual entity and simulation data: Based on the fatigue tests of 
+the eccentric tensile specimens, a multiscale numerical model for crack 
+propagation is established as a virtual entity. The virtual entity simulates 
+the crack initiation and propagation process and provides simulation 
+results, which include crack propagation paths, propagation rates, and 
+stress–strain fields and serve as effective prior state information for step 
+(c).
+(c) DT construction and data fusion: Within the DBN framework, a 
+particle filter (PF) algorithm is introduced to perform system inference 
+and updating. Test data is fused with multiscale simulation results to 
+achieve online estimation of state variables and key model parameters 
+associated with fatigue crack initiation and propagation. Information 
+exchange between the physical and virtual entities is realized by 
+continuously updating the prior distributions of the parameters, 
+enabling DT construction.
+(d) Application and prediction: The established DT is employed to 
+predict the microcrack initiation and propagation and macrocrack 
+propagation processes and obtain the probabilistic distributions of 
+remaining fatigue life of the RTD weld joints.
+3. Physical entity and test data acquisition
+The fatigue tests of eccentric tensile specimens recently conducted by 
+the writers [19] are taken as the physical entity in this study. This sec -
+tion briefly introduces the design and fabrication of eccentric tensile 
+fatigue specimens and describes the corresponding fatigue test program 
+and the obtained test data.
+3.1. Design of test specimens
+To realistically simulate the combined tensile and bending stress 
+Y. Ye et al. Journal of Constructional Steel Research 244 (2026) 110443 
+2 
+state of RTD weld joints in OSD under vehicle loading, a novel eccentric 
+tensile specimen was designed, as shown in Fig. 2 . The specimens were 
+extracted from full-scale OSD segments fabricated using actual bridge 
+construction techniques, in which both bridge deck and U-ribs were 
+made of Q345qD bridge steel with a thickness of 16 mm and 8 mm, 
+respectively. A CO ₂ gas-shielded full-penetration double-sided welding 
+process was employed. The filler material is HTW-58 ( Φ 1.2) welding 
+wire. Table 1 and Table 2 list the chemical compositions and mechanical 
+properties of the base metal and filler metal, respectively, in which f
+y 
+denotes the yield strength, f
+u 
+denotes the ultimate tensile strength, and δ 
+denotes the elongation. The detailed welding parameters have been 
+provided in Table 3 .
+The segments were sectioned to obtain test specimens with a working 
+section dimension of 80 mm × 16 mm and a retained U-rib length of 50 
+mm. The gripping ends of the specimens were widened to 100 mm to 
+mitigate end stress concentration, and four bolt holes were provided at 
+each end for connection to rectangle eccentric loading plates. To control 
+crack initiation location and quantify propagation process, a circular 
+hole defect with a diameter of 2 mm and a depth of 2.15 mm was pre -
+fabricated at the center of the RTD weld joint of the test specimen in 
+accordance with the weld quality criteria in EN ISO 5817 [20] . Addi -
+tionally, the weld zone was finely ground to eliminate the effects of 
+random initial defects, such as undercuts and slag inclusions, on crack 
+initiation and propagation.
+In order to observe the microstructure, the specimen surfaces were 
+sequentially ground using abrasive papers ranging from 320# to 2000#, 
+Fig. 1. Digital twin framework.
+Fig. 2. Eccentric tensile fatigue test specimen (unit: mm) [19] .
+Y. Ye et al. Journal of Constructional Steel Research 244 (2026) 110443 
+3 
+followed by mechanical polishing with polishing paste to remove sur -
+face impurities and oxide layers. The polished specimens were then 
+chemically etched using a nitric acid solution to reveal the grain 
+boundaries. After etching, the specimens were ultrasonically cleaned in 
+alcohol to remove residual contaminants. The microstructures were 
+observed using an optical microscope, and representative micrographs 
+have been provided in Fig. 3 (a). Subsequently, the acquired micro -
+structure images were processed and analyzed using Image-Pro Plus 
+software, which is widely used for optical micrograph processing and 
+grain size measurement [21] . For the relatively complex microstructures 
+considered in this study, automatic image preprocessing techniques 
+were first applied to enhance image contrast, followed by manual 
+marking to improve grain boundary identification accuracy, as shown in 
+Fig. 3 (b)-(c). During the image analysis process, most grain boundaries 
+were clearly identifiable; however, a small number of grain boundaries 
+were partially obscured by impurities. Grains with indistinct boundaries 
+were excluded from statistical measurements to minimize potential 
+measurement errors. By statistically analyzing multiple optical micro -
+graphs, the grain size distribution data was finally obtained.
+In this study, fatigue cracks initiate and propagate from the pre -
+defined circular hole defect as shown in Fig. 2 , which is located within 
+the HAZ. Therefore, both the metallographic characterization and the 
+CPFEM modeling in this study focus on this specific region, thereby 
+reducing the influence of large topological differences among different 
+weld zones. In the established microcrack propagation model in next 
+section, the depth of the polycrystal part used for the microcrack 
+propagation simulation is 2.5 mm. This polycrystal part is located within 
+the HAZ, where the thermal exposure during welding is considered to be 
+comparable; therefore, the grain sizes are expected to be similar [22] . 
+Consequently, although the internal subregions of the HAZ cannot be 
+completely distinguished during specimen preparation, the material 
+within the analyzed region can still be reasonably treated as belonging 
+to a statistically homogeneous HAZ. The measured grain size distribu -
+tion within the HAZ is presented in Fig. 4 . Statistical analysis shows that 
+the grain size distribution in this region can be well described using a 
+lognormal distribution, with the functional form given in Eq. (1) . Based 
+on the equivalent circular diameter definition, the mean grain size is 
+approximately 53.6 μ m, with logarithmic mean μ and standard deviation 
+σ values of 4.0 and 0.3, respectively. 
+f ( x ; μ , σ ) =
+1
+x σ
+̅̅̅̅̅ ̅
+2 π
+√ exp
+[
+  ( ln ( x )   μ )
+2
+2 σ
+2
+]
+(1) 
+3.2. Fatigue tests
+Two loading conditions were considered in this study with a nominal 
+loading stress amplitude of 50 MPa and 60 MPa, respectively, and three 
+fatigue test specimens were used for each loading condition. The fatigue 
+tests were performed using a WANCE HDT255B electro-hydraulic servo 
+control fatigue testing machine. Eccentric tensile loading was applied 
+through rigidly connected rectangle steel plates at both ends of the 
+specimen, thereby subjecting the RTD weld joint to a combined tensile- 
+bending stress state. The test setup is shown in Fig. 5 . To accurately 
+measure crack length, the beach marking technique was employed to 
+record the fatigue crack propagation path during the fatigue tests [23] . 
+Since the loading amplitude used for beach marking differs from that of 
+the fatigue loading (in this study, the stress ratio R of the fatigue loading 
+was set to 0.1, while that of the beach marking loading R was set to 0.5), 
+different energy inputs are introduced during the loading stages [24] . 
+This results in variations in crack propagation rates, producing distinct 
+propagation fronts along the crack path. These fronts appear as alter -
+nating bright and dark bands on the fracture surface (i.e., beach marks) 
+[25] , which visually represent the crack propagation trajectory. Prior to 
+the formal tests, preliminary tests were conducted to determine suitable 
+Table 1 
+Material chemical composition (%).
+Material C Si Mn P S Als Ni Ti
+Base metal 0.10 0.28 1.46 0.013 0.002 0.034 0.010 0.014
+Filler metal 0.07 0.53 1.55 0.010 0.010 / 0.55 0.11
+Table 2 
+Mechanical properties of Q345qD bridge steel.
+Material f
+y
+(MPa) f
+u
+(MPa) δ (%)   40 
+◦
+C(J)
+Base metal 444 530 34 280,274,239
+Filler metal 512 615 29 80,75,90
+Table 3 
+Welding process parameters for test specimens.
+Welding wire 
+Material
+Welding current 
+(A)
+Welding voltage 
+(V)
+Gas flow rate(L/ 
+min)
+HTW-58( Φ 1.2) 240 ± 20 30 ± 3 15 – 20
+Fig. 3. Statistics of the grain size distribution: (a) optical micrograph, (b) preprocessed micrograph, (c) annotation of grain boundaries.
+Fig. 4. Grain size distribution.
+Y. Ye et al. Journal of Constructional Steel Research 244 (2026) 110443 
+4 
+beach marking loading parameters. 20,000 cycles were selected as the 
+minimum number that could ensure clear beach marks without affecting 
+normal crack propagation. Specifically, during fatigue testing, 20,000 
+cycles beach marking loading was applied after every 50,000 cycles in 
+the early stage and every 100,000 cycles in the later stage. The fatigue 
+crack propagation life was defined based only on the number of fatigue 
+loading cycles, while beach marking cycles were used solely as auxiliary 
+marks and were not included in fatigue life calculation. Previous studies 
+have demonstrated that the beach marking method can produce clear 
+and sufficient markings on fracture surfaces without interfering with 
+normal crack propagation [26] . The test results indicate that when the 
+number of beach marking cycles with the stress ratio of 0.5 is signifi -
+cantly lower than that of fatigue cycles with the stress ratio of 0.1, crack 
+propagation during the beach marking stage is extremely limited, and its 
+influence on the main crack propagation process can be neglected [27] . 
+This loading produces clear and well-defined beach markings on the 
+fracture surface without significantly interfering with the natural crack 
+propagation behavior, thereby facilitating quantitative measurement of 
+crack length using an optical microscope. In addition, prior to fatigue 
+fracture of the specimen, the surface crack length was quantitatively 
+measured using an optical microscope after each beach marking loading 
+sequence. The detailed loading conditions are summarized in Table 4 , 
+and the loading sequence is illustrated in Fig. 6 .
+3.3. Test results
+During the fatigue tests, surface cracks on the specimens were 
+monitored using an optical microscope. After fatigue fracture, the 
+fracture surface was imaged using an optical microscope, and the typical 
+fracture surface morphology is shown in Fig. 7 . The fracture surface can 
+be clearly divided into three characteristic zones: the prefabricated 
+crack zone, the stable crack propagation zone, and the final instanta -
+neous brittle fracture zone. For all specimens, fatigue cracks were 
+initiated from the prefabricated circular hole defect, with one micro -
+crack forming on each side of the hole. Owing to factors such as 
+machining tolerances of the prefabricated defect and deviations from 
+ideal loading, variations were observed in the crack initiation positions, 
+propagation paths, and final crack morphologies. The cracks propagated 
+along the plate thickness direction, and an evident crack-front coales -
+cence phenomenon was observed, eventually resulting in an approxi -
+mately semi-elliptical crack shape [28] . When the crack depth reached 
+approximately 10 mm, the specimen entered the stage of final instan -
+taneous brittle fracture, during which the remaining fatigue life was 
+significantly reduced, ultimately leading to brittle fracture.
+The test results are summarized in Fig. 8 . The crack length prior to 
+crack coalescence is defined as the lengths of the two independent 
+cracks, excluding the diameter of the prefabricated circular hole defect. 
+After crack coalescence, the crack length is defined as the overall length 
+of the merged crack formed after coalescence, which includes the 
+diameter of the prefabricated circular hole defect. The crack coalescence 
+refers to the process in which initially independent microcracks nucle -
+ated on both sides of the prefabricated hole propagate under cyclic 
+loading. As the cracks propagate, their stress fields gradually overlap 
+and interact, eventually merging into a larger main crack. This phe -
+nomenon typically occurs when adjacent cracks become sufficiently 
+close so that the material ligament between them is eliminated, resulting 
+in the formation of a unified crack front. It can be observed that both 
+crack length and crack depth exhibit nonlinear propagation with 
+increasing loading cycles. Under the nominal stress amplitude of 60 
+MPa, the crack propagation rate is significantly higher than that under 
+50 MPa. Meanwhile, a certain degree of scatter is observed in the crack 
+propagation behavior among different specimens, which is mainly 
+attributed to material microstructural heterogeneity, geometric toler -
+ances of the prefabricated circular hole, and measurement uncertainties.
+4. Virtual entity and multiscale simulations
+The fatigue life of weld joints of OSD is considered in general to 
+consist of two components: the microcrack initiation and propagation 
+life N
+micro
+, and the macrocrack propagation life N
+macro 
+[29] . 
+N = N
+micro
++ N
+macro
+(2) 
+In this study, the microcrack propagation life N
+micro 
+refers to the 
+number of cycles required for the crack to propagate from the initiation 
+length to the micro-macro transition size, while the macrocrack propa -
+gation life N
+macro 
+denotes the fatigue life interval during which the crack 
+continues to propagate from the micro-macro transition size until final 
+fracture of the specimen.
+4.1. Multiscale simulations and virtual entity
+Previous studies [30] indicate that the initiation and early propa -
+gation of microcrack accounts for a substantial portion of the total fa -
+tigue life. The microcrack fatigue life is mainly determined by the 
+microstructural characteristics of the material. Crystal plasticity theory 
+can effectively capture the heterogeneous deformation behavior of the 
+material at grain scale, and it is therefore particularly well suited for 
+analyzing microcrack initiation and propagation life. However, crystal 
+plasticity constitutive models are highly complex, and constructing a 
+crystal plasticity model for the entire specimen region would lead to 
+prohibitively high computational costs, thereby rendering their direct 
+Fig. 5. Fatigue test arrangement [19] .
+Table 4 
+Loading conditions in tests [19] .
+Specimen Nominal stress amplitude Fatigue load(kN) Beach marking load(kN)
+Peak load Valley load Stress ratio Peak load Valley load Stress ratio
+Pl-50-1
+50 MPa 71.11 7.11
+0.1
+71.11 35.55
+0.5
+Pl-50-2
+Pl-50-3
+Pl-60-1
+60 MPa 85.33 8.53 85.33 42.67Pl-60-2
+Pl-60-3
+Y. Ye et al. Journal of Constructional Steel Research 244 (2026) 110443 
+5 
+application to the full crack propagation process impractical [31] . In 
+contrast, linear elastic fracture mechanics (LEFM) is applicable to a wide 
+range of geometries and loading conditions and can accurately charac -
+terize the stress and displacement fields near the crack tip by evaluating 
+the stress intensity factor (SIF) along the crack front. Moreover, LEFM- 
+based analyses only involve the solution of linear system equations, 
+offering advantages such as fast convergence and low computational 
+demand, which make them more suitable for efficient fatigue crack 
+propagation simulation in the macrocrack propagation stage. Therefore, 
+a multiscale crack initiation and propagation model is established in this 
+Fig. 6. Load sequences in tests [19] .
+Fig. 7. Beach markings on fracture surface [19] .
+Fig. 8. Test results of crack length vs. cycle number: (a) 50 MPa; (b) 60 MPa [19] .
+Y. Ye et al. Journal of Constructional Steel Research 244 (2026) 110443 
+6 
+study as the virtual entity of the DT, with the overall flowchart of the 
+proposed multiscale simulations illustrated in Fig. 9 . Firstly, an initial 
+finite element model is established in ABAQUS according to the geo -
+metric dimensions of the eccentric tensile specimen, with the pre -
+fabricated circular hole defect introduced in the weld. This model serves 
+as the basic model for subsequent development of both the microcrack 
+and macrocrack propagation models. It contains only geometric infor -
+mation and does not incorporate any specific constitutive equations. 
+Owing to the fundamental differences in theoretical foundations and 
+numerical methodologies between the microcrack and macrocrack 
+propagation stages, separate numerical simulation strategies and 
+constitutive equations are employed to establish a microcrack initiation 
+and propagation model and a macrocrack propagation model, respec -
+tively. Specifically, CPFEM is employed to capture the evolution of 
+microscale fatigue damage during the microcrack initiation and propa -
+gation stage, whereas LEFM is introduced to analyze crack propagation 
+behavior in the macrocrack propagation stage.
+4.2. Microcrack initiation and propagation stage
+4.2.1. Fatigue life of microcrack initiation and propagation stage
+For RTD weld joints subjected to cyclic loading, transgranular frac -
+ture is prone to occur within persistent slip bands inside individual 
+grain. The activated slip planes gradually evolve into critical planes, 
+leading to damage within the polycrystalline microstructure and ulti -
+mately triggering the microcrack initiation. It is often assumed that 
+microcrack initiation occurs in the grain exhibiting the highest level of 
+damage. With continued cyclic loading, the crack propagates along 
+grain boundaries or active slip planes into adjacent grains, preferentially 
+activating crystallographic slip systems in grains adjacent grain, and 
+subsequently entering next grain until the crack penetrates the entire 
+polycrystal part.
+Based on the physical description of microcrack initiation and 
+propagation, the corresponding crack propagation criteria and numeri -
+cal simulation model can be established to quantitatively characterize 
+the initiation and propagation behavior of microcracks within poly -
+crystalline materials. The microcrack initiation and propagation in 
+polycrystalline materials require appropriate damage criteria for effec -
+tive control. Fatigue indicator parameter (FIP) has been widely 
+employed in fatigue analysis of metallic materials [32 – 34] . In CPFEM- 
+based fatigue life prediction, FIPs are commonly introduced using the 
+plastic stress amplitude and plastic strain amplitude calculated on 
+individual slip systems within grains, serving as criteria for microcrack 
+initiation and propagation. The Gibbs free energy criterion proposed by 
+Fine and Bhat [35] provides an effective framework for multiscale 
+characterization of fatigue behavior in materials. At the microstructural 
+scale, the accumulated distortion energy between grains is regarded as 
+the dominant driving force controlling microcrack initiation and prop -
+agation. Under cyclic loading, persistent dislocation slip occurs along 
+slip bands within crystals, while grain boundaries hinder dislocation 
+motion, leading to gradual dislocation accumulation inside grains and 
+the formation of localized energy concentrations. When the accumu -
+lated energy reaches a critical threshold comparable to the variation in 
+Gibbs free energy, fatigue microcracks begin to initiate.
+The maximum value of plastic strain energy density (PSED) ϖ of a 
+single grain is used to determine the number of cycles required for fa -
+tigue crack initiation in this study. The microcrack fatigue life N
+micro 
+is 
+considered as the sum of the crack initiation life of the initial grain and 
+the microcrack propagation life through all subsequent grains, and it can 
+be calculated by Eq. (3) . 
+N
+micro
+= 4
+π E γ
+s
+  σ
+2
+d
+0
+( 1   ν
+2
+)
+π Ef
+*
+ϖ
++
+∑
+n
+i = 1
+4
+π E γ
+s
+  σ
+2
+d
+i
+( 1   ν
+2
+)
+π Ef
+*
+ϖ
+(3) 
+where γ
+S 
+is the surface energy of the material; σ is the nominal stress 
+amplitude; v is Poisson's ratio; E is Young's modulus; d
+0 
+denotes the 
+diameter of the initial grain; d
+i 
+represents the diameter of the ith grain 
+and the grain size is statistically characterized by a lognormal distri -
+bution in this study; the parameter f
+* 
+is a key model parameter to be 
+updated; ϖ =
+Δ τ
+2
+Δγ
+p
+2 
+is PSED, which can be obtained from CPFEM simu -
+lations; Δ τ is the plastic shear stress range; Δ γ
+p 
+is the plastic shear strain 
+range.
+4.2.2. Numerical simulation based on CPFEM
+The modeling type of CPFEM generally includes 2D model and 3D 
+representative volume element (RVE) model. Although 2D model offers 
+relatively high computational efficiency, they are incapable of accu -
+rately representing the three-dimensional grain morphology, orienta -
+tion distribution, and intergranular interactions. Moreover, simulations 
+performed on isolated 3D RVEs are insufficient to capture the stress- 
+strain states of specimens under realistic boundary conditions. Never -
+theless, it has been demonstrated that embedding an RVE into a 
+macroscale specimen model enables a more accurate representation of 
+the local stress state of materials under realistic cyclic loading conditions 
+Fig. 9. Multiscale simulations of test specimens.
+Y. Ye et al. Journal of Constructional Steel Research 244 (2026) 110443 
+7 
+[36] . Therefore, this study adopts a 3D polycrystal part embedded into 
+the macroscale model to simulate the grain-by-grain microcrack prop -
+agation process and compute the PSED values, thereby enabling a more 
+accurate characterization of the actual microstructural features of 
+polycrystalline materials and their mechanical responses under complex 
+loading conditions. The crystal plasticity theory is implemented in 
+ABAQUS through the user-defined material subroutine (UMAT) by 
+Huang [37] to accurately calculate the anisotropic deformation 
+behavior of materials at the crystallographic scale. The main steps are 
+summarized as follows and illustrated in Fig. 10 .
+(1) Initial model establishment: Based on the test observed crack 
+initiation locations and early propagation morphology, the polycrystal 
+part for microcrack propagation simulation is defined as a rectangular 
+block with dimensions of 7 × 2.5 × 0.2 mm. A cutout with the same 
+dimensions is cut from the weld zone of the base model established in 
+Section 4 to embed the polycrystal part. The surrounding structure 
+outside the polycrystal part is modeled as linear elastic material with a 
+Young's modulus of 190 GPa and a Poisson's ratio of 0.3, meshed using 
+C3D8R elements. The boundary conditions and loading are defined ac -
+cording to the eccentric tensile fatigue tests, and an initial “ .inp ” file 
+containing nodes, elements, materials, and boundary conditions infor -
+mation is generated.
+(2) Polycrystal part generation and material assignment: The poly -
+crystalline morphology and spatial grain distribution are randomly 
+generated using the Neper based on the Laguerre-Voronoi tessellation 
+algorithm, and a “ .stess ” file containing grain seed coordinates is ob -
+tained. Subsequently, a MATLAB script is employed to integrate the “ . 
+stess ” file with the initial “ .inp ” file generated in Step (1), assign random 
+grain orientations to each grain, and define uniform crystal plasticity 
+material parameters. The crystal plasticity material parameters are 
+adopted from the authors' previous study, in which they were identified 
+using a DT framework coupled with a particle swarm optimization al -
+gorithm [38] . The polycrystal part is discretized with a mesh size of 25 
+μ m using C3D8 elements, and the CPFEM-based microcrack propagation 
+model is generated.
+(3) Model coupling and computational preparation: The generated 
+polycrystal part is imported into ABAQUS and coupled to the initial 
+model using tie constraints. According to the test observed crack prop -
+agation paths, the polycrystal part is divided into two sets, namely 
+“ crystal-left ” and “ crystal-right, ” to facilitate automated crack path 
+identification and tracking in subsequent microcrack propagation 
+simulations.
+After the model is established, the numerical simulations of micro -
+crack initiation and propagation are conducted following the flowchart 
+shown in Fig. 11 , which consists of crack initiation analysis, single-step 
+propagation update, and cyclic iterative computation. The detailed 
+computational procedures are described as follows:
+(1) Crack initiation analysis: After the first CPFEM simulation, post- 
+processing is performed using a Python script developed via ABAQUS 
+secondary development to extract the stress-strain status fields in the 
+weld zone and compute the PSED for each grain. Automatic identifica -
+tion is performed for both “ crystal-left ” and “ crystal-right, ” and the grain 
+exhibiting the maximum PSED value is selected as the starting point for 
+crack propagation. The two grains are recorded using the sets “ crack- 
+left-01 ” and “ crack-right-01 ” , respectively. Their crack length, depth, 
+and corresponding PSED values are extracted as initial conditions for 
+subsequent crack propagation analysis.
+(2) Single-step propagation update: To represent the state in which 
+the crack has already propagated and to avoid numerical non -
+convergence caused by element deletion, the equivalent stiffness of the 
+cracked grain set “ crack-i ” is reduced to 1% of its original value. 
+Meanwhile, the stiffness of the adjacent grain set “ crack-i + 1 ” , located 
+ahead of the crack front grain set “ crack-i ” , is reduced to 10% of its 
+original value to reflect the initial damage state near the crack tip and 
+improve computational convergence. This stiffness degradation method 
+provides an equivalent representation of local load-carrying capacity 
+reduction induced by crack propagation, rather than explicitly modeling 
+geometric cracks. After stiffness degradation, the next CPFEM simula -
+tion is performed, and the updated stress-strain fields are extracted, 
+while the grain information in “ crack-i + 1 ” as well as the crack ge -
+ometry and corresponding PSED values are automatically recorded.
+(3) Cyclic iterative computation: Step (2) was repeated iteratively 
+until the crack length reached the micro-macro transition size defined in 
+Section 4.3 , yielding the complete PSED evolution under a given random 
+grain distribution.
+Under the identical external fatigue loading conditions, including 
+stress amplitude, frequency, and stress ratio, the crack propagation rate 
+and propagation mode are primarily determined by the material 
+microstructure properties [39] . To comprehensively account for the 
+influence of randomness in grain orientation and morphology, 20 
+Fig. 10. Numerical simulation procedure for microcrack propagation.
+Y. Ye et al. Journal of Constructional Steel Research 244 (2026) 110443 
+8 
+CPFEM simulations with different random distributions are generated 
+using automated scripts, and both the microcrack modeling and prop -
+agation simulation procedure described above are repeated. The 
+resulting 20 sets of PSED evolution data are shown in Fig. 12 (yellow 
+curves). It should be noted that the PSED obtained at the first propa -
+gation step is relatively high, as this step includes the contribution of 
+crack initiation to fatigue life. After statistical analysis, the average 
+PSED evolution curve (green curve) is adopted as the input for the 
+subsequent fatigue life prediction.
+4.3. Micro-macro transition
+In fatigue crack propagation simulation, the transition size between 
+microcrack and macrocrack is a key parameter that significantly in -
+fluences the accuracy of fatigue life prediction. This transition size not 
+only marks the end of the microcrack propagation stage but also rep -
+resents the beginning of stable macrocrack propagation. Therefore, its 
+determination plays a critical role in the predictive performance of the 
+crack propagation model. It should be noted that the physical signifi -
+cance of this transition size is not merely determined by the artificially 
+prescribed crack length, but it is closely associated with the micro -
+structural characteristics of polycrystalline materials. Owing to the 
+pronounced randomness in grain size and spatial distribution, the 
+microcrack typically needs to traverse multiple grains before forming a 
+macrocrack. The cumulative length of cracked grain sizes cannot be 
+strictly associated with a fixed deterministic value. Consequently, sim -
+ply defining the micro-macro transition size as a constant may fail to 
+correspond to the actual accumulated grain sizes and may not 
+adequately capture the actual transition from microcrack to macrocrack 
+behavior under different microstructural, thereby potentially intro -
+ducing systematic errors in fatigue life prediction.
+With the continuous improvement in the numerical accuracy and 
+stability of CPFEM-based crack propagation simulations, together with 
+advances in computational resources, the microscale simulation of 
+relatively long crack propagation processes has become increasingly 
+feasible. Based on these considerations, the micro-macro transition size 
+is treated as a random variable that varies with the underlying micro -
+structure in this study, with its specific value determined by the cumu -
+lative size of several adjacent grains along the crack propagation path. 
+Although the transition size corresponding to different random poly -
+crystalline structures is not identical, its statistical distribution consis -
+tently fluctuates around a characteristic length of approximately 4 mm. 
+The transition size of 4 mm is defined as a representative micro-macro 
+transition length based on a comprehensive consideration of both 
+computational efficiency and physical rationality [40] . In fatigue test, a 
+circular hole defect with a diameter of 2 mm is introduced, from which 
+Fig. 11. Flowchart of microscopic crack propagation simulation.
+Fig. 12. PSED results: (a) 50 MPa; (b) 60 MPa.
+Y. Ye et al. Journal of Constructional Steel Research 244 (2026) 110443 
+9 
+microcracks are assumed to initiate on both sides. Each microcrack 
+propagates independently to a maximum length of approximately 1 mm, 
+and their coalescence results in an equivalent total crack length of about 
+4 mm. This transition size represents an accumulated crack length 
+spanning multiple grains along the propagation path, rather than an 
+individual microstructural feature. The average grain size in the HAZ is 
+approximately 53.6 μ m; thus, the length of a single microcrack (1 mm) 
+corresponds to about 18.7 times the grain size, while the coalesced crack 
+length (4 mm) reaches approximately 74.6 times the grain size. Ac -
+cording to previous fatigue microcrack studies [41,42] , crack propaga -
+tion is strongly influenced by microstructural features when the crack 
+length is below 10 times the grain size, while this influence gradually 
+diminishes between 10 and 20 times, and becomes negligible beyond 20 
+times the grain size. Therefore, the selected transition size of 4 mm 
+clearly falls within the macro-mechanics-dominated regime. Further -
+more, to account for the inherent variability of the transition process, 
+the transition size is treated as a stochastic variable. Taking 4 mm as the 
+mean value, 1000 random transition lengths are generated through 
+statistical sampling to reflect the randomness associated with different 
+crack propagation paths.
+By parameterizing the micro-macro transition size as a random 
+variable, the proposed model retains 4 mm as a representative transition 
+size in an average sense, while reasonably accounting for the effects of 
+variation in grain size, grain orientation, and their combinations on the 
+crack transition behavior. This treatment enhances the reliability and 
+generalizability of fatigue life prediction results while maintaining 
+physical consistency. As shown in Fig. 13 , these are 1000 randomly 
+generated micro-macro transition sizes. These random micro-macro 
+transition sizes will be used in the analysis presented in Section 5.3 .
+4.4. Macrocrack propagation stage
+Once microcrack propagation penetrates the polycrystal part, the 
+crack propagation behavior is no longer primarily determined by indi -
+vidual grain orientations or microscale slip mechanisms. Instead, it 
+gradually transitions into a macroscale fracture process controlled by 
+the global geometry of the component, loading conditions, and the SIF at 
+the crack tip. At this stage, the crack can be regarded as a macroscale 
+defect embedded in a continuous medium, and its propagation behavior 
+can be described using LEFM.
+4.4.1. Fatigue life of macrocrack stage
+The Paris law [43] is adopted in this study as the analytical model for 
+macrocrack propagation, as expressed in Eq. (4) . In the macrocrack 
+propagation stage, the Paris law is employed to quantitatively describe 
+the relationship between the fatigue crack propagation rate and the 
+driving force of crack tip. 
+d a / d N
+macro
+= C ( Δ K )
+m
+(4) 
+where a denotes the crack length; N
+macro 
+represents the number of load 
+cycles in the macrocrack propagation stage; C and m are material pa -
+rameters associated with the fatigue crack propagation behavior.
+The Paris law parameters C and m were calibrated based on the 
+present eccentric tensile welded joint specimens under different stress 
+levels. It should be noted that these parameters are condition-dependent 
+and are mainly applicable to the specific specimen configuration and 
+loading conditions considered in this study. When the mean stress level, 
+structural geometry, or welding details change, the parameters should 
+be recalibrated using corresponding test data.
+By integrating both sides of Eq. (4) , Eq. (5) can be derived. This 
+equation is used to calculate the remaining fatigue life associated with 
+macrocrack propagation from the initial crack length a
+i 
+to the final crack 
+length a
+c
+. 
+N
+macro
+=
+∫
+a c
+a
+i
+da
+C ( Δ K )
+m
+(5) 
+where a
+i 
+denotes the initial crack size of the macrocrack, determined by 
+the micro-macro transition size; a
+c 
+represents the final crack length of 
+the macrocrack, which is typically defined as one-half or one-third of the 
+characteristic specimen dimension.
+4.4.2. Numerical simulation based on LFEM
+The key parameters C and m in the Paris law are crucial to ensuring 
+the reliability of the macrocrack propagation model. To determine the 
+parameters C and m , a fitting analysis is performed on the relationship 
+between the crack propagation rate d a / d N
+macro 
+and the SIF range Δ K . 
+The crack propagation rate is obtained from the test results described in 
+Section 3.3 , while the corresponding Δ K values are calculated through a 
+coupled numerical simulation using ABAQUS and Franc3D as detailed in 
+this section.
+The flowchart for establishing the macrocrack propagation model is 
+illustrated in Fig. 14 . First, the basic model developed in Section 4 is 
+Fig. 13. Micro-macro transition sizes.
+Y. Ye et al. Journal of Constructional Steel Research 244 (2026) 110443 
+10 
+imported into Franc3D. Considering that crack propagation mainly oc -
+curs in the weld zone, only the potential macrocrack propagation zone is 
+defined as a local substructure and discretized with a refined mesh, 
+whereas the remaining zones are meshed more coarsely to improve 
+computational efficiency while maintaining adequate accuracy. The 
+global model is discretized using C3D10 elements. To ensure the nu -
+merical convergence in Franc3D calculations, two symmetric initial 
+cracks with a length of 0.2 mm are pre-inserted at the prefabricated 
+circular hole defect based on the crack morphologies observed in the 
+fatigue tests. It should be noted that only the simulation results obtained 
+after the micro-macro transition size are used in subsequent analyses. 
+During the crack propagation simulation, Franc3D automatically gen -
+erates a locally refined mesh along the semi-elliptical crack front. The 
+crack-front region consists of three rings of elements: the middle ring is 
+composed of C3D15 elements to accurately represent the stress singu -
+larity at the crack tip, while the two outer rings are composed of C3D20 
+elements to further enhance the accuracy of the crack tip field calcula -
+tion. In each crack propagation step, stress analysis of the cracked model 
+is first performed in ABAQUS to obtain the stress-strain field distribution 
+of the structure. Subsequently, Franc3D calculates the SIF distribution 
+along the crack front based on the obtained stress-strain field and de -
+termines the crack propagation increment and deflection angle for the 
+next propagation step. Meanwhile, automatic remeshing is conducted in 
+the vicinity of the crack front for the subsequent step. By repeating the 
+above procedure, the step-by-step crack propagation path and the 
+corresponding SIF ranges are obtained.
+Numerical simulations are carried out to obtain the variation of SIFs 
+with increasing crack length under stress amplitudes of 50 MPa and 60 
+MPa, respectively. To determine the SIF corresponding to each crack 
+length observed in fatigue test, the macrocrack propagation obtained 
+from test (i.e., after the micro-macro transition size) are combined with 
+the numerically obtained Δ K   a relationships. An interpolation method 
+is then employed to calculate the SIF range associated with each crack 
+length, as shown in Fig. 15 .
+To obtain the parameters in the Paris model, Eq. (4) is transformed 
+into a base-10 logarithmic form, resulting in Eq. (6) . Based on Eq. (6) , 
+the parameters C and m can be determined from the linear relationship 
+between the crack propagation rate d a / d N
+macro 
+and the SIF range Δ K in a 
+double-logarithmic coordinate system. The least-squares method is then 
+employed to fit the test data at each propagation stage, resulting in a 
+straight fitting line, as shown in Fig. 16 . The slope of this line corre -
+sponds to the parameter m , while the intercept on the Y-axis corresponds 
+to lg C , from which the parameters C and m can be determined. These 
+parameters will be used in the analysis presented in Section 5.4 . 
+lg ( d a / d N
+macro
+) = lg C + m lg ( Δ K ) (6) 
+5. Data fusion and digital twin
+In DT, both physical entity and virtual entity are inevitably affected 
+Fig. 14. Numerical simulation procedure for macrocrack propagation.
+Fig. 15. Simulation results of SIF range vs crack length: (a)50 MPa; (b)60 MPa.
+Y. Ye et al. Journal of Constructional Steel Research 244 (2026) 110443 
+11 
+by multi-source uncertainties, which degrade the predictive accuracy of 
+the DT. Consequently, data fusion, as a core component in the estab -
+lishment of DT, plays a crucial role in mitigating these adverse effects.
+The uncertainties associated with physical entity mainly originate 
+from two aspects. One aspect is that the manufacturing process itself is 
+inherently stochastic. During the specimen fabrication process, toler -
+ances inherent in the cutting procedure and the drilling of a pre -
+fabricated circular hole led to a dispersed distribution of initial crack 
+morphologies and sizes. Another aspect is that limitations in sensor 
+monitoring capabilities also constitute a significant source of uncer -
+tainty. Owing to environmental noise and sensor accuracy constraints, 
+measurement errors are inevitably embedded in the monitoring data. In 
+contrast, the uncertainties of the virtual entity primarily come from 
+model systematic deviations. Numerical simulation models are essen -
+tially idealized and simplified representations of real physical processes, 
+and various approximations and assumptions are inevitably introduced 
+during model construction. These include stochastic deviations in 
+microstructure generation algorithms, idealized assumptions in bound -
+ary condition, and simplified treatments of key parameters such as the 
+SIF during numerical simulation calculation. Collectively, these factors 
+lead to discrepancies between the virtual entity responses and the actual 
+physical entity behavior.
+The superposition of these multi-source uncertainties can signifi -
+cantly compromise the accuracy of crack propagation simulations. 
+Therefore, it is necessary to employ data fusion techniques to compre -
+hensively integrate information from different sources and at different 
+levels and to achieve effective coupling between physical entity data and 
+virtual entity data through appropriate algorithms, thereby alleviating 
+the influence of uncertainties on the DT establishment process [44] . 
+Through data fusion, the DT can more accurately reflect the actual state 
+of the physical entity during its dynamic evolution, enhancing both the 
+accuracy and credibility of its predictive results and providing a more 
+reliable basis for engineering assessment and decision-making. 
+Accordingly, this study introduces a DBN framework in combination 
+with a PF algorithm to perform dynamic updating of the crack propa -
+gation process across its two distinct propagation stages.
+5.1. Dynamic Bayesian networks
+DBN is a class of probabilistic graphical models designed to charac -
+terize stochastic processes evolving over time. Owing to its strong 
+capability in handling nonlinear and non-Gaussian uncertainties, as well 
+as its support for online updating of both model parameters and system 
+states, DBN has been widely applied in DT framework [45] . Within the 
+DBN framework, heterogeneous information derived from fatigue tests 
+and numerical simulations can be effectively fused. This fusion enables 
+real-time correction of both model parameters and state estimates as 
+new observational data become available. Consequently, the crack 
+propagation states can be continuously updated and predicted, thereby 
+significantly improving the accuracy of fatigue life prediction [46] .
+Essentially, DBN is constructed by unfolding a static Bayesian 
+network along the temporal dimension to form a sequential probabilistic 
+model. Its fundamental assumptions include first-order Markov property 
+and temporal stationarity, meaning that the system state at the current 
+time depends only on the state at the previous time step and is inde -
+pendent of earlier historical states. Within the DBN framework, the 
+crack propagation process can be abstracted as a stochastic dynamic 
+system in which the hidden state evolves over time. Specifically, the 
+crack state variables are defined as latent states to describe the evolution 
+behavior of cracks under cyclic loading, while the corresponding test 
+measurements are treated as observation variables that provide con -
+straints for the estimation and correction of the latent states. By estab -
+lishing a state transition model and an observation model, the DBN can 
+systematically describe the temporal dependency between hidden crack 
+states and observational information during the crack propagation 
+process. The overall schematic structure of the DBN employed in this 
+study is illustrated in Fig. 17 .
+After discretizing time, the hidden state of the system at time instant 
+t is denoted as X
+t
+, and the corresponding observation data are denoted as 
+Y
+t
+. DBN characterizes the system evolution mechanism through the 
+probabilistic descriptions of the state transition model and the obser -
+vation model. Accordingly, the joint probability distribution of the 
+hidden states and observations can be factorized as 
+p ( X
+1 : T
+, Y
+1 : T
+) = p ( X
+1
+) p ( Y
+1
+| X
+1
+)
+∏
+T
+t = 2
+p ( X
+t
+| X
+t   1
+) p ( Y
+t
+| X
+t
+) (7) 
+where p ( X
+t
+| X
+t   1
+) represents the state transition model, which is used to 
+describe the evolution law of the crack propagation state between two 
+adjacent time steps. The hidden state X
+t 
+characterizes the system state at 
+time t and generally consists of a crack propagation model combined 
+with state noise, as expressed in Eq. (8) , to account for the evolution of 
+fatigue damage and its inherent uncertainty, and p ( X
+1
+) denotes the 
+initial state distribution of the system. The conditional probability 
+p ( Y
+t
+| X
+t
+) corresponds to the observation model, which establishes the 
+mapping relationship between the hidden state and the sensor mea -
+surement data as well as the numerical simulation results. The obser -
+vation Y
+t 
+denotes the measurement data at time t , whose formulation is 
+given in Eq. (9) . It is typically composed of the actual observation and 
+measurement noise, thereby reflecting the influence of observation er -
+rors on the crack propagation state. 
+X
+t
+= T ( X
+t   1
+, η
+t
+) (8) 
+Y
+t
+= O ( Y
+t   1
+, ε
+t
+) (9) 
+where T denotes the state transition function; O denotes the observation 
+function; η
+t 
+and ε
+t 
+represent the state noise and observation noise, 
+respectively, which are introduced to characterize the uncertainties in 
+the system evolution and observation process.
+Given all observation data up to time t , denoted as Y
+1 : t
+=
+Fig. 16. Fitting process of Paris model: (a) 50 MPa; (b) 60 MPa.
+Y. Ye et al. Journal of Constructional Steel Research 244 (2026) 110443 
+12 
+{ Y
+1
+, Y
+2
+, … , Y
+t
+} , the DBN is capable of inferring the posterior probability 
+distribution of the current hidden state p ( X
+t
+| Y
+1 : t
+) . Based on recursive 
+Bayesian inference, continuous prediction and dynamic updating of the 
+crack propagation state can be achieved. In this study, different state 
+transition models are employed for the microcrack propagation stage 
+and the macrocrack propagation stage, respectively. Specifically, the 
+microcrack propagation stage is based on the PSED-based fatigue life 
+calculation formula, whereas the macrocrack propagation stage is based 
+on the Paris crack propagation law. For both stages, the crack length is 
+selected as the observation variable in the observation model. Mean -
+while, the micro-macro transition size delineating the microcrack and 
+macrocrack regimes is adopted as the criterion for stage switching. 
+Through this way, continuous simulation and dynamic updating of the 
+multiscale crack propagation model are realized within a unified DBN 
+framework.
+It should be noted that the first-order Markov property and temporal 
+stationarity adopted in the DBN model are engineering approximations 
+rather than strict physical representations of fatigue crack propagation. 
+Although fatigue crack propagation may exhibit path-dependent 
+behavior, the current crack state is considered to implicitly contain 
+the cumulative effects of prior loading history, making the first-order 
+Markov assumption a practical simplification. The temporal statio -
+narity assumption is mainly applicable to conditions involving piece -
+wise constant loading or slowly varying statistical characteristics. In 
+addition, the observation-based sequential updating mechanism incor -
+porated in the model allows parameters to be continuously updated as 
+new data become available, which partially accounts for historical ef -
+fects and improves the adaptability of the model.
+5.2. PF algorithm
+Since the hidden states in DBN evolve dynamically over time and are 
+updated in a recursive manner, their posterior distributions can only be 
+progressively refined based on the currently available observations. 
+Consequently, during the iterative processes of state estimation and 
+parameter updating, it is necessary to introduce efficient filtering algo -
+rithms to achieve online fusion of historical information, thereby 
+avoiding explicit enumeration of the complete state sequence and 
+effectively reducing computational complexity while improving infer -
+ence efficiency. Among various filtering algorithms, the PF algorithm 
+has been widely adopted within the DBN framework for state inference 
+and updating problems [47] . This is primarily attributed to its strong 
+capability to approximate 

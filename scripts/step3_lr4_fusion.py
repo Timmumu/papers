@@ -612,3 +612,81 @@ FDCF = {
 942: 'High',
 }
 
+
+FD.update({
+72: 'Fused', 78: 'Fused', 121: 'Fused', 128: 'Aligned', 186: 'Fused', 239: 'Fused', 256: 'Fused', 304: 'Fused', 410: 'Fused', 464: 'Fused', 476: 'Fused', 588: 'Fused', 705: 'Fused', 757: 'Fused', 825: 'SINGLE', 830: 'Fused', 853: 'SINGLE',
+})
+
+FDEV.update({
+72: 'GNSS/inclinometer and geological state observations constrain MPM inversion; lab/literature wet-dry strength evolution updates the twin state over successive long-term analysis steps.',
+78: 'Sensor databases feed FEM monitoring fields and safety models in the Jinping-I platform; the text describes integrated modules but does not quantify field-level fusion accuracy.',
+121: 'Deformation, seepage and stress sensors are combined with ABAQUS source-domain simulations through GAT transfer learning; resulting fields feed KG-grounded LLM reasoning.',
+128: 'UAV photogrammetry, terrestrial scans and GCPs share a common coordinate reference, but terrestrial data mainly provide context and validation rather than a joint analytic stream.',
+186: 'Camera, LiDAR and radar detections are spatially aligned and temporally associated, then fused by EKF into trajectories; HPNet consumes trajectories and Lanelet2 road context.',
+239: 'Scene-coordinate depth anchors rescale dense monocular depth; RGB detections and registered BIM geometry jointly determine worker positions and crane hazard-zone distances.',
+256: 'FEM source fields and sensor target observations are jointly aligned using CORAL/MMD and a physics-informed loss; extreme-condition samples test generalization.',
+304: 'Measured displacement/excitation streams update online SVD modes and UKF state/stiffness estimates; localization gates which structural parameters enter the Bayesian update.',
+410: 'Sensor deformation/seepage values, FEM-generated fields and GCN/LSTM predictions are linked by point-to-domain mapping and a dynamic monitoring loss.',
+464: 'Second-level machine telemetry, guidance/attitude readings and borehole-derived geology enter the soil-machine interaction load model, returning correction-force guidance.',
+476: 'Graph-retrieved function/entity context is combined with monitoring-database values and visualization metadata to produce grounded answers, commands and DT scene updates.',
+588: 'GNSS position, inclinometer angles and rangefinder distances determine pile geometry; the collision algorithm combines that geometry with existing-pile models to calculate clearance and feedback.',
+705: 'GIS footprints/building attributes and earthquake ground-motion inputs feed IES building-response simulations; results are mapped back to structures for risk comparison.',
+757: 'Online gate vibration/stress/tilt data are compared with FE responses and maintenance/knowledge indicators to derive dynamic health states, warnings and control decisions.',
+825: 'A single source type, relay/interlocking circuit logic, is converted into Boolean equations and simulated; no independent sensor or live operational stream is fused.',
+830: 'TSP velocity-derived soft RMR estimates are fused with tunnel-face hard RMR through sequential Bayesian/BME inference, then aggregated with geology, support and BIM data.',
+853: 'Only displacement-response values are the stated inverse observations; the FEM model computes candidate responses and the loss selects the load vector, with no multi-sensor fusion.',
+})
+
+FDCF.update({
+72: 'High', 78: 'Medium', 121: 'High', 128: 'High', 186: 'High', 239: 'High', 256: 'High', 304: 'High', 410: 'High', 464: 'Medium', 476: 'Medium', 588: 'High', 705: 'Medium', 757: 'High', 825: 'High', 830: 'High', 853: 'Medium',
+})
+
+for _row in (147, 526, 793, 927):
+    FD.pop(_row, None)
+    FDEV.pop(_row, None)
+    FDCF.pop(_row, None)
+
+FD.update({
+31: 'Fused',
+106: 'Fused',
+133: 'Fused',
+212: 'Fused',
+317: 'Fused',
+433: 'Fused',
+506: 'Fused',
+})
+
+FDEV.update({
+31: 'Building smart-sensor streams, cloud SHM data and virtual structural-health state are fused through weighted Naive Bayes and value-of-structural-health change analysis.',
+106: 'Shield-attitude sensor data feed NGBoost prediction and NSGA-III optimization; DT control output links predicted attitude deviations with optimized construction parameters.',
+133: 'FEM-generated low-fidelity deformation data and high-fidelity monitoring data are aligned through transfer learning, MIMO response modelling and Bayesian uncertainty estimation.',
+212: 'TBM construction parameters, predicted attitude responses and SHAP-derived control factors are integrated in the DT platform to infer warning states and adjustment ranges.',
+317: 'Sensor/edge inputs, server-side FE computation, deviation severity classification and PSO model updating are integrated into a unified real-time SHM decision workflow.',
+433: 'Fatigue-test crack data and multiscale CPFEM/fracture-mechanics simulation are jointly updated through a dynamic Bayesian network and particle filter.',
+506: 'Multi-view camera features, site geometry and worker trajectory histories are fused in a cloud-hosted behavioural digital replica for Transformer/LSTM motion forecasting.',
+})
+
+FDCF.update({
+31: 'High',
+106: 'High',
+133: 'High',
+212: 'High',
+317: 'High',
+433: 'High',
+506: 'High',
+})
+
+FD.update({
+245: 'Aligned',
+648: 'Fused',
+})
+
+FDEV.update({
+245: 'Point clouds, time-synchronised video, worker position and heart-rate data are placed into a common construction information system with coordinate assignment and time-axis management; safety sensing is visualised with the site point cloud rather than fused into a predictive model.',
+648: 'Wind-wave data, material testing, OpenFAST multi-physics simulation and probabilistic corrosion-fatigue modelling are jointly used to estimate crack growth and failure-mode probabilities for FOWT bolts.',
+})
+
+FDCF.update({
+245: 'High',
+648: 'High',
+})

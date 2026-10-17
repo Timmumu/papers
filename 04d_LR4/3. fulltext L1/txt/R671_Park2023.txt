@@ -1,0 +1,986 @@
+Citation: Park, S.; Hong, C.; Hwang,
+I.; Lee, J. Comparison of
+Single-Camera-Based Depth
+Estimation Technology for Digital
+Twin Model Synchronization of
+Underground Utility Tunnels. Appl.
+Sci. 2023, 13, 2106. https://doi.org/
+10.3390/app13042106
+Academic Editor: Andrea Li Bassi
+Received: 9 December 2022
+Revised: 30 January 2023
+Accepted: 3 February 2023
+Published: 6 February 2023
+Copyright: © 2023 by the authors.
+Licensee MDPI, Basel, Switzerland.
+This article is an open access article
+distributed under the terms and
+conditions of the Creative Commons
+Attribution (CC BY) license (https://
+creativecommons.org/licenses/by/
+4.0/).
+applied 
+sciences 
+Article
+Comparison of Single-Camera-Based Depth Estimation
+Technology for Digital Twin Model Synchronization
+of Underground Utility T unnels
+Sangmi Park 1,*, Changhee Hong 1, Inkyu Hwang 2 and Jaewook Lee 1
+1 BIM Cluster, Department of Future & Smart Construction Research, Korea Institute of Civil Engineering and
+Building Technology, Goyang-si 10223, Republic of Korea
+2 GIS Research Center, Geospatial Information Technology, Sungnam-si 13487, Republic of Korea
+* Correspondence: sangmipark@kict.re.kr
+Abstract: Digital twin technology can be used for disaster safety management of underground utility
+tunnels, which are social infrastructures. To verify its efﬁciency in an underground utility tunnel, it
+must be implemented and monitored in the real world. Therefore, the state of information about an
+object and the position of an object in the real world, which can change upon movement, should be
+correspondingly reﬂected in the digital model. Underground utility tunnels are monitored through
+closed circuit television (CCTV) cameras because the main infrastructure facilities are installed in
+a long and narrow form, which limits access to them. Therefore, synchronization of a digital twin
+model of an underground utility tunnel requires a method for identifying the location of an object
+through an installed CCTV camera. This study compares the DenseDepth transfer learning method
+and the coordinate system conversion method through ﬂoor plan projection to estimate depth using
+a single CCTV camera installed in an underground utility tunnel. The coordinate system conversion
+method through ﬂoor plane projection showed an error of 0.23 m to 1.5 m within a 50 m range. The
+DenseDepth transfer learning method showed an error of 1 m to 3 m; therefore, it was considered
+unsuitable for distance estimation. The coordinate system conversion method through ﬂoor plane
+projection showed a smaller error even at a longer distance than the DenseDepth transfer learning
+method. Therefore, the coordinate system conversion method through ﬂoor plane projection was
+considered more suitable than the DenseDepth transfer learning method for depth estimation using a
+single camera.
+Keywords: depth estimation; deep learning; coordinate conversion; digital twin
+1. Introduction
+An underground utility tunnel is an underground structure in which major supply
+facilities of daily life resources, such as electricity, communication, and water supply, are
+installed in a downtown area [ 1]. Underground utility tunnels, which serve as a major
+supply chain in a downtown area, require safety management to prevent events such as
+pipeline rupture or ﬁre due to its nature and positioning. However, maintenance and
+management of these facilities is difﬁcult because of the of the long and narrow characteris-
+tics of underground utility tunnels. To address these issues, numerous studies on digital
+twin technology for efﬁcient monitoring are currently underway. Digital twin technology
+builds a virtual model of the real world, reﬂecting the shape and location of objects. A
+safety-and-disaster digital twin model must reﬂect the changes in the state of objects and
+spaces in the real world, such as cracks in structures, ﬁre outbreaks, and ﬁre-extinguisher-
+location changes. Underground utility tunnel ducts are mainly monitored through closed
+circuit television (CCTV) cameras, and many studies have been conducted using artiﬁcial
+intelligence (AI) technologies to determine their shapes. However, studies that focus on the
+location of changed objects on digital twin models are limited. Technologies using stereo
+Appl. Sci. 2023, 13, 2106. https://doi.org/10.3390/app13042106 https://www.mdpi.com/journal/applsci
+Appl. Sci. 2023, 13, 2106 2 of 12
+and depth cameras are widely used to determine the location of changed objects; however,
+changing CCTV cameras in underground utility tunnels installed in long extensions is
+expensive and time-consuming.
+Moreover, a monocular camera image such as a CCTV camera image lacks feature
+information related to the size of an object. Therefore, various algorithms using deep
+learning have been proposed, and their accuracy has been sufﬁciently improved to obtain
+image depth close to the results obtained from binocular images. The goal of this study is to
+identify the applicability of these algorithms in actual underground utility tunnels. In this
+study, the DenseDepth transfer learning method, which uses depth image of light detection
+and ranging (LiDAR) depth data, and the coordinate system conversion method through
+ﬂoor plan projection were used to estimate image depth, and their results were compared.
+Therefore, it was possible to derive an appropriate method for estimating distance using a
+single camera in an actual underground utility tunnel. This study contributes to solving
+the problem of reﬂecting the position of an object in the real world to the digital model.
+2. Related Research
+The technology of estimating real distance using an image is utilized in various ﬁelds
+of computer vision, such as autonomous driving. Typically, laser scanning provides high-
+accuracy location information, but its application in real environments is expensive.
+To solve this issue, a stereo-matching method was used to estimate the location of
+objects from acquired images using two or more cameras. The stereo matching method
+has been extensively studied in the ﬁeld of computer vision, and studies were conducted
+to use a calibration process to make two cameras in the same parallel operate in a stereo
+manner [2–5]. However, cameras used for stereo imaging have different postures and
+different focal lengths. In addition, there are differences in brightness according to the
+lighting of the two places where the camera is installed, or differences in brightness in an
+image according to the exposure of the aperture. In addition, various conditions cause
+problems that are difﬁcult to correct [ 6]. To address these problems, many studies [ 7,8]
+have been conducted. In particular, an algorithm based on a convolutional neural network
+(CNN) [7] was presented, and various stereo matching algorithms were announced [4,8,9].
+Underground utility tunnels are narrow and long security facilities, and it is difﬁcult
+to install additional cameras for stereo matching, which is a method for estimating depth.
+Therefore, in this study, depth-estimation research using a single camera was investigated.
+The stereo matching method is a system that imitates the human eye and can estimate
+depth information from monocular cues, such as shadow and texture, using only a single
+image [10]. Although studies have been conducted to estimate depth through object
+outlines [11], segments, and shadows [12,13], reliable depth-estimation information cannot
+be obtained because it relies on several clues and rules. Numerous studies have been
+conducted to estimate depth with only a single camera using a CNN. CNN-based single-
+image depth-estimation research was ﬁrst proposed by [ 14], and neural networks were
+used to precisely improve approximate depth information. Various new methods have been
+proposed to improve the performance of single-image depth estimation [15,16]. Studies
+using the regression loss function to improve the speed and performance of learning
+models [17] and studies on modeling methods for more accurate mapping of unclear
+mapping relationships between single images and depth maps using residual learning [18]
+have been conducted. New methods have been presented for single-image depth estimation.
+In addition, a method of improving loss function for faster in-depth estimation accuracy
+and quality-improvement learning based on transfer learning was proposed [ 19]. Most
+depth estimation algorithms are based on supervised neural networks, but research has
+been conducted to address the disadvantages of the existing unsupervised depth estimation
+methods by introducing a knowledge-distillation-based approach [20].
+Numerous studies have been conducted proposing a method for measuring distance
+using a survey method for single-image depth estimation without applying a CNN model.
+Appl. Sci. 2023, 13, 2106 3 of 12
+A study [21] was conducted using triangulation for indirect estimation of the distance to an
+object based on known planes and angles, without direct measurement.
+As depth estimation via a single image is computationally expensive, a study was con-
+ducted to match the relationship between the image projection point and the corresponding
+point [22]. It tracked the new absolute position, proposed an error-correction algorithm,
+and presented a model that maps 3D spatial points to 2D images.
+Although studies on various single-image depth-estimation methods have been con-
+ducted, only a few studies have directly compared, tested, and applied them to the actual
+ﬁeld. In this study, among the single-image depth-estimation methods, methods applicable
+to CCTVs installed in underground utility tunnels were selected and compared. To this end,
+we attempted to derive a model suitable for an underground utility tunnel by comparing
+the single-image depth-estimation method using a CNN and the method of mapping a 2D
+image and a 3D model.
+3. DenseDepth Transfer Learning-Based Depth Estimation
+3.1. Depth Measurement Based on a Single Camera
+Prior to extracting three-dimensional (3D) spatial information using AI, on-site investi-
+gation is required, because data must be taken directly from the underground utility tunnel.
+Therefore, an actual underground utility tunnel was visited and data were collected with a
+low-light camera and a thermal-imaging CCTV camera, as shown in Figure 1. In the image
+data, actual measurement information is displayed at 10 m intervals from 10 m to 50 m,
+such that it can be referred to the comparison of depth-estimation results with images.
+Appl. Sci. 2023, 13, 2106 3 of 13 
+ 
+[19]. Most depth estimation algorithms are based on supervised neural networks, but re-
+search has been conducted to address the disadvantages of the existing unsupervised 
+depth estimation methods by introducing a knowledge-distillation-based approach [20]. 
+Numerous studies have been conducted proposing a method for measuring distance 
+using a survey method for single-image depth estimation without applying a CNN model. 
+A study [21] was conducted using triangulation for indirect estimation of the distance to 
+an object based on known planes and angles, without direct measurement. 
+As depth estimation via a single image is computationally expensive, a study was 
+conducted to match the relationship between the image projection point and the corre-
+sponding point [22]. It tracked the new abso lute position, proposed an error-correction 
+algorithm, and presented a model that maps 3D spatial points to 2D images. 
+Although studies on various single-image depth-estimation methods have been con-
+ducted, only a few studies have directly compared, tested, and applied them to the actual 
+field. In this study, among the single-image depth-estimation methods, methods applica-
+ble to CCTVs installed in underground util ity tunnels were selected and compared. To 
+this end, we attempted to derive a model su itable for an underground utility tunnel by 
+comparing the single-image depth-estimation method using a CNN and the method of 
+mapping a 2D image and a 3D model. 
+3. DenseDepth Transfer Learning-Based Depth Estimation 
+3.1. Depth Measurement Based on a Single Camera 
+Prior to extracting three-dimensional (3D) spatial information using AI, on-site in-
+vestigation is required, because data must be taken directly from the underground utility 
+tunnel. Therefore, an actual underground ut ility tunnel was visited and data were col-
+lected with a low-light camera and a thermal-imaging CCTV camera, as shown in Figure 
+1. In the image data, actual measurement information is displayed at 10 m intervals from 
+10 m to 50 m, such that it can be referred to the comparison of depth-estimation results 
+with images. 
+ 
+Figure 1. Underground utility tunnel CCTV red-green-blue (RGB, left), thermal image (middle), and 
+no-light image (right). 
+3.2. Using Laser Scan Data from DenseDepth 
+DenseDepth is a monocular-image depth-e stimation project implemented by Ibra-
+heem Alhashim and Peter Wonka through transfer learning and is open at Github. Figure 
+2 shows network structure composed of an encoder–decoder model; the encoder is the 
+pre-trained DensNet-169 architecture and the decoder is composed of basic blocks of a 
+CNN layer. 
+ 
+Figure 1. Underground utility tunnel CCTV red-green-blue (RGB, left), thermal image (middle), and
+no-light image (right).
+3.2. Using Laser Scan Data from DenseDepth
+DenseDepth is a monocular-image depth-estimation project implemented by Ibraheem
+Alhashim and Peter Wonka through transfer learning and is open at Github. Figure 2 shows
+network structure composed of an encoder–decoder model; the encoder is the pre-trained
+DensNet-169 architecture and the decoder is composed of basic blocks of a CNN layer.
+Appl. Sci. 2023, 13, 2106 3 of 13 
+ 
+[19]. Most depth estimation algorithms are based on supervised neural networks, but re-
+search has been conducted to address the disadvantages of the existing unsupervised 
+depth estimation methods by introducing a knowledge-distillation-based approach [20]. 
+Numerous studies have been conducted proposing a method for measuring distance 
+using a survey method for single-image depth estimation without applying a CNN model. 
+A study [21] was conducted using triangulation for indirect estimation of the distance to 
+an object based on known planes and angles, without direct measurement. 
+As depth estimation via a single image is computationally expensive, a study was 
+conducted to match the relationship between the image projection point and the corre-
+sponding point [22]. It tracked the new abso lute position, proposed an error-correction 
+algorithm, and presented a model that maps 3D spatial points to 2D images. 
+Although studies on various single-image depth-estimation methods have been con-
+ducted, only a few studies have directly compared, tested, and applied them to the actual 
+field. In this study, among the single-image depth-estimation methods, methods applica-
+ble to CCTVs installed in underground util ity tunnels were selected and compared. To 
+this end, we attempted to derive a model su itable for an underground utility tunnel by 
+comparing the single-image depth-estimation method using a CNN and the method of 
+mapping a 2D image and a 3D model. 
+3. DenseDepth Transfer Learning-Based Depth Estimation 
+3.1. Depth Measurement Based on a Single Camera 
+Prior to extracting three-dimensional (3D) spatial information using AI, on-site in-
+vestigation is required, because data must be taken directly from the underground utility 
+tunnel. Therefore, an actual underground ut ility tunnel was visited and data were col-
+lected with a low-light camera and a thermal-imaging CCTV camera, as shown in Figure 
+1. In the image data, actual measurement information is displayed at 10 m intervals from 
+10 m to 50 m, such that it can be referred to the comparison of depth-estimation results 
+with images. 
+ 
+Figure 1. Underground utility tunnel CCTV red-green-blue (RGB, left), thermal image (middle), and 
+no-light image (right). 
+3.2. Using Laser Scan Data from DenseDepth 
+DenseDepth is a monocular-image depth-e stimation project implemented by Ibra-
+heem Alhashim and Peter Wonka through transfer learning and is open at Github. Figure 
+2 shows network structure composed of an encoder–decoder model; the encoder is the 
+pre-trained DensNet-169 architecture and the decoder is composed of basic blocks of a 
+CNN layer. 
+ 
+Figure 2. Encoder–decoder model from DenseDepth Paper (left) [ 19], and DenseDepth transfer
+learning network structure (right) [23].
+To create a model for estimating the value of the depth of two-dimensional (2D) image
+coordinates, training was performed using the original RGB image and an image whose
+depth value was given as a label. A supervised learning method was used, which estimated
+the depth value of the RGB image and compared it with the actual depth value of the
+Appl. Sci. 2023, 13, 2106 4 of 12
+labeled image to update its weight. DenseDepth basically provided two learning models,
+the KITTI road driving dataset and the NYU indoor dataset. The KITTI model, which
+has a similar image shape, such as the vanishing point and maximum distance of the
+underground utility tunnel, was selected as a test model. The upper part of Figure 3 is
+the original RGB image provided by KITTI, and the lower part is the image obtained by
+converting the corresponding LiDAR distance data into depth value labels. The image size
+is 1242× 375 pixels, and the depth range is from 1 m to 80 m.
+Appl. Sci. 2023, 13, 2106 4 of 13 
+ 
+Figure 2. Encoder–decoder model from DenseDepth Pape r (left) [19], and DenseDepth transfer 
+learning network structure (right) [23]. 
+To create a model for estimating the value of the depth of two-dimensional (2D) im-
+age coordinates, training was performed using the original RGB image and an image 
+whose depth value was given as a label. A su pervised learning method was used, which 
+estimated the depth value of the RGB image and compared it with the actual depth value 
+of the labeled image to update its weight. DenseDepth basically provided two learning 
+models, the KITTI road driving dataset and the NYU indoor dataset. The KITTI model, 
+which has a similar image shape, such as the vanishing point and maximum distance of 
+the underground utility tunnel, was selected as a test model. The upper part of Figure 3 
+is the original RGB image provided by KITTI, and the lower part is the image obtained by 
+converting the corresponding LiDAR distance data into depth value labels. The image size 
+is 1242 × 375 pixels, and the depth range is from 1 m to 80 m. 
+ 
+Figure 3. KITTI road-driving learning image. 
+3.3. Outdoor Road-Depth-Extraction Test Results 
+To determine the reliability of the h5 model of the KITTI road-driving dataset learned 
+using Keras, a deep learning library, a test was conducted on an actual outdoor road. Fig-
+ure 4 shows the depth-value contours extracted from images taken on roads in Korea. 
+After placing an object with a known actual distance from 10 m to 50 m, the error with the 
+depth value extracted through the DenseDepth model was calculated on the image. 
+ 
+Figure 3. KITTI road-driving learning image.
+3.3. Outdoor Road-Depth-Extraction T est Results
+To determine the reliability of the h5 model of the KITTI road-driving dataset learned
+using Keras, a deep learning library, a test was conducted on an actual outdoor road.
+Figure 4 shows the depth-value contours extracted from images taken on roads in Korea.
+After placing an object with a known actual distance from 10 m to 50 m, the error with the
+depth value extracted through the DenseDepth model was calculated on the image.
+Appl. Sci. 2023, 13, 2106 4 of 13 
+ 
+Figure 2. Encoder–decoder model from DenseDepth Pape r (left) [19], and DenseDepth transfer 
+learning network structure (right) [23]. 
+To create a model for estimating the value of the depth of two-dimensional (2D) im-
+age coordinates, training was performed using the original RGB image and an image 
+whose depth value was given as a label. A su pervised learning method was used, which 
+estimated the depth value of the RGB image and compared it with the actual depth value 
+of the labeled image to update its weight. DenseDepth basically provided two learning 
+models, the KITTI road driving dataset and the NYU indoor dataset. The KITTI model, 
+which has a similar image shape, such as the vanishing point and maximum distance of 
+the underground utility tunnel, was selected as a test model. The upper part of Figure 3 
+is the original RGB image provided by KITTI, and the lower part is the image obtained by 
+converting the corresponding LiDAR distance data into depth value labels. The image size 
+is 1242 × 375 pixels, and the depth range is from 1 m to 80 m. 
+ 
+Figure 3. KITTI road-driving learning image. 
+3.3. Outdoor Road-Depth-Extraction Test Results 
+To determine the reliability of the h5 model of the KITTI road-driving dataset learned 
+using Keras, a deep learning library, a test was conducted on an actual outdoor road. Fig-
+ure 4 shows the depth-value contours extracted from images taken on roads in Korea. 
+After placing an object with a known actual distance from 10 m to 50 m, the error with the 
+depth value extracted through the DenseDepth model was calculated on the image. 
+ 
+Figure 4. DenseDepth outdoor-road-depth-value-extraction image.
+Table 1 lists the error values according to the distance from the camera to the object on
+the road. A root mean squared error (RMSE) value of 4.17 was obtained. Hence, the KITTI
+model was considered sufﬁciently reliable in the depth-extraction performance of the road;
+therefore, it was applied to the underground utility tunnel image.
+Appl. Sci. 2023, 13, 2106 5 of 12
+Table 1. DenseDepth cavity depth-value error.
+Actual Measurement Error
+10 m 3 m
+20 m 4 m
+30 m 2 m
+40 m 4 m
+50 m 5 m
+3.4. Underground Utility T unnel Depth-Extraction T est Results
+Similar to the depth-extraction test of the road, the depth-value-extraction test of the
+underground utility tunnel image was conducted using the KITTI h5 model. A test image
+was used with a size of 1920× 1080 pixels taken with a low-light camera from a speciﬁc
+underground utility tunnel in Korea. Figure 5 shows the contour image of the depth-value
+extraction, which is the result of the test.
+Appl. Sci. 2023, 13, 2106 5 of 13 
+ 
+Figure 4. DenseDepth outdoor-road-depth-value-extraction image. 
+Table 1 lists the error values according to th e distance from the camera to the object 
+on the road. A root mean squared error (RMS E) value of 4.17 was obtained. Hence, the 
+KITTI model was considered sufficiently reliable in the depth-extraction performance of 
+the road; therefore, it was applied to the underground utility tunnel image. 
+Table 1. DenseDepth cavity depth-value error. 
+Actual Measurement Error 
+10 m 3 m 
+20 m 4 m 
+30 m 2 m 
+40 m 4 m 
+50 m 5 m 
+3.4. Underground Utility Tunnel Depth-Extraction Test Results 
+Similar to the depth-extraction test of the road, the depth-value-extraction test of the 
+underground utility tunnel image was conducted using the KITTI h5 model. A test image 
+was used with a size of 1920 × 1080 pixels taken with a low-light camera from a specific 
+underground utility tunnel in Korea. Figure 5 shows the contour image of the depth-value 
+extraction, which is the result of the test. 
+ 
+Figure 5. Extraction image of utility tunnel depth value. 
+Table 2 shows the depth-extraction-value error for each underground utility tunnel 
+distance obtained using DenseDepth. 
+Table 2. Depth-extraction-value error for underground utility tunnel distance obtained using 
+DenseDepth. 
+Actual Measurement Error 
+10 m 1 m 
+20 m 4 m 
+30 m 14 m 
+40 m 24 m 
+50 m 35 m 
+Unlike the depth-extraction test result of the road image, the error of the test result 
+of the underground utility tunnel was extremel y large. This may have been caused by 
+differences in the location of the vanishing point and the RGB color distribution at each 
+boundary line in the underground utility tunnel image compared to the road image used 
+when creating the learning model. Therefore, the KITTI model was considered unsuitable 
+for extracting the depth of the underground utility pit. A method of directly scanning the 
+Figure 5. Extraction image of utility tunnel depth value.
+Table 2 shows the depth-extraction-value error for each underground utility tunnel
+distance obtained using DenseDepth.
+Table 2. Depth-extraction-value error for underground utility tunnel distance obtained using DenseDepth.
+Actual Measurement Error
+10 m 1 m
+20 m 4 m
+30 m 14 m
+40 m 24 m
+50 m 35 m
+Unlike the depth-extraction test result of the road image, the error of the test result
+of the underground utility tunnel was extremely large. This may have been caused by
+differences in the location of the vanishing point and the RGB color distribution at each
+boundary line in the underground utility tunnel image compared to the road image used
+when creating the learning model. Therefore, the KITTI model was considered unsuitable
+for extracting the depth of the underground utility pit. A method of directly scanning the
+underground utility tunnel and creating a dedicated depth model for the utility tunnel
+requires the use of laser equipment, which can result in additional costs. Thus, a method of
+extracting depth values through a coordinate system conversion algorithm was applied.
+4. Coordinate System Conversion Algorithm-based Depth Estimation
+4.1. Conversion of 2D and 3D Coordinate Systems
+Coordinate system information is required to obtain 3D information from a camera
+image. The 3D real-world (X, Y, Z) coordinates pass through the camera lens and are
+Appl. Sci. 2023, 13, 2106 6 of 12
+projected onto the image sensor, creating an image consisting of 2D (x, y) coordinates. In
+this case, when only an image is given without 3D information, a single 3D real-world
+coordinate that matches the image coordinate cannot be obtained theoretically. This is
+because the Z value, which is the distance from the camera, is unknown. Therefore, in this
+study, by ﬁxing any one of the X, Y, or Z axes to a speciﬁc value, the 3D world was reduced
+to a 2D plane, and the 2D image coordinates were back-projected to determine the point of
+intersection with the plane. Through this procedure, a depth value corresponding to the
+Z-axis could be extracted, based on the camera coordinate system. However, the (X, Y, Z)
+3D coordinate system was assumed to be a completely empty space without any objects.
+When viewed without considering three-dimensional objects such as a pipeline, the
+underground community sphere has the shape of a cube with a long longitudinal section.
+This cube-shaped structure, assuming an empty space, can later be mapped with a standard
+grid to represent the regions where anomalous signals occur in the digital twin space.
+Figure 6 is a conceptual drawing of the standard grid superimposed on the underground
+common area.
+Appl. Sci. 2023, 13, 2106 6 of 13 
+ 
+underground utility tunnel and creating a dedicated depth model for the utility tunnel 
+requires the use of laser equipment, which can result in additional costs. Thus, a method 
+of extracting depth values through a coordi nate system conversion algorithm was ap-
+plied. 
+4. Coordinate System Conversion Algorithm-based Depth Estimation 
+4.1. Conversion of 2D and 3D Coordinate Systems 
+Coordinate system information is required to obtain 3D information from a camera 
+image. The 3D real-world (X, Y, Z) coordinates pass through the camera lens and are pro-
+jected onto the image sensor, creating an image consisting of 2D (x, y) coordinates. In this 
+case, when only an image is given without 3D information, a single 3D real-world coordi-
+nate that matches the image coordinate cannot be obtained theoretically. This is because 
+the Z value, which is the distance from the camera, is unknown. Therefore, in this study, 
+by fixing any one of the X, Y, or Z axes to a specific value, the 3D world was reduced to a 
+2D plane, and the 2D image coordinates were back-projected to determine the point of 
+intersection with the plane. Through this pr ocedure, a depth value corresponding to the 
+Z-axis could be extracted, based on the camera coordinate system. However, the (X, Y, Z) 
+3D coordinate system was assumed to be a completely empty space without any objects. 
+When viewed without considering three-dimensional objects such as a pipeline, the 
+underground community sphere has the shape of a cube with a long longitudinal section. 
+This cube-shaped structure, assuming an empty space, can later be mapped with a stand-
+ard grid to represent the regions where anomalous signals occur in the digital twin space. 
+Figure 6 is a conceptual drawing of the standard grid superimposed on the underground 
+common area. 
+ 
+Figure 6. Estimated map of the standard grid for underground utility tunnels. 
+4.2. Construction and Surveying of Environment for Image Mapping (World Coordinate System 
+Setting) 
+Coordinate systems in a 3D space can be divided into two major categories. A camera 
+coordinate system is based on the camera that acquired the image, whereas a world coor-
+dinate system is based on an arbitrary point in the real world. The camera coordinate sys-
+tem has the center of the lens as the origin, the horizontal and vertical directions of the 
+image are the X and Y axes, respectively, and th e direction to the principal point is the Z 
+axis. It is automatically determined according to the camera position and direction. In 
+contrast, the world coordinate system can be arbitrarily set as X, Y, and Z axes as well as 
+the origin, and it is commonly set inside the space where the camera image was acquired. 
+Figure 7 shows the world coordinate system set in the test environment. The bottom 
+of the ground was set as the X-Y plane using a flat point. A license plate with black num-
+bers written on a white background consisting of actual measurement information was 
+placed on the floor to facilitate the image coordinate calculation. 
+Figure 6. Estimated map of the standard grid for underground utility tunnels.
+4.2. Construction and Surveying of Environment for Image Mapping (World Coordinate
+System Setting)
+Coordinate systems in a 3D space can be divided into two major categories. A camera
+coordinate system is based on the camera that acquired the image, whereas a world
+coordinate system is based on an arbitrary point in the real world. The camera coordinate
+system has the center of the lens as the origin, the horizontal and vertical directions of the
+image are the X and Y axes, respectively, and the direction to the principal point is the Z
+axis. It is automatically determined according to the camera position and direction. In
+contrast, the world coordinate system can be arbitrarily set as X, Y, and Z axes as well as
+the origin, and it is commonly set inside the space where the camera image was acquired.
+Figure 7 shows the world coordinate system set in the test environment. The bottom of
+the ground was set as the X-Y plane using a ﬂat point. A license plate with black numbers
+written on a white background consisting of actual measurement information was placed
+on the ﬂoor to facilitate the image coordinate calculation.
+Figure 8 shows the actual measurement information of the ﬂoor plan world coordinate
+system and the CCTV camera. The height of the camera was 1 m 30 cm, and the distance
+between the camera and the number plate in the ﬁrst row was 5 m 60 cm. The number
+plates were 3× 3 in size, 5 m 60 cm wide, and 21 m 40 cm long, with a total of nine plates
+placed at intervals.
+Appl. Sci. 2023, 13, 2106 7 of 12
+Appl. Sci. 2023, 13, 2106 7 of 13 
+ 
+ 
+Figure 7. Floor plan using the world coordinate system. 
+Figure 8 shows the actual measurement information of the floor plan world coordi-
+nate system and the CCTV camera. The height of the camera was 1 m 30 cm, and the 
+distance between the camera and the number plate in the first row was 5 m 60 cm. The 
+number plates were 3 × 3 in size, 5 m 60 cm wide, and 21 m 40 cm long, with a total of nine 
+plates placed at intervals. 
+ 
+Figure 8. Measured information of floor plan using the world coordinate system. 
+4.3. Camera Calibration 
+To derive the conversion formula between the camera and world coordinate systems, 
+several internal parameters of the camera must be known in advance. They are the focal 
+length ( 𝑓௫, 𝑓௬) and the principal point ( 𝑐௫, 𝑐௬) related to lens and image sensor infor-
+mation, and radial (𝑘ଵ, 𝑘ଶ) and tangential (𝑝ଵ, 𝑝ଶ) distortion coefficients related to distor-
+tion. Obtaining these parameters is called camera calibration. 
+Camera calibration is performed by geometrically interpreting an image taken from 
+a 3D or 2D calibration object having a large number of prominent feature points. The cal-
+ibration object mainly used is a chess board in which black and white squares appear al-
+ternately. The [GML Camera Calibration] Toolbox provided by the ‘Graphics and Media 
+Figure 7. Floor plan using the world coordinate system.
+Appl. Sci. 2023, 13, 2106 7 of 13 
+ 
+ 
+Figure 7. Floor plan using the world coordinate system. 
+Figure 8 shows the actual measurement information of the floor plan world coordi-
+nate system and the CCTV camera. The height of the camera was 1 m 30 cm, and the 
+distance between the camera and the number plate in the first row was 5 m 60 cm. The 
+number plates were 3 × 3 in size, 5 m 60 cm wide, and 21 m 40 cm long, with a total of nine 
+plates placed at intervals. 
+ 
+Figure 8. Measured information of floor plan using the world coordinate system. 
+4.3. Camera Calibration 
+To derive the conversion formula between the camera and world coordinate systems, 
+several internal parameters of the camera must be known in advance. They are the focal 
+length ( 𝑓௫, 𝑓௬) and the principal point ( 𝑐௫, 𝑐௬) related to lens and image sensor infor-
+mation, and radial (𝑘ଵ, 𝑘ଶ) and tangential (𝑝ଵ, 𝑝ଶ) distortion coefficients related to distor-
+tion. Obtaining these parameters is called camera calibration. 
+Camera calibration is performed by geometrically interpreting an image taken from 
+a 3D or 2D calibration object having a large number of prominent feature points. The cal-
+ibration object mainly used is a chess board in which black and white squares appear al-
+ternately. The [GML Camera Calibration] Toolbox provided by the ‘Graphics and Media 
+Figure 8. Measured information of ﬂoor plan using the world coordinate system.
+4.3. Camera Calibration
+To derive the conversion formula between the camera and world coordinate systems,
+several internal parameters of the camera must be known in advance. They are the focal
+length ( fx, fy) and the principal point ( cx, cy) related to lens and image sensor informa-
+tion, and radial (k1, k2) and tangential (p1, p2) distortion coefﬁcients related to distortion.
+Obtaining these parameters is called camera calibration.
+Camera calibration is performed by geometrically interpreting an image taken from
+a 3D or 2D calibration object having a large number of prominent feature points. The
+calibration object mainly used is a chess board in which black and white squares appear
+alternately. The [GML Camera Calibration] Toolbox provided by the ‘Graphics and Me-
+dia Lab’ provides calibration results by applying OpenCV , which implements Zhang’s
+thesis [24], to multi-view images of the same chess board.
+Figure 9 shows a chessboard image for the internal calibration of the SNO-6084R
+CCTV camera. The square of the chess board forms a pattern with a square of 3 cm in width
+and length, and corner points with a size of 9× 6 can be detected.
+Appl. Sci. 2023, 13, 2106 8 of 12
+Appl. Sci. 2023, 13, 2106 8 of 13 
+ 
+Lab’ provides calibration results by applying OpenCV, which implements Zhang’s thesis 
+[24], to multi-view images of the same chess board. 
+Figure 9 shows a chessboard image for the internal calibration of the SNO-6084R 
+CCTV camera. The square of the chess board fo rms a pattern with a square of 3 cm in 
+width and length, and corner points with a size of 9 × 6 can be detected. 
+ 
+Figure 9. Image for internal calibration of SNO-6084R CCTV. 
+Table 3 lists the internal factors and dist ortion coefficients of the SNO-6084R CCTV 
+camera obtained by internal calibration using chess board images. The internal factors 𝑓௫, 
+𝑓௬,𝑐 ௫, and 𝑐௬ are measured in pixels and the distortion coefficients 𝑘ଵ, 𝑘ଶ, 𝑝ଵ, and 𝑝ଶ are 
+constants. 
+Table 3. SNO-6084R CCTV camera internal factors and distortion coefficients. 
+Internal Factors Value Distortion Factors Value 
+𝑓௫ 1185.29 𝑘ଵ −0.331729 
+𝑓௬ 1185.16 𝑘ଶ 0.098764 
+𝑐௫ 946.25 𝑝ଵ −0.000110 
+𝑐௬ 475.07 𝑝ଶ 0.000696 
+𝑓௫ 1185.29 𝑘ଵ −0.331729 
+4.4. Removing Camera Distortion 
+Due to the structural characteristics of ca meras, distortion occurs when capturing 
+images. Distortion types include radial and tangential distortions related to the lens and 
+the image sensor, respectively. Radial distortion is a phenomenon in which light rays that 
+pass farther from the center of a lens are considerably bent, appearing mainly in the form 
+of barrel distortion. Tangential distortion occurs during the camera manufacturing pro-
+cess and is caused by the lens and image sensor planes being not perfectly in parallel, but 
+with an inclination. Other types of distortion may also occur, but as the size is relatively 
+large for radial and tangential distortions, distortion correction is mainly aimed at these. 
+To obtain accurate back projection from image coordinates to 3D coordinates, this distor-
+tion correction must be preceded. Correction of both radial and tangential distortions can 
+be performed using coordinates obtained by projecting image coordinates onto a normal 
+coordinate system. 
+𝑥
+ௗ௜௦௧௢௥௧=𝑥 ௨௡ௗ௜௦௧௢௥௧(1 + 𝑘ଵ𝑟ଶ+𝑘 ଶ4) 
+𝑦ௗ௜௦௧௢௥௧=𝑦 ௨௡ௗ௜௦௧௢௥௧(1 + 𝑘ଵ𝑟ଶ+𝑘 ଶ4) (1) 
+Figure 9. Image for internal calibration of SNO-6084R CCTV .
+Table 3 lists the internal factors and distortion coefﬁcients of the SNO-6084R CCTV
+camera obtained by internal calibration using chess board images. The internal factors
+fx, fy, cx and cy are measured in pixels and the distortion coefﬁcients k1, k2, p1 and p2
+are constants.
+Table 3. SNO-6084R CCTV camera internal factors and distortion coefﬁcients.
+Internal Factors Value Distortion Factors Value
+fx 1185.29 k1 −0.331729
+fy 1185.16 k2 0.098764
+cx 946.25 p1 −0.000110
+cy 475.07 p2 0.000696
+fx 1185.29 k1 −0.331729
+4.4. Removing Camera Distortion
+Due to the structural characteristics of cameras, distortion occurs when capturing
+images. Distortion types include radial and tangential distortions related to the lens and
+the image sensor, respectively. Radial distortion is a phenomenon in which light rays that
+pass farther from the center of a lens are considerably bent, appearing mainly in the form
+of barrel distortion. Tangential distortion occurs during the camera manufacturing process
+and is caused by the lens and image sensor planes being not perfectly in parallel, but with
+an inclination. Other types of distortion may also occur, but as the size is relatively large
+for radial and tangential distortions, distortion correction is mainly aimed at these. To
+obtain accurate back projection from image coordinates to 3D coordinates, this distortion
+correction must be preceded. Correction of both radial and tangential distortions can be
+performed using coordinates obtained by projecting image coordinates onto a normal
+coordinate system.
+xdistort = xundistort (1 + k1r2 + k24
+)
+ydistort = yundistort (1 + k1r2 + k24
+) (1)
+Equation (1) is a model that is converted from coordinates ( xundistort , yundistort ) with
+no distortion on the normal coordinate system to coordinates (xdistort , ydistort ) with radial
+distortion applied according to the lens model. k1, k2 are radial distortion coefﬁcients
+obtained in the camera calibration step, and r is the radius from the optical center of
+Appl. Sci. 2023, 13, 2106 9 of 12
+the normal coordinate system. If the distortion is severe, a term k3 may be added to the
+expression in the form of a Taylor series.
+xdistort = xundistort + (2p1xundistort yundistort
++ p2
+(
+r2 + 2x2
+undistort
+))
+ydistort = yundistort +
+(
+p2
+(
+r2 + 2y2)
++ 2p2xundistort yundistort )
+(2)
+Equation (2) refers to the tangential distortion model and tangential distortion coefficient.
+Distortion is usually proportional to the size of the ﬁeld of view of the camera. The
+angle of view of the SNO-6084R CCTV is approximately 105◦, which is smaller than that
+of a wide-angle camera that shoots a wide angle of view of 120◦ or more, and the degree
+of distortion is greater than that of a web camera with a ﬁeld of view of approximately
+80◦. The picture on the right of Figure 10 is a distortion-corrected image using Equations
+(1) and (2). Even with the naked eye, the degree of distortion is not sufﬁciently small
+to distinguish the difference before and after correction. As a difference of only a few
+pixels can considerably change the coordinate conversion calculation result, the distortion
+correction procedure must be performed.
+Appl. Sci. 2023, 13, 2106 9 of 13 
+ 
+Equation (1) is a model that is converted from coordinates (𝑥௨௡ௗ௜௦௧௢௥௧,𝑦 ௨௡ௗ௜௦௧௢௥௧) with 
+no distortion on the normal coordinate system to coordinates (𝑥ௗ௜௦௧௢௥௧,𝑦 ௗ௜௦௧௢௥௧) with radial 
+distortion applied according to the lens model. 𝑘ଵ, 𝑘ଶ are radial distortion coefficients ob-
+tained in the camera calibration step, and r is the radius from the optical center of the 
+normal coordinate system. If th e distortion is severe, a term 𝑘ଷ may be added to the ex-
+pression in the form of a Taylor series. 
+𝑥ௗ௜௦௧௢௥௧=𝑥 ௨௡ௗ௜௦௧௢௥௧+( 2 𝑝ଵ𝑥௨௡ௗ௜௦௧௢௥௧𝑦௨௡ௗ௜௦௧௢௥௧
++𝑝 ଶ(𝑟ଶ+2 𝑥௨௡ௗ௜௦௧௢௥௧
+ଶ ሻሻ 
+𝑦ௗ௜௦௧௢௥௧=𝑦 ௨௡ௗ௜௦௧௢௥௧+( 𝑝ଶ(𝑟ଶ+2 𝑦ଶሻ
++2 𝑝ଶ𝑥௨௡ௗ௜௦௧௢௥௧𝑦௨௡ௗ௜௦௧௢௥௧ሻ 
+ 
+(2) 
+Equation (2) refers to the tangential distor tion model and tangential distortion coef-
+ficient. 
+Distortion is usually proportional to the si ze of the field of view of the camera. The 
+angle of view of the SNO-6084R CCTV is appr oximately 105°, which is smaller than that 
+of a wide-angle camera that shoots a wide an gle of view of 120° or more, and the degree 
+of distortion is greater than that of a web camera with a field of view of approximately 
+80°. The picture on the right of Figure 10 is a distortion-corrected image using Equations 
+(1) and (2). Even with the naked eye, the degree of distortion is not sufficiently small to 
+distinguish the difference before and after correction. As a difference of only a few pixels 
+can considerably change the coordinate conver sion calculation result, the distortion cor-
+rection procedure must be performed. 
+ 
+Figure 10. Original image (left) and distortion corrected image (right). 
+4.5. Transformation Matrix between Camera and World Coordinate Systems 
+If the internal factors and distortion coefficients are obtained through camera calibra-
+tion, the transformation matrix between the camera and world coordinate systems can be 
+obtained. The transformation matrix is composed of a rota tion matrix and a movement 
+vector and is represented as 𝑅=𝑅 ଶ(𝜃ሻ𝑅௬(𝜑ሻ௫𝑅(ψሻ when it is rotated by 𝜓, 𝜑, 𝜃 angles 
+around the x, y, and z axes, respectively, in three dimensions. In the case of a movement 
+vector, it expresses the movement of the center position along the x, y, and z axes. That is, 
+it can be viewed as an offset between the or igins of two different coordinate systems. 
+When the transformation matrix is known, a point 𝑃௪ in the world coordinate system can 
+be converted into a point 𝑃௖ in the camera coordinate system through Equation (3). 
+𝑃௖=𝑅∗𝑃 ௪ +Τ (3) 
+Table 4 presents the conversion matrix between the camera and world coordinate 
+systems obtained using the solvePnP function of the OpenCV library. 
+ 
+Figure 10. Original image (left) and distortion corrected image (right).
+4.5. T ransformation Matrix between Camera and World Coordinate Systems
+If the internal factors and distortion coefﬁcients are obtained through camera calibra-
+tion, the transformation matrix between the camera and world coordinate systems can be
+obtained. The transformation matrix is composed of a rotation matrix and a movement
+vector and is represented as R = R2(θ)Ry(ϕ)xR(ψ) when it is rotated by
+Appl. Sci. 2023, 13, x FOR PEER REVIEW 9 of 13 
+Equation (1) is a model that is converted from coordinates (𝑥𝑢𝑛𝑑𝑖𝑠𝑡𝑜𝑟𝑡, 𝑦𝑢𝑛𝑑𝑖𝑠𝑡𝑜𝑟𝑡) with 
+no distortion on the normal coordinate system to coordinates (𝑥𝑑𝑖𝑠𝑡𝑜𝑟𝑡, 𝑦𝑑𝑖𝑠𝑡𝑜𝑟𝑡) with radial 
+distortion applied according to the lens model. 𝑘1, 𝑘2 are radial distortion coefficients ob-
+tained in the camera calibration step, and r is the radius from the optical center of the 
+normal coordinate system. If the distortion is severe, a term 𝑘3 may be added to the ex-
+pression in the form of a Taylor series. 
+𝑥𝑑𝑖𝑠𝑡𝑜𝑟𝑡 = 𝑥𝑢𝑛𝑑𝑖𝑠𝑡𝑜𝑟𝑡 + (2𝑝1𝑥𝑢𝑛𝑑𝑖𝑠𝑡𝑜𝑟𝑡𝑦𝑢𝑛𝑑𝑖𝑠𝑡𝑜𝑟𝑡
++ 𝑝2(𝑟2 + 2𝑥𝑢𝑛𝑑𝑖𝑠𝑡𝑜𝑟𝑡
+2 )) 
+𝑦𝑑𝑖𝑠𝑡𝑜𝑟𝑡 = 𝑦𝑢𝑛𝑑𝑖𝑠𝑡𝑜𝑟𝑡 + (𝑝2(𝑟2 + 2𝑦2)
++ 2𝑝2𝑥𝑢𝑛𝑑𝑖𝑠𝑡𝑜𝑟𝑡𝑦𝑢𝑛𝑑𝑖𝑠𝑡𝑜𝑟𝑡) 
+ 
+(2) 
+Equation (2) refers to the tangential distortion model and tangential di stortion coef-
+ficient. 
+Distortion is usually proportional to the size of the field of view of the camera. The 
+angle of view of the SNO -6084R CCTV is approximately 105° , which is smaller than that 
+of a wide-angle camera that shoots a wide angle of view of 12 0° or more, and the degree 
+of distortion is greater than that of a web camera with a field of view of approximately 
+80° . The picture on the right of Figure 10 is a distortion-corrected image using Equations 
+(1) and (2). Even with the naked eye, the degree of distortion is not sufficiently small to 
+distinguish the difference before and after correction. As a difference of only a few pixels 
+can considerably change the coordinate conversion calculation result, the distortion cor-
+rection procedure must be performed. 
+ 
+Figure 10. Original image (left) and distortion corrected image (right). 
+4.5. Transformation Matrix between Camera and World Coordinate Systems 
+If the internal factors and distortion coefficients are obtained through camera calibra-
+tion, the transformation matrix between the camera and world coordinate systems can be 
+obtained. The transformation matrix is composed of a rotation matrix and a movement 
+vector and is represented as 𝑅 = 𝑅2(𝜃)𝑅𝑦(𝜑)𝑥𝑅(ψ) when it is rotated by 𝜓, 𝜑, 𝜃 angles 
+around the x, y, and z axes , respectively, in three dimensions. In the case of a movement 
+vector, it expresses the movement of the center position along the x, y, and z axes. That is, 
+it can be viewed as an offset between the origins of two different coordin ate systems. 
+When the transformation matrix is known, a point 𝑃𝑤 in the world coordinate system can 
+be converted into a point 𝑃𝑐 in the camera coordinate system through Equation (3). 
+𝑃𝑐 = 𝑅 ∗ 𝑃𝑤 + Τ (3) 
+Table 4 presents the conversion matrix between the camera and world coordinate 
+systems obtained using the solvePnP function of the OpenCV library. 
+ 
+ ,
+Appl. Sci. 2023, 13, x FOR PEER REVIEW 9 of 13 
+Equation (1) is a model that is converted from coordinates (𝑥𝑢𝑛𝑑𝑖𝑠𝑡𝑜𝑟𝑡, 𝑦𝑢𝑛𝑑𝑖𝑠𝑡𝑜𝑟𝑡) with 
+no distortion on the normal coordinate system to coordinates (𝑥𝑑𝑖𝑠𝑡𝑜𝑟𝑡, 𝑦𝑑𝑖𝑠𝑡𝑜𝑟𝑡) with radial 
+distortion applied according to the lens model. 𝑘1, 𝑘2 are radial distortion coefficients ob-
+tained in the camera calibration step, and r is the radius from the optical center of the 
+normal coordinate system. If the distortion is severe, a term 𝑘3 may be added to the ex-
+pression in the form of a Taylor series. 
+𝑥𝑑𝑖𝑠𝑡𝑜𝑟𝑡 = 𝑥𝑢𝑛𝑑𝑖𝑠𝑡𝑜𝑟𝑡 + (2𝑝1𝑥𝑢𝑛𝑑𝑖𝑠𝑡𝑜𝑟𝑡𝑦𝑢𝑛𝑑𝑖𝑠𝑡𝑜𝑟𝑡
++ 𝑝2(𝑟2 + 2𝑥𝑢𝑛𝑑𝑖𝑠𝑡𝑜𝑟𝑡
+2 )) 
+𝑦𝑑𝑖𝑠𝑡𝑜𝑟𝑡 = 𝑦𝑢𝑛𝑑𝑖𝑠𝑡𝑜𝑟𝑡 + (𝑝2(𝑟2 + 2𝑦2)
++ 2𝑝2𝑥𝑢𝑛𝑑𝑖𝑠𝑡𝑜𝑟𝑡𝑦𝑢𝑛𝑑𝑖𝑠𝑡𝑜𝑟𝑡) 
+ 
+(2) 
+Equation (2) refers to the tangential distortion model and tangential di stortion coef-
+ficient. 
+Distortion is usually proportional to the size of the field of view of the camera. The 
+angle of view of the SNO -6084R CCTV is approximately 105° , which is smaller than that 
+of a wide-angle camera that shoots a wide angle of view of 12 0° or more, and the degree 
+of distortion is greater than that of a web camera with a field of view of approximately 
+80° . The picture on the right of Figure 10 is a distortion-corrected image using Equations 
+(1) and (2). Even with the naked eye, the degree of distortion is not sufficiently small to 
+distinguish the difference before and after correction. As a difference of only a few pixels 
+can considerably change the coordinate conversion calculation result, the distortion cor-
+rection procedure must be performed. 
+ 
+Figure 10. Original image (left) and distortion corrected image (right). 
+4.5. Transformation Matrix between Camera and World Coordinate Systems 
+If the internal factors and distortion coefficients are obtained through camera calibra-
+tion, the transformation matrix between the camera and world coordinate systems can be 
+obtained. The transformation matrix is composed of a rotation matrix and a movement 
+vector and is represented as 𝑅 = 𝑅2(𝜃)𝑅𝑦(𝜑)𝑥𝑅(ψ) when it is rotated by 𝜓, 𝜑, 𝜃 angles 
+around the x, y, and z axes , respectively, in three dimensions. In the case of a movement 
+vector, it expresses the movement of the center position along the x, y, and z axes. That is, 
+it can be viewed as an offset between the origins of two different coordin ate systems. 
+When the transformation matrix is known, a point 𝑃𝑤 in the world coordinate system can 
+be converted into a point 𝑃𝑐 in the camera coordinate system through Equation (3). 
+𝑃𝑐 = 𝑅 ∗ 𝑃𝑤 + Τ (3) 
+Table 4 presents the conversion matrix between the camera and world coordinate 
+systems obtained using the solvePnP function of the OpenCV library. 
+ 
+ ,
+Appl. Sci. 2023, 13, x FOR PEER REVIEW 9 of 13 
+Equation (1) is a model that is converted from coordinates (𝑥𝑢𝑛𝑑𝑖𝑠𝑡𝑜𝑟𝑡, 𝑦𝑢𝑛𝑑𝑖𝑠𝑡𝑜𝑟𝑡) with 
+no distortion on the normal coordinate system to coordinates (𝑥𝑑𝑖𝑠𝑡𝑜𝑟𝑡, 𝑦𝑑𝑖𝑠𝑡𝑜𝑟𝑡) with radial 
+distortion applied according to the lens model. 𝑘1, 𝑘2 are radial distortion coefficients ob-
+tained in the camera calibration step, and r is the radius from the optical center of the 
+normal coordinate system. If the distortion is severe, a term 𝑘3 may be added to the ex-
+pression in the form of a Taylor series. 
+𝑥𝑑𝑖𝑠𝑡𝑜𝑟𝑡 = 𝑥𝑢𝑛𝑑𝑖𝑠𝑡𝑜𝑟𝑡 + (2𝑝1𝑥𝑢𝑛𝑑𝑖𝑠𝑡𝑜𝑟𝑡𝑦𝑢𝑛𝑑𝑖𝑠𝑡𝑜𝑟𝑡
++ 𝑝2(𝑟2 + 2𝑥𝑢𝑛𝑑𝑖𝑠𝑡𝑜𝑟𝑡
+2 )) 
+𝑦𝑑𝑖𝑠𝑡𝑜𝑟𝑡 = 𝑦𝑢𝑛𝑑𝑖𝑠𝑡𝑜𝑟𝑡 + (𝑝2(𝑟2 + 2𝑦2)
++ 2𝑝2𝑥𝑢𝑛𝑑𝑖𝑠𝑡𝑜𝑟𝑡𝑦𝑢𝑛𝑑𝑖𝑠𝑡𝑜𝑟𝑡) 
+ 
+(2) 
+Equation (2) refers to the tangential distortion model and tangential di stortion coef-
+ficient. 
+Distortion is usually proportional to the size of the field of view of the camera. The 
+angle of view of the SNO -6084R CCTV is approximately 105° , which is smaller than that 
+of a wide-angle camera that shoots a wide angle of view of 12 0° or more, and the degree 
+of distortion is greater than that of a web camera with a field of view of approximately 
+80° . The picture on the right of Figure 10 is a distortion-corrected image using Equations 
+(1) and (2). Even with the naked eye, the degree of distortion is not sufficiently small to 
+distinguish the difference before and after correction. As a difference of only a few pixels 
+can considerably change the coordinate conversion calculation result, the distortion cor-
+rection procedure must be performed. 
+ 
+Figure 10. Original image (left) and distortion corrected image (right). 
+4.5. Transformation Matrix between Camera and World Coordinate Systems 
+If the internal factors and distortion coefficients are obtained through camera calibra-
+tion, the transformation matrix between the camera and world coordinate systems can be 
+obtained. The transformation matrix is composed of a rotation matrix and a movement 
+vector and is represented as 𝑅 = 𝑅2(𝜃)𝑅𝑦(𝜑)𝑥𝑅(ψ) when it is rotated by 𝜓, 𝜑, 𝜃 angles 
+around the x, y, and z axes , respectively, in three dimensions. In the case of a movement 
+vector, it expresses the movement of the center position along the x, y, and z axes. That is, 
+it can be viewed as an offset between the origins of two different coordin ate systems. 
+When the transformation matrix is known, a point 𝑃𝑤 in the world coordinate system can 
+be converted into a point 𝑃𝑐 in the camera coordinate system through Equation (3). 
+𝑃𝑐 = 𝑅 ∗ 𝑃𝑤 + Τ (3) 
+Table 4 presents the conversion matrix between the camera and world coordinate 
+systems obtained using the solvePnP function of the OpenCV library. 
+ 
+ angles
+around the x, y, and z axes, respectively, in three dimensions. In the case of a movement
+vector, it expresses the movement of the center position along the x, y, and z axes. That
+is, it can be viewed as an offset between the origins of two different coordinate systems.
+When the transformation matrix is known, a point Pw in the world coordinate system can
+be converted into a point Pc in the camera coordinate system through Equation (3).
+Pc = R∗ Pw + T (3)
+Table 4 presents the conversion matrix between the camera and world coordinate
+systems obtained using the solvePnP function of the OpenCV library.
+Table 4. Transformation matrix between camera and world coordinate systems.
+Transformation Matrix Factor Value
+R
+
+
+r1 r2 r3
+r4 r5 r6
+r7 r8 r9
+
+ =
+
+
+0.9999
+−0.0123
+−0.0055
+0.0050
+−0.0416
+0.9991
+−0.0125
+−0.9990
+−0.0416
+
+
+T
+
+
+tx
+ty
+tz
+
+ =
+
+
+−5573.60
+1180.75
+5685.04
+
+
+Appl. Sci. 2023, 13, 2106 10 of 12
+4.6. Implementation of the Camera Image and 3D Model Space Mapping Automation SW Module
+If the focal length (the distance between the camera lens and image sensor) is known, the
+projection conversion relationship between the camera sensor coordinates and world coordi-
+nates can be expressed in a homogeneous coordinate system, as shown in Equation (4) [25].
+
+
+x∗ w
+y∗ w
+w
+
+ =
+
+
+f r1X + f r2Y + f r3Z + f tx
+f r4X + f r5Y + f r6Z + f ty
+r7X + r8Y + r9Z + tz
+
+ (4)
+For r and t in Equation (4), the values of the external transformation matrix obtained
+in Table 4 are used. The focal length f is the physical distance in mm. In contrast, the focal
+length fx, fy an internal factor obtained in the camera calibration step, is a value in pixels
+obtained by multiplying the actual focal length by the pixel size per mm of each image
+sensor element. Therefore, if the actual focal length f is unknown, it can be obtained by
+multiplying the value fx or fy obtained through camera calibration by the length in mm
+per pixel of the image sensor. In this study, substituting 1 for the f value in Equation (4),
+(x, y) was used as a coordinate on the normal coordinate system at 1 mm from the camera.
+If both sides of Equation (4) are divided by
+Appl. Sci. 2023, 13, 2106 10 of 13 
+ 
+Table 4. Transformation matrix between camera and world coordinate systems. 
+Transformation Matrix Factor Value 
+R ൥
+𝑟ଵ 𝑟ଶ 𝑟ଷ
+𝑟ସ 𝑟ହ 𝑟଺
+𝑟଻ 𝑟଼ 𝑟ଽ
+൩= ൥
+0.9999
+െ0.0123
+െ
+0.0055
+ 
+0.0050
+െ0.0416
+0.9991
+ 
+െ0.0125
+െ0.9990
+െ
+0.0416
+൩ 
+T ൥
+𝑡௫
+𝑡௬
+𝑡௭
+൩=൥
+െ5573.60
+1180.75
+5685.04
+൩ 
+4.6. Implementation of the Camera Image and 3D Model Space Mapping Automation SW 
+Module 
+If the focal length (the distance between the camera lens and image sensor) is known, 
+the projection conversion relationship between the camera sensor coordinates and world 
+coordinates can be expressed in a homogeneous coordinate system, as shown in Equation 
+(4) [25]. 
+ቈ
+𝑥∗𝑤
+𝑦∗𝑤
+𝑤
+቉=቎
+𝑓𝑟ଵ𝑋+ 𝑓𝑟ଶ𝑌+ 𝑓𝑟ଷ𝑍+ 𝑓𝑡௫
+𝑓𝑟ସ𝑋+ 𝑓𝑟ହ𝑌+ 𝑓𝑟଺𝑍+ 𝑓𝑡௬
+𝑟଻𝑋+𝑟 ଼𝑌+𝑟 ଽ𝑍+𝑡 ௭
+቏ (4) 
+For 𝑟 and 𝑡 in Equation (4), the values of the external transformation matrix ob-
+tained in Table 4 are used. The focal length 𝑓 is the physical distance in mm. In contrast, 
+the focal length 𝑓௫, 𝑓௬ an internal factor obtained in the camera calibration step, is a value 
+in pixels obtained by multiplying the actual focal length by the pixel size per mm of each 
+image sensor element. Therefore, if the actual focal length 𝑓is unknown, it can be obtained 
+by multiplying the value 𝑓௫ or 𝑓௬ obtained through camera calibration by the length in 
+mm per pixel of the image sensor. In this study, substituting 1 for the 𝑓value in Equation 
+(4), (𝑥, 𝑦ሻwas used as a coordinate on the normal coordinate system at 1 mm from the 
+camera. 
+If both sides of Equation (4) are divided by and each term is rearranged based on 
+the X and Y unknowns, the equation can be re -expressed in the form of a binary linear 
+system, as shown in Equation (5). If the 𝑍௪value is then set to 0 and calculated, the inter-
+section point with the floor plane can finally be obtained. 
+൜(𝑥௨𝑟଻െ𝑓𝑟ଵሻ𝑋௪ + (𝑥௨𝑟଼െ𝑓𝑟ଶሻ𝑌௪ = 𝑓𝑟ଷ𝑍௪ + 𝑓𝑡௫െ𝑥௨𝑟ଽ𝑍௪ െ𝑥௨𝑡௭
+(𝑦௨𝑟଻െ𝑓𝑟ସሻ𝑋௪ + (𝑦௨𝑟଼െ𝑓𝑟ହሻ𝑌௪ = 𝑓𝑟଺𝑍௪ + 𝑓𝑡௬െ𝑦௨𝑟ଽ𝑍௪ െ𝑦௨𝑡௭
+ (5) 
+4.7. Test Results 
+To test the accuracy of the 2D → 3D mapping conversion formula, the image coordi-
+nates of the corner points of the license plate were projected onto the floor, and the inter-
+section point world coordinates (X, Y, Z) were obtained and compared with the known 
+world coordinates. Figure 11 shows a 3D coordinate conversion result image for the nine 
+corner points of the license plate used in the test. 
+Table 5 lists the errors calculated by the Euclidean distance 
+ඥ(𝑥 െ 𝑥ᇱሻଶ+( 𝑦െ𝑦 ᇱሻଶ+( 𝑧െ𝑧 ᇱሻଶ. The average error of the nine points was about 105 cm. 
+ and each term is rearranged based on the
+X and Y unknowns, the equation can be re-expressed in the form of a binary linear system,
+as shown in Equation (5). If the Zw value is then set to 0 and calculated, the intersection
+point with the ﬂoor plane can ﬁnally be obtained.
+{(xur7− f r1)Xw + (xur8− f r2)Yw = f r3Zw + f tx− xur9Zw− xutz
+(yur7− f r4)Xw + (yur8− f r5)Yw = f r6Zw + f ty− yur9Zw− yutz
+(5)
+4.7. T est Results
+To test the accuracy of the 2D→ 3D mapping conversion formula, the image coor-
+dinates of the corner points of the license plate were projected onto the ﬂoor, and the
+intersection point world coordinates (X, Y, Z) were obtained and compared with the known
+world coordinates. Figure 11 shows a 3D coordinate conversion result image for the nine
+corner points of the license plate used in the test.
+Appl. Sci. 2023, 13, 2106 11 of 13 
+ 
+ 
+Figure 11. Result of calculating the world coordinates of the floor plan intersection point. 
+Table 5. Floor projection intersection errors. 
+Distance from 
+Camera 
+Point Real World Coordinates Floor Projection Intersection Error (cm) 
+ X Y Z X Y Z 
+5 m 60 cm 1 0 0 0 23 −14 0 27 
+ 2 560 0 0 555 25 0 25 
+ 3 1120 0 0 1108 −20 0 23 
+21 m 40 cm 4 0 2140 0 −12 2167 0 30 
+ 5 560 2140 0 545 2223 0 84 
+ 6 1120 2140 0 1107 2029 0 112 
+42 m 80 cm 7 0 4280 0 −22 4341 0 65 
+ 8 560 4280 0 528 4711 0 432 
+ 9 1120 4280 0 1111 4130 0 150 
+5. Result and Discussion 
+A great deal of research has been conducted on methods of estimating depth, but not 
+much research has been conducted to compare methods by applying them to actual envi-
+ronments, especially underground utility tunnels. Therefore, we compared two methods 
+of estimating depth with a single camera. 
+In the DenseDepth transfer learning method, an error of 1 m occurred at a distance 
+of 10 m, and an error of 4 m occurred at a distance of 20 m. However, the coordinate 
+system transformation method through floor plane projection produced an error of 23 to 
+27 cm at a distance of 5 m 60 cm and an error of 30 to 112 cm at a distance of 21 m 40 cm, 
+resulting in significantly better accuracy than that of the DenseDepth transfer learning 
+method. Therefore, the coordinate system conversion method through floor plane projec-
+tion can be applied to estimate the position of an object when the position of the object 
+undergoes change, when viewed through an installed CCTV comprising a single camera 
+in an underground utility tunnel. 
+However, based on the research results, it can be confirmed that the coordinate sys-
+tem conversion method has a large error range, even at the same distance. In order to 
+determine this reason for this, it will be necessary to measure the distance of more points 
+and to conduct further research. 
+6. Conclusions 
+The purpose of this study is to compare methods for measuring the depth of an object 
+using a single camera image for application in locating real-world objects through digital 
+Figure 11. Result of calculating the world coordinates of the ﬂoor plan intersection point.
+T able 5 lists the errors calculated by the Euclidean distance
+√
+(x− x′)2 + (y− y′)2 + (z− z′)2.
+The avera

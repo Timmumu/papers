@@ -1,0 +1,1047 @@
+Contents lists available at ScienceDirect
+Automation in Construction
+journal homepage: www.elsevier.com/locate/autcon
+Automated generation and semantic segmentation of roof orthophoto for
+digital twin -based monitoring of slated roofs
+Jiajun Li a,∗, Boan Taoa, Frédéric Boschéa, Chris Xiaoxuan Lub, Lyn Wilsonc
+a Institute for Infrastructure and Environment, School of Engineering, University of Edinburgh, Edinburgh, EH9 3FB, Scotland, UK
+b Department of Computer Science, University College London, London, WC1E 6BT, England, UK
+c Historic Environment Scotland, Salisbury Place, Longmore House, Edinburgh, EH9 1SH, Scotland, UK
+A R T I C L E I N F O
+Keywords:
+Roof orthophoto
+Slate
+Photogrammetry
+Deep learning
+Semantic segmentation
+A B S T R A C T
+Roofs are one of the building elements most exposed to environment-induced deterioration, and their
+deterioration can rapidly result in potential safety hazards to occupants or even buildings’ failure. In pursuit of
+cost-effective, efficient and pro-active building roof monitoring, this paper presents a computing pipeline for:
+1. Automated roof orthophoto generation that uses as input the 3D reconstruction from structure-from-motion
+photogrammetry and the building’s Digital Twin (DT) model, and outputs occlusion-free panel orthophotos with
+metric resolution. 2. Automated orthophoto semantic segmentation using deep learning to extract visible roof
+sub-components from the orthophotos. Various segmentation models are tested and contrasted. The approaches
+are validated with three real case studies of traditional buildings with slated pitched roofs. The proposed
+approach employs a generic pipeline which could be applied to any element of the building fabric.
+1. Introduction
+As a key component of building infrastructure, the roof is highly ex-
+posed to environmental elements. Elevated temperatures, moisture, and
+material soiling can lead to staining, weathering, and damage to various
+materials [ 1]. Over time, these factors contribute to increased roof
+fragility, component failure, and load redistribution, posing additional
+risks to the building and its occupants [ 2]. For instance, significant
+exposure to weather often leads to deterioration in the slated areas
+of building roofs [ 3]. Moreover, extreme climate events such as high
+summer temperatures, heavy winter precipitation, unpredictable winds,
+and intense storms are exacerbating the deterioration of buildings.
+In the case of traditional buildings, proactive conservation measures
+to prevent failures have become crucial [ 4]. Consequently, routine
+monitoring of building roofs is essential to detect and address defects
+promptly.
+Visual inspection is a widely established method for inspecting
+and diagnosing building roofs, both flat and pitched [ 5,6]. However,
+conventional methods heavily depend on manual effort for both obser-
+vation and analysis: surveyors must access roofs physically, requiring
+them to climb and walk around, which demands specific skills and ex-
+perience. Typically, scaffolding is necessary for safe access, significantly
+increasing the time, cost, and safety risks associated with the inspection
+process. Overall, the traditional manual roof monitoring approach is
+costly, inefficient, and fraught with safety hazards. In contrast, the use
+∗ Corresponding author.
+E-mail address: Jiajun.Li@ed.ac.uk (J. Li).
+of Unmanned Aerial Vehicles (UAVs) for capturing digital images is
+increasingly popular, significantly reducing the costs and safety risks
+associated with initial surveys [ 7,8].
+While the advancements in efficient and safe visual data acquisition
+are widely adopted in practice, the analysis of the acquired images of-
+ten remains a manual process, with results typically documented in an
+unstructured format within text documents [ 6]. For historic buildings,
+it is common to include manually annotated orthophotos of façades
+(which cover pitched roof panels) to indicate deteriorations and defects
+(refer to Fig. 1). Orthophotos offer the advantage of providing uniform
+scale across the entire image, facilitating the measurability of all de-
+tails. This uniformity makes it easier to compare deterioration across
+different sections of the orthophoto, thereby aiding in quantifying
+maintenance and repair needs [ 9]. However, generating orthophotos
+for certain architectural elements, especially roofs, can be problematic
+due to potential occlusions by chimneys or other structures.
+In the broader Facility Management (FM) industry, Digital Twins
+of building assets — typically derived from Building Information Mod-
+elling (BIM) models — are proposed to record life cycle information of
+assets and support asset managers make decisions related to operation
+and maintenance, potentially aided by Artificial Intelligence (AI) [ 11].
+However, this concept remains largely aspirational, with actual imple-
+mentations still in their early stages and primarily considered for new
+buildings, which benefit from modern design and construction practices
+https://doi.org/10.1016/j.autcon.2024.105725
+Received 26 May 2024; Received in revised form 31 July 2024; Accepted 19 August 2024
+Automation in Construction 167 (2024) 105725 
+Available online 25 August 2024 
+0926-5805/© 2024 The Author(s). Published by Elsevier B.V. This is an open access article under the CC BY license ( http://creativecommons.org/licenses/by/4.0/ ). 
+J. Li et al.
+Fig. 1. Rectified image of façade with overlays showing stone decay codes and repair needs. Note: the hatched doorway area was measured on site for image scaling as was the
+average block dimensions (British Geological Survey image P606737 ©UKRI 2005).
+Source: This image is reproduced with agreement from [ 10].
+incorporating BIM models. In contrast, exploring the feasibility and
+potential challenges of applying such practices to traditional buildings,
+particularly in the context of roof monitoring, has received limited
+attention [12,13].
+This paper aims to contribute to the development of DT-based
+solutions for the safe and efficient monitoring of roofs. The paper more
+specifically focuses on traditional slated roofs that are prominent in
+historic buildings but still common in modern construction. First, we
+propose a method for generating high-resolution vertical orthophotos
+for pitched building roofs using an existing building DT. This method
+aims to produce images that are free from occlusions caused by other
+building elements and exhibit reduced blur. Secondly, we develop
+a deep learning-based approach for semantically segmenting the or-
+thophotos into their constituent sub-elements, such as slates, leadwork,
+and others. This segmentation is crucial as it allows subsequent deteri-
+oration and defect detection tools to operate optimally, being trained
+and applied specifically to the materials they are designed to assess.
+The remaining of this paper is organised as follows. Section 2
+reviews the literature and state of the art on: roof inspection, the
+applications of orthophoto and photogrammetry, and image semantic
+segmentation techniques. Section 3 gives an overview of the proposed
+pipeline, with the methods for its two successive stages of orthophoto
+generation and orthophoto semantic segmentation detailed in Sec-
+tions 4 and 6, respectively. Sections 5 and 7 report the experimental
+results obtained for those two stages, respectively. Finally, Section 10
+concludes the work, reviewing its strengths and limitations and offering
+some outlooks for future work.
+This paper builds on the two conference papers, [14,15], that intro-
+duced the two stages of the method presented here, i.e. orthophoto gen-
+eration and orthophoto semantic segmentation. This paper revisits the
+presentation of the methods (in particular the orthophoto generation
+one) and extends their validations with additional case studies.
+2. Related works
+2.1. Digital twinning technologies for building management and monitoring
+DT technology can be used for many purposes in the built environ-
+ment: A BIM-based DT is used as a database, which links real-time
+collected data (e.g., occupancy count) and static data (e.g., mainte-
+nance history and technical documentation) to the 3D representation
+of facility [ 16]. These links help ease information retrieval for var-
+ious building monitoring and maintenance applications. For exam-
+ple, Seghezzi et al. [17] propose a Building Management System (BMS)
+based on an occupancy-oriented DT to detect actual room occupancy,
+for optimising space management, organisation, and cleaning activities.
+Another area of active research in the DT domain is the creation
+of DTs for existing buildings. For example, Bassier and Vergauwen
+[18] present a novel method to automatically reconstruct BIM wall
+objects and their topology, Lin et al. [ 19] use the 3D reconstructed
+data of elevated structures to realise defect detection within an end-to-
+end robotic bridge inspection system, and Armeni et al. [ 20] propose
+a hierarchical, detection-based approach for semantically parsing the
+point cloud data of buildings.
+In the context of historic buildings, Rocha et al. [ 21] employ a
+manual modelling workflow based on photogrammetry and laser scan-
+ning data to develop a BIM model of a historic house in Lisbon for
+conservation and restoration.
+Within the context of Digital Twinning for building fabric monitor-
+ing, there is great interest in automating data acquisition and process-
+ing in order to efficiently, robustly and safely detect and monitor de-
+fects, and support computer-aided maintenance decision-making [ 22].
+Regarding defect detection, Valero et al. [ 23] use machine learning
+to detect defects in 3D point clouds of masonry walls using machine
+learning, while Idjaton et al. [ 24] detect spalling zones in orthophotos
+of limestone walls using a deep neural network. And Loverdos and
+Sarhosis [25] apply deep learning to a large brickwork masonry walls
+image dataset to realise automated brick segmentation and crack de-
+tection. Regarding roof image analysis, work seems to have mainly
+be reported for the monitoring of flat roofs. Yudin et al. [ 26] use
+aerial images for flat roof defect segmentation (hollows, swelling, folds,
+patches and breaks), based on several deep neural networks.
+To our knowledge, no work has been reported to date that focuses
+on pitched slated roofs. In comparison to those other building fabric
+elements, historic pitched slated roofs have a more complex composi-
+tion with multiple sub-components (slate, leadwork, tower, etc.), which
+brings challenges to defect detection. To realise DT-based slated roof
+panel condition monitoring, it is thus necessary to distinguish the sub-
+components inside the roof panel orthophoto, so that specifically-built
+defect detection solutions can be applied to each sub-component with
+uniform materials.
+2.2. Photogrammetry in AEC-FM sector
+As a popular capturing reality method, digital structure-from-
+motion photogrammetry has been an active topic for generating 3D
+models of buildings due to its high level of automation and the fact
+that it can generate 3D data at low cost [ 27]. Thanks to the increased
+availability of UAVs, UAV-based structure-from-motion photogrammetry
+has been applied in several contexts, such as archaeology, disaster
+monitoring, construction monitoring, building surveying, or land map-
+ping [28]. Due to the feature of non-destruction and remote sensing,
+this technology is particularly suitable for roof data capturing.
+Automation in Construction 167 (2024) 105725 
+2 
+J. Li et al.
+Fig. 2. Orthophoto (commonly called ‘elevation’) of side of a residential house.
+Structure-from-motion photogrammetry can support various use
+cases in the AEC-FM sector. An important one is the creation of
+semantically-rich 3D models, or Digital Twins (DTs), of existing build-
+ings or infrastructure assets, commonly referred to as ‘Scan-to-BIM’
+[29–31]. In particular, Golparvar-Fard et al. [ 32] have focused on
+automatically generating as-built models from unstructured collec-
+tion of construction images by digital photography (Scan-to-BIM by
+photogrammetry). Civil infrastructure elements and construction opera-
+tions can be monitored by aligning the photogrammetric reconstructed
+model to the as-planned BIM model (Scan-vs-BIM) [ 33]. During main-
+tenance, ‘Scan-vs-BIM’ [ 34] can be applied, by comparing the as-
+designed model and 3D data, to identify the objects and any change
+(e.g. structural displacements).
+2.3. Orthophotos in building monitoring
+As a photogrammetric map with a uniform dimensional scale, anor-
+thophoto corrects the distortion and relief, and its generation is achieved
+by an orthographic projection on vertical planes [ 35,36]. Orthopho-
+tos are convenient and are widely used in practice for monitoring
+buildings for actual surface measurement and analysis, in particular
+façade elevations. In recent research, high-resolution orthophotos of
+façades have been used as input data for automated detection of façade
+defects [23,24,37].
+However, different from building façades, roofs (especially pitched
+roofs) have a more complex composition and are often partially oc-
+cluded by other building elements, such as chimneys, dormers, aeri-
+als, satellite dishes, etc [ 38]. As a result, building façade elevation
+orthophotos may not enable a full view of roofs, which can cause
+difficulty in monitoring. Fig. 2 shows an example of façade elevation
+orthophoto commonly generated for a building. One can see that, while
+the stone façade(s) appear(s) fully, the middle roof panel is occluded
+by the chimneys, pipes, etc. These problems challenge the generation
+of clear and complete orthophotos (without occlusion and with limited
+blur), and ultimately the development of automatic defect detection
+models, as the models need to be agnostic to different image acquisition
+situations (e.g. angle and distance).
+Moreover, roof panels typically consist of sub-components or parts
+made from a variety of materials, such as slate tiles and leadwork.
+For the effective application of defect detection methods, such as those
+previously presented in the context of masonry, it becomes essential
+to first segment the orthophotos into these sub-components. This seg-
+mentation allows for the isolation of target areas, particularly slate
+tiles which cover the largest areas and are most susceptible to frequent
+deterioration—thereby facilitating more precise and effective analysis.
+2.4. Semantic segmentation and its use in construction informatics
+2.4.1. Semantic segmentation
+Semantic segmentation was developed decades ago and has been
+developed into a well-established tool in Computer Vision with its
+powerful pixel-level segmentation ability. This technique is applied to
+different types of data, including 2D image and video, and 3D point
+cloud data. In construction informatics research dealing with 2D and 3D
+data (e.g. Scan-to-BIM), semantic segmentation is increasingly regarded
+as an essential step after data collection, to provide further information
+useful to support subsequent tasks such as object detection [ 39]. This
+technique has been applied to different types of data, including: (1)
+2D image of indoor scene [ 40] and aerial images of different architec-
+ture [41]; (2) 3D point cloud of building interiors [ 39], plumbing and
+structural components [42], 4D point cloud (3D point cloud videos with
+temporal information) captured by auto-driving cars and robot [ 43].
+Specifically in its application to 2D images, semantic segmentation
+enables assigning a class label to each pixel of an image, and such pixel-
+level semantic information can help make judgements or be leveraged
+by other tasks [44,45]. Traditional machine learning methods, such as
+object contour detection, recognition, simple filtering and other image
+processing work, can realise segmentation, especially in some contexts
+where the colour, texture and other features are uniform within the
+same object, e.g. in some medical science studies [ 46]. These machine
+learning-based methods rely on the careful design of feature extractors
+by humans, but they have the advantage of lower requirements in terms
+of computational power and data quantity.
+In comparison, deep learning models aim to learn those features
+from the data itself and commonly outperform machine learning mod-
+els if they are trained with sufficiently large and representative datasets.
+Different deep architectures have been introduced, Convolutional Neu-
+ral Networks (CNNs) being prominent. As a result of active research
+in this area, the performance of semantic segmentation models has
+greatly improved, not only in accuracy but also in speed [ 47]. dif-
+ferent CNN-based deep learning models have been proposed for 2D
+image data segmentation. DeepLabV3, a widely used system developed
+by Google [ 48], can handle the problem of segmenting objects at
+multiple scales with cascaded module and Atrous Spatial Pyramid
+Pooling(ASPP). Compared to DeepLabV3, PointRend demonstrates better
+performance (higher mIoU value), by extracting the point features
+made up of fine-grained features and coarse prediction [ 49]. Specif-
+ically, PointRend handles better the problems of smooth regions and
+blurry contours from the bilinear sampling process. Thanks to the
+recognisable features, objects can be easily detected and classified, but
+the precision of contour detection is low.
+In recent years, Vision Transformer (ViT) has achieved performance
+superior to the commonly used CNNs, by splitting each image into
+patches. Due to their outstanding performance in image classification,
+these models have also been explored for semantic segmentation: Seg-
+menter can capture global interaction between elements of a scene using
+transformer, rather than the traditional convolutions, which would eas-
+ily cause information loss [ 50]. SegFormer reaches better performance
+and efficiency by re-designing the Transformer encoder and uses a
+simple multilayer perceptron (MLP) decoder [51]. However, all authors
+also point out that ViT relies heavily on large-scale datasets to achieve
+good performances [52].
+Within these main classes of deep learning models, different variants
+can be created by modifying different components, such as the loss
+function. Focal Loss is a commonly used loss function for dealing with
+class imbalance and putting more focus on the hard and misclassified
+examples, by multiplying each class loss with a weighting factor [ 53].
+Dice Loss can deal with the imbalance problem between foreground
+and background, by giving more importance to the foreground than
+the background, thus making the model region-related [54]. These two
+loss functions alongside the defaultCross-Entropy Loss can be paired and
+used together in improving model training [ 55].
+Besides, label correction is a common practice in semantic seg-
+mentation, particularly in the task of 2D image segmentation. Label
+correction involves refining and updating the annotations of training
+data to improve the quality and accuracy of segmentation models. This
+process addresses issues such as annotation errors, inconsistencies, and
+Automation in Construction 167 (2024) 105725 
+3 
+J. Li et al.
+Fig. 3. Overview of the data processing pipeline for monitoring slated pitched building roofs.
+ambiguities, which are prevalent in large datasets. Wang and Yushke-
+vich [56] developed a multi-atlas segmentation method with joint label
+fusion and corrective learning, which combines segmentations from
+multiple atlases and corrects label errors during training. Hesse and
+Namburete [ 57] focused on improving U-Net segmentation through
+active contour-based label correction, which corrects imperfect ground-
+truth labels by aligning them with object boundaries, thus enhancing
+boundary predictions in medical ultrasound imaging. Ibrahim et al.
+[58] introduced a semi-supervised framework with self-correcting net-
+works, which uses a small set of fully supervised images and a larger
+weak set with only bounding box labels. Their self-correction module
+iteratively improves the generated labels during training, significantly
+reducing the annotation effort while maintaining high performance.
+Similarly, Mendel et al. [59] proposed an Error-Correcting Supervision
+approach, where a secondary correction network assists the primary
+segmentation model by generating pseudo-labels for unlabelled data
+during training, resulting in consistent improvements over supervised
+baselines. Integrating these advanced label correction techniques into
+the training pipeline not only enhances performance metrics but also
+contributes to the generalisation ability of the models, making them
+more effective in real-world applications. The semantic segmentation
+method employed herein also applies a contour-based label correc-
+tion, using the prior knowledge contained in the BIM model that the
+segmented images are aligned with.
+2.4.2. Semantic segmentation in construction informatics
+Semantic segmentation has been actively explored in construction
+informatics using different models, now principally deep learning mod-
+els. Examples include: equipment and worker segmentation in images
+for visual understanding on construction sites [ 60], building interior
+segmentation of point clouds [ 20], material and damage (e.g., cracks,
+spalling, and corrosion) segmentation in images [ 61,62] and point
+cloud [63,64]. In the context of historic building monitoring, semantic
+segmentation has also been used in masonry wall semantic segmenta-
+tion [65], crack segmentation in masonry wall images [ 66]. However,
+there is seemingly no specific research dealing with semantic segmen-
+tation of data (images or point clouds) from other building fabric
+elements like roofs.
+2.5. Contribution above state of the art
+This study develops an automated pipeline for monitoring slated
+pitched building roofs. It produces an occlusion-free orthophoto for
+each roof panel, which is then semantically segmented into individ-
+ual sub-components including ‘slate’, ‘lead’, and ‘other’. This method,
+following a ‘Scan-vs-DT’ approach, facilitates the use of deep learning
+models for detecting deteriorations and defects in each sub-component
+area. Ultimately, this allows for the comprehensive documentation of
+all deteriorations and defects, along with their progression, in the roof
+DT (logbook). While tailored for pitched slated roofs, this methodology
+could potentially be adapted to other building fabric elements, such as
+walls.
+3. Approach overview
+As illustrated in Fig. 3 , the proposed approach comprises three
+successive, fully automated stages:
+A. Roof panel orthophoto generation;
+Automation in Construction 167 (2024) 105725 
+4 
+J. Li et al.
+Fig. 4. Orthophoto generation example sketch map.
+B. Roof panel orthophoto semantic segmentation; and
+C. Deterioration and defect detection in the semantic segments.
+The process takes two inputs:
+• A structure-from-motion photogrammetric reconstruction of a
+roof that is referenced in the building’s local coordinate system;
+and
+• The Digital Twin 3D model of the building being monitored. The
+model must identify each individual roof panel as an element,
+with its own geometry and other semantic identification.
+The output of stage A is an orthophoto for each roof panel, with
+minimised blur and without projection artefacts. Stage B then segments
+each one of these orthophotos semantically into its main material
+sub-components: slates, leadwork, and other. These segmented areas
+are then processed in Stage C using dedicated algorithms to output
+deterioration and defects related to that type of material. The detected
+deteriorations and defects are then systematically recorded (including
+with their exact position) in the building’s Digital Twin. The scope of
+this paper is Stage A and Stage B. Stage C is not covered.
+Stage A’s method is detailed in Section 4 with associated experimen-
+tal validation reported in Section 5. Stage B’s method is then detailed in
+Section 6 with associated experimental validation reported in Section 7.
+4. Roof panel orthophoto generation
+The roof orthophoto generation method is composed of 3 main
+successive steps: 1. Creating panel orthophoto templates, 2. Selecting
+the most suitable images, 3. Instantiating orthophoto. Step 1 is con-
+ducted once offline, while Steps 2 and 3 are conducted each time
+an image acquisition campaign is conducted by UAV survey for that
+roof, for example, once a year in a proactive maintenance regime. Step
+2 selects from the complete set of UAV-taken images, those images
+most suitable to generate an orthophoto for each roof panel. Step 3
+then processes those selected images to ‘texture’ each panel orthophoto
+template, thereby instantiating an orthophoto from the given data
+acquisition campaign. These three steps are detailed in Sections 4.1 to
+4.3, respectively.
+4.1. Creating panel orthophoto templates
+The first (offline) step for generating orthophotos is to build an
+orthophoto template for each roof panel. As illustrated in Fig. 4, each
+panel orthophoto template is defined by a canvas with associated mask:
+• The canvas is the vertical face of the Horizontally-Oriented Bound-
+ing Box (HOBB) that is parallel to the main horizontal direction
+of the roof. The HOBB is the Bounding Box of the object that
+is object-oriented in the horizontal plane and axis-oriented ver-
+tically. The pixel resolution of the orthophoto image canvas is set
+so that each pixel is square with dimensions 𝛿 × 𝛿, e.g. 𝛿 = 5 mm .
+• the mask of the orthophoto template is defined by projecting all
+the panel’s mesh triangles onto the canvas, which defines the
+extent of the roof panel within the canvas. In the mask, the RGB
+value of each pixel outside the projected triangles is set to [0, 0,
+0] (black), and those inside the projected triangles is set to [1, 1,
+1] (white).
+This process is illustrated in Fig. 4 for one roof panel.
+4.2. Selecting most suitable images
+Before filling the masked area of each panel template created in
+Section 4.1, it is essential to select suitable UAV-taken images. This
+necessity arises because the original images were captured from varying
+incidence angles and locations, which can lead to resolution artefacts
+e.g., the target panel appearing too small, and the inclusion of pixels
+from occluding elements. To exclude images that are too far or oblique,
+which would only negatively contribute to the final orthophoto, they
+are filtered out with three parameters set below with an example
+illustrated in Fig. 5.
+We define the ray shot from the pinhole camera 𝑂𝑖 through the
+image centre 𝐶𝑖, and the intersection point with the roof plane is
+denoted as 𝐶 ′
+𝑖 . Let us call 𝐶𝑝 the centre of the target panel, and ⃗ 𝑛𝑝 its
+normal. Given this, the filtering parameters considered in this study are:
+• 𝛼𝑝𝑖: the angle between ⃖⃖⃖⃖⃖⃖⃖⃖ ⃗𝐶 ′
+𝑖 𝑂𝑖 and ⃗ 𝑛𝑝, which captures the picture
+incidence angle between respect to the roof panel.
+• 𝑑1
+𝑝𝑖: the distance ‖⃖⃖⃖⃖⃖⃖⃖⃖ ⃗𝑂𝑖𝐶 ′
+𝑖 ‖, which broadly captures the distance from
+the camera to the roof panel along the view direction.
+• 𝑑2
+𝑝𝑖: the distance ‖⃖⃖⃖⃖⃖⃖⃖⃖ ⃗𝐶𝑝𝐶 ′
+𝑖 ‖ normalised by the maximum dimension
+of this panel 𝑑𝑚𝑎𝑥
+𝑝 , which can be used to measure whether the
+camera is pointing at the target panel or away from it.
+The smaller 𝛼𝑝𝑖, 𝑑1
+𝑝𝑖 and 𝑑2
+𝑝𝑖 are, the better the capture of the roof panel
+in the image should be. The thresholds for the three parameters are set
+as follows:
+• 𝛼𝑝𝑖: the threshold is arbitrarily set as 45 ◦, beyond which images
+are defined as ‘too oblique’.
+• 𝑑1
+𝑝𝑖: the threshold is set as twice the value of the average UAV
+flying height from the roof.
+• 𝑑2
+𝑝𝑖: the threshold is set as 1, which is exactly the value of the
+largest dimension of the roof.
+Automation in Construction 167 (2024) 105725 
+5 
+J. Li et al.
+Fig. 5. The different parameters for screening input images for the generation of roof panel orthophotos.
+4.3. Instantiating orthophoto
+Each selected image is then projected onto the templates, to texture
+and instantiate individual orthophotos. Then, for each panel, a final
+orthophoto is generated by merging the individual orthophotos.
+4.3.1. Individual orthophoto
+The panel content inside the UAV image is first framed out by its
+boundary, to reduce the processing time. To realise this, each panel
+boundary of the DT model in the world coordinate system is trans-
+formed into the camera’s 3D coordinate system (by camera external
+calibration, using Eq. (1)), and then into the image coordinate system
+(by camera internal calibration, using Eqs. ( 2) and (3)):
+1. From world coordinate system to camera coordinate system.
+𝐏𝐜 =
+⎡
+⎢
+⎢⎣
+𝑋𝑐
+𝑌𝑐
+𝑍𝑐
+⎤
+⎥
+⎥⎦
+= [
+𝐑 t
+][𝐏𝑤
+1
+]
+= [
+𝐑 t
+]
+⎡
+⎢
+⎢
+⎢
+⎢⎣
+𝑋𝑤
+𝑌𝑤
+𝑍𝑤
+1
+⎤
+⎥
+⎥
+⎥
+⎥⎦
+(1)
+where 𝐏𝐜 and 𝐏𝐰 are the point coordinates in camera system and
+world system respectively. 𝐑 represents the 3 × 3 rotation matrix
+in the world system, defined by the three camera rotation angles
+around 𝑥, 𝑦, and 𝑧 axes. t represents the 3 × 1 camera translation
+vector. Possible polynomial distortion transformations in some
+camera system should be applied to normalise 𝐏𝑐 by dividing its
+first two components, 𝑋𝑐 and 𝑌𝑐, by its last one 𝑍𝑐.
+2. From camera coordinate system (3D) to image coordinate
+system (2D).
+⎡
+⎢
+⎢⎣
+𝑢
+𝑣
+1
+⎤
+⎥
+⎥⎦
+= 1
+𝐙𝐜
+𝐊𝐏𝐜 (2)
+⎧
+⎪
+⎨
+⎪⎩
+scale = max(w, h)
+x = scale ∗ 𝑢 + 𝑤∕2
+y = scale ∗ 𝑣 + ℎ∕2
+(3)
+In Eq. (2), 𝐊 is the 3 × 3 camera’s internal calibration matrix,
+containing focal length, camera skew, aspect ratio, and principle
+point offset. 𝑢 and 𝑣, in the range [ −0.5, 0.5], are relative
+coordinates in the image system (centre as the origin). In Eq. (3),
+𝑤 and ℎ are the width and height pixels of the image. 𝑥 and
+𝑦 compose the pixel coordinate in the image system (top left
+corner as the origin), which is the final output.
+With this process, the boundary polygon is projected onto the UAV
+images, then pixels to be projected from the UAV image to the DT
+model are limited to those within the projected panel boundary. Then,
+the texturing process on the orthophoto plane follows 2 steps:
+1. 2D-3D. All the 2D pixels within the original image panel (within
+the projected panel boundary) are projected to the DT mesh data
+using the camera calibration matrices. This outputs correspond-
+ing 3D points.
+2. 3D-2D. All the 3D points derived are then projected onto the
+orthophoto template.
+This process textures the masked area of each roof panel with pixels
+from each image from the selected image set from Section 4.2 , thus
+outputting individual orthophotos, i.e. one orthophoto for each input
+UAV image.
+4.3.2. Final orthophoto
+While individual orthophotos can sometimes be used as-is for anal-
+ysis, they may not encompass the entire roof or may be marred by
+occlusions. To remedy this, all individual images for a given panel are
+aligned and merged to produce a single comprehensive orthophoto.
+This process is achieved as follows:
+1. Aligning orthophotos by Scale-Invariant Feature transform
+(SIFT) feature matching. To eliminate the small shift between
+orthophotos caused by the small errors from the photogram-
+metric process and avoid its influence on the merging process,
+SIFT features are detected and matched across images [ 67].
+These matchings are then used to calculate homographies to
+shift all individual orthophotos to one baseline one (selected as
+the orthophoto from the most suitable UAV image as defined
+in Section 4.2). Fig. 6 illustrates this alignment process and its
+benefit on the final merged image.
+2. Merging all orthophotos for one roof panel into one. To ex-
+clude pixels from occluders, the aligned individual orthophotos
+can be merged by calculating the median value of the RGB for
+each orthophoto pixel. If, as we have observed, occlusions ap-
+pear in fewer than 50% of the images, merging the orthophotos
+helps eliminate occlusions.
+The above process aims to generate a final orthophoto of good
+clarity and occlusion-free.
+5. Experimental results of orthophoto generation
+5.1. Experimental data
+Two case study buildings are included in this study:
+Duff House : Duff House is a historic building located in Banff, Ab-
+erdeenshire, Scotland. It is a category A listed, early Geor-
+gian mansion under the care of Historic Environment Scotland
+(HES) [68]. This building is a complex one containing different
+pitched roof panel forms (flat, curved, etc.), shapes (triangle,
+Automation in Construction 167 (2024) 105725 
+6 
+J. Li et al.
+Fig. 6. Pixel shifting.
+Fig. 7. Duff House input data to our proposed process.
+trapezoidal, parallelogram, etc.). It also contains other compo-
+nents such as chimneys and balustrades, the building dimension
+is 34.2 m in length and 25.7 m in width. Due to its data com-
+plexity, this example is suitable for training and shaping the
+generalisation of the segmentation model.
+Duff House was fully surveyed using a UAV (DJI Mavic 2 Pro,
+same for St Mary’s Church) equipped with a Sony ILCE-7R
+digital camera, with a fixed focal length of 35 mm. The UAV
+survey acquired 859 images containing the roof, and with over
+75% overlapping, enabling a detailed and accurate 3D recon-
+struction of the roof (and upper parts of the façades). A full 3D
+reconstruction of the house exterior (façades, entrance stair case,
+etc.) was also obtained by merging the UAV reconstruction with
+a Terrestrial Laser Scanning (TLS) point cloud.
+The structure-from-motion photogrammetric reconstruction of
+Duff House is shown in Fig. 7 , alongside the 3D DT model of
+its roof. The resulting 3D point cloud contains 2,104,179 points
+and is registered in the world coordinate system. The point cloud
+density is approximately 2400 points/m 2. The roof DT model
+contains 36 individual slated panels (20 planar ones and 16
+curved ones). The required input DT model is a more granular
+model than BIM model, appearing as an Industry Foundation
+Classes (IFC) object for each individual roof panel, finished
+using the photogrammetric reconstruction as a baseline. For his-
+toric buildings, such Scan-to-BIM process is a simulation of the
+original building designing task. IFC model contains geometry,
+location and other necessary information of each roof panel.
+The geometry of each panel is defined as panel boundary with
+extrusion. As input to the proposed process, geometries of each
+roof were then defined as triangle meshes.
+St Mary’s Church : St Mary’s Church is a Roman Catholic parish
+church, located in Stirling, Scotland. It is a category B listed
+Highland church [69]. This building has a two-story pitched roof
+that contains large rectangular panels spaced apart by lead strip,
+which can help test the robustness of the trained model. The
+dimension of main part of the building is 44.7 m in length and
+25 m in width. This building was surveyed using the same UAV
+as Duff House but equipped with another Hasselblad l1d-20c
+camera, with a fixed focal length of 28 mm. 1245 images were
+obtained for reconstructing the roof with 75% overlapping.
+The structure-from-motion photogrammetric reconstruction of
+St Mary’s Church is shown in Fig. 8: The 3D point cloud contains
+1,570,136 points and is registered in the world coordinate sys-
+tem. The point cloud density is approximately 1255 points/m 2.
+This roof DT model contains 18 individual slated panels, all of
+them are planar.
+The surveying work (including flying the drone and conducting the
+3D reconstruction) for those case study buildings took in the order of
+several hours.
+Automation in Construction 167 (2024) 105725 
+7 
+J. Li et al.
+Fig. 8. St Mary’s Church input data to our proposed process.
+5.2. Evaluation metrics for orthophoto generation
+The orthophoto generation results are evaluated qualitatively and
+quantitatively, considering:
+• occlusion: the extent to which occlusions from other components
+have been removed (qualitative);
+• blur: the general level of blur the orthophoto presents, which is
+evaluated by assessing the sharpness of the boundary of each slate
+(qualitative);
+• merging quality : the quality of the final merged orthophoto
+for each panel, measured by the mean percentage of matched
+features, ̄ 𝑎calculated using Eq. (4) (quantitative).
+̄ 𝑎= 1
+𝑛 − 1
+∑
+𝑖∈⧵{𝑏}
+| 𝑏
+𝑖 |
+|𝑏| (4)
+where  is the set of 𝑛 orthophotos associated to the given panel,
+𝑏 is the baseline orthophoto, and  𝑏
+𝑖 is the set of SIFT features
+from orthophoto 𝑖 matched to the baseline orthophoto, and 𝑏 is
+the set of SIFT features from orthophoto 𝑏.
+5.3. Results
+5.3.1. Value of image selection and fine alignment on merged orthophoto
+quality
+The stages in the generation of an orthophoto, including the final
+refinement, are demonstrated in Fig. 9 , using roof panel D4 as an
+example: Fig. 9(a) shows four typical individual orthophotos generated
+from images potentially containing some information about panel D4:
+the upper left one is the best of the four, but the lighting condition
+varies across the panel; the upper right one is of lower quality, mainly
+due to the presence of an occluder (the chimney in this example) and
+artefacts; the lower two individual orthophotos are from pictures that
+only partly capture the panel, and one of them even contains pixels
+from an occluder (a nearby tower).
+The above images are 4 of 78 images that seemingly contain infor-
+mation about panel D4 before the image selection process is applied.
+Fig. 9(b) shows the result of merging the 78 individual orthophotos
+obtained from those 78 UAV images. As can be seen, this resulting
+orthophoto is free of pixels from occluders and also does not contain
+any hole (i.e. empty pixel) in the roof panel area, which shows the value
+of the median value merging strategy. However, careful observation
+shows that this merged orthophoto is blurry.
+When the image selection process explained in Section 4.2 is ap-
+plied, 67 of the 78 images are discarded, and only 11 are retained.
+Such selection is highlighted in both 3D and 2D scatter plots in Fig. 10,
+in which the red dots represent the selected images, while the black
+dots are the remaining ones. The merged orthophoto obtained from the
+selected 11 images is shown in Fig. 9(c) . It contains less but still some
+blur than that of the initial merged orthophoto in Fig. 9(b) .
+Finally, Fig. 9(d) shows the median merged orthophoto obtained
+using only the selected set of images and after fine alignment. It has
+significantly less blur than the median orthophoto in Fig. 9(c) obtained
+after merging and image selecting but without fine alignment.
+5.3.2. Quality of final orthophotos
+Four representative panels in Fig. 7 are used for reviewing the
+application of the proposed orthophoto generation method: Panel D1
+is the largest panel within the whole roof, placed on the front and
+back side of the house (easily occluded by balustrades, chimneys and
+towers in some images, it does not appear completely in any single
+image). Panel D2 is a curved panel placed on the one of the towers
+of the house (easily occluded by stone ornaments). Panel D3 is one
+of the triangular panels placed near the roof centre with almost no
+occlusion. Finally, Panel D4 is one of the panels placed on the side of
+the house (easily occluded by the towers and balustrades on the edges).
+The results obtained for all four panels are shown in Fig. 11 .
+Panel D1 presents the worst result, with the most significant and
+uneven level of blur. For this panel, ̄ 𝑎= 10% , which is the lowest
+among all the panels. This is likely due to the large size of the panel,
+which results in the whole panel not being seen completely in any
+single selected image. As a result, the alignment process described in
+Section 4.3.2 starts with one image that only covers a small part of
+the roof. Notwithstanding, in comparison to Fig. 2 where the chimney
+occludes part of the roof, all the potential occlusions for this panel
+are successfully removed. The result for the curved Panel D2 is better,
+with ̄ 𝑎= 35%. This is likely because it is smaller and not as occluded,
+so that the baseline orthophoto has more matches with the other
+orthophotos. In the smallest Panel D3, the details are more clear under
+magnification: defects like the shallow organic growth appear very
+clearly. In this case again, ̄ 𝑎= 38%. For Panel D4, ̄ 𝑎= 25%, which is also
+higher and also correlates with a final orthophoto of higher quality.
+These orthophoto examples demonstrate the generally good per-
+formance of the proposed approach. Indeed, at least for panels of
+small to medium sizes (e.g. up to 30 m 2), the slated roofs are clearly
+and precisely extracted and should thus be well suited for semantic
+segmentation (as explored in Section 6 ) and defect detection. Besides,
+no matter which angle was the image taken or where the panel is
+located, the final orthophotos are all in the uniform scale and vertical,
+with the slates appearing as parallel horizontal rows in all images.
+This should further ease the development and application of robust
+automated defect detection models — and such representation also
+remains suited for manual defect annotation using current manual
+methodologies.
+The method however performs less well for larger panels. To tackle
+this, they could simply be split into sub-areas within which the pro-
+posed method will work. Alternatively, the orthophoto image merging
+Automation in Construction 167 (2024) 105725 
+8 
+J. Li et al.
+Fig. 9. Orthophoto transformation process for roof panel D4 from individual orthophotos to merged ones using different datasets.
+Fig. 10. 𝛼𝑝𝑖, 𝑑1
+𝑝𝑖 and 𝑑2
+𝑝𝑖 in different images in 3D and 2D scatter plot form.
+strategy should be reviewed and developed so that the refinement is
+conducted more globally than from the localised data associated with
+the baseline photo.
+Another four representative panels from the St Mary’s Church
+(Fig. 8) are illustrated in Fig. 12 . The ̄ 𝑎values for the four panels are:
+6%, 8%, 7% and 10%, and their widths are 25.4 m, 27.1 m, 6.9 m
+and 3.1 m. The longer panels, Panel C1 and Panel C2, have relatively
+lower ̄ 𝑎values, originating from the blur problem occurring on the left
+and right sides of these panels. Panel C3 is a relatively smaller panel,
+so there is less blur. However, by comparing the filtering parameter
+scatter plots of this panel in Fig. 13 to the ones in Fig. 10 , it can
+be easily seen that the distributions of parameters, especially the 𝑑1
+𝑝𝑖
+Automation in Construction 167 (2024) 105725 
+9 
+J. Li et al.
+Fig. 11. Generated orthophotos of typical panels.
+Fig. 12. Generated orthophotos of typical panels of St Mary’s Church.
+and 𝑑2
+𝑝𝑖 are broader, which implies that some of these images have
+low overlapping with the selected baseline orthophoto in the merging
+process, ultimately making the ̄ 𝑎value low. Notably, Panel C3 was
+frequently occluded; yet the occlusions are successfully removed in the
+final orthophoto. Finally, Panel C4 has is much smaller, leading to even
+better results. Correspondingly, its ̄ 𝑎value is higher.
+6. Semantic segmentation
+The input to this stage is an orthophoto of a slated roof panel
+generated by the method presented in Section 4 . The generated or-
+thophoto shows the roof panel that is composed of different essential
+sub-components: slates and leadwork, as well as other less frequent
+elements (e.g. stone, grid, equipment, glass, ladder, etc.).
+Since the intention of this work is to find defects in slated areas
+as well as leadwork areas, and these materials have distinct types
+of defect types, it is best to first segment the orthophoto to isolate
+these particular subparts. For this, we explore different methods for
+(pixel-level) semantic segmentation.
+6.1. Dataset
+The data output of Duff House by Li et al. [ 14] includes data for
+36 panels. We split these into 27 panels for training and 9 panels for
+testing. For each panel, we retain maximum 10 unmerged orthopho-
+tos obtained from different photos of the same panel (with different
+angles and covering the panel in various ways). This dataset is used
+for developing and comparing different initial semantic segmentation
+models.
+In addition, the St Mary’s Church data include data for 18 pan-
+els. With this data, we create another dataset composed of one un-
+merged orthophoto per panel. This dataset is used solely to test the
+generalisability of the models created using the Duff House dataset.
+Finally, a combined dataset using data from the two buildings is
+created. It is divided into a training dataset that is ∼80% of the overall
+dataset (27 panel orthophoto data of Duff House, along with 13 panel
+orthophoto data of St Mary’s Church) and a testing dataset that is the
+remaining ∼20% (9 from Duff House, along with 5 from St Mary’s
+Church). Here, only one unmerged orthophoto is kept for each panel.
+We select the orthophoto with the largest coverage of the panel.
+Automation in Construction 167 (2024) 105725 
+10 
+J. Li et al.
+Fig. 13. Filtering parameters distributions of Panel C3.
+Fig. 14. Colour coded confusion matrix (left), semantic segmentation model output (middle), illustrations of FP/FN from the perspective of background class (right).
+Table 1
+Experimental parameter settings for the deep learning model training.
+Parameter Value
+Batch size 4
+Max iteration 2400
+Validation interval 400
+Training vs. validation 80% : 20%
+All the orthophotos used in the datasets above are manually labelled
+in 4 classes: background (labelled as 0), slate (1), leadwork (2), and other
+(3). The other category contains: stone, grid, equipment, glass, ladder,
+etc. The class other normally occupies a very small proportion of pixels
+in orthophotos.
+6.2. Deep learning model
+As discussed earlier in Section 2, state-of-art models that can be use-
+ful to the specific problem in this study include: DeepLabV3, PointRend,
+Segmenter, Segformer. Basic hyper-parameter settings are tuned for best
+performance by comparing these deep learning models. The best set-
+tings are reported in Table 1 . All models were pre-trained using their
+default weights.
+For each model, K-fold cross validation is applied during training:
+the entire training dataset is first split into 𝑘 folds (𝑘 = 5 in this study).
+The model is trained 𝑘 times on each 𝑘 − 1 folds, and then validated on
+the remaining fold. The model performances are evaluated using the
+average value of these 𝑘 time validation results, and the best model is
+selected based on those. Then, the best model is retrained using the
+entire training dataset, and the final result is obtained by testing this
+model on the testing dataset.
+During training, the input images are not rescaled. This is because
+most of the roof orthophotos are rectangular with varying width-to-
+length ratios, and the resizing processing operations that are typically
+applied in semantic segmentation pipelines would result in information
+loss. But, to meet the requirements of input image size and com-
+puting capacity limits, all images are cropped (tiled) and read as
+512 × 1024 × 3 matrices.
+As will be shown in the Experimental Validation using the Duff
+House dataset (Section 7.3), PointRend with default backbone (ResNet)
+and loss function (Cross-Entropy Loss) achieves best performance all
+four initial models. As a result, further experiments are conducted
+by using different loss functions including Dice Loss (sensitive to re-
+gion detection) and Focal Loss (sensitive to imbalance problem). With
+grid search as a tool for hyperparameter adjustment, specific weights
+between different losses are selected for best performance.
+The models trained with the Duff House dataset were then tested
+with the St Mary’s Church dataset to assess its generalisation ability.
+The results lead us to finally use the combined orthophoto dataset (Duff
+House + St Mary’s Church) for training and testing a final model with
+best segmentation performance and generalisation ability.
+6.3. Background label correction
+In most deep learning semantic segmentation methods, precise de-
+lineation of segmentation boundary is a challenging problem, with
+many confusions arising at those boundaries. Fig. 14 illustrates this
+issue with a typical output of the semantic segmentation models we
+explored. The figure highlights the discrepancies between thePrediction
+and Ground Truth (GT) for the different classes.
+However, in this study, the set of background pixels is actually
+known a priori, because the panel boundary is defined by the Digital
+Twin 3D model projection (see [ 14] for details). In other words, the
+Ground Truth for the background class is known a priori. Therefore,
+an extra step is introduced to correct the False Positive (FP) and False
+Negative (FN) results for the background class:
+1. False Negative ( 𝑃 𝑟𝑒𝑑𝑖𝑐𝑡𝑖𝑜𝑛 ≠ 0 and 𝐺𝑇 = 0 ): In this case, the
+predicted label is simply changed back to ‘0’ (i.e. background
+class).
+Automation in Construction 167 (2024) 105725 
+11 
+J. Li et al.
+Fig. 15. Illustration of the correction of FP for the background class. Left: Example 1 where the label is corrected to ‘1’ after one step; Right: Example 2 where the label is
+corrected to ‘2’ after two steps.
+2. False Positive ( 𝐺𝑇 ≠ 0 and 𝑃 𝑟𝑒𝑑𝑖𝑐𝑡𝑖𝑜𝑛 = 0 ): In this case, the
+predicted label is changed from the background class to the most
+likely other class. As illustrated in Fig. 15, for each FP pixel the
+non-zero label that appears most frequently in the 3 × 3 grid
+around it is selected as the new label. If the grid contains only
+background pixels (i.e. class ‘0’), then the grid is expanded by one
+pixel (i.e. 5 × 5 grid) and the process is repeated until a at least
+a non-zero label is found. As will be shown, this simple process
+works well in our context.
+As will be shown in the Experimental Results (Section 7), while the
+baseline semantic segmentation results are already good, this process
+delivers some additional improvements.
+6.4. Label merging strategy
+As we have seen in Section 4, each individual orthophoto may
+not necessarily cover entirely a given roof panel of interest. Besides,
+the textured parts of multiple individual orthophotos will most likely
+overlap. Ultimately, we do not wish to have many orthophotos (with
+their individual semantic segementation) for each roof panel, but a
+single one covering the overall panel with a single semantic segmen-
+tation. This can be achieved using either of the following two merging
+strategies:
+• Label Merging Strategy 1 : Merge the unmerged orthophotos as
+described in Section 4, and then apply the semantic segmentation
+to the merged orthophoto.
+• Label Merging Strategy 2 : Merge the semantic segmentation re-
+sults of all unmerged orthophotos. For each pixel, the label that
+appears most frequently (top 1 class) among the unmerged or-
+thophotos is selected as the final label. In cases when two (or
+more) classes have the same frequencies for all unmerged or-
+thophotos, the final label will be selected in the following order
+of priority: other, leadwork, slate. For example, if slate and other
+appear the same time for one pixel, then other would be chosen
+as the final label.
+These two merging strategies are compared on the model trained with
+the combined dataset.
+7. Experimental results
+In this section, evaluation metrics for semantic segmentation are
+first introduced. Then all the experimental results are reported. Differ-
+ent models are trained using the Duff House training dataset and tested
+using the Duff House and St Mary’s Church testing datasets. The best
+model is selected by comparing these results, and it is finally re-trained
+and tested using the combined dataset. All the training and testing work
+is completed in the Google Colab Pro environment, with NVIDIA A100
+GPU 40 GB.
+7.1. Evaluation metrics for semantic segmentation
+The segmentation results for each class are evaluated using two
+parameters:
+• Intersection over Union (IoU) : computed to assess the overlap
+between Prediction and Ground Truth segments.
+• Accuracy (Acc) : calculated by dividing the sum of the True Pos-
+itive pixels by the sum of the True Positive pixels and False
+Positive pixels.
+To compare the general testing performance between different models,
+the following overall evaluation metrics are evaluated:
+• aAcc: the Accuracy of all pixels, evaluating the classification
+accuracy.
+• mIoU: the mean IoU of all classes; mIoU is an important indicator
+to measure the accuracy of overall semantic segmentation.
+• mAcc: the mean Acc of all classes, evaluating the overall perfor-
+mance in pixel classification.
+In the following, we report results for different models in the form
+of tables and confusion matrices. In the tables, we report for each
+model: the overall aAcc, mIoU and mAcc, and then IoU and Acc for each
+of the four classes. We also report relative (in percentages) confusion
+matrices.
+7.2. Background label correction
+Regardless of the model employed, the Background model correction
+step described in Section 6.3 can be applied to correct FP and FN for the
+background class. We thus demonstrate the benefits of this correction
+using one model (which we will see later performs well): PointRend.
+Table 2 and Fig. 16 show the results obtained when training and
+testing this model on Duff House dataset, before and after applying the
+background label correction results.
+While the baseline performance is already quite good (all metrics
+>85 and most of them are >95), the additional corrective step im-
+proves performance for all classes, in particular the leadwork and other
+classes, which had the lowest performance without this correction. The
+higher increases in mIoU ( +1.58 to 94.22) and mAcc ( +1.15 to 97.25)
+also indicate a reduced difference in performance among the different
+classes. Although anticipated, this improvement is welcome, because
+the background regions are often next to leadwork regions. And so, any
+correction of background class would most likely benefit the leadwork
+class. Nonetheless, the results demonstrate the good performance of the
+proposed background label correction method.
+Automation in Construction 167 (2024) 105725 
+12 
+J. Li et al.
+Table 2
+Testing results before and after background label correction.
+Result Overall Overall (excl. background) background slate leadwork other
+aAcc mIoU mAcc aAcc mIoU mAcc IoU Acc IoU Acc IoU Acc IoU Acc
+Before 98.93 92.64 96.1 – – – 99.26 99.79 98.09 98.87 88.49 92.27 84.7 93.5
+After 99.31 94.22 97.25 98.40 92.29 96.34 100 100 98.44 99.17 91.24 94.31 87.19 95.53
+Fig. 16. Confusion matrices before (a) and after (b) applying the background label correction step.
+Table 3
+Comparing trained models (with K-fold cross validation) on Duff House.
+Model Overall background slate leadwork other
+aAcc mIoU mAcc IoU Acc IoU Acc IoU Acc IoU Acc
+DeepLabV3 98.74 93.01 96.12 98.86 99.62 97.44 98.41 86.20 91.85 89.53 94.60
+PointRend 99.13 94.77 97.27 99.31 99.79 98.13 98.82 90.29 94.14 91.35 96.36
+Segformer 98.79 93.17 96.71 99.05 99.64 97.19 98.18 87.48 93.18 88.96 95.83
+Segmenter 98.20 90.70 94.27 98.36 99.46 96.20 97.84 80.80 88.26 87.44 91.53
+PointRend(CEL+DL) 99.08 93.82 96.30 99.40 99.77 98.03 99.04 89.49 94.22 88.35 92.15
+PointRend(CEL+FL) 99.03 94.01 96.62 99.31 99.80 97.90 98.83 89.53 93.33 89.28 94.53
+PointRend(DL+FL) 99.06 94.14 96.59 99.29 99.76 98.06 99.00 89.06 93.02 90.14 94.54
+7.3. Initial models with Duff House dataset
+All models are first trained using Duff House training dataset only,
+and using K-fold cross validation. Table 3 presents the validation perfor-
+mance of the different models. Generally, all models already show good
+performance: the evaluation metrics of overall performance are all>90,
+most of them are >95 and even nearly 100. Generally, the target class,
+slate, is segmented satisfactorily. Errors mostly come from the classes
+leadwork and other.
+By comparing the first 4 rows, PointRend stands out with the highest
+values in all evaluation metrics. The variants in the last three rows
+are then developed based on PointRend, in an attempt to enhance per-
+formance with regard to specific challenges with our dataset, namely
+data class imbalance (the leadwork and other classes occupy much fewer
+pixels than background and slate) and region ambiguity.
+Among all the variant models, PointRend(CEL+DL) may be consid-
+ered to achieve the best overall performance, as it slightly increases
+the values of Acc both on slate class ( +0.22 to 99.04) and leadwork
+class ( +0.08 to 94.22). But, its performance is still close to that of
+the default PointRend model and has some sacrificial drops on most
+metrics. Therefore, with the current Duff House training dataset, the
+default PointRend model may still be used as the best model for
+retraining and testing.
+With the best model, the segmentation prediction results using
+models trained by different datasets (unmerged or merged Duff House
+orthophotos) are compared in Table 4: The results show that the model
+trained with the dataset of unmerged orthophotos and tested on the
+dataset of unmerged orthophotos has the best performance. And when
+testing on the dataset of merged orthophotos, then the model trained on
+the dataset of unmerged orthophotos still outperforms the one trained
+on the dataset of merged orthophotos. These results help determine that
+it is in all cases best to train the model on the dataset of unmerged
+orthophotos.
+7.4. Testing generalisation with St Mary’s Church testing dataset
+Table 5 reports the evaluation results of best model, PointRend, on
+the testing dataset of St Mary’s Church. This enables an assessment
+of the model’s generalisation, since no data from St Mary’s Church
+was used to train those models. Table 5 shows a similar pattern as
+Table 3: It can segment theslate area more accurately thanleadwork and
+other classes, while the other class has the worst performance among
+all classes. However, compared to the performance on Duff House,
+there are decreases in the overall performance, such as a nearly 30
+percentage point drop in mIoU and nearly 20 percentage point drop in
+mAcc. Compared to the corresponding performance values in Table 4 ,
+although the performance values for slate remain at the same level,
+those for leadwork and other are much lower.
+Therefore, even though aAcc remains close to 100% and the general
+performance is acceptable, the generalisation ability of the models is
+limited. Put another way, unsurprisingly the model, when trained using
+data from only one building (Duff House), work but not sufficiently
+well for other buildings. Therefore, more data, especially with diverse
+features of leadwork and other classes, should be used for training.
+7.5. Models trained with combined dataset
+Giving to the overall still limited amount of data available, all the
+models above are all retrained using the combined training dataset
+using K-fold cross validation. The comparison of the different models
+Automation in Construction 167 (2024) 105725 
+13 
+J. Li et al.
+Table 4
+Testing results of Duff House merged orthophotos.
+Strategy Overall Overall (excl. background) background slate leadwork other
+aAcc mIoU mAcc aAcc mIoU mAcc IoU Acc IoU Acc IoU Acc IoU Acc
+Train unmerged/test unmerged 99.31 94.22 97.25 98.40 92.29 96.34 100 100 98.44 99.17 91.24 94.31 87.19 95.53
+Train unmerged/test merged 98.75 86.98 93.56 97.46 82.64 91.42 100 100 97.81 98.76 89.21 92.36 60.89 83.13
+Train merged/test merged 98.53 84.06 88.5 97.02 78.75 84.67 100 100 97.44 99.25 86.26 90.92 52.55 63.83
+Table 5
+Testing results on St.Mary’s Church by models trained using Duff House training dataset.
+Model Overall Overall (excl. background) background slate leadwork other
+aAcc mIoU mAcc aAcc mIoU mAcc IoU Acc IoU Acc IoU Acc IoU Acc
+PointRend 94.65 63.31 78.54 91.61 51.08 71.39 100 100 92.99 93.96 36.32 61.36 23.94 58.84
+Table 6
+Comparing trained models (with K-fold cross validation) on combined dataset.
+Model Overall background slate leadwork other
+aAcc mIoU mAcc IoU Acc IoU Acc IoU Acc IoU Acc
+DeepLabV3 97.95 80.92 86.78 98.32 99.58 97.19 98.52 77.07 86.92 51.10 62.09
+PointRend 98.17 82.55 88.51 98.80 99.72 97.46 98.65 77.73 87.88 56.21 67.81
+Segformer 98.25 83.72 89.31 98.61 99.51 97.27 98.64 83.02 90.81 55.99 68.28
+Segmenter 97.58 79.11 83.90 97.91 99

@@ -1,0 +1,1300 @@
+Efficient edge-cloud digital twin for real-time SHM with server-deployed 
+FEA and fast particle swarm optimization
+Yazhou Zhang
+a , b
+, Yong Deng
+c , *
+, Gongjian Zhou
+a , b
+, Jiwei Zhong
+a , b
+, Xungang Zhao
+a , b
+, 
+Chenxu Zhou
+a , b
+a
+State Key Laboratory of Bridge Intelligent and Green Construction, Wuhan, Hubei 430034, China
+b
+China Railway Major Bridge Engineering Group Co., Ltd., Wuhan, Hubei 430050, China
+c
+School of Civil Engineering and Transportation, South China University of Technology, Guangzhou, Guangdong, China, 510640
+ARTICLE INFO
+Keywords:
+Digital twin
+Structural safety
+Real-time health monitoring
+Edge-cloud integration
+Finite element analysis
+Particle swarm optimization
+ABSTRACT
+Digital twins (DTs) are increasingly applied throughout the life cycle of structures for health monitoring and 
+decision-making. To meet real-time requirements, this paper presented an efficiency-enhanced DT framework 
+based on an edge-cloud collaborative architecture and three innovations. First, a Python-based finite element 
+(FE) analysis program with a precomputed stiffness matrix strategy significantly accelerated structural load 
+identification and response computation. Second, a deviation severity coefficient with adaptive weighting 
+effectively detected sensor faults and improved identification robustness. Third, a modified particle swarm 
+optimization algorithm with population differentiation and local acceleration strategies further enhanced 
+identification accuracy and efficiency. The system was validated in a bridge pier replacement project under five 
+construction scenarios. The results demonstrated a sub-300 ms total response time, a 70-fold reduction in one- 
+time FE computation, a 70 % decrease in optimization cost, stress prediction errors below 10%, and safety 
+warnings for stress levels exceeding design values by over threefold.
+1. Introduction
+This section introduces the technical context required for under -
+standing the proposed structural health monitoring (SHM) framework. It 
+first discusses the fundamental principles and practical challenges of 
+SHM, then outlines the motivations driving this study and summarizes 
+its main contributions.
+1.1. Background of structural health monitoring
+Structural safety assurance necessitates a systematic evaluation of all 
+foreseeable limit states and accidental risks during the design phase, 
+encompassing the structure ’ s entire service life [ 1 , 2 ]. This approach 
+requires rigorous deterministic and probabilistic analyses of extreme 
+loading scenarios, such as peak operational loads, foundation displace -
+ment thresholds, and accidental overload conditions [ 3 – 7 ]. Under these 
+limit states, induced stresses and deformations must be maintained 
+below both the ultimate material strength and permissible structural 
+deformation limits to achieve quantified system reliability metrics. 
+However, the following limitations significantly constrain the precision 
+of existing methodologies. First, the structural system inherently di -
+verges from its as-designed configuration due to material heterogeneity, 
+coupled with performance variability, progressive degradation, and 
+uncertainties emerging throughout construction and operational phases 
+[ 8 – 11 ]. Applying idealized design models introduces inherent discrep -
+ancies that critically undermine structural integrity assessments. Sec -
+ond, boundary conditions such as soil-structure interactions resist 
+precise numerical simulation due to their environmental sensitivity and 
+temporal variability [ 12 – 14 ]. Consequently, the boundary conditions 
+assumed during design-phase safety evaluations frequently diverge from 
+field observations. Furthermore, critical scenarios often remain unad -
+dressed in conventional design frameworks due to methodological lim -
+itations, economic constraints, or the probabilistic nature of unforeseen 
+extreme events [ 15 – 17 ]. As a result, the deployment of SHM systems 
+throughout the structural life cycle has become imperative to mitigate 
+risks arising from indeterminate material properties, fluctuating 
+boundary constraints, and stochastic loading scenarios [ 18 , 19 ]. Real- 
+time and continuous monitoring of loading spectrum evolution and 
+* Corresponding author.
+E-mail address: yongdeng@scut.edu.cn (Y. Deng). 
+Contents lists available at ScienceDirect
+Automation in Construction
+journal homep age: www.el sevier.com/l ocate/autcon
+https://doi.org/10.1016/j.autcon.2025.106718
+Received 1 September 2025; Received in revised form 6 December 2025; Accepted 10 December 2025 
+Automation in Construction 182 (2026) 106718 
+Available online 22 December 2025 
+0926-5805/© 2025 Elsevier B.V. All rights are reserved, including those for text and data mining, AI training, and similar technologies. 
+associated structural responses enables reliable safety evaluations that 
+accurately characterize in-service structural performance [ 20 , 21 ].
+A SHM system typically comprises two core components: sensing 
+networks and analytical diagnostics. It integrates sensor network mea -
+surements of structural-environmental parameters with data-informed 
+prognostics to evaluate real-time integrity and forecast evolutionary 
+performance states [ 22 , 23 ]. Currently, the sensing network prioritizes 
+specialized sensors and advanced transmission techniques to enable 
+real-time state acquisition. For example, Trapani et al. [ 22 ] imple -
+mented microcontroller-integrated piezoresistive ceramic sensors to 
+directly quantify stress variations in masonry systems via electrome -
+chanical coupling, circumventing conventional strain-derived stress 
+computation. As for data transmission, Ma et al. [ 24 ] implemented a 
+long range radio (LoRa) wireless ad hoc network to transmit sensor data 
+from monitoring nodes to local terminals, with General Packet Radio 
+Service (GPRS) networks relaying the data to a centralized service 
+platform. Hu et al. [ 25 ] utilized HTTP web protocols over wireless local 
+area networks (WLANs) to enable communication between sensors and 
+computer networks. Abner et al. [ 26 ] adopted a Bluetooth Low Energy 
+(BLE) mesh network to facilitate multi-hop communication between 
+sensor nodes, relay nodes, and station nodes, leveraging self-healing 
+capabilities for dynamic path optimization. Mukherjee et al. [ 27 ] 
+employed 5G networks to transmit sensor data from edge devices to 
+remote cloud servers. Xu et al. [ 28 ] developed a dynamic wireless sensor 
+network (DWSN) using tree-topology routing with address reallocation 
+mechanisms to adapt to structural movements.
+The analytical diagnostics emphasizes surrogate model development 
+and deployment, typically leveraging finite element modeling (FEM) as 
+the predominant paradigm to balance computational efficiency with 
+high-fidelity structural representation [ 29 , 30 ]. Structural integrity 
+assessment is performed through systematic comparison of field- 
+measured structural responses against model-generated predictions, 
+Fig. 1. Framework of digital twin for real-time structural health monitoring.
+Fig. 2. Flow of finite element analysis.
+Y. Zhang et al. Automation in Construction 182 (2026) 106718 
+2 
+where the model operates under parameterized representations of un -
+damaged structural properties, in-situ loading profiles, and ambient 
+environmental conditions monitored in real-time. However, the 
+convergence of three critical developments, namely real-time opera -
+tional demands in SHM, multi-module integration requirements in dig -
+ital twin (DT) frameworks [ 31 ], and enhanced machine learning (ML) 
+capabilities in system relationship extraction, has driven a paradigm 
+shift toward data-driven surrogate modeling architectures. Training 
+data can be derived from physics-based simulations, in-situ measure -
+ments, and synthetic data augmentation, with diverse modalities 
+including cross-sectional, sequential, and image-based formats [ 32 – 36 ].
+1.2. Motivation
+As outlined above, SHM has evolved into a multidisciplinary field 
+integrating hardware innovation with advanced system analytics. These 
+advancements have progressively addressed the critical demands for 
+real-time performance and accuracy in SHM systems. However, existing 
+methodologies still face persistent limitations that arise from the 
+inherent trade-off between accuracy and computational efficiency. As a 
+result, monitoring performance remains suboptimal, underscoring 
+research gaps that require systematic investigation and methodological 
+innovation.
+Dense sensor arrays with high sampling rates are always employed to 
+achieve comprehensive structural characterization [ 21 ]. Bridge health 
+monitoring systems, for instance, can routinely generate multi-gigabyte 
+daily datasets through continuous sensing modalities, creating sub -
+stantial challenges in data transmission bandwidth and computational 
+resource allocation [ 37 ]. Although high-bandwidth communication 
+channels are theoretically essential for maintaining data fidelity and 
+supporting real-time analysis [ 38 ], practical deployment is often con -
+strained by harsh environmental conditions and hardware limitations, 
+which make such infrastructure difficult to implement in the field [ 39 ]. 
+Furthermore, raw sensor outputs predominantly contain extraneous 
+information unrelated to structural integrity assessment, necessitating 
+advanced signal processing techniques (e.g., Fourier spectral analysis, 
+wavelet transform, time-domain feature extraction) to distill physically 
+meaningful indicators from the acquired datasets [ 25 , 37 , 40 ].
+Data-driven surrogate models, particularly ML approaches, have 
+gained traction as computationally efficient alternatives to FEM for real- 
+time SHM in large-scale systems. Nevertheless, their practical imple -
+mentation is constrained by three fundamental limitations: the sampling 
+bias inherent in training datasets, the architectural constraints of sur -
+rogate models, and the absence of mathematically rigorous frameworks 
+Y. Zhang et al. Automation in Construction 182 (2026) 106718 
+3 
+for quantifying error propagation and generalization boundaries. Cur -
+rent implementations demonstrate acceptable accuracy within their 
+trained parameter spaces but exhibit significant performance deterio -
+ration under out-of-distribution (OOD) scenarios, particularly when 
+confronted with uncharacterized loading patterns or emerging struc -
+tural degradation modes [ 33 ]. Furthermore, architectural mismatch and 
+data-model imbalance, which manifest as overfitting and representation 
+gaps, remain poorly quantified when relying on conventional training- 
+accuracy metrics [ 41 , 42 ]. Notably, the severe scarcity of anomaly data 
+relative to normal operational measurements introduces intrinsic sam -
+pling skewness, while the topological complexity of engineered systems 
+compounds diagnostic ambiguity, frequently preventing precise 
+subsystem-level anomaly attribution. Although domain-informed ML 
+approaches (e.g., physics-informed neural networks, PINN) show 
+promise in enhancing model generalization and robustness [ 43 , 44 ], 
+FEM retains superior predictive fidelity and reliability for safety-critical 
+engineering applications [ 45 , 46 ].
+1.3. Contributions and outline
+To address persistent challenges in reconciling computational effi -
+ciency with diagnostic accuracy for real-time SHM, this study developed 
+a DT framework integrating the following three core innovations: 
+• Real-time FE execution : A Python-based FE program was devel -
+oped and implemented to execute structural response analysis 
+through cloud computing. Computational efficiency was enhanced 
+through precomputed stiffness matrix and sparse matrix protocols, 
+satisfying sub-second latency constraints for real-time safety 
+assessments.
+• Robust sensor fault detection : A deviation severity coefficient was 
+formulated to detect abnormal sensors. Adaptive weighting was 
+applied to balance heterogeneous sensor data, thereby improving the 
+robustness of system identification.
+• Efficient system identification : A modified particle swarm opti -
+mization variant was designed to expedite system parameter iden -
+tification, yielding times of convergence improvements without 
+compromising precision for time-constrained diagnostics.
+Although advanced hardware technologies such as edge-cloud inte -
+gration, cloud computing, and 5G wireless networks are still employed 
+in the proposed DT system for rapid data transmission and processing, 
+the three innovations presented in this paper primarily target method -
+ological advances in generic system simulation and identification. These 
+contributions aim to provide adaptable improvements for future health 
+monitoring tasks across different structural types, varying levels of 
+complexity, and diverse hardware conditions. In addition to the funda -
+mental concepts and recent advancements in SHM and DT presented in 
+Section 1, the remainder of the paper is structured as follows: Section 2 
+delineates the constituent modules of the DT framework while eluci -
+dating technical implementations of three core contributions; Section 3 
+demonstrates the implementation process and device configurations of 
+the proposed system through an engineering application; Section 4 
+conducts a comprehensive analysis of experimental findings, employing 
+systematic comparison with conventional approaches to validate the 
+enhanced performance of the developed strategies; and Section 5 syn -
+thesizes principal conclusions and outlook for future research.
+2. Methodology
+This section systematically describes the functional architecture of 
+the proposed DT framework, summarizing the roles, data flow, and in -
+teractions among its core modules. These technical elements serve as the 
+basis for the three methodological contributions that are elaborated in 
+the subsequent three subsections.
+2.1. Proposed framework of digital twin
+The proposed framework, as depicted in Fig. 1 , comprises three hi -
+erarchical hardware architecture layers: the sensing layer, the edge 
+preprocessing layer, and the cloud computing layer. The sensing layer 
+integrates a network of sensors to monitor external environmental pa -
+rameters (e.g., temperature) and internal structural responses (e.g., 
+strain), transmitting raw data to edge devices. The edge preprocessing 
+layer executes localized lightweight computations, including feature 
+extraction, data fusion, and forwarding operations, all tailored to task- 
+specific requirements and data attributes. This step minimizes data 
+volume and noise to be transmitted, optimizing transmission efficiency 
+and quality. The cloud computing layer, serving as the framework ’ s core 
+computational component, integrates modules for data storage, caching, 
+processing, and analytics to facilitate advanced simulation, analysis, and 
+visualization. For example, in the engineering application introduced in 
+Section 3, the cloud server performs FE analysis, dynamically updating 
+structural loads and global stress distributions using real-time data to 
+Table 1 
+Fundamental mechanism of Fast-PSO.
+Equation Action Mathematical Form Term Explanation
+5
+Velocity update in standard 
+PSO
+v
+i
+( t + 1 ) = wv
+i
+( t )
++ c
+1
+r
+1
+( pbes t
+i
+  x
+i
+( t ) )
++ c
+2
+r
+2
+ 
+x
+gbest
+  x
+i
+( t )
+)
+v
+i 
+and x
+i
+: velocity and position of the i -th particle; t : iteration index; w : inertial weight; c
+1 
+and c
+2
+: cognition and social coefficients; r : random numbers in the interval [0,1]; pbest
+i 
+and x
+gbest
+: the historical best position of the i -th particle and the swarm.
+6
+Location update in standard 
+PSO
+x
+i
+( t + 1 ) = x
+i
+( t ) + v
+i
+( t + 1 )
+7
+Exploration Dynamism 
+calculation in Fast-PSO
+α ( x
+i
+) = ‖ x
+i
+  pbest
+i
+‖
+2
+α : Exploration Dynamism Index.
+8
+Velocity update of Exploratory 
+particles in Fast-PSO
+v
+i
+( t + 1 ) = w
+exp
+v
+i
+( t )
++ c
+1 , exp
+r
+1
+( pbest
+i
+  x
+i
+( t ) )
++ c
+2 , exp
+r
+2
+ 
+x
+gbest
++ L ( t )   x
+i
+( t )
+)
+w
+exp
+, c
+1 , exp
+, and c
+2 , exp
+: inertial weight, cognition coefficient, and social coefficient of 
+Exploratory particles; L ( t ) : random perturbation vector generated by the L ´evy flight 
+distribution.
+9
+Velocity update of Exploitative 
+particles in Fast-PSO
+v
+i
+( t + 1 ) = w
+expl
+v
+i
+( t )
++ c
+1 , expl
+r
+1
+( pbest
+i
+  x
+i
+( t ) )
++ c
+2 , expl
+r
+2
+ 
+x
+*
+local
+  x
+i
+( t )
+)
+w
+expl
+, c
+1 , expl
+, and c
+2 , expl
+: inertial weight, cognition coefficient, and social coefficient of 
+Exploitative particles; x
+*
+local
+: the optimal solution of the HPSS surrogate model.
+10
+Reinvigoration of Stagnant 
+particles in Fast-PSO
+x
+i
+= r
+3
+x
+gbest
++ ( 1   r
+3
+) x
+exp
++ L ( t ) x
+exp
+: the mean position of all Exploratory particles.
+11
+Particle group allocation in 
+Fast-PSO
+ρ ( t + 1 ) = g
+(
+ρ ( t ) ,
+{
+x
+gbest
+( k )
+}
+k = t   4
+k = t
+)
+ρ : group proportion vector; g : group allocation strategy.
+12
+Surrogate model of HPSS in 
+Fast-PSO
+̂
+f ( x ) =
+∑
+P
+j = 0
+β
+j
+ϕ
+j
+( x )
+β and ϕ : coefficients and basis functions of the HPSS surrogate model;
+13
+Surrogate model training in 
+Fast-PSO
+β =
+argmin
+β
+∑
+( x k , y k ) ∈ S train
+[
+̂
+f ( x
+k
+)   f ( x
+k
+) ]
+2
+f ( x
+k
+) and 
+̂
+f ( x
+k
+) : the actual value and surrogate model prediction at position x
+k
+; S
+train
+: the 
+training dataset of the HPSS surrogate model.
+Y. Zhang et al. Automation in Construction 182 (2026) 106718 
+4 
+ensure precise structural safety assessment. As an essential component 
+of industrialized tools, the interaction layer is mainly responsible for 
+information visualization of the DT model and subsequent decision 
+making. It leverages WebGL technology for cross-platform accessibility, 
+allowing structural condition monitoring through terminal devices such 
+as PCs, laptops, tablets, and smartphones.
+Data transmission between the sensing layer and the edge layer can 
+utilize either wired or wireless communication protocols (e.g., Wi-Fi, 
+Zigbee, LoRa), with selection criteria determined by specific engineer -
+ing characteristics and operational requirements. Wi-Fi demonstrates 
+superior transmission quality and bandwidth efficiency, though signif -
+icant signal attenuation occurs in obstructed environments, making it 
+suitable for applications with simple structural configurations requiring 
+unobstructed sensor-terminal pathways. While Zigbee exhibits inferior 
+Y. Zhang et al. Automation in Construction 182 (2026) 106718 
+5 
+transmission quality and speed compared to Wi-Fi, its ultra-low power 
+consumption renders it appropriate for long-term monitoring systems. In 
+the engineering application, given the infrastructure ’ s high-risk nature 
+and stringent requirements for real-time data integrity, wired trans -
+mission was implemented to ensure optimal transmission efficiency and 
+data fidelity.
+Data transmission from the edge layer to the cloud can be achieved 
+via wired (e.g., Ethernet, fiber optics) or wireless (e.g., 4G, 5G) methods. 
+Wired systems ensure secure, high-fidelity data transmission during 
+high-volume transfers, whereas wireless systems eliminate geographical 
+constraints between endpoints. Given the server-edge distance in the 
+engineering application, 5G technology was selected for its balanced 
+consideration of transmission speed, quality, and cost efficiency. In 
+contrast to MQTT, which prioritizes low power consumption over 
+transmission stability and data integrity, the TCP/IP protocol was 
+adopted for edge-to-cloud communication because its standardized ar -
+chitecture ensures robust reliability and industrial applicability. 
+Furthermore, encryption and compression techniques were integrated to 
+enhance security while preserving bandwidth efficiency.
+The cloud computing layer employs distributed computing frame -
+works including Hadoop and Spark. Spark was specifically chosen in the 
+engineering application for its Python-compatible API architecture and 
+accelerated computational capabilities. It specifically aligns with two 
+critical requirements: compatibility with existing Python-based FE 
+analysis modules, and real-time processing capability essential for SHM. 
+Processed data was subsequently transmitted via HTTP/HTTPS pro -
+tocols to client terminals, enabling real-time visualization of analytical 
+results and interactive models through standard web browsers.
+2.2. Python-based finite element program with cloud computing
+Conventional structural FE analysis predominantly relies on com -
+mercial desktop-based softwares (e.g., ABAQUS, ANSYS, Midas Civil, 
+etc.), necessitating manual or scripted data transfer for sensing inputs 
+and analytical outputs. This workflow fragmentation introduces 
+computational bottlenecks that critically compromise structural moni -
+toring system automation and efficiency. While commercial platforms 
+emphasize visualization capabilities, especially in modeling and analysis 
+as the key distinguishing feature, such functionality becomes non- 
+essential in well-constrained application scenarios (e.g., specific load- 
+response solutions at predefined critical nodes). Furthermore, graph -
+ical processing demands substantial GPU resources for rendering and 
+computation, making visualization impractical for typical resource- 
+constrained monitoring system architectures with limited computa -
+tional and storage capacity. As illustrated in Fig. 2 , the developed FE 
+program only preserves the formulation, assembly, and computation of 
+stiffness and force matrices [ 47 ]. To overcome client-side constraints in 
+data and workflow management, the Python-implemented system em -
+ploys MySQL for database operations, enabling full cloud-based 
+functionality.
+To ensure modeling efficiency for both engineering application and 
+subsequent projects, the preprocessing module incorporates the pre -
+defined Element Library with common element types and shape func -
+tions, the Material Library containing elastic moduli, densities, and 
+Poisson ’ s ratios for diverse concrete and steel grades, and the Boundary 
+Library defining various constraint and load conditions. The Python- 
+based solver module enables flexible equation system resolution based 
+on structural characteristics. For sparse global stiffness matrices, the 
+SciPy sparse solver ( “ scipy.sparse.linalg.spsolve ” ) is employed, while 
+models with limited degrees of freedom utilize the direct solver from 
+NumPy ( “ numpy.linalg.solve ” ) to optimize computational efficiency. In 
+the post-analysis module, Python APIs extract nodal and elemental 
+displacement and stress responses, enabling specialized analyses such as 
+staged construction simulation, load combination evaluation, and 
+structural configuration optimization. Python ’ s interoperability facili -
+tates seamless integration of analysis results with other digital systems, 
+including SHM platforms and engineering information management 
+frameworks. This flexibility supports cross-platform data sharing, sec -
+ondary development, and collaborative workflows.
+In addition to leveraging Python to achieve intensive FE analysis 
+capabilities, the program employs two strategies to optimize SHM effi -
+ciency. The first is a computation acceleration strategy based on the 
+fixed stiffness matrix. In structural analysis, when the topology and 
+geometric configuration of the structure remain unchanged, the global 
+stiffness matrix theoretically remains constant across varying external 
+loading conditions. By reusing the precomputed global stiffness matrix 
+for multi-load case analyses, the program minimizes redundant element- 
+level stiffness calculations and global matrix assembly processes, sub -
+stantially accelerating real-time structural response evaluation. The 
+second approach focuses on sparse matrix storage and in-memory 
+computing. Given the high sparsity of the FE-derived global stiffness 
+matrices in the engineering application, the program adopts the Coor -
+dinate (COO) format to reduce storage requirements. Optimized data 
+structures and storage schemes enable core computations, particularly 
+the solution of large-scale linear systems, to be performed primarily in 
+memory. This memory-centric strategy minimizes interactions with the 
+hard disk, limiting them to necessary data output at the end of the 
+analysis, thereby further reducing computational cycles and enhancing 
+overall efficiency.
+Fig. 3. Conceptual site overview diagram of the application.
+Table 2 
+Information of investigated scenarios.
+Scenario Specific Task Subject 
+Component
+Applied 
+Force
+Primary State
+1
+Constructing 
+Platform
+Trestle No.1
+Self-weight 
+of platform 
+and workers
+Eccentric 
+compression of 
+the trestle
+2
+Installing Steel 
+Crossbeam
+Trestle No.1
+Self-weight 
+of the steel 
+crossbeam
+Compression of 
+the trestle
+3
+Lifting Main 
+Girder and 
+Cushion Beam
+Trestle No.1
+Self-weight 
+of the main 
+girder
+Deformation of 
+steel crossbeam 
+and compression 
+of the trestle
+4
+Existing Pier 
+Cap Sliding
+Trestle No.2
+Existing pier 
+cap sliding 
+onto the 
+trestle
+Compression and 
+eccentric tension 
+of the trestle
+5
+Existing Pier 
+Cap Lowering
+Trestle No.2
+Self-weight 
+of the pier 
+cap
+Compression of 
+the trestle
+Y. Zhang et al. Automation in Construction 182 (2026) 106718 
+6 
+2.3. Hybrid load identification with adaptive sensor weighting
+During complex construction phases or under varying loading con -
+ditions, imposed structural loads are often uncertain or difficult to 
+quantify precisely. This uncertainty poses a significant challenge for FE 
+analysis, which requires explicit load inputs to compute structural 
+responses. This study proposed a load identification method that de -
+termines the equivalent loads acting on a structure using monitored 
+data, specifically stress measurements obtained from a limited number 
+of instrumented locations. Subsequently, these inverted loads serve as 
+inputs to the system for performing a global stress analysis. This enables 
+the determination of stress distributions across all structural 
+Fig. 4. Illustration of investigated scenarios.
+Y. Zhang et al. Automation in Construction 182 (2026) 106718 
+7 
+components, including potentially uninstrumented regions, thereby 
+facilitating more comprehensive and timely structural safety 
+monitoring.
+As outlined in Algorithm 1, the initial step quantifies the relationship 
+between structural loads and stresses. Under the assumptions of linear 
+elasticity and small deformations, it is governed by a linear system as Eq. 
+1 [ 48 ], 
+σ = SF (1) 
+where the stress influence matrix S is explicitly defined through the 
+elasticity matrix, strain-displacement matrix, displacement trans -
+formation matrix, and the inverse of stiffness matrix [ 49 ]. In addition to 
+matrix combination with theoretical structural configuration, the stress 
+Fig. 5. Schematic diagram of sensor arrangement on trestles.
+Fig. 6. Representative components of the digital twin system.
+Y. Zhang et al. Automation in Construction 182 (2026) 106718 
+8 
+influence matrix can be obtained from FE simulations as in this study 
+using its concept that the component S
+ij 
+refers to the stress response at 
+the i -th location with unit force acting on the j -th location. However, the 
+stress influence matrix is frequently ill-conditioned or singular due to 
+intrinsic limitations such as sparse sensor placement, measurement 
+noise, and load distribution ambiguities [ 50 ]. This pathological condi -
+tioning renders the load inversion problem ill-posed, manifesting as 
+solution non-uniqueness and extreme sensitivity to data perturbations. 
+For singularity, the Moore-Penrose pseudoinverse of the stress influence 
+matrix S
++
+can be utilized in the singular value decomposition (SVD) 
+method as Eq. 2 [ 51 ], 
+S
++
+= V Σ
++
+U
+T
+(2) 
+in which, 
+S = U Σ V
+T
+(3) 
+where U and V are two orthogonal matrices; and Σ
++
+is the pseudoinverse 
+of a diagonal matrix Σ .
+For measurement noise, a leave-one-out (LOO) scheme was proposed 
+in this study to assess sensor reliability and adjust sensor weight for load 
+inversion. Inspired by techniques in sensor fault detection and isolation 
+(FDI) [ 52 ] and outlier detection in structural identification [ 53 ], each 
+sensor data is iteratively eliminated and its faulty potential is quantified 
+by the “ deviation severity (DS) ” defined as Eq. 4 , 
+α
+i
+=
+ 
+̂σ
+i
+  ̂σ
+i
+i
+)
+2
+∑
+N   1
+j = 1
+(
+̂σ
+i
+j
+  σ
+j
+)
+2
+(4) 
+where α
+i 
+is the deviation severity at the i -th sensor location; ̂σ
+i 
+is the 
+predicted response at the i -th sensor location using all sensor data via 
+load inversion; ̂σ
+i
+i 
+and ̂σ
+i
+j 
+are the predicted responses at the i -th and j -th 
+sensor locations, respectively, with the i -th sensor data excluded from 
+load inversion; σ
+j 
+is the measured response at the j -th sensor location; 
+and N is the total number of sensor locations. Sensors with high DS 
+values are assigned reduced weights in constructing the objective 
+function to be minimized. Finally, loads that generated FE stresses 
+consistent with measured values can be identified and used to determine 
+Table 3 
+Device configurations of the digital twin system.
+Layer Component Parameters
+Sensing Layer Strain Sensors
+Measurement Range: ± 3000 με 
+Nonlinearity: < ± 2 % FS 
+Sensitivity: 500 με /mV/V 
+Bridge Voltage: < 10 VDC
+Edge Preprocessing 
+Layer
+Edge Computing 
+Unit
+Processor: digital signal processor 
+(DSP) 
+Number of Channels: 8 
+Power Consumption: 15 W
+Cloud Computing 
+Layer
+Computing Center
+CPU: 128 cores 
+Memory (RAM): 64 GB 
+GPU Memory: 24 GB
+Interaction Layer Online Platform
+Visualization Engine: Three.js, 
+Cesium 
+Architecture: microservice 
+architecture
+Table 4 
+Execution time (seconds) in digital twin workflow.
+Scenario Process Total
+Data from Sensor Layer to Cloud Computing Layer Load Identification Stress Distribution Determination Digital Twin Visualization
+1
+N/A *
+0.206 0.0305
+N/A *
+0.261
+2 0.146 0.0301 0.204
+3 0.195 0.0306 0.254
+4 0.118 0.0252 0.177
+5 0.107 0.0249 0.164
+*
+The time costs associated with hardware and network configurations are included in the “ Total ” time shown in this table but are not reported separately.
+Fig. 7. Effect of stiffness matrix generation method on execution time (seconds) of stress distribution determination.
+Y. Zhang et al. Automation in Construction 182 (2026) 106718 
+9 
+the structural stress distribution.
+2.4. Fast-PSO algorithm
+As established in the previous section, the load inversion technique 
+which relies on matching FE-predicted responses with field measure -
+ments (i.e., Line 17 in Algorithm 1), constitutes a conventional FE 
+model-updating problem. In this process, swarm intelligence algorithms 
+are typically employed (i.e., Line 18 in Algorithm 1) to perform auto -
+mated optimization [ 54 , 55 ]. Particle swarm optimization (PSO) is a 
+classic swarm intelligence algorithm optimizing solutions through iter -
+ative updates of individual positions (i.e., solutions), and these updates 
+are guided by the historical optimal positions of both the swarm and 
+individual particles [ 56 ]. During this process, the algorithm requires 
+iterative evaluations of the objective function to assess the positional 
+quality (i.e., fitness) of particles. However, the computational 
+complexity of massive structural FE models and data transfer delays 
+across modules significantly reduce optimization efficiency through 
+Fig. 8. Effect of optimization method on execution time (seconds) of load identification.
+Table 5 
+Hyperparameters of PSO and Fast-PSO.
+Hyperparameter Range Value
+PSO Fast-PSO
+Population Size –
+20 for the engineering 
+application and 50 for the 
+benchmark functions
+Initial Proportion Vector of Exploratory, 
+Exploitative, and Stagnation Particles
+– – [0.4, 0.4, 0.2]
+Surrogate Model of HPSS 
+̂
+f ( x )
+– –
+Quadratic response 
+surface model
+Weight Coefficient, w 
+( w
+exp 
+and w
+expl
+)
+[0.4, 
+0.9]
+0.729
+Cognition Coefficients, c
+1 
+( c
+1 , exp 
+and c
+1 , expl
+)
+[0, 4] 1.494
+Social Coefficients, c
+2 
+( c
+2 , exp 
+and c
+2 , expl
+)
+[0, 4] 1.494
+Fig. 9. Deviation severity of sensors.
+Y. Zhang et al. Automation in Construction 182 (2026) 106718 
+10 
+Fig. 10. Comparison of measured and calculated sensor stresses.
+Y. Zhang et al. Automation in Construction 182 (2026) 106718 
+11 
+frequent objective function evaluations. To mitigate this limitation, 
+data-driven surrogate models (e.g., Kriging, artificial neural networks), 
+trained on representative FE simulation datasets, replace the full FE 
+model during optimization [ 57 – 59 ]. Additionally, the standard PSO 
+employs uniform behavioral patterns, update strategies, and weighting 
+parameters across the swarm, potentially inducing premature conver -
+gence to local optima, insufficient balance between global exploration 
+and local exploitation, and suboptimal convergence rates [ 60 ].
+To mitigate these limitations, this study proposed a modified PSO 
+(Fast-PSO) algorithm integrating dynamic population differentiation 
+with adaptive group allocation. Furthermore, high-potential solution 
+subspaces (HPSS) are dynamically identified and modeled using inde -
+pendent surrogate models, while direct mathematical optimization 
+techniques are applied to accelerate solution convergence within these 
+subspaces. As outlined in Algorithm 2 and Table 1 , particles are classi -
+fied into three behavioral groups, namely exploratory, exploitative, and 
+stagnant, following multiple iterations of the standard PSO framework. 
+This classification employs the Exploration Dynamism Index as Eq. 7 in 
+Table 1 , which quantifies convergence stagnation via the Euclidean 
+distance between a particle ’ s current and historical best positions. 
+Exploratory particles exhibiting high dynamism retain standard PSO 
+update rules to intensively probe unexplored regions of the solution 
+space. Exploitative particles with moderate dynamism leverage low- 
+fidelity surrogate models (e.g., quadratic response surfaces) to map 
+localized HPSS, enabling rapid mathematical optimization techniques 
+(e.g., gradient-based convergence) within these refined regions. Stag -
+nant particles demonstrating minimal dynamism trigger L ´evy-flight- 
+aided relocation to escape local optima as Eq. 10 [ 61 ], redistributing 
+them toward unexplored regions.
+As formulated in Eq. 11, the algorithm monitors the evolution of the 
+global best solution within the most recent five generations to determine 
+whether the search process has stagnated, and adjusts the proportions of 
+exploratory and exploitative particles accordingly. If no improvement is 
+observed, the system identifies stagnation and increases the proportion 
+(e.g., 5 %) of exploratory particles while reducing exploitative ones to 
+enhance global search ability and escape local optima. Conversely, if 
+improvement occurs, the system increases the proportion (e.g., 2 %) of 
+exploitative particles to focus the search on promising regions and 
+accelerate convergence. After the target proportions are set, particle 
+classification in the current iteration is performed based on the 
+Fig. 10. ( continued ).
+Y. Zhang et al. Automation in Construction 182 (2026) 106718 
+12 
+movement range of each particle: those with the smallest ranges are 
+assigned as stagnation-type; among the remaining, particles with the 
+largest ranges are assigned as exploratory-type; and the rest are assigned 
+as exploitative-type.
+The proposed Fast-PSO systematically balances global exploration, 
+local exploitation, and convergence recovery while preserving core PSO 
+mechanics. Its innovations manifest in two primary mechanisms. First, 
+dynamic particle categorization, guided by real-time convergence status 
+and diversity feedback, enables efficient computational resource distri -
+bution. This allows strategic prioritization of critical search behaviors 
+across optimization phases: emphasizing exploration for rapid identifi -
+cation of promising regions during initial stages, and shifting toward 
+exploitation to accelerate convergence to precise solutions later. Such 
+adaptive balancing mitigates redundant searches in low-potential re -
+gions and prevents premature convergence from insufficient exploration 
+or excessive exploitation, thereby significantly reducing high-quality 
+solution discovery time and directly enhancing optimization speed.
+Second, the dynamically constructed surrogate models for HPSS 
+leverage available real-evaluated data points to form local approxima -
+tions using explicit and tractable mathematical representations. This 
+formulation enables the direct application of efficient mathematical 
+optimization techniques to rapidly obtain optimal solutions, thereby 
+bypassing computationally expensive iterative particle evaluations. The 
+resulting local optimum provides guidance for Exploitation particles, 
+significantly accelerating convergence within potential basins and 
+playing a decisive role in global optimization efficiency.
+Fig. 11. Visualization of calculated global stress distribution.
+Y. Zhang et al. Automation in Construction 182 (2026) 106718 
+13 
+3. Engineering application of the proposed digital twin
+This section introduces the engineering application used to demon -
+strate the implementation of the proposed DT framework. It presents the 
+construction background, critical working scenarios, sensor deploy -
+ment, and system configuration, forming the basis for the subsequent 
+evaluation of the system ’ s operational performance.
+3.1. Background of the application
+In the newly constructed Chengdu – Chongqing Middle Line, the 
+Jingkou Double-Track Bridge intersects the existing Xinjingkou Jialing 
+River Bridge on the Shanghai – Chengdu Line via a grade-separated 
+crossing. As shown in Fig. 3 , the two lines intersect at an angle of 
+approximately 13
+◦
+, with an overlap length of 115 m. To minimize the 
+longitudinal elevation of the new line, an underpass scheme was adop -
+ted. The spatial overlap between the new and existing piers required the 
+demolition of gravity piers No. 23 and No. 24 of the Xinjingkou Jialing 
+River Bridge, which were replaced by portal piers to accommodate the 
+new alignment. The entire construction process comprised over 20 tasks 
+categorized into three phases: construction of the new portal piers, 
+transfer of the existing bridge loads to these piers, and removal of the 
+existing gravity piers.
+This application focuses on five representative scenarios described in 
+Table 2 . As illustrated in Fig. 4 , the steel crossbeam of the newly con -
+structed portal pier rested on temporary steel tubular trestles (Trestle 
+No. 1). The steel crossbeam bore the dead load transmitted from the 
+main girder and underwent deformation. As a result, Trestle No. 1 was 
+subjected to both the load transferred through the steel crossbeam and 
+direct loading from the construction platform. The removal of existing 
+pier caps required lateral displacement using winches mounted on 
+sliding trestles (Trestle No. 2). As a result, Trestle No. 2 primarily 
+resisted horizontal forces exerted by the winches while simultaneously 
+supporting vertical loads from existing pier caps.
+The construction process entailed significant complexity, tight 
+scheduling, and elevated safety risks. Crucially, the trestles bore most 
+structural loads, making their stability and safety paramount to project 
+integrity. To ensure their structural integrity, stress sensors were 
+installed at the most critical sections for real-time monitoring as illus -
+trated in Fig. 5 , which were identified through prior analysis. However, 
+deviations from design conditions, including varying mechanical and 
+human-induced loads and boundary condition discrepancies, limit the 
+reliability of localized monitoring. It motivated the full-field stress dis -
+tribution analysis to comprehensively assess structural behavior in this 
+application.
+3.2. Implementation of the digital twin system
+Corresponding to the functional modules shown in Fig. 1 , Fig. 6 il -
+lustrates the representative devices used in the proposed DT system, 
+Fig. 11. ( continued ).
+Fig. 12. Schematic diagram of the verification bridge model.
+Y. Zhang et al. Automation in Construction 182 (2026) 106718 
+14 
+with their configuration details provided in Table 3 . The system 
+employed a 5G mobile network for data transmission from the edge 
+preprocessing layer to the cloud computing layer, taking advantage of its 
+high bandwidth and low latency. Besides, it adopted an edge-cloud 
+collaborative architecture in which the edge preprocessing layer per -
+formed lightweight local computations, including denoising, sampling, 
+and data packaging. The reduced data volume to the cloud improved 
+transmission efficiency and minimized network latency. In addition, the 
+utilized edge device was equipped with a dedicated local storage unit of 
+approximately 20 MB, capable of retaining about one day of sensor data. 
+This capacity is sufficient to allow maintenance personnel to identify 
+and rectify potential network interruptions in a timely manner. During 
+periods of network disconnection, sensor data are temporarily buffered 
+at the edge and automatically synchronized once connectivity is 
+restored. Owing to the use of precise timestamps, this mechanism en -
+sures data integrity and prevents any temporal inconsistency. Finally, 
+online interaction was facilitated through a self-developed platform that 
+enables interactive visualization, real-time monitoring, and efficient 
+user – system communication throughout the DT workflow.
+4. Results and discussion
+This section comprehensively examines the performance of the 
+proposed DT framework. First, the computational efficiency of the entire 
+process, from data acquisition to stress distribution visualization, is 
+quantitatively analyzed, with particular emphasis on evaluating the 
+contribution of the two proposed strategies to improving overall effi -
+ciency. Subsequently, the effectiveness of the proposed damaged sensor 
+identification strategy is demonstrated. Finally, by comparing the stress 
+data collected from the physical entity with those predicted by the DT 
+under five different scenarios, the accuracy and comprehensiveness of 
+the twin ’ s predictions, as well as its capability to identify potential 
+structural risks, are validated.
+4.1. Efficiency assessment
+As shown in Table 4 , the total time required from data acquisition to 
+global stress visualization across all five scenarios does not exceed 0.3 s 
+(300 ms), demonstrating the real-time capability of the DT system and 
+its compliance with the fundamental requirements for risk early- 
+warning tasks in SHM [ 62 ]. It is noteworthy that the time spent on 
+hardware and network-related operations accounts for less than 20 % of 
+the total duration. This observation underscores the significance and 
+necessity of the efficiency enhancements introduced in this paper for the 
+remaining modules, particularly structural simulation and system 
+identification, which together account for the majority of the compu -
+tational time.
+The generation and assembly of the stiffness matrix constitute the 
+establishment of the structural FE model, enabling the calculation of 
+structural responses under applied external loads. Fig. 7 illustrates the 
+specific impact of different stiffness matrix generation methods on the 
+execution time for structural stress distribution calculation, in which the 
+stiffness matrix (i.e., the FE model) is required to be invoked once. The 
+results demonstrate that directly calling the precomputed stiffness ma -
+trix (requiring approximately 20 – 30 ms) reduced the execution time by 
+up to 70 times compared to computing and calling the stiffness matrix 
+(requiring approximately 1600 – 1900 ms). It can thus be anticipated that 
+using precomputed stiffness matrices will lead to significant time sav -
+ings in modules such as deviation severity determination of sensors and 
+load identification, in which repeated invocation of the FE model is 
+required. Given the assumptions adopted in this application, including 
+material linearity, small deformations, and fixed boundary conditions, 
+the use of this approach is well justified. For example, the temporary 
+steel trestles examined here are expected to remain within the elastic 
+range under service loads [ 63 , 64 ]. Moreover, Table 4 shows that the 
+time required for global stress computation constitutes only 10 – 15 % of 
+the total workflow duration, suggesting that the framework is likely to 
+maintain satisfactory performance when applied to larger and more 
+complex structures.
+Fig. 8 illustrates the specific impact of different optimization 
+Fig. 13. Performance comparison of developed finite element program and Midas Civil.
+Y. Zhang et al. Automation in Construction 182 (2026) 106718 
+15 
+methods on the execution time for structural load identification. In this 
+application, using the hyperparameters provided in Table 5 and 
+achieving a convergent objective function value of 0.01, Fast-PSO 
+reduced the computational time by approximately 70 % across all five 
+scenarios compared to the standard PSO, decreasing from approximately 
+300 – 800 ms to 100 – 200 ms. These results demonstrate the successful 
+coding and implementation of this modified optimization algorithm. 
+Furthermore, as a general-purpose algorithm applicable to diverse 
+Fig. 14. Value and execution time of Fast-PSO versus objective function evaluation.
+Y. Zhang et al. Automation in Construction 182 (2026) 106718 
+16 
+mathematical and engineering optimization problems, the superiority of 
+Fast-PSO is more comprehensively demonstrated through comparative 
+evaluations with the standard PSO on benchmark problem sets. The 
+corresponding results are provided in the Appendix A.2 “ Evaluation of 
+Fast-PSO with benchmark functions ” .
+4.2. Fidelity assessment
+The deviation severity of all sensors calculated according to Eq. 4 is 
+shown in Fig. 9 . Among these, the deviation severity derived from data 
+collected by Sensor 3 (installed on Trestle 1, corresponding to Scenarios 
+1 – 3) is significantly higher (exceeding 1.5) than those of the other 
+sensors (less than 0.2). Therefore, during load identification using Fast- 
+PSO, the weight of this sensor in the objective function was reduced (set 
+Fig. 14. ( continued ).
+Y. Zhang et al. Automation in Construction 182 (2026) 106718 
+17 
+to an extremely small value). The accuracy of using deviation severity to 
+identify sensor faults is corroborated by the stress measurements 
+recorded in Fig. 10 . It can be observed that the measurement from 
+Sensor 3 under Scenarios 1 – 3 consistently register a value of   2.21 MPa 
+(compressive stress), which clearly contradicts the actual mechanical 
+behaviors of the structure under varying external loads.
+Furthermore, Fig. 10 presents a comparison between the stresses 
+measured and calculated via the developed FE program with identified 
+loads at the sensor locations. The results indicate a high level of agree -
+ment in most cases with relative errors less than 10 %, demonstrating the 
+accuracy and reliability of the entire DT system.
+Fig. 14. ( continued ).
+Y. Zhang et al. Automation in Construction 182 (2026) 106718 
+18 
+4.3. Risk identification
+Fig. 11 presents the global stress distribution of the structure calcu -
+lated using the FE program with the identified loads, covering both 
+sensor-instrumented and non-instrumented locations. In addition to 
+clearly illustrating the varying stress levels across structural compo -
+nents, the stress nephograms for each scenario reveal that the computed 
+extreme stress values exceed those measured from sensor-instrumented 
+locations. For instance, as shown in Fig. 11 (e), the maximum computed 
+stress in Trestle 2 under Scenario 5 is   78.30 MPa, whereas the 
+maximum measured stress at sensor locations shown in Fig. 10 (e) is only 
+  26.39 MPa. This discrepancy highlights a significant misalignment 
+between the critical regions predicted in prior analyses and caused by 
+the actual loads, which may be attributed to the differences between 
+design assumptions and real-world conditions as previously discussed. 
+These findings underscore the safety imperative of deploying a real-time 
+DT system for structural state monitoring during construction, which 
+constitutes the fundamental motivation of this study.
+Fig. 14. ( continued ).
+Y. Zhang et al. Automation in Construction 182 (2026) 106718 
+19 
+5. Conclusions
+This paper presented an efficiency-enhanced digital twin (DT) sys -
+tem tailored to the real-time requirements of structural health moni -
+toring. A bridge pier replacement project was selected as an engineering 
+application, where six pre-installed sensors were used to identify 
+external forces and compute stress distributions of two steel trestles 
+under five representative scenarios. The main conclusions are as follows: 
+• The DT system adopted edge-cloud integration, cloud computing, 
+and 5G mobile network at the hardware level, and employed a 
+Python-based finite element (FE) program and swarm-intelligence- 
+based optimization at the software level. The total time from data 
+acquisition to stress visualization remained below 300 ms, demon -
+strating strong real-time capability and suitability for risk warning in 
+health monitoring.
+• The developed FE program, combined with precomputed and fixed 
+stiffness matrix, significantly accelerated load identification and 
+global stress computation, reducing FE computational time to 1/70 
+of the original.
+• The proposed deviation severity coefficient with adaptive weighting 
+accurately identified abnormal sensors, ensuring prediction- 
+measurement stress errors below 10 % in most cases.
+• The modified particle swarm optimization (Fast-PSO) algorithm, 
+incorporating population differentiation and local acceleration, 
+improved both accuracy and efficiency. It reduced computational 
+time by approximately 70 % in the application and achieved up to a 
+tenfold accuracy improvement over the standard PSO on 12 
+CEC ’ 2022 benchmark problems.
+• The DT system effectively identified critical stress regions, with 
+predicted maximum stresses consistently exceeding those considered 
+during design, in some cases by more than threefold.
+Overall, this paper presented an effective solution for real-time 
+monitoring of engineering structures and offered technical guidance 
+for efficient simulation and system identification. While some proposed 
+approaches were developed under certain simplifying assumptions, such 
+as linear elasticity and small deformations, these do not diminish their 
+practical relevance for most engineering applications. Future research 
+will aim to further enhance the framework ’ s adaptability and compu -
+tational robustness, enabling its extension to more complex scenarios, 
+including systems with varying stiffness or nonlinear responses.
+CRediT authorship contribution statement
+Yazhou Zhang: Writing – review & editing, Writing – original draft, 
+Visualization, Validation, Software, Methodology, Investigation, Formal 
+analysis, Data curation, Conceptualization. Yong Deng: Writing – re -
+view & editing, Writing – original draft, Visualization, Validation, 
+Investigation, Formal analysis, Data curation, Conceptualization. 
+Gongjian Zhou: Writing – review & editing, Supervision, Project 
+administration, Funding acquisition, Conceptualization. Jiwei Zhong: 
+Writing – review & editing, Supervision, Investigation. Xungang Zhao: 
+Writing – review & editing, Investigation, Data curation. Chenxu Zhou: 
+Writing – review & editing, Software, Data curation.
+Declaration of competing interest
+The authors declare that they have no known competing financial 
+interests or personal relationships that could have appeared to influence 
+the work reported in this paper.
+Acknowledgment
+This work was supported by the National Key Research and Devel -
+opment Program of China (No. 2023YFC3806800) and the Guangdong 
+Table 6 
+Comparative performance of Fast-PSO and PSO under similar execution time.
+Function D = 10 D = 20 Function D = 10 D = 20
+PSO Fast-PSO PSO Fast-PSO PSO Fast-PSO PSO Fast-PSO
+Mean Mean Mean Mean Mean Mean Mean Mean
+STD STD STD STD STD STD STD STD
+Best Best Best Best Best Best Best Best
+Time, s * Time, s Time, s Time, s Time, s Time, s Time, s Time, s
+F1
+9.09E þ 02 1.00E + 03 1.31E + 04 5.27E þ 03
+F7
+2.06E + 03 2.15E þ 02 2.20E + 03 2.36E þ 02
+6.06E + 02 3.48E þ 02 6.31E + 03 1.19E þ 03 1.50E + 01 3.04E þ 00 6.69E + 01 1.02E þ 01
+4.04E þ 02 4.87E + 02 6.56E + 03 3.23E þ 03 2.03E + 03 2.06E þ 02 2.11E + 03 2.21E þ 02
+0.097 0.094 0.114 0.105 1.503 1.152 2.547 2.267
+F2
+4.45E + 02 6.74E þ 01 5.82E + 02 2.74E þ 02
+F8
+2.25E + 03 2.30E þ 02 2.31E + 03 2.56E þ 02
+3.79E + 01 1.20E þ 01 7.91E þ 01 8.81E + 01 2.40E + 01 5.15E þ 00 7.31E + 01 1.50E þ 01
+4.08E + 02 4.71E þ 01 4.61E + 02 1.36E þ 02 2.23E + 03 2.25E þ 02 2.23E + 03 2.32E þ 02
+0.081 0.076 0.097 0.088 1.972 1.529 3.449 3.096
+F3
+6.17E + 02 6.41E þ 01 6.46E + 02 7.00E þ 01
+F9
+3.61E + 08 6.10E þ 07 8.85E + 08 1.45E þ 08
+7.83E + 00 7.29E-01 1.37E + 01 1.77E þ 00 7.28E + 07 8.48E þ 06 2.37E + 08 2.69E þ 07
+6.06E + 02 6.25E þ 01 6.26E + 02 6.71E þ 01 2.06E + 08 4.45E þ 07 5.16E + 08 8.79E þ 07
+0.095 0.083 0.120 0.102 0.528 0.463 0.560 0.519
+F4
+8.48E + 02 8.73E þ 01 9.60E + 02 1.04E þ 02
+F10
+2.71E + 03 3.39E þ 02 4.87E + 03 6.41E þ 02
+1.11E + 01 9.38E-01 1.87E + 01 1.91E þ 00 2.94E + 02 9.35E þ 01 1.49E + 03 2.02E þ 02
+8.25E + 02 8.50E þ 01 9.28E + 02 9.94E þ 01 2.50E + 03 2.51E þ 02 2.51E + 03 2.61E þ 02
+0.131 0.107 0.134 0.136 0.518 0.431 0.778 0.679
+F5
+1.03E + 03 2.29E þ 02 3.95E + 03 8.37E þ 02
+F11
+3.05E + 03 3.13E þ 02 3.56E + 03 3.88E þ 02
+1.27E + 02 4.93E þ 01 1.44E + 03 1.70E þ 02 3.40E + 01 5.57E þ 00 1.72E + 02 1.59E þ 01
+9.04E + 02 1.57E þ 02 1.59E + 03 5.63E þ 02 3.01E + 03 3.07E þ 02 3.30E + 03 3.54E þ 02
+0.133 0.106 0.134 0.126 0.810 0.601 1.053 0.911
+F6
+2.77E þ 04 5.57E + 06 7.01E þ 06 1.09E + 08
+F12
+9.10E + 08 1.15E þ 08 3.96E + 09 5.56E þ 08
+3.87E þ 04 4.20E + 06 8.80E þ 06 4.95E + 07 4.35E + 07 1.59E þ 07 3.44E + 08 1.00E þ 08
+6.52E þ 03 7.43E + 05 4.44E þ 05 2.29E + 07 8.79E + 08 9.48E þ 07 3.53E + 09 4.35E þ 08
+0.291 0.241 0.309 0.287 0.826 0.636 1.117 0.955
+*
+Benchmark function evaluations were performed with 256 GB of memory, with all other settings identical to those in the engineering application.
+Y. Zhang et al. Automation in Construction 182 (2026) 106718 
+20 
+Pearl River Talent Program (Overseas Young Talents) (No. 
+2024QN11G384).
+Appendix A. Validation of the finite element implementation 
+and Fast-PSO performance
+This appendix provides supplementary validation for the methods 
+presented in this paper. The first part verifies the developed finite 
+element program, while the second evaluates the performance of the 
+proposed Fast-PSO algorithm.
+A.1. Validation of the developed finite element program
+This section validates the accuracy of the developed Python-based FE 
+program. The verification case involves a half-through concrete-filled 
+steel tubular (CFST) tied-arch bridge. As shown in Fig. 12 , the bridge has 
+a total length of 1130 m, with a main span of 252 m, side spans of 60 m, 
+and a width of 27 m. All structural components were assigned a density 
+of 7.85 g/cm
+3 
+and an elastic modulus of 200 GPa.
+The bridge model was constructed within the self-developed Python 
+program following a standard FE modeling procedure, whose general 
+framework is described in Section 2.2 "Python-based finite element 
+program with cloud computing". The bridge geometry was first drafted 
+in Autodesk CAD based on the design drawings. The Python program 
+then extracted the three-dimensional coordinates of key feature points 
+to generate primary nodes. Additional nodes were created by linear 
+interpolation along the geometric centerlines of the main components 
+(e.g., girders, arch ribs, and hangers). These continuous components 
+were discretized into a series of connected three-dimensional beam el -
+ements. To ensure computational accuracy, denser mesh divisions were 
+applied in regions with expected high stress gradients, such as near 
+joints and supports. The final FE model consisted of 1050 nodes and 
+6300 degrees of freedom.
+Fixed boundary constraints were applied at both bridge supports, 
+and the self-weight of the structure was considered as the applied load. 
+Before computation, the program automatically executed the load 
+application process by traversing each beam element, calculating its 
+volume and weight based on sectional properties and material density, 
+and converting the weight into an equivalent set of nodal forces and 
+moments acting at both ends of the element. Finally, all equivalent nodal 
+loads were systematically assembled into the global load vector for 
+subsequent structural response analysis.
+The vertical nodal displacements under self-weight load were 
+computed and compared with the results obtained from the commercial 
+FE software Midas Civil. The results presented in Fig. 13 demonstrate 
+close agreement between the two methods, confirming the accuracy of 
+the developed program. Furthermore, the computational times were 
+2.09 s for Midas Civil and 1.85 s for the developed program, reflecting 
+the earlier conclusion that by retaining only core modeling and solving 
+modules, the present FE program achieved higher computational effi -
+ciency compared to commercial software. This advantage makes it a 
+suitable tool for real-time SHM applications.
+A.2. Evaluation of Fast-PSO with benchmark functions
+This section conducts a comprehensive performance evaluation and 
+comparison between Fast-PSO and the standard PSO using the CEC ’ 2022 
+test suite, which consists of 12 rotated, shifted, hybrid, and composite 
+minimization functions [ 65 ]. The aim is to demonstrate the computa -
+tional efficiency improvements of Fast-PSO in a more standardized 
+manner through widely recognized benchmark problems.
+Table 5 presents the hyperparameter settings used for both the en -
+gineering application and the benchmark problems. No hyperparameter 
+optimization was performed; instead, classical parameter values 
+commonly adopted in previous studies were directly employed [ 66 ]. 
+The primary objective is to validate the performance improvements 
+introduced by the Fast-PSO strategies, such as population differentiation 
+and surrogate-model acceleration, over the standard PSO. Therefore, to 
+ensure a fair and scientifically rigorous comparison, the principle of 
+controlled variables was applied: the baseline parameters of Fast-PSO 
+and the standard PSO were kept identical. This design ensures that 
+any observed performance gains can be attributed to the proposed 
+mechanisms rather than from any incidental advantage due to hyper -
+parameter tuning. For the benchmark problems, both algorithms were 
+evaluated and compared under two relatively high dimensions (D = 10 
+and D = 20) in the following two aspects: 
+• Fast-PSO was repeated 30 times for each of five different numbers of 
+objective function evaluations (100, 150, 200, 250, and 300). The 
+mean and confidence interval of the final objective function values, 
+as well as the average execution time, were recorded. The results are 
+presented in Fig. 14 .
+• Both Fast-PSO and the standard PSO were repeated 30 times under 
+approximately the same execution time (with 270 objective function 
+evaluations for Fast-PSO and 2000 for the standard PSO). The mean, 
+standard deviation, and best values of the final objective function 
+values were obtained. The results are summarized in Table 6 .
+The results in Fig. 14 demonstrate that the objective function value 
+decreased as the number of function evaluations increased, indicating a 
+correct optimization trend of the modified algorithm. The narrow con -
+fidence intervals further reflect the high stability of its optimization 
+performance. Due to strategies such as population differentiation which 
+introduce higher complexity and more sophisticated algorithmic 
+behavi

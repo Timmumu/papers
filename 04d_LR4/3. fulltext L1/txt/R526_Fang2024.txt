@@ -1,0 +1,885 @@
+Advanced Engineering Informatics 62 (2024) 102648
+Available online 19 June 2024
+1474-0346/© 2024 Elsevier Ltd. All rights are reserved, including those for text and data mining, AI training, and similar technologies.
+Full length article 
+A status digital twin approach for physically monitoring over-and-under 
+excavation in large tunnels 
+Weili Fang
+a , b , c
+, Weiya Chen
+a , b , *
+, Peter E.D. Love
+d
+, Hanbin Luo
+a , b
+, Haiming Zhu
+e
+, 
+Jiajing Liu
+a , b 
+a
+School of Civil and Hydraulic Engineering, Huazhong University of Science and Technology, 430074, Wuhan, China 
+b
+National Center of Technology Innovation for Digital Construction, Huazhong University of Science and Technology, 430074, Wuhan, China 
+c
+Department of Civil and Building Systems, Technical University of Berlin, Gustav-Meyer-Allee 25 13156, Berlin, Germany 
+d
+School of Civil and Mechanical Engineering, Curtin University, GPO Box U1987, Perth, WA, Australia 
+e
+China Overseas Construction Limited, Shenzhen 518000, China 
+ARTICLE INFO 
+Keywords: 
+Digital twin 
+Point cloud 
+Triangulated irregular network 
+Over-and-under excavation 
+ABSTRACT 
+Accurate assessments of over-and-under-excavation volumes during tunnel construction are critical for stability 
+and structural safety. Over-and-under-excavation assessment is typically time-consuming as it is undertaken 
+manually and is prone to inaccuracies that adversely impact quality, safety, and costs. To overcome this problem, 
+a status digital twin (to monitor physical conditions) is developed to assess over-and-under excavation during 
+tunneling, enabling a robust and automated assessment of volumes of earth to be determined. The development 
+of the status digital twin comprises three stages: (1) creating an as-designed building information model and as- 
+built point cloud model; (2) producing an automated status update with newly added data; and (3) calculating 
+the of over-and-under excavation volume by building a Triangulated Irregular Network (TIN). The status digital 
+twin is tested in a large-scale tunnel project to evaluate its feasibility and effectiveness. The average over-and- 
+under excavation thickness is 0.05 m, and the mean error of volume calculation is 4.54 %. The results 
+demonstrate that the status digital twin can accurately assess over-and-under excavation during the construction 
+of large-scale tunnel projects by providing instant feedback concerning over/under excavation, thus enabling 
+quality to be effectively managed and costs to be controlled. 
+1. Introduction 
+Drilling and blasting are popular excavation methods in tunnel 
+construction [56] . When drilling and blasting are used, over-and-under 
+excavation (also called overcut and undercut) is likely to occur more 
+often than using other construction methods, such as Tunnel Boring 
+Machines (TBMs) [25] . Over-excavation is defined as an excessively 
+blasted rock area beyond the tunnel ’ s designed contour line. Oppositely, 
+under-excavation is defined as the remaining rock area within the 
+designed contour line in the tunnel. Over-and-under excavation can 
+negatively impact the peripheral rock mass around an excavation area, 
+affecting a tunnel ’ s stability and structural safety and increasing con -
+struction costs [22,57] . Monitoring excavation quality is a manually 
+laden process and, as a result, is time-consuming, with estimates of 
+excavated material often inaccurate, adversely impacting project costs 
+[2,22] . 
+While several rule-based or artificial intelligence (AI) methods have 
+been developed to assess over-and-under excavation accurately, it re -
+mains a pervasive problem during tunnel construction 
+[2,12,36,13,35,22,43] . With this in mind, this research addresses the 
+following question: How can over-and-under excavation be accurately 
+assessed during the construction of large-scale tunnel projects ? This research 
+proposes that a status digital twin is used for basic condition monitoring 
+applications to assess and manage the excavation process. Creating 
+operating parameters with visualization tools is core to developing a 
+status digital twin. Thus, this research utilizes a non-invasive three- 
+dimensional (3D) point cloud-based method to accurately and auto -
+matically assess a tunnel ’ s over-and-under excavation during 
+construction. 
+Thus, the paper commences with a brief review of the three- 
+dimensional (3D) point cloud and semantic segmentation application 
+in tunnel construction ( Section 2 ). Details about the proposed status 
+* Corresponding author. 
+E-mail address: weiya_chen@hust.edu.cn (W. Chen). 
+Contents lists available at ScienceDirect 
+Advanced Engineering Informatics 
+journal homepag e: www.else vier.com/loc ate/aei 
+https://doi.org/10.1016/j.aei.2024.102648 
+Received 25 May 2023; Received in revised form 10 April 2024; Accepted 11 June 2024 
+Advanced Engineering Informatics 62 (2024) 102648
+2
+digital twin, which utilizes a point cloud and Triangulated Irregular 
+Network (TIN), are then presented (Section 3). A case study is then used 
+to test and validate the digital twin in a real-life project (Section 4). A 
+discussion about the contributions and limitations of the developed 
+status digital twin is presented (Section 5) before the paper’s conclusions 
+(Section 6). 
+2. Background to the research 
+Digital twins can take various forms depending on their function 
+[31,41]. As mentioned above, the development of a status digital twin 
+forms the focus of this paper. However, a cursory glance at the literature 
+reveals two other types of digital receiving attention: (1) Operation twins, 
+which are used to adjust operating parameters based on linked actions 
+and/or workflows; and (2) Simulation twins, which are used to predict 
+how an objective or device responds to operational conditions in the 
+future – this is key for predictive maintenance and product development. 
+With advances in AI and sensing technologies coming to the fore, 
+digital twinning has become a popular research topic, as evident by the 
+sheer number of research papers dealing with this subject matter (e.g., 
+[7,24,8,37,9,27,42]. Undertaking a detailed review of digital twin 
+literature is outside the scope of this paper as it focuses on developing a 
+new approach for assessing over-and-under excavation during tunnel 
+construction. However, within the context of tunnel construction, 
+readers are advised to refer to the works of Li et al. [28] and Li et al. 
+[29]. 
+2.1. Three-dimensional (3D) point cloud for tunnel construction 
+Due to the accuracy and efficiency of 3D point clouds, they have been 
+widely used in construction for numerous applications, such as progress 
+monitoring, building performance examination, safety inspection, and 
+retrospective building information models (BIM) from ‘as-builts’ docu -
+mentation[32,38,49,54]. Several studies have also applied point clouds 
+in tunnel construction for cross-section extraction[3,10], deformation 
+measurement[18,48], and reconstruction[11,55]. However, using point 
+clouds to assess over-and-under excavation in tunnel projects has been 
+limited to the work of Huang et al. [22], who employed image-matching 
+and cubic parametric interpolation spline methods to visualize and 
+calculate the volume of over-and-under excavation. 
+While Huang et al.’s [22] work enabled significant headway to be 
+made with the calculation of over-and-under excavation, improvements 
+are required to their method to further improve its accuracy by: (1) 
+automatically segmenting part of a tunnel from a point cloud; and (2) 
+the process to determine geometric calculations. Point cloud semantic 
+segmentation is the task of clustering parts of points that belong to the 
+same object class. Studies examining point cloud semantic segmentation 
+can be categorized as: (1) model-driven approaches; and (2) data-driven 
+approaches. 
+2.2. Point cloud semantic segmentation 
+Model-driven approaches classify point clouds into different seg -
+ments based on predefined labels (e.g., descriptions of objects of inter -
+est). In the context of point cloud semantic segmentation, a plethora of 
+model-driven approaches were developed. For example, the model 
+fitting-based approaches aim to fit shapes onto point cloud data to detect 
+objects’ geometric primitives. Two of the most widely used model 
+fitting-based approaches are the Hough Transform (HT)[5]and Random 
+Sample Consensus (RCS)[16]. Still, they require prior knowledge of 
+predefined shapes or surfaces[14]. However, the RCS has been proven to 
+perform better in terms of efficiency and robustness than the HT[1,15]. 
+Data-driven methods predict objects using training data[44,51,52]. 
+For example, the feature clustering-based method aggregates points 
+with similar attributes into clusters[6,58]. Implementing this method 
+initially requires extracting predefined features from the points (e.g., 
+normal surface vector, height difference, and saliency). Although 
+feature clustering-based methods are proven to perform better than 
+region-growing methods[1,45], they also suffer from noise or outliers, 
+and designing a practical feature is a critical factor for their successful 
+implementation[15]. 
+With significant advancements in AI, deep learning-based data- 
+driven approaches have been widely used for segmenting point clouds 
+[17,50]. Compared with the approaches mentioned above, a deep 
+learning algorithm automatically learns predictive features from many 
+labeled samples, avoiding the need for expert-defined features 
+[23,26,40]. However, semantic segmentation of point clouds remains 
+challenging due to their irregular format and varying point densities 
+[33]. 
+2.3. Volume calculation with triangulated irregular network 
+The TIN has been widely used as a geometric processing tool in 
+various manufacturing and engineering fields. It is a versatile tool rep -
+resenting the spatial distribution of physical elements measured in 
+discrete locations[46]. The TIN differs from point clouds by offering a 
+continuous surface to represent geometric data, which allows different 
+interpolation techniques to be applied for finer value extraction or 
+computation. For example, the vertices of a TIN can be used to calculate 
+the slope and aspect[21], gravity-specific curvature, and other land 
+surface parameters[34]. 
+The TIN has been combined with various sensing techniques for 
+volume measurement. For example, large TINs are constructed to assess 
+the volume of earthwork[19]) and lake water from remote-sensing data, 
+and a smaller range of TINs can also be used to measure the crown 
+projection area and volume of trees[30]. Combined with dedicated al -
+gorithms, TINs can be generated from different data sources and serve as 
+a basis for more advanced geometric calculation tasks. Using TINs for 
+tunnel excavation volume calculation has received limited attention. To 
+overcome the challenges as mentioned earlier associated with auto -
+mated point cloud segmentation and excavation volume calculation, 
+two issues require consideration: (1) new end-to-end deep learning al -
+gorithms need to be developed to directly extract and learn point cloud 
+features and produce segmented results without data representation 
+transformation[39]; and (2) the use of the TIN-based method to calcu -
+late the volume of over-and-under excavation. 
+3. Status digital twin of excavation 
+To recap, the aim is to develop an approach to evaluate over-and- 
+under excavation in large-scale tunnel projects accurately. The pro -
+posed approach consists of three significant steps: (1) initialization of 
+the status digital twin consisting of an as-designed BIM; (2) automated 
+periodic status update with newly added data; and (3) the calculation of 
+over-and-under excavation volume using a TIN-based algorithm. The 
+framework of the status digital twin is presented in Fig. 1. Notably, the 
+digital twin is continuously updated with automated steps each time a 
+new scan is registered. 
+3.1. Initialization with as-designed building information model 
+Autodesk Revit® and Dynamo generated the as-designed building 
+information model (BIM) based on computer-aided design (CAD) 
+drawings. Dynamo is a piece of visual programming software that runs 
+on the Revit® platform for parametric design. Based on the CAD files, 
+Dynamo reads the parameters in the drawings, generates surfaces after 
+connecting control points, and finally fuses to form a 3D tunnel model. 
+The workflow of the ‘as-designed’ BIM is presented in Fig. 2. 
+3.2. Automated status update with point clouds 
+Pre-processing the laser-scanned point cloud data is an important 
+W. Fang et al. 
+Advanced Engineering Informatics 62 (2024) 102648
+3
+step for the as-built 3D reconstruction process; it is necessary to ensure 
+semantic segmentation ’ s accuracy. Thus, point cloud data pre- 
+processing techniques are adopted. The procedure to pre-process the 
+point cloud data is described in the following four steps. 
+1. Compression of Tunnel Face Point Cloud : Fine-grained point cloud data 
+generated by laser scanners is usually too heavy to be processed 
+directly. An octree-based approach was adopted [20] to compress the 
+point cloud to preserve key point cloud information and simulta -
+neously reduce the number of points (for example, by a ratio of 50 %) 
+2. Point Cloud Filter : After raw point cloud data compression based on 
+the normal vector, the Random Sample Consensus (RANSAC) 
+method was adopted in combination with space decomposition to 
+simplify the input point cloud further while keeping minimum shape 
+loss. The space is partitioned into voxels, each containing a subset of 
+the entire point cloud. Moreover, the RANSAC can help remove 
+outliers from the target surface. The side length of the voxel and the 
+minimum number of points inside a voxel are key parameters for 
+space decomposition, and the former is proportional to the point 
+cloud data simplification rate 
+3. Automated Segmentation of Tunnel Face from Point Cloud : Inside a 
+tunnel, the tunnel face and surrounding rock are closely connected 
+with homogenous texture, making it difficult to separate by generic 
+point cloud segmentation methods. To avoid manual corrections 
+after heuristic segmentation methods, an encoder-decoder network 
+architecture adapted from the PointNet ++ [40] was adopted to 
+achieve accurate point cloud segmentation, taking advantage of the 
+shape before the tunnel cross-sections. This state-of-the-art point 
+cloud segmentation network can extract features with different 
+granularities using a single network. The network employs a 
+Fig. 1. The framework of the status digital twin model. 
+Fig. 2. The workflow to generate the ‘as-designed ’ BIM using Dynamo. 
+W. Fang et al. 
+Advanced Engineering Informatics 62 (2024) 102648
+4
+hierarchical structure that recursively applies PointNet on a nested 
+partitioning of the input point set to capture features of the whole 
+point cloud and point subsets at different scales. Since the classifi -
+cation part of PointNet ++ is designed for the entire point cloud, it is 
+removed from the pipeline, and only the segmentation part is kept 
+for further training. The encoder part follows a down-sampling 
+process. Multi-level down-sampling is adopted through multiple set 
+abstraction structures to obtain point-wise features of different sizes. 
+The final set abstraction output corresponds to global features for the 
+whole point cloud. The essential component set abstraction com -
+prises three modules: (1) sampling; (2) grouping; and (3) PointNet. 
+The decoder part for the segmentation task follows an up-sampling 
+process. The point-wise feature is obtained by reverse interpolation 
+and skip connection, which contains local and global information. 
+The propagated features of the original set of points are computed 
+using the following equations 
+f
+( j )
+( x ) =
+∑
+k
+i = 1
+w
+i
+( x ) • f
+( j )
+i
+∑
+k
+i = 1
+w
+i
+( x )
+(1) 
+w
+i
+( x ) =
+1
+d ( x , x
+i
+)
+p
+, j = 1 , ⋯ , C (2) 
+where f
+( j )
+( x ) corresponds to the feature vector, w
+i
+( x ) The interpolation 
+weight depends on the inverse distance weighted average based on k 
+nearest neighbors. Features for each point can be obtained with this 
+feature propagation rule. The encoder-decoder network architecture is 
+illustrated in Fig. 3 . 
+4. Triangulation and Registration : After removing the outliers, the next 
+step is to generate a Delaunay triangulation mesh from sample points 
+using the existing library functions in MatLab as per Qhull [4] . Scan- 
+BIM registration aims to align the scanned point cloud data with the 
+‘as-designed ’ building information model. To achieve higher align -
+ment accuracy, the tunnel ’ s scanned point cloud data are used to 
+calculate the transformation matrix between the ‘as-designed ’ BIM. 
+The ‘as-designed ’ BIM is processed using a standard geodetic coor -
+dinate system from design drawings. The coordinate system of the 3D 
+point cloud model is the laser scanner ’ s internal coordinate system. 
+Calculating the deviation between the ‘as-designed ’ and ‘as-built ’ 
+BIM models in the same coordinate space determines the quantity of 
+over-and-under excavation 
+3.3. Volume estimation with TIN 
+The final step is to analyze the over-and-under excavation. Fig. 4 
+presents the workflow of the TIN-based method for over-and-under 
+excavation volume calculation and comprises three sub-steps: 
+1. Clipping and Plane Intersection: The ‘as-built ’ and the ‘as-designed ’ 
+BIM are 3D mesh models (TINs), which comprise many triangular 
+planes with three vertices, and each vertex has a unique coordinate 
+value. The calculation commences by defining a clipping plane that 
+slides along the central line of the tunnel with a fixed interval. Each 
+time the clipping plane is positioned, it will intersect with the ‘as- 
+built ’ and ‘as-designed ’ models, and the intersection points are 
+connected to become two contours, respectively. These contours are 
+then used to form a cross-sectional slice representing the extent of 
+over and undercut. 
+2. Cross-sectional Thickness and Area Calculation: Given a cross-sectional 
+slice, point-plane distance equations can calculate the exact exca -
+vation thickness distributed along the contours. The thickness at a 
+given location is represented by picking the vertex on the contour 
+from the scanned model and calculating the distance from that vertex 
+to the as-designed TIN. Given a plane Ax + By + Cz + D = 0 (a triangle 
+in the as-designed TIN), the distance ( d ) from a point outside the 
+plane ( x
+0
+, y
+o
+, z
+0
+) to the plane, is as noted in (3): 
+d =
+Ax
+0
++ By
+0
++ Cz
+0
++ D
+̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅ ̅
+A
+2 +
+B
+2 +
+C
+2
+√ (3) 
+The distance (d) represents how far the scanned surface is from the 
+designed one (i.e., the excavation thickness). The area of the cross- 
+sectional slice can then be computed by summing the area of triangles 
+inside the sliced plane. 
+3. Volume calculation: The sampling calculation method is used to 
+derive the cross-sectional area from slice 1 to slice n , and the column 
+volume calculation method (see (4)) is employed to approximate the 
+overall volume of over/undercut 
+V =
+1
+3
+h
+∑
+n   1
+i = 1
+( s
+i
++ s
+i + 1
++
+̅̅̅̅̅̅̅̅̅̅
+s
+i
+s
+i + 1
+√
+) (4) 
+where V is the overall volume of over and undercuts in the drilling and 
+blasting cycle from slice 1 to n ; h is the sampling interval in the direction 
+of drilling and blasting ( h is generally 0.1 m); s
+i 
+represents the cross- 
+sectional area of slice i . 
+In the next section of this paper, the developed status digital is tested 
+Fig. 3. The simplified network architecture of PointNet ++ for the tunnels ’ point cloud segmentation. 
+W. Fang et al. 
+Advanced Engineering Informatics 62 (2024) 102648
+5
+and validated in a real-life tunnel construction project. 
+4. Case study 
+The expressway project in Guizhou, China, is used to test the feasi -
+bility of the proposed status digital twin. As shown in Fig. 5 , the project 
+starts in the east of Leishan County (Guizhou, China), passes through a 
+series of neighboring towns and villages, and ends at Zhongcheng in the 
+north of Rongjiang County (Guizhou, China). The total length of the 
+expressway project is 72.45 km, with an estimated budget of 12.29 
+billion yuan (approx. US$ 1.84 billion). The project has a total of 18 
+tunnels, with four of them longer than three kilometers. 
+Fig. 5 shows the distribution of the four long tunnels, which share the 
+same design pattern. The geological structure of the tunnels is complex, 
+mostly highly weathered sandstone or slate, where the boundary of the 
+rock formation and the local section of the occurrence change will lead 
+to more overcut and undercut. 
+Fig. 6 presents the rock quality distribution for the Leigongshan 
+Tunnel, the longest among the 18 tunnels in this project. The tunnel has 
+a total length of 4960 m with host rock quality between level IV and V 
+according to the Code for Design of Road Tunnel (JTG D70-2004) in 
+China (quality levels range from I to VI, a smaller number indicates 
+better rock quality), where the uniaxial compressive strength of rocks 
+changes between 8 and 25 MPa. 
+4.1. Data collection 
+In this project, two types of data are collected: (1) tunnel point cloud 
+data using laser scanners; and (2) coordinates of point cloud obtained 
+using a Real-Time Kinematic (RTK) device. As shown in Fig. 7 , the point 
+cloud data was acquired using a Terrestrial Laser Scanning (TLS) device 
+(i.e., Leica ScanStation P40). Point cloud samples for the entire tunnel 
+Fig. 4. Workflow of TIN-based over/undercut analyses. 
+Fig. 5. Map of Leirong expressway project. 
+W. Fang et al. 
+Advanced Engineering Informatics 62 (2024) 102648
+6
+were made approximately every 40 m starting from the tunnel entrance, 
+and all the scanned samples were concatenated until reaching the tunnel 
+face. “ L ” shaped red marks were made at the tunnel entrance to provide 
+visual cues for coordinates measurements with the RTK station. The 
+measured coordinates (in the WGS-84 coordinate system) were assigned 
+to the point clouds to enable the alignment of the ‘as-designed ’ BIM and 
+‘as-built ’ point clouds. 
+4.2. Data pre-processing 
+Dedicated software (i.e., Cyclone) was first used to pre-process the 
+obtained tunnel face point cloud data to form a preliminary processed 
+xyz file, which provided a basis for subsequent gridding to process the 
+original scanned point cloud. 
+Automatic point cloud segmentation was achieved using a custom -
+ized PointNet ++ algorithm by removing the classification module from 
+the pipeline. The network was trained with 21-point cloud samples and 
+validated and tested with 6 and 3 samples, respectively. Each point 
+cloud sample initially had over one million points and was down- 
+sampled to 20,480 points to save memory. The distribution of points 
+between the tunnel face and tunnel surrounding rock classes was about 
+15 % and 85 %. 
+The network was trained with a learning rate of 0.00025 for 60 
+rounds, which resulted in an average test accuracy of 0.94 and mIoU 
+(mean Intersection over Union) of 0.91. This segmentation network can 
+help separate the surrounding rock from the tunnel face and provide 
+input for mesh conversion. Fig. 8 presents examples of automatic point 
+cloud segmentation. 
+Next, mesh processing software Geomagic Wrap 2017 was used to 
+achieve further point cloud mesh conversion. The post-processed point 
+cloud model was meshed and repaired to form a complete and smooth 
+mesh model. Finally, 3D mesh models of the tunnel face and surrounding 
+rocks with high geometric precision are obtained, as noted in Fig. 9 . 
+Fig. 6. Rock quality distribution of Leigongshan Tunnel. 
+Fig. 7. Data collection steps in front of the tunnel face and entrance. 
+Fig. 8. Examples of automatic point cloud segmentation. 
+W. Fang et al. 
+Advanced Engineering Informatics 62 (2024) 102648
+7
+4.3. Results and analyses 
+Three long tunnels were selected for evaluation, and 30 scanned 
+samples were collected and compared against manual excavation re -
+cordings. The tunnel name, number of samples, level of host rock, the 
+thickness of C20 injection, and upper step arc length are shown in 
+Table 1 . The pouring volume of shotcrete in all cases in selected tunnels 
+was obtained from field records and used as ground truth for over/under 
+excavation volume computation (the pouring volume can be different 
+from the final volume after solidification but was the only available 
+reference data). 
+The TIN-based volume estimation method was compared with a 
+manual measurement solution. The manual solution works as follows: 
+the surveyor chooses a random location along the upper step arc inside a 
+random cross-sectional plan and then notes the distance between the 
+design surface (indicated by a total station) and the actual surface as 
+excavation thickness d. Then, the estimated excavation volume can be 
+calculated by (5): 
+V = d * l * h (5) 
+where V is the volume of over and undercuts in one drilling and blasting 
+cycle; h is the length in the direction of drilling and blasting; l represents 
+the upper step arc length. The manual measurement method is often 
+used as a standard solution for its simplicity. Four sets of average over- 
+and-under excavation thickness and four sets of manually calculated 
+volumes were collected. 
+To verify the effectiveness of the TIN-based volume estimation 
+method, it was compared with the manual measurement solution using 
+the actual pouring volume as a reference. The results of the comparisons 
+are shown in Table 1 and Fig. 9 . 
+From Fig. 10 (a), the error of volume calculation of the TIN-based 
+approach and manual measurement was 4.54 % and 25.72 %, 
+respectively (compared to the actual pouring volume). The error of 
+volume calculation in groups 1, 3, and 4 were all less than 20 %, which 
+meets the requirements of tunnel construction inspection. However, in 
+group 2, the manual calculation error cannot fit the requirements. The 
+calculation error of using our proposed approach is significantly smaller 
+than the manual measurement error. Fig. 10 (b) shows that the thickness 
+of the average over-under-excavation using the status digital twin 
+approach and manual measurement was 0.05 m and 0.09 m, respec -
+tively. The deviation of the average thickness for over-and-under exca -
+vation using the status digital twin was smaller than that of the manual 
+measurement under multiple sections. 
+5. Discussion 
+Digital twins serve as a transformative bridge between the physical 
+and digital realms, enabling the acquisition of real-time data concerning 
+physical objects ’ status, working conditions, and position. Despite their 
+potential advantages across the asset life cycle, quantifying specific 
+benefits and business value during construction remains a persistent 
+challenge [31] . This research has developed a status digital twin capable 
+of accurately determining excavation volumes during the excavation 
+process. While immediate quantification of benefits may not be provided 
+in this research, it is crucial to recognize and explore additional tangible 
+advantages, including enhanced safety, increased productivity, and 
+reduced costs. 
+The proposed status digital twin significantly enhances informed 
+decision-making processes by leveraging its technical attributes, such as 
+data integration and semantic data description. Data integration ensures 
+decision-makers access current information about the physical state, 
+facilitating proactive decision-making. Furthermore, semantic data 
+description improves data interpretability, enabling decision-makers to 
+comprehend the context and relationships among different variables. 
+For example, the attributes derived from the status digital twin primarily 
+involve excavation conditions at various locations, specifically the dis -
+tribution of over- and under-excavation along contour lines. Such in -
+formation can assist on-site managers in intuitively understanding 
+excavation quality in different tunnel zones. Additionally, it can aid in 
+establishing the connection between excavation parameters and the 
+volume of the excavation, optimizing parameters for subsequent exca -
+vation rounds. 
+5.1. Contributions 
+The contributions of this research are twofold. Firstly, the volume of 
+the excavation can be calculated automatically to determine whether it 
+is over or under-excavated. The feasibility and effectiveness of this 
+approach are well-suited for application on-site. The developed TIN- 
+based excavation volume calculation method employed a fine-grained 
+computation logic and was validated using the actual pouring volume 
+Fig. 9. Examples of as-built 3D models of a tunnel. 
+Table 1 
+Parameters of selected tunnel excavation samples from three tunnels. 
+Group 
+ID 
+Tunnel 
+name 
+Stake 
+number 
+Rock 
+grade 
+C20 injection 
+thickness 
+(cm) 
+Upper step 
+arc length 
+(mm) 
+1 Leigongshan ZK11 +
+551.7 ~ 
+555.2 m 
+IVb 18 19,110 
+2 Taojiang ZK14 +
+74.8 ~ 
+78.8 m 
+Vc 24 19,370 
+3 Taojiang ZK14 +
+72.4 ~ 
+74.8 m 
+Vc 24 19,370 
+4 Baizhushan YK18 +
+233.5 ~ 
+237.1 
+IVb 18 19,110 
+W. Fang et al. 
+Advanced Engineering Informatics 62 (2024) 102648
+8
+as ground truth. Previous studies determining over-and-under excava -
+tion have only compared their calculations to manual measurements 
+[22] . The comparisons presented in Fig. 10 demonstrated that the TIN- 
+based method provides more stable and accurate volume estimations at 
+the cost of building a point cloud model while considering multiple 
+cross-sectional planes for calculation. Manual measurements exhibited 
+large variations and tended to underestimate the excavation volume. 
+This issue could be attributed to the random selection of the cross- 
+sectional plane for measurement and the variations in working 
+methods among site surveyors. Secondly, a deep learning approach was 
+adopted to automatically segment the tunnel face and surrounding rock 
+based on PointNet ++ . Due to the continuity of the rock mass itself and 
+the weak texture characteristics of the tunnel ’ s rock wall, this part ’ s 
+point cloud segmentation is often conducted manually using dedicated 
+software. This automated point cloud processing approach can improve 
+the accuracy and efficiency of status updates. 
+5.2. Limitations 
+Despite the novelty of the research that has been presented, it needs 
+to be acknowledged that several limitations exist. Ensuring the quality of 
+point cloud data (e.g., ‘noise ’ ) is a challenge. In the case of a tunnel 
+project, noise in the ‘Light Detection And Ranging ’ (LiDAR)-generated 
+point clouds can materialize from unexpected objects or materials. Thus, 
+the ‘noise ’ in the point cloud renders it difficult to represent the tunnel 
+perfectly after triangulation. New algorithms are needed to address this 
+limitation and improve the point cloud quality [47] . 
+We acknowledge that our proposed status digital twin approach has 
+been validated only in limited tunnel projects and does not apply to all 
+geological conditions. For example, under conditions of abundant water, 
+the mechanical parameters, such as the strength of the rock, will 
+significantly decrease after it is encountered, and the deformation of the 
+surrounding rock will increase, posing several challenges for the on-site 
+application of this method [53] . Furthermore, it should be acknowledged 
+that the dataset used in this research was imbalanced, negatively 
+impacting the model ’ s ability to generalize well to new scenarios and 
+unseen data. To address this limitation, there is a need to develop 
+resampling techniques (i.e., undersampling and oversampling) and new 
+algorithmic approaches (i.e., ensemble approaches). Moreover, the 
+deformation of the surrounding rock will increase with the exposure 
+time of the excavation face after excavation. In this instance, the accu -
+racy of the data obtained during on-site data collection is greatly 
+affected by the timing of on-site measurement collection. To address this 
+issue, we suggest that the frequency of data collection needs to be 
+increased. 
+To sum up, the research focuses on introducing a new method for 
+assessing the volume of excavation. This method involves a web-based 
+application of a status digital twin, emphasizing functionality rather 
+than user interface, accessibility, and mechanisms for ensuring data 
+accuracy and timeliness. It should be acknowledged that the function (i. 
+e., user interface, accessibility) is significant for digital twins, which are 
+at the core of operation twins and simulation twins . Therefore, future 
+research will shift its focus towards developing operation twins with real- 
+time control and management functionalities and creating simulation 
+twins for predictive analysis and scenarios. 
+6. Conclusion 
+This paper proposed a ‘status ’ digital twin to automatically assess a 
+tunnel project ’ s over-and-under excavation with its development 
+comprising three steps: (1) initialization of the ‘status ’ digital twin 
+consisting of an as-designed BIM; (2) automated status update with as- 
+built point cloud data; and (3) the calculation of over-and-under exca -
+vation volume by a TIN-based geometric method. A large-scale tunnel 
+project in Guizhou, China, was used to validate its effectiveness and 
+feasibility. 
+The results demonstrated that the status digital twin accurately 
+evaluated over-and-under excavation with an average thickness of 0.05 
+m and an error of volume calculation of 4.54 %, respectively. In this 
+case, site managers, for example, can take action to control the exca -
+vation process. Evaluating overcut and undercut during excavation can 
+result in effective managerial interventions to ensure a tunnel ’ s stability 
+and structural safety. 
+For future research, the status digital twin model can be extended to 
+simulate the excavation process and predict the potential risk caused by 
+under and over-excavating. In addition, further research is required to 
+consider tunnel face conditions (e.g., distribution of cracks and rock 
+layers on tunnel face). The distribution of cracks and rock layers on the 
+tunnel face can lead to different blast-hole distribution and further 
+control parameter variations, which enables more accurate over-and- 
+under excavation control. 
+CRediT authorship contribution statement 
+Weili Fang: Writing – review & editing, Writing – original draft, 
+Methodology, Conceptualization. Weiya Chen: Writing – review & 
+editing, Writing – original draft, Methodology, Conceptualization. Peter 
+E.D. Love: Writing – review & editing, Writing – original draft, 
+Conceptualization. Hanbin Luo: Writing – review & editing, Writing – 
+original draft, Conceptualization. Haiming Zhu: Conceptualization. 
+Jiajing Liu: Conceptualization, Writing – original draft, Writing – re -
+view & editing. 
+Declaration of competing interest 
+The authors declare that they have no known competing financial 
+Fig. 10. Comparisons between the TIN-based approach and manual measurements. 
+W. Fang et al. 
+Advanced Engineering Informatics 62 (2024) 102648
+9
+interests or personal relationships that could have appeared to influence 
+the work reported in this paper. 
+Data availability 
+Data will be made available on request. 
+Acknowledgement 
+The authors would like to acknowledge the financial support of the 
+Alexander von Humboldt-Stiftung, and the National Natural Science 
+Foundation of China (Grant No. U21A20151, 72301114, 72001086). 
+Finally, we would like to thank the Associate Editor and the eight 
+anonymous reviewers who have helped us improve the quality of this 
+manuscript. 
+References 
+[1] A. Adam, E. Chatzilari, S. Nikolopoulos, I. Kompatsiaris, H-RANSAC: A hybrid 
+point cloud segmentation combining 2D and 3D data, ISPRS Ann. Photogramm. 
+Remote Sens. Spatial Inform. Sci. 4 (2) (2018) 1 – 8, https://doi.org/10.5194/isprs- 
+annals-IV-2-1-2018 . 
+[2] Alhaddad, M. (2016). Photogrammetric Monitoring of Cast-iron Tunnels and 
+Applicability of Empirical Methods for Damage Assessment . Ph.D. Dissertation, The 
+University of Cambridge. Cambridge. 
+[3] R. Argüelles-Fraga, C. Ord ´o ˜nez, S. García-Cort ´es, J. Roca-Pardi ˜nas, Measurement 
+planning for circular cross-section tunnels using terrestrial laser scanning, Autom. 
+Constr. 31 (2013) 1 – 9, https://doi.org/10.1016/j.autcon.2012.11.023 . 
+[4] C.B. Barber, D.P. Dobkin, H. Huhdanpaa, The quickhull algorithm for convex hulls, 
+ACM Trans. Math. Softw. (TOMS) 22 (4) (1996) 469 – 483, https://doi.org/ 
+10.1145/235815.235821 . 
+[5] D.H. Ballard, Generalizing the Hough transform to detect arbitrary shapes, Pattern 
+Recogn. 13 (2) (1981) 111 – 122, https://doi.org/10.1016/0031-3203(81)90009-1 . 
+[6] J.M. Biosca, J.L. Lerma, Unsupervised robust planar segmentation of terrestrial 
+laser scanner point clouds based on fuzzy clustering methods, ISPRS J. 
+Photogramm. Remote Sens. 63 (1) (2008) 84 – 98, https://doi.org/10.1016/j. 
+isprsjprs.2007.07.010 . 
+[7] C. Boje, A. Guerriero, S. Kubicki, Y. Rezgui, Towards a semantic construction 
+digital twin: Directions for future research, Autom. Constr. 114 (2020) 103179, 
+https://doi.org/10.1016/j.autcon.2020.103179 . 
+[8] D.M. Broo, M. Bravo-Haro, J. Schooling, Design and implementation of a smart 
+infrastructure digital twin, Autom. Constr. 136 (2022) 104171, https://doi.org/ 
+10.1016/j.autcon.2022.104171 . 
+[9] J. Brozovsky, N. Labonnote, O. Vigren, Digital technologies in architecture, 
+engineering and construction, Autom. Constr. 158 (2023) 105212, https://doi.org/ 
+10.1016/j.autcon.2023.105212 . 
+[10] Z. Cao, D. Chen, Y. Shi, Z. Zhang, F. Jin, T. Yun, L. Zhang, A flexible architecture 
+for extracting metro tunnel cross sections from terrestrial laser scanning point 
+clouds, Remote Sens. (Basel) 11 (3) (2019) 297, https://doi.org/10.3390/ 
+rs11030297 . 
+[11] Y.J. Cheng, W.G. Qiu, D.Y. Duan, Automatic creation of as-is building information 
+model from single-track railway tunnel point clouds, Autom. Constr. 106 (2019) 
+102911, https://doi.org/10.1016/j.autcon.2019.102911 . 
+[12] A. Daraei, S. Zare, Prediction of overbreak depth in Ghalaje road tunnel using 
+strength factor, Int. J. Min. Sci. Technol. 28 (4) (2018) 679 – 684, https://doi.org/ 
+10.1016/j.ijmst.2018.04.013 . 
+[13] A. Daraei, S. Zare, A modified criterion for prediction of tunnel deformation in non- 
+squeezing ground conditions, J. Mod. Transp. 27 (2019) 11 – 24, https://doi.org/ 
+10.1007/s40534-018-0173-y . 
+[14] A. Dimitrov, M. Golparvar-Fard, Segmentation of building point cloud models 
+including detailed architectural/structural features and MEP systems, Autom. 
+Constr. 51 (2015) 32 – 45, https://doi.org/10.1016/j.autcon.2014.12.015 . 
+[15] Z. Dong, B. Yang, P. Hu, S. Scherer, An efficient global energy optimization 
+approach for robust 3D plane segmentation of point clouds, ISPRS J. Photogramm. 
+Remote Sens. 137 (2018) 112 – 133, https://doi.org/10.1016/j. 
+isprsjprs.2018.01.013 . 
+[16] M.A. Fischler, R.C. Bolles, Random sample consensus: a paradigm for model fitting 
+with applications to image analysis and automated cartography, Commun. ACM 24 
+(6) (1981) 381 – 395, https://doi.org/10.1016/b978-0-08-051581-6.50070-2 . 
+[17] Y. Guo, H. Wang, Q. Hu, H. Liu, L. Liu, M. Bennamoun, Deep learning for 3D point 
+clouds: A survey, IEEE Trans. Pattern Anal. Mach. Intell. 43 (12) (2020) 
+4338 – 4364, https://doi.org/10.1109/TPAMI.2020.3005434 . 
+[18] J.Y. Han, J. Guo, Y.S. Jiang, Monitoring tunnel deformations by means of multi- 
+epoch dispersed 3D LiDAR point clouds: An improved approach, Tunn. Undergr. 
+Space Technol. 38 (2013) 385 – 389, https://doi.org/10.1016/j.tust.2013.07.022 . 
+[19] X. Hao, Y. Pan, Accuracy analysis of earthwork calculation based on triangulated 
+irregular network (TIN), Intell. Autom. Soft Comput. 17 (6) (2011) 793 – 802, 
+https://doi.org/10.1080/10798587.2011.10643188 . 
+[20] A. Hornung, K.M. Wurm, M. Bennewitz, C. Stachniss, W. Burgard, OctoMap: An 
+efficient probabilistic 3D mapping framework based on octrees, Auton. Robot. 34 
+(3) (2013) 189 – 206, https://doi.org/10.1007/s10514-012-9321-0 . 
+[21] G. Hu, C. Wang, S. Li, W. Dai, L. Xiong, G. Tang, J. Strobl, Using vertices of an 
+irregular triangular network to calculate slope and aspect, Int. J. Geogr. Inf. Sci. 36 
+(2) (2022) 382 – 404, https://doi.org/10.1080/13658816.2021.1933493 . 
+[22] Y. Huang, F. Liu, J. Wang, S. Zhang, Q. Tang, A photogrammetric system for tunnel 
+undercut and overcut detection, IEEE Trans. Intell. Transp. Syst. (2022), https:// 
+doi.org/10.1109/tits.2022.3157588 . 
+[23] J. Zhan, W. Fang, P.E.D. Love, & H. Luo. Explainable artificial intelligence: 
+Counterfactual explanations for risk-based decision-making in construction. IEEE 
+Transactions on Engineering Management . 71, (2024) 10667 – 10685. 
+[24] F. Jiang, L. Ma, T. Broyd, K. Chen, Digital twin and its implementation in the civil 
+engineering sector, Autom. Constr. 130 (2021) 103838, https://doi.org/10.1016/j. 
+autcon.2021.103838 . 
+[25] M. Koopialipoor, E.N. Ghaleini, H. Tootoonchi, D. Jahed Armaghani, M. Haghighi, 
+A. Hedayat, Developing a new intelligent technique to predict overcut in tunnels 
+using an artificial bee colony-based ANN, Environ. Earth Sci. 78 (5) (2019) 1 – 14, 
+https://doi.org/10.1007/s12665-019-8163-x . 
+[26] W. Fang, P.E.D. Love, L. Ding, S. Xu, T. Kong, H. Li, Computer vision and deep 
+learning to manage safety in construction: Matching images of unsafe behavior and 
+semantic rules, IEEE Transactions on Engineering Management 70 (12) (2023) 
+4120 – 4132 . 
+[27] W. Lang, Z. Bao, K. Chen, S.T. Ng, I.Y. Wuni, Developing an integrative framework 
+for digital twin applications in the building construction industry: A systematic 
+literature review, Adv. Eng. Inf. 59 (2024) 102346, https://doi.org/10.1016/j. 
+aei.2023.102346 . 
+[28] T. Li, X. Li, Y. Rui, J. Ling, S. Zhao, H. Zhu, Digital twin for intelligent tunnel 
+construction, Autom. Constr. 158 (2023) 105210, https://doi.org/10.1016/j. 
+autocon.2023.105210 . 
+[29] Y. Li, Z. Xiao, J. Li, T. Shen, Integrating vision and laser point cloud data for shield 
+tunnel digital twinning, Autom. Constr. 157 (2024) 105180, https://doi.org/ 
+10.1016/j.autcon.2023.105180 . 
+[30] W. Lin, Y. Meng, Z. Qiu, S. Zhang, J. Wu, Measurement and calculation of crown 
+projection area and crown volume of individual trees based on 3D laser-scanned 
+point-cloud data, Int. J. Remote Sens. 38 (4) (2017) 1083 – 1100, https://doi.org/ 
+10.1080/01431161.2016.1265690 . 
+[31] P.E.D. Love, J. Matthews, The ‘how ’ of benefits management for digital technology: 
+From engineering to asset management, Autom. Constr. 107 (2019) 102930, 
+https://doi.org/10.1016/j.autcon.2019.102930 . 
+[32] P.E.D. Love, J. Zhou, J. Matthews, H. Luo, Object oriented modeling: Retrospective 
+systems information modeling for constructability assessment, Autom. Constr. 71 
+(2) (2016) 359 – 371, https://doi.org/10.1016/j.autcon.2016.08.032 . 
+[33] J.W. Ma, T. Czerniawski, F. Leite, Semantic segmentation of point clouds of 
+building interiors with deep learning: Augmenting training datasets with synthetic 
+BIM-based point clouds, Autom. Constr. 113 (2020) 103144, https://doi.org/ 
+10.1016/j.autcon.2020.103144 . 
+[34] A.E. Maxwell, C.M. Shobe, Land-surface parameters for spatial predictive mapping 
+and modeling, Earth Sci. Rev. 226 (2022) 103944, https://doi.org/10.1016/j. 
+earscirev.2022.103944 . 
+[35] J. Mei, W. Zhang, B. Xu, Y. Zhu, B. Wang, Optimization methods of blasting 
+parameters of large cross-section tunnel in Horizontal layered rock mass, Geotech. 
+Geol. Eng. 39 (7) (2021) 5309 – 5323, https://doi.org/10.1007/s10706-021-01834- 
+8 . 
+[36] M.R. Moghaddasi, M. Noorian-Bidgoli, ICA-ANN, ANN, and multiple regression 
+models for prediction of surface settlement caused by tunneling, Tunn. Undergr. 
+Space Technol. 79 (2018) 197 – 209, https://doi.org/10.1016/j.tust.2018.04.016 . 
+[37] M. Pregnolato, S. Gunner, E. Voyaki, R. De Risi, N. Carhart, G. Gavriel, P. Tully, 
+T. Tryfonas, J. MacDonald, C. Taylor, Towards civil engineering 4.0: Concept, 
+workflow, and application of digital twins for existing infrastructure, Autom. 
+Constr. 141 (2022) 104421, https://doi.org/10.1016/j.auton.2022.104421 . 
+[38] V. P ˘atr ˘aucean, I. Armeni, M. Nahangi, J. Yeung, I. Brilakis, C. Haas, State of 
+research in automatic as-built modelling, Adv. Eng. Inf. 29 (2) (2015) 162 – 171, 
+https://doi.org/10.1016/j.aei.2015.01.001 . 
+[39] Qi, C. R., Su, H., Mo, K., and Guibas, L. J. (2017). Pointnet: Deep learning on point 
+sets for 3D classification and segmentation. In Proceedings of the IEEE Conference on 
+Computer Vision and Pattern Recognition 12
+th 
+July to 26
+th
+, Honolulu, Hawaii, 
+pp.652-666. 10.1109/CVPR.2017.16. 
+[40] Qi, C. R., Yi, L., Su, H., and Guibas, L. J. (2017). Pointnet ++ : Deep hierarchical 
+feature learning on point sets in a metric space. Available at: arXiv:1706.02413, 
+doi: 10.48550/arXiv.1706.02413. 
+[41] Remmert, H. (2022). What is a digital twin? DIGI , 10
+th 
+June, Available at: http 
+s://www.digi.com/blog/post/what-is-a-digital-twin , Accessed 10
+th 
+June 2022. 
+[42] M. Shen, R. Huang, Backdoor attacks with wavelet embedding: Revealing and 
+enhancing the insights of vulnerabilities in visual object detection models on 
+transformers within digital twin systems, Adv. Eng. Inf. 60 (2024) 102355, https:// 
+doi.org/10.1016/j.aei.2024.102355 . 
+[43] Y. Shen, D. Zhang, R. Wang, J. Li, Z. Huang, SBD-K-medoids-based long-term 
+settlement analysis of shield tunnel, Transp. Geotech. (2023) 101053, https://doi. 
+org/10.1016/j.trgeo.2023.101053 . 
+[44] H. Luo, J. Chen, P.E.D. Love, & W. Fang. Explainable transfer learning for modeling 
+and assessing risks in tunnel construction. IEEE Transactions on Engineering 
+Management . 71, (2024) 8339 – 8355. 
+[45] G. Te, W. Hu, A. Zheng, and Z. Guo. Rgcnn: Regularized graph CNN for point cloud 
+segmentation. In Proceedings of the 26th ACM International Conference on Multimedia 
+22
+nd
+-26
+th 
+October Seoul, Korea, (2018) pp. 746-754. doi: 10.1145/ 
+3240508.3240621. 
+W. Fang et al. 
+Advanced Engineering Informatics 62 (2024) 102648
+10
+[46] G. Trajcevski, P. Giri, X. Teng, H. Hashemi, Tinet: Triangulated irregular networks 
+evolving in time, In Spatial Gems 1 (2022) 131–138, https://doi.org/10.1145/ 
+3548732.3548747. 
+[47] Wolff, K., Kim, C., Zimmer, H., Schroers, C., Botsch, M., Sorkine-Hornung, O., and 
+Sorkine-Hornung, A. (2016). Point cloud noise and outlier removal for image-based 3D 
+reconstruction. In 2016, the Fourth International Conference on 3D Vision (3DV) 
+IEEE, 25
+th 
+-28
+th 
+October, Stanford, California, USA, pp. 118-127. doi: 10.1109/ 
+3DV.2016.20. 
+[48] G. Walton, D. Delaloye, M.S. Diederichs, Development of an elliptical fitting 
+algorithm to improve change detection capabilities with applications for 
+deformation monitoring in circular tunnels and shafts, Tunn. Undergr. Space 
+Technol. 43 (2014) 336–349, https://doi.org/10.1016/j.tust.2014.05.014. 
+[49] Q. Wang, M.K. Kim, Applications of 3D point cloud data in the construction 
+industry: A fifteen-year review from 2004 to 2018, Adv. Eng. Inf. 39 (2019) 
+306–319, https://doi.org/10.1016/j.aei.2019.02.007. 
+[50] J. Wang, C. Xu, L. Dai, J. Zhang, R. Zhong, An unequal deep learning approach for 
+3-D Point cloud segmentation, IEEE Trans. Ind. Inf. 17 (12) (2020) 7913–7922, 
+https://doi.org/10.1109/TII.2020.3044106. 
+[51] P.E.D Love, W. Fang, J. Matthews, S. Porter, H. Luo, L. Ding, Explainable artificial 
+intelligence (XAI): Precepts, models, and opportunities for research in 
+construction, Adv. Eng. Inform. 57 (2023) 102024. 
+[52] W. Fang, P.E. Love, H. Luo, L. Ding, Computer vision for behaviour-based safety in 
+construction: A review and future directions, Adv. Eng. Inform. 43 (2020) 100980. 
+[53] R. Xu, Y. Hu, Z. Yan, Y. Zhao, Z. Li, Experimental investigation on the effect of 
+water saturation on the failure mechanism and acoustic emission characteristics of 
+sandstone, Int. J. Geomech. 24 (6) (2024) 04024102. 
+[54] Y. Xu, S. Tuttas, L. Hoegner, U. Stilla, Reconstruction of scaffolds from a 
+photogrammetric point cloud of construction sites using a novel 3D local feature 
+descriptor, Autom. Constr. 85 (2018) 76–95, https://doi.org/10.1016/j. 
+autcon.2017.09.014. 
+[55] C. Yi, D. Lu, Q. Xie, S. Liu, H. Li, M. Wei, J. Wang, Hierarchical tunnel modelling 
+from 3D raw LiDAR point cloud, Comput. Aided Des. 114 (2019) 143–154, https:// 
+doi.org/10.1016/j.cad.2019.05.033. 
+[56] O. Yilmaz, T. Unlu, An application of the modified Holmberg-Persson approach for 
+tunnel blasting design, Tunnel. Undergr. Space Technol. 43 (2014) 113–122, 
+https://doi.org/10.1016/j.tust.2014.04.009. 
+[57] Q. Zhang, Z. Tao, C. Yang, S. Guo, M. He, C. Zhang, S. Wang, Experimental and 
+numerical investigation into the non-explosive excavation of tunnels, J. Rock 
+Mech. Geotech. Eng. (2022), https://doi.org/10.1016/j.jrmge.2022.02.003. 
+[58] G. Zhou, S. Cao, J. Zhou, Planar segmentation using range images from terrestrial 
+laser scanning, IEEE Geosci. Remote Sens. Lett. 13 (2) (2016) 257–261, https://doi. 
+org/10.1109/LGRS.2015.2508505. 
+W. Fang et al. 

@@ -1,0 +1,918 @@
+Academic Editor: Ahmed Senouci
+Received: 25 March 2026
+Revised: 24 April 2026
+Accepted: 13 May 2026
+Published: 18 May 2026
+Copyright: © 2026 by the authors.
+Licensee MDPI, Basel, Switzerland.
+This article is an open access article
+distributed under the terms and
+conditions of the Creative Commons
+Attribution (CC BY) license.
+Article
+Digital Twin-Enabled Robust Parallel Control of Construction
+Engineering Equipment Under Uncertainty
+Ran Chen 1, Haotian Xu 1, Limao Zhang 2, Jingguo Rong 3, Chu Wei 4, Hu Chang 5 and Haoyang Zhang 2,*
+1 State Grid Hubei Economic Research Institute, 93 Xudong Street, Hongshan District, Wuhan 430070, China;
+13971290298@163.com (R.C.); kaddxu@icloud.com (H.X.)
+2 School of Civil and Hydraulic Engineering, Huazhong University of Science and Technology,
+1037 Luoyu Road, Hongshan District, Wuhan 430074, China; zlm@hust.edu.cn
+3 State Grid Economic and Technological Research Institute, State Grid Office Area, Future Science City,
+Changping District, Beijing 102209, China; sunzson@163.com
+4 Wuhan Optics Valley Information Technologies Co., Ltd., 166 Zhongbei Road, Wuchang District,
+Wuhan 430206, China; weichu@cnovit.com
+5 Jingzhou Jingli Engineering Design Consulting Co., Ltd., 9 Jiuyang Avenue, Jingzhou 434020, China;
+17839863993@163.com
+* Correspondence: haoyang25@hust.edu.cn
+Highlights
+What are the main findings?
+• A digital twin framework for robust parallel control of mobile gin poles is proposed.
+• A finite element kinetic analysis–driven surrogate model is established to capture the
+behavior–mechanics characteristics of the mobile gin pole.
+• An AI model is developed to accurately predict key stress parameters.
+• A multi-objective optimization approach based on NSGA-III is designed to balance
+safety and operational efficiency.
+What are the implications of the main findings?
+• The proposed framework demonstrates strong robustness under noise interference
+and missing data conditions.
+• The digital twin system effectively reduces safety risks and improves operational
+efficiency in complex terrains.
+Abstract
+This paper proposes a digital twin framework for robust parallel control of the mobile gin
+pole in ultra-high voltage (UHV) transmission line construction, aiming to improve safety
+and operational efficiency under uncertain conditions. The new framework integrates
+kinetic analysis, machine learning models, and multi-objective optimization algorithms
+to address the challenges of heavy-lifting operations in complex terrains. The method
+conducts finite-element kinetic analysis based on the actual structure of the mobile gin
+pole. A Tyrannosaurus Rex Optimization Algorithm (TROA) is employed to enhance the
+performance of the Extra Randomized Trees (ET) model for predicting key parameters such
+as maximum axial stress and shear stress. The framework leverages the Non-Dominated
+Sorting Genetic Algorithm III (NSGA-III) to optimize safety and efficiency metrics by
+adjusting key control parameters. A digital twin system for the mobile gin pole was
+constructed to validate the proposed approach. Results indicate that: (1) The proposed
+prediction model achieved performance improvements with R2, RMSE, and MSE of 0.9642,
+19.6, and 7.42, respectively. Compared with baseline machine learning models, the proposed
+model achieved significant improvements of 21.5%, 19.2%, and 5.1% in R2, RMSE, and MSE,
+Buildings 2026, 16, 1982 https://doi.org/10.3390/buildings16101982
+Buildings 2026, 16, 1982 2 of 31
+respectively. (2) Experiments confirm that the proposed model maintains high prediction
+accuracy under noise interference and missing data scenarios, indicating strong robustness.
+(3) Under various operation conditions, the method reduces safety risks by up to 32.30%
+and improves operational efficiency by up to 42.73%. Case studies further verify the
+effectiveness of the proposed framework, demonstrating superior prediction accuracy,
+noise resistance, and computational efficiency compared to conventional control methods.
+The core methodological novelty of this study lies in integrating TROA, ET, NSGA-III, and
+digital twin technology into a unified framework for mobile gin poles. This framework
+adopts TROA-ET to convert finite-element-based kinetic analysis into a behavior–mechanics
+surrogate model. It further embeds the constructed surrogate model into an NSGA-III-
+driven digital twin parallel control architecture. In this way, the study contributes an
+integrated and computationally efficient solution for safety–efficiency co-optimization of
+mobile gin pole operations under uncertainty.
+Keywords: digital twin; parallel control; gin pole; meta heuristic algorithm; extreme tree;
+non-dominated sorting genetic algorithm-III
+1. Introduction
+Ultra-high voltage (UHV) transmission line construction is often carried out in moun-
+tainous and spatially constrained environments, where tower erection involves high-
+altitude assembly, heavy lifting, and complex safety risks [ 1]. In such contexts, mobile
+gin poles are widely used because they can be coupled with the tower structure without
+requiring large external working space [2]. Compared with conventional gin poles, mobile
+gin poles integrate the lifting structure with a tracked chassis, thereby improving mobility
+and reducing relocation time. Owing to these advantages, mobile gin poles have shown
+strong potential for tower erection in complex terrain.
+Despite these benefits, the operation of mobile gin poles still faces significant chal-
+lenges in safety and efficiency [3]. Their lifting tasks are executed in limited workspaces
+and often near surrounding structures or energized components, which increases the
+risks of collision, overload, and structural failure. In current practice, these risks are still
+mainly managed through manual observation and experience-based decision-making,
+which makes it difficult to achieve timely perception, consistent load control, and efficient
+operation under changing construction conditions [4].
+Building on research in technologies such as sensors, communications, virtual plat-
+forms, and artificial intelligence, many studies have addressed the challenges of automated
+lifting operations using methods such as computer vision [ 5], path planning [ 6], finite-
+element analysis [7], and digital twins [8]. For example, digital twin technology has been
+applied across multiple industries, achieving significant success by creating virtual sce-
+narios consistent with the real world to enable real-time monitoring and control of the
+entire system [9]. The rapid development of artificial intelligence technology has provided
+a fast and feasible method for establishing associations between different data sets [ 10].
+In practice, efficiency and safety often have conflicting improvement directions, making
+comprehensive optimization of the construction process challenging. Therefore, scholars
+have proposed multi-objective optimization algorithms, with notable examples including
+genetic algorithms and particle swarm algorithms [11]. Parallel control theory provides
+an efficient path for the simulation and control of complex systems [12]. However, most
+of these studies focus on conventional cranes rather than mobile gin poles. Although
+mobile gin poles share certain structural and operational similarities with cranes, they
+https://doi.org/10.3390/buildings16101982
+Buildings 2026, 16, 1982 3 of 31
+differ in terms of tower-coupled configuration, working space constraints, and multi-mode
+motion characteristics. As a result, existing crane-oriented approaches cannot be directly
+transferred. More importantly, there is still a lack of an intelligent control framework for
+mobile gin poles that can integrate real-time perception, structural response prediction,
+multi-objective decision-making, and uncertainty-aware virtual–physical interaction within
+a unified system [13].
+To address this gap, this study proposes a digital twin-enabled robust parallel control
+framework for the mobile gin pole. The framework combines finite-element-based kinetic
+analysis, a TROA-ET surrogate prediction model, and NSGA-III-based multi-objective
+optimization to support real-time safety assessment and operational decision-making un-
+der uncertain conditions. Specifically, this study addresses three questions: (1) how to
+realize real-time spatial attitude monitoring for collision-risk reduction; (2) how to balance
+operational efficiency and structural safety during lifting; and (3) how to achieve robust
+parallel control under uncertainty. Accordingly, the main contributions of this study are
+as follows: (1) a digital twin based intelligent control framework of the mobile gin pole is
+established; (2) a behavior–mechanics surrogate model is developed by combining finite-
+element analysis with a meta-heuristic optimized ET model for accurate structural response
+prediction; and (3) a multi-objective optimization strategy is introduced to improve both
+safety and efficiency in practical lifting scenarios. Among these, the key methodological
+contribution is the construction of a computationally efficient surrogate model that trans-
+lates high-fidelity finite-element results into real-time structural response prediction for
+control purposes. On this basis, multi-objective optimization and digital twin integration
+are used to support safety–efficiency co-optimization and closed-loop virtual–physical
+interaction. Therefore, the novelty of this study should be understood as an integrated
+control framework tailored to mobile gin poles.
+The subsequent sections of this paper are arranged as follows. Section 2 reviews the
+relevant literature on crane equipment control methods. Section 3 elaborates on the pro-
+posed framework and explains the mechanisms of the involved algorithms, including the
+TROA-ET and the NSGA-III. Section 4 further illustrates the effectiveness of the proposed
+framework through real-world examples. Section 5 discusses the performance of different
+optimization algorithms in this case study. Finally, Section 6 summarizes the conclusions of
+this study, along with limitations and future recommendations.
+2. Literature Review on Crane Equipment Control
+Regarding the control issues of mobile gin pole systems, a type of large-scale crane
+equipment, numerous scholars have conducted relevant research to enhance the safety
+and performance of such equipment. In this section, we will review the research on the
+control of crane equipment, which can be categorized into several areas: (1) rule-based
+control using computational models, (2) intelligent control based on artificial intelligence,
+and (3) system control based on digital twins. While these research streams have been
+successfully applied in crane control, their integration into a unified intelligent control
+framework for mobile gin poles remains largely unexplored.
+(1) Rule-based control using computational models
+Rule-based control using mathematical models. This type of research aims to quan-
+titatively calculate the forces and motion of equipment using mathematical and physical
+theories, with most methods based on the lumped mass approach. This includes Lagrange
+modeling and bond graph modeling [14,15]. Mustafa Tinkir et al. [16] used the Lagrange
+formula to obtain a dynamic model of a scaled crane system. Yingguang et al. modeled
+marine cranes using the bond graph method [15]. On the other hand, finite-element analysis
+and computer-based model analysis are also used for equipment mechanical analysis [17].
+https://doi.org/10.3390/buildings16101982
+Buildings 2026, 16, 1982 4 of 31
+For example, Gerdemeli et al. [18] used the finite-element method to perform stress analysis
+on crane components, considering the crane’s self-weight, effective load, hook weight,
+trolley weight, and dynamic load, to investigate the damage caused by heavy loads to
+the equipment. Research on crane mechanical modeling has already reached a relatively
+mature stage.
+(2) Intelligent control based on artificial intelligence
+Currently, equipment controller designs are mainly divided into open-loop control
+and closed-loop control. Compared to open-loop control, closed-loop controllers can
+adjust their performance based on the required output response. Feedback schemes utilize
+measurements and estimates of system state to reduce oscillations and achieve accurate
+system positioning. Therefore, feedback loops or closed-loop control schemes are less
+sensitive to disturbances and parameter changes [19]. To measure system state, necessary
+sensors must be added, which increases the additional costs. One drawback of closed-loop
+systems is their slow response due to input delay in the feedback loop [20].
+Closed-loop controllers can be categorized into linear control [21], optimal control [22],
+adaptive control [23], intelligent control [24], sliding mode control [25], etc. Among these,
+intelligent control has garnered significant attention due to the rapid development of
+artificial intelligence technology. Intelligent control can achieve direct or indirect adaptive
+control under highly nonlinear systems or model uncertainty conditions, leveraging its
+powerful learning and adaptive capabilities. Neural networks possess excellent nonlinear
+processing capabilities and inherent robustness due to their parallel architecture, making
+them significant for solving mathematical modeling problems [26]. Lee et al. [27] proposed
+a combination of neural networks and sliding mode controllers to achieve precise vehicle
+positioning and eliminate the sway angle of the payload. Duong et al. [ 28] proposed
+a hybrid evolutionary algorithm to control an underactuated three-dimensional tower
+crane system using a recurrent neural network. The hybrid evolutionary algorithm (HEA)
+was designed by embedding genetic operators (crossover and mutation) from genetic
+algorithms (GA) into particle swarm optimization (PSO) to create offspring that consider
+parent selection based on adaptive results. The hybrid algorithm was used to construct an
+RNN-based controller. It demonstrated good performance as it could drive the system to
+the desired point. Fuzzy logic controllers (FLC) have also been widely used in many crane
+control systems, which perform well in handling unstable machines, nonlinear systems, and
+optimal point control problems [29]. Benhellal et al. [30]. combined NN with FLC to serve
+as a neuro-fuzzy controller for crane systems. The main method of the proposed control
+strategy is to use sliding mode theory as the learning algorithm to adjust the neuro-fuzzy
+parameters. Li et al. [31] proposed a method combining NN and fuzzy logic on a specific
+crane system. The learning algorithm adopted by the neuro-fuzzy controller is based on
+ant colony optimization, demonstrating faster convergence performance compared to the
+backpropagation algorithm.
+In recent years, swarm intelligence optimization and deep learning have been widely
+applied in engineering fields such as structural health monitoring and damage identifica-
+tion. Meta-heuristic algorithms effectively solve nonlinear, multi-local-optimum inverse
+and parameter identification problems, while deep learning supports damage detection,
+data recovery and physics-informed analysis, and their hybrid strategies further improve
+data reconstruction and response estimation. Both approaches excel in handling nonlinear
+mappings, noisy data and incomplete measurements. However, deep learning demands
+large datasets, high computational costs and extensive parameter tuning, whereas swarm
+intelligence-optimized ensemble learning is more suitable for medium-scale datasets and
+scenarios requiring efficiency and robustness. Given this study uses 3350 finite-element
+simulation samples to build an accurate and efficient surrogate model for real-time digital
+https://doi.org/10.3390/buildings16101982
+Buildings 2026, 16, 1982 5 of 31
+twin decision support, the TROA-ET strategy is adopted to balance accuracy, robustness
+and efficiency, with ongoing advances in swarm intelligence and deep learning offering
+promising directions for future work.
+(3) System control based on digital twins
+The concept of digital twins was first proposed by Grieves as a digital virtual repre-
+sentation of a physical entity. A digital twin primarily consists of a physical entity, a virtual
+model, and the connection between the physical and virtual components [ 32,33]. It is
+updated through modeling, simulation, and self-optimization of the physical entity. NASA
+and the U.S. Air Force have applied digital twin technology to various types of aircraft
+for condition monitoring, fault diagnosis, lifespan prediction, and design optimization by
+integrating diverse heterogeneous information sources [ 34–36]. Additionally, extensive
+research has demonstrated its applications in various equipment, including tunnel bor-
+ing machines [37], wind turbines [38], and computer numerical control (CNC) machine
+tools [39]. Digital twins have evolved from a descriptive concept into a practical technology.
+In particular, structural safety monitoring is one of the most promising applications
+of digital twins, as it provides real-time reflections of the physical world and facilitates
+decision-making based on rapid analysis algorithms [ 40]. Haag and Anderl [ 41] devel-
+oped a digital twin that uses the finite-element method (FEM) for structural analysis of a
+simple bending beam, with actual forces or displacements obtained from sensors as input.
+Guivarch et al. [42] proposed a method for constructing a digital twin of a helicopter’s
+tilting rotor assembly using multibody simulation. Fotland et al. [43] performed various
+simulation methods and effectively constructed a digital twin for crane pulleys and cables.
+Moi et al. [44] used strain gauges as load sensors and implemented a digital twin for state
+monitoring of folding-arm cranes based on an inverse method, which can determine stress,
+strain, and load at an unlimited number of points in real time. The focus of these studies is
+to combine mechanistic models, such as structural statics and dynamics with numerical
+methods to establish digital twins. The fundamental advantage of constructing digital twins
+using this approach is that the model parameters have practical physical significance, which
+facilitates scientific interpretation of the results. However, due to the large computational
+load, numerical methods are typically difficult to use in real-time applications.
+To overcome this limitation, Rasheed et al. [45] proposed to use artificial intelligence
+(AI) to construct digital twins. Both mechanical models and statistical models have their
+advantages and disadvantages. Therefore, a more reasonable approach should be adopted
+to combine simulation with AI to construct digital twins for structural analysis [46]. Willcox
+et al. [47] proposed a promising method that combines a component-based reduced-order
+model library with Bayesian state estimation or optimal tree algorithms to create data-
+driven, physics-based digital twins. Therefore, if computational workload is reduced and
+prediction accuracy is improved, digital twins composed of mechanistic and statistical
+models will become lighter, more efficient, and more reliable.
+Overall, the reviewed studies provide important foundations for intelligent lifting
+control, but they also reveal clear limitations when considered from the perspective of mo-
+bile gin pole applications. Rule-based approaches offer good interpretability and physical
+consistency, yet they usually rely on simplified assumptions and are difficult to deploy
+in real time under complex and uncertain construction conditions. AI-based approaches
+improve adaptability and nonlinear mapping capability, but many of them are weakly
+connected to structural mechanics and often focus on control performance without ex-
+plicitly coupling safety-related structural responses with operational efficiency. Digital
+twin-based approaches provide a promising way to connect physical assets with virtual
+models for monitoring and decision support; however, existing studies mainly emphasize
+state monitoring or structural analysis, and an integrated framework that combines real-
+https://doi.org/10.3390/buildings16101982
+Buildings 2026, 16, 1982 6 of 31
+time perception, physics-informed surrogate prediction, multi-objective optimization, and
+virtual–physical parallel control is still lacking, especially for mobile gin poles.
+Compared with these existing studies, the proposed framework advances the literature
+in three aspects. First, it combines finite-element-based kinetic analysis with a TROA-ET
+surrogate model to establish a behavior–mechanics mapping, thereby preserving physical
+relevance while improving computational efficiency. Second, it moves beyond pure pre-
+diction or monitoring by introducing NSGA-III to jointly optimize structural safety and
+operational efficiency under different operating conditions. Third, it embeds the above
+models into a digital twin-enabled parallel control architecture with perception, prediction,
+and guidance subsystems, so that the framework supports not only offline analysis but also
+virtual–physical interaction and robust decision-making under uncertainty. Therefore, the
+proposed method can be understood as an integrated extension beyond existing rule-based,
+AI-based, and digital twin approaches, rather than a simple application of any single
+research stream.
+3. Methodology
+To analyze the safety and efficiency of the mobile gin pole during operation and
+achieve optimized control of the equipment, this study designed a new digital twin frame-
+work. Specifically, kinetic analysis is first used to establish high-fidelity mechanical knowl-
+edge of the equipment. TROA-ET is then employed to build a behavior–mechanics surro-
+gate model that preserves physical relevance while enabling rapid prediction. Based on this
+surrogate, NSGA-III performs safety–efficiency co-optimization, and the resulting models
+are embedded into a digital twin parallel control architecture. This integrated design
+transforms high-cost offline analysis into an operational framework suitable for real-time
+perception, decision support, and robust control under uncertainty. It primarily consists
+of four parts: (1) construction of a kinetic model for the equipment and finite-element
+analysis; (2) meta-model optimization of behavior–mechanics surrogate models; (3) control
+parameters optimization based on NSGA-III; (4) perception enhancement and parallel
+control framework for the equipment. Sections 3.1–3.3 provide a detailed analysis of the
+establishment of kinetic models for the equipment, machine learning models, and multi-
+objective optimization methods. Section 3.4 outlines the system establishment method.
+Figure 1 presents the main conceptual diagram of the proposed framework.
+ 
+ 
+Figure 1. The main conceptual diagram of the proposed framework.
+https://doi.org/10.3390/buildings16101982
+Buildings 2026, 16, 1982 7 of 31
+3.1. Mobile Gin Pole Kinetic Analysis Based on FEM
+In the research and application of complex engineering equipment, physical system
+simulation plays a crucial role. For critical equipment such as the mobile gin pole used
+in power engineering construction, a thorough understanding of its physical system char-
+acteristics is the foundation for achieving safe and efficient operation. Through physical
+system simulation, it is possible to simulate the operational state of the mobile gin pole
+under various working conditions in a virtual environment, obtain its dynamic response
+data, and thereby provide strong support for the development of subsequent safety control
+strategies [48].
+In actual power engineering construction scenarios, the main body of the mobile
+gin pole is typically coupled with the existing tower structure. During force analysis,
+this section generally does not undergo bending failure. During operation, the jibs are
+subjected to significant dynamic loads, and this component is structurally weaker than
+the main tower. Therefore, special attention must be paid to the force conditions of the jib.
+Additionally, different construction tasks have varying requirements for the jib’s lifting
+capacity, lifting height, and swing range, further increasing the complexity of the analysis.
+To address these complex factors, traditional empirical design and analysis meth-
+ods are no longer sufficient. With the rapid development of computer technology and
+simulation software, utilizing professional simulation tools to perform physical system sim-
+ulations on cranes has become an inevitable trend. By establishing a simulation model of
+the mobile gin pole in ANSYS, one can conduct an in-depth analysis of its overall structure
+and operating principles, as well as perform dynamic simulation analysis to obtain key
+data such as stress distribution, deformation conditions, and vibration characteristics. This
+enables a comprehensive understanding of the mobile gin pole’s mechanical performance
+under various operating conditions, providing a crucial basis for subsequent optimization
+design and safety control.
+During the dynamic analysis, to reduce computational resource requirements, the gin
+pole components were simplified, and the track vehicle components were simplified to
+a square solid. The main load-bearing components of the jibs are steel rods. Therefore,
+the truss structure was simplified using beam elements. Small geometric features, such
+as bolts and rounded corners, were removed to avoid mesh distortion. The simplified
+mobile gin pole three-dimensional model was imported into ANSYA Design Modeler, with
+material properties set to Q345B. The process of model establishment is shown in Figure 2.
+Rotating parts in the model were connected using ball joints. Welded parts were set to
+bound contact. Sliding components were assigned friction contact. Rotational centrifugal
+force was applied using acceleration. Sinusoidal acceleration was used to simulate lifting
+impact loads. Based on the operating principle, three motion processes (lifting, slewing, and
+luffing) were calculated. To further enhance computational speed, this study conducted
+a mesh independence test to determine the optimal mesh density. This study selected
+a jib swing motion condition with a load of 1000 kg and a speed of 1 ◦/s for the mesh
+independence simulation experiment. The element sizes were selected as [0.5, 0.1, 0.05,
+0.03, 0.02, 0.01, 0.0075, 0.005], and the maximum axial force and maximum shear force
+outputs of the finite-element model were recorded. The results of the mesh independence
+experiments are shown in Figure 3. The maximum axial stress and maximum shear stress
+of the jib under different conditions were extracted from the computational results.
+https://doi.org/10.3390/buildings16101982
+Buildings 2026, 16, 1982 8 of 31
+Figure 2. The establishment process of the mobile gin pole finite-element model.
+ 
+ 
+Figure 3. Verification of mesh independence for the mobile gin pole finite-element model.
+3.2. Prediction Model Based on Meta-Heuristic Algorithm
+To realistically reflect the construction scene, it is necessary to construct a relational
+model that combines the actual decision parameters and target parameters that characterize
+the safety risks of the mobile gin pole, and embeds them into the parallel control system.
+https://doi.org/10.3390/buildings16101982
+Buildings 2026, 16, 1982 9 of 31
+This section combines advanced machine learning models and meta-heuristic algorithms to
+establish predictive models between relevant parameters. The following provides a detailed
+introduction to the structure and related evaluation indicators of the prediction model.
+3.2.1. Extreme Trees (ET)
+The Extreme Trees (ET) proposed by Geurts et al. are a typical representative of
+ensemble learning algorithms [49]. The Extreme Trees model adopts the same principle as
+Random Forests (RF) [50] and uses random subsets of features to train each base estimator.
+Numerous research findings have demonstrated that ET, with its unique randomization
+strategy and ensemble mechanism, exhibits outstanding performance in complex data
+processing and prediction tasks. The algorithm has strong feature selection capability
+and nonlinear mapping ability in high-dimensional spaces. It can accurately capture
+complex relationships in the data. Therefore, it is well suited for problems with noise or
+strong nonlinearity.
+ET has significant advantages in training efficiency and generalization performance.
+Its randomized node-splitting strategy reduces computational complexity. As a result,
+the training speed is higher than that of traditional decision tree algorithms. The model
+also remains efficient when processing large-scale datasets. Additionally, this strong
+randomness effectively suppresses model overfitting tendencies, enabling it to produce
+robust and reliable predictions even in scenarios with small sample sizes or unstable data
+distributions. As a parallelized ensemble model, ET avoids the limitations of a single model
+by constructing multiple randomized decision trees and aggregating prediction results. ET
+can automatically generate feature importance evaluation metrics, reducing reliance on
+manual feature engineering and minimizing the interference of subjective assumptions on
+prediction results. Based on the above advantages, this paper selects the ET model as the
+core prediction model for mobile gin pole performance.
+ET utilizes a set of unpruned regression trees, which are generated individually using
+traditional top-down methods, differing from the RF model. The RF model employs a two-
+step process involving bagging and bootstrapping for regression analysis. Compared to RF,
+which selects the optimal split from a random feature subset at each node, ET randomly
+selects a split point for each feature and then chooses the optimal split from these options.
+The mathematical form of this process is as follows:
+Split ETR = argmin
+f ,s
+[Error( f , s)] (1)
+where Split ETR represents the final split determined by the ET; f represents the feature,
+s represents the randomly selected split point for that feature; the function Error( f , s)
+is used to measure the reduction in error caused by the split. The core objective of the
+algorithm is to find the combination off and s that minimizes the error, thereby determining
+the optimal split. The final mathematical representation of the ET model output can be
+concisely expressed as the formula:
+YETR = 1
+N
+N
+∑
+i=1
+Ti(X) (2)
+where YETR represents the expected output, which depends on the number of treesN in the
+set; Ti represents the i tree in the set; and X is the input feature vector. By integrating the
+outputs of multiple unpruned trees with rich diversity, ET achieves an accurate prediction
+of the target value.
+https://doi.org/10.3390/buildings16101982
+Buildings 2026, 16, 1982 10 of 31
+3.2.2. Tyrannosaurus Rex Optimization Algorithm (TROA)
+The Tyrannosaurus Rex Optimization Algorithm (TROA) is a novel meta-heuristic
+algorithm inspired by nature, proposed by Venkata Satya Durga Manohar Sahu et al. in
+2023 [51]. The algorithm draws inspiration from the hunting behavior of Tyrannosaurus
+rex. In the algorithm simulation, it is assumed that the Tyrannosaurus rex hunts alone.
+The initial positions of the prey and the Tyrannosaurus rex are randomly generated, and
+the prey closest to the Tyrannosaurus rex is selected as the target. The Tyrannosaurus
+rex pursues the prey, while the prey attempts to escape. This process continues until
+the Tyrannosaurus rex successfully captures the prey or the prey escapes. The algorithm
+primarily consists of three steps:
+(1) Initialization of population positions
+For population-based algorithms, randomly generate the number of prey in the search
+space. The location of prey is randomly generated within the upper and lower limits, as
+shown in the mathematical model below:
+Xi = rand (np, dim) × (ub − lb) + lb (3)
+where Xi is the prey position (i = 1, 2,· · · , n, n is the dimension), np is the population size,
+dim is the search space dimension, ub is the upper limit, and lb is the lower limit.
+(2) Hunting and chasing
+Tyrannosaurus rex hunted randomly, and the mathematical model for hunting actions
+is as follows:
+xnew =
+(
+xnew i f rand () < Er
+x Random else (4)
+where Er is the estimated time to reach scattered prey. At the same time, Tyrannosaurus rex
+hunts prey by updating its position, using the formula:
+xnew = x + rand () × sr × (tpos × tr − target × pr) (5)
+where sr is the hunting success rate (with values ranging from 0.1 to 1). If the success rate is
+0, it means the prey has escaped and the hunt has failed, requiring an update to the prey’s
+position; tpos is a parameter representing the T. rex’s relative position to the prey;tr is the
+T. rex’s running speed;target is the minimum position of the prey relative to the T. rex; and
+pr is a related parameter.
+(3) Selection stage
+The selection process depends on the current and previous positions of the prey. It
+is determined by comparing the fitness function f (X) of the initial random prey position
+with the fitness function f (Xnew ) of the updated prey position, expressed as the formula:
+Xk+1
+i =
+(
+update the target position i f f (X) < f (Xnew )
+target is zero otherwise (6)
+If the Tyrannosaurus rex fails to catch its prey, the prey’s position becomes zero; if
+the updated prey position has a better fitness value, the target position is updated. This
+process is iterated repeatedly until the optimal solution is selected.
+3.2.3. TROA-ET Model
+To obtain the optimal hyperparameter combination for the ET model, a hybrid model
+of TROA and ET is constructed. The TROA-ET model structure is shown in Figure 4.
+Initially, the original dataset is divided into a training set and a test set. In the TROA, the
+https://doi.org/10.3390/buildings16101982
+Buildings 2026, 16, 1982 11 of 31
+position of each individual corresponds to a set of randomly generated hyperparameters
+for the ET model, including n_estimators , min_samples _split , and min_samples _lea f . For
+each candidate–hyperparameter combination, model fitness is evaluated using 5-fold
+cross-validation on the training set, and the average validation loss across the folds is
+taken as the fitness value in TROA. Once the optimization process terminates, the optimal
+hyperparameters are obtained. These optimal hyperparameters are then used to retrain
+the ET model on the full training set, and the final predictive performance is reported on
+the independent test set. In this way, the test set is not involved in hyperparameter tuning,
+which reduces the risk of data leakage and optimistic performance estimation. The flow
+description of ET combined with TROA is shown in Algorithm 1.
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+Figure 4. The model structure of TROA-ET.
+Algorithm 1: Pseudocode of TROA-ET model
+Input: original dataset D, max Iterations max_iter, and population size pop _size
+Output: optimal hyperparameter combination best_params
+01 Initialize a population of Tyrannosaurus rex containing pop _size individuals
+02 for i = 1 to pop _size do
+03 Randomly generate a set of hyperparameter params _i =
+(n_estimators _i , min_samples _split _i, min_samples _lea f _i)
+04 Using params _i as the position of the i th Tyrannosaurus rex
+05 end for
+06 for iter = 1 to max _iter do
+07 for i = 1 to pop _size do
+08 Using params _i to construct an ET_model
+09 Calculate the loss function of ET_model as the fitness value f itness_i
+10 if i == 1 or f itness _i < best_ f itness then
+11 best_ f itness = f itness_i
+12 best_params = params _i
+13 end if
+14 end for
+15 for i = 1 to pop _size do
+16 Update the position of the i th Tyrannosaurus rex params _i
+17 end for
+18 end for
+19 return best_params
+https://doi.org/10.3390/buildings16101982
+Buildings 2026, 16, 1982 12 of 31
+3.2.4. Prediction Model Evaluation
+In the prediction model for the target parameters, the model is constructed through
+the training set, and the reliability of the model is verified through the test set. In order to
+effectively evaluate the reliability of prediction models, corresponding model evaluation
+indicators should be introduced. The commonly used evaluation indicators are as follows:
+RMSE =
+s
+1
+n
+n
+∑
+1
+(yi − ˆyi)2 (7)
+MSE = 1
+n
+n
+∑
+1
+(yi − ˆyi)2 (8)
+Var = 1
+n
+n
+∑
+1
+( ˆyi − yi)2 (9)
+R2 = 1 − ∑i
+( ˆyi−yi)2
+n
+∑i( ˆyi−yi)2
+n
+= 1 − MSE( ˆy, y)
+Var(y) (10)
+where n indicates the total number of all samples. yi, ˆyi, and ˆyi represent the true value,
+the predicted value, and the mean value of all samples, respectively. For the RMSE , MAE ,
+MSE, and Var, the smaller the value, the more reliable the model. For the R2, the closer it
+is to 1, the more reliable the model.
+3.3. Optimization of Control Objectives Based on Genetic Algorithm
+Based on the developed TROA-ET model, which accurately maps the relationship be-
+tween input variables and objectives, multi-objective optimization (MOO) can be performed
+to obtain the optimal solution for light crane operations. The mathematical representation
+of the multi-objective optimization problem is as follows:
+min[ f1(x), f2(x), · · · , fn(x)] (11)
+
+
+
+lb ≤ x ≤ ub
+Aeq × x = beq
+A × x ≤ b
+(12)
+where fn(x) is the objective function; x is the variable to be optimized; lb and ub are the
+upper and lower bounds of variable x; the equations Aeq × x = beq and A × x ≤ b are the
+equality and inequality constraints on x.
+3.3.1. Non-Dominated Sorting Genetic Algorithm III
+Non-Dominated Sorting Genetic Algorithm III (NSGA-III) is a multi-objective evolu-
+tionary algorithm proposed by Deb et al. based on NSGA-II [52]. It has been improved for
+high-dimensional optimization problems with three or more objectives. By introducing a
+reference point mechanism and an angle-based selection strategy, it effectively enhances
+the uniformity and convergence of the solution set in high-dimensional spaces. This study
+selects the NSGA-III algorithm as the core algorithm for optimizing the safety control of
+the mobile gin pole. Its core principles can be summarized in the following four parts:
+(1) Non-dominated sorting
+NSGA-III inherits the fast non-dominant sorting strategy of NSGA-II, first assessing
+the dominance relationship among individuals in the population. For two solutions xi and
+xj, if the following condition is satisfied:
+https://doi.org/10.3390/buildings16101982
+Buildings 2026, 16, 1982 13 of 31
+∀m ∈ {1, 2, . . . ,M}, fm(xi) ≤ fm
+ 
+xj
+
+∧ ∃ m′ ∈ {1, 2, . . . ,M}, fm′ (xi) < fm′
+ 
+xj
+
+(13)
+Then xi is said to dominate xj. Through the dominance relationship, all solutions
+are divided into different non-dominated levels F1, F2, . . ., Fk, where F1 is the set of Pareto
+optimal solutions that are not dominated by any other solution, constituting the initial
+Pareto frontier; subsequent levels Fl(l > 1) are solutions that are dominated by Fl−1 but
+are not dominated within the same level. The algorithm prioritizes selecting individuals
+from lower tiers (e.g., solutions in F1) to drive the population toward convergence on the
+Pareto frontier. Figure 5 shows pareto front and non-dominated sorting.
+Figure 5. Pareto front and non-dominated sorting.
+(2) Reference point mechanism
+The algorithm guides the population to uniformly distribute in the high-dimensional
+target space through a reference point system. Let the dimension of the target space be
+M. H reference points
+n
+zh
+h = 1, 2, . . . ,H
+o
+are generated through Latin hypercube design
+or uniform grid partitioning, satisfying ∑M
+m=1 zh
+m = 1 and zh
+m ≥ 0. For an individual x, its
+normalized objective vector f (x)( f1(x), f2(x), . . . ,f M(x)), the Chebyshev distance to the
+reference point zh is calculated:
+dchebyshev(x, zh) =
+M
+max
+m=1
+n
+wm ·
+ fm(x) − zref
+m
+
+o
+(14)
+where wm is the weight of m, and zref
+m is the ideal value of the reference point h on target m.
+Individuals are assigned to the subregion belonging to the reference point with the smallest
+distance. When the number of individuals in a subregion exceeds the capacity Ncap, the
+solution’s representativeness is maintained by removing the individuals furthest from the
+reference point, i.e., retaining the solution that satisfies min
+
+dchebyshev(x, zh)
+
+.
+(3) Selection strategy based on angle
+To address the issue of decreased efficiency in traditional crowding distance calcu-
+lations in high-dimensional spaces, NSGA-III uses a polar coordinate transformation to
+https://doi.org/10.3390/buildings16101982
+Buildings 2026, 16, 1982 14 of 31
+calculate the angle between individuals to measure distribution. For individuals xi and xj,
+whose objective vectors are vi = f (xi) − zref and vj = f
+ 
+xj
+
+− zref respectively, the angle
+θij is defined as:
+θij = arccos
+ 
+vi · vj
+|vi| ·
+vj
+
+!
+(15)
+Within the same reference point area, solutions with larger angles relative to other
+individuals are prioritized to avoid clustering of similar solutions. This strategy effec-
+tively alleviates the diversity degradation problem caused by the “dimension disaster” by
+maximizing the angle differences between solution vectors.
+(4) Population renewal
+NSGA-III uses genetic operations to iterate the population, with the following specific
+process: The first step is parent selection: based on the non-dominant hierarchy l(x) and
+reference point distance d(x), a binary tournament selection is used to prioritize individuals
+with smaller l(x) and d(x). The second step is crossover mutation: the simulated binary
+crossover operator is used, with a crossover probability of pc and a distribution index of ηc.
+The offspring individuals u1 and u2 are generated from the parent individuals v1 and v2:
+um =
+
+
+
+0.5[(1 − αm)v1m + (1 + αm)v2m], random value ≤ 0.5
+0.5[(1 + αm)v1m + (1 − αm)v2m], ortherwise
+(16)
+where αm = (2r + (1 − 2r)(1 − βm))1/(ηc+1), r is a uniform random number, and βm satis-
+fies βm = (2r′)1/(ηc+1) (r′ is another uniform random number). The mutation operation
+uses polynomial mutation with a mutation probability of pm and an exponent of ηm. The
+third step is population pruning: after merging the parent and offspring generations, redun-
+dant solutions at higher levels or within subregions are removed through non-dominated
+sorting and reference point selection to maintain a constant population size N.
+3.3.2. Pareto Optimal Solution Decision
+In multi-objective optimization problems, each solution in the Pareto optimal set satis-
+fies the condition of non-dominance, theoretically exhibiting equal acceptability. However,
+in practical applications, designers often need to select a unique implementation plan from
+the optimal set. Since optimization of a single objective may lead to deterioration in the
+performance of other objectives, specific rules are required to narrow the solution set to
+a feasible optimal subset. Several decision-making methods have been proposed in the
+academic literature, such as the Weighted Sum Model (WSM) [53], Multi-Attribute Utility
+Theory (MAUT), Analytical Hierarchy Process (AHP), Elimination and Choice Expressing
+Reality (ELECTRE), and Technique for Order of Preference by Similarity to Ideal Solution
+(TOPSIS). In this study, the WSM is chosen as the decision-making tool. The core pro-
+cess is as follows: first, infeasible solutions are eliminated, and then multiple objectives
+are transformed into a single objective function through a linear combination, where the
+weight coefficients for the sensitive dimensions are pre-set based on project preferences
+or practical scenarios. The logical framework of the decision-making process is shown in
+Figure 6, where the weight coefficients a and b correspond to the priorities of Objective 1
+and Objective 2, respectively.
+https://doi.org/10.3390/buildings16101982
+Buildings 2026, 16, 1982 15 of 31
+Figure 6. The display of WSM.
+3.4. Perception Upgrade and Parallel Control Framework
+Large-scale crane engineering equipment constitutes a complex engineering system
+encompassing multiple functions such as sensing, positioning, planning, and control. This
+study employs digital technology and intelligent algorithms to demonstrate exceptional
+performance, effectively addressing the prediction of structural stress on the equipment
+and providing optimized decision-making. Sensor integration and physics-based collision
+detection are utilized to enhance hazard perception capabilities. In this study, multiple
+module groups are integrated into a comprehensive system through the application of
+relevant intelligent algorithms and scenario-based design. Based on perception-enhanced
+physical world lifting equipment and digitally driven virtual engineering scenarios, dy-
+namic control is achieved through parallel control. Specifically, it comprises three main
+subsystems as shown in Figure 7.
+Figure 7. Framework of the gin pole parallel control system.
+https://doi.org/10.3390/buildings16101982
+Buildings 2026, 16, 1982 16 of 31
+(1) Description Subsystem: The primary purpose of this system is to instantiate virtual
+engineering scenarios that resemble real-world construction scenarios. Using appro-
+priate initialization principles, the virtual engineering scenario constructs each critical
+component, including specific geographic models, lifting equipment, materials, and
+various supporting tools. Data collected during real-world operations is used to
+monitor the performance of sensors in the virtual scene, thereby enhancing system
+performance. This ensures consistency between system data and real-world data. An
+initialization sensor model is constructed within the subsystem to correspond with
+the description of the real world. When creating a digital twin, the virtual crane equip-
+ment fully maps the behavior of real-world equipment, triggering virtual sensors to
+generate a set of virtual monitoring data. This data is aligned with real-world data to
+further enhance the performance of the description subsystem.
+(2) Prediction Subsystem: The prediction subsystem involves mapping the state changes
+in entities such as the crane and its environment, including equipment trajectory,
+collisions, position changes, and structural forces on the equipment. Real-world
+data is collected via sensors and analyzed and modeled using machine learning.
+Specifically, this study collects data on equipment behavior and its impact on the
+environment using newly added sensors. GPS is used for equipment positioning,
+encoders are used to collect the relative angles of various equipment components,
+and tension sensors are used to monitor lifting weights. Additionally, a large number
+of sensors installed on the base ensure safe equipment operation, such as hydraulic
+pressure monitoring, water temperature monitoring, and tilt monitoring. Based on
+the results of finite-element analysis, this study uses machine learning to construct
+an equipment behavior–mechanics response model, as detailed in Section 3.2. It is
+worth noting that in the prediction subsystem, the machine learning model performs
+mechanical analysis based on real-time equipment monitoring data, further enhancing
+structural safety.
+(3) Guiding Subsystem: Both the physical system and the virtual system generate control
+commands. To ensure consistency between the control commands of the virtual
+system and the physical system, the command deviations must be compared to
+achieve temporal and spatial synchronization between the physical system and the
+virtual system. The guidance subsystem connects the virtual system and the physical
+system. By comparing the leading state of the prediction subsystem’s inference results
+with the synchronized state of the physical system, the control strategy deviation
+between the digital twin and the physical system is calculated, enabling difference
+correction during the virtual–physical interaction process.
+4. Case Study
+To demonstrate the practical performance and operational effectiveness of the frame-
+work proposed in this study, and to test the reliability of the prediction and optimization
+methods, this study uses actual engineering cases as samples for method validation. This
+section provides a comprehensive overview of the engineering background, variable pre-
+diction, and target parameter optimization, and analyzes the results.
+4.1. Data and Resources
+The real-world scenario in this study is derived from the 110 kV transmission project
+of a 220 kV substation in a certain city, with the MT2DO6 model tracked tower erection
+equipment as the research subject. All sensor monitoring data in the system is sourced from
+the equipment’s original or newly added sensors, as shown in Figure 8. The equipment
+primarily performs three operational modes: lifting, luffing, and slewing. The mobile
+https://doi.org/10.3390/buildings16101982
+Buildings 2026, 16, 1982 17 of 31
+gin pole rotation speed is ≤0.3 r/min, with a rotation angle of ±170◦, a lifting speed of
+0–15 m/min, a lifting height ranging from 9 m to 34.6 m, a rated lifting moment of 5.98 t·m,
+and a luffing speed of 0–7.5 m/min.
+Figure 8. Diagram of the actual structure of the gin pole and installation of sensors.
+A high-precision sensor system records the working status of the gin pole in real
+time, as shown in Figure 8, thus providing data support for safety risk control. For
+better monitoring and risk control, a bidirectional data communication system has been
+developed, capable of bi-directional transmission of information. Its data is derived from
+a wide range of installed sensors. The upgraded equipment includes jib tilt sensors,
+hook tilt sensors, hook weight sensors, wind speed sensors, and track vehicle horizontal
+angle sensors. By calculating sensor monitoring data, information such as the current
+working amplitude of the mobile gin pole, torque values, and torque difference values
+can be obtained. After the sensors are fixedly installed, address binding and calibration
+operations must be performed to ensure that monitoring data is displayed normally. The
+equipment employs SPC-SDIO-S1212 intelligent distributed I/O across its various systems,
+utilizing the CANopen bus to collect data and transmit control commands. Additionally, the
+research equipment is equipped with a Data Transfer Unit (DTU) to facilitate the conversion
+between serial data and IP data, establishing a data connection with the cloud platform via
+4G signals. The DTU module supports the MQTT IoT protocol and is currently connected
+to the hydraulic system controller, sensor system controller, and main controller within the
+equipment. The equipment connection interface uses an RS485 interface, enabling real-time
+transmission of equipment sensing information to a pre-configured MQTT server via the
+4G network, as well as subscription to relevant information.
+The dataset in this study comes from finite-element calculation results, collecting force
+data of the luffing, lifting, and slewing of the gin pole under different load conditions. One-
+hot encoding was used to process the categorical variables. Considering the structural safety
+https://doi.org/10.3390/buildings16101982
+Buildings 2026, 16, 1982 18 of 31
+and efficiency performance during operation, the maximum axial stress and maximum
+shear stress of the structure were selected as the target parameters in this study. Axial stress
+and shear stress are the direct causes of structural failure. At the same time, this study used
+the product of the load weight and lifting speed to characterize the operating efficiency of
+the mobile gin pole, i.e., the change in gravitational potential energy of the lifted object per
+unit time. These three target parameters can well represent the comprehensive operating
+status of the mobile gin pole. In this study, the main control and state parameters of the gin
+pole were selected as decision variables for subsequent control optimization, as shown in
+Table 1. The relevant parameter values distribution is shown in Figure 9.
+To clarify the representativeness of the dataset, the 3530 samples were not intended
+to exhaust all possible field scenarios, but to cover the main operational envelope of the
+studied mobile gin pole in a structured manner. Specifically, the dataset includes the three
+primary operating modes of the equipment, i.e., lifting, slewing, and luffing, and spans
+the principal decision and state variables that govern its mechanical response, including
+load, elevation angle, acceleration, velocity, and time history. The simulated conditions
+were designed around the actual operating characteristics of the MT2DO6 equipment and
+the engineering constraints adopted in this study, so that the generated samples represent
+typical combinations of working states within the practical operating range rather than
+isolated idealized cases. Therefore, the dataset should be understood as a representative
+finite-element-based sampling of realistic operating conditions for the target equipment.
+Figure 9. Distribution of relevant parameter values.
+https://doi.org/10.3390/buildings16101982
+Buildings 2026, 16, 1982 19 of 31
+Table 1. The description of the studied parameters.
+Parameter Symbol Unit Description
+Load x1 kg The weight of the lifted object
+Luffing x2 None Angle variation motion of the gin pole jibs
+Lifting x3 None The lifting motion of the hook driven by the winch
+Slewing x4 None The rotational motion of the gin pole main structure around
+the slewing bearing
+Time x5 s Time history in finite-element analysis of the gin pole
+Elevation angle x6 ◦ The angle between the jibs and the tower
+Acceleration x7 m/s2 Component acceleration under different operating conditions
+Velocity x8 m/s Component velocity under different operating conditions
+Maximum axial stress y1 MPa Maximum axial stress of the gin pole structure at different
+times and states
+Maximum shear stress y2 MPa Maximum shear stress of the gin pole structure at different
+times and states
+Efficiency y3 kg·m/s The product of load and velocity is used to characterize the
+efficiency of gin pole operation
+4.2. Model Development
+This study uses the TROA-ET hybrid algorithm to map the relationships between
+different parameters. ET constructs multiple decision trees and then averages them to
+obtain the final prediction results, thereby reducing the risk of overfitting in a single decision
+tree and improving generalization ability. To obtain a more reasonable combination of
+hyperparameters, TROA is used to find potential combinations of hyperparameters. In ET,
+the core hyperparameters include the size of decision trees (n_estimators), minimum sample
+size for splitting (min_samples_split), and minimum sample size of leaf (min_samples_leaf).
+In TROA, the Tyrannosaurus rex position corresponds to a set of randomly generated
+hyperparameter lists. By calculating the loss function on the test set and using it as a
+fitness function, the quality of each individual (i.e., hyperparameter combination) in TROA
+is evaluated.
+The TROA-ET model is trained on a dataset of 3530 samples, of which 70% is used
+as the training set and 30% as the test set. The dataset is derived from finite-element
+kinetic analysis models based on the physical behavior of an actual gin pole to ensure the
+robustness of the training process. After multiple trial calculations, the hyperparameters of
+TROA are determined as shown in Table 2. The ET models for the two target parameters y1
+and y2 were optimized using TROA for hyperparameter combination, and the results are
+shown in Table 3. This target parameter y3 does not require prediction because it can be
+calculated directly.
+Table 2. The hyperparameters of TROA.
+Hyperparameters Setting
+Number of iterations 50
+Population size 50
+Convergence threshold 1 × 10−6
+Mutation probability 0.1
+Range of n_estimators [30, 250]
+Range of min_samples_split [2, 4]
+Range of min_samples_leaf [1, 3]
+https://doi.org/10.3390/buildings16101982
+Buildings 2026, 16, 1982 20 of 31
+Table 3. The optimal hyperparameter combination of ET obtained from TROA.
+Target Parameters n_Estimators min_Samples_Split min_Samples_Leaf
+y1 75 2 1
+y2 93 2 1
+To improve the reproducibility of the case study, the main implementation settings
+are summarized here. The dataset used for surrogate model development contained 3530
+samples generated from finite-element simulations of the mobile gin pole under different
+lifting, slewing, and luffing conditions. The categorical operation modes were transformed
+using one-hot encoding, and the dataset was divided into training and test subsets with a
+ratio of 70% and 30%, respectively. To avoid using the test set during model selection, TROA-
+based hyperparameter optimization was conducted only on the training set. Specifically,
+for each candidate–hyperparameter combination, 5-fold cross-validation was performed on
+the training set, and the average validation loss was used as the fitness criterion of TROA.
+After the optimal hyperparameters were identified, the ET model was retrained using
+the full training set, and its final performance was evaluated on the independent test set.
+All baseline models followed the same train–test split for fair comparison. This protocol
+ensures that hyperparameter tuning and final model assessment were separated, thereby
+improving the rigor and reproducibility of the reported results. The predicted results are
+shown in Table 4. The prediction targets of the TROA-ET model were the maximum axial
+stress and maximum shear stress, while the efficiency objective was directly calculated as
+the product of load and lifting velocity.
+Table 4. Performance metrics of different baseline models.
+Model
+Maximum Axial Force Maximum Shear Force
+MSE/MPa2 RMSE/MPa R2 MSE/MPa2 RMSE/MPa R2
+TROA-ET 385 19.6 0.964 55.1 7.42 0.943
+CB 893 29.9 0.917 144 12.0 0.818
+WRF 534 23.1 0.950 75.4 8.68 0.905
+XGB 755 27.5 0.930 121 11.0 0.847
+DT 583 24.1 0.946 102 10.1 0.872
+For hyperparameter optimization, TROA was adopted to search for the optimal ET
+settings. The number of iterations and population size were both set to 50, the convergence
+threshold was set to 1× 10−6, and the mutation probability was set to 0.1. The search ranges
+of the ET hyperparameters were [30, 250] for n_estimators, [2, 4] for min_samples_split,
+and [1, 3] for min_samples_leaf. After optimization, the best hyperparameter combinations
+were obtained as (75, 2, 1) for maximum axial stress prediction and (93, 2, 1) for maximum
+shear stress prediction. For multi-objective optimization, the three operating conditions,
+i.e., lifting, slewing, and luffing, were optimized separately according to the engineering
+constraints listed in Table 5. The objective set included maximum axial stress, maximum
+shear stress, and operational efficiency, and the final solution was selected from the Pareto
+set using the weighted sum method. To evaluate computational efficiency, the runtime
+of each optimization algorithm was recorded under the same implementation conditions.
+NSGA-III achieved the lowest runtime of 8.13 s, compared with 10.44 s for ACO, 9.20 s
+for PSO, and 12.71 s for SA. In addition, the finite-element model was used for offline
+data generation and post-optimization validation, whereas the online decision-making
+stage relied on the surrogate model rather than repeated high-fidelity simulations, which
+reduced the computational burden and improved practical applicability.
+https://doi.org/10.3390/buildings16101982
+Buildings 2026, 16, 1982 21 of 31
+Table 5. Allowable ranges of the control parameters.
+Control Parameters x1 x2 x3 x4 x5 x6 x7
+Value range
+1 0 0 [50, 1500] [0, 90] [0, 0.025 m/s2] [0, 0.25 m/s]
+0 1 0 [50, 1500] [0, 90] [0, 0.25◦/s2] [0, 1.8◦/s]
+0 0 1 [50, 1500] [0, 90] [0, 0.01 m/s2] [0, 0.125 m/s]
+All finite-element simulations and data-driven computations were conducted on a
+workstation equipped with Inter Core i7-12700F, 32 GB, running a Windows 10 system. The
+finite-element analysis was implemented in ANSYS 2024 R2, while the surrogate modeling
+and optimization procedures were implemented in Python 3.10. These settings are reported
+to facilitat

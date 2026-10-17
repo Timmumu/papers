@@ -1,0 +1,848 @@
+Advanced Engineering Informatics 59 (2024) 102250
+Available online 14 November 2023
+1474-0346/© 2023 Elsevier Ltd. All rights reserved.
+Contents lists available at ScienceDirect
+Advanced Engineering Informatics
+journal homepage: www.elsevier.com/locate/aei
+Full length article
+A digital twin-based motion forecasting framework for preemptive risk
+monitoring✩
+Yujun Jiao1, Xukai Zhai1, Luyajing Peng, Junkai Liu, Yang Liang, Zhishuai Yin∗
+Department of Automotive Engineering of Wuhan University of Technology, Wuhan, 430070, Hubei, China
+Foshan Xianhu laboratory of the Advanced Energy Science and Technology Guangdong laboratory, Foshan, 528200, Guangdong, China
+Hubei Key Laboratory of Advanced Technology for Automotive Components, Wuhan, 430070, Hubei, China
+Hubei Collaborative Innovation Center for Automotive Components Technology, Wuhan, 430070, Hubei, China
+Hubei Research Center for New Energy & Intelligent Connected Vehicle, Wuhan, 430070, Hubei, China
+A R T I C L E I N F O
+Keywords:
+Digital twin
+Motion forecasting
+Risk monitoring
+Cloud edge collaboration
+A B S T R A C T
+Risk monitoring is a critical task in numerous industrial fields, including construction engineering. Existing
+approaches primarily focus on identifying the immediate incidents of unsafe events, often neglecting the
+latent risks arising from the high uncertainty of agents’ motions. To bridge this gap and lay the basis for
+preemptive risk monitoring, this paper proposes a novel and effective digital twin-based motion forecasting
+framework that leverages cloud-edge collaboration to predict the future trajectories of workers on construction
+sites, while ensuring data privacy and reducing computational burden. The edge-end acquires multi-view
+images about the physical scene and extracts multi-scale features with a deep learning-based backbone. In
+the cloud-end, where the digital world is hosted, a Transformer-based trajectory tracking model is developed
+to construct a behavioral digital replica comprising of multiple workers’ historical trajectories from the bird’s-
+eye view perspective. Subsequently, a LSTM-based model, combined with the social pooling mechanism, is
+deployed to obtain spatiotemporal interactive features from the historical trajectories and predict workers’
+future motions. Experiments are conducted on a dataset (WHUT-MF) collected from real-world constructions
+sites. Our framework achieves 0.528 m in ADE and 0.84 m in FDE on entire WHUT-MF, which demonstrate
+that the proposed digital twin-based motion forecasting model accurately predicts the future trajectories of
+workers in various scenarios with potential risks.
+1. Introduction
+Risk monitoring is a crucial and challenging issue in complex and
+highly dynamic scenes such as construction sites. These sites consist
+of numerous heterogeneous entities, also referred to as agents, such
+as building materials, heavy machinery and workers, which inter-
+connect with each other and affect the security of construction sites
+collectively. Existing risk monitoring approaches typically focus on
+identifying the current safety state of construction sites through the
+recognition of workers’ behaviors and machinery operational states [1,
+2]. However, in complex scenes involving heterogeneous and dynamic
+agents, evaluating the current state alone is insufficient. It is essential
+to assess the latent risks arising from motion uncertainties and the
+✩ This research is supported by Key R&D program of the Ministry of Science and Technology of the People’s Republic of China under Grant No.
+2022YFB2502901; National Natural Science Foundation of China(51805388); Hubei Major Project(2022AAA001); Wuhan University of Technology Independent
+Innovation Research Fund(2023-vb-20).
+∗ Corresponding author.
+E-mail addresses: yjiao@whut.edu.cn (Y. Jiao), 333876@whut.edu.cn (X. Zhai), lpeng@whut.edu.cn (L. Peng), 285835@whut.edu.cn (J. Liu),
+yang.liang@whut.edu.cn (Y. Liang), zyin@whut.edu.cn (Z. Yin).
+1 Yujun Jiao and Xukai Zhai are joint first authors. Their contribution to this study is equal.
+complex interaction between diverse agents. Such assessments allow
+for proactive risk monitoring and timely intervention to prevent disas-
+trous safety consequences, such as entering restricted areas or colliding
+with moving obstacles. Workers are the primary category of dynamic
+agents and the focal point of safety management on construction sites.
+Their motions are highly dynamic, driven both by task-oriented inten-
+tion and context-related interaction. Therefore, accurately predicting
+their motion trends, i.e. future trajectories, is challenging but vital for
+preemptive risk monitoring on construction sites.
+The motion of workers is driven by their individual intentions to-
+wards certain targets, as well as their interactions with the surrounding
+https://doi.org/10.1016/j.aei.2023.102250
+Received 31 May 2023; Received in revised form 15 October 2023; Accepted 5 November 2023
+Advanced Engineering Informatics 59 (2024) 102250
+2
+Y. Jiao et al.
+environment. Most mechanism-based human motion forecasting ap-
+proaches [3,4] usually employ predictive optimal control or plan-based
+methods to inference a probabilistic model of human motion trajec-
+tories based on historical movements. This means they predominantly
+consider motion information but lack a detailed understanding of the
+surrounding contexts. They also struggle to handle the unpredictable
+and complex interactions between agents. On construction sites, agents’
+movements are influenced by a multitude of diverse environmental fac-
+tors, making it challenging for mechanism-based approaches to forecast
+human motion accurately. To improve the accuracy and robustness of
+motion forecasting in dynamic scenes, data-driven learning methods
+have been extensively explored in domains such as computer vision [5,
+6], intelligent transportation [7,8], etc. In comparison, there is still
+limited research in the context of construction sites. To predict the
+future trajectories of workers using data-driven methods in construc-
+tion site scenarios, acquiring a massive amount of historical motion
+data is necessary. Furthermore, it is necessary to establish refined
+representations of large-scale scenes, enabling the encoding of complex
+scene dynamics and interactive relations to realize accurate motion
+prediction.
+However, the aforementioned work faces significant challenges due
+to the following reasons: (1) The most commonly adopted sensors on
+construction sites are cameras typically deployed independent of one
+another, making it difficult to obtain a comprehensive fine-grained
+representation of large-scale scenes. (2) The limited computational
+power of onsite computing platforms hinders real-time execution of
+deep learning-based motion prediction model. Moreover, the platform’s
+ability to support the upstream tasks of motion prediction, namely
+object detection and tracking, is even more demanding. The prevalent
+approach adopted in recent years has been to transmit the collected
+data from construction sites to the cloud for processing. Nevertheless,
+this practice is unfavorable for privacy protection and data security,
+while also imposing significant pressure on data transmission.
+To address the aforementioned issues, our work proposes leveraging
+the digital twin technology, which has been widely utilized to simu-
+late and model physical counterparts, capturing their physical details
+and visual features. For example, numerous researches [9–11] adopt
+digital Twin for the purpose of building information modeling (BIM)
+to optimize the management of the production process. However, for
+certain tasks, such as motion prediction, what is required is not limited
+to observable information of the physical counterpart, but also implicit
+and intricate features.
+In this paper, we propose an edge-cloud collaboration framework
+to implement digital twin-based motion forecasting for risk monitoring
+on construction sites. At the edge-end, a pre-trained ResNet is utilized
+as the backbone network to extract multi-view feature maps at each of
+the three edge-computing platforms we deployed in the construction
+sites, for the purpose of privacy protection, data security and lower
+transmission burden. The cloud-end hosts the digital twin in which
+a multi-object tracking and a motion forecasting model is deployed.
+Specifically, inspired by previous works [12–15], a Transformer-based
+multi-object tracker is devised to exploit the cross-attention mecha-
+nism, so as to capture the expressive motion characteristics of multiple
+agents across multi-view features transmitted from the edge-end. His-
+torical trajectories are then obtained by decoding the learned query
+and utilized to form a fine-grained task-oriented behavioral digital
+replication of the scene. Subsequently, a social LSTM-based [16] motion
+forecasting model is deployed to obtain spatiotemporal interactive
+features among the multi-agents, which are then decoded to produce
+the predicted future trajectories of agents.
+The main contributions of our work can be summarized as follows.
+1. This study proposes a cloud–edge collaborative framework for
+constructing a digital twin aiming to perform motion forecasting of
+workers. At the edge-end, multi-scale features are extracted from the
+acquired multi-view images for privacy protection and data security.
+The cloud-end hosts the digital realm in which a Transformer-based
+multi-object tracking network and a social LSTM-based motion forecast-
+ing model are deployed to obtain historical trajectories and furthermore
+predict future trajectories of multiple workers.
+2. To create a task-centric digital replication of the physical scene,
+a query-based tracking model is developed to obtain historical trajec-
+tories of multiple objects across multiple views. Building upon this,
+we employ social LSTM to capture the spatiotemporal interaction fea-
+tures among the agents, ultimately predicting high-precision future
+trajectories for each and every worker.
+3. The experimental results, conducted on a dataset collected from
+real-world construction sites, demonstrate that the proposed digital
+twin-based motion forecasting model can accurately predict the future
+trajectories of workers in various scenarios with latent risks.
+2. Related work
+2.1. Risk monitoring on construction sites
+Prompted by the rapid development of Artificial Intelligence (AI)
+algorithms and their successes in computer vision, vision-based ap-
+proaches for risk monitoring have become a research focus in construc-
+tion engineering [17–19]. These approaches typically focus on detect-
+ing the risks stemming from unsafe behaviors of workers [20–22] such
+as not wearing helmets [23–25], falling from heights [26–28], and col-
+lisions with safety-related objects [29,30], etc. However, evaluating the
+immediate safety status of the scene through detection-based methods
+is inadequate for handling fast-evolving and stochastic potential risks,
+promoting the development of proactive prediction-based approaches.
+Several studies have approached risk prediction through motion fore-
+casting, primarily utilizing model-based or mechanism-based methods:
+Rashid [31] developed a physics-based human trajectory prediction
+model for evaluating collision risks around hazard areas, Amir [32]
+studies the feasibility of the proactive safety framework by utilizing two
+mechanism-based trajectory prediction models via field experiments.
+A significant limitation lies in the difficulty of rule-based approaches
+to adapt to complex environments. For scene-adaptive and robust
+motion forecasting, we propose a deep learning-based framework, en-
+abled by the digital twin technology, in the service of preemptive risk
+monitoring.
+2.2. Motion forecasting methods
+Motion forecasting serves as the foundation for preemptive risk
+monitoring by predicting the motion trends of dynamic agents, which
+are inherently influenced by both the environmental conditions and in-
+dividual behavioral intentions. Several motion forecasting studies [33–
+36] employ recurrent neural networks (RNNs) to iteratively capture
+the temporal evolution patterns of agents’ motion for prediction. To
+model the complex and diverse interactive relationships among agents,
+other research works [16,37,38] employ convolutional neural networks
+(CNNs) to capture spatial interactions based on the encoded histori-
+cal motions with RNNs. Recent studies [39,40] propose to integrate
+the spatiotemporal encoding of dynamic and static elements in the
+environment, utilizing cross-attention mechanisms to learn intricate
+interactions between the agents and scene context. Furthermore, gen-
+erative models such as Generative Adversarial Networks (GANs) [41]
+and Gaussian Mixture Models (GMMs) [42] have also been introduced
+for motion forecasting.
+Some studies have focused on motion forecasting of workers on
+construction sites, where explicit geometric and topological structures
+may be absent. Therefore, they emphasize the use of historical motion
+and the modeling of interactions between dynamic agents via Gener-
+ative Adversarial Networks [43] and recurrent neural network based
+methods [44,45].
+Advanced Engineering Informatics 59 (2024) 102250
+3
+Y. Jiao et al.
+Fig. 1. Overall architecture of the proposed digital twin based motion forecasting framework.
+2.3. Digital twin-based applications in construction engineering
+The essence of a digital twin is to establish a task-oriented replica-
+tion of the physical world as the digital realm [ 46–49]. As a universal
+technical framework, it has been incorporated into the whole life
+cycle of various infrastructural entities [ 50–52] such as machinery
+and buildings. Utilizing the digital twin technology, the construction
+community proposes numerous approaches to construct fine-grained 3D
+digital replications of infrastructures to implement effective and effi-
+cient construction progress management, thereby empowering digital
+fabrication [ 53–58]. In these studies, the construction of the digital
+twins focus primarily on replicating explicit and visible 3D details about
+the physical counterparts. Our study extends the concept of digital twin
+to replicate implicit motion and interaction features of dynamic agents,
+constructing a digital replica comprising of historical trajectories to lay
+the basis for robust and accurate motion forecasting.
+3. Approach
+3.1. Digital twin-based motion forecasting framework leveraging cloud-edge
+collaboration
+In this paper, the digital twin technology is adopted to develop a
+motion forecasting model that enables risk monitoring and prediction
+on construction sites. The architecture of the proposed framework is
+illustrated in Fig. 1 , comprising two main components: the physical
+world and the digital world. Besides, the edge-cloud framework is
+utilized to bridge the physical world and the digital world. It combines
+cloud computing and edge computing to enable efficient behavioral
+digital twin construction and accurate motion forecasting. In this frame-
+work, edge computing platforms provide real-time and low-latency
+processing for handling multi-view raw images captured in the physical
+world. The cloud computing platform receives the feature queues trans-
+mitted from the edge computing platforms, extracts motion information
+from the constructed digital description of surrounding context in BEV
+space, and perform motion forecasting exploiting its robust computing
+and storage capabilities.
+In the physical world, multiple cameras are deployed to capture
+multi-view videos of the scene, which are processed by deep CNN-based
+backbones. In the digital world, a Transformer-based tracking model
+is devised to exploit the cross-attention mechanism, implementing a
+query-based approach to extract the motion features of workers in a
+unified global bird’s-eye-view (BEV) space, and subsequently obtains
+historical trajectories to construct a fine-grained task-oriented behav-
+ioral digital replication of the physical world. Subsequently, a social
+LSTM-based model is designed to encode interactive features in both
+spatial and temporal dimensions, and predict the future trajectories of
+workers. The overall architecture of digital replica construction and
+motion forecasting is presented in Fig. 2 .
+3.2. Construction of the behavioral digital replica
+The digital replica we construct in this study is a behavioral replica-
+tion of workers’ motions, effectively represented as historical trajecto-
+ries. To accurately detect and track multiple workers based on features
+collected from multiple perspectives, we propose an instance-oriented
+query that encodes cross-view motion features by leveraging the cross-
+attention mechanism of Transformer, building upon the baseline model
+proposed by Zhang et al. [ 15]. The obtained query is then decoded
+into a 10-dimensional 3D bounding box, which captures the dynamic
+motion characteristics of the worker at the current frame in the BEV
+space. Moreover, the 3D bounding boxes of the same query across
+continuous frames within the observed time span naturally form a
+tracked trajectory, serving as the basis of the digital replication.
+In order to represent workers’ motion features in a global-refined
+3D scene space for robust digital replica construction, we integrate
+the information from multi-view camera in the birds’ eye view (BEV)
+space. First of all, we take the area covered by multiple cameras as
+the entire BEV space and divide it into grids of the same size. Each
+grid represents an area in the real world corresponding to an image
+region captured by multi-view cameras. Second, the center point of
+BEV space is set as the origin, and we perform joint calibration on
+all cameras to obtain the transformation matrix from pixel space to
+BEV space, including rotation matrix and translation matrix. Finally, we
+initialize some 3D reference points in BEV space to roughly represent
+the locations of target instances, which will be projected to multi-view
+image and the corresponding query aggregates temporal-spatial motion
+features via the cross-attention mechanism. Note that there are no
+explicit grids in the constructed BEV space. Instead, we just exploit the
+sparse reference point in BEV space and the corresponding query-based
+feature to represent the location and context-related motion feature of
+instance in construction scenarios.
+Given multi-level feature maps extracted from multi-view images
+𝐹 = { 𝐹1, 𝐹2, 𝐹3 ∣ 𝐹𝑚 = { 𝐹𝑚1, 𝐹𝑚2, 𝐹𝑚3, 𝐹𝑚4}, m ∈ {1 , 2, 3}} where 𝐹𝑚𝑗
+denotes the feature of level𝑗 extracted from images captured by camera
+𝑚. Queries denoted as 𝑞𝑡 = { 𝑞𝑡
+1, 𝑞𝑡
+2 … 𝑞𝑡
+𝑛
+} are initialized by embedding
+Advanced Engineering Informatics 59 (2024) 102250
+4
+Y. Jiao et al.
+Fig. 2. The diagram of digital replica construction and motion forecasting.
+layers, 𝑡 means at time 𝑡, 𝑛 represents the number of instances observed
+in the scene which varies as time goes by. 3D reference points 𝑐𝑡
+which depicts the position of agents in the BEV space are generated
+by queries. Then the sampling point set denoted as 𝑑𝑡, which contains
+various sampling points in the image pixel coordinate, are acquired
+via mapping the 3D positions from the BEV space to the image space.
+Exploiting the cross-attention mechanism, features of sampling points
+are aggregated to update that of the reference 3D point. This process
+can be expressed mathematically as follows.
+𝑐𝑡
+𝑖 = 𝜓 (𝑞𝑡
+𝑖
+) (1)
+𝑑𝑡
+𝑖𝑗
+= 𝜋𝑗
+(𝑐𝑡
+𝑖
+), 𝑗 = {1, 2, 3} (2)
+𝑑𝑡 =
+{
+𝑑𝑡
+1, 𝑑𝑡
+2 … 𝑑𝑡
+𝑖 ∣ 𝑑𝑡
+𝑖 =
+{
+𝑑𝑡
+𝑖1
+, 𝑑𝑡
+𝑖2
+, 𝑑𝑡
+𝑖3
+}}
+(3)
+𝑓 𝑡
+𝑐𝑖
+=
+4∑
+𝑚=1
+3∑
+𝑗=1
+𝛷
+(
+𝐹𝑚𝑗 , 𝑑𝑡
+𝑖𝑗
+)
+𝜎 (𝜔𝑚𝑗𝑖
+) (4)
+Where 𝑐𝑡
+𝑖 represents the 3D reference point of query 𝑖, 𝜓(.) denotes
+multi-layer perceptron, 𝜋𝑗 is the mapping matrix from the BEV space
+coordinates to image pixel coordinates of camera 𝑗, 𝑑𝑡
+𝑖 is the set of
+sampling points on feature maps of multi-view cameras for query 𝑖.
+Besides, 𝑓 𝑡
+𝑐𝑖
+denotes the aggregated features of the 3D reference point,
+𝛷(.) stands for bilinear sampling, 𝜎(.) represents the sigmoid activation
+function, and 𝜔𝑚𝑗𝑖 represents the weight to fuse features from sampling
+points. Based on the aggregated feature of 3D reference point, denoted
+as 𝑓 𝑡
+𝑐𝑖
+, we can update both 𝑐𝑡
+𝑖 and 𝑞𝑡
+𝑖.
+𝑞𝑡
+𝑖 ⇐ 𝑞𝑡
+𝑖 + 𝛹
+(
+𝑓 𝑡
+𝑐𝑖
++ 𝛤 (𝑞𝑡
+𝑖
+))
+, 𝑐𝑡
+𝑖 ⇐ 𝑐𝑡
+𝑖 + 𝛹
+(
+𝑓 𝑡
+𝑐𝑖
+)
+(5)
+Furthermore, the updated 3D reference point and query feature are
+decoded and a 10-dimensional 3D bounding box : 𝑥𝑡
+𝑖 ∈ 𝑅3 is the center
+of the 3D bounding box, 𝑠𝑖 = (𝑤𝑖, 𝑙𝑖, ℎ𝑖
+)∈ 𝑅3 represents the size of the
+3D bounding box, 𝑣𝑡
+𝑖 =
+(
+𝑣𝑡
+𝑥, 𝑣𝑡
+𝑦
+)
+∈ 𝑅2 is the velocity of the target in the
+pixel coordinate system, 𝑜𝑡
+𝑖 = (sin 𝜃𝑖, cos 𝜃𝑖
+)denotes the heading of the
+agent. The procedure can be expressed mathematically as below:
+𝑥𝑡
+𝑖 = 𝑐𝑡
+𝑖 + 𝛹 (𝑞𝑡
+𝑖
+) (6)
+𝑠𝑡
+𝑖, 𝑣𝑡
+𝑖, 𝑜𝑡
+𝑖 = 𝛹 (𝑞𝑡
+𝑖
+) (7)
+Where 𝛹 (.) is the multi-layer perceptron mentioned above. Further-
+more, we adopt delicately designed rules proposed in [ 13] for query
+life management, which adds new queries to denote new targets and
+eliminates old queries to represent vanishing targets in observed time
+span.
+3.3. Digital twin-based motion forecasting
+Based on the digital replica constructed, a motion forecasting model
+is developed to encode both spatial and temporal features shaping
+the motions of multiple agents in the scene. Due to the absence of
+geometric and topological structures in construction site scenes, graph-
+based scene representation is not suitable. In the previous section, we
+generated the historical trajectories of the agents in the BEV space.
+Therefore, we also convert the entire construction site scene into a
+rasterized BEV grid. Building upon this, inspired by the social LSTM
+proposed by Alahi et al. [16], we first utilize LSTM to extract temporal
+motion features from the target’s historical trajectories. Subsequently,
+the social pooling mechanism is employed to model the spatial interac-
+tive relations among multiple agents, ultimately deriving a social tensor
+that characterizes the spatiotemporal interaction among them. This
+tensor is then decoded to generate predictions of future trajectories.
+Specifically, the historical trajectories of workers are denoted as
+𝑋 = { 𝑋1, 𝑋2, … , 𝑋𝑛 ∣ 𝑋𝑖 = { 𝑥𝑡
+𝑖 ∣ 𝑡 ∈ { 𝑡 − 𝑇𝑜𝑏𝑠, 𝑡 − 𝑇𝑜𝑏𝑠 + 1, … , 𝑡} }} where
+𝑖 is the index of the worker and 𝑇𝑜𝑏𝑠 represents the length of recorded
+historical trajectories. Initially, the LSTM encoder embeds𝑥𝑡
+𝑖 as 𝑟𝑡
+𝑖 ∈ 𝑅𝐷,
+where 𝑥𝑡
+𝑖 is the motion information for agent 𝑖 (the target agent) at time
+𝑡, 𝐷 denotes the dimension of hidden state. To represent interactions
+among multi-agents, we utilize a social tensor 𝑇 𝑡
+𝑖 to aggregate other
+agents’ motion features in a predefined interactive region, which is a
+rectangle with the size of {𝑀 × 𝑁}. The process can be expressed as
+below.
+𝑇 𝑡
+𝑖 ∈ 𝑅𝑀×𝑁×𝐷, 𝑇 𝑡
+𝑖𝑡
+(𝑝,𝑞)
+=
+∑
+𝑗∈𝐼 𝑖
+(𝑝,𝑞)
+ℎ𝑡−1
+𝑗 ∈ 𝑅𝐷 (8)
+Here, 𝑇 𝑡
+𝑖𝑡
+(𝑝,𝑞)
+is the social tensor of a single cell with coordinates (𝑝, 𝑞) in
+the interactive region, ℎ𝑡−1
+𝑗 is the hidden state of agent𝑗 residing within
+Advanced Engineering Informatics 59 (2024) 102250
+5
+Y. Jiao et al.
+Table 1
+Comparison with the baseline approaches on public dataset ETH/UCY using metrics ADE/FDE. The number of input and output frames is set
+to 12 and 8. Bold indicates the best.
+ETH/UCY ADE ↓(m)/FDE↓(m)
+scenarios Vanilla LSTM Social-LSTM Social-GAN Trajectron++ Social-STGCNN ours
+ETH 1.09/2.41 1.09/2.35 0.87/1.62 0.71/1.66 0.64/1.11 0.77/1.88
+Hotel 0.86/1.91 0.79/1.76 0.67/1.37 0.22/0.46 0.49/0.85 0.70/1.4
+Univ 0.61/1.31 0.67/1.40 0.76/1.52 0.44/1.17 0.44/0.79 0.75/1.32
+Zara1 0.41/0.88 0.47/1.00 0.35/0.68 0.30/0.79 0.34/0.53 0.30/0.67
+Zara2 0.52/1.11 0.56/1.17 0.42/0.84 0.23/0.59 0.30/0.48 0.51/1.02
+the cell at time 𝑡 − 1. Furthermore, interaction feature 𝑒𝑡
+𝑖 is generated
+based on the influential tensor 𝑇 𝑡
+𝑖 .
+𝑒𝑡
+𝑖 = 𝛶 (𝑇 𝑡
+𝑖 , 𝑊𝑒
+) (9)
+Here, 𝛶 (.) denotes the embedding function, 𝑊𝑒 represents the pa-
+rameters in the embedding function. Hidden state ℎ𝑡
+𝑖 is updated accord-
+ing to the formula below.
+ℎ𝑡
+𝑖 = LSTM (ℎ𝑡−1
+𝑖 , 𝑒𝑡
+𝑖, 𝑟𝑡
+𝑖, 𝑊𝑒
+) (10)
+Here, 𝑊𝑒 denotes the LSTM weights. Once the final hidden state
+is obtained through multiple LSTM layers, the predicted trajectory of
+agent 𝑖 denoted as 𝑌𝑖 = { 𝑦𝑡
+𝑖 ∣ 𝑡 ∈ { 𝑡 + 1, 𝑡 + 2, … , 𝑡 + 𝑇𝑝𝑟𝑒
+}} is produced,
+where 𝑇𝑝𝑟𝑒 is the time span of the predicted trajectory. Predictions of
+all agents presented in the scene are obtained through the same process
+as described above.
+4. Experiments and results
+Our proposed digital twin-based motion forecasting model is trained
+utilizing two public dataset, ETH and UCY, which are widely used
+to train and test human motion forecasting approaches. We test the
+proposed model on a dataset collected from real-world construction
+sites in Wuhan, China. Both quantitative and qualitative analysis are
+conducted, and the results clearly demonstrate the effectiveness of our
+proposal in forecasting workers’ motion robustly and accurately in
+various scenes on construction sites.
+4.1. Dataset
+The self-created test dataset WHUT-MF comprises 165 sequences,
+each containing 20 images captured by multiple cameras over a span
+of 5 s. The label for each sequence is represented as [pedestrian ID,
+𝑥 coordinate, 𝑦 coordinate, 𝑧 coordinate, predicted timestep], where
+the predicted timestep depends on both the prediction horizon and
+frequency. The accurate 3D positions (𝑥, 𝑦, 𝑧) of multiple workers in
+the predicted time domain are measured using LiDAR and portable
+positioning sensors, with a sampling frequency matching that of the
+cameras.
+For the purpose of validation, we specifically focus on challenging
+scenarios that might harbor hidden risks and pose difficulties for work-
+ers’ motion forecasting. Examples include the vicinity of ascending or
+descending commodities suspended from tower cranes, the surround-
+ing areas of slow-moving trucks, and the proximity to rotating crane
+counterweights.
+4.2. Evaluation metrics
+To evaluate the effectiveness of our proposed digital twin-based
+motion forecasting model, we utilize the following two commonly used
+metrics to measure the accuracy of motion forecasting: (1) Average
+displacement error (ADE): the average Euclidean distance between the
+real value of the target’s position and its predicted value on all of
+the prediction steps. (2) Final displacement error (FDE): the Euclidean
+distance between the real value and predicted value of the target’s
+position only on the final prediction step. Furthermore, we propose a
+new metrics named weighted displacement error (WDE), which is the
+weighted average of ADE and FDE. Given the nature of most accidents
+resulting from sudden latent risks, we intuitively prioritize FDE in
+assessing whether workers can timely avoid hazards. Specifically, we
+empirically assign a weight of 0.3 to ADE and 0.7 to FDE.
+4.3. Implementation details
+The proposed framework for edge-cloud collaboration is supported
+by the ROS operating system, ensuring well-organized and efficient
+communication between edges and the cloud. 3 cameras are securely
+mounted on a stationary platform in three perspectives: front, left, and
+right. To obtain 3D accurate positions of workers as ground truth labels,
+we employ the Alpha Prime sensor developed by Velodyne, which is
+installed on top of the stationary platform.
+Edge computing platforms are equipped with cameras deployed on
+construction sites. The central computing platform is equipped with
+4 high-performance Nvidia 3090 GPU. To facilitate real-time analysis,
+our system employs the MQTT (Message Queuing Telemetry Transport)
+protocol to transmit data streams generated by the edge computing
+platforms to the cloud.
+For training of the motion forecasting model, the Adam optimizer
+with an initial learning rate of 0.001 is adopted. We use the same set
+of key hyperparameters as in [16], and set the training epoch to 30.
+The training platform is Intel(R) Xeon(R) Silver 4210 CPU @ 2.20 GHz,
+Nvidia GTX 3090 GPU with 32G RAM. It takes roughly four hours to
+train the model.
+4.4. Quantitative evaluation
+In Table 1, we show the performance of our proposed motion fore-
+casting model on public datasets ETH and UCY, which are merged into
+ETH/UCY comprising five scenes (ETH, Hotel, Univ, Zara1, Zara2) . Re-
+sults reveal that our approach achieves performance on par with SOTA
+(State of the Art) when predicting the movements of human-beings in
+open and complex scenes.
+Furthermore, to demonstrate the ability of motion forecasting of our
+proposed model on specific construction sites, we have conducted ex-
+periments on the collected WHUT-MF. The results in Table 2 reveal that
+our approach can predict motions of workers accurately across various
+scenes in general. It is also suggested that the model performs the best
+in scene B. We attribute this discrepancy to the lack of inconspicuous
+motion characteristics among workers in Scenes A and C. In these
+particular scenes, workers tend to remain stationary or exhibit minimal
+movement for extended duration. Consequently, it becomes challenging
+to extract rich and expressive features from historical motion, resulting
+in a lower prediction accuracy compared to Scene B.
+Furthermore, we conduct a series of experiments to examine the
+precision of the constructed digital replica. Since the digital replica is
+in fact composed of tracked historical trajectories of multiple objects,
+we adopt the metrics including average multi-object tracking accuracy
+(AMOTA) and average multi-object tracking precision (AMOTP). Ad-
+ditionally, we also aim to investigate the optimal time span of the
+historical trajectories to be utilized, which would not only enhance
+the accuracy of motion prediction but also lower the computational
+overhead associated with constructing the digital replica.
+Advanced Engineering Informatics 59 (2024) 102250
+6
+Y. Jiao et al.
+Table 2
+Results of motion forecasting on the entire WHUT-MF dataset and 3 sets of hazardous
+scenes. Scene A, Scene B, and Scene C represent the vicinity of rising or falling
+commodities suspended from a tower crane, the surrounding areas of a slow-moving
+truck, and the neighborhood of rotating crane counterweights. These scenes are part
+of the WHUT-MF dataset.
+ADE↓ (m) FDE ↓ (m) WDE ↓ (m)
+Entire WHUT-MF 0.528 0.841 0.747
+Scene A 0.555 0.832 0.915
+Scene B 0.494 0.764 0.683
+Scene C 0.843 1.647 1.405
+Table 3
+Results of trajectory tracking and prediction with different time splits. 𝛼 represents the
+time span of the historical data used to construct the digital replica; 𝛽 is the prediction
+horizon, and their unit is second.
+split(𝛼 − 𝛽) AMOTA ↑ AMOTP↓ WDE↓ (m)
+split a(1-3) 0.241 1.593 0.839
+split b(1.5-3) 0.249 1.587 0.819
+split c(2-3) 0.263 1.571 0.747
+split d(2.5-3) 0.256 1.579 0.793
+Fig. 3. Vicinity of lifting commodities.
+We conducted experiments on the WHUT-MF dataset, utilizing dif-
+ferent time splits, and the corresponding results are presented in Ta-
+ble 3. The analysis of AMOTA, AMOTP and WDE clearly demonstrates
+the influence of time span of historical trajectories on the accuracy
+of multi-object tracking, and consequently the precision of motion
+forecasting. It is also clearly suggested that the Weighted Displacement
+Error (WDE) varies in accordance with the accuracy of the constructed
+digital replica. From the experimental results, it is evident that longer
+duration of historical trajectories does not necessarily yield better per-
+formance. Our findings indicate that a 2-second duration of historical
+trajectories achieves the highest accuracy in motion tracking. More-
+over, based on a 2-second historical trajectory, the motion prediction
+accuracy for the subsequent 3 s is also optimal.
+4.5. Qualitative evaluation
+In Figs. 3 –6, we present visualized results of motion forecasting
+for four representative hazardous scenarios. The right column of each
+figure displays three raw images (from top to bottom) captured from
+the right, center, and left perspectives respectively. The left column
+showcases the historical trajectories tracked and future trajectories
+predicted for each worker presented in the corresponding scene. For
+better visualization, we project the 3D trajectories onto the BEV plane.
+Historical trajectories and predicted trajectories are represented by
+solid points, while ground truths are denoted by ’ ×’ symbols. Different
+colors are utilized to distinguish the motions of different workers.
+Fig. 4. Vicinity of delivering commodities.
+Fig. 5. Areas surrounding a slow-moving truck.
+Fig. 6. Neighborhood of rotating crane counterweights.
+Fig. 3 and Fig. 4 show workers gathering around a tower crane
+located in the foundation pit, where commodities are being lifted and
+delivered, respectively. The visualized predicted trajectories in Figs. 3–
+4 indicate that the workers’ intentions of avoiding rising or falling
+heavy objects are effectively captured. Fig. 5 illustrates workers navi-
+gating through the field while avoiding an upcoming track. The results
+indicate that our approach successfully captures and represents both
+the workers’ intention to avoid moving obstacles and the interactions
+Advanced Engineering Informatics 59 (2024) 102250
+7
+Y. Jiao et al.
+among them. Furthermore, the predicted trajectories aligns well with
+human behavior. Fig. 6 depicts a worker walking past a running crane,
+with special attention given to the rotating counterweights. Notably,
+our approach accurately forecasts the motions of workers by leveraging
+the digital replica and the interactive features among them, laying a
+solid foundation for effective and preemptive risk monitoring.
+5. Conclusion
+In this paper, a digital twin-based motion forecasting framework
+is developed and validated on real-world construction sites, laying
+a solid foundation for preemptive motion risk monitoring in service
+of intelligent safety management and provides a prototype for large-
+scale applications. In the physical world, cross-view images acquired
+by multiple cameras are processed with deep CNNs deployed on the
+edge-computing platform to obtain multi-scale and de-identification
+features about the scene. In the digital world hosted on the cloud, a
+fine-grained behavioral digital replication consisting of tracked trajec-
+tories of workers is constructed using a Transformer-based multi-object
+tracking model. Afterward, a social LSTM-based model is developed to
+capture the spatiotemporal interactive features, which are then decoded
+to generate future trajectories of workers. A series of experiments is
+designed and conducted to evaluate the effectiveness of the proposal.
+The results show that the proposed framework performs accurate and
+real-time motion prediction for multiple workers on construction sites.
+Our work extends the concept of digital twin by incorporating
+human motion features into the digital replica and introduces a novel
+approach to monitor latent risks on construction sites. Future studies
+will focus on further exploiting digital twin technology to refine the
+construction of the digital replication with more detailed and nuanced
+information, such as worker’s body movements, so as to integrate the
+recognition of workers’ behaviors with motion forecasting to further
+enhance the accuracy of motion prediction. Additionally, multi-modal
+data instead of single-modal images could be used to further improve
+the model’s robustness.
+Declaration of competing interest
+The authors declare that they have no known competing finan-
+cial interests or personal relationships that could have appeared to
+influence the work reported in this paper.
+Data availability
+Data will be made available on request.
+References
+[1] Z. Shang, Z. Shen, A framework for a site safety assessment model using
+statistical 4d bim-based spatial–temporal collision detection, in: Construction
+Research Congress 2016, 2016, pp. 2187–2196.
+[2] S.M. Park, J.H. Lee, L.S. Kang, A framework for improving object recogni-
+tion of structural components in construction site photos using deep learning
+approaches, KSCE J. Civ. Eng. 27 (2023) 1–12.
+[3] Y. Rao, L. Chen, Q. Liu, Y. Li, J. Zhou, Improvement dynamic continuum model
+for pedestrian flow, in: 2009 International Symposium on Computer Network
+and Multimedia Technology, IEEE, 2009, pp. 1–6.
+[4] M. Monfort, A. Liu, B. Ziebart, Intent prediction and trajectory forecasting
+via predictive inverse linear-quadratic regulation, in: Proceedings of the AAAI
+Conference on Artificial Intelligence, Vol. 29, 2015.
+[5] E. Alam, A. Sufian, A.K. Das, A. Bhattacharya, M.F. Ali, M.H. Rahman, Leveraging
+deep learning for computer vision: A review, in: 2021 22nd International Arab
+Conference on Information Technology, ACIT, IEEE, 2021, pp. 1–8.
+[6] M. Wu, C. Li, Z. Yao, Deep active learning for computer vision tasks:
+Methodologies, applications, and challenges, Appl. Sci. 12 (2022) 8103.
+[7] J. Guerrero-Ibañez, J. Contreras-Castillo, S. Zeadally, Deep learning support
+for intelligent transportation systems, Trans. Emerg. Telecommun. Technol. 32
+(2021) e4169.
+[8] L. Fei, B. Han, Multi-object multi-camera tracking based on deep learning for
+intelligent transportation: a review, Sensors 23 (2023) 3852.
+[9] J. Zhang, J.C. Cheng, W. Chen, K. Chen, Digital twins for construction sites:
+Concepts, lod definition, and applications, J. Manage. Eng. 38 (2022) 04021094.
+[10] W. Wang, H. Guo, X. Li, S. Tang, Y. Li, L. Xie, Z. Lv, Bim information integration
+based vr modeling in digital twins in industry 5.0, J. Ind. Inf. Integr. 28 (2022)
+100351.
+[11] M. Kaewmoracharoen, T. Suwan, P. Nusen, P. Champrasert, Fitness-for-use of as-
+built building information modeling for digital twin, in: 2022 37th International
+Technical Conference on Circuits/Systems, Computers and Communications,
+ITC-CSCC, IEEE, 2022, pp. 868–871.
+[12] N. Wojke, A. Bewley, D. Paulus, Simple online and realtime tracking with a deep
+association metric, in: 2017 IEEE International Conference on Image Processing,
+ICIP, IEEE, 2017, pp. 3645–3649.
+[13] X. Weng, J. Wang, D. Held, K. Kitani, Ab3dmot: A baseline for 3d multi-object
+tracking and new evaluation metrics, 2020, arXiv preprint arXiv:2008.08063.
+[14] A. Kim, A. Ošep, L. Leal-Taixé, Eagermot: 3d multi-object tracking via sensor
+fusion, in: 2021 IEEE International Conference on Robotics and Automation,
+ICRA, IEEE, 2021, pp. 11315–11321.
+[15] T. Zhang, X. Chen, Y. Wang, Y. Wang, H. Zhao, Mutr3d: A multi-camera tracking
+framework via 3d-to-2d queries, in: Proceedings of the IEEE/CVF Conference on
+Computer Vision and Pattern Recognition, 2022, pp. 4537–4546.
+[16] A. Alahi, K. Goel, V. Ramanathan, A. Robicquet, L. Fei-Fei, S. Savarese, Social
+lstm: Human trajectory prediction in crowded spaces, in: Proceedings of the IEEE
+Conference on Computer Vision and Pattern Recognition, 2016, pp. 961–971.
+[17] W. Liu, Q. Meng, Z. Li, X. Hu, Applications of computer vision in monitoring the
+unsafe behavior of construction workers: Current status and challenges, Buildings
+11 (2021) 409.
+[18] M. Zhang, R. Shi, Z. Yang, A critical review of vision-based occupational health
+and safety monitoring of construction site workers, Saf. Sci. 126 (2020) 104658.
+[19] W. Fang, L. Ding, P.E. Love, H. Luo, H. Li, F. Pena-Mora, B. Zhong, C. Zhou,
+Computer vision applications in construction safety assurance, Autom. Constr.
+110 (2020) 103013.
+[20] Y. Yu, J. Zhang, H. Guo, Investigation of the relationship between construc-
+tion workers’ psychological states and their unsafe behaviors using virtual
+environment-based testing, in: Computing in Civil Engineering 2017, 2017, pp.
+417–424.
+[21] Q. Meng, W. Liu, Z. Li, X. Hu, Influencing factors, mechanism and prevention
+of construction workers’ unsafe behaviors: a systematic literature review, Int. J.
+Environ. Res. Public Health 18 (2021) 2644.
+[22] J. Yang, G. Ye, Q. Xiang, M. Kim, Q. Liu, H. Yue, Insights into the mechanism
+of construction workers’ unsafe behaviors from an individual perspective, Saf.
+Sci. 133 (2021) 105004.
+[23] X. Long, W. Cui, Z. Zheng, Safety helmet wearing detection based on deep
+learning, in: 2019 IEEE 3rd Information Technology, Networking, Electronic and
+Automation Control Conference, ITNEC, IEEE, 2019, pp. 2495–2499.
+[24] A. Hayat, F. Morgado-Dias, Deep learning-based automatic safety helmet
+detection system for construction safety, Appl. Sci. 12 (2022) 8268.
+[25] M.H. Kim, S.W. Shin, Y.Y. Suh, Application of deep learning algorithm for
+detecting construction workers wearing safety helmet using computer vision, J.
+Korean Soc. Saf. 34 (2019) 29–37.
+[26] W. Fang, B. Zhong, N. Zhao, P.E. Love, H. Luo, J. Xue, S. Xu, A deep
+learning-based approach for mitigating falls from height with computer vision:
+Convolutional neural network, Adv. Eng. Inform. 39 (2019) 170–177.
+[27] W. Fang, L. Ding, H. Luo, P.E. Love, Falls from heights: A computer vision-based
+approach for safety harness detection, Autom. Constr. 91 (2018) 53–61.
+[28] M. Yu, L. Gong, S. Kollias, Computer vision based fall detection by a convolu-
+tional neural network, in: Proceedings of the 19th ACM International Conference
+on Multimodal Interaction, 2017, pp. 416–420.
+[29] H. Son, H. Seong, H. Choi, C. Kim, Real-time vision-based warning system for
+prevention of collisions between workers and heavy equipment, J. Comput. Civ.
+Eng. 33 (2019) 04019029.
+[30] J.-P. Sleiman, E. Zankoul, H. Khoury, F. Hamzeh, Sensor-based planning tool
+for tower crane anti-collision monitoring on construction sites, in: Construction
+Research Congress 2016, 2016, pp. 2624–2632.
+[31] K.M. Rashid, A.H. Behzadan, Enhancing motion trajectory prediction for site
+safety by incorporating attitude toward risk, Comput. Civ. Eng. 2017 (2017)
+425–433.
+[32] K.M. Rashid, A.H. Behzadan, Risk behavior-based trajectory prediction for
+construction site safety monitoring, J. Constr. Eng. Manag. 144 (2018) 04017106.
+[33] D.J. Phillips, T.A. Wheeler, M.J. Kochenderfer, Generalizable intention prediction
+of human drivers at intersections, in: 2017 IEEE Intelligent Vehicles Symposium,
+IV, IEEE, 2017, pp. 1665–1670.
+[34] W. Ding, S. Shen, Online vehicle trajectory prediction using policy anticipa-
+tion network and optimization-based context reasoning, in: 2019 International
+Conference on Robotics and Automation, ICRA, IEEE, 2019, pp. 9610–9616.
+[35] S.H. Park, B. Kim, C.M. Kang, C.C. Chung, J.W. Choi, Sequence-to-sequence
+prediction of vehicle trajectory via lstm encoder–decoder architecture, in: 2018
+IEEE Intelligent Vehicles Symposium, IV, IEEE, 2018, pp. 1672–1678.
+[36] M.-F. Chang, J. Lambert, P. Sangkloy, J. Singh, S. Bak, A. Hartnett, D. Wang, P.
+Carr, S. Lucey, D. Ramanan, et al., Argoverse: 3d tracking and forecasting with
+rich maps, in: Proceedings of the IEEE/CVF Conference on Computer Vision and
+Pattern Recognition, 2019, pp. 8748–8757.
+Advanced Engineering Informatics 59 (2024) 102250
+8
+Y. Jiao et al.
+[37] N. Deo, M.M. Trivedi, Convolutional social pooling for vehicle trajectory predic-
+tion, in: Proceedings of the IEEE Conference on Computer Vision and Pattern
+Recognition Workshops, 2018, pp. 1468–1476.
+[38] R. Chandra, U. Bhattacharya, A. Bera, D. Manocha, Traphic: Trajectory prediction
+in dense and heterogeneous traffic using weighted interactions, in: Proceedings
+of the IEEE/CVF Conference on Computer Vision and Pattern Recognition, 2019,
+pp. 8483–8492.
+[39] N. Nayakanti, R. Al-Rfou, A. Zhou, K. Goel, K.S. Refaat, B. Sapp, Wayformer:
+Motion forecasting via simple & efficient attention networks, 2022, arXiv preprint
+arXiv:2207.05844.
+[40] M. Liang, B. Yang, R. Hu, Y. Chen, R. Liao, S. Feng, R. Urtasun, Learning lane
+graph representations for motion forecasting, in: Computer Vision–ECCV 2020:
+16th European Conference, Glasgow, UK, August 23–28, 2020, Proceedings, Part
+II 16, Springer, 2020, pp. 541–556.
+[41] P. Kothari, A. Alahi, Safety-compliant generative adversarial networks for human
+trajectory forecasting, IEEE Trans. Intell. Transp. Syst. (2023).
+[42] D.E. McNamara, M.D. Petersen, E.M. Thompson, P.M. Powers, A. Shumway, S.M.
+Hoover, M.P. Moschetti, E. Wolin, Evaluation of ground-motion models for usgs
+seismic hazard forecasts: Induced and tectonic earthquakes in the central and
+eastern united statesevaluation of gmms for usgs seismic hazard forecasts, Bull.
+Seismol. Soc. Am. 109 (2019) 322–335.
+[43] D. Kim, M. Liu, S. Lee, V.R. Kamat, Trajectory prediction of mobile construction
+resources toward pro-active struck-by hazard detection, in: Proceedings of the
+International Symposium on Automation and Robotics in Construction, IAARC,
+2019.
+[44] J. Cai, Y. Zhang, L. Yang, H. Cai, S. Li, A context-augmented deep learn-
+ing approach for worker trajectory prediction on unstructured and dynamic
+construction sites, Adv. Eng. Inform. 46 (2020) 101173.
+[45] S. Tang, M. Golparvar-Fard, M. Naphade, M.M. Gopalakrishna, Video-based mo-
+tion trajectory forecasting method for proactive construction safety monitoring
+systems, J. Comput. Civ. Eng. 34 (2020) 04020041.
+[46] J. Vrana, Nde 4.0: Digital twin, semantics, interfaces, networking, feedback,
+new markets and integration into the industrial internet of things, 2020, arXiv
+preprint arXiv:2004.05193.
+[47] M.W. Grieves, Product lifecycle management: the new paradigm for enterprises,
+Int. J. Prod. Dev. 2 (2005) 71–84.
+[48] G. Githens, Product lifecycle management: driving the next generation of lean
+thinking by Michael grieves, 2007.
+[49] R.N. Bolton, J.R. McColl-Kennedy, L. Cheung, A. Gallan, C. Orsingher, L. Witell,
+M. Zaki, Customer experience challenges: bringing together digital, physical and
+social realms, J. Serv. Manag. 29 (2018) 776–808.
+[50] M. Grieves, Virtually Perfect: Driving Innovative and Lean Products Through
+Product Lifecycle Management, Space Coast Press Cocoa Beach, 2011.
+[51] T.H.-J. Uhlemann, C. Lehmann, R. Steinhilper, The digital twin: Realizing the
+cyber–physical production system for industry 4.0, Procedia CIRP 61 (2017)
+335–340.
+[52] J.L. Menéndez, F. Mas, J. Serván, J. Ríos, Virtual verification of an aircraft final
+assembly line industrialization: an industrial case, in: Key Engineering Materials,
+Vol. 502, Trans Tech Publ, 2012, pp. 139–144.
+[53] J. Heaton, A.K. Parlikad, J. Schooling, Design and development of bim models
+to support operations and maintenance, Comput. Ind. 111 (2019) 172–186.
+[54] J.M.D. Delgado, L. Oyedele, Digital twins for the built environment: learning
+from conceptual and process models in manufacturing, Adv. Eng. Inform. 49
+(2021) 101332.
+[55] Y. Jiang, et al., Intelligent building construction management based on bim
+digital twin, Comput. Intell. Neurosci. 2021 (2021).
+[56] Y. Jiang, M. Li, W. Wu, X. Wu, X. Zhang, X. Huang, R.Y. Zhong, G.G. Huang,
+Multi-domain ubiquitous digital twin model for information management of
+complex infrastructure systems, Adv. Eng. Inform. 56 (2023) 101951.
+[57] R. He, M. Li, V.J. Gan, J. Ma, Bim-enabled computerized design and digital
+fabrication of industrialized buildings: A case study, J. Clean. Prod. 278 (2021)
+123505.
+[58] Y. Pan, L. Zhang, A bim-data mining integrated digital twin framework for
+advanced project management, Autom. Constr. 124 (2021) 103564.

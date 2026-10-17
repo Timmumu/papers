@@ -1,0 +1,974 @@
+ 
+ 
+ 
+ 
+ 
+Sustainability 2026, 18, 133 https://doi.org/10.3390/su18010133 
+Article 
+Hazard- and Fairness-Aware Evacuation with Grid-Interactive 
+Energy Management: A Digital-Twin Controller for Life Safety 
+and Sustainability 
+Mansoor Alghamdi 1,*, Ahmad Abadleh 1,*, Sami Mnasri 1,*, Malek Alrashidi 1, Ibrahim S. Alkhazi 2, 
+Abdullah Alghamdi 2 and Saleh Albelwi 2 
+1 Department of Computer Sciences, Applied College, University of Tabuk, Tabuk 47512, Saudi Arabia; 
+mqalrashidi@ut.edu.sa 
+2 Faculty of Computing and Information Technology, University of Tabuk, Tabuk 47731, Saudi Arabia; 
+i.alkhazi@ut.edu.sa (I.S.A.) 
+* Correspondence: malghamdi@ut.edu.sa (M.A.); aabadleh@ut.edu.sa (A.A.); smnasri@ut.edu.sa (S.M.) 
+Abstract 
+The paper introduces a real -time digital-twin controller that manages evacuation routes 
+while operating GEEM for emergency energy management during building fires. The 
+system consists of three interconnected parts which include (i) a physics -based hazard 
+surrogate for short-term smoke and temperature field prediction from sensor data (ii) , a 
+router system that manages path updates for individual users and controls exposure and 
+network congestion (iii), and an energy management system that regulates the exch ange 
+between PV power and battery storage and diesel fuel and grid electricity to preserve vital 
+life-safety operations while reducing both power usage and environmental carbon output. 
+The system operates through independent modules that function autonomously to 
+preserve operational stability when sensors face delays or communication failures , and it 
+meets Industry 5.0 requirements through its implementation of auditable policy controls 
+for hazard penalties , fairness weight, and battery reserve floor settin gs. We evaluate the 
+controller in co -simulation across multiple building layouts and feeder constraints. The 
+proposed method achieves superior performance to existing AI/RL baselines because it 
+reduces near -worst-case egress time ( 𝑇95 and worst -case exposure) and decreases both 
+event energy 𝐸event and CO2-equivalent 𝐶𝑂₂event while upholding all capacity , exposure 
+cap, and grid import limit constraints. A high -VRE, tight -feeder stress test shows how 
+reserve management, flexible-load shedding, and PV curtailment can achieve trade -offs 
+between unserved critical load 𝑈energy and emissions. The team delivers implementation 
+details together with reporting templates to assist researchers in reaching reproducibility 
+goals. The research shows that emergency energy systems , which integrate evacuation 
+systems, achieve better safety results and environmental advantages that enable smart -
+city integration through digital thread operations throughout design, commissioning, and 
+operational stages. 
+Keywords: digital twin; emergency evacuation; fairness-aware routing; hazard-aware 
+path planning; grid-interactive energy management 
+ 
+ 
+Academic Editors: Francesco Riganti 
+Fulginei and Pablo García Triviño 
+Received: 2 October 2025 
+Revised: 15 December 2025 
+Accepted: 18 December 2025 
+Published: 22 December 2025 
+Copyright: © 2025 by the authors. 
+Licensee MDPI, Basel, Switzerland. 
+This article is an open access article 
+distributed under the terms and 
+conditions of the Creative Commons 
+Attribution (CC BY) license. 
+Sustainability 2026, 18, 133 2 of 35 
+ 
+https://doi.org/10.3390/su18010133 
+1. Introduction 
+Digital twins (DTs) are reshaping building fire safety by closing the loop between 
+sensing, simulation, and control. Early work on DT -enabled safety management has 
+articulated end -to-end frameworks that fuse building information models, sensor 
+networks, and control logic to support preparedness, response, and recovery [1]. Recent 
+surveys emphasize that evacuation is a particularly promising DT application because it 
+combines high-frequency state estimation (hazard fields, congestion) with rapid decision 
+support for routing and signage [2]. Alongside these advances, the safety community 
+continues to examine dynamic guidance, such as adaptive exit signage, and to catalog the 
+operational pitfalls that accompany it (e.g., conflicting cues, latency, and human fac tors) 
+[3], as well as scalable implementations for multi-floor, multi-exit facilities [4]. 
+On the computational side, a large literature optimizes evacuation routes under 
+evolving conditions. Studies span domain settings, from cruise ships to underground 
+facilities, and propose real -time algorithms that balance path length, congestion, and 
+safety penalties [5 –7], while more recent work explores reinforcement learning and 
+simulation-assisted optimization to handle large state spaces and nonstationary dynamics 
+[8,9]. For hazard realism, many engineering workflows still rely on high -fidelity 
+fire/smoke simulators such as the Fire Dynamics Simulator (FDS) [10], often coupled, one-
+way or two-way, with agent-based egress models to evaluate performance-based designs 
+[11–13]. Reviews of agent -based evacuation underscore how fundamental diagram 
+speed–density effects, social behaviors, and heterogeneity shape outcomes [14,15], and a 
+growing body of literature integrates social -force dynamics with routing or learning 
+components [16,17]. 
+Despite this progress, two gaps remain salient for modern smart buildings. First, 
+evacuee routing typically optimizes for efficiency or safety but only implicitly treats 
+fairness. The protection of vulnerable populations whose mobility constraints or exposure 
+sensitivity differ from those of the average occupant remains overlooked . Policy and 
+empirical evidence show that disabled or mobility -impaired residents remain 
+disproportionately at risk even in jurisdictions that have invested heavily in safety 
+upgrades [18–21]. While a few transportation-oriented studies frame evacuation planning 
+as a multi-objective problem that includes equity [22,23], these approaches rarely appear 
+in building-scale, real-time controllers. Second, evacuation control rarely co-optimizes on-
+site energy during emergencies. In practice, a building’s ability to keep critical services 
+online (communications, elevators reser ved for assisted egress, pressurization fans, and 
+medical equipment) depends on photovoltaic generation, battery sta te of charge, grid 
+import caps, and backup generation. Outside the building, emergency vehicle (EV) 
+priority at signals also affects response time and coordination [24–26]. Treating egress and 
+energy as separate problems can obscure important trade -offs: for instance, maintaining 
+critical power under tight caps may demand choices that increase short -term emissions 
+but reduce life-safety risk by preserving protected egress systems. 
+The proposed method addresses the problem of designing a building-scale digital-
+twin controller that, in real time, (i) routes occupants to safe exits as hazards and 
+congestion evolve, (ii) enforces accessibility constraints and an explicit fairness policy for 
+vulnerable groups, and (iii) dispatches on-site energy resources to sustain critical services 
+under grid and device limits, thereby making the life -safety versus sustainability trade -
+off explicit and controllable. The controller must operate with surr ogate hazard 
+predictions faster than high -fidelity CFD, remain computationally feasible at sub -second 
+to multi -second control periods , and expose policy knobs that let operators choose 
+acceptable points on the efficiency–equity and safety–sustainability frontiers. 
+Building on the DT foundations in ref. [1,2], we integrate three ingredients that are 
+typically studied in isolation: (a) hazard - and congestion -aware routing on a building 
+Sustainability 2026, 18, 133 3 of 35 
+ 
+https://doi.org/10.3390/su18010133 
+graph, informed by a physically motivated advection –diffusion–decay surrogate that 
+approximates smoke/toxic propagation (complementary to the high -fidelity models used 
+in [10 –13]); (b) a runtime fairness policy that prioritizes vulnerable occupants, tightens 
+exposure thresholds, and slightly adjusts admission/throughput where capacity 
+bottlenecks arise (motivated by evidence on mixed -ability risks [18 –21] and equity 
+formulations in disaster logistics [22,23]); and (c) Grid-Interactive Emergency Energy 
+Management that balances photovoltaic generation, battery storage, capped grid import, 
+and optional backup generation to keep critical loads online during the event window. At 
+the city edge, we read out an emergency -vehicle priority indicator consistent with the 
+traffic-signal preemption literature and deployments [24 –26]. The system runs in a 
+receding-horizon loop, continuously re -weighting edges by predicted hazard, density -
+dependent travel times, and policy terms, while a co -simulated dispatcher allocates 
+energy subject to device and feeder constraints. 
+Compared to prior work on dynamic signage and path optimization [3 –7], 
+reinforcement-learning–based routing [8,9], and coupled fire–egress analysis [10–13], the 
+proposed approach differs from the existing work in several points: (i) we jointly control 
+life-safety and energy by formulating evacuation guidance and emergency energy 
+dispatch as a single, closed-loop digital-twin controller, rather than treating energy as an 
+external constraint or an ex post metric; this renders the trade -off between sustaining 
+critical services and short -term emissions operational within the controller itself, a 
+capability not addressed in building -scale, real -time evacuation systems to our 
+knowledge; (ii) we elevate fairness to a first -class optimization [27,28] objective by 
+encoding it at runtime, prioritizing vulnerable occupants in planning order, tightening 
+exposure thresholds for sensitive groups, and making small capacity/throughput 
+adjustments at bottlenecks. This approach creates a tunable equity–efficiency frontier that 
+decision-makers can navigate, linking empirical risk evidence [18 –21] with optimization-
+based planning [22,23]; and (iii) we introduce a physically informed yet computationally 
+light hazard surrogate, a graph-based advection–diffusion–decay model that captures key 
+transport and attenuation behaviors while remaining fast enough for control, 
+complementing high -fidelity tools such as FDS and FD S + E vac that are essential for 
+design verification but too slow for inner-loop control [10–13]. 
+The main contributions of the paper are as follows: 
+- A unified digital-twin controller that couples hazard- and congestion-aware routing 
+with grid-interactive energy management, exposing operator-level knobs for fairness 
+and sustainability. 
+- An operational fairness mechanism for mixed -ability populations that acts during 
+routing/queuing, not just as a reporting metric, enabling explicit navigation of the 
+equity–efficiency trade-off. 
+- A co-simulation framework that integrates a physically grounded hazard surrogate, 
+agent-based movement with capacity gating, and device/feeder -constrained energy 
+dispatch, which is compatible with DT data streams and amenable to site calibration. 
+2. Related Work 
+We focus on four strands most relevant to our controller: (i) DT-enabled fire safety 
+and evacuation; (ii) dynamic signage and real -time egress control; (iii) routing under 
+dynamic hazards (optimization and learning); and (iv) building–city coupling and 
+emergency energy management. A compact comparison is kept in Table 1 , while each 
+subsection below emphasizes deltas that matter for a deployable DT controller (latency, 
+robustness, and co-optimization). 
+ 
+Sustainability 2026, 18, 133 4 of 35 
+ 
+https://doi.org/10.3390/su18010133 
+Table 1. Comparative analysis of recent works. 
+Work/Domain Real-Time? Hazard-
+Aware? Fairness? DT-Integrated? Energy Co-
+Optimization? 
+Multi-
+Objective
+? 
+Main Limitation 
+Classical evacuation 
+simulators X Partial X X X X Static, no DT, no sensing 
+Hazard-aware routing   X X X Partial No fairness, limited sensing 
+DT-based fire 
+modeling   X  X X Simulation only 
+Building energy 
+management  X X Partial  Partial No evacuation consideration 
+Hierarchical DT [29] x Partial X   N/A Not designed for sub-second, 
+life-critical building emergencies 
+Fuzzy evacuation [30] x Partial x X X N/A Strategic recovery focus, not sub-
+second emergency control. 
+This work       Integrated, real-time, multi-
+domain optimization 
+2.1. Digital Twins (DT), BIM, and IoT for Fire Safety and Evacuation 
+Digital twins (DTs) are transforming building fire safety by enabling real -time 
+situational awareness, analytics, and decision support beyond static design rules. Recent 
+frameworks integrate BIM, IoT sensing, AI, and AR to track hazards and occupant states 
+and to support evacuation and system control in smart buildings [1,2]. Surveys focused 
+on emergency evacuation identify the next steps as building –occupant co -modeling, 
+streaming data fusion, and closed-loop decision logic for resilient smart cities [2]. Despite 
+this progress, most implementations remain single -building and route -advisory, with 
+limited coupling to high -fidelity hazard fields or city -scale energy resources. 
+In contrast to hierarchical DT architectures and uncertainty -aware evacuation planning, 
+our design operationalizes hierarchy for sub -second, safety-critical control with explicit 
+life-safety priorities. We implement online robustness measures such as hazar d inflation, 
+queue buffers, and a GEEM state -of-charge floor, rather than relying on offline fuzzy 
+uncertainty envelopes. This makes our approach a practical, real -time complement to 
+prior hierarchical DTs for energy adaptation and to fuzzy multi -objective plans intended 
+for medium-term recovery. 
+To address the identified gaps, we propose a fully integrated DT that continuously 
+ingests sensor data and jointly optimizes evacuation routing and emergency energy 
+management. 
+2.2. Dynamic Signage and Real-Time Egress Control 
+A complementary thread replaces fixed exit signs with intelligent dynamic signage 
+that responds to evolving smoke, heat, and congestion conditions. The NFPA’s research 
+foundation review (2022) synthesizes the state of dynamic exit signs and documents the 
+technical and regulatory challenges ahead [3]. Building on this, Yen and Lin (2024) 
+formulate a mathematical control model for multi -floor, multi-exit buildings that drives 
+sign directions using temperature/smoke constraints and congestion indices; FDS -based 
+experiments demonstrate notable gains over fixed -logic baselines [4]. While this shows 
+building-level viability, most systems optimize group guidance (sign-level control) rather 
+than personalized routing with fairness objectives or two -way coupling to physics-based 
+hazard fields. 
+ 
+Sustainability 2026, 18, 133 5 of 35 
+ 
+https://doi.org/10.3390/su18010133 
+2.3. Routing Under Dynamic Hazards: Optimization and Learning 
+Real-time routing that accounts for changing hazards and crowding is advancing 
+rapidly. Liu et al. embed FDS outputs into a time -varying equivalent-weight Dijkstra to 
+optimize routes under evolving visibility, gas, temperature, and congestion, reporting 
+performance improvements on complex layouts [5]. Other recent work proposes multi -
+objective real-time search for underground fires [6] and a self-adaptive escape model that 
+augments Dijkstra with spatiotemporal safety indices [7]. Learning -based routing is 
+emerging as well (e.g., deep RL and hybrid simulation-optimization) to plan routes under 
+uncertainty and congestion at scale [8,9]. Yet, across these studies, the hazard –egress 
+coupling is typically one -way (pre -run CFD to routing) rather than closed -loop, and 
+optimization objectives focus on average evacuation time, rarely encoding equity/fairness 
+or multi-stakeholder city coordination. 
+Physics-Based Fire/Smoke Modeling and Coupled Egress 
+High-fidelity hazard fields remain the standard for rigorous evaluation. FDS (NIST) 
+provides LES-based CFD for combustion, smoke, and thermal fields; its documentation 
+and validation corpus underpin most performance-based studies [10]. FDS + Evac extends 
+this with an agent-based egress module, allowing (at least) one-way coupling between fire 
+dynamics and crowd movement [11]. Reviews consistently note that many assessments 
+still use one-way coupling, limiting feedback from evolving crowd states back to hazard 
+scenarios; recent theses and reviews call for two -way coupled DT -BIM-CFD-egress 
+ecosystems to capture interactions more faithfully [12,13]. These observations motivate 
+closed-loop architectures where sensors and predictive surrogates update both hazard 
+and routing models online. 
+2.4. Agent-Based Evacuation and Social Behavior 
+State-of-the-art reviews of agent -based evacuation models (ABM) stress the 
+importance of empirically grounded behaviors (communication, compliance, panic 
+mitigation), validation, and congestion phenomena [14,15]. Improved social -force 
+formulations and ABM architectures capture complex crowd dynamics in stations, 
+tunnels, and high-rise contexts and are now routinely combined with path planning and 
+hazard fields in simulators [16,17]. These advances give a mature substrate on which to 
+layer DT-driven, personalized, fairness-aware routing. 
+Most models assume static building conditions and do not integrate real-time sensing 
+or hazard dynamics. Routing tends to rely on fixed edge costs that do not adapt to smoke, 
+visibility, or congestion. Vulnerable occupants (mobility -impaired, elderly, chil dren) are 
+rarely treated using fairness or priority mechanisms. These approaches do not embed 
+evacuation routing within a multi-objective optimization framework. 
+As a solution for these shortcomings, we will incorporate, in our study, dynamic 
+hazard fields, congestion -aware weights, and fairness constraints into a multi -objective 
+routing formulation executed in real time inside a digital twin. 
+2.5. Equity, Vulnerable Populations, and Fairness in Evacuation 
+Post-Grenfell discourse and official guidance emphasize inclusive evacuation, yet the 
+literature still under-represents people with disabilities or cognitive/functional limitations 
+in building evacuations [18 –21]. Fairness -driven optimization is growing in disaster 
+evacuations (e.g., tsunami/ hurricanes), where resource allocation and route scheduling 
+explicitly balance efficiency and equity [22,23]. Building -fire contexts have begun to 
+incorporate mixed -ability populations in simulation studies [21], but ex plicit fairness 
+metrics (e.g., minimizing disparity in risk/egress times across vulnerable groups) remain 
+rare in indoor, DT-enabled evacuation optimization. 
+Sustainability 2026, 18, 133 6 of 35 
+ 
+https://doi.org/10.3390/su18010133 
+Hazard modeling usually remains single -source (e.g., smoke only), ignoring multi -
+hazard interactions (temperature, CO, low visibility). Moreover, most algorithms do not 
+scale to real-time due to reliance on computationally heavy simulation, and existing 
+hazard-aware routing does not ensure fairness or equitable evacuation. 
+Our method will use multi -hazard sensing combined with a computationally 
+lightweight but rigorous optimization model, enabling real -time operation and fairness -
+aware routing. 
+2.6. Building–City Coupling and Emergency Vehicle Priority 
+A final strand links building to city -level response systems, notably emergency 
+vehicle preemption (EVP) and traffic management to reduce response and transport 
+delays. Recent works propose dynamic preemption strategies and document funded 
+municipal pilots integrating signal control and emergency priority, evidencing the 
+feasibility of coordinated, cross -infrastructure response at urban scale [24–26]. However, 
+few building -fire studies close the loop by feeding DT hazard/occupant states to city 
+control systems and hospitals in real time, suggesting novel opportunities for DT -to-city 
+orchestration in life-safety operations. 
+Energy management is almost always formulated independently of evacuation 
+processes. Existing models seldom operate on the short time scales (seconds –minutes) 
+required during emergencies. In addition, no studies consider how evacuation loads (stair 
+pressurization fans, emergency elevators) interact with PV/battery/diesel assets in real 
+time, and CO2 efficiency and unserved critical -load metrics are rarely integrated 
+simultaneously. We will introduce GEEM, the first Grid-Interactive Emergency Energy 
+Management model explicitly co-optimized with evacuation routing inside a digital twin. 
+2.7. Summary of Gaps and Contributions 
+Overall, existing studies provide important foundations in evacuation modeling, 
+hazard sensing, and energy management. However, none integrates multi -hazard 
+sensing, real -time digital twin state estimation, fairness -aware routing, and grid -
+interactive energy dispatch into a unified multi -objective optimization framework. Table 
+1 summarizes the methodological gaps this work addresses. 
+Unlike prior research works treating evacuation guidance, hazard estimation, and 
+building energy as largely separate problems, our approach integrates them into a single, 
+closed-loop digital -twin controller. Framework papers on digital twins for evacuation 
+establish feasibility but are mostly route -advisory and single -building in scope, with 
+limited coupling to high-fidelity hazards or energy systems [1,2]. Dynamic signage studies 
+optimize sign states at the group level yet rarely personalize guidance or en code fairness 
+objectives in the control loop [3 –7]. Optimization and learning -based routing typically 
+ingest precomputed hazard fields (one -way coupling) and focus on average clearance 
+time rather than equity or operational sustainability [5 –9]. High -fidelity fire/egress 
+couplings provide essential evaluation fidelity but are too slow for inner-loop control and 
+seldom close the loop online [10–13]. In contrast, our controller (i) co-optimizes life-safety 
+and emergency energy in real time, making the trade -off between sustaining critical 
+services and short -term emissions explicit and operator -tunable; (ii) operationalizes 
+fairness during planning and admission, which enables prioritizing vulnerable occupants, 
+tightening exposure thresholds, and providing smal l capacity/throughput adjustments 
+rather than reporting equity only ex post [18–23]; and (iii) employs a physically informed 
+yet lightweight hazard surrogate that preserves key transport/attenuation behaviors 
+while meeting real-time deadlines, complementing but not replacing high-fidelity models 
+[10–13]. Additionally, we expose a city-coupling pathway (emergency-vehicle priority) to 
+align building operations with urban response systems, which is an integration that 
+Sustainability 2026, 18, 133 7 of 35 
+ 
+https://doi.org/10.3390/su18010133 
+remains uncommon in building -fire studies [24 –26]. Together, these choices move from 
+advisory, one-way pipelines to an actionable, personalized, fairness -aware, and energy -
+aware controller suitable for deployment and policy tuning. 
+Prior DT -evacuation studies are predominantly route -advisory, rely on one -way 
+CFD to routing coupling, and treat equity and energy as ex -post metrics. In contrast, the 
+proposed controller (a) closes the loop with sensor -driven re-planning at control -period 
+scale, (b) operationalizes fairness inside the routing/queuing decisions, and (c) co-
+optimizes GEEM with explicit feeder/device limits. This shifts DTs from descriptive 
+platforms to real -time decision engines aligned with life -safety and sustainability 
+objectives. 
+3. Proposed Method 
+We present a closed -loop, digital -twin (DT) evacuation controller that fuses (i) 
+physics-informed hazard prediction, (ii) agent -based crowd dynamics, (iii) personalized, 
+fairness-aware routing, and (iv) city/grid orchestration. Figure 1 summarizes the 
+architecture. 
+ 
+Figure 1. System architecture (digital twin-driven evacuation control loop). 
+3.1. System Overview and Data Flow 
+Let Ω denote the floor domain discretized into a graph 𝐺 = (𝑉, 𝐸). The DT maintains 
+a hazard state ℎ𝑡 (temperature/visibility/toxicant proxies) and occupant state 𝑋𝑡 =
+{𝑥𝑖(𝑡), 𝑣𝑖(𝑡)}𝑖=1
+𝑁 . Each control step of length Δ𝑡 involves the following: 
+1. Sense and predict: Ingest sensors 𝑧𝑡 (smoke/CO/temperature/visibility, door/HVAC 
+states, BLE/Wi-Fi occupancy) and predict a short-horizon field ℎ̂𝑡+𝛥𝑡 = 𝑓𝜃(ℎ𝑡 , 𝑧𝑡). 
+2. Update weight: Map ℎ̂𝑡+Δ𝑡 and congestion 𝜌𝑒(𝑡) to time-varying edge weights 𝑤𝑒(𝑡). 
+3. Personalize routing: Solve a multi -objective program to compute paths {𝜌𝑖(𝑡)} 
+balancing efficiency, safety, and fairness. 
+4. Simulate and actuate : Simulate agents over [𝑡, 𝑡 + Δ𝑡] , update ℎ𝑡+Δ𝑡, 𝑋𝑡+Δ𝑡 , and 
+actuate dynamic signs/luminaires and city interfaces. 
+In addition to evacuation control, the digital twin also supervises a Grid -Interactive 
+Emergency Energy Management (GEEM) layer. GEEM co -optimizes emergency power 
+flows (e.g., smoke-control/pressurization fans, emergency lighting, elevators) and on -site 
+resources (PV, battery, diesel) with evacuation objectives. At each control step Δ𝑡 , the 
+controller exchanges set -points with the building energy system and a distribution -grid 
+interface that enforces feeder import limits and voltage/thermal constraints, th ereby 
+aligning life safety with energy and environmental sustainability during the event. 
+3.2. Formal Optimization Problem 
+
+Sustainability 2026, 18, 133 8 of 35 
+ 
+https://doi.org/10.3390/su18010133 
+We formalize the real -time evacuation –energy co -optimization problem solved at 
+each control step t ∈ {0, Δt, 2Δt, … }. The building is represented by a directed graph G = 
+(V, E), where nodes are rooms, halls, stairs, and exits, and edges represent walkable 
+connections. 
+Decision variables: 
+Routing variables 
+For each occupant i ∈ I, edge e ∈ E, and time step t, we define: 
+xi,e(t) ∈ {0, 1}: 1 if occupant i is assigned to traverse edge e at time t. 
+Ti: predicted egress time of occupant i. 
+Ei: cumulative exposure of occupant i. 
+Energy dispatch variables (GEEM) 
+Pgrid(t): real power imported from the grid (positive) or exported (negative). 
+Ppv(t): PV real power dispatched. 
+Pbat(t): battery real power (positive = discharge). 
+Pdiesel(t): diesel generator output (proposed method only). 
+s(t): battery state of charge. 
+Parameters 
+𝑤𝑒
+haz(t): hazard-derived weight for edge eee (hazard surrogate). 
+𝑤𝑒
+cong(t): congestion penalty based on density. 
+𝑤𝑒
+acc ∈ {0, 1}: accessibility flag (1 if unusable by vulnerable groups). 
+κ1, κ2, κ3: weights for hazard, congestion, and accessibility. 
+α, β, γ, η, ζ, ξ: objective weights (clearance, exposure, fairness, energy, CO2, unserved 
+critical load). 
+𝑃̅grid, 𝑃̅bat, 𝑃̅diesel: device limits. 
+Lcrit(t), Lflex(t): critical and flexible loads. 
+Control: Δ𝑡 = 0.5 − 2 𝑠 (𝑡𝑦𝑝. 1 𝑠). 
+Edge costs: κ1 (hazard) ∈ [2, 6], κ2 (congestion) ∈ [0.5, 2], κ3 (inaccess.) large (hard 
+penalty). 
+Objective weights (7): α ( clearance) dominant; β ( exposure) medium; γ ( fairness) 
+medium; η, ζ, ξ (energy/CO2/unserved) tuned so safety terms remain primary. 
+Exposure caps: 𝛯𝑖 stricter for vulnerable groups; fairness weights ( α, β, γ) adjusted 
+per group. 
+GEEM: battery reserve floor 𝑠𝑚𝑖𝑛 + margin; grid import cap at 10 –20% headroom; 
+diesel off unless 𝐿𝑡
+𝑐𝑖𝑟𝑡 at risk. 
+Feasibility constraints 
+(1) Flow conservation 
+For all occupants i, the following is applied: 
+∑ 𝑥𝑖,𝑒(𝑡) − ∑ 𝑥𝑖,𝑒(𝑡)
+𝑒∈𝛿−(𝑣)
+= {1 𝑓𝑜𝑟 𝑣 = 𝑠𝑡𝑎𝑟𝑡(𝑖) ; −1 𝑓𝑜𝑟 𝑣 = 𝑒𝑥𝑖𝑡(𝑖) ; 0 𝑜𝑡ℎ𝑒𝑟𝑤𝑖𝑠𝑒} 
+𝑒∈𝛿+(𝑣)
+ 
+(2) Edge capacity and queueing 
+∑ 𝑥𝑖,𝑒(𝑡) ≤ 𝐶𝑒(𝑡), ∀ 𝑒 ∈ 𝐸
+𝑖
+ 
+(3) Hazard and accessibility 
+𝑥𝑖,𝑒(𝑡) = 0 𝑖𝑓 𝑤𝑒
+ℎ𝑎𝑧(𝑡) ≥ 𝑇𝑢𝑛𝑠a𝑓𝑒 𝑜𝑟 𝑤𝑒
+𝑎𝑐𝑐 = 1 
+(4) Exposure constraint 
+𝐸𝑖 = ∑∑𝑥𝑖,𝑒(𝑡)λ𝑒(𝑡) ≤ 𝐸̅𝑖𝑒𝑡 with stricter 𝐸̅i for vulnerable groups. 
+Sustainability 2026, 18, 133 9 of 35 
+ 
+https://doi.org/10.3390/su18010133 
+(5) Energy balance and device constraints (GEEM) 
+Power balance: 
+Pgrid(t) + Ppv(t) + Pbat(t) + Pdiesel(t) = Lcrit(t) + Lflex(t). 
+Battery SOC: 
+𝑠(𝑡 + Δ𝑡) = 𝑠(𝑡) + ηc Pbat(t)− − 1/ηd Pbat(t)+ 
+Device limits: 
+|Pgrid(t)| ≤ 𝑃̅grid, |Pbat ≤ 𝑃̅bat|, 0 ≤ Pdiesel(t) ≤ 𝑃̅diesel 
+Objective function 
+At each control cycle, we minimize the following multi-objective function: 
+𝑚𝑖𝑛𝑥,𝑃 α max𝑖T𝑖 + β ∑ 𝐸𝑖 + γ Φ({Ti}) + η ∑ Eevent(t)
+𝑡
++ ζ ∑ CO2(t) +
+𝑡
+ ξ ∑ Ucrit(t)
+𝑡
+ 
+𝑖
+ 
+where 
+• Clearance time term: maxiTi 
+• Safety term: ∑Ei𝑖 
+• Fairness term (e.g., max–min gap): 
+Φ = 𝑚𝑎𝑥𝑔𝜖𝐺 𝑇̅𝑔 − 𝑚𝑖𝑛𝑔𝜖𝐺 𝑇̅𝑔 
+• Energy use: 
+Eevent(t) = Pgrid(t)+ − Ppv(t) − Pbat(t)− 
+• CO2 emissions: 
+CO2(t) = γgrid Pgrid(t)+ + γdiesel Pdiesel(t) 
+• Unserved critical load: 
+Ucrit(t) = max{0, Lcrit(t) − Psupplied(t)}. 
+Solution strategy (two-stage decomposition) 
+Stage A: Weight computation 
+The edge weight is calculated as a weighted sum of hazard, congestion , and 
+accessibility terms: 
+we(t) = κ1 𝑤𝑒
+haz(t) + κ2 𝑤𝑒
+cong(t) + κ3 𝑤𝑒
+acc. 
+Stage B: Routing + GEEM dispatch 
+Solve time-dependent shortest paths with fairness and capacity gating. 
+Solve QP/MILP for GEEM subject to device/grid constraints. 
+The hazard surrogate uses an advection –diffusion–decay form chosen to retain 
+transport/attenuation behavior while meeting a ≤ 2 s control deadline. The nominal 
+coefficients (advection hop delay 15 s/edge with HVAC multiplier 1.3, diffusion 0.002, 
+decay 0.03) reproduce first -crossing times against the high -fidelity reference with low 
+magnitude error and consistent edge -risk ordering. The unsafe threshold 1.3 marks the 
+onset of deteriorated tenability (reduced visibility/thermal stress) and was picked to be 
+conservative under sensor latency. Fairness policy uses priority ordering, +1 capacity 
+nudge at bottlenecks, and vulnerable assistance (speed-assist 0.95× and 0.7× exposure cap). 
+These values were tuned to sit on the knee of the fairness –efficiency Pareto: they reduce 
+the max–min egress gap without materially harming clearance time. GEEM limits reflect 
+common emergency envelopes for a medium commercial building (PV 80 kW, BESS 150 
+kWh/80 kW with 20% reserve, import cap 120 kW). Under tight -cap stress, we enf orce 
+Sustainability 2026, 18, 133 10 of 35 
+ 
+https://doi.org/10.3390/su18010133 
+anti-backfeed logic, ramp-rate constraints, and reserve floors; in that regime, the controller 
+trades CO2 for zero unserved critical. 
+3.3. System Architecture and Routing Graph for Adaptive Evacuation 
+Every Δ𝑡 seconds, we (i) update hazards, (ii) refresh weights, (iii) recompute routes 
+for agents whose planned path intersects deteriorating edges, and (iv) actuate guidance. 
+Algorithm 1 shows the overall procedure of the proposed method. The steps of 
+Algorithm 1 can be explained as follows: 
+Algorithm 1. Closed-loop digital twin evacuation with GEEM (period Δt) 
+Inputs: 𝐺 = (𝑉, 𝐸), hazard surrogate 𝑓𝜃, hazard state ℎ𝑡, occupants 𝑋𝑡, sensors 𝑧𝑡, energy state st (battery SOC) 
+and device/grid limits, period 𝛥𝑡, parameters 𝜅1, 𝜅2, 𝜅3, (𝛼, 𝛽, 𝛾, 𝜂, 𝜁, 𝜉), exposure caps { 𝛯𝑖}, emission factors 
+𝜙𝑡
+𝑔𝑟𝑖𝑑, 𝜙𝑑𝑔. 
+Outputs: Personalized routes { 𝑝𝑖 }, energy set -points {𝑃𝑡
+𝑔𝑟𝑖𝑑, 𝑃𝑡
+𝑝𝑣, 𝑃𝑡
+𝑏𝑎𝑡𝑡, 𝑃𝑡
+𝑑𝑔, 𝐿𝑡
+𝑓𝑙𝑒𝑥} , building actuation 
+(signs/lights) and grid/DR telemetry. 
+Procedure: 
+1. Sense and predict: Acquire 𝑧𝑡; compute ĥ{t+Δt} ← 𝑓𝜃 (ℎ𝑡, 𝑧𝑡) (1). 
+2. Update edge costs: For each edge 𝑒, estimate 𝑝𝑖(𝑡) and 𝑇𝑒(𝑡), Haz𝑒(𝑡), Cong𝑒(𝑡), Inacc𝑒𝑡 ; set 𝑤𝑒(𝑡) per the 
+cost model (6). 
+3. Trigger replans: Build set ℐ for agents with unsafe edge ahead, queue above threshold, or 𝑎𝑑𝑚𝑖𝑡𝑠 >
+ 𝜀 𝑖𝑚𝑝𝑟𝑜𝑣𝑒𝑚𝑒𝑛𝑡𝑠. 
+4. Route-optimization update: 
+4.1 Build a feasible subgraph 
+ Remove all edges disabled by safety or accessibility constraints. 
+4.2 Compute candidate paths 
+ For each individual or group I, generate a set of k candidate shortest paths using updated edge 
+weights we(t). 
+4.3 Apply fairness and priority rules 
+Assign priority modifiers for vulnerable groups, fire wardens, and mobility -impaired 
+occupants, adjust path costs using group-based modifiers. 
+4.4 Evaluate capacity and queueing feasibility 
+Simulate predicted flows, eliminate candidate paths violating edge capacities, update waiting 
+times and congestion forecasts. 
+4.5 Select optimal routing decision 
+ Solve reduced multi-objective problem: min [α Tmax + β ∑iEi + γΦ({Ti}) ] over the remaining feasible 
+candidate paths. 
+4.6 Stabilize solution (anti-oscillation) 
+Apply hysteresis or time -based smoothing to prevent route oscillations between consecutive 
+control cycles. 
+5. Conflict resolution: Where edge capacities are exceeded, run a local min -cost-flow reassignment on the 
+saturated neighborhood to rebalance paths. 
+6. Simulate and actuate 𝒕 ← 𝒕 + 𝜟𝒕. Advance agents/queues to 𝑋𝑡+𝛥𝑡; update ℎ𝑡+𝛥𝑡 from sensors; actuate 
+dynamic signs/luminaires and apply energy set-points; publish DR/telemetry to the city/DSO. 
+7. Loop: Set 𝑡 ← 𝑡 + 𝛥𝑡 and repeat steps 1–6 until evacuation completes or timeout. 
+- Step 1 updates the digital twin state using sensor fusion. The hazard map, density 
+map, and energy-system state are refreshed every cycle. 
+- Step 2 computes per-edge hazard, congestion, and accessibility metrics. These are 
+transformed into dynamic edge weights used by the routing layer. 
+Sustainability 2026, 18, 133 11 of 35 
+ 
+https://doi.org/10.3390/su18010133 
+- Step 3 applies feasibility constraints , ensuring that unsafe or inaccessible passages 
+are excluded before any optimization takes place. 
+- Step 4 performs the evacuation -routing optimization. Previously condensed , this 
+step is now decomposed into path generation, fairness adjustments, capacity/queue 
+checking, and final multi-objective selection. 
+- Step 5 solves the GEEM problem using the formal mathematical formulation. 
+- Step 6 deploys the results to the building (signage, BMS/EMS). 
+- Step 7 triggers the next control cycle, ensuring real-time operation. 
+Figure 1 shows the closed-loop pipeline used during an event. Sensors (temperature, 
+visibility, CO, door/HVAC states, and occupancy beacons) feed the building’s digital 
+twin, which maintains the current hazard and occupant states. A fast hazard predictor 
+(surrogate of high -fidelity fire/smoke models) produces short -horizon forecasts that are 
+converted into edge weights for the building graph (safety, congestion, and accessibi lity 
+factors). These weights drive a personalized router that computes time -dependent routes 
+for affected occupants while respecting capacities and fairness priorities (e.g., mobility -
+limited users). The agent-based simulator advances occupants and queues over the next 
+control interval, and the system actuates dynamic signs/luminaires while publishing 
+telemetry to the city systems (e.g., traffic signal preemption, hospital notification). Two 
+feedback are explicit: simulator → digital twin (state update) and city interface → 
+telemetry. The numbered badges indicate the receding -horizon steps: sense, update DT, 
+predict, weight edges, route, and actuate, then repeat. 
+Figure 2 illustrates adaptive routing on a simplified floor . Occupants leave Room A 
+and Room B toward Hall 1, then to the Stairs and Exit. Solid arrows denote primary flows; 
+the “Blocked” mark on the Hall → Stairs segment represents a deteriorating or 
+inaccessible link detected by sensors/prediction. When a link becomes unsafe or saturated, 
+the controller generates alternative paths (dashed arrows) that detour around the 
+blockage while honoring local capaciti es. The crowd markers near Hall 1 depict density 
+buildup that contributes to congestion penalties used in routing. A dynamic sign cue 
+indicates how guidance devices switch direction in sync with newly computed routes. 
+Together, the elements show how the system performs time -dependent re-planning each 
+control period, redirecting flows away from hazards and bottlenecks to maintain safe, 
+efficient, and equitable egress. 
+ 
+Figure 2. Routing graph for adaptive evacuation. 
+ 
+
+Sustainability 2026, 18, 133 12 of 35 
+ 
+https://doi.org/10.3390/su18010133 
+3.4. Grid-Interactive Emergency Energy Management (GEEM) 
+Grid-Interactive Emergency Energy Management (GEEM) is a layer that makes the 
+building behave as a grid -interactive microgrid during fire events. GEEM co -optimizes 
+life-safety operations (smoke control, pressurization, emergency lighting, elevators) and 
+on-site resources (PV, battery, diesel) together with grid exchange to support evacuation 
+while minimizing event energy use, CO2-equivalent emissions, and unserved critical load. 
+At each control step, the digital twin solves a small dispatch problem subject to power 
+balance, device limits (battery SOC, generator bounds), and a distribution -grid interface 
+(import caps, voltage/thermal constraints), and then issues set -points to the 
+BMS/microgrid controllers. The resulting energy decisions are coupled with the routing 
+controller so that evacuation guidance and power dispatch evolve consistently under 
+changing hazards, congestion, and grid conditions. This section formalizes the GEEM 
+variables and constraints and defines the sustainability metrics used in the joint objective. 
+At each control step t, the digital twin solves a local energy dispatch problem that 
+determines how on -site resources and grid exchange support life -safety systems during 
+the evacuation. We denote the following: 
+Decision Variables 
+Pgrid(t) ∈ R: Grid real power (import > 0, export < 0). 
+Ppv(t) ≥ 0: PV real power dispatched. 
+Pbat(t) ∈ [−𝑃̅bat, 𝑃̅bat]: Battery real power (discharge > 0). 
+Pdiesel(t) ∈ [0, 𝑃̅diesel]: Diesel generator output. 
+s(t) ∈ [smin, smax]: Battery state of charge (SOC). 
+Parameters 
+Lcrit(t): Critical life-safety load (e.g., pressurization fans, emergency lights, evacuation 
+elevators). 
+Lflex(t): Flexible/non-critical load that may be shed. 
+ηc, ηd: Charge/discharge efficiencies. 
+𝑃̅grid: Grid-import cap imposed by the feeder. 
+γgrid, γdiesel: Emission factors. 
+Δt: Control period. 
+Constraints 
+(1) Power balance 
+For each control step , the energy balance is maintained according to the following 
+constraint: 
+Pgrid(t) + Ppv(t) + Pbat(t) + Pdiesel(t) = Lcrit(t) + Lflex(t) − Ucrit(t), 
+where Ucrit(t) ≥ 0 is a slack variable representing unserved critical load. This ensures 
+feasibility even under extreme grid caps or depleted storage. 
+(2) PV dispatch limit 
+0 ≤ Ppv(t) ≤ 𝑃̅pv(t), where 𝑃̅pv(t) is determined by available irradiance. 
+(3) Battery dynamics and limits 
+Battery SOC evolves as follows: 
+s(t + Δt) = s(t) + ηc Pbat(t)− − 1/ηd Pbat(t)+, 
+where Pbat(t)+ = max{Pbat(t), 0}, Pbat(t)− = max{−Pbat(t), 0}. 
+The state-of-charge constraint is as follows: 
+smin ≤ s(t) ≤ smax. 
+Sustainability 2026, 18, 133 13 of 35 
+ 
+https://doi.org/10.3390/su18010133 
+A reserve floor (e.g., smin = 0.2 smax) ensures enough energy for prolonged evacuation 
+or re-ignition scenarios. 
+(4) Grid import/export 
+−𝑃̅grid ≤ Pgrid(t) ≤ 𝑃̅grid. 
+This enforces feeder safety and respects the emergency demand-response signal. 
+If anti-backfeed protection is required, Pgrid(t) ≥ 0. 
+(5) Diesel generator 
+0 ≤ Pdiesel(t) ≤ 𝑃̅diesel. 
+Diesel is held at zero and invoked only when needed to prevent an unserved critical 
+load. 
+(6) Sustainability metrics at each step 
+Event energy 
+Eevent(t) = Pgrid(t)+ − Ppv(t) − Pbat(t)−. 
+CO2-equivalent emissions 
+CO2(t) = γgrid Pgrid(t)+ + γdiesel Pdiesel(t). 
+Unserved critical load 
+Ucrit(t) = max{0, Lcrit(t) − Psupplied(t)}. 
+(7) GEEM Objective 
+GEEM minimizes a weighted sum of energy, emissions, and critical-load violations: 
+min{P(t),s(t)} η ∑ Eevent(t)
+𝑡
++ ζ ∑ CO2(t)
+𝑡
++ ξ ∑ Ucrit(t)
+𝑡
+ 
+3.5. Deployment Pathway on Existing BMS 
+The controller integrates with a standard building stack via BACnet/IP or OPC UA 
+for telemetry and actuation. Required points include environmental sensors, access and 
+HVAC states, DER set -points (PV curtailment, BESS charge/discharge limits and reserve 
+floors, generator enable), and feeder import/export measurements. The runtime exposes 
+auditable policy knobs for operators and enforces safety invariants: life-safety circuits are 
+never shed; if a cycle deadline is missed, the system holds the last feasible commands; if 
+communications degrade, the system reverts to safe defaults. A staged protocol is used 
+for adoption: hardware -in-the-loop with a controller emulator, then shadow mode 
+alongside the BMS, then supervised live with operator override authority and automated 
+rollback. Interfaces align with prevailing building and fire -safety practice (for example, 
+coordination with the fire alarm control panel under NFPA guidance), without requiring 
+proprietary vendor features. 
+4. Evaluation 
+This section introduces and details the achieved experiments. 
+4.1. Objectives and Research Questions 
+The evaluation quantifies how the proposed closed -loop controller (Algorithm 1) 
+performs under realistic fire scenarios with dynamic hazards, congestion, and 
+distribution-grid limits. We focus on three questions: 
+Sustainability 2026, 18, 133 14 of 35 
+ 
+https://doi.org/10.3390/su18010133 
+Q1 (Life -safety): Does hazard -aware, capacity -constrained, and fairness -aware 
+routing reduce clearance time and occupant exposure relative to strong baselines? 
+Q2 (Fairness): Does prioritizing vulnerable groups narrow disparities in egress 
+outcomes without materially harming overall efficiency? 
+Q3 (Sustainability under constraints): Does the GEEM layer reduce event energy and 
+CO2-equivalent emissions while respecting feeder/grid limits and preserving life -safety 
+performance? 
+These questions directly exercise the pipeline defined in Section 3 (sensing → 
+prediction → edge-weighting → personalized routing → actuation) and its co -
+optimization with GEEM. They also operationalize assumptions and safety invariants 
+shown in Section 3. 
+4.2. Endpoints and Metrics 
+We adopt endpoints that correspond to the method’s variables and equations: 
+- Clearance time (T_clear): Total evacuation duration (time to last occupant exit). This 
+is the primary efficiency endpoint reported for each scenario and baseline. 
+- Per-occupant exposure (E_i): Cumulative exposure computed along realized 
+trajectories; we report distributional summaries (median, IQR) and worst -case 
+exposure across groups. 
+- Fairness: Primary criterion is the max –min gap in predicted (and realized) egress 
+times across predefined groups (e.g., mobility -limited vs. others), as specified at the 
+end of Section 3.5; we also report group-wise exposure differences to confirm equity 
+gains are not achieved by shifting risk. 
+- Event energy (𝐸𝑒𝑣𝑒𝑛𝑡), 𝐶𝑂₂𝑒𝑣𝑒𝑛𝑡, unserved critical load ( 𝑈crit): These metrics are used 
+to assess the sustainability and resilience of the GEEM dispatch under feeder import 
+caps and device limits. 
+Reporting protocol. For each metric , we provide mean ± 95% CI over stochastic 
+seeds/scenarios and paired comparisons against baselines. Unless normality is confirmed 
+(Shapiro–Wilk, α = 0.05), we use nonparametric paired tests (Wilcoxon signed-rank) with 
+Holm–Bonferroni correction across endpoints; otherwise, paired t-tests and Cohen’s d are 
+reported. Scenario-level spider charts (life -safety vs. sustainability) complement tabular 
+summaries to visualize trade-offs. 
+4.3. Experimental Setup and Co-Simulation 
+- Simulation stack. We evaluate the controller with a co -simulation that couples (i) a 
+graph-based hazard surrogate (advection –diffusion–decay with HVAC -amplified 
+advection and hop -delays from the ignition node), (ii) an agent -based egress 
+simulator with density -dependent spe eds and capacity gating, and (iii) the closed -
+loop controller (Algorithm 1) running in a receding-horizon loop with control period 
+Δt = 2 s. 
+- Building models and scenarios. The testbed is a two -floor layout (rooms → halls → 
+stairs → exits) with vertical connectivity H2 ↔H1 and one exit per floor (E1, E2). The 
+ignition is fixed at H1, and HVAC is on. Links become inaccessible when the predicted 
+edge hazard reaches a safety threshold (hazard ≥ 1.3), forcing re-routing (e.g., H1 → 
+H2 → S2 → E2 when H1 → S1 deteriorates). We simulate N = 80 occupants with 25% 
+vulnerable, cap the horizon at 900 s, and aggregate over S = 5 random seeds. 
+- Hazard surrogate. The surrogate updates the edge-level hazard 𝒉𝒆 by 
+ℎ𝑒(𝑡 + Δ𝑡) = ℎ𝑒(𝑡) + Δ𝑡(𝑘𝑑𝑖𝑓𝑓(ℎ̅𝑁(𝑒) − ℎ𝑒)   − 𝑘𝑑𝑒𝑐𝑎𝑦ℎ𝑒) + Δ𝑡 𝑘𝑎𝑑𝑣(𝑡), 
+Sustainability 2026, 18, 133 15 of 35 
+ 
+https://doi.org/10.3390/su18010133 
+with 𝑘𝑑𝑖𝑓𝑓 = 0.03, 𝑘𝑑𝑒𝑐𝑎𝑦 = 0.002, and advective source  𝑘𝑎𝑑𝑣 injected layer -by-layer from 
+the ignition with hop-delay 15 s per hop and HVAC multiplier 1.3. Values are clipped to 
+[0, 1.6]. When ℎ𝑒 ≥ 1.3, edge 𝑒 is treated as unsafe (blocked) for routing. 
+- Crowd model and capacities. Pedestrian speeds follow a fundamental diagram on 
+each edge: 𝑣 = 𝑣0(1 − 𝜌/𝜌𝑚𝑎𝑥) with 𝜌𝑚𝑎𝑥 = 2.5 persons/m2; 𝑣0 equals the edge’s base 
+speed (stairs use a conservative factor). Edge capacity is 1.3 ⋅ width persons/s. We 
+model FIFO queues at nodes and track per -edge loads so that instantaneous density 
+slows traversal times. 
+- Routing and controller configuration. Time -varying edge costs combine hazard and 
+congestion terms with weights κ 1 = 6 (hazard) and κ 2 = 1 (congestion). Fairness is 
+operationalized at runtime via (a) priority ordering , where vulnerable agents are 
+planned/served first each control cycle; (b) a capacity nudge , where effective 
+admission capacity is increased by one person for vulnerable agents when fairness is 
+enabled; and (c) stricter exposure caps for vulnerable users (0.7× of the standard cap). 
+Stairs are marked as inaccessible for wheelchair users. The multi-objective weights in 
+use are α = 1 .0 (clearance), β = 0 .4 (exposure), γ = 0 .4 (fairness), and (𝜂, 𝜁, 𝜉) =
+ (0.1,0.1,0.2) for energy/CO2/unserved. 
+- GEEM and grid limits. The Grid-Interactive Emergency Energy Management (GEEM) 
+layer co-optimizes PV 80 kW, battery 150 kWh (power limit 80 kW; 20% reserve), grid 
+import cap 120 kW, and (for the proposed method only) an optional diesel 100 kW 
+kept off unless required. We compute 𝐸𝑒𝑣𝑒𝑛𝑡 , 𝐶𝑂2𝑒𝑣𝑒𝑛𝑡 , and 𝑈𝑐𝑟𝑖𝑡 using emission 
+factors = 0.55 and 𝑔𝑑𝑖𝑒𝑠𝑒𝑙 = 0.80 𝑘𝑔 − 𝐶𝑂2𝑒/kWh. To exercise GEEM under stress, a 
+tight-cap variant (grid cap 60 kW, curtailed PV 40 kW during part of the event) is 
+reported in the supplement. 
+- City-level orchestration (diagnostic metric). We estimate emergency vehicle (EV) 
+travel time along a short urban path with and without preemption; preemption is 
+triggered when DT telemetry predicts extended clearance or high average hazard. 
+This does not affect building -level routing but is reported a s an external readiness 
+indicator. 
+- Runtime and hardware. On a CPU -only workstation, the complete control loop 
+(hazard update, edge re -weighting, routing, and dispatch) meets the 2 s deadline 
+across runs. Per-step timings and configuration files are included in the artifact. 
+4.4. Baseline Implementations and Ablations 
+4.4.1. Baselines 
+We implement four strong comparators that isolate the contributions of hazard 
+awareness, congestion handling, fairness, and GEEM. All baselines use the same sensing, 
+graph, and control period Δt as the proposed controller to ensure comparability. Re -
+planning triggers and device actuation policies are shared unless explicitly disabled. 
+- B0: Static signage (shortest paths). Time -invariant routing (no re -planning), no 
+hazard or congestion costs. Edges can still become blocked if the hazard threshold 
+(≥1.3) is crossed, forcing agents who reach a blocked edge to stall and re -queue. 
+Fairness mechanics and GEEM are off. 
+- B1: Congestion-aware only. Time -dependent routing with congestion term ( κ2 = 1); 
+hazard term off (κ1 = 0). Re-plans when the next edge becomes unsafe. Fairness and 
+GEEM are off. 
+- B2: Hazard -aware + congestion. Time -dependent routing with hazard and 
+congestion (κ1 = 6, κ2 = 1). Re-plans on predicted hazard deterioration. Fairness and 
+GEEM are off. 
+Sustainability 2026, 18, 133 16 of 35 
+ 
+https://doi.org/10.3390/su18010133 
+- B3: Fairness-aware, no GEEM. Same as B2, with runtime fairness mechanics enabled: 
+(i) priority ordering (vulnerable planned first each cycle), (ii) capacity nudge (+1 
+effective admission on next edge for vulnerable), and (iii) stricter exposure caps (0.7×). 
+GEEM is off. 
+- Proposed method B3 + GEEM (PV 80 kW, battery 150 kWh with 20% reserve, grid 
+cap 120 kW, diesel 0/100 kW kept off unless required). Sustainability terms are active 
+with (𝜂, 𝜁, 𝜉) = (0.1,0.1,0.2). 
+4.4.2. Shared Components Across Baselines 
+Pedestrian speeds follow a fundamental diagram with 𝜌𝑚𝑎𝑥 = 2.5 pers/m2 ; edge 
+capacity is 1.3 × width (pers/s) . Stairs are inaccessible to wheelchair users. Edges with 
+predicted hazard ≥ 1.3 are treated as unsafe (blocked). The hazard surrogate and control 
+period are identical across methods. 
+4.4.3. Implementation Details 
+- Re-planning triggers: (a) Next edge becomes unsafe; (b) predicted queue exceeds 
+local capacity buffer; (c) exposure nearing cap for vulnerable agents (detour to safer 
+corridors). 
+- Costing: Edge 𝑐𝑜𝑠𝑡 = 𝑡𝑟𝑎𝑣𝑒𝑙 𝑡𝑖𝑚𝑒 (𝑑𝑒𝑛𝑠𝑖𝑡𝑦− 𝑑𝑒𝑝𝑒𝑛𝑑𝑒𝑛𝑡) + 𝜅1 × ℎ𝑎𝑧𝑎𝑟𝑑 + 𝜅2 ×
+𝑒𝑥𝑐𝑒𝑠𝑠 𝑙𝑜𝑎𝑑; 𝜅1 = 6, 𝜅2 = 1 when hazard-aware. 
+- Fairness runtime policy (B3/proposed method): Vulnerable agents scheduled first 
+each cycle; +1 admission headroom on contested edges; vulnerable speed 𝑎𝑠𝑠𝑖𝑠𝑡 0.9 × 
+when fairness is on (and a 1.25× penalty when fairness is off). 
+4.4.4. Ablation Studies 
+To quantify the marginal value of each design choice, we conduct controlled 
+ablations. Unless noted, all ablations inherit the proposed configuration. 
+A0—Oracle hazards: surrogate replaced by “ground -truth” hazard stream (upper 
+bound). 
+A1—Data-only surrogate: remove decay/diffusion structure to test physics priors. 
+A2—No hazard term: κ1 = 0 (safety penalty off). 
+A3—No congestion term: κ2 = 0. 
+A4—No exposure caps: soft penalties only. 
+A5—Fairness off: disable priority/nudge/assist. 
+A6—Capacity-agnostic routing: no admission gating (diagnostic). 
+A7—No GEEM: disable sustainability terms and dispatch. 
+A9—Control-period sensitivity: Δt ∈ {1, 2, 4, 8}s. 
+Hazard-stressed variant: earlier link closures and higher advection to separate B1 vs. 
+B2; amplifies the safety advantage of hazard awareness. 
+4.4.5. Evaluation Protocol 
+Each method runs on the same seeds; we report 𝑇𝑐𝑙𝑒𝑎𝑟 (mean ± 95% CI), per -agent 
+exposure 𝐸𝑖 (median [IQR]), fairness (max–min egress gap; mean ± CI), and GEEM metrics 
+𝐸𝑒𝑣𝑒𝑛𝑡 , 𝐶𝑂2𝑒𝑣𝑒𝑛𝑡 , 𝑈𝑐𝑖𝑟𝑡 . Paired tests (proposed method vs. baseline) per scenario family 
+with Holm–Bonferroni correction; effect sizes accompany 𝑝 − 𝑣𝑎𝑙𝑢𝑒𝑠. 
+4.5. Datasets and Parameter Values 
+4.5.1. Scenario Matrix (Building, Hazards, Population) 
+Unless otherwise stated, the following factors are fixed: ignition at H1, HVAC on, 
+control period Δt = 2 s, horizon 900 s, N = 80 occupants with 25% vulnerable, aggregated 
+Sustainability 2026, 18, 133 17 of 35 
+ 
+https://doi.org/10.3390/su18010133 
+over S = 5 seeds. Links become inaccessible when predicted edge hazard ≥ 1.3. A hazard -
+stressed variant (earlier link closures and higher advection) is reported in the supplement. 
+Table 2 summarizes the configuration used in the evaluation. 
+Table 2. Scenario matrix used in evaluation. 
+Factor Levels Value(s) Actually Used 
+Floors/exits per floor fixed 2 floors; one exit per floor (E1, E2) 
+Ignition location fixed H1 (hall, Floor 1) 
+HVAC state fixed On 
+Occupant count NN fixed 80 
+Vulnerable fraction fixed 25% 
+Control period Δt\Delta t fixed 2 s 
+Runtime budget fixed 900 s 
+Seeds per scenario SS fixed 5 
+Edge inaccessibility threshold fixed Hazard ≥ 1.3 
+4.5.2. Controller, Routing, and Safety Parameters 
+Edge costs combine hazard and congestion with weights κ1 = 6 and κ2 = 1 ; 
+inaccessibility uses a large hard penalty, and stairs are blocked for wheelchair users. 
+Exposure caps are stricter for vulnerable (0.7×). The multi -objective weights are α = 1 .0 
+(clearance), β = 0.4 (exposure), γ = 0.4 (fairness), and (𝜂, 𝜁, 𝜉) = (0.1,0.1,0.2) (energy, CO2, 
+unserved). Runtime fairness is operationalized as priority ordering, a + 1 capacity nudge 
+on contested edges for vulnerable agents, and a small speed assist (0.9×) when fairness is 
+on (and a 1.25× penalty when fairness is off), aligning with the policy of GEEM. Table 3 
+lists the controller and routing parameters. 
+Table 3. Controller and routing parameters (defaults and sweep ranges). 
+Parameter Symbol/Equation Value Notes 
+Hazard weight κ1/(6) 6 Higher penalty for hazardous links 
+Congestion weight κ2/(6) 1 Density-based travel time 
+Inaccessibility penalty κ3/(6) Large Blocks unusable links; stairs inaccessible 
+to wheelchair users 
+Exposure cap (per-
+agent) 𝐸𝑖
+𝑚𝑎𝑥/(3) group-dependent Vulnerable = 0.7× standard cap 
+Fairness mechanics 
+(runtime) — Priority + capacity nudge + 0.9× 
+speed assist 
+1.25× speed penalty for vulnerable when 
+fairness off 
+Control period Δt 2s Meets deadline in all runs 
+4.5.3. GEEM Assets, Limits, and Emissions Factors 
+The Grid -Interactive Emergency Energy Management (GEEM) layer co -optimizes 
+PV, battery, grid import, and (for proposed only) diesel. Emission factors are 0.55 kg -
+CO2e/kWh (grid) and 0.80 kg -CO2e/kWh (diesel). A tight -cap stress variant (grid cap 60 
+kW, PV curtailed to 40 kW during part of the event) is included in the supplement. Table 
+4 lists the configuration of GEEM. 
+Table 4. GEEM configuration. 
+Quantity Symbol Value Notes 
+PV nameplate 𝑃𝑃𝑉
+𝑚𝑎𝑥 80 kW Constant in main runs 
+Battery energy 𝐸𝑏𝑎𝑡 150 kWh Reserve floor 20% SOC 
+Battery power 𝑃𝑏𝑎𝑡
+𝑚𝑎𝑥 80 kW Charge/discharge limit 
+Sustainability 2026, 18, 133 18 of 35 
+ 
+https://doi.org/10.3390/su18010133 
+Grid import cap 𝑃𝑔𝑟𝑖𝑑
+𝑚𝑎𝑥 120 kW 60 kW in stress variant 
+(supplement) 
+Diesel genset 𝑃𝐷𝐺
+𝑚𝑎𝑥 
+0 kW (baselines/B3); 100 kW 
+(proposed method, stress 
+only) 
+Off in the main runs 
+Grid emission factor 𝑔𝑔𝑟𝑖𝑑 0.55 kg-CO2e/kWh Used for 𝐶𝑂2𝑒𝑣𝑒𝑛𝑡 
+Diesel emission factor 𝑔𝑑𝑖𝑒𝑠𝑒𝑙 0.80 kg-CO2e/kWh Used for 𝐶𝑂2𝑒𝑣𝑒𝑛𝑡 
+4.5.4. Hardware and Runtime Budget 
+Experiments run on a CPU -only workstation. The complete control loop (hazard 
+update, re -weighting, routing, dispatch) meets the 2 s deadline across runs; per -step 
+timings are provided in the artifact. 
+4.6. Results and Statistical Tests 
+4.6.1. Results Overview 
+Clearance time and exposure improve versus B0 –B2 with large paired effects (Table 
+5. Fairness: At the chosen operating point, the max –min egress gap is reduced relative to 
+hazard-only baselines while retaining most efficiency gains (Table 5, Section 4.9). 
+Sustainability: With GEEM active, event -energy/CO2 improves without constraint 
+violations; under tight caps , the controller trades emissions for zero unserved critical 
+(Table 6). 
+Table 5. Primary endpoints vs. baselines (mean ± 95% CI; exposure median [IQR]). 
+Method 𝑻𝒄𝒍𝒆𝒂𝒓 (s) 𝑬𝒊 (Exposure Units) Fairness Gap (s) 𝑬𝒆𝒗𝒆𝒏𝒕 (kWh) 
+B0 152.4 ± 5.9 37.60 [7.15] 14.54 ± 4.87 2.54 ± 0.10 
+B1 158.0 ± 9.4 38.13 [8.11] 13.16 ± 6.06 2.63 ± 0.16 
+B2 158.0 ± 9.4 38.13 [8.11] 13.16 ± 6.06 2.63 ± 0.16 
+B3 135.6 ± 6.0 36.13 [5.72] 38.93 ± 6.78 2.26 ± 0.10 
+Proposed method 95.2 ± 2.7 20.55 [2.86] 16.29 ± 4.70 3.01 ± 0.13 
+Table 6. Tight-cap scenario (grid cap 10 kW, PV 5 kW, battery 20 kWh/10 kW, 25% reserve; seeds = 
+5). Mean ± 95% CI. 
+Method 𝑻𝒄𝒍𝒆𝒂𝒓 (s) 𝑬𝒆𝒗𝒆𝒏𝒕 (kWh) 𝑪𝑶𝟐𝒆𝒗𝒆𝒏𝒕 (kg) 𝑼𝒄𝒊𝒓𝒕 (kWh) 
+B3 135.6 ± 6.0 0.94 ± 0.04 0.21 ± 0.01 1.32 ± 0.06 
+The proposed method 135.6 ± 6.0 3.01 ± 0.13 1.86 ± 0.08 0.00 ± 0.00 
+Table 5 shows that, at the selected fairness operating point, the proposed controller 
+delivers the strongest life -safety performance while reducing disparity across ability 
+groups. Clearance time improves to 95.2 ± 2.7 s, outperforming B3 (135.6 ± 6.0 s, − 40.4 s, 
+−29.8%), B0 (152.4 ± 5.9 s, −57.2 s), and B1/B2 (158.0 ± 9.4 s, −62.8 s). Median exposure drops 
+to 20.55 [2.86] from 36.13 [5.72] under B3 (−43%), and the fairness gap shrinks to 16.29 ± 
+4.70 s from 38.93 ± 6.78 s (−58%). Thus, tuning the fairness policy shifts the equity, as the 
+efficiency frontier inward, retaining most efficiency gains while substantially narrowing 
+max–min egress time differences. Table 5 shows that integrating fairness -aware routing 
+and GEEM yields substantially better life -safety outcomes, faster clearance, lower 
+exposure, and reduced disparity than all hazard or congestion-based baselines. 
+4.6.2. Statistical Tests 
+For each scenario , family, and endpoint, we perform paired comparisons of the 
+proposed method vs. each baseline on matched seeds. Normality of paired differences is 
+Sustainability 2026, 18, 133 19 of 35 
+ 
+https://doi.org/10.3390/su18010133 
+checked (Shapiro–Wilk, α = 0.05); if normal, we use a paired 𝑡 − 𝑡𝑒𝑠𝑡 (report Cohen’s d); 
+otherwise, Wilcoxon signed -rank (report matched -pairs rank -biserial correlation). 
+Multiple comparisons are controlled via Holm–Bonferroni across endpoints and baselines. 
+Scripts to compute 𝑝 − 𝑣𝑎𝑙𝑢𝑒𝑠 /effect sizes from the provided CSVs are included in the 
+artifact. 
+4.6.3. Fairness Note 
+Enabling fairness (B3/proposed method) improves clearance and exposure in this 
+setup but increases the max –min egress-time gap because vulnerable agents have lower 
+free speeds while non -vulnerable agents benefit from decongestion. This is a tunable 
+policy: raising γ, adding small vulnerable -speed assistance, or tightening group -wise 
+exposure caps can reduce the gap at modest efficiency cost. A stressed hazard variant 
+(earlier closures, higher advection) and fairness -weight sensitivity are provided in the 
+supplement. 
+4.6.4. Runtime/Feasibility 
+The full control loop (surrogate update → edge re-weighting → routing → GEEM 
+dispatch) meets the 2 s deadline on a CPU -only workstation; per -step timings and 
+configurations are in the artifact. 
+Figure 3 shows that both groups exhibit low exposure spread; the vulnerable group’s 
+median is slightly higher, consistent with conservative detours and stricter exposure caps. 
+This confirms that hazard -aware routing reduces overall exposure while our fairn ess 
+policy avoids heavy-tail outliers for vulnerable occupants. Figure 3 shows that the fairness 
+policy successfully limits high-exposure outliers for vulnerable occupants, creating more 
+equitable exposure distributions. 
+ 
+Figure 3. Per-occupant exposure by group (median, IQR). Vulnerable distribution remains compact 
+under stricter caps; heavy tails are suppressed. 
+Figure 4 shows that the proposed method and B3 dominate on clearance and 
+exposure, forming the outer envelope on those axes. B0–B2 trail on life-safety axes. On the 
+fairness gap, the prototype policy trades some equity for efficiency (scores smaller on that 
+axis for B3/Proposed method), highlighting a tunable policy lever. Event energy is slightly 
+higher for the proposed method (serving flexible loads under GEEM), reflecting the 
+safety–sustainability trade -off. Figure 4 illustrates that the pr oposed method forms the 
+
+Sustainability 2026, 18, 133 20 of 35 
+ 
+https://doi.org/10.3390/su18010133 
+best overall balance across safety, exposure, fairness, and energy metrics compared to all 
+baselines. 
+ 
+Figure 4. Normalized performance across endpoints (higher is better after inversion for lower -is-
+better metrics). Proposed/B3 form the outer envelope on life -safety axes; energy differs by GEEM 
+choice. 
+Figure 5 shows that the non -vulnerable curve is shifted right relative to the 
+vulnerable curve, indicating higher exposure levels for non -vulnerable occupants across 
+most quantiles. This is consistent with our runtime policy that applies stricter exposure 
+caps and preferential routing to vulnerable occupants. The curves are steep (limited tail 
+mass), supporting the claim that the controller avoids high -exposure outliers. Figure 5 
+demonstrates that vulnerable occupants experience systematically lower exposur es due 
+to stricter caps and protective routing. 
+ 
+Figure 5. Empirical CDFs of per-occupant exposure under the proposed method, 

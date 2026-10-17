@@ -1,0 +1,1016 @@
+ 
+Contents lists available at ScienceDirect
+Automation in Construction
+journal homepage: www.elsevier.com/locate/autcon 
+Semantic-Gravity Iterative Closest Point and AI-assisted navigation for 
+Robot-Ready Construction Digital TwinsI
+Reza Akhavian a
+ ,∗, Mani Amani a,b, Johannes Mootz a,c, Behrad Beheshti d, Robert Ashe d
+a Department of Civil, Construction, and Environmental Engineering, San Diego State University, San Diego, CA, United States
+b Department of Electrical and Computer Engineering, University of California, San Diego, San Diego, CA, United States
+c Department of Mechanical and Aerospace Engineering, University of California, San Diego, San Diego, CA, United States
+d Department of Computer Science, San Diego State University, San Diego, CA, United States
+A R T I C L E I N F O
+Keywords:
+BIM
+Digital twins
+Construction robotics
+ICP
+Agentic AI
+Path Planning
+Safety
+ A B S T R A C T
+This paper introduces BIM2RDT (Building Information Models to Robot-Ready Construction Digital Twins), an 
+AI-assisted pipeline transforming static BIM into dynamic digital twins for construction robot navigation and 
+safety monitoring. The framework fuses BIM geometry, unmanned ground vehicle (UGV) visual observations, 
+and IoT sensor data to enable automated site monitoring and safety-aware path planning. A core contribution 
+is Semantic-Gravity ICP (SG-ICP), a point cloud registration method leveraging LLM-guided semantic reasoning 
+to assign BIM-family-specific upright priors, improving alignment robustness in low-feature construction 
+scenes. The framework integrates YOLOE open-vocabulary detection for BIM-conditioned perception and 
+demonstrates safety monitoring through Hand-Arm Vibration (HAV) sensing written into IFC-compatible digital 
+twin representations. Controlled experiments show SG-ICP reduces RMSE by approximately 60%–97% over 
+standard registration methods in high-noise scenarios. These capabilities represent an initial step towards 
+agentic construction workflows, with LLM-orchestrated pipelines that condition perception, trigger IFC updates, 
+and propose navigation constraints.
+1. Introduction
+The Architecture, Engineering, and Construction (AEC) industry is 
+in the midst of a profound digital transformation. Historically charac-
+terized as a late adopter of digital technology, the sector has tradition-
+ally relied heavily on the experiential knowledge of its professionals. 
+However, growing pressures from economic uncertainties due to factors 
+such as low productivity, persistent labor shortages, and the increasing 
+complexity of modern projects are compelling companies to rapidly 
+adopt digital construction management strategies to optimize resources 
+and workflows. Market projections indicate that adoption of technolo-
+gies such as the Digital Twins (DTs) in the construction market will 
+reach $155.01 billion by 2030, with safety applications and worker 
+monitoring driving significant growth [1]. For example, Cyber–Physical 
+Systems (CPS) integrate computation, networking, and physical pro-
+cesses, creating a feedback loop where physical systems are monitored 
+and controlled by computer-based algorithms [2]. Technological ad-
+vances such as Building Information Modeling (BIM), DT, robotics, and 
+Artificial Intelligence (AI) form the basis of a next-generation approach 
+to construction management that moves beyond manual processes and 
+reactive decision-making [3].
+I This article is part of a Special issue entitled: ‘Next-Gen Construction’ published in Automation in Construction.
+∗ Corresponding author.
+E-mail address: rakhavian@sdsu.edu (R. Akhavian).
+This paper presents BIM2RDT, Building Information Models to
+Robot-Ready Construction Digital Twins, where the central ‘2’ embod-
+ies both our BIM transformational approach and the dual ‘R’ require-
+ments for robot readiness. BIM2RDT is a context-aware, AI-powered 
+framework that transforms static BIM models into a digital twin, a 
+medium that the robot can utilize in dynamic environments, with 
+virtual components for robot path planning, activity recognition, and 
+safety monitoring and compliance during construction execution.
+BIM2RDT uses the BIM as an a priori map to condition perception 
+and constrain alignment, then writes geometry and contextual in-
+formation (such as activity safety constraints) layers back into an 
+interoperable twin representation. This addresses a critical gap in 
+current construction robotics: the lack of integrated systems that si-
+multaneously leverage pre-existing BIM data, real-time sensor streams, 
+and autonomous decision-making for safe and efficient site navigation.
+The framework fuses three data streams: (1) geometric and se-
+mantic information from BIM models as the foundational spatial and 
+functional representation, (2) IoT/wearable activity data that describe 
+work activity and safety exposure, and (3) UGV visual observations 
+https://doi.org/10.1016/j.autcon.2026.107134
+Received 31 October 2025; Received in revised form 18 June 2026; Accepted 6 July 2026
+Automation in Construction 190 (2026) 107134 
+Available online 20 July 2026 
+0926-5805/© 2026 The Authors. Published by Elsevier B.V. This is an open access article under the CC BY-NC-ND license ( http://creativecommons.org/licenses/by- 
+nc-nd/4.0/ ). 
+R. Akhavian et al.
+collected during site traversal. Accordingly, BIM2RDT implements an 
+LLM-assisted orchestration layer as bounded semantic reasoning com-
+ponents that close the loop between sensing and model maintenance, 
+representing an initial step towards agentic behavior, where LLMs 
+are used iteratively via tool calls to transform observations into state 
+updates and bounded actions, rather than only producing responses. 
+As such, we use the term ‘‘agentic’’ in a narrow, operational sense 
+where the AI module performs semantic reasoning that conditions per-
+ception (e.g., assigning gravity priors for ICP), triggers IFC-consistent 
+twin updates, and proposes navigation constraints, without claiming 
+autonomous long-horizon planning or full decision authority.
+This study investigates three research questions: RQ1: How can 
+semantic information from static BIMs be leveraged to constrain and 
+improve point cloud registration accuracy in construction environments 
+with ambiguous geometry and limited features? RQ2: To what ex-
+tent can an LLM-based reasoning provide physically-informed, object-
+specific priors that reduce local-minimum failures in scan-to-BIM align-
+ment? RQ3: How can sensor-detected safety activities be semanti-
+cally mapped into interoperable digital twin representations to enable 
+proactive intervention and context-aware robot planning?
+To answer these questions, BIM2RDT implements a three-stage 
+perception-to-update loop. BIM semantics are translated into context-
+specific prompts for open-vocabulary detection using YOLOE [4], en-
+abling recognition of both permanent BIM families and temporary 
+site objects without retraining. We introduce Semantic-Gravity ICP 
+(SG-ICP), a point-cloud registration method where an LLM assigns 
+object-adaptive upright priors per BIM family (e.g., heavy crates vs. 
+easily tipped cones), producing physically plausible orientation reg-
+ularization. Finally, sensor-detected activities are mapped into IFC 
+constructs (IfcEvent, IfcTask), demonstrated via HAV monitoring against 
+ISO 5349-1 thresholds [5] as a proof-of-concept. The resulting activity 
+layers generate contextual cost maps for robot path planning. The 
+specific contributions of this work are:
+• A BIM-conditioned perception pipeline using BIM object labels to 
+prompt open-vocabulary detection (YOLOE) and define ROIs for 
+scan-to-BIM alignment.
+• SG-ICP: a registration method using LLM-inferred, BIM-family-
+specific upright priors to regularize ICP and reduce
+local-minimum failures.
+• An IFC-compatible mechanism to write sensor-recognized activi-
+ties into the digital twin (via IfcEvent /IfcTask), demonstrated with 
+HAV monitoring.
+• Experimental validation showing RMSE reductions up to 97% in 
+challenging scenarios and its consequences in context-aware path 
+planning.
+Fig. 1 shows an overview of the developed framework: robot sens-
+ing updates the twin through BIM-conditioned perception and SG-ICP 
+registration; the updated twin then informs subsequent robot planning 
+and safety-aware navigation
+2. Literature review
+This review is organized to mirror the BIM2RDT pipeline: (i) dy-
+namic construction digital twins, (ii) robotic site monitoring and BIM-
+aided navigation, (iii) BIM semantics and ICP-based registration, and 
+(iv) AI-based autonomous agents in construction.
+2.1. From BIM to digital twin with geometric and operational updates
+The evolution from Building Information Models (BIM) to digital 
+twins (DTs) in construction represents a paradigm shift towards data-
+driven, real-time management of built environments. The defining 
+characteristic that distinguishes a true DT from an advanced BIM model 
+is this bi-directional, real-time or near-real-time data connection [6]. 
+This cyber–physical integration establishes a continuous feedback loop: 
+the physical asset is instrumented with sensors that feed data to the 
+digital model, and the digital model, in turn, can be used to ana-
+lyze, simulate, and control the physical asset. During construction, 
+a dominant technical gap is geometric synchronization: maintaining 
+an as-built geometry that stays aligned with BIM coordinates while 
+temporary objects, staging, and work fronts evolve. This motivates 
+scan-to-BIM workflows and automated update mechanisms that can 
+operate continuously rather than as occasional manual reconciliation. 
+Additionally, a construction digital twin requires an operational link be-
+tween the physical site and its digital representation. Prior DT research 
+has emphasized IoT-to-model connections for monitoring and analytics, 
+often highlighting interoperability and real-time data streams as key 
+enablers [6–8]. Wearables and IoT streams enable activity recognition 
+and exposure monitoring, but these signals are often managed outside 
+the BIM/DT representation, limiting their integration into planning 
+and coordination. Hand-arm vibration (HAV) exposure, for example, 
+is a representative safety signal because it has standardized evaluation 
+metrics and actionable thresholds for wearable-based safety monitoring 
+in construction settings (e.g., ISO 5349-1) [5,9].
+2.2. Robotics reality capture and BIM-aided navigation
+The continuous and accurate acquisition of as-built data is the 
+lifeblood of a Digital Twin. While fixed sensors provide valuable data 
+streams, mobile robotic platforms have emerged as a primary method 
+for comprehensive and autonomous site scanning. Mobile robots pro-
+vide repeatable sensing for progress and condition capture, reducing 
+the cost and safety risk of manual scanning [10]. In indoor, GPS-denied 
+construction environments, reliable autonomy requires robust localiza-
+tion and mapping under frequent changes and occlusions [11]. Prior 
+work has explored UGV platforms for inspection and monitoring [12], 
+and quadruped systems in particular offer superior traversal capability 
+for unfinished interiors and cluttered work zones [13,14]. The fusion 
+and registration of data collected from multiple scans and different 
+sensor modalities (e.g., LiDAR, cameras) into a single, coherent model 
+is another complex technical problem [15,16]. To address this, a re-
+curring theme is leveraging building structure (planarity, corridors, 
+cores) and pre-existing digital models to improve robustness with low 
+computational cost. BIM-aided localization and mapping reduce drift 
+and provide meaningful anchors, but success depends on accurate 
+registration between robot observations and BIM pointclouds.
+2.3. BIM semantics and geometric registration with ICP
+The accurate alignment of 3D point clouds is a cornerstone of 
+robotics, computer vision, and digital twinning for the built environ-
+ment. The Iterative Closest Point (ICP) algorithm remains the founda-
+tional method for this task, but its limitations have inspired decades 
+of innovation. The standard ICP algorithm iteratively refines the rigid 
+transformation between two sets of point clouds by minimizing the sum 
+of squared distances between corresponding points [17]. Despite its 
+widespread adoption, ICP’s performance is highly sensitive to the initial 
+alignment and is famously susceptible to converging to local minima, 
+especially in scenes with sparse features, repetitive geometry, or poor 
+initial overlap [18]. In construction, robust point cloud registration 
+(often referred to as ‘‘scan-to-BIM’’) is critical for as-built verification, 
+progress monitoring, and digital twin maintenance. Researchers have 
+extensively used ICP and its variants to align laser scans of a job site 
+with the as-designed BIM model to detect deviations [19]. The struc-
+tured nature of building environments, with prevalent planar surfaces, 
+makes point-to-plane ICP particularly effective. Global BIM-point cloud 
+registration minimizes deviations using ICP, evaluating alignments for 
+construction quality control [20]. Lidar inertial odometry (LIO) and 
+BIM have been used together for robust robot localization, using ICP-
+like methods to map and navigate in building environments [21]. 
+Automation in Construction 190 (2026) 107134 
+2 
+R. Akhavian et al.
+Fig. 1. Overview of the BIM2RDT framework.
+Semantic-aided ICP in global LiDAR registration uses BIM semantics 
+via Pose Hough Transform, enhancing robot autonomy in construc-
+tion [22]. A common limitation is that gravity constraints are typically 
+applied uniformly (a fixed upright prior), even though different site 
+objects have different physical plausibility of tilt.
+2.4. AI and autonomous agents in construction
+Agentic AI systems are defined by capabilities such as proactive 
+planning, contextual memory, sophisticated tool use, and the ability 
+to adapt their behavior based on environmental feedback [23]. Un-
+like automation tools in the built-environment industry that follow 
+rigid, pre-programmed instructions, or analytical models that simply 
+provide outputs for human interpretation, agentic AI systems are de-
+signed to perceive their environment, reason about that information, 
+and act autonomously to achieve specified goals [24]. This capacity 
+for autonomous, goal-directed action makes them particularly well-
+suited for managing the unpredictable and dynamic nature of con-
+struction projects. Recent frameworks distinguish between simple AI 
+agents (modular, task-specific systems) and true agentic AI, which 
+exhibits multi-agent collaboration, dynamic task decomposition, per-
+sistent memory, and coordinated autonomy [25]. Industry practition-
+ers have operationalized this concept through ‘‘agentic workflows’’ 
+where AI systems iteratively reflect, plan, and use tools to accomplish 
+complex tasks through multi-step processes rather than single-prompt 
+responses [26]. In the construction context, this translates to systems 
+capable of perception, planning, and action in unstructured environ-
+ments, representing a critical evolution for managing construction exe-
+cution complexity. Consequently, the development of intelligent agents 
+capable of perception, planning, and action in unstructured construc-
+tion environments represents a critical and underexplored research 
+frontier [24].
+2.5. Summary and gap addressed by BIM2RDT
+Existing research provides strong building blocks such as robotic 
+scanning, BIM-aided localization, ICP variants, and sensor-based safety 
+monitoring. However, these are often treated as separate systems. 
+BIM2RDT closes the loop by (i) conditioning perception on BIM seman-
+tics to stabilize object identification in dynamic inventories, (ii) improv-
+ing scan-to-BIM alignment using SG-ICP with object-adaptive semantic-
+gravity priors, and (iii) writing safety-relevant activities into an inter-
+operable twin representation that can directly inform robot planning. 
+This structure directly motivates the methodology and matches the 
+evaluation reported in the experiments.
+Automation in Construction 190 (2026) 107134 
+3 
+R. Akhavian et al.
+3. Methodology
+This section presents the BIM2RDT methodology in three stages. 
+Sections 3.1–3.3 describe the perception pipeline, Section 3.4 intro-
+duces the core innovation of SG-ICP, and Sections 3.5–3.7 detail how 
+safety activities and geometric updates are written back to the IFC 
+model.
+3.1. Object detection
+We employ the YOLOE open-vocabulary object detector [4]. The 
+selection of YOLOE is deliberate and critical to the BIM2RDT frame-
+work. Unlike traditional closed-set object detectors, which are limited 
+to a predefined set of categories, open-vocabulary models can iden-
+tify objects based on arbitrary textual descriptions. This capability is 
+particularly suitable for construction sites, which are populated with 
+a broad assortment and often variable set of object labels, from stan-
+dard BIM components (e.g., columns, beams) to temporary materials 
+(e.g., pallets, scaffolding) and unplanned obstacles. YOLOE allows our 
+system to be highly adaptable, as it can be dynamically prompted with 
+the specific BIM families relevant to the robot’s current operational 
+area without requiring model retraining, a significant advantage over 
+alternatives.
+Semantic information from the BIM or user-specified labels ini-
+tializes a textual prompt that biases classification towards the target 
+BIM families. The process begins by translating the semantic infor-
+mation from the BIM into a concise textual prompt for the detector. 
+BIM family names, which can be verbose or contain non-descriptive 
+metadata (e.g., ‘‘Steel_I-Beam_W12x26_A992’’), are processed 
+using an LLM to extract the core object class. For example, the afore-
+mentioned name is simplified to ‘‘steel I-beam’’. Similarly, ‘‘Traf-
+fic_Cone_Orange_70cm’’ becomes ‘‘traffic cone’’. The prompt 
+concatenates BIM family names, such as ‘‘Concrete Pillar’’ or ‘‘Safety 
+Cone’’, with contextual descriptors like ‘‘construction site object’’ to 
+bias classification. As an example, for a BIM family ‘‘Wall’’ the prompt 
+might be: ‘‘a concrete wall in a building site’’.
+This list of simplified class names, derived from the BIM elements 
+expected in the scene, forms the textual prompt. For a given region, 
+the prompt might be a list such as: [‘‘steel I-beam’’, ‘‘traffic cone’’, 
+‘‘wooden crate’’, ‘‘steel barrel’’]. This context-specific prompt biases 
+the classification towards the target BIM families, improving detection 
+accuracy and reducing false positives. The detector outputs bounding 
+boxes with associated class names, which we then map one-to-one 
+to the corresponding BIM families. These mappings define regions 
+of interest (ROI) that support downstream feature selection and 3D 
+registration analyses. In dynamic sites, this semantic biasing reduces 
+false positives from clutter, ensuring ROIs align with BIM elements for 
+accurate deviation detection.
+3.2. Corner detector
+In order to detect features within the 2D ROI, the shape geometry 
+is required. We opt to use Shi-Tomasi corner detection to detect these 
+features due to the algorithm’s superior stability in tracking under 
+affine transformations, which is beneficial for construction scenes with 
+perspective distortions from robot viewpoints [27]. It is important to 
+note that any corner detector algorithm can be used in this framework. 
+The goal of the corner detector is to identify coordinates that exist 
+on the object, and this set of 3D coordinates would give us plausible 
+points that exist on the object geometry that can be used for point cloud 
+alignment. Given a grayscale image 𝐼, compute spatial gradients 𝐼𝑥, 𝐼𝑦. 
+For each pixel 𝑥 in the ROI, form the second-moment matrix over a 
+window 𝑊 (𝑥): 
+𝑀(𝑥) =
+∑
+𝑢∈𝑊 (𝑥)
+[ 𝐼𝑥(𝑢)2 𝐼𝑥(𝑢)𝐼𝑦(𝑢)
+𝐼𝑥(𝑢)𝐼𝑦(𝑢) 𝐼𝑦(𝑢)2
+]
+(1)
+Let 𝜆1(𝑥) ≥ 𝜆2(𝑥) be the eigenvalues of 𝑀(𝑥). The Shi–Tomasi score 
+is: 
+𝑆(𝑥) = min{ 𝜆1(𝑥), 𝜆2(𝑥)} (2)
+Accept 𝑥 if 𝑆(𝑥) ≥ 𝜏 (cornerness threshold), then apply non-
+maximum suppression in a radius 𝑟, and keep the top 𝐾 responses. The 
+threshold 𝜏 is adaptively set based on image noise levels, typically 0.01−
+0.05, with 𝑟 = 3 pixels and 𝐾 = 600 for construction ROIs to balance 
+density and computational efficiency. The Shi-Tomasi algorithm is a 
+cornerstone in feature detection, known for its robustness and avail-
+ability across OpenCV implementations. These detected corners within 
+BIM-mapped ROIs provide robust keypoints for ICP correspondence. 
+Since we are using a depth camera to provide perception to the robot, 
+we can use the identified pixel (𝑥, 𝑦) to query the 𝑧 value so we get a 3D 
+representation of the feature values that are detected on the 2D image. 
+Given a set of points 𝐴 = {( 𝑥𝑖, 𝑦𝑖, 𝑧𝑖)}𝑁
+𝑖=1 where 𝐴 ⊂ R3, we can then 
+conduct ICP with a root set of points 𝐵 = {(𝑥𝑖, 𝑦𝑖, 𝑧𝑖)}𝑁
+𝑖=1 where 𝐵 ⊂ R3, 
+which becomes our target points sampled from the BIM.
+3.3. Pointcloud registration
+In general BIM alignment approaches, the ICP algorithm aligns 
+robot-captured point clouds (e.g., from LiDAR mounted on quadrupeds) 
+with BIM-derived models, enabling deviation detection for progress 
+monitoring [28]. The goal of using ICP is to minimize Wahba’s prob-
+lem [29], given by: 
+𝐸ICP(𝑅, 𝑡) = 1
+2
+𝑁∑
+𝑖=1
+𝑤𝑖 ‖ 𝑏𝑖 − (𝑅𝑟𝑖 + 𝑡)‖2
+2 (3)
+While closed-form solvers such as the Kabsch algorithm can recover 
+(𝑅, 𝑡) given a set of known point correspondences [30], they require the 
+data association to be specified a priori. However, the association is 
+often not known in practice. To address this, ICP was introduced, which 
+initializes data classifications given a defined heuristic. Concretely: ICP 
+alternates between (i) estimating correspondences (nearest-neighbor 
+matching under the current pose) and (ii) solving an optimization step 
+for (𝑅, 𝑡), until convergence or until a maximum number of iterations 
+has been reached. This joint treatment allows ICP to handle unknown 
+data association in practice.
+However, ICP is known to converge to local minima. To mitigate 
+this issue, many methods have been proposed. One of these methods 
+is to introduce an additional source of information in the form of 
+gravity alignment to promote a more upright final pose to improve 
+point cloud alignment. However, the naive integration of bias can 
+introduce error by dominating the point cloud registration optimization 
+through excessively minimizing the gravity alignment term. This can 
+be detrimental to BIM updates and potentially introduce discrepancies. 
+This problem is addressed in BIM2RDT via semantic priors, and is 
+explained in the following subsection.
+3.4. Semantic-gravity iterative closest point
+Consider the regularized optimization problem: 
+min
+𝑅∈SO(3), 𝑡∈R3
+1
+2
+𝑁∑
+𝑖=1
+𝑤𝑖 ‖ 𝑏𝑖 − (𝑅𝑟𝑖 + 𝑡)‖2
+2 + 𝛾
+2 ‖ 𝑔𝑚 − 𝑅𝑔0‖2
+2. (4)
+where 𝑟𝑖 ∈ R3 are model sample points with normals, 𝑏𝑖 ∈ R3 are 
+corresponding scene points, 𝑤𝑖 ≥ 0 are robust weights, (𝑅, 𝑡) ∈ SO(3) ×
+R3 is the unknown rigid transform, 𝑔0 is the canonical upright vector 
+in model coordinates (e.g. 𝑒𝑧), 𝑔𝑚 is the measured gravity vector in 
+world coordinates, and 𝛾 ≥ 0 is the gravity weight, which balances data 
+fidelity and upright bias; in practice, we tune it via cross-validation on 
+simulated construction scenes.
+It is important to note that this regularization is algorithm agnostic. 
+Given any point cloud registration and data association scheme, one 
+Automation in Construction 190 (2026) 107134 
+4 
+R. Akhavian et al.
+can introduce a gravity bias regularization term to introduce upright 
+behavior with a tunable weight in 𝛾. In our experiments, we experiment 
+with commonly used algorithms to show their efficacy in BIM settings 
+by leveraging the semantic qualities.
+3.4.1. Gravity alignment
+The data term 
+𝐸ICP(𝑅, 𝑡) = 1
+2
+𝑁∑
+𝑖=1
+𝑤𝑖 ‖ 𝑏𝑖 − (𝑅𝑟𝑖 + 𝑡)‖2
+2 (5)
+is a standard weighted ICP.
+The gravity bias term 
+𝐸grav(𝑅) = 𝛾
+2 ‖ 𝑔𝑚 − 𝑅𝑔0‖2
+2 (6)
+acts as a soft constraint, encouraging 𝑅𝑔0 to align with gravity, 
+maintaining a more upright orientation. Expanding the gravity penalty: 
+𝐸grav(𝑅) = 𝛾
+2
+( ‖𝑔𝑚‖2
+2 + ‖𝑅𝑔0‖2
+2 − 2 𝑔⊤
+𝑚𝑅𝑔0
+) (7)
+Since ‖𝑔𝑚‖ = ‖𝑔0‖ = 1 in unit-norm form, this reduces to 
+𝐸grav(𝑅) = 𝛾( 1 − 𝑔⊤
+𝑚𝑅𝑔0
+) (8)
+Thus, minimizing 𝐸grav is equivalent to maximizing the alignment 
+of 𝑅𝑔0 with 𝑔𝑚.
+In Gauss–Newton or SVD updates, this bias is equivalent to adding 
+one weighted correspondence (𝑔0, 𝑔 𝑚) with weight √𝛾: 
+{(𝑟𝑖, 𝑏𝑖, √𝑤𝑖)}𝑁
+𝑖=1 ∪ ( 𝑔0, 𝑔 𝑚,
+√
+𝛾) (9)
+3.4.2. Semantic alignment
+We use BIM semantic labels to estimate each object’s susceptibility 
+to gravity-induced tipping. Heavier objects tend to have a stronger 
+upright bias; if they appear tilted, routine site dynamics or workspace 
+drift are less likely explanations. This extends prior pose-informed ICP 
+(e.g., IMU-ICP [31]) by replacing sensor-derived pose bias with an 
+explicit upright vector (e.g., the gravity vector) and by making the 
+bias object-adaptive through BIM semantics. This approach helps in 
+reducing errors in tilted but stable objects like heavy equipment. We 
+define 
+𝛾𝑛𝑒𝑤 = 𝛾𝑓 𝑎𝑚𝑖𝑙𝑦.𝛾𝑖𝑛𝑖𝑡𝑖𝑎𝑙 (10)
+where 𝛾𝑖𝑛𝑖𝑡𝑖𝑎𝑙 is the initialized value that can serve as a general tuning 
+knob. Assigning weights manually is cumbersome, so we instead use an 
+LLM to traverse all BIM families and assign 𝛾family ∈ [0, 1], a prior for the 
+object being upright. The LLM interprets family names, descriptions, 
+and construction-site context and outputs the corresponding bias score. 
+We use the OpenAI API to prompt GPT-4o-mini. Specifically, the LLM 
+is given the following context:
+‘‘You return BIM alignment priors. For each label, output: upright 
+bias ∈ [0 , 1] (fraction of tilt corrected per ICP iteration). Only 
+include labels given. No extra text. Take gravity into account, how 
+likely is this to not be upright? If it is not likely we need a smaller 
+value. JSON that matches the provided schema strictly.’’
+A JSON file containing the name of all families is attached to the 
+command. The LLM will use its contextual reasoning capabilities to 
+infer the possibilities of being ‘‘upright’’ and returns a tailored co-
+efficient. Algorithm 1 describes the SG-ICP registration procedure, 
+which augments standard ICP with a gravity-alignment bias and object-
+dependent semantic weighting. Given an observed point cloud and 
+BIM-derived priors, it iteratively estimates the rigid transformation that 
+aligns detected objects to the model while favoring physically plausible 
+(upright) solutions.
+Algorithm 1 SG-ICP pseudo code incorporating gravity bias
+Require: body 𝐵; loss , schedule 𝐿, default bias 𝛽def ; grav-
+ity ̂ 𝑔; params: restarts, yawJitterDeg, sampleCount, maxIterations,
+maxPairDistance, normalGate, trimFraction, huberDelta, (𝜀𝑟, 𝜀𝑡)
+Ensure: pose of 𝐵 aligned to scene 𝑆
+1: (𝛽, yawOnly) ← LLMBiasManager(, 𝐿, 𝛽def )
+2: 𝑆 ← AcquireScenePoints() require | 𝑆| ≥ 6
+3: (𝑉 , 𝑁) ← SampleModelWithNormals(𝐵, sampleCount)
+4: (𝑝0, 𝑞0) ← SnapshotPose(𝐵); PrepareMovementMode(𝐵)
+5: for 𝑎 ∈ YawRestarts(restarts, ̂ 𝑔,yawJitterDeg) do
+6: ResetPose(𝐵, 𝑝0, 𝑞0); ApplyYawJitter(𝐵, 𝑎)
+7: for 𝑘 = 1..maxIterations do
+8: (𝑋, 𝑁𝑊 ) ← ModelToWorld(𝐵, 𝑉 , 𝑁)
+9: 𝑃 ← MatchPairs(𝑋, 𝑆, maxPairDistance, 𝑁𝑊 , normalGate)
+10: 𝑃 ← RelaxIfFew(𝑃 , 𝑆, 𝑋); 𝑃 ← TrimPairs(𝑃 , trimFraction)
+11: 𝑤 ← RobustWeights(𝑃 , huberDelta)
+12: (𝑅𝛥, 𝑡𝛥) ← SolveRigid(𝑃 , 𝑤, 𝛽)
+13: 𝑅𝛥 ← ProjectYawIf(𝑅𝛥, ̂ 𝑔,yawOnly)
+14: ApplyDelta(𝐵, 𝑅𝛥, 𝑡𝛥)
+15: if Converged(𝑃 , 𝑅𝛥, 𝑡𝛥, 𝜀𝑟, 𝜀𝑡) then break
+16: end if
+17: end for
+18: ScoreAndKeepBest(𝐵, 𝑆, maxPairDistance)
+19: end for
+3.5. Safety-aware digital twin updates with activity integration
+Once the robot-captured point cloud is geometrically registered to 
+the BIM using the Semantic-Gravity ICP (SG-ICP) method, the BIM2RDT 
+framework extends these capabilities to incorporate real-time activ-
+ity recognition for enhanced safety monitoring. Here, it semantically 
+links sensor-detected activities to BIM entities using IFC standards. 
+Specifically, it leverages IfcTask and IfcEvent (core entities in the IFC 
+schema for representing identifiable units of work or activities) as a 
+unifying interface, allowing sensor-derived activities (e.g., ‘‘hammer 
+drilling with unsafe vibration levels’’) to be treated as compatible IFC 
+constructs without requiring explicit temporal scheduling ties.
+The integration of dynamic site conditions beyond geometry is 
+exemplified by the analysis of worker activities involving hazards such 
+as excessive hand-arm vibrations (HAV) during tool operation. We 
+draw from prior work on wearable sensor-based HAV monitoring [9], 
+which demonstrated the feasibility of attaching wearables to positions 
+beyond those specified in ISO 5349-1 [5]. In this work, we expand upon 
+the existing methodology and develop a subject-specific approach that 
+enables more accurate mapping.
+The acceleration signals are transmitted to a central processing 
+unit, where the frequency-weighted RMS acceleration 𝑎ℎ𝑣 is calculated. 
+This data serves as the input for computing A(8), the 8-h energy-
+equivalent frequency-weighted vibration total value, as defined in [5]. 
+The initiation of the activity is marked by the creation of an IfcEvent. 
+Upon attaining the critical exposure action value (EAV) of 2.5 m/s2, a 
+triggering mechanism schedules an IfcTask, thereby assigning a safety 
+instructor to intervene and mitigate the vibration-induced workload on 
+the affected worker. Following the termination of the activity, another
+IfcEvent containing the accumulated daily vibration exposure is created, 
+enabling the precise tracking and verification of compliance with ISO 
+5349-1 limits. On the backend, we enrich the existing IFC file with 
+time-stamped HAV events using IfcOpenShell.
+In this work, HAV detection serves two roles: (i) a long-horizon 
+occupational exposure signal that is logged and traced in BIM/IFC to 
+support safety management workflows and (ii) a short-horizon risk 
+signal that enriches information used by robot navigation to reduce 
+traversal through high-exposure work zones. Sensor-recognized activ-
+ities are written into the twin as Activity Instances that can reuse the 
+Automation in Construction 190 (2026) 107134 
+5 
+R. Akhavian et al.
+project’s schedule vocabulary (labels, scopes) when present, but remain 
+valid even when no schedule file, look-ahead, or CPM alignment exists. 
+This mapping exploits IFC’s extensible structure, where sensor activi-
+ties are instantiated as new or augmented entities with attributes for 
+safety metrics (e.g. 𝑎ℎ𝑣 values and risk flags), ensuring interoperability 
+without altering the core BIM model.
+Work planning is not typically part of baseline BIM/IFC deliveries, 
+so representing it using IfcTask and IfcEvent requires explicit mod-
+eling preconditions. BIM2RDT therefore treats IfcTask/IfcEvent as an 
+optional runtime enrichment layer that can operate in two modes. If 
+an IfcWorkSchedule structure already exists (e.g., from 4D planning), 
+BIM2RDT appends HAV-related IfcEvent instances and links them to the 
+corresponding existing IfcTask. If no work plan is present, BIM2RDT 
+creates a minimal process scaffold for traceability only: IfcEvent in-
+stances record observed activity start/end and threshold exceedances, 
+and a minimal IfcTask encodes a recommended intervention (e.g., ‘‘Stop 
+worker from HAV exposure’’). This schedule-agnostic mode is not in-
+tended to reconstruct project scheduling, yet it provides a consistent, 
+queryable record of safety-relevant observations.
+To support actionable alarms and queries, each event must be 
+grounded in a work context. Specifically, the spatial grounding of 
+each IfcEvent is achieved through the BIM object that represents the 
+vibration source. When the HAV monitor identifies a threshold ex-
+ceedance, the system uses the LLM-based semantic mapping (Section 
+4.7.1) to associate the event with the most likely source object in the 
+IFC model. The IfcLocalPlacement of that object provides the geographic 
+reference for the event, and the subsequent IfcTask references both the 
+affected worker (identified by sensor assignment) and the spatial zone 
+defined by the object’s placement. Real-time alarms are triggered by 
+the HAV threshold logic and routed through a web-hosted dashboard, 
+where the event location, worker identity, vibration magnitude, and 
+recommended intervention are displayed together.
+3.6. Activity-proximity cost map
+In our method, HAV is associated with a workstation location rather 
+than continuous worker tracking. The detection of HAV is assigned to a 
+BIM object representing the vibrating source. The spatial placement of 
+this BIM object provides the event location. SG-ICP provides an accu-
+rate geometric map, and the HAV monitor augments it with contextual 
+activity layers. When a high HAV activity is recognized, the LLM agent 
+infers the most likely activity family and instantiates a local cost map 
+around that object. For a grid cell at (𝑥, 𝑦) and an object reference point 
+𝑜 = (𝑥𝑜, 𝑦𝑜), the activity cost decays with distance from 𝑜 as: 
+𝑓 (𝑥, 𝑦) = 𝐴 𝑒−𝑑(𝑥,𝑦) (11)
+where 𝐴 > 0 is a design parameter (the peak cost at the object) and 
+𝑑(𝑥, 𝑦) ≥ 0 is the distance from (𝑥, 𝑦) to 𝑜. Unless noted otherwise, we 
+take 
+𝑑(𝑥, 𝑦) = ‖‖(𝑥 − 𝑥𝑜, 𝑦 − 𝑦𝑜)‖‖2 (12)
+but any other distance metric would be valid.
+While this produces a costmap that can both qualitatively and 
+quantitatively be beneficial for project managers to measure the effects 
+and probabilistic areas of HAV activity, it can also be included in robot 
+mission planning. Previous works have shown that natural language 
+sentiment analysis can directly be used in classical robot path plan-
+ning [16]. We later on demonstrated the efficacy of using BIM2RDT in 
+path planning scenarios.
+3.7. Automated digital twin synchronization via IFC updates
+Once SG-ICP computes object transformations in robot coordinates, 
+these updates must be written back to the BIM to synchronize the 
+digital twin with observed site conditions. This process involves two 
+stages: semantic object mapping and coordinate system transformation.
+3.7.1. Semantic object mapping
+After SG-ICP computes alignment transformations, the system must 
+map detected objects to their corresponding IFC elements. YOLOE 
+(Section 3.1) outputs object labels. IFC elements are referenced by 
+globally unique identifiers (GUIDs). An LLM bridges this semantic gap 
+by mapping YOLOE-detected object names to IFC element GUIDs using 
+reasoning over object types and descriptions. The following prompt is 
+used:
+‘‘You are tasked with mapping detected construction site objects to 
+IFC building elements based on their names and types.
+Detected Objects (from YOLOE):
+- Wooden Crate (hierarchy: Environment/Props/WoodenCrate) - ...
+IFC Objects (from BIM):
+- Crate_Storage_01 (GUID: 2a3b4c5d..., Type: IfcFurniture) - ...
+Rules: 1. Only map objects where you are confident there is a match 
+2. Use exact names and GUIDs as provided 3. Consider semantic 
+similarity 4. If uncertain, set confidence to ‘low’ and explain why 5. 
+Return valid JSON’’
+The LLM returns structured JSON mappings with confidence scores 
+(‘‘high’’, ‘‘medium’’, ‘‘low’’) and semantic reasoning for each match. A 
+rule-based fallback provides limited pattern matching when API access 
+is unavailable, however, this fallback only succeeds for highly standard-
+ized naming and cannot handle the semantic variability common in 
+construction sites.
+3.7.2. Coordinate system transformation
+SG-ICP outputs are converted from robot coordinate frames to IFC 
+coordinate conventions and applied to update placements of the LLM-
+mapped objects in the IFC model. The rigid transformation resulting 
+from the SG-ICP registration represents the alignment of the physical 
+object relative to the digital model. To synchronize the Digital Twin, 
+this transformation is first converted from the robot’s sensing coordi-
+nate frame to the IFC project’s coordinate convention (addressing axis 
+orientation and unit scaling differences). We utilize the IfcOpenShell
+library to programmatically access and modify the IFC schema. Us-
+ing the unique element GUID identified in Section 3.7.1, the system 
+targets the specific IfcProduct and updates its IfcLocalPlacement. The 
+computed translation and rotation matrices are applied to the object’s
+IfcAxis2Placement3D attributes, ensuring that the geometric state of the 
+digital asset is persistently updated to match the physical site conditions 
+observed by the robot.
+4. Experiments and results
+This section presents experimental validation of the BIM2RDT
+framework across four key components: (1) Semantic-Gravity ICP align-
+ment accuracy under varying viewpoints and noise conditions, (2) 
+integration with RANSAC-based registration, (3) safety monitoring 
+through HAV activity mapping, and (4) context-aware path plan-
+ning. Experiments are conducted in controlled simulation environments 
+designed to isolate and evaluate individual framework components, 
+establishing baseline performance and demonstrating proof-of-concept 
+for each module. While these controlled scenarios enable repeatable 
+measurement and systematic ablation studies, field deployment in 
+active construction sites remains as future work (see Section 6.2). Each 
+scenario configuration is evaluated in a single trial with all stochastic 
+elements controlled by fixed random seeds.
+Automation in Construction 190 (2026) 107134 
+6 
+R. Akhavian et al.
+Fig. 2. Implementation environment of the BIM2RDT pipeline showing software modules (blue, solid border), external data and outputs (gray, dashed border), 
+and the data formats exchanged at each interface.
+4.1. Implementation environment
+Fig. 2 complements the conceptual overview in Fig. 1 by providing 
+an implementation-level schematic that traces each data handover, 
+including file formats, interchange protocols, and software interfaces 
+for reproducability purposes, through the pipeline as built for the 
+experiments reported below.
+All experiments were conducted in a controlled simulation environ-
+ment built in Unity. The environment models a virtual UGV equipped 
+with a simulated RGB-D camera capturing color and depth images at 
+configurable viewpoints. BIM objects are represented as textured 3D 
+meshes exported from the source BIM model authored in Revit, as 
+FBX files for 3D rendering and IFC files for semantic processing, with 
+recorded ground-truth poses for quantitative evaluation. HAV sensor 
+signals were pre-recorded from physical wearable devices using the sen-
+sor configuration and placement protocol described in [9] and stored as 
+CSV time-series files (columns: timestamp, tri-axial acceleration), then 
+replayed in simulation to drive the safety monitoring pipeline.
+The BIM2RDT pipeline is implemented primarily in C# within 
+Unity, with Python-based components for IFC manipulation and safety 
+monitoring. Object detection uses YOLOE with BIM-derived textual 
+prompts; feature extraction within detected ROIs uses the Shi-Tomasi 
+corner detector via OpenCV version 4.13.0. Point cloud registration, 
+including the SG-ICP extension, is built in Unity as well, with RANSAC-
+based global initialization. ICP was run with a maximum of 90 itera-
+tions and was early-stopped when the threshold of 0.0001 was reached. 
+Semantic reasoning for gravity-prior assignment and object-to-IFC map-
+ping is performed through the OpenAI API (GPT-4o-mini), with out-
+puts parsed as schema-validated JSON, specifically, BIM-family-specific 
+gravity priors 𝛾 and detected-object-to-IFC-GUID mappings, both ex-
+changed as structured JSON between the LLM and the registration and 
+twin-update modules.
+Digital twin updates are written to IFC files using IfcOpenShell ver-
+sion 0.8.4.post1, which programmatically modifies IfcLocalPlacement 
+attributes and instantiates IfcEvent/IfcTask entities for HAV-related 
+safety records. The HAV monitoring dashboard (Fig. 5) is implemented 
+as a web application using Python 3.12 with real-time vibration traces 
+and threshold alerts. Path planning (Fig. 7) operates on a 2D discretized 
+occupancy grid derived from the updated BIM floor plan, with A* 
+search over obstacle cells and activity-proximity cost overlays. All 
+experiments were conducted on a system with an AMD Ryzen 5 3600 
+6-Core Processor, 16 GB of RAM, and an NVIDIA GeForce RTX 2060 
+Super. Each scenario configuration uses fixed random seeds to ensure 
+reproducibility. Furthermore, to support full reproducibility, the source 
+code for all pipeline components is available from the corresponding 
+author upon request.
+4.2. Semantic-gravity ICP (SG-ICP)
+Here, we give mesh results on how well the meshes overlap, given 
+the ground truth and SG-ICP. We experiment in four different scenarios. 
+One is the same setup with three different viewpoints, and the fourth 
+one is a variety of BIM families, which would have poor feature 
+description (scaffolding, tripod, wooden pallets, etc.). We experiment 
+with various perspectives to show the robustness under different feature 
+sets. Both ICP implementations use Huber weights, restart poses, and 
+randomize initial conditions to further improve convergence. The four 
+scenarios can be seen in Fig. 3. Each scenario contains 3-5 BIM objects 
+with varying geometric features. Scenario 1-3 feature simple primitives 
+(cones, barrels, crates) and Scenario 4 introduces complex scaffolding 
+geometry, representing challenging construction site conditions.
+4.3. Random sample consensus
+We obtain an initial rigid alignment using a RANdom SAmple 
+Consensus (RANSAC)-based global registration stage [32]. Feature cor-
+respondences are generated between the downsampled source and 
+target point clouds, and RANSAC is used to robustly estimate an initial 
+transform 𝑇0 by maximizing the number of inliers under a distance 
+threshold 𝜏. Starting from 𝑇0, we perform local refinement using ICP to 
+minimize the objective function. Since RANSAC is used commonly as a 
+method to filter out incorrect correspondences before conducting ICP, 
+we can still incorporate the gravity residual inside the optimization. 
+This emphasizes the plug-and-play feature of our approach.
+Automation in Construction 190 (2026) 107134 
+7 
+R. Akhavian et al.
+ 
+(a) Scenario 1
+ 
+(b) Scenario 2
+ 
+ 
+(c) Scenario 3
+ 
+(d) Scenario 4
+ 
+Fig. 3. Four evaluation scenarios used for the mesh-overlap analysis.
+Fig. 4. Scenario for noisy conditions.
+4.3.1. Ablation studies
+We conduct ablation studies to isolate the impact of the gravity term 
+and the semantic (family-specific) weighting used in SG-ICP. Using the 
+four multi-object scenarios in Fig. 3, we evaluate six variants: (i) ICP, 
+(ii) ICP + gravity regularization with a single static weight (static 𝛾), 
+(iii) SG-ICP (family-weighted 𝛾), and the same three variants preceded 
+by a RANSAC-based global initialization (RANSAC, RANSAC + static 𝛾, 
+RANSAC + SG-ICP). Each configuration is evaluated on the same scene 
+with fixed random seeds to ensure reproducibility. Alignment quality 
+is reported as Hausdorff-distance RMSE between the aligned mesh and 
+the ground-truth pose; Table 1 summarizes these RMSE results across 
+all four scenarios.
+To stress-test robustness to sensor noise, we additionally evaluate 
+single-object alignment under additive Gaussian depth noise, using the 
+noisy-condition setup in Fig. 4. Table 2 reports the resulting normalized 
+RMSE under noise for each variant. At moderate noise (𝜎 = 0.1), SG-ICP 
+reduces RMSE by 56% relative to standard ICP (3.04 vs. 6.93), while 
+at high noise (𝜎 = 0.2), the reduction is 97% (2.50 vs. 88.73). The 
+RANSAC-initialized variants show a similar pattern: RANSAC SG-ICP 
+achieves 1.93 at 𝜎 = 0.1 compared to 42.61 for standard RANSAC, 
+a 95% reduction. These results confirm that semantic-gravity priors 
+provide the greatest benefit precisely when alignment conditions are 
+most challenging.
+Automation in Construction 190 (2026) 107134 
+8 
+R. Akhavian et al.
+Fig. 5. Integration of HAV monitoring into the updated digital twin, with automatic warning at the daily vibration limit.
+Table 1
+Hausdorff distances (RMSE).
+ Method (RMSE) Scen. 1 Scen. 2 Scen. 3 Scen. 4 
+ ICP 4.964481 10.943896 4.111695 54.700146 
+ ICP (static 𝛾)(ours) 5.511244 4.895416 3.870467 59.895943 
+ SG-ICP (ours) 4.910435 3.964882 3.632635 57.057274 
+ RANSAC 5.435321 5.719707 4.976137 30.579460 
+ RANSAC (static 𝛾)(ours) 4.952999 4.325600 4.072346 54.715191 
+ RANSAC SG-ICP(ours) 4.769428 5.496947 3.609692 35.954880 
+Table 2
+Normalized Hausdorff Distance RMSE under different noise levels.
+ Method 𝜎 = 0.1 𝜎 = 0.2 
+ RANSAC_SG-ICP 1.926605 43.968082 
+ RANSAC_Fixed (static 𝛾) 3.510232 43.646484 
+ RANSAC 42.609661 99.852318 
+ SG-ICP 3.036388 2.501471 
+ ICP_Fixed (static 𝛾) 3.073769 3.680148 
+ ICP 6.930099 88.734306 
+4.4. Hand-arm vibration activity mapped in the DT
+As shown in Fig. 5, the HAV dashboard systematically records and 
+processes vibration data, subsequently generating visual warnings upon 
+violation of the EAV. The dashboard is designed as a web application 
+to be easily reproducible and scalable for real-world applications. Si-
+multaneously, the IfcEvent start, end, accumulated daily vibration and 
+the subsequent IfcTask of intervention are written to the IFC file. Fig. 6 
+shows a minimal representation of an IFC file, containing the concate-
+nated events. IFC files serve as an industry-wide accepted format, yet 
+it must be noted that they cannot be displayed easily due to its size. 
+Its sequential structure allows adding elements without disturbing the 
+original version. For readability, some elements have been removed. In 
+addition to IFcEvent and IFcTask, the helper elements IfcWorkSchedule
+and IfcDeclares are shown. For visualization purposes only, the example 
+replay accelerates the time axis and the recorded event ordering and 
+threshold logic are unchanged.
+4.5. Bim2RDT-enabled path planning
+In this section, we demonstrate the efficacy of using BIM2RDT for 
+context-aware path planning against traditional BIM path planning. 
+While BIM-based path planning has been thoroughly investigated and 
+validated, most works rarely acknowledge the safety considerations 
+Table 3
+Path metrics comparison.
+ Metric BIM2RDT SG-ICP Only Native BIM A* 
+ Path length (units) 17.73 14.45 7.50 
+ Min-obstacle distance (m) 1.390 0.139 0.000 
+ Avg-obstacle distance (m) 2.648 2.265 N/A 
+ Collision No No Yes 
+within the BIM. Here, we evaluate three sequential scenarios. In the 
+first scenario, the BIM is used naively for path planning with A*. 
+However, the BIM is outdated and does not accurately represent the 
+real world. In the second scenario, we apply the first stage of our 
+pipeline, SG-ICP, to update and align the BIM, enabling more accurate 
+path planning. In the third scenario, we introduce an HAV activity 
+event, where the BIM2RDT method assigns avoidance costs based on 
+the event context.
+Fig. 7(a) shows the overall real-world setup and Fig. 7(b) illustrates 
+the overlap between the BIM (highlighted in yellow) and the real-world 
+environment (rendered with real textures). A significant misalignment 
+is apparent, which can lead to incorrect path planning when the BIM is 
+used directly. After a single iteration of SG-ICP, the alignment between 
+the BIM and the real-world scene improves substantially, as shown 
+in Fig. 7(c). Fig. 7(d) shows the resulting A* path before the SG-ICP 
+correction, which results in a collision with a real-world object, marked 
+by an ‘‘X’’ symbol. However, planning with A* on the updated BIM 
+produces a collision-free path, illustrated in Fig. 7(e). Finally, when 
+BIM2RDT is fully enabled, additional safety constraints, such as HAV, 
+are incorporated. This results in the path shown in Fig. 7(f), which 
+appropriately avoids cluttered regions of the workspace.
+Table 3 quantitatively supports these observations. In the first sce-
+nario, which relies solely on A*, the planned path collides with a 
+real-world obstacle. In the second scenario, following SG-ICP align-
+ment, the planner successfully reaches the goal; however, this stage 
+does not account for safety or contextual constraints. When BIM2RDT 
+is activated, the planner generates a successful and conservative path 
+that safely connects the start and goal locations.
+The path length increase from A* (7.5 units) → SG-ICP (14.45) →
+BIM2RDT (17.73) reflects progressive safety layering. SG-ICP ensures 
+geometric feasibility (no collisions), while BIM2RDT adds HAV avoid-
+ance, increasing clearance from the workstation by 2.3 m. This 23% 
+path length penalty is typical for human-aware motion planning, where 
+safety buffers necessarily reduce efficiency.
+Automation in Construction 190 (2026) 107134 
+9 
+R. Akhavian et al.
+Fig. 6. HAV events are written to the IFC file.
+Fig. 7. Path planning results by using BIM2RDT. (a) Real-world scene layout with labeled objects; (b) BIM overlay (yellow) showing misalignment with real-world 
+positions; (c) SG-ICP-corrected alignment; (d) Naive A* path; (e) A* path after SG-ICP correction; (f) BIM2RDT safety-aware path avoiding HAV activity zone.
+4.6. Digital twin update via automated IFC synchronization
+To demonstrate the end-to-end pipeline, the complete BIM2RDT 
+workflow was applied to the scene shown in Fig. 8. Three objects 
+(i.e., a wooden crate, a traffic cone, and a barrel) were detected by 
+YOLOE from the UGV’s RGB-D feed. SG-ICP was then used to align 
+each object’s extracted point cloud with the corresponding BIM-derived 
+geometry. Following alignment, the LLM-based semantic mapping mod-
+ule (Section 3.7.1) was invoked to associate each detected object with 
+its IFC counterpart. Table 4 shows the results. The Confidence score 
+is a categorical assessment (‘high,’ ‘medium,’ or ‘low’) produced by 
+the LLM as part of its structured JSON output, based on the degree 
+of semantic similarity between the detected object label and the IFC 
+element’s name and type attributes. A ‘high’ confidence indicates a di-
+rect, unambiguous match (e.g., ‘Cone’ to ‘Traffic_cone:750 mm’), while 
+‘medium’ reflects cases requiring inference across differing naming con-
+ventions (e.g., ‘WoodenCrate’ to ‘Box:33x38x30’). Following successful 
+mapping, the SG-ICP rigid transformations were converted from the 
+robot coordinate frame to IFC conventions and applied to update each 
+element’s IfcLocalPlacement. Fig. 8 shows the resulting updated IFC 
+Automation in Construction 190 (2026) 107134 
+10 
+R. Akhavian et al.
+Fig. 8. Updated IFC file geometry after automated pipeline.
+Table 4
+LLM semantic mapping results.
+ Detected object IFC element IFC type Confidence 
+ WoodenCrate Box:33 × 38 × 30 IfcFurniture Medium 
+ Cone Traffic_cone:750mm IfcBuildingElementProxy High 
+ Barrel Barrel:55 US gallon IfcBuildingElementProxy High 
+model geometry. Geometry extracted and rendered directly from the 
+IFC file using IfcOpenShell.
+Following successful semantic mapping, the SG-ICP transformations 
+were converted from robot coordinates to IFC conventions and written 
+to the IFC model.
+This demonstration validates the BIM2RDT methodology, as LLM-
+based semantic reasoning successfully maps detected objects to IFC el-
+ements, and the updated IFC file accurately reflects the robot-observed 
+site conditions.
+5. Discussion
+In this section, the obtained results are discussed from both theory 
+and practice standpoints.
+5.1. Implications of geometric alignment results
+The experimental outcomes for SG-ICP highlight its superior per-
+formance in aligning robot-captured meshes with BIM models, as ev-
+idenced by the substantial reductions in Hausdorff distances across 
+diverse viewpoints. Notably, the high improvements in the first three 
+scenarios demonstrate how semantic-gravity integration addresses com-
+mon ICP pitfalls, such as sensitivity to initial poses in environments 
+with ambiguous features, analogous to construction sites with often 
+occluded elements like scaffolding or equipment stacks.
+This robustness enhances the reliability of digital twins for as-built 
+verification, potentially minimizing costly rework by enabling early 
+detection of geometric deviations. There can be occurrences where 
+ICP does better than the gravity-aligned approaches, such as the last 
+scenario. This is expected since the gravity alignment introduces differ-
+ent rotations and translations, since it can sacrifice the optimal point 
+cloud transformation for a more upright pose. If the correspondences 
+are of high quality, this gravity bias introduces higher errors in the 
+optimization of the true pose. However, this upright bias serves as a 
+compass in noisy environments where the correspondences are poor, 
+which can guide more realistic orientations as opposed to the best pose 
+under poor pointclouds.
+Furthermore, the mixed magnitude of improvements across scenar-
+ios with static scaling argues for adaptive priors. Specifically, schedule 
+and scene context (when available) or learned scene cues can modulate 
+the semantic-gravity weight, preserving the strong performance in dif-
+ficult cases without over-constraining easy ones. This aligns with our 
+methodology goal of LLM-mediated parametrization, ‘‘common sense’’ 
+informs the bias where helpful and abstains where unnecessary.
+5.2. Practical implementation of BIM2RDT in construction settings
+The successful deployment of BIM2RDT within active construction 
+projects requires careful consideration of how this methodology inte-
+grates with established project delivery processes, existing technology 
+infrastructure, and field operations management. Construction practi-
+tioners face unique challenges when implementing advanced digital 
+twin technologies that extend beyond pure technical functionality to 
+encompass organizational change management, workflow coordina-
+tion, and economic feasibility within competitive project environments.
+In the preconstruction phases, the methodology shifts BIM coordi-
+nation from purely geometric clash detection to semantic planning. 
+Coordinators and safety managers must collaborate to identify BIM 
+families requiring high-fidelity tracking and map specific safety risks 
+(e.g., HAV) to these objects. This integrates safety planning directly 
+into the digital model rather than keeping it in siloed documents. 
+The construction phase implementation requires coordination between 
+field superintendents, safety supervisors, and technology coordinators 
+to manage the daily operations of both robotic scanning activities and 
+worker-worn sensor monitoring. Superintendents need clear protocols 
+for scheduling robot deployment activities that complement rather than 
+interfere with active construction operations.
+BIM2RDT transforms robot missions from simple documentation 
+exercises into intelligent, context-aware inspection protocols. Tradi-
+tional robotic scanning follows pre-programmed paths that treat the 
+site as unknown territory, requiring exhaustive coverage to capture 
+all conditions. In contrast, BIM2RDT-equipped UGVs leverage semantic 
+expectations from the BIM to focus scanning resources on high-value 
+targets—objects likely to have deviated from design, temporary ele-
+ments requiring verification, or zones with active safety-critical work. 
+In other words, since perception is BIM-conditioned (target families 
+and ROIs) and alignment is stabilized by object-adaptive priors, robot 
+missions can shift from broad, exhaustive scanning towards targeted 
+and repeatable verification passes.
+For project managers and safety personnel, the primary decision 
+impact is the ability to move from reactive interpretation of raw pho-
+tos/point clouds towards actionable, location-grounded signals. Current 
+practice separates safety monitoring (manual observations, incident 
+Automation in Construction 190 (2026) 107134 
+11 
+R. Akhavian et al.
+reports) from progress tracking (periodic surveying, photo documenta-
+tion). BIM2RDT unifies these streams within the digital twin, enabling 
+managers to make risk-informed scheduling decisions. For example, 
+deviations can trigger targeted re-inspections or coordination checks, 
+while safety events (e.g., threshold exceedances) can trigger interven-
+tion tasks and influence where robots are routed to avoid interfering 
+with active high-risk work zones.
+6. Conclusion
+This paper introduced BIM2RDT, a context-aware, AI-powered
+framework that transforms static Building Information Models into 
+dynamic, robot-ready digital twins with an emphasis on safety. By 
+integrating BIM data, robot-collected point clouds, and IoT sensor 
+streams for activity monitoring, the framework provides a robust 
+solution for real-time site understanding. The proposed Semantic-
+Gravity ICP (SG-ICP) algorithm, which leverages LLM-based reasoning 
+to inform physical priors, was shown to significantly improve point 
+cloud registration accuracy, achieving RMSE reductions of up to 97% 
+over standard methods and ensuring physically plausible alignments. 
+Furthermore, the integration of HAV monitoring demonstrated the 
+framework’s capability to map safety-critical events to the digital twin, 
+supporting safety monitoring and risk-aware planning.
+Despite its contributions, the work has limitations. First, the ex-
+periments were conducted in controlled settings, and the framework’s 
+scalability to large, highly dynamic construction sites with diverse and 
+unanticipated objects remains to be validated. This includes practical 
+sources of variability that were not captured in the proof-of-concept 
+evaluation (e.g., severe occlusions, dust/lighting changes, frequent re-
+configuration of temporary works, and intermittent connectivity that 
+can affect data transfer and update frequency). Furthermore, the stress 
+testing of the open-vocabulary detection needs to be further verified. 
+Given that BIMs have unique nomenclature between jobsites, an accu-
+rate mapping between them all is essential to the framework’s success. 
+The HAV monitoring demonstration uses pre-recorded vibration signals 
+replayed in simulation rather than data collected during actual tool 
+operation on site. Also, the framework’s dependence on high-quality 
+BIM models as a priori maps may limit applicability in projects with 
+incomplete or poorly structured digital models.
+Second, our current ‘‘agentic’’ scope is intentionally bounded for 
+two bounded reasoning tasks: assigning BIM-family upright priors for 
+SG-ICP and mapping detected labels to IFC GUIDs for synchronization. 
+The system employs LLMs for semantic reasoning and orchestrates 
+multi-step perception-to-update workflows, but it does not exhibit au-
+tonomous long-horizon planning, goal decomposition, or adaptive re-
+planning in response to environmental feedback—capabilities typically 
+associated with fully agentic systems. Thus, with proper referencing 
+for adopting the perspective that Agentic AI is characterized by iter-
+ative reasoning and tool use rather than zero-shot execution, ‘‘agen-
+tic’’ here describes the system’s use of LLM-based semantic reasoning 
+to condition perception and updates, rather than claiming full agent 
+autonomy.
+Third, the safety component is demonstrated using HAV as an 
+ISO-standardized, measurable signal, but it is not intended to repre-
+sent comprehensive site safety coverage; broader hazard categories 
+(e.g., proximity risks, fall hazards, dynamic exclusion zones) and lon-
+gitudinal validation of intervention effectiveness remain future work. 
+Extending this to multi-worker, multi-hazard scenarios (e.g., simul-
+taneous HAV, heat stress, fall risk, noise exposure across dozens of 
+workers) introduces sensor fusion challenges, communication band-
+width requirements, and computational complexity not addressed in 
+the current work.
+Future work will focus on conducting extensive field trials on active 
+construction sites to validate robustness, developing error-correction 
+mechanisms for imperfect BIM inputs, and optimi

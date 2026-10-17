@@ -1,0 +1,1357 @@
+Dynamic prediction and control of a tunnel boring machine with a particle 
+swarm optimization – random forest algorithm and an integrated 
+digital twin
+Tiejun Li
+a , b
+, Jun Liu
+a
+, Xianguo Wu
+a
+, Feiming Su
+a , *
+, Yang Liu
+c , d , **
+a
+School of Civil and Hydraulic Engineering, Huazhong University of Science and Technology, Wuhan 430074, China
+b
+China Communications Construction Company Limited
+c
+Zhongnan Hospital of Wuhan University, Wuhan 430071, China
+d
+Economics and Management School of Wuhan University, Wuhan 430072, China
+HIGHLIGHTS
+• Research focuses on reducing the negative impact during shield tunneling construction process.
+• The high-performance machine learning models is utilized to predict and adjust the attitude of TBM.
+• The reasonable control range of shield construction parameters is obtained.
+• A twin shield attitude control system is proposed based on digital twin technology.
+ARTICLE INFO
+Keywords:
+Tunnel boring machine
+Shield construction parameters
+Random forest- particle swarm optimization
+Shapley additive explanations
+Digital twin
+ABSTRACT
+Tunnel boring machines (TBMs) often experience attitude deviation during excavation, impacting the stability 
+and safety of tunnel construction. Traditional attitude adjustment relies on manual adjustment, which has a 
+lagging effect. Therefore, the study combines a digital twin platform and a hybrid intelligence algorithm to 
+enable real-time adjustment of the shield attitude deviation. The particle swarm optimization and random forest 
+(PSO-RF) algorithm is first used to make accurate predictions of the shield attitude. Shapley additive explana -
+tions (SHAP) is subsequently employed to identify the key construction parameters. Then, based on these pa -
+rameters, a control system for the shield attitude is designed in conjunction with a digital twin (DT) technique. A 
+case study of China ’ s Guiyang Metro Line 3 demonstrates the following: (1) The PSO-RF model achieves high 
+accuracy, with R² values ranging from 0.916 to 0.943 for six shield attitude targets. (2) The key shield parameters 
+are continuously optimized and adjusted within the control range to achieve shield attitude control. (3) The 
+digital twin system provides real-time attitude warnings and parametric inference, significantly improving TBM 
+performance and safety. In this paper, a novel method of combining predictive modeling and the DT platform is 
+proposed. Under the proposed intelligent method, the attitude deviation of a TBM during tunneling was 
+significantly reduced.
+1. Introduction
+With the growing demand for underground transportation systems, 
+tunnel construction faces numerous challenges [1] , particularly in 
+maintaining shield attitude control. Shield tunnels have become the 
+preferred method for underground tunnel construction because they 
+adapt to diverse geological conditions. The shield construction process 
+for rail transit is extremely complex and involves many construction 
+techniques [2] . Shield attitude control while tunneling is key to ensuring 
+sufficient tunnel construction quality [3,4] . During shield construction, 
+the shield tunnel axis is affected by external factors such as excavation 
+surface disturbances, shield quality changes and shield operation diffi -
+culties. As a result, the axis direction of the tunnel is difficult to control, 
+and the tunnel can easily deviate from the designed route [5] ; moreover, 
+the shield advancing attitude can tilt up or become deviated or 
+* Corresponding author.
+** Corresponding author at: Zhongnan Hospital of Wuhan University, Wuhan 430071, China.
+E-mail addresses: sufeiming@hust.edu.cn (F. Su), dabailiu@whu.edu.cn (Y. Liu). 
+Contents lists available at ScienceDirect
+Applied Soft Computing
+journal homepag e: www.else vier.com/loc ate/asoc
+https://doi.org/10.1016/j.asoc.2025.113294
+Received 15 December 2024; Received in revised form 19 April 2025; Accepted 5 May 2025 
+Applied Soft Computing Journal 178 (2025) 113294 
+Available online 16 May 2025 
+1568-4946/© 2025 Elsevier B.V. All rights are reserved, including those for text and data mining, AI training, and similar technologies. 
+serpentine, which may cause ground collapse in severe cases, resulting 
+in safety- and quality-related problems [6] . Therefore, close attention 
+must be paid to TBM attitude control during excavation to mitigate these 
+issues. Some typical engineering cases also illustrate the challenges for 
+TBM attitude control. In March 2014, shield tunnel axis deviation 
+occurred on the right line of a route from Huayang Station to Guangdu 
+North Station, which is part of the Chengdu Metro Line 1 southern 
+extension. In July 2016, deviation in the tunnel between Dajicun Station 
+and Xinggui Road Station on Nanning Metro Line 3 occurred. Addressing 
+the defects caused by these accidents incurred significant economic 
+losses and postponed the construction period by two months. Given 
+these challenges, developing intelligent and timely methods for shield 
+attitude adjustment remains a crucial research focus.
+Ensuring the quality of shield construction necessitates precise shield 
+attitude adjustment and control. At present, this adjustment process is 
+predominantly manual, but because this adjustment needs to occur at 
+the onset of deviation, timely control is difficult [7] . Hence, leveraging 
+actual engineering monitoring data to predict the shield attitude is a 
+beneficial approach for efficient and timely adjustment and control. In 
+the past few decades, many studies have explored attitude prediction in 
+shield construction. These methods fall into two categories: empirical 
+formulas and numerical simulations. In terms of empirical formulas, 
+Festa et al. [8] constructed an empirical formula based on a mechanism 
+data analysis of shield construction and actual shield driving processes 
+to control attitude deviation during shield construction. Liu et al. [9]
+established acceleration, momentum, kinematic and orientation equa -
+tions for a tunnel boring machine (TBM) and performed position pre -
+diction and adjustment. The above research was based on empirical 
+formulas. Although such approaches are simple and fast, it is difficult to 
+accurately control a TBM in complex terrain and on steeply curved 
+sections during construction [10] . In terms of numerical simulation 
+methods, Sun et al. [11] used finite element simulations to analyze the 
+shield correction process, examining how correction moments influence 
+shield attitude and assessing the effects of different soil properties and 
+burial depths on both parameters. These studies were based on a 
+traditional numerical simulation method, which has the advantages of 
+reflecting the physical laws governing tunnel construction and simu -
+lating the experimental scenario with high accuracy. However, numer -
+ical simulation methods often overlook potential coupling relationships 
+between factors influencing shield attitude, while also suffering from 
+excessive assumptions, high computational costs, limited factor 
+consideration, and an inability to perform dynamic real-time calcu -
+lations — leading to relatively low accuracy in shield attitude analysis 
+and prediction [12] .
+In recent years, mainstream prediction research has shifted toward 
+machine learning (ML) algorithms, driven by their potent data analysis 
+capabilities and capacity to thoroughly explore potential coupling re -
+lationships among various influencing factors [13 – 16] . Li et al. [17]
+developed a variety of intelligent algorithms to propose a prediction 
+model for estimating the penetration rate of TBMs under different 
+geological conditions and achieved good application results in actual 
+projects. Harandizadeh et al. [18] proposed a hybrid intelligent model 
+called ICA-ANFIS-PNN, which provides an accurate, effective and 
+applicable technique for the performance prediction of TBMs. Parsajoo 
+et al. [19] used an artificial bee colony algorithm to optimize the pa -
+rameters of an adaptive neuro-fuzzy inference system (ANFIS) and 
+accurately predicted the brittleness index of rock samples from a project 
+in Malaysia. Bardhan et al. [20] used a novel ensemble strategy based on 
+input – output amalgamation techniques to predict the performance of 
+TBMs and verified its effectiveness in a project conducted in Turkey. Xu 
+et al. [21] constructed a database based on a project in Malaysia and 
+accurately predicted the penetration rate of TBMs through supervised 
+ML techniques. These studies demonstrate the potential of ML models 
+for application in real engineering projects.
+Recent years have seen extensive research on shield attitude pre -
+diction using ML methods, yielding significant results due to their 
+Nomenclature
+Js-U Jack stroke – Up, mm
+Js-D Jack stroke - Down, mm
+Js- L Jack stroke - Left, mm
+Js-R Jack stroke - Right, mm
+Jt-U Jack thrust – Up, kN
+Jt-D Jack thrust - Down, kN
+Jt-L Jack thrust - Left, kN
+Jt-R Jack thrust - Right, kN
+Sti-U Shield tail interspace - Up, mm
+Sti-D Shield tail interspace - Down, mm
+Sti-L Shield tail interspace - Left, mm
+Sti-R Shield tail interspace – Right, mm
+Cep Chamber earth pressure, bar
+Rssc Rotation speed of screw conveyor, (rpm)* 1000
+Ct Cutterhead torque, kN ⋅ m
+Cs Cutterhead speed, r ⋅ min-1
+As Advancing speed, mm ⋅ min-1
+Gp Grouting pressure, bar
+Gt Gross thrust, kN
+Sm Shield muck, m
+3
+Fa Foam agent, m
+3
+Ifa Internal friction angle, 
+◦
+Sc Soil cohesion, kPa
+Tbd Tunnel burial depth, m
+Hdsi Horizontal displacement of shield incision, mm
+Vdsi Vertical displacement of shield incision, mm
+Hdst Horizontal displacement of shield tail, mm
+Vdst Vertical displacement of shield tail, mm
+Paa Pitch attitude angle, mm ⋅ m
+  1
+Haa Horizontal attitude angle, mm ⋅ m
+  1
+Table 1 
+Research on data-driven shield attitude prediction methods.
+Literature Algorithms Prediction result
+Hu et al. 
+[22]
+XGBoost The R
+2 
+and MSE for predicting the 
+shield tunnel attitude are 0.753 
+and 9.03 mm, respectively, which 
+can meet actual project 
+requirements.
+Chen et al. 
+[23]
+Bayesian optimization: LGBM The R
+2 
+values predicted for the six 
+shield attitude parameters all reach 
+0.9 or above.
+Zhang et al. 
+[24]
+Principal component analysis 
+(PCA) and a gated recurrent 
+unit (GRU)
+The proposed framework enables 
+real-time prediction of EPB shield 
+tunneling trajectories.
+Fu et al. 
+[25]
+PCA and time convolutional 
+network (TCN)
+The average prediction accuracy 
+for four shield attitude parameters 
+is 89.68 %.
+Wang et al. 
+[26]
+Convolutional GRU neural 
+network
+In the advanced prediction of 
+shield attitude, the highest R
+2 
+is 
+0.9652, and the average R
+2 
+is 
+0.9004.
+Chen et al. 
+[27]
+Time-aware long-short-term 
+memory (LSTM)
+The model achieves R
+2 
+values of 
+0.84 (HDSH), 0.97 (VDSH), 0.91 
+(HDST), 0.98 (VDST), 0.93 (ROLL), 
+and 0.98 (PITCH).
+Chang et al. 
+[28]
+Attention-based LSTM model In the selected dataset, the highest 
+R
+2 
+for predicting the shield attitude 
+reached 0.8526.
+T. Li et al. Applied Soft Computing 178 (2025) 113294 
+2 
+inherent advantages. Table 1 summarizes the recent progress in shield 
+attitude prediction. ML methods can overcome the inherent drawbacks 
+of empirical formulas and numerical simulations, thereby enabling 
+precise predictions of the shield attitude. However, previous studies 
+have focused mainly on predicting the shield attitude, with few reports 
+on further regulating shield alignment on the basis of these predictions. 
+In practical engineering cases, effectively regulating shield alignment on 
+the basis of predictions is another issue that deserves close attention.
+To adjust attitude in shield tunneling, many scholars have adopted 
+different methods of identifying key operating parameters of shield 
+tunneling and have adjusted the shield attitude on the basis of the 
+identified operating parameters. After shield attitude prediction is per -
+formed, the effective adjustment and control of the shield attitude are 
+vital for guiding engineering practice. Many researchers have reported 
+that adjusting construction parameters is an effective means of con -
+trolling the shield attitude and ensuring construction safety [29] . Xie 
+et al. [30] adjusted the shield attitude by changing the thrust distribu -
+tion in the jack working area. Wang et al. [31] introduced a multi -
+cylinder shield control system that operates according to a 
+leader–follower control strategy, where the system manages the shield 
+attitude by manipulating the length of each motion chain. Wu et al. [32]
+established a connection between the shield jack oil pressure and shield 
+attitude via historical engineering data through an ML algorithm, 
+allowing for the control of the shield attitude by adjusting the oil pres -
+sure. Pan et al. [33] proposed an AutoDL framework for the dynamic 
+prediction and multiobjective optimization of the TBM excavation atti -
+tude, which increases the reliability and efficiency of tunnel excavation. 
+The adjustment of the shield tunneling attitude depends on precise 
+predictions. However, practical engineering cases often pose challenges 
+for shield attitude control because of the uneven mass distribution, 
+operational complexities, and varying frictional resistance across sec -
+tions. In addition, current shield attitude control methods rely on the 
+experience of the shield driver, introducing a lag effect in the manual 
+adjustment process. The shield needs to operate for a certain distance or 
+time before the machine’s motion path changes. To enable intelligent 
+real-time shield attitude adjustment, an algorithm-physical interaction 
+platform must be developed to enhance TBM excavation attitude 
+monitoring and control.
+In summary, the main research issues are as follows: (1) How can an 
+index system for the influencing factors of the shield attitude be estab -
+lished, and on this basis, how can data be collected and processed to 
+obtain valid data sample sets? (2) How can the shield attitude and 
+nonlinear mapping relationship between shield parameters be estab -
+lished to quickly and accurately predict the shield attitude? (3) How can 
+the importance of shield parameters be evaluated, the key control pa -
+rameters in construction be defined, and effective shield attitude control 
+be realized? This research incorporates a digital twin model for the real- 
+time monitoring of the TBM excavation posture and utilizes a particle 
+swarm optimization and random forest (PSO-RF) model to map the 
+complex relationship between the operational parameters and the TBM 
+posture. In addition, the parameter control range for the effective 
+adjustment of the TBM excavation posture under local conditions is 
+identified. This paper seeks to provide a new paradigm for collaborative 
+decision making between operators and intelligent algorithms to pro -
+vide a feasible method for adaptive shield attitude control.
+The article is structured as follows. Section 2 summarizes the 
+research significance of this paper. Section 3 describes the proposed 
+shield attitude prediction and control framework. Section 5 uses a case 
+study to show the effectiveness of the proposed method. Section 6
+compares the proposed method with the latest approaches. Section 7
+presents the limitations and future research directions, and Section 7 
+concludes the paper.
+2. Research significance
+Existing methods have yielded significant results in predicting 
+changes in the attitudes of shield machines, thereby providing guidance 
+for the on-site construction of shield tunnels. However, prior research 
+has focused predominantly on predicting shield attitudes, while 
+neglecting the subsequent control based on these predictions. When a 
+shield machine initiates excavation, changes in its attitude arise from 
+complex interactions between the machine and the surrounding ground, 
+which are influenced by multiple parameters, including the shield pa -
+rameters and geological properties. This dynamic process is highly 
+intricate, rendering precise analysis through theoretical and numerical 
+methods very challenging. Although numerous ML methods have been 
+employed to predict issues related to attitude changes during shield 
+excavation, limited research has identified key parameters based on 
+these predictions, and no study has yet established a collaborative 
+decision-making mechanism that integrates intelligent algorithms with 
+manual operations.
+A new approach is necessary to more effectively predict and provide 
+just-in-time control of the changes in the shield attitude during exca -
+vation. Therefore, this paper proposes a dynamic prediction and control 
+method for shield attitudes, which integrates a high-performance PSO- 
+RF model and a digital twin platform. The key contributions include:
+(1) Effective fusion of data from multiple sources. By analyzing 
+the mechanisms of shield attitude deviation, this study identifies influ -
+encing factors, constructs a comprehensive index system, and pre -
+processes the data to create an effective sample dataset.
+(2) Establishment of high-performance predictive models. An 
+ML algorithm is employed to achieve accurate shield attitude prediction, 
+with the PSO-RF algorithm validated for its effectiveness in model 
+construction.
+(3) Exploration of collaborative decision-making mechanisms 
+between operators and intelligent models. Using the SHAP method, 
+key parameters significantly impacting shield attitude are identified. 
+These parameters are then dynamically adjusted and optimized within a 
+digital twin framework to guide real-time attitude control.
+In summary, this study integrates digital twin technology with shield 
+attitude adjustment processes to design a control system. The proposed 
+framework not only improves predictive accuracy but also identifies 
+critical control parameters, offering a solution for intelligent shield 
+attitude management.
+3. Methodology
+Due to the complexity of TBM operations and their working envi -
+ronment, multiple coupling factors make it challenging to establish 
+precise theoretical descriptions or numerical models. To address this, 
+this study proposes a shield attitude prediction model using a PSO-RF 
+algorithm, with attitude control achieved through iterative adjust -
+ments of key construction parameters. The implementation of this 
+approach is based on the Python platform; the detailed flowchart is 
+given in Fig. 1 . The approach has three main steps: data acquisition and 
+preprocessing, shield attitude prediction, and key construction param -
+eter optimization. The specifics of each step are discussed in detail in the 
+following sections: 3.1, Data collection and preprocessing; 3.2, Devel -
+opment of the shield attitude prediction model; and 3.3, Shield attitude 
+control on the basis of key construction parameters.
+3.1. Data collection and preprocessing
+The sensors embedded in the TBM provide real-time monitoring of 
+operational status during excavation. However, some of the collected 
+data values will be abnormal, and this will have a negative impact on the 
+modeling of shield posture prediction. Consequently, data preprocessing 
+is conducted to extract valuable information and transform it into a 
+format suitable for model development. This preprocessing involves 
+outlier cleaning, filling, normalization, and Pearson correlation analysis.
+T. Li et al. Applied Soft Computing 178 (2025) 113294 
+3 
+3.1.1. Outlier cleaning
+Because the sensors and data acquisition instruments used in 
+tunneling systems are always operating, the data collected include not 
+only the data acquired under normal shield working conditions but also 
+those acquired during shutdowns. The data from the shutdown state 
+have no reference value regarding the operating state in the tunneling 
+system, and the data from the shutdown and normal operation states are 
+generally mixed together, which greatly affects model construction and 
+accuracy. To address this, an abnormal data filter is introduced to 
+improve analysis precision. Abnormal data can be categorized into 
+nonworking shutdown data and abnormal data. These two types of data 
+need to be identified and treated in different ways.
+The data acquired in a shutdown state are collected mainly when the 
+cutterhead is replaced or when the shield is stopped or maintained. The 
+nonworking state of a TBM can be identified according to the relevant 
+construction parameters. In this work, four major construction param -
+eters are selected as indices: the gross thrust, cutterhead torque, advance 
+speed and cutterhead speed. When one of the four construction pa -
+rameters is equal to zero, the shield can be considered to be in a 
+nonworking state. The corresponding discriminant function is as follows 
+[34] : 
+D = F ⋅ T ⋅ v ⋅ n (1) 
+Status =
+{
+Normal working condition ， D ∕= 0
+Abnormal working condition ， D = 0
+(2) 
+where F , T , v and n correspond to the gross thrust, cutterhead torque, 
+advance speed and cutterhead speed, respectively, and D represents the 
+product of these four parameter values.
+During data acquisition, electromagnetic noise and strong mechan -
+ical vibrations at the construction site introduce significant anomalies, 
+causing large deviations in subsequent analysis. To ensure reliable 
+model training and prediction, these abnormal data must be filtered out. 
+The penetration degree is often used as an indicator of the working state 
+of a cutterhead. This paper adopts the penetration degree as the criterion 
+for identifying abnormal data in a normal working state. The formula for 
+penetration P is shown in Eq. (3) . The rings refer to the number of each 
+ring excavated by the shield machine in underground tunnel engineer -
+ing and are typically counted from the starting point of the tunnel. Fig. 2
+shows the penetration data for 201 – 400 rings. 
+Fig. 1. Framework of the proposed shield attitude control method.
+T. Li et al. Applied Soft Computing 178 (2025) 113294 
+4 
+P = v / n (3) 
+As shown in Fig. 2 , the first three rings of penetration have an 
+obvious peak, and the rapid increase in penetration is dramatically 
+reduced again because the shield construction machine operates in a 
+state of flux in the initial stages. The data collected at this time are not 
+meaningful and will disrupt subsequent data analysis. Consequently, it is 
+necessary to distinguish between data from the initial working stage and 
+those from the normal working state and eliminate the data in the initial 
+working stage.
+In the normal working state, there are also several abnormal data 
+points, which are characterized by abnormally large or small penetra -
+tions. Therefore, the penetration degrees observed for the 200 rings are 
+grouped for statistical analysis, and abnormally large or small penetra -
+tion degrees are excluded.
+3.1.2. Data filling
+When outliers and data in the initial working stage are removed from 
+the collected data, the resultant gaps need to be filled. Common filling 
+methods include statistical filling, filling on the basis of correlation at -
+tributes and interpolation filling.
+In this paper, the cubic interpolation method is used to fill these gaps. 
+For the function S ( x ) ∈ C
+2
+[ a , b ] , considering a cubic polynomial in the 
+interval [ x
+i   1
+, x
+i
+]( i = 1 , 2 , … , n ) and assuming a = x
+0
+< x
+1
+< … <
+x
+n   1
+< x
+n
+= b , if a function y
+i
+= f ( x
+i
+)( i = 1 , 2 , … , n   1 ) is given for node 
+x
+i 
+and the condition S ( x
+i
+) = y
+i
+( i = 0 , 1 , … , n ) is satisfied, then S ( x ) is a 
+cubic spline interpolation function, and its mathematical expression is 
+[35] : 
+S ( x ) = M
+i   1
+( x
+i   1
+)
+3
+6 h
+i   1
++ M
+i
+( x   x
+i   1
+)
+3
+6 h
+i   1
++
+(
+y
+i   1
+ 
+M
+i   1
+h
+2
+i   1
+6 h
+i   1
+)
+x
+i   1
+  x
+h
+i   1
++
+(
+y
+i
+ 
+M
+i
+h
+2
+i
+6
+)
+x   x
+i   1
+h
+i   1
+(4) 
+where [ x
+i -1
+, x
+i
+] is an intercell of [ a , b ], x is a value in the interval [ x
+i -1
+, x
+i
+], 
+h
+i -1 
+is the difference between x
+i 
+and x
+i -1
+, and M
+i 
+is the second derivative 
+of S ( x ).
+Notably, the geological parameter information obtained from core 
+drilling sampling is usually discontinuous. In contrast, the operating 
+parameter data collected by the shield machine sensor are continuous, 
+and each segment has corresponding values. Therefore, this study uses 
+the ordinary kriging method to expand the geological information so 
+that each segment of the operation dataset has corresponding geological 
+data.
+3.1.3. Data normalization
+Before training the model, normalizing data within the sample set is 
+advantageous as it minimizes the effect of dimensional fluctuations on 
+prediction efficiency and precision. Some studies indicate that scaling 
+data samples to intervals of [-1, 1] can allow input variables to be 
+directly compared and can reduce the potential impacts of different 
+target amplitudes on subsequent optimization [36] . 
+x
+n
+=
+x
+i
+  x
+min
+x
+max
+  x
+min
+× ( b   a ) + a (5) 
+where x
+n 
+is the normalized standard value. x
+max 
+is the maximum, and 
+x
+min 
+is the minimum. a and b represent the normalized minimum and 
+maximum values of the input variable x , respectively, and the initial 
+values for a and b are   1 and 1, respectively.
+3.1.4. Pearson correlation analysis
+To ensure optimal model performance, it ’ s crucial to perform feature 
+selection and analyze inter-feature correlations beforehand. The Pearson 
+correlation coefficient, calculated using Eq. (6) [37] , serves as a stan -
+dard measure for assessing linear relationships between variables. 
+R =
+N
+∑
+x
+i
+y
+i
+ 
+∑
+x
+i
+∑
+y
+i
+̅̅̅̅̅̅̅̅̅̅̅̅̅̅ ̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅ ̅
+N
+∑
+x
+2
+i
+  (
+∑
+x
+i
+)
+2
+√ ̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅ ̅̅̅̅̅̅̅̅̅̅̅̅̅̅ ̅
+N
+∑
+y
+2
+i
+  (
+∑
+y
+i
+)
+2
+√ (6) 
+where R is the Pearson correlation coefficient; x
+i 
+and y
+i 
+are the i th values 
+of X and Y , respectively; and N is the number of samples.
+3.2. Development of the shield attitude prediction model
+To achieve accurate just-in-time prediction for shield attitude 
+changes during excavation, a PSO-RF model was developed. The flow -
+chart of the PSO-RF model for prediction and evaluation is illustrated in 
+Fig. 3 .
+3.2.1. Random forest
+RF is a powerful ensemble learning method that integrates statistical 
+principles with ML, offering high predictive accuracy, robustness against 
+overfitting, and strong generalization capabilities [38] . A 
+repeated-sampling approach is adopted for RF based on a self-help 
+method. The predictor h ( x , θ
+k
+) is subsequently constructed, and K clas -
+sification trees are generated according to the self-help sample set to 
+form an RF . The average predicted value of all the trees is used as the 
+Fig. 2. Penetration degrees of 201 – 400 rings.
+Fig. 3. Flowchart of the PSO-RF model.
+T. Li et al. Applied Soft Computing 178 (2025) 113294 
+5 
+final prediction result. The prediction result h
+i
+( x ) of predictor h ( x , θ
+k
+) for 
+each decision tree is recorded to obtain the prediction set 
+{ h
+1
+( x ) , h
+2
+( x ) , h
+3
+( x ) , … , h
+k
+( x )} , and the final prediction result h ( x ) can be 
+expressed as [39] : 
+h ( x ) =
+1
+k
+∑
+k
+i = 1
+h
+i
+( x ) (7) 
+3.2.2. Particle swarm optimization algorithm
+The PSO algorithm is utilized to determine the optimal hyper -
+parameters for the ML algorithm. While alternative parameter optimi -
+zation methods such as gray wolf optimization (GWO) and the whale 
+optimization algorithm (WOA) can also be employed to find the optimal 
+hyperparameters for the RF algorithm, these methods have comparable 
+prediction accuracies [40] . In addition, the PSO algorithm stands out 
+because of its simplicity, ease of implementation, minimal need for 
+parameter adjustments, rapid convergence, low memory demands, and 
+ability to avoid local optima.
+In a D -dimensional space with a population size of n particles, each 
+particle ’ s current position represents a candidate solution in the opti -
+mization. Particle searches are iteratively performed until the optimal 
+solution satisfying the termination condition is obtained. During each 
+iteration, every particle updates its position based on its historical 
+optimal position ( P
+best
+) and the optimal position in the population ( G
+best
+). 
+The updating formula is expressed as follows [41] : 
+V
+k + 1
+id
+= ω V
+k
+id
++ C
+1
+r
+1
+ 
+P
+k
+id
+  X
+k
+id
+)
++ C
+2
+r
+2
+ 
+P
+k
+id
+  X
+k
+id
+)
+(8) 
+X
+k + 1
+id
+= X
+k
+id
++ V
+k + 1
+id
+(9) 
+where w denotes the inertial weight; d represents the dimension of the 
+particle and is in the range [ 1 , D ] ; i denotes the current i th particle and is 
+in the range [ 1 , n ] ; k signifies the current iteration number; V
+id 
+represents 
+the velocity of the particle; X
+id 
+corresponds to the position of the par -
+ticle; and C
+1 
+and C
+2 
+are learning factors. r
+1 
+and r
+2 
+are random numbers 
+in the range [0,1].
+3.2.3. Model performance evaluation
+This study evaluates model performance using three key metrics: 
+root-mean-square error (RMSE), mean absolute error (MAE) and good -
+ness of fit (R
+2
+). These indicators quantify prediction errors and model fit 
+quality. Lower RMSE and MAE values reflect better accuracy, while an 
+R
+2 
+approaching 1 indicates stronger predictive capability. The equations 
+for each index are presented below. 
+RMSE =
+̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅ ̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅ ̅
+1
+n
+∑
+n
+i = 1
+( Pr e
+i
+  Obs
+i
+)
+2
+√
+(10) 
+MAE =
+1
+n
+∑
+n
+i = 1
+| Pr e
+i
+  Obs
+i
+| (11) 
+R
+2
+= 1  
+∑
+n
+i = 1
+( Obs
+i
+  Pr e
+i
+)
+2
+∑
+n
+i = 1
+( Obs
+i
+  Obs
+ave
+)
+2
+(12) 
+where n denotes the sample number, Pr e
+i 
+is the predicted value, Obs
+i 
+is 
+the actual value, and Obs
+ave 
+represents the average of the actual values.
+3.3. Shield attitude control based on key construction parameters
+To enhance transparency in shield attitude control, SHAP additive 
+interpretation was applied to the PSO-RF model, mitigating blind con -
+trol risks and offering parameter insights for a digital twin platform. On 
+this basis, this work further establishes a digital twin platform to 
+strengthen the integrated control of TBM attitude prediction and 
+regulation.
+3.3.1. SHapley additive explanations
+Owing to the "black box effect", the prediction results of the ML 
+model often lack sufficient credibility [42] . To address this issue, many 
+methods (such as tree-based methods, PCA and SHAP) have been used to 
+interpret ML models. Among them, SHAP analysis has unique advan -
+tages. Compared with other methods, SHAP provides a consistent 
+interpretation, and even if the predictions of the model change, the 
+interpretation of the SHAP values should be remain stable as long as the 
+characteristics of the feature contributions remain the same. In the study 
+of shield attitude, these advantages of SHAP can make it easier to 
+identify key shield parameters after precise predictions are made by the 
+developed PSO-RF model. The SHAP method leverages game theoretic 
+principles to assess the impacts of features on the model ’ s output by 
+calculating the Shapley value ’ s marginal contribution for each feature. 
+These contributions can be positive, indicating improved prediction 
+results, or negative, signifying a reduction in prediction performance 
+[43] . The formula for calculating f ( x
+ij
+) is as follows: 
+f ( x
+ij
+) =
+∑
+S ⊆ F \ { j }
+| S | ! (| F |   | S |   1 ) !
+| F | !
+[ v ( S ∪ { j })   v ( S )] (13) 
+where f ( x
+ij
+) is the SHAP value of the j -th feature x
+ij 
+of the i -th sample x
+i
+; F 
+represents all feature sets in sample x
+i
+; S represents the feature subset; 
+v ( S ) represents the contribution of the influence factors included in 
+subset S ; and v ( S ∪ { j })   v ( S ) represents the contribution of influencing 
+factor j to the interaction. The cumulative mean of the influencing fac -
+tors j for all samples is the SHAP value of the influencing factor j . The 
+formula is as follows: 
+f ( x
+j
+) =
+∑
+M
+i = 1
+f ( x
+ij
+) (14) 
+3.3.2. A digital twin system for driving shield attitude control
+The sensors installed on the TBM monitor and record real-time 
+excavation data, which is processed by the onboard acquisition sys -
+tem. These records — containing shield parameters and excavation sta -
+tus — form the foundation for a three-dimensional digital twin platform. 
+Physical equipment can be converted into digital models, which should 
+reflect the actual characteristics of the modeled TBM. By combining the 
+digital twin model with real-time monitoring data from the TBM and 
+integrating intelligent modules, reliable estimates of the TBM excava -
+tion posture can be obtained.
+By leveraging engineering monitoring data, the shield attitude can be 
+accurately predicted through a mapping relationship between the target 
+attitude and influencing factors. This prediction capability enables 
+shield attitude control. Through SHAP analysis, considering the pro -
+ject ’ s actual conditions and control requirements, key construction pa -
+rameters during shield tunneling are selected for optimization and 
+adjustment. This iterative process continues until the shield attitude 
+conforms to the defined control specifications, ensuring the safety of 
+tunneling operations. The twin shield attitude control system is subse -
+quently created from the shield attitude control method and digital twin 
+technology. Serving as a valuable addition to the existing shield oper -
+ating system, the digital twin model significantly increases the intelli -
+gence and automation of shield attitude control. This approach enables 
+shield attitude control on the basis of dual physical and data inputs, 
+providing a comprehensive solution.
+4. Case Study
+In this study, real data from the Guiyang rail transit line are collected 
+to validate the proposed method. First, based on mechanistic analysis 
+and engineering experience, the parameters significantly influencing the 
+shield attitude are identified. Then, a PSO-RF hybrid model is estab -
+lished to accurately predict changes in the shield attitude. Finally, the 
+shield attitude is dynamically controlled by integrating the PSO-RF 
+model with a digital twin (DT) platform.
+T. Li et al. Applied Soft Computing 178 (2025) 113294 
+6 
+4.1. Background
+Guiyang Metro Line 3 construction commenced in late 2018, with an 
+estimated total investment of 32.231 billion yuan. This line is an 
+important transportation route for promoting the balanced and coordi -
+nated development of the northern and southern regions of the city and 
+for achieving green, low-carbon transportation and environmental 
+protection in the western urban agglomeration. On this line, the tunnel 
+from the Sifanghe Road Station to Zaojiaojing Station (SZ) spans 
+YDK24 + 511.010 to YDK25 + 628.283, covering a total distance of 
+1117.209 m. It features a maximum longitudinal slope of 25.144 ‰ and 
+burial depths ranging from 12.69 to 21.72 m. Shield construction in this 
+region employs an earth pressure balancing (EPB) TBM with a diameter 
+of 6470 mm. The EPB-TBM is equipped with numerous sensors that 
+continuously monitor its operating status. All operating parameter data 
+are collected and recorded by the data acquisition system. The tunnel in 
+this area mainly passes through medium-weathered dolomite that is 
+partially insulated and partially hydrated, leading to complex hydro -
+geology. The dolomite in this region has a compressive strength of 
+45 – 78 MPa, a soil cohesion of approximately 200 kPa, and an internal 
+friction of approximately 30
+◦
+. Shield tunneling in such locally hydrated 
+and complex formations complicates shield control. The shield 
+tunneling process in rail transit construction is highly complex and re -
+quires precise control of the shield attitude within the challenging 
+environment of the SZ construction zone. The project plan map, the 
+composite EPB-TBM used in the project, the construction situation in -
+side the tunnel and the interface of the shield attitude monitoring system 
+are shown in Fig. 4 (a)~(d), respectively.
+4.2. Selecting the input parameters
+The sensors equipped in the EPB-TBM can monitor real-time exca -
+vation conditions, with collected data processed by the onboard system 
+and exported as CSV files organized by ring number. These files contain 
+critical parameters including the excavation date and time, ring number, 
+construction parameters, navigation parameters, etc. Based on literature 
+review, key input parameters were selected to optimize model training 
+efficiency, avoiding redundancy. The bottom of the cylinder of the 
+shield thrust system rests on the lining segment of the upper ring, the 
+jacking force generated by the segment is used for the segment, and the 
+Fig. 4. Project overview: (a) Plane location map of the 7 standard projects of Guiyang Rail Transit Line 3; (b) composite EPB-TBM for the project; (c) construction of 
+the interior of the tunnel; (d) interface of the shield attitude monitoring system.
+T. Li et al. Applied Soft Computing 178 (2025) 113294 
+7 
+reaction force generated by the segment drives the TBM forward. The 
+jack stroke and thrust are two key parameters that directly affect the 
+shield attitude [44] . One of these key parameters is the shield tail 
+clearance. Inadequate clearance may cause the shield to apply excessive 
+pressure on the segment, risking dislocation or cracking [45] . Main -
+taining equilibrium between chamber earth pressure and tunnel face 
+pressure is crucial for minimizing soil disturbance, making chamber 
+earth pressure a vital element in shield attitude control [46] . Controlling 
+the rotation speed of the screw conveyor regulates soil discharge, 
+maintaining this pressure balance [47] . Appropriate cutterhead torque 
+and speed enhance cutting efficiency and mitigate instability during 
+construction [48] . An increase in the advance speed contributes to 
+greater soil disturbance, which affects the shield attitude [23] . Tail void 
+grouting plays a crucial role in shield construction because it directly 
+influences the load on the surrounding soil, thereby impacting the shield 
+attitude during construction [49] . The thrust system, a vital shield 
+subsystem, controls the shield attitude and position, with gross thrust 
+being crucial for attitude control during construction [50] . For tunnel 
+face stability, balancing soil discharge and excavation to maintain a 
+stable support pressure is essential [51] . A foaming agent can regulate 
+soil fluidity to reduce cutterhead torque and protect the shield cutter -
+heads [52] .
+Moreover, numerous factors influence the shield attitude, including 
+geological parameters and tunnel burial depth. Geological parameters 
+reflect soil pressure in the shield environment. During shield attitude 
+adjustment, the TBM interacts with surrounding soil mainly via shear 
+and compression forces [53] . As the tunnel burial depth increases, the 
+thrust of the TBM needs to increase to overcome the soil pressure, which 
+poses certain challenges for the stability of the shield attitude [54] .
+In this paper, an input index system for shield attitude is introduced 
+based on the previous mechanism analysis. The identified indices 
+include jack stroke (JS), jack thrust (JT), shield tail clearance (STC), 
+chamber earth pressure (CEP), rotation speed of the screw conveyor 
+(RSSC), cutterhead torque (CT), cutterhead speed (CS), advance speed 
+(AS), grouting pressure (GP), gross thrust (GT), shield muck (SM), foam 
+agent (FA), internal friction angle (IFA), soil cohesion (SC), and tunnel 
+burial depth (TBD). Among these, JS, JT, CEP, RSSC, CT, CS, AS, GP, and 
+GT are the TBM ’ s active control parameters that can be directly adjusted 
+by operators. Conversely, STC, SM, and FA are passive control 
+parameters beyond the operators ’ direct control. HDSI, VDSI, HDST, 
+VDST, HAA, and PAA serve as descriptors of the shield ’ s position state 
+and are the most critical control indicators for shield operation, as 
+shown in Fig. 5 . Consequently, these variables are selected as the output 
+variables for the prediction model. A comprehensive dataset for rings 
+201 – 400 was generated during TBM operation and collected, 
+comprising data for a total of 200 rings.
+4.3. Data preprocessing
+Owing to shield shutdown, sensor signal interference and other 
+reasons, many abnormal and invalid values exist in the original dataset, 
+and they need to be preprocessed for subsequent analysis. In accordance 
+with the process described in Section 3.1 , data cleaning, data filling, 
+data normalization and Pearson correlation analysis are successively 
+carried out for the original data.
+First, according to Eq. (1) and (2), we identify the shutdown data in 
+the original dataset and eliminate these data directly. The penetration 
+values are calculated according to the penetration Eq. (3) , and the 
+observed penetration ranges from 3 mm ⋅ r
+  1 
+to 36 mm ⋅ r
+  1
+. The pene -
+tration degree was determined according to the obtained numerical 
+values, and the distribution of the penetration degree was plotted. The 
+statistical results are shown in Fig. 6 (a), with T representing the data 
+count and A representing the cumulative data percentage. The figure 
+clearly shows that the distribution of the penetration degree closely 
+resembles a normal distribution. Notably, data within the range of 
+3 – 30 mm ⋅ r
+  1 
+make up a substantial 96 % of the dataset. On the basis of 
+these findings, combined with engineering experience, the data corre -
+sponding to P > 30 are eliminated. Moreover, the dataset is divided into 
+an initial tunneling section under normal tunneling conditions and a 
+stable tunneling section. The data pertaining to the initial tunneling 
+section are subsequently excluded. After the resulting data gaps are 
+filled via cubic spline interpolation, the penetration degrees of rings 
+201 – 400 are determined, as shown in Fig. 6 (b). This figure demonstrates 
+effective control of the penetration peak, yielding data representative of 
+the normal working stage. In this paper, 200 data are used for model 
+training and prediction, which reflect the operating behavior of shield 
+drivers and the shield attitude changes. The statistical information for 
+the input and output parameters after pretreatment is presented in 
+Fig. 5. Attitude parameters of the TBM.
+T. Li et al. Applied Soft Computing 178 (2025) 113294 
+8 
+Table 2 , and a box diagram of the input and output variables is shown in 
+Fig. 7 .
+Pearson ’ s correlation coefficient analysis effectively assesses input - 
+output parameter correlations. Fig. 8 presents the input - output 
+parameter correlation heatmap. Input parameter correlation coefficients 
+mostly fall within [-0.5, 0.5], suggesting weak, independent relations. 
+The correlation coefficients between JS-U, JS-D, JT-U, JT-D, STI-U, and 
+STI-D and PAA, VDSI and VDST are no greater than 0.8. The correlation 
+coefficients between JS-L, JS-R, JT-L, JT-R, STI-L, and STI-R and HAA, 
+HDSI and HDST are also no greater than 0.8. The correlation coefficients 
+between CEP, CT and AS and the shield attitude are less than 0.8. 
+Pearson coefficients for other input - output pairs are small. Evidently, 
+linear relationships are not clear. This also indicates that traditional 
+mathematical regression models may not be inadequate for describing 
+the complex mapping relationship between shield tunnel parameters 
+and attitude parameters and that using ML models is more conducive to 
+providing accurate shield tunnel attitude prediction.
+Fig. 6. Penetration: (a) the penetration distribution of the collected data; (b) the penetration degrees of rings 201 – 400 after data preprocessing.
+Table 2 
+Input and output parameter data information.
+Parameter Variables Parameter type ​ Data Units
+Min Ave Max
+Shield parameter JS-U Input parameter 1634 1488 1407 mm
+JS-D 1644 1492 1387 mm
+JS-L 1645 1493 1383 mm
+JS-R 1485 1433 1404 mm
+JT-U 300 98 4 kN
+JT-D 226 124 42 kN
+JT-L 276 180 25 kN
+JT-R 235 117 27 kN
+STI-U 80 64 6 mm
+STI-D 580 79 60 mm
+STI-L 90 67 7 mm
+STI-R 550 68 50 mm
+CEP 3.3 1 0.2 bar
+RSSC 17 8 2 (rpm)* 1000
+CT 2800 1573 650 kN ⋅ m
+CS 2.9 2 1.3 r ⋅ min
+  1
+AS 58 32 5 mm ⋅ min
+  1
+GP 3.2 3 0.7 bar
+GT 9319 1209 126 kN
+SM 70 63 58 m
+3
+Soil property parameter FA 150 56 30 m
+3
+IFA 35 33 30
+◦
+SC 230 214 200 kPa
+Tunnel design parameter TBD 21.72 16.97 12.70 m
+Shield attitude parameter HDSI Output parameter 61 4   40 mm
+VDSI 51 17   22 mm
+HDST 28   8   48 mm
+VDST 49 8   47 mm
+PAA 21 8   11 mm ⋅ m
+  1
+HAA 4   3   9 mm ⋅ m
+  1
+T. Li et al. Applied Soft Computing 178 (2025) 113294 
+9 
+4.4. Shield attitude prediction via the PSO-RF
+4.4.1. Hyperparameter setting
+Optimizing the hyperparameters of the ML model is crucial for 
+improving the accuracy of predictions before applying ML algorithms to 
+predict shield attitudes [55] . Improperly formulated hyperparameter 
+values may increase the number of calculations, prolong the training 
+time and overfit the model. Therefore, it is necessary to set the hyper -
+parameters of the ML model reasonably. When the RF algorithm is 
+employed to train samples, four hyperparameters in the algorithm 
+should be optimized: (1) the number of decision trees (n_estimators), 
+which determines the prediction accuracy and computational 
+complexity of the RF model; (2) the maximum depth of the decision tree 
+(max_depth), which is related to the complexity of the RF model struc -
+ture and is a key hyperparameter to prevent overfitting of the RF model; 
+(3) the minimum number of samples required for splitting internal nodes 
+(min_samples_split), which prevents the model from being too sensitive 
+to noisy data; and (4) the minimum number of leaf nodes (min_sam -
+ples_leaf), which controls the purity of leaf nodes and can improve the 
+generalization of the RF model.
+To maximize the RF prediction model ’ s accuracy, the PSO fitness is 
+set as the training model ’ s MSE loss function. The particle population 
+number is 20, the maximum number of iterations is 100, the learning 
+factors are both 0.5, and the inertia weight is 1. When the fitness of the 
+particles becomes stable or the number of iterations reaches the 
+maximum, the iterative cycle is terminated, and the optimal hyper -
+parameters are obtained.
+Before the parameters are optimized, it is crucial to establish the 
+initial optimization range for the hyperparameters. The setting range of 
+the model hyperparameters depends on the specific research objective. 
+On the basis of the parameter ranges provided in previous studies [29, 
+56,57] , combined with specific case backgrounds, the parameter search 
+ranges for the relevant hyperparameters in this study are determined. 
+The initial ranges of n_estimators, max_depth, min_samples_split and 
+min_samples_leaf are [50,150], [20,500], [2,5] and [1,5] , respectively. 
+The process of optimizing the RF hyperparameters is depicted in Fig. 9 , 
+and the results of hyperparameter optimization are provided in Table 3 .
+Fig. 7. Inputs and outputs for the shield construction data: (a) Input; (b) output.
+T. Li et al. Applied Soft Computing 178 (2025) 113294 
+10 
+4.4.2. Model training and performance evaluation
+Overfitting is a major challenge in machine learning, often resulting 
+in poor model generalization. To address this, techniques like K-fold 
+cross-validation are employed. In this paper, after hyperparameter 
+optimization, the RF model is trained using 5-fold cross-validation to 
+ensure robust performance across diverse data distributions. Further -
+more, the PSO-RF model ’ s performance is closely monitored on both 
+training and test sets, with training halted if the performance gap grows 
+too large, preventing overfitting.
+The MSE serves as the evaluation metric, computed for the validation 
+set predictions in each iteration. After repeating this process five times, 
+the average MSE is used as the final performance measure. The model ’ s 
+training error is defined by Eq. (15) : 
+CV
+( 5 )
+=
+1
+5
+∑
+5
+i = 1
+MSE
+i
+(15) 
+where CV
+( 5 )
+is the final training error and MSE
+i 
+is the mean square error.
+Fig. 8. Heatmap of the Pearson correlation coefficients for the input and output parameters.
+Fig. 9. RF algorithm hyperparameter optimization process: (a) HDSI, (b) VDSI, (c) HDST, (d) VDST, (e) PAA, and (f) HAA.
+T. Li et al. Applied Soft Computing 178 (2025) 113294 
+11 
+To evaluate the accuracy of the model, the results of 5-fold CV for six 
+prediction targets using the MAE, RMSE and R
+2 
+are presented in Table 4
+and Table 5 . Additionally, Fig. 10 shows a comparison between the 
+predicted results and the actual values of the six shield attitude targets.
+As shown in Table 4 , Table 5 and Fig. 10 , the established RF model 
+provides precise predictions of the shield attitude. The prediction errors 
+of the model are low for all the folds. The MAEs of the six shield attitude 
+targets are 2.95 mm, 2.748 mm, 2.814 mm, 3.388 mm, 0.779 mm ⋅ m
+  1 
+and 0.502 mm ⋅ m-1. The RMSEs are 3.707 mm, 3.428 mm, 3.576 mm, 
+4.308 mm, 0.943 mm ⋅ m-1, and 0.623 mm ⋅ m
+  1
+, respectively. The R
+2 
+values are 0.934, 0.943, 0.918, 0.917, 0.916, and 0.928, respectively. 
+The scatterplot in Fig. 10 depicts a well-distributed pattern of points 
+around the fitting line; there are some extreme points, and some de -
+viations are generated because of insufficient data for model learning. 
+These results validate the model ’ s accuracy and robustness, effectively 
+capturing input-output relationships without overfitting or underfitting.
+4.5. Optimization and improvement of the shield attitude
+4.5.1. SHAP analysis of the predictive models
+The influence of input parameters like jack stroke on shield attitude 
+is complex and interrelated, making single-parameter qualitative anal -
+ysis inadequate for capturing real-world construction dynamics or 
+identifying key factors. To address this, the SHAP algorithm can be 
+employed. By considering the shield attitude as the prediction index, the 
+SHAP algorithm facilitates the evaluation of primary and secondary 
+factors of the shield parameters. This method enables the selection of 
+pertinent shield construction parameters for attitude optimization, 
+providing a robust theoretical foundation for rail transit.
+While importance rankings provide insights into the significance of 
+input parameters, they do not inherently reveal the specific direction of 
+influence of each parameter on the model ’ s prediction results. Analyzing 
+importance rankings alone may not fully clarify the decision-making 
+mode of the model. This limitation becomes apparent for shield drivers 
+seeking a deeper understanding of the model ’ s operational rules, 
+creating a gap in trust between humans and the machine model.
+SHAP provides another visual interpretation scheme. Features are 
+ordered vertically by importance, with each sample plotted horizontally 
+according to its Shapley value. Values left of the centerline (negative) 
+reduce model output, while those right of the centerline (positive) 
+enhance it. Color intensity reflects feature magnitude, with red indi -
+cating higher values and blue lower ones, revealing how each parameter 
+influences predictions. Fig. 11 shows the global summary of the SHAP 
+values and the feature importances of the average SHAP values of the 15 
+most critical parameters.
+According to the global summary diagram of the SHAP values drawn 
+via calculation, JS, JT, STC, CEP, CT, CS and GT exert the most signif -
+icant influences on the shield attitude prediction results. Therefore, to 
+control the shield attitude, special attention should be given to these 
+parameters.
+The results show that (1) the impact of JS on the shield attitude 
+becomes more pronounced with increasing JS. JS-L and JS-R affect 
+mainly the HDSI, HDST and HAA, and JS-L and JS-R have opposite in -
+fluences. JS-U and JS-D affect mainly the VDSI, VDST and PAA, and JS-U 
+and JS-D have opposite influences. In addition, the impacts of JT and 
+STC on the shield attitude are similar to that of JS. An excessive dif -
+ference in JS and JT will lead to uneven segment damage, which will 
+seriously interfere with the normal shield attitude during construction. 
+An STC value that is too low during construction can lead to interference 
+between the shield tail and the segment, hindering shield advancement 
+and potentially causing segment dislocation damage. Conversely, 
+excessive STC increases the grouting between the tunnel surface and 
+soil, significantly affecting the load on the surrounding soil. Both sce -
+narios significantly impact the shield attitude. These findings align with 
+prior studies. Zhou et al. proved that JT is positively correlated with the 
+shield tail deviation [58] . Wang et al. identified JS and CEP as key 
+influencing factors in shield attitude deviation [59] . Wada et al. [60]
+reported that STC significantly impacts the shield attitude.
+(2) CEP, CT, CS and GT are the four most important parameters. The 
+same parameter has different effects on different shield attitude targets. 
+The side on which the SHAP value of the GT is less than 0 is represented 
+mainly by red and purple points, indicating that the influence of the GT 
+on the HDSI is reversed; that is, with increasing GT, the smaller the 
+corresponding SHAP value is, the greater the influence on the shield 
+attitude. The influence of CEP on the HDSI is complex; the red and blue 
+points are on the side with SHAP values less than 0, and the purple 
+points are on the side with SHAP values less than 0. The HDSI first in -
+creases with increasing CEP; when the HDSI increases within a certain 
+range, it begins to decrease with further increases in CEP. The sample 
+point concentration areas of the other shield parameters are closer to 
+0 than those of CEP, CT, CS and GT are, indicating that these parameters 
+have a certain impact on the shield attitude, but the impact is small. 
+During construction, a CEP that is too small will cause the tunnel face to 
+collapse and subsequently cause surface settlement, whereas a CEP that 
+is too large will cause ground uplift. Changes in CT and CS cause 
+improper shield movement, resulting in attitude deviation. Adjusting 
+the GT can affect the AS and prevent the attitude instability caused by 
+propulsion being too fast or too slow.
+Table 3 
+Hyperparameter optimization results.
+Hyperparameter Range Target of shield attitude prediction
+HDSI VDSI HDST VDST PAA HAA
+n_eatimators [50,150] 50 80 50 140 150 100
+max_depth [20,500] 160 35 365 245 325 145
+min_samples_split [2,5] 2 2 2 3 3 4
+min_samples_leaf [1,5] 4 2 3 2 5 4
+Table 4 
+Five-fold cross-validation results for HDSI, VDSI and HDST.
+Folds HDSI VDSI HDST
+MAE RMSE R
+2
+MAE RMSE R
+2
+MAE RMSE R
+2
+Fold 1 2.922 3.741 0.934 2.705 3.418 0.943 2.827 3.594 0.917
+Fold 2 2.717 3.456 0.943 2.575 3.247 0.949 2.739 3.466 0.923
+Fold 3 2.611 3.292 0.949 2.555 3.216 0.950 2.721 3.431 0.925
+Fold 4 3.198 3.976 0.925 2.851 3.546 0.939 2.876 3.674 0.914
+Fold 5 3.297 4.069 0.922 3.051 3.715 0.933 2.906 3.576 0.912
+Average 2.95 3.707 0.934 2.748 3.428 0.943 2.814 3.576 0.918
+T. Li et al. Applied Soft Computing 178 (2025) 113294 
+12 
+(3) The five parameters SM, FA, IFA, SC and TBD do not appear 
+among the first 15 most critical parameters; this is caused by the rela -
+tively concentrated distributions of SM, FA, IFA, SC and TBD in the 
+sample data. Although the geological conditions and undetermined 
+factors in actual engineering practice have a significant effect on the 
+shield posture, the geological conditions have little effect on the tunnel 
+in this study. This may be caused by the small difference in the relative 
+properties of the soil around the shield in the selected section.
+Notably, the SHAP analysis results in this study are similar to the 
+correlation analysis results previously discussed in Section 3.2 . This may 
+be related to the stability of the RF model. Since RF consists of multiple 
+decision trees, the interpretability of the model is generally stable, 
+meaning that both the SHAP analysis and Pearson correlation analysis 
+may yield similar rankings of feature importance. Although the results 
+are similar, the goals of SHAP analysis and Pearson correlation analysis 
+differ. Pearson correlation analysis aims to filter shield parameters 
+effectively, whereas the goal of SHAP analysis is to understand the 
+operational mechanism of the PSO-RF model.
+4.5.2. Shield attitude optimization control
+Based on SHAP and influence rule analyses of input parameters, key 
+shield construction parameters are adjusted for attitude control. The 
+SHAP analysis results indicate that STC significantly impacts shield 
+tunneling attitude. However, STC is a passive parameter rather than an 
+active parameter and cannot be directly controlled. Therefore, the STC is 
+removed as a coupling factor. Parameters such as JS, JT, CEP, CT, CS and 
+GT are adjusted to achieve shield attitude control. The adjustment 
+ranges for these parameters, determined by shield type specifications, 
+are provided in Table 6 .
+In accordance with GB50446-2017 and engineering practice, the 
+allowable deviation limits for HDSI, VDSI, HDST, and VDST in shield 
+construction are set to ± 50 mm, whereas for the PAA and HAA, the 
+allowable deviation limit is ± 30 mm ⋅ m
+  1
+. As warning thresholds for a 
+construction site, values of 80 % of the specified deviation limits are 
+adopted, resulting in the following limits: HDSI, VDSI, HDST, and VDST 
+should be maintained within ± 40 mm, whereas PAA and HAA should 
+remain within ± 25 mm ⋅ m
+  1
+, prompting corrective adjustments if 
+exceeded. According to the data in Table 2 , both PAA and HAA fall 
+within the specified control ranges; therefore, the focus is primarily on 
+controlling HDSI, VDSI, HDST, and VDST. The relevant shield con -
+struction parameters are adjusted continually within the stipulated 
+adjustment ranges. The RF model is then employed to predict the shield 
+attitude control targets until they align with the specified control 
+criteria. The outcomes are presented in Fig. 12 .
+Fig. 12 shows the effective control of the shield attitude following the 
+adjustment of the relevant construction parameters. The four shield 
+attitude targets are maintained within the warning range without any 
+exceedances. This method is applied to Guiyang Rail Transit Line 3, and 
+its effectiveness is shown by comparing the shield attitudes before and 
+after the control adjustments, as depicted in Fig. 13 .
+The primary factor influencing shield attitude is JS. To elaborate on 
+the shield attitude adjustment process, this method ’ s fundamental 
+principle is demonstrated by adjusting the JS to change the VDSI. The 
+JSs on the shield are divided into four groups: upper, lower, left and 
+right. For the four jacks in each group, Fig. 14 (a) illustrates the predicted 
+VDSI values in the tunneling process for rings 201 – 400, and Fig. 14 (b) 
+shows the difference between JS-U and JS-D. The downward deviation 
+of the shield can be corrected by setting JS-U to be greater than JS-D; 
+similarly, JS-U can be set to less than JS-D to correct the upward devi -
+ation of the shield.
+To illustrate this rectification process with the example of the VDSI at 
+ring 305, the following specific steps are used: upper and lower limits of 
+  150 mm to 150 mm are set for the difference between JS-U and JS-D. 
+The initial difference between JS-U and JS-D is set as 0, with 37.5 mm as 
+the gradient. Considering the VDSI under nine conditions (namely, 
+  150 mm,   112.5 mm,   75 mm,   37.5 mm, 0 mm, 37.5 mm, 75 mm, 
+112.5 mm, and 150 mm), the difference between JS-U and JS-D corre -
+sponding to the minimum VDSI is found. In the interval [-150 mm, 
+150 mm], the shield offset can be reduced by modifying the difference 
+between JS-U and JS-D. When the difference between JS-U and JS-D is 
+150 mm, the maximum VDSI is 53 mm; when the difference between JS- 
+U and JS-D is   150 mm, the minimum VDSI is 12 mm. Therefore, by 
+adjusting the difference between JS-U and JS-D, the VDSI can be 
+effectively reduced. Maintaining a good shield attitude can reduce soil 
+overdigging, excessive friction and extrusion of the shield shell into the 
+soil, thus reducing soil disturbance d

@@ -1,0 +1,1774 @@
+Real-time attitude control of large rectangular pipe-jacking machines using 
+a mechanics-informed digital twin
+Dong Su
+a , b , c , d , e
+, Jianhang Chen
+a
+, Penglu Chen
+a
+, Lei Wang
+a , b , c , d , e , *
+, 
+Jinwei Zhou
+a
+, Xiangsheng Chen
+a , b , c , d , e
+a
+College of Civil and Transportation Engineering, Shenzhen University, Shenzhen 518060, China
+b
+Key Laboratory of Coastal Urban Resilient Infrastructures (MOE), Shenzhen University, Shenzhen 518060, China
+c
+Shenzhen Key Laboratory of Green, Efficient and Intelligent Construction of Underground Metro Station, Shenzhen University, Shenzhen 518060, China
+d
+State Key Laboratory of Intelligent Geotechnics and Tunnelling, Shenzhen University, Shenzhen 518060, China
+e
+National Engineering Research Center of Deep Shaft Construction, Shenzhen University, Shenzhen 518060, China
+ARTICLE INFO
+Keywords:
+Digital twin
+Intelligent attitude control
+Rectangular pipe-jacking
+Load model
+Trajectory deviation
+ABSTRACT
+Traditional experience-based methods for controlling the attitude of pipe-jacking machines frequently result in 
+notable deviations from the planned trajectory, posing risks such as excessive jacking forces and structural 
+damage to segments. Achieving precise control of machine attitudes is vital for large-section pipe-jacking pro -
+jects. This paper presents a mechanics-informed digital twin framework designed to reduce trajectory deviations 
+by leveraging intelligent control systems. A dynamic control platform processes diverse real-time data from 
+construction operations, issues immediate risk alerts and suggest corrective forces derived from a theoretical load 
+model. As demonstrated in a super-large rectangular pipe-jacking project in China, this approach effectively 
+predicted attitude-related moments and provided dependable guidance for trajectory corrections, enhancing 
+construction safety and efficiency. Building on this progress, combining mechanics-informed digital twin 
+approach with machine learning techniques for attitude prediction and control is expected to further enhance the 
+intelligence and adaptability of rectangular pipe-jacking operations.
+1. Introduction
+Rectangular underground structures offer over 20 % higher spatial 
+utilization compared to circular ones, helping to reduce overall con -
+struction costs and providing significant green and low-carbon benefits 
+[ 1 , 2 ]. As a result, rectangular pipe-jacking technology has rapidly 
+developed and is increasingly applied in various urban underground 
+projects [ 3 , 4 ]. To meet growing engineering demands, the size of rect -
+angular pipe-jacking machines has continued to increase, placing higher 
+requirements on control accuracy and construction reliability [ 5 , 6 ]. 
+During pipe-jacking operations, the machine is expected to advance 
+precisely along the Designed Tunnel Axis (DTA). However, due to un -
+even mass distribution, complex geological conditions, and varying 
+control parameters, the machine often deviates from the DTA, failing to 
+meet required construction tolerances [ 7 – 9 ]. Although operators may 
+frequently perform attitude adjustments, current experience-based 
+control methods rely heavily on manual operations and are prone to 
+delayed responses, making it difficult to effectively reduce tunnel de -
+viation [ 9 – 11 ].
+Tunnel deviation leads to increased jacking resistance, which may 
+exceed the machine ’ s designed capacity and cause significant con -
+struction risks [ 12 ]. Excessive jacking force on the pipe segments can 
+also result in cracking, structural damage, and joint leakage, posing 
+serious safety threats [ 13 ]. These challenges are particularly prominent 
+in large-section rectangular pipe-jacking, where multi-cutter designs 
+and heterogeneous soils significantly complicate attitude control 
+[ 14 – 16 ]. Furthermore, during construction near existing structures, 
+deviations in the machine ’ s attitude and position may lead to collision 
+risks. For instance, in twin or multi-tunnel projects, excessive tunnel 
+deviation can widen the gaps between adjacent tunnels, making it 
+difficult to form an integrated structure [ 17 ]. Therefore, it is imperative 
+to introduce informative and digital technology to achieve precise and 
+real-time attitude control of rectangular pipe-jacking machines, thereby 
+ensuring construction accuracy, reducing trajectory deviation, and 
+* Corresponding author at: College of Civil and Transportation Engineering, Shenzhen University, Shenzhen 518060, China.
+E-mail addresses: sudong@szu.edu.cn (D. Su), 2200471013@email.szu.edu.cn (J. Chen), wanglei2020@email.szu.edu.cn (L. Wang), xschen@szu.edu.cn
+(X. Chen). 
+Contents lists available at ScienceDirect
+Automation in Construction
+journal homep age: www.el sevier.com/l ocate/autcon
+https://doi.org/10.1016/j.autcon.2025.106373
+Received 8 January 2025; Received in revised form 15 June 2025; Accepted 23 June 2025 
+Automation in Construction 177 (2025) 106373 
+Available online 1 July 2025 
+0926-5805/© 2025 Elsevier B.V. All rights are reserved, including those for text and data mining, AI training, and similar technologies. 
+enhancing structural safety.
+The attitude control of pipe-jacking and shield machines has 
+attracted significant research attention in recent years. To enhance the 
+precision control of the machine’s attitude, the force analyses of 
+machine-soil interactions in shield tunnelling have been studied, and the 
+accuracy of proposed theoretical models has been validated through 
+engineering cases [ 18 , 19 ]. While theoretical models have enhanced our 
+understanding of machine–soil interactions, they lack real-time appli -
+cability. Additionally, there are substantial differences in the forces 
+acting on rectangular pipe-jacking machines compared to circular shield 
+machines. For example, the multi-cutter design leads to more uneven 
+forces between the front and rear, making the machine prone to nose- 
+diving during construction. The uneven distribution of soil chamber 
+pressure further complicates attitude adjustments for rectangular pipe- 
+jacking machines [ 5 , 20 ]. On the other hand, to improve the real-time 
+attitude control for shield machines, machine learning algorithms 
+have been used to predict the attitude and motion trajectory during 
+shield tunnelling [ 21 ]. Shen et al. [ 22 ] proposed a framework for shield 
+attitude prediction using a random forest deep learning method, inves -
+tigating the correlation between input parameter combinations and 
+prediction accuracy. Zhou et al. [ 11 ] developed a deep learning model to 
+achieve real-time prediction of shield machine attitude and position 
+under complex environments. Although these studies have improved the 
+real-time attitude prediction for rectangular pipe-jacking construction, 
+aiding operators in making corrective decisions, such decisions remain 
+largely experiential and retain significant uncertainty. Therefore, 
+establishing a correction decision platform based on theoretical force 
+analysis models of the machine, combined with real-time position, 
+attitude, and geological conditions, can provide operators with real-time 
+decision support for corrections and is expected to significantly improve 
+the accuracy of rectangular pipe-jacking machine control [ 23 ].
+Digital Twin (DT) technology, through the real-time mapping of 
+physical entities and virtual models [ 24 ], contributes to intelligent 
+construction and cost-effective management in civil engineering. This 
+technology has been promoted and applied in civil engineering [ 25–27 ], 
+providing a new approach for establishing a real-time correction deci -
+sion platform for rectangular pipe-jacking machines. Wu et al. [ 28 ] 
+proposed a digital twin framework based on Bayesian optimization 
+categorical boosting and a multi-objective evolutionary algorithm based 
+on decomposition, which effectively helps to control the attitude of 
+large-diameter slurry shields. Ye et al. [ 29 ] developed a digital twin- 
+based platform for smart early warning and risk management, which 
+has been successfully applied in engineering practice. However, the 
+application of digital twins in the field of underground engineering is 
+still in its infancy [ 30 , 31 ], and it has not yet been applied to real-time 
+prediction and auxiliary correction decision-making for the attitude of 
+rectangular pipe-jacking machines.
+The application of DT technology in pipe-jacking construction faces 
+challenges similar to those in shield tunnelling: insufficient real-time 
+data acquisition and processing, issues with the immediacy and stabil -
+ity of data transmission, complex interactions among geotechnical, 
+mechanical, and structural components, and difficulties in achieving 
+efficient collaborative decision-making between human operators and 
+intelligent platforms [ 32 ]. Zhang et al. [ 33 ] proposed a digital twin- 
+based intelligent monitoring and control method for shield tunnelling 
+that utilizes deep learning algorithms to optimize tunnelling parameters; 
+however, their approach does not effectively resolve the issue of real- 
+time attitude correction for shield machines. Moreover, data-driven al -
+gorithms like deep learning demand high-quality, high-volume data and 
+often fail to capture the underlying physical mechanisms, making their 
+outputs difficult to interpret or validate and thus less suitable for real- 
+time guidance in shield tunnelling [ 34 , 35 ]. Additionally, the results 
+from these models are typically based on data from specific conditions, 
+which limits their generalisability to other engineering projects [ 34 ]. 
+Consequently, researchers have increasingly turned to physics-based 
+models to guide tunnel boring machine operations, a strategy that 
+may better address the challenge of real-time attitude correction for 
+pipe-jacking machines under complex geological conditions [ 36–38 ].
+This paper explores applying mechanics-informed DT technology to 
+enable the intelligent attitude control of large rectangular pipe-jacking 
+machine. The proposed DT framework significantly enhances the effi -
+ciency and accuracy of attitude control by integrating real-time moni -
+toring, risk warning, and recommended correction thrust for the 
+articulated cylinders. The key innovations of this paper are as follows: 
+(1) a mechanics-informed DT framework is proposed to achieve real- 
+time intelligent control of the pipe-jacking machine’s attitude; (2) a 
+soil-machine interaction load model is established and integrated into 
+the DT framework, providing a theoretical foundation for attitude con -
+trol during pipe-jacking construction; (3) A DT-based intelligent control 
+platform is developed, enabling dynamic visualization of the pipe- 
+jacking process, risk warnings, and correction force recommendations 
+through computational algorithms.
+The rest of this paper is structured as follows: Section 2 outlines the 
+engineering background. Section 3 details the architecture of the DT- 
+based intelligent control platform for the pipe-jacking machine’s atti -
+tude. Section 4 explains the theoretical analysis model for the attitude of 
+the rectangular pipe-jacking machine used in this paper. Section 5 pre -
+sents a case study of the platform’s application in a practical tunnel 
+construction project. Section 6 concludes the paper.
+2. Engineering background
+The Shasan Station, located in the Bao’an District of Shenzhen, 
+China, is a two-story underground island station. As shown in Fig. 1 , the 
+two ends of the station were built using the open-cut method, while the 
+middle part of the station, which is 70 m long and passes under a large 
+concrete box culvert, was constructed using the twin closely-spaced 
+rectangular pipe-jacking method [ 17 ]. As shown in Fig. 2 (a), the 
+cross-section of the station during construction is 13.53 m high and 22.6 
+m wide, divided into two small sections: the left-line and right-line 
+substructures, with a close spacing of 5 cm. Each substructure is built 
+in sequence with a super-large rectangular pipe-jacking machine. The 
+left- and right-line substructures are then connected to form an inte -
+grated underground space for operational use through structural trans -
+formation, as shown in Fig. 2 (b). As shown in Fig. 3 , the pipe-jacking 
+machine used is 13.55 m high and 11.295 m wide, comprising two 
+smaller pipe-jacking machines: the upper and lower submachines. The 
+machine is equipped with 45 articulation cylinders to assist with attitude 
+correction, arranged in the middle of the machine. These cylinders are 
+divided into six groups to improve control efficiency, with their pa -
+rameters listed in Table 1 .
+During rectangular pipe-jacking, the machine typically exhibits a 
+snake-like motion (see Fig. 4 (a)). Therefore, the primary challenge in 
+constructing subway stations using the closely-spaced pipe-jacking 
+method lies in the high-precision control of the machine’s attitude and 
+alignment. This is especially critical when the right-line tunnel is jacked 
+closely to the left-line tunnel. Additionally, for super-large rectangular 
+pipe-jacking machines, the uneven distribution of soil strata within the 
+excavation area can easily cause an unbalanced force on the machine, 
+exacerbating its deviation. Deviation of the machine towards the left- 
+line tunnel can easily lead to collision risks, while deviation away 
+from the left-line tunnel can widen the gap between the two tunnels, 
+making it difficult to form an integrated station structure (see Fig. 4 (b)). 
+Vertical misalignment of the machine can also cause elevation differ -
+ences between the left and right tunnels, leading to water leakage and 
+reducing the station’s usable space, thereby severely impacting the 
+station’s functionality. According to design requirements, the net dis -
+tance between the left- and right-line tunnels must be controlled within 
+10 cm. However, it is difficult to effectively control the machine’s atti -
+tude within the design requirements if using the traditional feedback- 
+based control method [ 2 , 11 ]. Therefore, a digital twin approach for 
+the attitude control of rectangular pipe-jacking machines is considered, 
+D. Su et al. Automation in Construction 177 (2025) 106373 
+2 
+which could help realize real-time risk warnings and intelligent control 
+of the machine, improving the accuracy of attitude control and meeting 
+construction safety requirements.
+3. Digital-twin framework for the intelligent control of 
+machine ’ s attitude
+To achieve intelligent attitude control in pipe-jacking operations, 
+this section presents a digital twin (DT) framework that integrates real- 
+time data acquisition, virtual modeling, and intelligent decision-making. 
+The framework consists of a physical layer, a digital layer, and a service 
+layer, enabling real-time interaction between physical systems and vir -
+tual models. Section 3 details the functions of each layer and their roles 
+in supporting accurate attitude prediction and control.
+3.1. Framework design
+To reduce the trajectory deviation of the rectangular pipe-jacking 
+machine, this paper developed an intelligent control platform based 
+on DT technology. According to the DT concept, which comprises five 
+components: physical entity, virtual entity, connections, data, and ser -
+vices [ 8 , 39 ]. The platform ’ s key functions include data visualization, 
+risk warning, and intelligent decision-making for deviation correction. 
+The framework design of this platform is illustrated in Fig. 5 . By inte -
+grating geological information, various monitoring data of the machine, 
+and other relevant details, the platform aids managers in real-time site 
+information management and provides risk warnings and guidance for 
+timely attitude adjustments by users. The platform operates as follows: 
+first, monitoring data from the pipe-jacking construction is automati -
+cally collected through a multi-function collection base station and 
+various sensors. This information is then wirelessly transmitted from the 
+base station to the data center and the platform. A virtual model of the 
+tunnel construction, including the pipe-jacking machine, surrounding 
+soil, and tunnel structure, is created, and dynamic mapping between the 
+construction site and the virtual model is achieved based on the 
+collected data. With the input of dynamic data, the attitude of the 
+rectangular pipe-jacking machine can be simulated using the established 
+theoretical analysis model (introduced in Section 4 ). As a result, the 
+Fig. 1. Plan layout of the Shasan Station.
+Fig. 2. Profile of the Shasan Station ’ s pipe-jacking section.
+D. Su et al. Automation in Construction 177 (2025) 106373 
+3 
+platform enables parallel deduction and intelligent decision-making, 
+providing automatic attitude prediction, risk warnings and guidance 
+parameters (such as the correction angle, thrust adjustment values). 
+Real-time risk warnings are visually displayed for managers, and guid -
+ance for machine deviation rectification based on risk assessment is 
+provided to operators for precise adjustments. Ultimately, the platform 
+offers a dynamic, interactive, and intelligent approach to controlling the 
+attitude of the rectangular pipe-jacking machine.
+3.2. Physical layer
+The physical layer serves as the foundation of the DT system, 
+focusing on the real-time collection and transmission of key construction 
+data. This section outlines its structure and core functions.
+3.2.1. Multi-information of pipe-jacking construction
+Pipe-jacking construction is a complex process involving various 
+types of information, including geological data, tunnel structure details, 
+and specifications of the pipe-jacking machine. To effectively reduce 
+trajectory deviation, it is essential for the platform to collect and inte -
+grate these diverse data types in a timely manner, thereby providing a 
+fundamental information source for accurate control and adjustment. 
+Fig. 3. Super-large rectangular pipe-jacking machine and the articulation cylinders.
+Table 1 
+Designed parameters of the articulated cylinders.
+Parameter Value
+Number of the articulated cylinders 45
+Groups 6
+Stoke of the articulated cylinders 300 mm
+Maximum rectifying force 160,314 kN
+Maximum rectifying angle
+Up and down: 1.2
+◦
+Left and right: 1.5
+◦
+D. Su et al. Automation in Construction 177 (2025) 106373 
+4 
+Since tunnel structural data are less utilized in this paper — primarily 
+obtained from design drawings for constructing the BIM model — the 
+discussion mainly focuses on geological data and pipe-jacking machine 
+data.
+Regarding data acquisition, geological data were primarily obtained 
+through borehole sampling, while pipe-jacking machine data were 
+collected via the tunnelling system and guidance system and transmitted 
+in real-time through wireless devices.
+In terms of data storage, geological data were stored in a constructed 
+database supporting export formats such as Excel documents. The co -
+ordinates of borehole points and corresponding stratum information 
+were recorded, with coordinate indexing enabling real-time retrieval 
+based on the jacking distance. Similarly, pipe-jacking machine data were 
+stored in a corresponding database, recording real-time data from 
+various systems of the machine, with timestamp indexing to facilitate 
+real-time access.
+For data processing, to improve the retrieval efficiency of geological 
+data, the original data were preprocessed by segmenting the geological 
+model into smaller zones along the pipe-jacking direction. A weighted 
+algorithm was applied to generate stratum information for each zone, 
+enabling efficient real-time access. As for pipe-jacking machine data, 
+preprocessing methods such as data extraction and outlier detection 
+were employed to ensure data validity.
+3.2.2. Real-time data acquisition and transmission
+To effectively acquire construction site information, real-time data 
+collection is achieved through multiple base stations with distinct 
+functions, all connected to a central gateway that manages and controls 
+terminal equipment. Various sensors, including those integrated into 
+different systems of the pipe-jacking machine and the automatic guid -
+ance system, are linked to the collection base stations to gather real-time 
+data from the construction site. Data are collected at the second-level 
+interval, ensuring real-time acquisition of operational parameters. The 
+collection base station is responsible for aggregating diverse information 
+during pipe-jacking, while the transmission base station handles both 
+uplink and downlink data transmission and control.
+The hardware layout at the construction site is illustrated in Fig. 6 . 
+Sensors and theodolites are strategically installed on the construction 
+site, and laser targets are positioned on the pipe-jacking machine. Most 
+of the sensors installed on the machine are connected to the control 
+platform via wire transmission, which ensures high transmission speed 
+and stability [ 32 ]. Additionally, these sensors are calibrated both in the 
+factory and on-site following assembly, further enhancing the reliability 
+and stability of the data and effectively resolving issues related to real- 
+time data acquisition and transmission. Collected data is transmitted to 
+the collection base station via a wireless link and subsequently sent to 
+the data center through the transmission base station. Theodolites, laser 
+targets of the automatic guidance system, and sensors on various sys -
+tems of the pipe-jacking machine are installed and calibrated based on 
+the specific conditions of the tunnel construction. Additionally, manual 
+checks of the machine ’ s position and attitude are performed at regular 
+intervals to verify the data measured by the automatic guidance system. 
+To ensure uninterrupted operation of the acquisition system, a contin -
+uous power supply is maintained, and relevant equipment is routinely 
+Fig. 4. Risks induced by misalignment of twin closely-spaced tunnels.
+D. Su et al. Automation in Construction 177 (2025) 106373 
+5 
+inspected and serviced. This setup allows real-time transmission of 
+monitoring data to the platform, enabling operators to access critical 
+information through the Internet.
+3.3. Digital layer
+To support real-time monitoring and intelligent control of the ma -
+chine ’ s attitude during pipe-jacking, the digital layer constructs a virtual 
+simulation environment that integrates data and models for enhanced 
+decision-making.
+3.3.1. Digital twins of pipe-jacking construction
+The virtual static model of tunnel construction, including the pipe- 
+jacking machine, surrounding soil, and tunnel structure, is developed 
+using Geographic Information System (GIS) technology and Building 
+Information Modeling (BIM) technology before pipe-jacking construc -
+tion. For example, ArcGIS software was utilized to construct a 3D 
+geological model based on borehole data, which was integrated into the 
+Fig. 5. DT framework for intelligent attitude control of machine ’ s attitude.
+Fig. 6. Real-time data transmission and layout of hardware devices.
+D. Su et al. Automation in Construction 177 (2025) 106373 
+6 
+front-end of the DT platform for real-time visualization of the geological 
+environment. The geological information around the pipe-jacking ma -
+chine (e.g., soil distribution, mechanical parameters) was extracted from 
+the established 3D geological model and used as input data for the 
+platform’s real-time calculations, supporting dynamic optimization of 
+the machine’s attitude correction. During the construction process, dy -
+namic mapping between the construction site and the virtual model is 
+achieved through real-time monitoring data, which facilitates the 
+updating of the virtual model’s information.
+In this framework, the intelligent control platform is divided into two 
+core components: the front end and the back end, based on a distributed 
+Linux architecture to enhance usability for operators and managers. The 
+back end utilizes the lightweight Flask framework for Web services and 
+implements load balancing through Nginx to manage high concurrency 
+and heavy traffic requests. For databases, InfluxDB and MySQL are 
+appropriately configured, with index optimization to improve query 
+efficiency. The temporal database InfluxDB is employed to manage real- 
+time monitoring data, while the relational database MySQL handles non- 
+temporal data. On the front end, the Vue.js progressive framework is 
+selected, combined with Element-Plus for page layout design, and Three. 
+js for the dynamic loading of 3D models, such as geological models. 
+Thus, models of the pipe-jacking machine, tunnel structure, surrounding 
+soil, and environment are established. Information from various stages 
+of pipe-jacking construction, including investigation, design, and con -
+struction, is input and recorded. In the digital layer of this platform, the 
+attitude of the rectangular pipe-jacking machine can be simulated by 
+integrating the theoretical analysis model (see Section 4 ) with real-time 
+data.
+3.3.2. Real-time interaction
+The real-time data and 3D models of pipe-jacking construction dis -
+played on the platform, as shown in Fig. 7 , are synchronized with the 
+construction process through the data acquisition system. Multiple 
+monitoring points are established, including those for the attitude of the 
+pipe-jacking machine and the earth pressure at the excavation face. 
+Users can access the platform via the network to obtain real-time 
+monitoring data. Furthermore, when the monitoring data exceeds pre -
+defined warning thresholds, the platform will display information 
+regarding the risk warning level and the corresponding response plans. 
+Based on this risk warning mechanism and response plan, the platform’s 
+computer system can automatically generate guidance parameters for 
+the intelligent control of the machine’s attitude, which are then pro -
+vided to operators in the control room.
+3.4. Service layer
+The service layer utilizes theoretical load model and real-time data to 
+support functions such as predictive simulation and intelligent control. 
+This section introduces how these services assist operators in making 
+data-informed decisions for accurate machine attitude adjustment.
+3.4.1. Parallel deduction service
+To aid users in assessing the risk warning levels, a risk warning 
+system has been integrated into the platform’s software, designed ac -
+cording to current specifications [ 7 ]. As shown in Fig. 8 , the risk warning 
+workflow utilizes two control indexes: the pipe-jacking machine’s de -
+viation and its change rate. Notably, if the sign of the change rate is 
+opposite to that of the deviation, it indicates that the deviation of the 
+pipe-jacking machine will decrease, and the risk level associated with 
+the change rate is categorized as green. The pipe-jacking machine’s 
+deviation is determined based on real-time monitoring data, while its 
+change rate is influenced by the machine’s attitude.
+The risk warning level is determined using these two control indexes. 
+Users can preset standard or threshold values for the deviation and 
+change rate risk levels in the software according to relevant risk man -
+agement specifications. Consequently, the platform can provide real- 
+time risk warnings based on the monitoring data, which are displayed 
+in red, orange, yellow, or green to indicate different risk levels, as shown 
+in Fig. 9 .
+As shown in Fig. 10 , the pipe-jacking construction process is divided 
+into two stages: the stoppage and advancement stages. During the 
+advancement stage, the pipe-jacking machine moves forward, and soil 
+extracted during excavation is conveyed to the muck bucket. The ma -
+chine will stop when the muck bucket is full, and the muck bucket will 
+then be transported to the ground surface to unload the muck. Fig. 10 (c) 
+illustrates that parallel deduction is performed during the stoppage 
+stage. Based on the geological conditions and construction parameters 
+from the previous advancement stage, the attitude of the pipe-jacking 
+machine for the next stage is predicted using the theoretical analysis 
+model (introduced in Section 4 ). This allows the operator to evaluate 
+risks and make timely adjustments. The predicted risk warning level for 
+the next advancement stage is determined in conjunction with the ma -
+chine’s deviation, and intelligent decisions are made based on the pre -
+dicted risk level.
+3.4.2. Intelligent decision service
+As illustrated in Fig. 10 (c), intelligent decision-making is based on 
+the predicted risk warning level and the corresponding response plan, 
+which guides the intelligent control of the pipe-jacking machine’s atti -
+tude for the following advancement stage. The workflow of the response 
+plan is detailed in Table 2 , where the parameters are selected based on 
+the Chinese pipe-jacking specification [ 40 ]. Depending on the risk 
+warning level, various response strategies are employed, including ad -
+justments to monitoring frequency and deviation correction angles. The 
+attitude angle of the machine for the next advancement stage is deter -
+mined to minimize trajectory deviation based on the correction angle 
+and attitude angle from the previous stage. The relationship between 
+various machine attitude angles and rectification moments can be 
+determined using a load model that accounts for soil-machine interac -
+tion. This model leverages sensor data, including soil chamber pressure, 
+articulation cylinder thrust, and geological distribution parameters, to 
+compute the correction force in real time, as discussed in Section 4 . 
+Consequently, guide parameters for intelligent attitude control, such as 
+the rectification moments for the articulation cylinders arranged in 
+groups, are calculated automatically using the theoretical analysis 
+model based on the attitude angle. These parameters are then displayed 
+on the intelligent decision interface of the platform. Operators in the 
+control room can use these guide parameters to precisely adjust the 
+articulation cylinders, thereby achieving accurate control of the ma -
+chine’s attitude.
+4. Theoretical load model of rectangular pipe-jacking machine
+In order to ensure accurate management of the rectangular pipe- 
+jacking machine’s attitude, a theoretical load model of the front shield 
+has been proposed [ 18 , 41 ]. The forces impacting the front shield can be 
+classified into three kinds: (a) the weight of the front shield, denoted as 
+f
+1
+, which remains constant during pipe jacking; (b) the interactional 
+forces between the front shield and the adjacent soil, including f
+2
+, f
+3 
+and 
+f
+4
+; and (c) the thrust exerted by the articulation cylinders, referred to as 
+f
+5
+, which can be actively controlled by the operator. As shown in Fig. 11 , 
+f
+1 
+represents the weight of the front shield; f
+2 
+indicates the normal force 
+exerted on the front shield periphery by the soil; f
+3 
+represents the 
+tangential force; f
+4 
+indicates the loads affecting the excavation face; f
+5 
+signifies the thrust from the articulation cylinders.
+Considering the considerable stiffness of the front shield in com -
+parison to the surrounding soil, it can be effectively treated as a rigid 
+entity. To pinpoint the direction of the forces acting on it, a local co -
+ordinate system {O-xyz} has been established, as depicted in Fig. 12 . 
+This system {O-xyz} moves with the front shield, with the origin O 
+marking the shield’s midpoint. The x-axis is aligned with the machine’s 
+designed tunnel axis, the y-axis stretches out horizontally, and the z-axis 
+D. Su et al. Automation in Construction 177 (2025) 106373 
+7 
+Fig. 7. Interface of the intelligent control platform.
+D. Su et al. Automation in Construction 177 (2025) 106373 
+8 
+extends vertically. Consequently, the shield ’ s position and attitude 
+during pipe jacking are described by six degrees of freedom. Among 
+these, three pertain to attitude angles: yaw, pitch, and roll. The 
+remaining three are position coordinates, which include advancement 
+distance, Horizontal Deviation ( HD ), and Vertical Deviation ( VD ), as 
+shown in Fig. 13 . A positive yaw angle signifies a right turn, while a 
+negative one indicates a left turn. The horizontal deviation is right for 
+positive, left for negative. The pitch angle is positive with upward tilt, 
+negative with downward tilt. The vertical deviation includes positive 
+upward and negative downward. Additionally, the roll angle in a rect -
+angular pipe-jacking machine is generally small and will not be the 
+primary focus of this paper.
+4.1. Soil-machine interaction
+Within the three load types, the forces interacting between the 
+machine and the adjacent soil ( f
+2 
+~ f
+4
+) are intricately linked to various 
+factors, including soil characteristics, operational variables, the ma -
+chine ’ s attitude and its geometric parameters, posing it difficulties in 
+precisely controlling the machine ’ s position and attitude during pipe 
+jacking. The forces exerted on the front shield periphery mainly 
+comprise the normal force ( f
+2
+), the tangential force ( f
+3
+), and the mo -
+ments associated with these forces. It ’ s these forces that predominantly 
+influence the machine ’ s trajectory. Nonlinear springs are evenly 
+distributed along the front shield to model its interaction with the soil. 
+[ 10 , 41 ].
+4.1.1. Shield periphery coordinate transformation
+During pipe jacking, frequent adjustments of the machine ’ s attitude 
+is necessary to steadily correct trajectory deviations. These adjustments 
+can induce displacement between the machine and the adjacent soil, 
+causing variations in earth pressure across different regions, which has a 
+Fig. 8. Workflow of the three-level warning system.
+D. Su et al. Automation in Construction 177 (2025) 106373 
+9 
+considerable effect on the loads f
+2 
+to f
+3
+. Therefore, it is crucial to 
+establish the machine ’ s position and attitude variation prior to calcu -
+lating the loads f
+2 
+to f
+3
+.
+The attitude angles describe the orientation of the front shield. 
+Accordingly, the rotation matrix can be expressed as follows. 
+R
+z
+( α ) =
+⎡
+⎣
+cos α sin α 0
+  sin α cos α 0
+0 0 1
+⎤
+⎦
+(1) 
+Fig. 9. Example of real-time construction data synchronization and automatic risk warning.
+Fig. 10. Intelligent decision process for attitude correction based on construction stages.
+D. Su et al. Automation in Construction 177 (2025) 106373 
+10 
+R
+y
+( β ) =
+⎡
+⎣
+cos β 0   sin β
+0 1 0
+sin β 0 cos β
+⎤
+⎦
+(2) 
+R
+x
+( ψ ) =
+⎡
+⎣
+1 0 0
+0 cos ψ sin ψ
+0   sin ψ cos ψ
+⎤
+⎦
+(3) 
+R ( α , β , ψ ) = R
+z
+( α ) R
+y
+( β ) R
+x
+( ψ ) (4) 
+where α , β , and ψ denote the yaw, pitch, and roll angles, respectively.
+Given that the guidance system can provide the positions of preset 
+monitoring points of the front shield in real-time, it becomes possible to 
+obtain the yaw, pitch, and roll angles of the front shield by analyzing the 
+relative positions of the measurement points. Consequently, the front 
+shield ’ s position and attitude are readily determined.
+The variation in the front shield ’ s attitude induces corresponding 
+displacements in both the shield ’ s periphery and the adjacent soil. To 
+accurately calculate the relative displacement, it is essential to first 
+establish the position variation of the shield ’ s periphery. In the coordi -
+nate system { O }, the position vector for a point S located on the shield ’ s 
+periphery can be represented as follows. 
+r
+os
+= [ x y z ]
+T
+(5) 
+where x, y and z represent the coordinates of the point S .
+After attitude adjustment, the change in position vector Δ r
+os 
+caused 
+by attitude adjustment can be determined by. 
+Δ r
+os
+= ( R ( α , β , ψ )   1 ) r
+os
+(6) 
+Consider a section of the front shield as illustrated in Fig. 14 . The 
+starting position of this section is indicated by a solid rectangle, whereas 
+the intended new position following the attitude adjustment is repre -
+sented by a dotted rectangle. The horizontal and vertical displacement 
+of point S , resulting from previous attitude adjustment, can be calcu -
+lated as follows. 
+Δ u
+Sh
+= Δ r
+os
+⋅ j (7) 
+Δ u
+Sv
+= Δ r
+os
+⋅ k (8) 
+where j = [010]
+T 
+represents the unit vector along the y axis and k =
+[001]
+T 
+represents the unit vector along the z axis. Δ u
+Sh 
+and Δ u
+Sv 
+repre -
+sent the horizontal and vertical displacement of point S , which differ 
+from the normal displacement of the soil u
+n
+. Therefore, it is essential to 
+determine u
+n
+.
+As illustrated in Fig. 15 , when y = ± b / 2 and Δ u
+Sh
+y > 0, or z = ± H
+0
+/ 2 
+and Δ u
+Sv
+z > 0, the point S falls within the passive state zone, resulting in 
+a positive value for u
+n
+; when y = ± b / 2 and Δ u
+Sh
+y = 0, or z = ± H
+0
+/ 2 and 
+Δ u
+Sv
+z = 0, the point S falls within the static state zone, leading to a zero 
+value for u
+n
+; when y = ± b / 2 and Δ u
+Sh
+y < 0, or z = ± H
+0
+/ 2 and Δ u
+Sv
+z < 0, 
+the point S falls within the active zone, which means u
+n 
+takes on a 
+negative value. Accordingly, u
+n 
+can be solved as follows. 
+Table 2 
+Workflow of response strategies.
+Risk warning 
+level
+Monitoring 
+frequency
+Deviation angle 
+correction
+Other measures
+Red warning
+Manual retest per 
+0.3 m
+0.3 – 0.5
+◦
+per time
+If necessary, stop 
+construction
+Orange 
+warning
+Manual retest per 
+0.5 m
+0.15 – 0. 3
+◦
+per 
+time
+Yellow 
+warning
+Manual retest per 
+1.0 m
+< 0.15
+◦
+per time
+Fig. 11. Load model of rectangular pipe-jacking machine.
+D. Su et al. Automation in Construction 177 (2025) 106373 
+11 
+u
+n
+=
+{
+| Δ u
+Sh
+| ⋅ sign ( Δ u
+Sh
+y ) , y = ± b / 2
+| Δ u
+Sv
+| ⋅ sign ( Δ u
+Sv
+z ) , z = ± H
+0
+/ 2
+(9) 
+where b and H
+0 
+represent the machine ’ s width and height.
+It can be observed that u
+n 
+at point S is determined by rotation matrix 
+R , the front shield parameter H
+0 
+and b , and position parameters x , y , z of 
+point S . Therefore, u
+n 
+is represented as a multivariate nonlinear 
+function. 
+u
+n
+= f ( R , H
+0
+, b , x , y , z ) (10) 
+4.1.2. Normal interaction between shield and soil
+In order to assess the loads f
+2 
+to f
+3
+, as depicted in Fig. 16 , the front 
+shield periphery is divided into many small units. The force acting on 
+each unit is represented by calculating the force at its central point. The 
+overall interaction is then determined by summing the forces of all the 
+units.
+Fig. 12. Attitude angles of rectangular pipe-jacking machine.
+Fig. 13. Deviation of rectangular pipe-jacking machine.
+D. Su et al. Automation in Construction 177 (2025) 106373 
+12 
+Before adjusting the machine ’ s attitude, the front shield is in its 
+initial state, with normal earth pressure around its periphery in a 
+balanced condition. This pressure can be determined by referring to the 
+earth ’ s static pressure. Particularly, the pressure exerted on the top plate 
+is calculated using Eq. (11) , the pressure on the bottom plate is calcu -
+lated using Eq. (12) , and the horizontal earth pressure on the side plates 
+is calculated using Eq. (13) . 
+σ
+v0
+= K
+v0
+γ h (11) 
+σ
+v0
+= K
+v0
+γ h +
+G
+A
+(12) 
+σ
+h0
+= K
+h0
+γ h (13) 
+where σ
+v0 
+represents the vertical earth pressure at rest, while σ
+h0 
+in -
+dicates the horizontal earth pressure at rest; K
+v0 
+represents the coeffi -
+cient of vertical earth pressure at rest, and it ’ s set to one; K
+h0 
+represents 
+the coefficient of horizontal earth pressure at rest; γ represents the soil ’ s 
+unit weight; G represents the front shield ’ s weight; A represents the area 
+of bottom plate of the front shield; h represents the overlying soil ’ s 
+thickness.
+However, the normal earth pressure will change after the attitude 
+adjustment. As shown in Fig. 17 , the sum of f
+2 
+can be determined using 
+ground reaction curves. The curves are represented as follows [ 10 , 41 ]. 
+K
+i
+( u
+n
+) =
+⎧
+⎪
+⎪
+⎪
+⎨
+⎪
+⎪
+⎪
+⎩
+( K
+io
+  K
+imin
+) tanh
+[
+a
+i
+u
+n
+K
+io
+  K
+imin
+]
++ K
+io
+( u
+n
+≤ 0 )
+( K
+io
+  K
+imax
+) tanh
+[
+a
+i
+u
+n
+K
+io
+  K
+imax
+]
++ K
+io
+( u
+n
+≥ 0 )
+(14) 
+where i = v or h represents either vertical or horizontal directions; the 
+subscript o represents the static condition; min and max refer to the 
+active and passive state of the earth pressure, respectively; a
+i 
+represents 
+the slope of the earth pressure coefficient curves in the static condition, 
+which is defined as a
+i 
+= k
+i 
+/ σ
+vo
+; where k
+i 
+represents the coefficients of 
+subgrade reaction; u
+n 
+signifies the soil ’ s normal displacement when the 
+computed point is in the compaction region, u
+n 
+> 0, and when it is in the 
+extension region, u
+n 
+< 0.
+The normal earth pressure ( σ
+n
+) at point S can be solved by. 
+σ
+n
+= K
+i
+( u
+n
+) σ
+v0
+(15) 
+where K
+i
+( u
+n
+) represents the earth pressure coefficient at any point S . 
+Fig. 14. Schematic diagram of shield displacement.
+Fig. 15. Normal displacement of adjacent soil.
+D. Su et al. Automation in Construction 177 (2025) 106373 
+13 
+Then the normal force f
+2 
+can be calculated by. 
+f
+2
+=
+∑
+σ
+n
+A
+s
+n
+s
+(16) 
+where A
+s 
+indicates the grid area containing point S; n
+s 
+represents the unit 
+normal vector at point S .
+The normal earth pressure ( σ
+n
+) will result in associative moment at 
+origin point O that can be calculated as follows. 
+M ( f
+2
+) =
+∑
+σ
+n
+A
+s
+( r
+os
+× n
+s
+) (17) 
+4.1.3. Tangential interaction between shield and soil
+The tangential interaction between front shield periphery and soil 
+will also influence the attitude control during pipe jacking. Fig. 18
+illustrate the machine-soil friction curve, which can be divided into the 
+ascending section and the platform section. The tangential stress τ
+s 
+[ 27 ] 
+can be solved as. 
+τ
+s
+= μσ
+n
+(18) 
+Fig. 16. Discretization of shield periphery.
+Fig. 17. Ground reaction curve. [ 10 , 41 ].
+Fig. 18. Friction curve of machine and soil.
+D. Su et al. Automation in Construction 177 (2025) 106373 
+14 
+μ =
+⎧
+⎨
+⎩
+s
+s
+u
+μ
+max
+0 ≤ s ≤ s
+u
+μ
+max
+s ≥ s
+u
+(19) 
+where τ
+s 
+denotes the tangential stress at point S ; σ
+n 
+denotes the normal 
+stress at the same point; μ denotes the friction coefficient at the interface 
+between the machine and the soil; μ
+max
+= 0 . 4tan φ , where φ represents 
+the friction angle of the soil; s denotes the relative tangential displace -
+ment at point S ; s
+u 
+denotes the relative tangential displacement when 
+tangential stress reaches its maximum.
+Subsequently, the tangential force f
+3 
+exerted on the front shield is 
+represented as. 
+f
+3
+=
+∑
+τ
+s
+A
+s
+t
+s
+(20) 
+where t
+s 
+denotes the unit tangential vector at point S .
+The tangential stress τ
+s 
+will result in associative moment at origin 
+point O that can be expressed as. 
+M
+ 
+f
+3
+)
+=
+∑
+τ
+s
+A
+s
+( r
+os
+× t
+s
+) (21) 
+4.1.4. The loads acting on the excavation face
+During the pipe-jacking process, the front shield encounters earth 
+pressure in front of cutter. In the case of large rectangular pipe-jacking 
+machines, the Soil Chamber (SC) pressure distribution is more com -
+plex, which influences the machine ’ s attitude. As illustrated in Fig. 19 , 
+the machine ’ s soil chamber used in Shasan Station is segmented into 
+four distinct areas, designated as SC1-SC4. A total of 19 earth pressure 
+sensors are affixed to the soil chamber ’ s rear panel, tagged from TY6 to 
+TY24, to monitor earth pressure variations in SC. The mean earth 
+pressure for different areas, labeled P1 to P4, is derived from the 
+monitoring data provided by these sensors, as reported in the previous 
+study [ 6 ]. The load exerted on the excavation face ( f
+4
+) is determined by 
+summation of the four uniform surface loads (P1 to P4). The forces and 
+associative moments are calculated as follows. 
+f
+4
+=
+[
+ 
+∑
+4
+i = 1
+P
+i
+h
+i
+b 0 0
+]
+(22) 
+M
+ 
+f
+4
+)
+=
+[
+0
+∑
+4
+i = 1
+P
+i
+h
+i
+b z
+i
+0
+]
+(23) 
+where M ( f
+4
+) denotes the associative moment led by f
+4
+; P
+i 
+denotes the 
+mean earth pressure across SC1 to SC4; h
+i 
+denotes the height for SC1 to 
+SC4; z
+i 
+denotes the central coordinates along the z-axis for SC1 to SC4.
+4.2. Other loads exerted on the machine
+The remaining forces exerted on the front shield includes the weight 
+of the front shield ( f
+1
+) and the thrust of the articulation cylinders ( f
+5
+). 
+Due to the uneven mass distribution of the machine, the front shield 
+mass is mainly concentrated in the cutters, the f
+1 
+and associative 
+moment ( M ( f
+1
+)) at origin point O can be calculated by. 
+f
+1
+= [ 0 0 - G ] (24) 
+M ( f
+1
+) = [ 0 - G ⋅ e 0 ] (25) 
+where e denotes the distance between the front shield ’ s centroid and its 
+geometric center.
+The machine ’ s articulation cylinders are controlled in groups (see 
+Fig. 3 ), with each cylinder within the same group applying the same 
+force. Accordingly, the total thrust of all articulation cylinders ( f
+5
+) can 
+be expressed as. 
+f
+5
+=
+[
+∑
+6
+m = 1
+t
+m
+n
+m
+0 0
+]
+(26) 
+where m represent the count of the articulation cylinders groups; t
+m 
+represents the unit thrust of the corresponding articulation cylinders 
+group; n
+m 
+represents the total number of cylinders within that group. 
+Fig. 19. Distribution of loads exerted on excavation face.
+D. Su et al. Automation in Construction 177 (2025) 106373 
+15 
+The associative moment ( M ( f
+5
+)) at origin point O induced by f
+5 
+can be 
+calculated by. 
+M
+ 
+f
+5
+)
+=
+[
+0 -
+∑
+6
+m = 1
+t
+m
+n
+m
+z
+m
+-
+∑
+6
+m = 1
+t
+m
+n
+m
+y
+m
+]
+(27) 
+where z
+m 
+denotes the unit coordinates of the corresponding group on the 
+z axis; y
+m 
+denotes the unit coordinates of the corresponding group on the 
+y axis. The central coordinate positions of each articulated cylinder 
+group are listed in Table 3 .
+4.3. Calculation of the machine ’ s attitude
+The pipe-jacking machine advances slowly when jacking in soil, and 
+the front shield essentially maintains a state of stasis The static equi -
+librium equation for the front shield is expressed by. 
+∑
+5
+n = 1
+f
+ne
+= 0 (28) 
+∑
+5
+n = 1
+M ( f
+ne
+) = 0 (29) 
+The expansion of Eqs. 28 and 29 are as follows. 
+f
+1e
++ f
+2e
++ f
+3e
++ f
+4e
++ f
+5e
+= 0 (30) 
+M ( f
+1e
+) + M ( f
+2e
+) + M
+ 
+f
+3e
+)
++ M
+ 
+f
+4e
+)
++ M
+ 
+f
+5e
+)
+= 0 (31) 
+where e = x , y , or z , represents the various directions of different loads.
+Based on the established load model Section 4 , all the forces acting 
+on the front shield during pipe jacking can be calculated. This model 
+allows for determining the relationship between attitude angles ( α , β , ψ ) 
+and the rectification moments ( M ( f
+5y
+) , M ( f
+5z
+)) generated by f
+5
+, as shown 
+in Fig. 20 . The theoretical analysis model incorporates operating pa -
+rameters, attitude parameters, soil parameters, geometric parameters, 
+and their interrelationships. This comprehensive model provides a solid 
+foundation for parallel deduction and intelligent decision-making 
+(introduced in Section 3.4 ) regarding the rectangular pipe-jacking ma -
+chine ’ s attitude management.
+5. Case study and validation
+To assess the efficacy of the suggested intelligent control platform 
+that integrates the load model, the left-line tunnel of Shasan Station was 
+chosen as a case study. The main parameters are presented in Table 4 . 
+The data acquired by the sensors of the machine are initially stored in 
+the local database of the intelligent control platform. Subsequently, the 
+data processing module embedded in the control platform performs 
+preprocessing operations, including data extraction, outlier detection, 
+and data transformation, to generate a refined dataset. The refined 
+dataset is then fed into the embedded prediction algorithm, which is 
+designed based on the load model of the pipe jacking machine. The 
+predicted attitude parameters are validated against predefined safety 
+thresholds and instantaneously transmitted to the risk warning module 
+and intelligent decision control unit for auxiliary attitude correction. 
+Specifically, by embedding this model into the intelligent platform, the 
+platform can output shield attitude based on input soil and operating 
+parameters, enabling risk warnings. Additionally, it can input shield 
+attitude (such as rectification angles calculated from response strategies) 
+and other parameters to output predicted rectification moments, 
+thereby facilitating intelligent decision-making.
+Table 3 
+Central coordinates of articulated cylinder groups.
+Articulated cylinder group n
+m
+y
+m
+(m) z
+m
+(m)
+Group A 7 0.00 6.30
+Group B 7 5.15 3.30
+Group C 7 5.15   3.48
+Group D 10 0.00   6.30
+Group E 7   5.15   3.48
+Group F 7   5.15 3.30
+Fig. 20. Calculation procedure for rectification moment.
+Table 4 
+Description of the main operation parameters.
+Number Parameter type Parameter Unit
+1
+Soil parameters
+Density kN/m
+3
+2 Cohesion kPa
+3 Friction angle
+◦
+4 Cofficient of subgrade reaction MPa/m
+5
+Operating parameters
+Chamber pressure bar
+6 Cover depth m
+7 Advance speed mm/min
+8 Cutter head rotation speed r/min
+9 Cutter torque KN ⋅ m
+10 Total thrust force kN
+11 Pressure of cylinder group A kPa
+12 Pressure of cylinder group B kPa
+13 Pressure of cylinder group C kPa
+14 Pressure of cylinder group D kPa
+15 Pressure of cylinder group E kPa
+16 Pressure of cylinder group F kPa
+17
+Shield attitude
+Pitch angle mm/m
+18 Roll angle mm/m
+19 Yaw angle mm/m
+20
+Shield deviation
+Horizontal deviation mm
+21 Vertical deviation mm
+D. Su et al. Automation in Construction 177 (2025) 106373 
+16 
+5.1. Data base
+The geological profile of the left-line tunnel is shown in Fig. 21 . 
+Based on the geological survey findings, the overlying strata at the 
+construction site consist of plain fill and silty clay, while the underlying 
+strata are sandy clay, fully weathered mixed granite, and highly 
+weathered granite. Due to these uneven strata, controlling the attitude 
+of the pipe-jacking machine is challenging, and the machine tends to 
+deviate from the DTA. Detailed mechanical and physical characteristics 
+of the strata have been presented in Table 5 , which were primarily ob -
+tained from the detailed investigation phase of the Shasan Station 
+project through borehole exploration. Parameters concerning the rect -
+angular pipe-jacking machine and the left-line tunnel are detailed in 
+Section 2 .
+Operation parameters of the machine were collected using various 
+sensors during pipe jacking, as illustrated in Section 3.2 . Attitude pa -
+rameters of the pipe-jacking machine were collected using an automatic 
+guidance system. These data were transmitted to the data center of the 
+platform. Subsequently, several data preprocessing methods, including 
+data extraction, outlier detection, and data transformation, were applied 
+to the operating and attitude parameters of the machine. The data was 
+processed centrally every minute during the jacking process, and the 
+preprocessing typically took less than 1 s. No significant delays were 
+observed during the data processing on the platform.
+5.1.1. Data extraction
+The operating and attitude parameters from the advancement stage 
+were collected for preprocessing. Since the machine stopped during 
+muck outward transportation stage, the advancement process was 
+discontinuous. Consequently, these parameters during the stoppage 
+stage were set to zero. First, the data for the advancement stage were 
+extracted from the monitoring data. Advancement Distance ( Ad ) was 
+used to identify the pipe-jacking construction stage in the operating 
+parameters, which was recorded at a regular intervals Δ t . If Ad ( t + Δ t ) – 
+Ad ( t ) = 0, the data belong to stoppage stage; otherwise, the data belongs 
+to the advancement stage.
+The data from the advancement stage were used as the initial dataset 
+for preprocessing, which included outlier detection and data trans -
+formation. However, the first 2.5 % and last 2.5 % of the data, recorded 
+during the transition between the advancement and stoppage stages, 
+were excluded due to their high volatility.
+5.1.2. Outlier detection
+Outliers are some extreme values that markedly differ from the 
+trends observed in the data after preprocess. Due to sensor malfunctions 
+and unstable construction conditions, outliers can represent errors in the 
+monitoring data, often characterized by sudden and substantial in -
+creases or decreases. Consequently, it is essential to identify outliers 
+using statistical methods. In this paper, the Interquartile Range (IQR) 
+was employed to detect these anomalies.
+5.1.3. Data transformation
+During the machine advancement stage, operational and attitude 
+parameters were recorded at 1-s and 12-s intervals. To standardize these 
+parameters for the same construction process, average values corre -
+sponding to specific advancement distances were calculated. In this 
+paper a short construction process was defined as the machine 
+advancing a distance of 10 mm. The average values for this process were 
+Fig. 21. Geological profiles of the case tunnel.
+Table 5 
+Soil parameters of the case project.
+Soil name Density Cohesion Friction 
+angle
+Cofficient of 
+subgrade reaction
+(kN/ 
+m
+3
+)
+(kPa) (
+◦
+) (MPa/ 
+m)
+(MPa/ 
+m)
+γ c φ K
+v
+K
+h
+Fill 17.8 15.0 13.0 10 12
+Slity clay 19.0 25.0 12.5 18 25
+Mud soil 15.9 10 4 5 7.5
+Sandy clay 18.5 25.0 22.5 35 45
+Fully weathered 
+mixed granite
+18.8 30.0 25.0 60 75
+Highly weathered 
+mixed granite
+19.2 35 27 100 120
+D. Su et al. Automation in Construction 177 (2025) 106373 
+17 
+determined by taking the weighted average of the recorded parameters. 
+Thus, the operating and attitude parameters were averaged according to 
+their respective recording intervals. 
+Op =
+∑
+n
+i = 1
+Op
+i
+⋅ Δ t
+Oi
+∑
+n
+i = 1
+Δ t
+Oi
+(32) 
+At =
+∑
+m
+i = 1
+At
+i
+⋅ Δ t
+Ai
+∑
+m
+i = 1
+Δ t
+Ai
+(33) 
+where Δ t
+Oi 
+and Δ t
+Ai 
+are the recording intervals of the operating and 
+attitude parameters, respectively; Op
+i 
+and At
+i 
+are the operating and 
+attitude parameters recorded at different time points during the short 
+construction process, respectively; n and m are the amount of operating 
+and attitude parameters recorded at this short construction process, 
+respectively.
+5.2. Data analysis and the load model validation
+This section evaluates the predictive performance and reliability of 
+the proposed load model using actual construction monitoring data, 
+ensuring its applicability in real-world pipe-jacking scenarios.
+5.2.1. Monitoring data analysis
+The monitoring data collected during jacking Ring No. 11 of the left- 
+line tunnel was analysed and used for verification of the established 
+platform, based on which the horizontal and vertical moments ( M ( f
+5z
+) 
+and M ( f
+5y
+)) induced by the thrust of articulation cylinder groups are 
+calculated. The machine ’ s position and the surrounding geological 
+conditions are shown in Fig. 21 , and the soil chamber pressure is 
+detailed in the previous study [ 5 ]. The model validation primarily 
+consists of two steps:
+1. Based on the calculation process of the rectification moment 
+shown in Fig. 20 , the predicted moments ( M
+yp
+) for the validation section 
+were computed by inputting soil parameters, operating parameters, and 
+shield attitude into the prediction model. The soil parameters were 
+determined based on the position of the pipe jacking machine, while the 
+operating parameters (such as the soil chamber pressure) and shield 
+attitude were derived from the preprocessed dataset.
+2. The predicted moments ( M
+yp
+) for the validation section were 
+compared with the measured moments ( M
+ym
+), and the prediction ac -
+curacy was evaluated using relevant error indexes.
+To assess the accuracy of the platform ’ s predictions, several error 
+indexes were introduced, three of which consider absolute value, 
+including Absolute Error ( AE ), Mean Absolute Error ( MAE ), Root Mean 
+Squared Error ( RMSE ), and two consider relative value, including 
+Relative Error ( RE ) and Mean Relative Error ( MRE ). These error indexes 
+are defined as follows. 
+⎧
+⎪
+⎪
+⎪
+⎪
+⎪
+⎪
+⎪
+⎪
+⎪
+⎪
+⎪
+⎪
+⎪
+⎪
+⎪
+⎪
+⎪
+⎪
+⎪
+⎪
+⎪
+⎪
+⎪
+⎪
+⎨
+⎪
+⎪
+⎪
+⎪
+⎪
+⎪
+⎪
+⎪
+⎪
+⎪
+⎪
+⎪
+⎪
+⎪
+⎪
+⎪
+⎪
+⎪
+⎪
+⎪
+⎪
+⎪
+⎪
+⎪
+⎩
+AE = M
+yp
+  M
+ym
+MAE =
+1
+N
+∑
+N
+1
+⃒
+⃒
+M
+yp
+  M
+ym
+⃒
+⃒
+RMSE =
+̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅ ̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅ ̅
+1
+N
+∑
+N
+1
+ 
+M
+yp
+  M
+ym
+)
+2
+√
+√
+√
+√
+RE =
+⃒
+⃒
+M
+yp
+  M
+ym
+⃒
+⃒
+M
+ym
+× 100%
+MRE =
+1
+N
+∑
+N
+1
+⃒
+⃒
+M
+yp
+  M
+ym
+⃒
+⃒
+M
+ym
+× 100%
+(34) 
+where M
+yp 
+indicates the predicted moment forecasted by the platform; 
+M
+ym 
+indicates the actual moment calculated by measured data; N rep -
+resents the number of sample.
+5.2.2. Validation of the established load model
+Figures 22 and 23 illustrate the variations in horizontal and vertical 
+moments as well as the associated error indexes. The figures show that 
+the moments vary around their mean values. Both the predicted and 
+measured moments exhibit a similar trend, with some discrepancies 
+between predicted values and actual measurements, though these dif -
+ferences are not pronounced. The maximum relative errors for the 
+horizontal and vertical moments for Ring No. 11 are 13.3 % and 4.4 %, 
+respectively, with the vast majority of relative errors staying under the 
+10 % mark. In general, the predicted moments correspond closely with 
+the measured data. However, discrepancies persist, primarily due to 
+errors in soil parameter measurements, and monitoring data from the 
+machine ’ s guidance system. Table 6 presents the error indexes for the 
+moments between predicted and measured data. The mean relative er -
+rors for horizontal and vertical moments in Ring No. 11 are 6.6 % and 
+1.7 %, respectively.
+To assess the predictive stability of the model, the 95 % confidence 
+intervals for the MAE and MRE have been obtained using the following 
+formula: 
+⎧
+⎪
+⎪
+⎪
+⎪
+⎪
+⎪
+⎪
+⎪
+⎪
+⎪
+⎪
+⎪
+⎪
+⎪
+⎨
+⎪
+⎪
+⎪
+⎪
+⎪
+⎪
+⎪
+⎪
+⎪
+⎪
+⎪
+⎪
+⎪
+⎪
+⎩
+e
+i
+= AE or RE
+e =
+1
+N
+∑
+N
+i = 1
+e
+i
+s
+e
+=
+̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅ ̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅ ̅
+1
+N   1
+∑
+N
+i = 1
+( e
+i
+  e )
+2
+√
+√
+√
+√
+CI = e ± z
+α / 2
+s
+e
+̅̅̅ ̅
+N
+√
+(35) 
+Where z
+α /2 
+indicates the corresponding quantiles of the t- 
+distribution.
+The confidence interval results are shown in Table 6 . According to 
+the statistical results, for horizontal moment prediction, the credible 
+fluctuation range of the MAE is controlled around 3000 kN ⋅ m, and the 
+credible fluctuation range of the MRE is controlled within 10 %. For 
+vertical moment prediction, the credible fluctuation range of the MAE is 
+controlled around 2000 kN ⋅ m, and the credible fluctuation range of the 
+MRE is controlled within 3 %. The above confidence interval results 
+effectively validate the predictive stability of the model. These results 
+indicate that the platform ’ s predictions are highly accurate and 
+acceptable for practical engineering applications.
+With the support of the platform, the horizontal deviation of the 
+rectangular pipe-jacking machine during the jacking left-line tunnel was 
+effectively controlled, as shown in Fig. 24 . The horizontal deviation was 
+maintained within the range of   20 to 40 mm, and the yaw angle was 
+controlled within   4 to 2 mm/m.
+5.2.3. Risk warning analysis
+The risk waring function of the established platform is shown in 
+Fig. 25 . At the start of jacking the left-line tunnel, the machine was right- 
+handed, and the horizontal deviation approached 40 mm. Consequently, 
+the machine was classified under a yellow risk warning level according 
+to the platform ’ s risk warning mechanism. Guidance for adjusting the 
+machine ’ s attitude was provided to the operator to make precise cor -
+rections and promptly reduce trajectory deviation. This adjustment 
+ensured that the pipe-jacking machine steadily shifted to a left-handed 
+position with a negative yaw angle. After continued adjustments of 
+the machine ’ s attitude, the risk level decreased to green as the jacking 
+distance approached 30 m. Furthermore, the final horizontal deviation 
+was   16 mm, significantly below the allowable deviation of ± 50 mm.
+Figure 26 shows the successful finishing of the case tunnel at Shasan 
+D. Su et al. Automation in Construction 177 (2025) 106373 
+18 
+Station, with the pipe-jacking machine ’ s trajectory deviation meeting 
+construction safety control requirements. During this project, the 
+established intelligent attitude control platform effectively supported 
+real-time risk warning and intelligent decision-making for attitude 
+correction, thereby facilitating high-quality recta

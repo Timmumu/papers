@@ -410,3 +410,77 @@ AI = {
 942: 'The framework has not yet been validated with field or laboratory tests, and its large Bayesian network demands 97,484.8 MB of memory just to store conditional probability tables, limiting practical scale-up. Future work includes custom Bayesian networks to cut computation, validation through field coring and lab testing, and adding restoration and resilience modelling.',
 }
 
+
+AH.update({
+72: 'Combines monitored Taihe landslide state with MPM inversion and wet-dry degradation laws; forecasts east-side collapse beyond 260 m by year five and deposits beyond 460 m by year ten.',
+78: 'Connects dam monitoring data, FEM fields and warning models in a real Jinping-I platform, with database preprocessing and real-time visualization for safety assessment.',
+121: 'Joins GAT/FEM multi-physics fields to structured engineering semantics and a dam-specific LLM, grounding fault causes and mitigation recommendations in monitoring data and dam standards.',
+128: 'Converts high-resolution UAV/terrestrial survey into volume-correct facade and statue models; sub-centimetre control-point accuracy supports stress and vulnerability analysis.',
+186: 'Combines roadside sensor fusion, lane-level HD maps and multimodal HPNet predictions to generate geometric vehicle-conflict alerts before work-zone collisions.',
+239: 'Resolves monocular-depth scale ambiguity with relocalized 3D anchors and places metric worker positions and dynamic fall zones in a BIM-aligned crane twin.',
+256: 'Addresses FEM-to-monitoring domain gaps with GAT gating, multi-source scenario data and CORAL/MMD alignment; tests span two dams and extreme operating conditions.',
+304: 'Reduces full-parameter UKF cost by using online POM-slope changes to localize damage first, then estimates stiffness only at affected frame DOFs.',
+410: 'Maps sparse dam sensors to full-domain deformation and seepage fields through GCN transfer learning, FEM/LSTM mapping and a dynamic monitoring loss.',
+464: 'Moves large rectangular pipe-jacking correction from experience toward mechanics-based guidance, linking live attitude/soil data to calculated soil interaction and cylinder forces.',
+476: 'Embeds a lightweight, execution-grounded GraphRAG assistant in a real safety-monitoring twin, supporting spoken commands, domain QA and view/function execution.',
+588: 'Adds 3D collision checking to marine pile positioning; real wharf field trials use pile attitude and GNSS/range data to warn operators and guide boat repositioning.',
+705: 'Extends physics-based integrated earthquake simulation to two Indian urban sites, linking building attributes and ground motions to building-level seismic-risk indicators.',
+757: 'Integrates monitoring, FE updating, health assessment and control for hydro-steel gates across engineering projects, with reported improvements in response and inspection.',
+825: 'Formalizes point, crank-handle and level-crossing gate interlocking as Boolean/HDL digital elements and verifies their relay-state logic in simulation.',
+830: 'Automates the TSP-to-RMR-to-support workflow with Bayesian sequential updating and BIM aggregation; the Laoying case completes revised design in under two hours.',
+853: 'Presents an inverse-load route to predicting chord-supported dome cable forces from structural response, comparing circular, elliptical and rounded-square models.',
+})
+
+AI.update({
+72: 'The ten-year forecast depends on an assumed annual wet-dry cycle and literature-derived degradation curves; coarse spatial/time discretization and uncertainty sensitivity remain open.',
+78: 'The case demonstrates platform functions but supplies limited quantified warning-performance validation; extreme-event response and emergency-plan integration remain future work.',
+121: 'Validation is limited to one dam and the LLM recommendations are not shown in an operational intervention loop; broader projects and recommendation verification are needed.',
+128: 'The twins are survey-based rather than continuously synchronized; two facades and literature-assumed material properties limit generalization and seismic validation.',
+186: 'Warnings were evaluated on simulator-generated work-zone data, whose driver variability is lower than real traffic; roadside field deployment and alert-response effects remain untested.',
+239: 'Performance degrades in dense fog/night-fog and the risk rules use simplified fall-zone assumptions; broader site/weather testing and worker-location ground truth are needed.',
+256: 'Both cases are dams in one river basin; transfer beyond these assets and independent deployment under unseen boundary/material conditions remain to be established.',
+304: 'The method assumes stiffness-only damage and has limited experimental scale; field structures, sensor noise and damage types beyond the studied frame scenarios need testing.',
+410: 'The case is one 186 m dam and reported gains depend on the chosen monitoring/FEM setup; broader dam types and long-term online operation need validation.',
+464: 'The guidance is operator-mediated and validated on one pipe-jacking project; deviation/safety gains and force recommendations need verification across soils and projects.',
+476: 'Field evidence is one medium-scale project; response/retrieval gains, ASR robustness and KG-update correctness need long-term operational assessment.',
+588: 'The evidence is one wharf prototype; field collision rates, warning lead time and positioning/error sensitivity across hulls, sea states and pile geometries remain open.',
+705: 'The assessment is a pilot simulation using limited/inexact city attributes and hypothetical historical motions; observed earthquake damage validation and inventory completeness are needed.',
+757: 'The platform is validated on selected hydro-steel assets, but component-level error rates and causal attribution of reported gains need more transparent multi-site evaluation.',
+825: 'Only software simulation is demonstrated; no FPGA, live relay data or physical interlocking integration is tested, so real-time fault detection and fail-safe behavior remain unverified.',
+830: 'The validation is one tunnel and omits numerical support analysis in the case study; other geology, outcome comparison and full machine feedback remain future work.',
+853: 'No field sensor dataset or deployed twin is reported, and validation errors are not clearly quantified; inferred cable forces need verification against measured construction data.',
+})
+
+for _row in (147, 526, 793, 927):
+    AH.pop(_row, None)
+    AI.pop(_row, None)
+
+AH.update({
+31: 'Adds a sensor-data reliability layer to DT-enabled SHM, using weighted Naive Bayes and value-of-structural-health analysis to reduce misleading decisions from degraded sensors.',
+106: 'Moves shield-attitude management from prediction-only toward DT-supported optimal control, with cross-geology validation and multiobjective optimization of seven attitude indicators.',
+133: 'Combines mechanics-based simulation and monitoring data in a probabilistic transfer-learning framework, improving dam deformation prediction under unseen operating conditions.',
+212: 'Connects TBM telemetry, PSO-RF prediction, SHAP interpretation and DT visualization/control so operators can adjust shield parameters before attitude deviation threatens construction safety.',
+317: 'Addresses real-time bottlenecks in SHM digital twins through edge-cloud partitioning, accelerated FE computation, deviation-severity classification and fast PSO updating.',
+433: 'Links physical fatigue tests and multiscale fracture simulation through Bayesian updating, enabling real-time parameter correction and remaining-life prediction for critical bridge weld joints.',
+506: 'Transforms multi-camera construction-site perception into short-horizon worker trajectory forecasts, supporting preemptive safety monitoring rather than only current-state hazard recognition.',
+})
+
+AI.update({
+31: 'The demonstration is mainly one case/numerical SHM setup; broader building types, sensor suites, long-term drift and quantified false-alarm behaviour need validation.',
+106: 'Validation is one Wuhan metro underpass and focuses on model/control performance; fail-safe behaviour under sensor loss, communication delay and operator acceptance remain open.',
+133: 'Evidence is one concrete arch dam with prototype monitoring data; long-term online deployment, abrupt abnormal events and broader dam geometries need testing.',
+212: 'The method remains case-study based; real actuator integration, robustness under abnormal geology, alarm prioritisation and human-in-the-loop control outcomes require further validation.',
+317: 'The framework demonstrates efficiency and SHM response computation, but wider structural types, noisy/missing sensor streams and field maintenance decision impacts need evaluation.',
+433: 'Validation uses laboratory weld-joint specimens rather than an operating bridge; scaling to field monitoring, traffic variability and real sensor noise is still needed.',
+506: 'The WHUT-MF dataset covers selected construction-site scenarios; occlusion, dense crowds, transfer to new sites and latency of field deployment remain limitations.',
+})
+
+AH.update({
+245: 'Demonstrates a practical construction-site DT data foundation across small, medium and large sites: daily point clouds, time-synchronised video, coordinate/time-axis management and worker position/heart-rate sensing are integrated for progress, quality and safety management.',
+648: 'Clarifies a DT4ENG lifecycle framework linking forward DT, backward DT and DT-informed decision making; the FOWT case shows how wind-wave data, OpenFAST simulation and probabilistic corrosion-fatigue modelling identify dominant bolt failure modes for proactive maintenance.',
+})
+
+AI.update({
+245: 'Safety evidence is limited to a single worker and is partly conceptual; the paper reports visualization/situational-awareness benefits rather than quantified accident reduction, automated warnings, or closed-loop intervention. Future work is needed on metadata, processing and real-time functions.',
+648: 'The DT4ENG decision loop is mostly framework-level and the case study is analytical/simulation-based, not a deployed live twin; high setup cost, continuous data processing and data/model integration complexity are explicitly noted as challenges.',
+})

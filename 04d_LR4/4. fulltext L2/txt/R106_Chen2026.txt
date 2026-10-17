@@ -1,0 +1,1404 @@
+Full length article
+Automatic management of shield attitude: insights from sensor data 
+analysis and hybrid machine learning
+Hongyu Chen
+a
+, Xingchen Zhou
+b
+, Yong Xia
+a
+, Yuan Cao
+b
+, Yang Liu
+c , d , *
+a
+Department of Civil and Environmental Engineering, The Hong Kong Polytechnic University, Hong Kong 999077, China
+b
+School of Civil and Hydraulic Engineering, Huazhong University of Science and Technology, Wuhan, Hubei 430074, China
+c
+ZhongNan Hospital of Wuhan University, Wuhan University, Wuhan 430071, China
+d
+Economics and Management School, Wuhan University, Wuhan 430072, China
+ARTICLE INFO
+Keywords:
+Shield attitude
+Attitude adaptive regulation
+Sensor data
+Multiobjective optimization
+IBKA-NGBoost-NSGA-III
+Digital twin
+ABSTRACT
+Shield attitude control is vital for tunnel safety, yet existing single-scene models lack generalization and real-time 
+adaptability across diverse geologies. Herein, a digital twin (DT)-driven intelligent control framework integrating 
+the improved black kite algorithm (IBKA), natural gradient boosting (NGBoost), and NSGA-III is proposed to 
+achieve automated, optimal attitude management. Using a Wuhan metro underpass as a case study, the 
+framework ’ s performance was validated across typical geological conditions. Key results demonstrate that (1) the 
+IBKA-NGBoost prediction model achieves an optimal accuracy-efficiency trade-off for small-sample data under 
+two geological conditions, with R2values exceeding 0.91 for seven attitude indicators and a training time of only 
+29.2 s; (2) the integrated IBKA-NGBoost-NSGA-III framework enables adaptive multiscenario optimization, 
+reducing deviations of the seven attitude parameters by an average of 69.3%; adjustment of the 12 key con -
+struction variables yielded a maximum improvement of 84.8%; and (3) embedding this algorithm into a DT 
+system enhanced real-time regulatory capability, supporting adaptive adjustment for improved construction 
+guidance and safety. Consequently, the proposed method enables adaptive adjustment, thereby supporting 
+construction guidance and safety management.
+1. Introduction
+1.1. Research background
+Metro tunnels play crucial roles in transportation and have become 
+important infrastructure for cities [1 – 3] . However, during the con -
+struction process of tunnel projects, they not only face challenges from 
+complex and variable environments but also are affected by uncertain 
+factors such as human operations, which makes the shield position 
+difficult to control during tunnel construction [4 – 7] . Furthermore, as 
+shield tunneling technology continues to mature, the safety standards 
+for tunnel construction have substantially increased [8,9] . Therefore, in 
+the construction of shield tunnels, maintaining control over the position 
+of the shield requires special attention [10] . If the shield attitude is not 
+well controlled, a series of problems, such as rising, deviation, snake 
+movement, displacement and cracking [11,12] , which significantly 
+affect the safety and quality of tunnel construction, can occur [13] . 
+Moreover, several typical engineering accidents highlight the 
+importance of controlling the attitude of the TBM [14,15] . Therefore, 
+dynamic anticipation of the shield attitude and optimized control of the 
+attitude deviation that is generated in the excavation route are highly 
+important [9,16] .
+1.2. Related research
+1.2.1. Related research on prediction
+To achieve shield tunneling attitude control, scholars have con -
+ducted extensive research. The existing methods for predicting the 
+attitude and position of tunnel boring machines include primarily 
+theoretical derivation, experimental methods, numerical simulation, 
+and artificial intelligence algorithms. In terms of theoretical formulas, 
+Liu et al. [17] integrated acceleration, momentum, and kinematic 
+equations and azimuth equations to establish a dynamic mathematical 
+model for TBM attitudes to achieve control of TBM trajectory tracking. 
+Shen et al. [18] used equivalent springs to model the interplay between 
+shield tunneling and soil, which resulted in a method for calculating the 
+shield attitude. Huang et al. [19] introduced shield attitude into the 
+* Corresponding author at: ZhongNan Hospital of Wuhan University, Wuhan University, Wuhan 430071, China.
+E-mail addresses: hongychen@polyu.edu.hk (H. Chen), zxc202110@163.com (X. Zhou), cexia@polyu.edu.hk (Y. Xia), dabailiu@whu.edu.cn (Y. Liu). 
+Contents lists available at ScienceDirect
+Advanced Engineering Informatics
+journal homepag e: www.else vier.com/loc ate/aei
+https://doi.org/10.1016/j.aei.2026.104521
+Received 12 August 2025; Received in revised form 2 February 2026; Accepted 25 February 2026 
+Advanced Engineering Informatics 73 (2026) 104521 
+Available online 14 March 2026 
+1474-0346/© 2026 Elsevier Ltd. All rights are reserved, including those for text and data mining, AI training, and similar technologies. 
+horizontal force balance analysis of shield tunneling and established a 
+theoretical model for the horizontal attitude of shield tunneling. With 
+respect to experimental methods, Wang et al. [20] analyzed and simu -
+lated the effects of attitude and position adjustment and control through 
+large-scale model experiments. As examples of numerical simulation 
+methods, Shen et al. [21] studied excavation mechanics and limit ranges 
+during the shield attitude adjustment process, and Sun et al. [22]
+examined how various soil parameters and burial depths affect the 
+correction torque and shield attitude. They suggested employing atti -
+tude adjustment methods by controlling tunnel parameters. However, 
+the factors that influence the movement behavior of tunnel boring ma -
+chines are complex and varied, with coupling relationships between 
+them. Considering real geological conditions and the complex factors 
+that influence shields in theoretical and experimental methods is diffi -
+cult. Predictions that are obtained under simplified conditions cannot 
+provide operators with accurate guidance and are costly. Numerical 
+simulation methods involve long modeling cycles, and the boundary 
+conditions and parameter values are highly dependent on experience, 
+which makes updating them in real time challenging during tunneling. 
+Additionally, forecasting the orientation of a TBM is a real-time and 
+dynamic highly nonlinear challenge that encompasses numerous inter -
+related input and output datasets. Traditional analysis methods often 
+lack adaptability to typical geological conditions and provide insuffi -
+cient real-time prediction capabilities and accuracy in cases with com -
+plex nonlinear engineering issues [15] . To overcome these limitations, 
+data-driven approaches have emerged as a powerful alternative, shift -
+ing the focus from rigid theoretical derivations to adaptive learning from 
+massive engineering datasets.
+With advances in artificial intelligence, machine learning (ML) 
+methods provide more innovative, scientific, and precise solutions for 
+solving complex nonlinear engineering problems [23] . They have been 
+extensively applied in engineering research for prediction, analysis, and 
+optimization [24–26] . Liu et al. [27] integrated excavation efficiency 
+and cost objectives to investigate the regulation of TBM parameters 
+using an improved backpropagation neural network (BPNN) algorithm. 
+Pan et al. [28] applied the support vector machine (SVM) algorithm to 
+predict surface subsidence in conjunction with the Hongmei South Road 
+Tunnel West Line project. SVMs are good at handling similar features, 
+but their ability to deal with complex features and data gaps is limited. 
+The BPNN has low efficiency and poor generalization ability. Ke Lei 
+et al. [29] utilized the Transformer model to achieve rock classification 
+in TBM tunnels. While deep learning architectures, particularly 
+Transformer-based models, have gained prominence in time-series 
+forecasting due to their self-attention mechanisms [30,31] , they often 
+require massive datasets to achieve convergence and avoid overfitting. 
+In shield tunneling projects, high-quality labeled data for specific 
+geological strata often exhibit “small-sample” characteristics, which 
+limits the efficacy of data-hungry Transformer-based models. Further -
+more, the high computational demand of Transformers can hinder the 
+real-time feedback required for DTs. The natural gradient boosting 
+(NGBoost) algorithm is a probability-based boosting algorithm that was 
+proposed by ML researchers Tony Duan et al. in 2019 [32] . It can 
+address challenges such as nonlinearity, data noise, and complex 
+dependence relationships [33] . Several scholars have applied it for 
+prediction in the engineering field [34–36] . Liu constructed a BO- 
+NGBoost prediction model for predicting the deformation of existing 
+tunnels [37] . Zhou proposed a BO-NGBoost prediction model that out -
+puts corresponding safety control strategies on the basis of the safety risk 
+level of the shield approaching the structure [38] . Cao et al. used the 
+NGBoost algorithm to accurately predict the optimal amount of sup -
+plementary cementitious material, which served as a supportive tool for 
+reducing the production costs and carbon emissions of segment concrete 
+[33] . By employing the NGBoost technique, this method iteratively re -
+fines the parameter probability distributions, thereby facilitating accu -
+rate probabilistic estimation of the total thrust and torque [39] . They 
+reported that the probabilistic prediction model based on NGBoost 
+exhibited superior predictive performance compared with conventional 
+deterministic ML models with the same quantity of or fewer data. In 
+complex engineering systems and high-dimensional feature spaces, to 
+explore patterns, a large number of data samples are usually required 
+[40] . However, herein, the number of available samples is only 
+approximately 1,000. The small sample size in this study is relative to 
+tens of thousands or even hundreds of thousands of data records in some 
+cases. As a probabilistic gradient-boosting model, NGBoost can increase 
+robustness against both ground disturbances and equipment errors [41] . 
+Building on previous research and analysis, in this study, the NGBoost 
+algorithm is selected to model the intricate nonlinear relationships be -
+tween the shield orientation and excavation-related parameters. How -
+ever, the performance of such boosting models is highly sensitive to their 
+configuration, necessitating a robust optimization strategy to ensure 
+global convergence in complex search spaces.
+Hyperparameters significantly influence the accuracy of NGBoost 
+model predictions. To optimize these hyperparameters, techniques such 
+as grid search and random search are frequently used to identify the best 
+combination [42–44] . Many scholars have proposed the use of genetic 
+algorithms and particle swarm optimization for hyperparameter selec -
+tion. However, because both are population-based optimization tech -
+niques, they necessitate an adequate number of initial training points for 
+effectively searching for optimal solutions, which can lead to lower 
+training efficiency [45] . To address these constraints, IBKA is an effi -
+cient algorithm that can discover the optimal solution with the fewest 
+objective function evaluations, thereby greatly promoting convergence 
+speed and population diversity. It significantly outperforms all the 
+currently popular competitive optimizers on most test functions. IBKA 
+employs chaotic initialization and opposition-based learning to generate 
+a highly diverse initial population that covers the solution space, thus 
+avoiding the local-optimum traps that are caused by traditional random 
+initialization. This strengthens the global exploration of the shield spa -
+tial–temporal search space and provides a better starting point for 
+determining NGBoost hyperparameters such as the learning rate and 
+Nomenclature
+BKA Black kite algorithm
+NGBoost Natural gradient boosting
+NSGA-III Nondominated sorting genetic algorithm, the third version
+ML Machine learning
+BPNN Back propagation neural network
+RF Random forest
+LSTM Long short-term memory
+GBDT Gradient boosting decision tree
+SVM Support vector machine
+GCN Graph convolutional networks
+GRU Gated recurrent unit
+WT Wavelet transform noise filter
+CNN Convolutional neural network feature extractor
+XGBoost EXtreme gradient boosting
+HDSI Horizontal deviation of the shield machine incision, mm
+VDSI Vertical deviation of the shield machine incision, mm
+HDST Horizontal deviation of the shield tail, mm
+VDST Vertical deviation of the shield tail, mm
+HAA Horizontal attitude angle, mm/m
+PAA Pitch attitude angle, mm/m
+RAA Roll attitude angle, mm/m
+H. Chen et al. Advanced Engineering Informatics 73 (2026) 104521 
+2 
+tree depth [46] . The IBKA-NGBoost model provides accurate prediction 
+for the shield attitude and offers a basis for determining the optimal 
+attitude.
+1.2.2. Related research on multiobjective optimization
+Constructing the multiobjective optimization (MOO) decision model 
+to find the optimal attitude is the next key issue. To effectively solve 
+multidimensional objective optimization problems, Deb [47] introduced 
+a widely distributed reference point instead of a crowding degree on the 
+basis of the NSGA-II framework, which resulted in a new generation 
+algorithm, NSGA-III. By preserving the key features and benefits of the 
+NSGA-II algorithm, the NSGA-III algorithm increases population di -
+versity and improves the ability to discover superior Pareto-optimal 
+solutions in multiobjective scenarios, which makes it particularly 
+adept at addressing high-dimensional multiobjective problems [48,49] . 
+Wen Xu et al. [12] used BO-LGBM-NSGA-III to achieve MOO for surface 
+subsidence, cutterhead wear, and shield operation energy consumption. 
+Chen Hongyu et al. [3] used BO-CatBoost-NSGA-III to achieve dynamic 
+MOO for tunneling energy, speed and tool wear. NSGA-III predefines a 
+set of uniformly distributed reference points to steer the search toward 
+diverse trade-offs on the Pareto front and keep the algorithm from 
+becoming trapped in local optima [50] . However, at present, research on 
+the optimization of shield parameters and attitude is mainly focused on 
+the algorithms used, with limited attention given to the integration of 
+optimization models and physical entities [51] .Therefore, it is necessary 
+to establish a framework that can not only accurately predict attitude 
+but also convert modeling insights into reliable automated control 
+strategies.
+The emergence of digital twin (DT) technology is regarded as a 
+promising approach to bridging the aforementioned issues. DT tech -
+nology enables interactions among simulation, optimization, and feed -
+back, and this capability creates new opportunities for intelligent 
+control in tunnel construction [52] . Herein, a new method combining 
+the IBKA-NGBoost-NSGA-III intelligent hybrid algorithm with the DT 
+platform is proposed to promote intelligent adaptive attitude adjust -
+ment. Currently, research is mainly focused on the application of arti -
+ficial intelligence methods in specific geological settings [7] , and 
+emphasis is placed on the application of construction parameters based 
+on digital twins [40] ; however, research on the application of DTs for 
+attitude control and evaluation is relatively scarce. This study combines 
+MOO and a DT to explore the optimization and control of shield machine 
+attitude under different geological conditions, and the implementation 
+mechanism of the DT is systematically evaluated to promote DT 
+deployment in the shield construction safety field.
+1.3. Gaps and contributions of this study
+1.3.1. Research gaps
+Previous traditional methods and data-driven research have 
+improved the reliability and efficiency of tunnel excavation. This is 
+substantive progress in this field, but specific constraints have also been 
+identified: 
+(1) Emphasis on individual geological conditions: Prior research has 
+often focused on specific types of geological conditions and has 
+not succeeded in developing a universal model that is applicable 
+to multiple geological scenarios. A comprehensive strategy is 
+essential for addressing the complex geological challenges in 
+tunnel engineering.
+(2) Methodological variation: There is still no consensus regarding 
+the adoption of deep learning methods that are related to shield 
+spatial – temporal analysis or the application of ensemble algo -
+rithms, which depend on the sample size and research objectives. 
+The differences among these methods may affect the consistency 
+and validity of the research results.
+(3) Lack of adaptive optimization regulation and evaluation mecha -
+nisms: The current data-driven methods use existing data for 
+prediction, which results in a lag effect. The objective of the en -
+gineering problem of determining the shield attitude should focus 
+on optimization rather than prediction. Prediction is merely the 
+logic for achieving the objective of control. Therefore, adaptive 
+decision regulation for MOO and a DT evaluation mechanism are 
+needed to effectively develop real-time intelligent DTs.
+(4) Underused technological progress: In previous research, sensor 
+data, ML, the Internet of Things, and other emerging technologies 
+have rarely been used to develop an intelligent decision-making 
+framework for the adaptive attitudes of shield tunnels using 
+DTs. Integrating these technologies can increase the efficiency, 
+precision and initiative of decision-making. This study focuses 
+primarily on investigating the predictive regulation of a single 
+geological condition rather than adaptive optimization decision- 
+making [14] .
+1.3.2. Motivation and contributions
+During shield tunneling, the attitude of the machine easily becomes 
+unstable and deviates under dynamically changing, complex geological 
+conditions; thus, rapid response and timely control adjustments are 
+essential. Moreover, as many as seven objectives must be simultaneously 
+considered for attitude regulation. Therefore, determining which 
+method to adopt and how to bridge the resulting research gaps are key 
+issues that must be addressed. On the basis of the research status and 
+problem-solving methods analyzed, the fundamental research inquiries 
+of this study focus on the following: 
+(1) How can an intelligent prediction framework be constructed 
+without a large amount of sample data to accurately describe the 
+complex nonlinear relationship between the shield attitude and 
+influencing factors?
+(2) How can the significance of parameters be determined and 
+assessed, how can the key control parameters that influence the 
+shield orientation during construction be identified, and how can 
+effective control of the shield attitude be achieved?
+(3) How can MOO be conducted on the basis of key parameters to 
+achieve real-time dynamic adaptive control of the shield attitude 
+under varying geological conditions?
+Given the above problem analysis, herein, a DT platform with an 
+intelligent IBKA-NGBoost-NSGA-III optimization control framework for 
+the tunneling attitude is presented. The aim of this study is to provide a 
+feasible method for adaptive real-time intelligent dynamic control of the 
+shield attitude. To address the aforementioned gaps, the following 
+contributions are made: 
+• A novel DT-driven framework for adaptive shield attitude control: A 
+closed-loop intelligent framework is proposed by integrating IBKA- 
+NGBoost and NSGA-III, enabling real-time dynamic interaction be -
+tween physical tunneling entities and virtual models to achieve 
+automated attitude management across varying geological 
+conditions.
+• High-efficiency predictive modeling via IBKA-NGBoost under small- 
+sample constraints: By optimizing the NGBoost algorithm with the 
+IBKA, the model achieves excellent uncertainty quantification and 
+generalization. It yields high precision (R
+2 
+> 0.91) with minimal 
+training time (29.2 s), specifically addressing data scarcity issues for 
+complex strata.
+• Multiobjective collaborative optimization mechanism for complex 
+tunneling parameters: The coupling of the intelligent “ decision en -
+gine ” (NSGA-III) with the prediction model allows for the simulta -
+neous optimization of 12 critical construction variables. This 
+mechanism achieves a maximum improvement of 84.8% in attitude 
+H. Chen et al. Advanced Engineering Informatics 73 (2026) 104521 
+3 
+accuracy compared to that for baseline data, significantly reducing 
+reliance on operator experience.
+• Paradigm shift from passive “ AI-prediction ” to proactive “ AI-deci -
+sion making ” : The study establishes a collaborative decision-making 
+protocol between human operators and intelligent models. By 
+embedding the TOPSIS evaluation method into the DT platform, we 
+transform a traditional AI method from a simple predictive tool into a 
+robust autonomous control system for TBM operations.
+1.4. Organization structure
+The remainder of this paper is organized as follows: Section 2 out -
+lines the methodologies that are employed in this study. Section 3 in -
+troduces the analysis and decision-making methods and reports the use 
+of a metro underpass project in Wuhan as a case study to perform 
+multiobjective excavation parameter prediction and optimization con -
+trol. Section 4 discusses the advantages of the IBKA-NGBoost model over 
+other models, its DT framework and future work. Finally, Section 5 of -
+fers a comprehensive overview of the study ’ s findings.
+2. Methodology
+To address the high-dimensional MOO problem related to the atti -
+tude of the TBM and achieve intelligent decision-making in the 
+tunneling system, in this study, a high-dimensional MOO method for the 
+shield attitude that is based on the DT platform integrated with the 
+IBKA-NGBoost-NSGA-III algorithm is developed. The primary process is 
+outlined as follows: First, a framework of the shield attitude DT system is 
+established, and the physical entity is mapped to a virtual model. On this 
+basis, data are obtained through the DT platform to offer numerical 
+sources for intelligent decision-making. Second, intelligent prediction is 
+achieved through the integration of intelligent modules. Finally, control 
+from the virtual entity to the entity is achieved, and the shield attitude is 
+controlled. Moreover, the performance of the TBM is improved. The 
+intelligent online real-time adaptive optimization and decision-making 
+process is displayed in Fig. 1 .
+2.1. Establishment of the DT model for shield attitude control
+2.1.1. DT framework
+Attitude control in shield tunneling using DTs is a stage in which 
+shield tunneling is simulated in a virtual construction environment. 
+Herein, DTs are introduced into shield tunneling attitude analysis, and 
+an intelligent shield tunneling attitude analysis framework that is via 
+DTs is proposed, which provides a visual decision-making environment 
+for controlling the orientation of a TBM. The framework of DTs, which 
+includes the following main parts, is shown in Fig. 2 . 
+1. System Architecture and Components
+(1) Physical layer
+The physical layer consists of the physical entities, surrounding 
+construction facilities, data collection sensors, and activities of con -
+struction personnel. Its main functions include completing the basic 
+construction tasks of the shield machine, providing parameters for twin 
+body modeling, and collecting and transmitting data. To obtain various 
+parameters, the shield machine is equipped with different types of 
+sensors. For instance, the soil chamber pressure is monitored by pressure 
+sensors installed at different positions (upper part, lower part, left side, 
+and right side) of the soil chamber. The corresponding variables are: X1 
+(upper part), X2 (lower part), X3 (left side), and X4 (right side). The 
+comprehensive automated monitoring system can monitor and record 
+the various attitude parameters of the shield machine in real time, 
+including all the attitude parameters in this study. Additionally, the data 
+acquisition frequency is set to 30 s per collection sequence and the In -
+dustrial Ethernet data communication protocol is used to ensure the 
+reliable acquisition of real-time data. 
+(2) Digital layer
+This layer includes virtual models of all the physical layer compo -
+nents and maps the behavior of the physical layer. This involves estab -
+lishing models for the appearance and rules of physical systems, 
+including prediction and optimization algorithms, along with control -
+ling physical shield tunneling construction and managing project 
+engineering-related information. The construction process of the virtual 
+model includes 3D geometric modeling of the shield machine based on 
+Unity 3D, as well as modeling of behavior rules. The IBKA-NGBoost- 
+NSGA-III algorithm is encapsulated as a callable microservice and 
+embedded into the digital thread. 
+(3) User layer
+The user domain of DTs includes various participants who can make 
+Fig. 1. Flowchart of the optimization of shield attitude on the basis of IBKA-NGBoost-NSGA-III and DTs.
+H. Chen et al. Advanced Engineering Informatics 73 (2026) 104521 
+4 
+information-based decisions and provide feedback. A web-based visual 
+dashboard enables engineers to monitor parameters in real time and 
+receive optimization suggestions. The system presents the optimized 
+results calculated by the digital layer (i.e., the recommended construc -
+tion parameters and attitude parameters) to the user clearly, as shown in 
+Fig. 15 . Simultaneously, the “ actual values ” and “ recommended values ” 
+of the parameters are displayed in the interface, providing a basis for the 
+user's real-time decision-making. 
+2. Data flow and integration mechanism
+The physical and virtual entities are bidirectionally mapped and 
+corresponding data are synchronized through the Internet of Things. The 
+collected data are provided externally through OPCUA as standardized 
+data services. This specifically includes the data preprocessing process, 
+the selection of real-time databases, and a closed-loop path for opti -
+mizing instructions to be issued from the virtual space to the physical 
+shield machine control system.
+2.1.2. Physical-to-virtual reflection: Establishment of a DT model
+The sensors in the TBM persistently track and record the operating 
+status throughout the excavation process, and the data are processed by 
+the acquisition system. These sensors capture important information 
+such as the shield excavation time, construction progress, construction 
+parameters, and shield attitude. At present, the attitude and construc -
+tion parameters are displayed on the screen in the control room of the 
+TBM and can be remotely viewed for monitoring. However, the lack of 
+intuitive real-time dynamic visualization functions hinders real-time 
+analysis of the machine's operating status and safety, which results in 
+an inability to fully understand the substantial volume of data generated 
+in the TBM excavation process. To address this challenge, a DT platform 
+was created as an effective means for reflecting physical entities. The 
+mapping between the shield physical object and the virtual 
+representation is shown in Fig. 3 .
+2.1.3. Operational mechanism of the DT system
+Based on the aforementioned DT platform, real-time intelligent 
+control of the shield attitude is carried out. The operational mechanism 
+of the DT system is as follows.
+Step 1: Real-time Sensing. Multisource operational and attitude data 
+are synchronously acquired in the physical layer using TBM-embedded 
+sensors, including earth pressure cells, thrust jack transducers, and the 
+guidance system. Following preliminary noise reduction via the local 
+PLC, data packets are uploaded to the DT database at 1-second intervals 
+(1 Hz) through an industrial Ethernet backbone, establishing a robust 
+high-fidelity nexus between the physical and digital domains.
+Step 2: Intelligent Prediction. Serving as the “ intelligent brain ” , the 
+digital layer first performs preprocessing on the incoming streaming 
+data. The system then invokes the pretrained IBKA-NGBoost algorithm 
+module, which not only predicts the current attitude deviation based on 
+historical tunneling data but also provides an uncertainty estimation of 
+the prediction through its probabilistic output characteristics. Compared 
+to traditional point-estimate prediction methods, this probabilistic 
+paradigm aids in identifying latent risks and establishing a more scien -
+tific basis for threshold judgment. An early warning is triggered when 
+the predicted deviation probability exceeds the 80% confidence limit.
+Step 3: Intelligent Optimization. Upon completion of the prediction, 
+the system implements real-time MOO using the IBKA-NGBoost-NSGA- 
+III framework. The optimization primarily aims to minimize attitude 
+deviations while simultaneously enhancing the tunneling efficiency of 
+the TBM process. By exploring the predefined search space of opera -
+tional parameters, the algorithm identifies a set of Pareto-optimal so -
+lutions. The digital layer then filters the most compatible recommended 
+parameters from the Pareto set, tailored to the current geological con -
+ditions, to serve as the basis for correction.
+Step 4: Decision Feedback. The final optimization recommendations 
+Fig. 2. Shield tunneling DT system framework.
+H. Chen et al. Advanced Engineering Informatics 73 (2026) 104521 
+5 
+are transmitted to the TBM operator via the web-based User Layer. 
+Through 3D visualization technology, the interface dynamically displays 
+the TBM's real-time position and predicted trajectory within the tunnel, 
+presenting a comparative visualization of “ current parameters ” versus 
+“ system-recommended parameters ” . Operators can adopt the sugges -
+tions with a single click or make fine-tuned adjustments based on field 
+experience. Once the instructions are executed by the physical hard -
+ware, the resulting feedback data are looped back to Step 1, forming a 
+robust “ perception-analysis-optimization-feedback ” closed loop for real- 
+time dynamic supervision of shield attitude.
+2.1.4. Feature selection and sample preprocessing
+1. Parameter variable selection
+Herein, four shield machine position indicators are selected as the 
+output variables of the model: the horizontal deviation of the shield 
+machine incision (HDSI), the vertical deviation of the shield machine 
+incision (VDSI), the horizontal deviation of the shield tail (HDST), and 
+the vertical deviation of the shield tail (VDST). Additionally, three angle 
+indicators are chosen: the pitch attitude angle (PAA), the rolling attitude 
+angle (RAA), and the horizontal attitude angle (HAA). The HDSI rep -
+resents the horizontal distance between the center of the TBM cutter -
+head and the design tunnel axis (DTA) at a given moment. A positive 
+deviation is recorded when the cutterhead center deviates to the right of 
+the DTA. Similarly, the VDSI indicates the vertical distance between the 
+nucleus of the cutterhead and the design tunnel axis (DTA), where a 
+positive deviation signifies an upward shift toward the DTA. The same 
+logic applies to the HDST and VDST. The HAA, which is also known as 
+the yaw angle, is the deflection angle of the TBM in the horizontal di -
+rection and describes the variation in the tunneling route in the hori -
+zontal direction. This angle requires frequent correction control. The 
+PAA represents the vertical attitude of the shield machine, specifically 
+its deflection angle while tunneling vertically. Owing to its own gravity, 
+the “ top-heavy and bottom-light ” phenomenon of the shield machine 
+bowing downward can occur, which necessitates precise control of the 
+PAA variation. The RAA is the rotation angle of the TBM around its axis 
+because of the force from the cutterhead's rotation during propulsion. 
+The RAA is defined as positive when the TBM rotates clockwise around 
+its axis. To ensure normal forward tunneling of the shield machine, the 
+RAA must be kept within a small range. As tunneling progresses, the 
+attitude and position deviate from the DTA, and the seven considered 
+parameters also change continuously. To accurately predict and control 
+the shield position and attitude, precise measurements of these attitude 
+indicators are needed [15,53] . Geological parameters and shield con -
+struction factors are the key factors that influence the attitude and 
+positioning of the shield machine. Owing to the short excavation section 
+under the tunnel, the burial depth and geometric shape of the tunnel 
+remain almost unchanged, and their effects can be ignored. On the basis 
+of expert experience and the literature [9,14,15] , in this study, the soil 
+warehouse pressure — upper, soil warehouse pressure — lower, soil 
+warehouse pressure — left, soil warehouse pressure — right, threshold 
+difference between upper and lower jacks, left and right jack thrust 
+difference, travel difference, articulation cylinder stroke difference 
+(horizontal), articulation cylinder stroke difference (vertical), articula -
+tion oil pressure, cutterhead rotation speed, cutterhead torque, 
+advancing speed, grouting pressure, grouting volume, spiral rotation 
+speed, screw torque, internal friction angle, soil cohesion, compression 
+modulus, and other input parameters are selected. 
+2. Data preprocessing
+(1) Data Cleaning
+During the TBM shutdown process, a substantial volume of blank 
+data with parameter values of 0 are generated. To create a dataset, 
+eliminating any blank data to increase the data validity is essential. The 
+data cleaning process is implemented based on Equations (1) and (2)
+[54,55] : 
+f = f ( v ) ⋅ f ( n ) ⋅ f ( T ) ⋅ f ( n
+1
+) ⋅ f ( T
+1
+) (1) 
+f =
+{
+1 , Operational state
+0 , Non   operational state
+(2) 
+where v , n , T , n
+1
+, and T
+1 
+represent the advancing speed, cutterhead 
+rotation speed, cutterhead torque, screw conveyor rotation speed and 
+screw torque, respectively. If f = 0, the entry is deleted. 
+(2) Box plot method
+By displaying the distribution of data, a box plot effectively high -
+lights outliers within the dataset, with values that fall outside the 
+designated upper and lower boundaries classified as outliers. The box 
+Fig. 3. Mapping from physical entities to virtual entities.
+H. Chen et al. Advanced Engineering Informatics 73 (2026) 104521 
+6 
+plot method is used to screen outlier points in the sample data to prepare 
+for the subsequent processing and correction steps. 
+(3) Data normalization
+Because there are significant differences in the ranges and magni -
+tudes of the input variables, as well as positive and negative differences, 
+directly using them as training samples increases the error of the pre -
+diction model. Therefore, normalizing the original data is necessary. 
+Standardizing the data to the [-1, 1] interval is a more effective approach 
+for preventing the suppression of input vector features than standard -
+izing to the [1] interval is. The formula for normalization is as follows 
+[50,56] : 
+x
+nor
+= ( x
+max
+  x
+min
+) ⋅
+x   x
+min
+x
+max
+  x
+min
++ x
+min
+(3) 
+where x
+nor 
+represents the normalized standard value; x
+max 
+and x
+min 
+default to 1 and   1, respectively; x represents the sample value; and x
+max 
+and x
+min 
+represent the maximum and minimum sample values, respec -
+tively.
+2.2. Shield tunnel attitude prediction using the IBKA-NGBoost model and 
+DTs
+Through the use of real-time monitoring data from the TBM, DTs can 
+be combined with an intelligent prediction model to accurately estimate 
+the attitude index. This includes building and training the IBKA- 
+NGBoost learning model. However, selecting an appropriate model ar -
+chitecture is critical given the complexity of the tunneling environment 
+and the specific characteristics of the sensor data.
+2.2.1. Improved black kite algorithm (IBKA)
+The BKA addresses optimization issues by mimicking how black kites 
+hunt and capture prey and uses both global and local search methods to 
+identify the best solution [ 57 ]. The IBKA maintains the strengths of the 
+original BKA and introduces a population strategy that is grounded in 
+chaotic opposition. This helps improve the quality of the population and 
+its distribution probability at the beginning. Moreover, IBKA employs 
+the Levy flight approach and a nonlinear decreasing inertia weight 
+approach to strike a balance between the exploration and exploitation 
+abilities of the whole population, all while remaining in line with the 
+natural movement patterns of black kites [ 58 ]. The formulas for calcu -
+lating the predatory stage of the BKA are presented below: 
+X
+i
+= BK
+lb
++ rand ( BK
+ub
+  BK
+lb
+) (4) 
+x
+i , j
+t + 1
+=
+{
+x
+i , j
+t
++ n ( 1 + sin ( r ) ) × x
+i , j
+t
+, 0 . 9 < r
+x
+i , j
+t
++ n × ( 2 r   1 ) × x
+i , j
+t
+, else
+(5) 
+where BK
+lb 
+and BK
+ub 
+represent the upper and lower limits, respectively, 
+of the threshold; rand represents a random value in the range of [1] ; x
+i , j
+t 
+and x
+i , j
+t + 1 
+represent the positions of the i -th black kite in the j -th dimen -
+sion at iterations t and t + 1, respectively; r represents a random value 
+between 0 and 1; T denotes the total number of iterations; and n =
+0 . 05 × exp
+(
+  2 × ( t / T )
+2
+)
+.
+Following the incorporation of the Levy flight escape strategy and 
+the nonlinear decreasing inertial weight strategy for enhancement, the 
+formulas for updating positions in the predatory and migratory stages of 
+IBKA can be expressed as follows: 
+X
+i , j
+( t + 1 ) =
+{
+Lv × X
+i , j
+( t ) + w ( t ) × n ( 1 + sin ( r ) ) × X
+i , j
+( t ) p < r
+Lv × X
+i , j
+( t ) + w ( t ) × n ( 2 r   1 ) × X
+i , j
+( t ) else
+(6) 
+X
+i , j
+( t + 1 ) =
+⎧
+⎨
+⎩
+Lv × X
+i , j
+( t ) + C ( 0 , 1 ) ×
+ 
+Lv × X
+i , j
+( t )   w ( t ) × BW
+L
+( t )
+)
+f
+ 
+X
+i , j
+( t )
+)
+< rf
+ 
+X
+j
+( t )
+)
+Lv × X
+i , j
+( t ) + C ( 0 , 1 ) ×
+ 
+w ( t ) × BW
+L
+( t )   Lv * m × X
+i , j
+( t )
+)
+, else
+(7) 
+To increase the accuracy of the globally optimal value that is ob -
+tained by integrating the Levy flight strategy with the nonlinear 
+decreasing inertia weight strategy, a greedy strategy is employed for 
+position updating in this study. This strategy only performs replacement 
+when the fitness of the new position is superior to that of the original 
+position, which ensures that a better individual is selected in each up -
+date. Otherwise, the position of the solution remains unchanged.
+2.2.2. NGBoost
+NGBoost is a boosting algorithm that focuses on probabilistic pre -
+dictions and enables direct estimation of the probability distribution for 
+the target variable. This method quantifies the uncertainty in the pre -
+diction results and provides uncertainty assessments for point pre -
+dictions. Additionally, NGBoost employs the natural gradient descent 
+method for model training, which can converge to the globally optimal 
+solution faster [41,59] .
+NGBoost comprises three primary modules: (1) base learners ( f
+n
+), (2) 
+a parameter probability distribution ( P
+θ
+( y | x ) ), and (3) reasonable 
+scoring rules ( ℘ ( P
+θ
+, y ) ). For a new sample input x , the prediction y | x is 
+obtained in the form of P
+θ
+. θ is a combination of m base learner inputs 
+and an initial distribution θ
+( 0 )
+, and the above parameters determine the 
+probability prediction y | x . To obtain the prediction result parameter θ 
+for a certain x , each base learner f
+n 
+takes x as input and, on the basis of a 
+scaling factor ρ
+( m )
+and learning rate η , scales the predicted output. Here, 
+f
+n 
+is collectively referred to as the set of base learners for stage n . The 
+updated equation is as follows [60] : 
+y | x P
+θ
+( x ) , θ = θ
+( 0 )
+  η
+∑
+M
+m = 1
+ρ
+( m )
+⋅ f
+( m )
+( x ) (8) 
+The prediction parameters for each sample i are calculated for its 
+current position in each iteration θ
+m   1
+i
+. The natural gradient g
+i 
+of the 
+evaluation rule S is used to fit a set of base learners f to predict the 
+corresponding components of the natural gradient for each sample x
+i 
+After the scaling factor ρ
+( m )
+is determined, each predicted sample 
+parameter has a proportional gradient that is based on a smaller learning 
+rate ρ
+( m )
+⋅ f
+( m )
+( x ) ; after scaling is performed, it is added to each θ
+( m   1 )
+i 
+and 
+updated to θ
+m
+i
+.
+NGBoost uses decision trees as base learners and updates the pre -
+diction model parameters through iterative computation of the natural 
+gradient. This model undergoes an iterative training loop, which in -
+cludes natural gradient computation for optimization, fitting of base 
+learners, and adaptive model updates. This enables the model to output 
+the full probability distribution of the target variable. Upon comparison, 
+the normal distribution shows optimal performance in terms of the CRPS 
+and PIT calibrations and is thus selected as the target distribution.
+The hyperparameters of the NGBoost model are optimized using 
+IBKA, with a focus on four key parameters: learning_rate, mini -
+batch_frac, col_sample, and n_estimators. In gradient boosting trees, the 
+learning_rate dictates the magnitude of weight adjustments in each 
+iteration of the model ’ s training process. An excessively high learning 
+rate may lead to unstable training, whereas an overly low learning rate 
+may result in a sluggish training process. Minibatch_frac typically refers 
+to the proportion of the data subset that is used to train the model in 
+each iteration. During the tree construction process, col_sample 
+randomly selects a certain proportion of features for splitting, which 
+helps prevent overfitting and improves model diversity. N_estimators 
+refers to the number of trees. Increasing the number of trees can improve 
+model performance but also increases computational costs and the risk 
+of overfitting. The IBKA algorithm is configured for 100 iterations with a 
+population size of 5. The dataset is randomly divided into two parts: 
+H. Chen et al. Advanced Engineering Informatics 73 (2026) 104521 
+7 
+80% for training and 20% for testing. Additionally, a fivefold cross- 
+validation method is employed to mitigate the effects of random vari -
+ance and prevent overfitting.
+2.2.3. Accuracy testing of the prediction models
+To achieve a more precise quantitative assessment of the effective -
+ness of IBKA-NGBoost [61] , the root mean square error (RMSE) and the 
+mean absolute error (MAE) are used to assess the extent of inconsistency 
+between the predicted and actual values [62] . R
+2 
+is used to assess the 
+degree of correspondence between the predicted and actual values [63] . 
+The calculation method is shown in Eqs. (9) to (11) [64] . 
+R
+2
+= 1  
+∑
+n
+i = 1
+( y
+i
+  ̂y
+i
+)
+2
+∑
+n
+i = 1
+( y
+i
+  y
+i
+)
+2
+(9) 
+RMSE =
+̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅ ̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅ ̅
+1
+n
+∑
+n
+i = 1
+( y
+i
+  ̂y
+i
+)
+2
+√
+(10) 
+MAE =
+1
+n
+∑
+n
+i = 1
+| ̂y
+i
+  y
+i
+| (11) 
+2.3. Intelligent regulation from virtual to real: Online parameter 
+optimization
+2.3.1. NSGA-III
+The NSGA-III algorithm increases the search rate for high-quality 
+solutions, maintains population diversity, and helps the algorithm 
+effectively explore Pareto frontiers in multidimensional optimization. 
+Research indicates that the NSGA-III algorithm excels at solving prob -
+lems with three or more objectives [50,65] . It uses reference points to 
+divide the population's solutions and calculates the crowding distance 
+on the basis of these reference points. By adjusting the number and 
+positions of the reference points, the distribution of solutions can be 
+adjusted to better cover the front edge [66] .
+Each reference point that is constructed by NSGA-III is on an 
+( M   1 ) -dimensional hyperplane, where M represents the dimension of 
+the objective space, i.e., the number of optimization objectives. If we 
+divide each target into H parts, then the number of reference points is 
+[49] : 
+ref Count = C
+H
+M + H   1
+(12) 
+Next, NSGA-III normalizes the objective functions. First, the mini -
+mum values of each objective function are combined and set as ideal 
+points [67] : 
+z =
+ 
+Z
+min
+1
+, Z
+min
+2
+, ⋯ , Z
+min
+M
+)
+(13) 
+In the formula, Z
+nin
+1
+, Z
+min
+2
+, ⋯ , Z
+min
+M 
+represent the minimum values of the 
+optimization functions. The values of the distinct population within the 
+target dimension are then converted as follows: 
+f
+ʹ
+i
+( X ) = f
+i
+( X )   Z
+min
+i
+(14) 
+The extremum points of each dimension are acquired through the 
+ASF function operation [68] : 
+ASF ( X , W ) = max
+i = 1
+f
+ʹ
+i
+( X )
+w
+i
+(15) 
+The lowest value of the ASF for each dimension is defined as the 
+extremum point, a set of M -dimensional extremum points is obtained, 
+and this set is used to construct a hyperplane with ( M   1 ) dimensions 
+compared to each coordinate axis. The intercept between the hyper -
+plane and each coordinate axis is denoted as, and the objective function 
+can be normalized by the following equation [68] : 
+f
+n
+i
+( X ) =
+f
+ʹ
+i
+( X )
+a
+i
+  Z
+min
+i
+=
+f
+i
+( X )   Z
+min
+i
+a
+i
+  Z
+min
+i
+(16) 
+The next step is to create a “ mapping relationship ” among the in -
+dividuals in the population and the reference points. The origin of the 
+hyperplane is connected with various reference points, rays are con -
+structed, and individuals with the smallest distances are grouped 
+together as related reference points. The number of individuals that are 
+linked to each reference point is determined, and K individuals are 
+selected to enter the final frontier population on the basis of this 
+number.
+2.3.2. Determining the objective function and establishing variable 
+constraints
+The relational function is expressed as follows [69] : 
+| f
+m
+| = minf
+m
+[ IBKA   NGBoost ( X
+1
+, X
+2
+, ⋯ , X
+n
+)] (17) 
+where | f
+m
+| represents the absolute value of the output function for 
+each optimization objective and where X
+1
+, X
+2
+, ⋯ , X
+n 
+represent the input 
+variables.
+The relevant constraint range, which is expressed as follows, is 
+provided on the basis of engineering specifications and project experi -
+ence [69] : 
+v
+bl
+≤ x
+i
+≤ v
+ul
+(18) 
+where x
+i 
+represents the measured value of decision variable X
+i 
+and 
+where v
+ul 
+and v
+bl 
+indicate the upper and lower bounds, respectively, of 
+the input variable X
+i
+.
+2.3.3. TOPSIS approach for deriving the optimal solution
+The Pareto-optimal solutions that are generated by NSGA-III form a 
+collection that effectively addresses MOO requirements. However, 
+practical tunneling operations necessitate a single decision-making 
+strategy to guide excavation activities. When the final optimal solu -
+tion is selected from the Pareto front, various multicriteria deci -
+sion ‑ making methods, such as those that are based on fuzzy logic or 
+utility theory, are available. However, fuzzy logic requires the mem -
+bership functions to be manually defined, which introduces strong 
+subjectivity, and utility theory requires the decision ‑ makers ’ utility 
+curve to be obtained in advance, which makes real ‑ time construction on 
+site difficult. In this study, the TOPSIS method is adopted for the 
+following reasons: First, the Pareto solution set that is generated in this 
+research consists of precise numerical objectives; thus, no fuzzification is 
+needed. Second, the “ closeness to the ideal solution ” concept of TOPSIS 
+is intuitive and can provide a clear ranking of compromise alternatives. 
+Third, TOPSIS has been widely applied to shield tunneling construction 
+problems, and the use of TOPSIS to screen the optimal solution can offer 
+valuable insights for similar projects [70,71] . Therefore, TOPSIS is 
+considered the most suitable approach for addressing the deci -
+sion ‑ making problem in this study. This method evaluates each candi -
+date by measuring its distances to both the positive (ideal) and negative 
+(nonideal) reference points. This dual-proximity assessment enables 
+systematic ranking of trade-off solutions under complex geological and 
+engineering constraints. The scoring equation for each alternative is 
+presented as Equation (19) [72] : 
+S
+i
+=
+f
+ 
+i
+f
+ 
+i
++ f
++
+i
+(19) 
+where S
+i 
+denotes the fraction that is associated with the i -th Pareto 
+solution, f
+ 
+i 
+indicates the distance between the i -th Pareto solution and 
+the negative ideal solution, and f
++
+i 
+represents the distance between the i 
+th Pareto solution and the positive ideal solution. The calculation for -
+mulas for f
+ 
+i 
+and f
++
+i 
+are presented in Equations (20) and (21) , 
+respectively: 
+f
+ 
+i
+=
+̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅ ̅̅̅̅̅̅̅̅̅̅ ̅
+∑
+m
+j = 1
+(
+x
+ij
+  z
+ 
+j
+)
+2
+√
+(20) 
+H. Chen et al. Advanced Engineering Informatics 73 (2026) 104521 
+8 
+f
++
+i
+=
+̅̅̅̅̅̅̅̅̅̅̅̅̅̅ ̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅ ̅
+∑
+m
+j = 1
+(
+x
+ij
+  z
++
+j
+)
+2
+√
+(21) 
+where m represents the overall count of the optimization objectives, 
+x
+ij 
+represents the i -th Pareto solution under the j -th objective, and z
++
+j 
+and 
+z
+ 
+j 
+denote the highest and lowest values under the j -th objective, 
+respectively. The corresponding calculation formulas are displayed in 
+Equations (24) and (25) : 
+z
++
+j
+= max
+{
+x
+1 j
+, x
+2 j
+, ⋯ , x
+ij
+}
+(22) 
+z
+ 
+j
+= min
+{
+x
+1 j
+, x
+2 j
+, ⋯ , x
+ij
+}
+(23) 
+To showcase the degree of improvement that is attained by each 
+optimization approach, the percentage of improvement for each Pareto 
+solution is computed for individual objectives by Equation (24) , and the 
+total improvement that is offered by each scheme is assessed by Equa -
+tion (25) : 
+Imp
+ij
+=
+⃒
+⃒
+⃒
+⃒
+⃒
+Org
+j , ave
+  Opt
+ij
+Org
+j , ave
+⃒
+⃒
+⃒
+⃒
+⃒
+(24) 
+Impoverall
+i
+=
+̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅ ̅̅̅̅̅̅̅̅ ̅
+∑
+m
+j = 1
+(
+Imp
+ij
+)
+2
+√
+(25) 
+where Imp
+ij 
+represents the improvement that is attained for the j -th 
+objective of the i -th Pareto solution, Org
+j , ave 
+denotes the initial average of 
+the j -th objective, Opt
+ij 
+signifies the optimization value of the j -th 
+objective of the i -th Pareto solution, and Impoverall
+i 
+represents the cu -
+mulative improvement that is provided by the i -th Pareto solution.
+2.3.4. Online optimization implementation steps
+Herein, the IBKA-NGBoost-NSGA-III algorithm is used to develop an 
+optimized solution for the multiobjective challenge of determining 
+shield tunneling parameters. The optimization process begins with a 
+randomly initialized population, which moves through procedures of 
+selection, recombination, and mutation to create successive generations 
+of viable solutions. In the process of seeking high-quality solutions, 
+iterative evolutionary strategies such as nondominated sorting, the 
+reference point method, and associated solutions are employed to 
+continuously generate better populations and update the space of 
+feasible solution sets. Pseudocode that outlines these steps is presented 
+in Fig. 4 .
+3. Case study
+3.1. Background
+In this study, intelligent control and decision-making for shield 
+attitude in a specific section of the Wuhan Metro Tunnel in China are 
+used as a case study. This study focuses on the underpass construction 
+between Julong Avenue Station and Tangyunhai Station of the Wuhan 
+Metro Line 7 project, which intersects with Line 2. At the underpass 
+location, the existing pipeline segment features an inner diameter of 6 m 
+and is buried at a depth of 8.5 – 9.92 m and situated in cohesive soil that 
+is interspersed with crushed stones. In contrast, the pipe segment for 
+Line 7 features an outer diameter of 6.2 m and is buried at a depth of 
+18.62 m and positioned within a layer of cohesive soil that is mixed with 
+crushed stones and moderately weathered dolomite. Notably, the sep -
+aration between the underpass section and the existing line is merely 
+2.7 m.
+The construction of this tunnel project has high requirements for the 
+attitude and position of the TBM, and new intelligent technologies for 
+predicting the attitude of the TBM are necessary. The shield machine 
+attitude parameters and geological environment around the tunnel are 
+shown in Fig. 5 .
+3.2. Data acquisition and analysis
+3.2.1. Data acquisition
+The geological data are sourced from geological exploration reports. 
+The shield data are monitored in real time through the DT platform, and 
+the data between rings number 1455 and 1465 of the underpass section 
+are collected. The data collection interval is 30 s. Ultimately, 1048 
+datasets are selected as sample data to construct a research model. Each 
+dataset includes 18 parameters and 3 geological parameters obtained by 
+the real-time measurement system of the TBM. The methods that are 
+Fig. 4. Pseudocode for IBKA-NGBoost-NSGA-III.
+H. Chen et al. Advanced Engineering Informatics 73 (2026) 104521 
+9 
+used to calculate the geological parameters can be found in the literature 
+[7] . Table 1 displays the data for each variable.
+3.2.2. Data preprocessing
+Noise reduction for construction data and shield attitude data is 
+essential for improving prediction model performance. An analysis of 
+the dataset reveals that data for multiple individual parameters that 
+correspond to several ring numbers are missing. To address the effects of 
+missing values, outliers, and noise, a series of data processing steps are 
+implemented, including the removal of outliers, the imputation of 
+missing values, and the application of denoising methods. Box plots are 
+then used for processing. Taking several input parameters and 7 shield 
+tunnel pose parameters as examples, box plots are used for detection, 
+and the results are shown in Figs. 6 and 7 .
+After outliers are detected, denoising techniques are employed on 
+the anomalous data to decrease the detrimental effects of these outliers 
+on the model ’ s predictive performance. In this study, the WT is used to 
+denoise the original data, and the signal comparison results for the 
+shield tunnel attitude parameters prior to and following denoising are 
+shown in Fig. 8 . In addition, the original shield machine position and 
+attitude data have sharp edges and noise ( Fig. 8 ). After threshold 
+denoising on the basis of wavelet analysis, the obtained shield machine 
+attitude signal is smoother, and the smoothness of the data curve is 
+greatly improved compared with that before denoising.
+After raw data cleaning and outlier removal, a Min-Max normaliza -
+tion procedure is applied to scale all variables into a consistent interval, 
+thereby enhancing the numerical stability and convergence speed of the 
+models. To rigorously evaluate predictive performance in a real-world 
+engineering context, the dataset is partitioned into a training set and a 
+testing set at a ratio of 8:2. Crucially, this partition follows a strict 
+chronological sequence — training the model with historical excavation 
+cycles to predict the forthcoming attitude parameters — rather than 
+employing random shuffling. This time-series splitting strategy ensures 
+that the model ’ s generalization capability is tested considering the dy -
+namic evolution of geological conditions. To maintain absolute evalu -
+ation fairness, all baseline models (e.g., BPNN, RF, and LSTM) are 
+Fig. 5. Project background introduction: (a) Soil distribution and (b) shield machine attitude parameters.
+Table 1 
+Statistical characteristics of the sample data.
+Parameter type Variable name Unit Max. Min. Average value Standard deviation
+Input variables Soil warehouse pressure — upper, X1 bar 2.9 0.1 1.35 0.33
+Soil warehouse pressure — lower, X2 bar 6.3 0 2.19 1.19
+Soil warehouse pressure — left, X3 bar 23.1 0.2 1.51 0.82
+Soil warehouse pressure — right, X4 bar 3.2 0.1 1.50 0.47
+Thrust difference between the upper and lower jacks, X5 kN 244   203 41.19 73.68
+Left and right jack thrust difference, X6 kN 145   229   27.75 67.62
+Travel difference between the upper and lower jacks, X7 mm 92   125   11.95 18.28
+Left and right jack travel difference, X8 mm 82   108   1.55 17.77
+Articulation cylinder stroke difference (horizontal), X9 mm 95 0 25.65 19.30
+Articulation cylinder stroke difference (vertical), X10 mm 85 0 21.20 16.07
+Articulation oil pressure, X11 bar 365 0.3 112.40 84.83
+Cutterhead rotation speed, X12 r/min 2.9 0.5 1.65 0.16
+Cutterhead torque, X13 kN ⋅ m 3200 650 2040.75 517.80
+Advancing speed, X14 mm/min 80 3.6 35.69 14.70
+Grouting pressure, X15 bar 3.5 0.7 2.48 0.37
+Grouting volume, X16 m
+3
+8 5 7.35 0.40
+Spiral rotation speed, X17 rpm 49 0 10.22 5.68
+Screw torque, X18 kN ⋅ m 201.6 65 135.96 27.36
+Internal friction angle, X19
+◦
+30 36 33 2.12
+Soil cohesion, X20 kPa 37 42 39 1.44
+Compression modulus, X21 MPa 19 28 23 2.57
+Output variables Horizontal deviation of shield machine incision, F1 mm 61   65   2.38 16.91
+Vertical deviation of shield machine incision, F2 mm 53   77   4.55 27.42
+Horizontal displacement of the shield machine tail, F3 mm 44   69   26.92 22.79
+Vertical displacement of the shield machine tail, F4 mm 78   49 17.46 21.93
+Pitch attitude angle, F5 mm/m 24.8   28   1.61 13.15
+Horizontal attitude angle, F6 mm/m 21.6   15   1.10 3.82
+Rolling attitude angle, F7 mm/m 16   15   0.03 3.57
+H. Chen et al. Advanced Engineering Informatics 73 (2026) 104521 
+10 
+implemented using this same method of data splitting and synchroni -
+zation of preprocessing parameters. The finalized training model is then 
+deployed to forecast the multidimensional shield attitude of the test 
+samples, facilitating a direct comparison with the high-precision field 
+measurement data.
+3.2.3. Data correlation analysis
+Pearson correlation analysis reveals no significant linear associations 
+between the construction parameters and the attitude parameters of the 
+TBM. A heatmap that illustrates the correlation analysis results for the 
+attitude parameters is shown in Fig. 9 . According to Fig. 9 , absolute 
+values of less than 0.6 indicate that the linear correlations between the 
+input variables are weak and relatively independent. The highest 
+negative correlation between the advancing speed and the PAA is   0.55, 
+and the highest positive correlation between the screw machine speed 
+and the VDST is 0.44.
+Fig. 6. Box plots of the input parameters (X1 ~ X10): (a) X1 ~ X4, (b) X5 ~ X6, and (c) X7 ~ X10.
+Fig. 7. Box plots of the shield attitude (F1 ~ F7): (a) F1 ~ F4 and (b) F5 ~ F7.
+H. Chen et al. Advanced Engineering Informatics 73 (2026) 104521 
+11 
+3.3. Prediction of the shield attitude via IBKA-NGBoost
+3.3.1. Hyperparameter optimization
+The setting of hyperparameters significantly affects model learning 
+and training effectiveness [ 73,74 ]. The key hyperparameters of 
+NGBoost, including learning_rate, minibatch_frac, col_sample, and 
+n_estimators, are optimized with the IBKA. Table 2 presents the results of 
+hyperparameter optimization for the NGBoost model. During parameter 
+tuning, IBKA refines the parameter sampling strategy on the basis of 
+previous model evaluation results, such as loss values, to progressively 
+determine the optimal parameters. This iterative adjustment of search 
+space is illustrated in Fig. 10 .
+Fig. 8. Comparison of signals before and after denoising of the shield tunnel attitude parameters: (a) F1, (b) F2, (c) F3, (d) F4, (e) F5, (f) F6, and (g) F7.
+H. Chen et al. Advanced Engineering Informatics 73 (2026) 104521 
+12 
+IBKA performs efficient and stable optimization of the hyper -
+parameters and identifies the best combination of hyperparameters for 
+the NGBoost model within 100 iterations. The data in Table 2 and 
+Fig. 10 show that in the hyperparameter optimization process for the 7 
+objectives, the maximum number of iterations is 89. IBKA can auto -
+matically find the optimal hyperparameter combination in a small 
+number of iterations, thus achieving high precision and high efficiency 
+in the intelligent parameter adjustment process.
+3.3.2. Analysis of the prediction results
+By using the optimization outcomes that are obtained from the IBKA 
+process, the training set is employed to train IBKA-NGBoost, which is 
+subsequently validated using the test set to assess its performance. 
+However, performing settlement prediction via ML models solely on the 
+training dataset can lead to biased evaluations. Therefore, we employ k- 
+fold cross-validation (CV) to verif

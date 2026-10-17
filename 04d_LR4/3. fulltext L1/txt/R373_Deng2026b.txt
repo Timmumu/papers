@@ -1,0 +1,1178 @@
+Available online at www.sciencedirect.com
+ScienceDirect 
+Underground Space 29 (2026) 377–394
+www.keaipublishing.com/undsp 
+Research Paper 
+Vision-driven dynamic tunnel digital twin for real-time
+situation and emergency awareness
+Rong Deng a , 
+a Research Centre for Smart Urban Resilience and Fireﬁghting, Department of Building Environment and Energy Engineering,
+The Hong Kong Polytechnic University, Hong Kong 999077, China
+Siqi Zhu a , Tong Lu a , Wei Wang b , 
+b Sichuan Jiutong Zhilu Technology (Goveste) Co., Ltd., Chengdu 610095, China
+Shaojie Gong b , Yuxin Zhang a , 
+Xinyan Huang a,⁎ , Asif Usmani a 
+Received 8 December 2025; received in revised form 23 March 2026; accepted 8 May 2026
+Available online 22 July 2026
+Abstract 
+Eﬀective management and safe operation of tunnel infrastructure are critically challenged by the persistent vehicle tracking across 
+non-overlapping
+ camera domains and the lack of real-time situational awareness for emergency incidents. This work proposes a dynamic 
+digital twin framework to create a high-ﬁdelity virtual representation that synchronously updates with physical tunnel environments by 
+leveraging existing Closed-Circuit Television (CCTV) networks. The core is a novel Tunnel Re-identiﬁcation Model (TRIM) that can 
+create discriminative feature embeddings for seamless vehicle tracking and re-identiﬁcation across multi-camera domains. Comparative 
+validations unequivocally demonstrate that the TRIM signiﬁcantly outperforms Convolutional Neural Networks (CNNs) and standard 
+Vision Transformer backbones, achieving a state-of-the-art mAP@10 of 0.684. Analysis of attention heatmaps reveals its ability to gen-
+erate a comprehensive and granular feature representation, focusing on preserving high-quality characteristics for speciﬁc vehicle iden-
+tity. Furthermore, the emergency response ability of the digital twin is augmented with a vision-based ﬁre detection module to real-time
+localize and visualize emergent tunnel ﬁre events in the digital twin. By consolidating and distilling vision data from CCTV cameras into
+an intuitive representation, the proposed framework enhances situational judgment for operators and signiﬁcantly reinforces the safety
+resilience of tunnel infrastructure without requiring extensive hardware redevelopment.
+Keywords: Digital twin; Vehicle re-identiﬁcation; Emergency response; Traﬃc management; Smart tunnel
+1 Intr oduction
+As fundamental transportation infrastructure, road tun-
+nels
+ are the key nodes of city operation and personnel 
+interaction. Due to the inherently semi-enclosed environ-
+ments and complicated facilities of tunnels, traditional tun-
+nel operation and maintenance mostly rely on isolated
+monitoring systems and preset management plans ( Liu 
+et al., 2024 ). Operational data, including videos, textual 
+report
+s, and binary sensor signals, commonly lags behind
+changes in real-world tunnels, and its presentation is not 
+in
+ a straightforward and easy-to-understand format. Oper-
+ation and maintenance teams necessitat e information-
+intensive distillation and analysis of heterogeneous data
+from tunnel sensor networks ( Yin et al., 2020). Traditional 
+tunnel
+ operation lacks responsiveness to the dynamic 
+changes in traﬃc ﬂow and the complexity of unexpected 
+events, with critical issue s such as insuﬃcient perception
+capabilities, delayed decision-making responses, and high
+operational costs ( T. Li et al., 2024 ). 
+⁎ Corresponding author. 
+E-mail address: xy.huang@polyu.edu.hk (X. Huang). 
+Peer
+ review under the responsibility of Tongji University.
+https://doi.org/10.1016/j.undsp.2026 .05.004 
+2467-9674/© 2026 Tongji University. Publishing Services by Elsevier B.V. on behalf of KeAi Communications Co. Ltd. 
+This is an open access article under the CC BY-NC-ND license ( http://creativecommons.org/licenses/by-nc-nd/4.0/). 
+Digital twins, as a bridge connecting the physical world 
+and the digital space, oﬀer a revolutionary approach to 
+solving the aforementioned problems and achievi ng smart
+tunnel operation ( Wu et al., 2 025). Its data-driven integra-
+tion with tunnel facilities and historic records enables real-
+time awareness and real-scene modeling of digital twin
+models for tunnel scenarios (
+Yu et al., 2021 ). This further 
+facilitates traﬃc management and emergency response by 
+prompt vehicle positioning and immediate data transmis-
+sion, thereby providing a visual platform for data integra-
+tion and judgment ( Ye et al., 2023 ). Furthermore, the 
+implementation of digital twins allows a uniﬁed data plat-
+form to interconnect diﬀerent functional modules and sub-
+systems, such as equipment signal controllers and ﬁre
+services ( X. Zhang et al., 2024b ). 
+378R. Deng et al. / Underground Space 29 (2026) 377–394
+Despite these beneﬁts, how to fully utilize data, perform 
+real-time updates, and reﬂect changes of the real world
+remains the focus for tunnel digital twins ( Liu et al.,
+2021). Current solutions have limited practicality because 
+of the lack of cross-domain perception and the incompati-
+bility of multi-source sensor data. This data silo degrades 
+tunnel digital twins into low time-sensitivity systems with 
+poor interaction between physical devices and virtual mod-
+els. One of the challenges lies in persistently tracking vehi-
+cle ﬂow inside tunnels, as well as immediately reacting to
+emergency incidents such as ﬁres (
+Gao et al., 2021 ). 
+Given these gaps, this study proposes a dynamic tunnel 
+digital twin framework for simultaneously updating vehicle 
+behaviors and reﬂecting occurrences in accordance with the 
+physical world. Rather than functioning as a fully auto-
+mated closed-loop digital twin, the proposed framework
+serves as an advanced data fusion and perception layer
+within the comprehensive digital twin architecture (
+Chang 
+et al., 2024 ). By employing a Transformer-based re-
+identiﬁcation model (TRIM) to conduct visual feature 
+extraction and matching, the constant tracking and re-
+identiﬁcation (Re-ID) of the same vehicle from multiple 
+camera areas can be performed within the full-domain dig-
+ital twin. Along with the regular traﬃc monitoring func-
+tion, a vision-based ﬁre detection unit is coupled into the 
+digital twin, which provides accurate ﬁre coordinates and 
+risk estimations. This dynamic tunnel digital twin is estab-
+lished directly on Cl osed-Circuit Television (CCTV) net-
+works, meaning it can be conveniently deployed in
+existing and upcoming tunnels without redevelopment.
+By consolidating multi-camera vision data, it establishes
+a fundamental data-fusion platform, thereby providing
+the essential prerequisite data infrastructure for future
+intelligent decision-making and automated facility control.
+2 Literature revie w
+2.1 Digital twin in tunnel lifecycle
+Over the period of tunnel construction, uncertain and 
+changeable geological conditions will be encountered, 
+which are gradually exposed as excavation or blasting pro-
+gresses ( Desai et al., 2022 ). Through integrating on-site 
+sensing methods, including image recognition, oblique 
+photography, laser scanning, and various physical sensors,
+digital twins are allowed to quickly and accurately access
+geotechnical and structural responses, thereby supporti ng
+tunnel construction ( L. Zhang et al., 2024 ). Considering 
+that tunnel construction involves multidisciplinary knowl-
+edge that contains mechanics, thermodynamics, geology, 
+and materials science, digital twins present computability 
+and pr edictability to simulate multi-physics coupling and
+avoid potential structural failures with ﬁne-grained descrip-
+tions ( Fang et al., 2024 ). 
+During the operation and maintenance phase, digital 
+twins serve as a comprehensive and intelligent management 
+platform, providing a holistic and real-time overview of the 
+tunnels’ performance and environment. By integrating with
+disparate systems, such as electromechanical equipment
+(
+Yu et al., 2023), lighting controls (Shen et al., 2022), traﬃc 
+signals (Zhao et al., 2022 ), and structural health mo nitor-
+ing (Wang et al., 2025 ), digital twins create a uniﬁed repre-
+sentation of tunnel operational conditions. A practical 
+exempliﬁcation involves designing a digital twin framework 
+to ad opt surveillance videos to reconstruct an immersive
+virtual tunnel and couple with tunnel facilities (
+Z. Wu 
+et al., 2022 ). This enables operators to predict the future 
+performance of these assets and minimize the losses of traf-
+ﬁc accidents, moving beyond reactive problem-solving to a
+more predictive and optimized management paradigm
+(
+Khan, 2025 ). Historic traﬃc patterns can be superposed 
+onto this digital twin model, allowing for the proactive 
+adjustment of traﬃc managem ent strategies at the speciﬁc
+time point to ensure smooth and eﬃcient transit (
+Rezaei 
+et al., 2 023). Furthermore, tunnel digital twins enable the 
+sophisticated optimization of critical subsystems. For 
+instance, ventilation and lighting systems can be dynami-
+cally adjusted based on actual traﬃc volume and air quality
+data, thereby signiﬁcantly reducing energy consumption
+and operational costs while adhering to safety standards
+(Yang et al., 2024 ). 
+Although these applications have signiﬁcantly empow-
+ered smart operation and maintenance of tunnels, current 
+studies in this ﬁeld are still limited by data silos (
+Chang 
+et al., 2024). They lack a uniﬁed mechanism for associating 
+and integrating tunnel lifecycle data, which restricts contin-
+uous environmental perception of tunnel scenarios. Exist-
+ing methods have diﬃculty enabling mutual interaction 
+between various data, including CCTV videos, sensor mea-
+surements, and facility conditions, resulting in digital twin
+frameworks that fall short in supporting operational and
+management decisions.
+2.2 Digital twin in emergency response
+In the domain of emergency response and disaster miti-
+gation, digital twins are emerging as a cornerstone for 
+achieving new levels of eﬃciency, saf ety, and sustainability
+(
+Fan et al., 2 021). This high-ﬁdelity replica of the physical 
+world makes key emergency information available for 
+security staﬀ from Internet of Things (IoT) networks, traf-
+ﬁc systems, and environmental monitors (
+Huang et al .,
+2022). The resulting dynamic twin facilitates a holistic
+understanding of the operational state, enabling a shift 
+from reactive to predictive response. Advanced analytics 
+and machine learning algorithms applied to digital twins 
+can assist with ﬂood prevention by integrating rainfall data
+and river water level information from sensors in ﬂood-
+prone areas (
+Thakur, 2024). Regarding urban wildﬁre con-
+trol measures, digital twins oﬀer a systematic pipeli ne that
+integrates remote sensing data ( Wang et al., 2024), fuel dis-
+tribution ( Lewis et al., 2024 ), meteorological infor mation
+(Hyeong-su et al., 2019 ), and aerial ﬁeld images ( Shao 
+et al., 2023 ) to drive complex ﬁre spread models. This 
+enables emergency departments to predict the spread path 
+and speed of wildﬁre and its products in a virtual environ-
+ment, determining the eﬃciency of diﬀerent ﬁreﬁghting
+strategies and evaluating residential impact (
+Halem et al.,
+2024). 
+R. Deng et al. / Underground Space 29 (2026) 377–394379
+The application of digital twins fundamentally trans-
+forms emergency response within tunnel environments, 
+where rapid and informed decision-making is paramount
+(Yu & He, 2022 ). In the event of an incident, such as a ﬁre 
+or collision, the digital twin provides immediate and com-
+prehensive situational awareness to emergency services and
+tunnel operators by tracking high-ﬁre-risk vehicles and
+forecasting potential ﬁre power (
+X. Zhang et al., 2024b ). 
+For example, it can predict the propagation of ﬁre and 
+the dispersion of smoke with high accuracy, considering 
+ventilation status and tunnel geometry through communi-
+cating with external artiﬁcial intelligence (AI) models (
+X. 
+Wu et al., 2022 ). This predictive capability is invaluable 
+for formulating eﬀective response strategies, such as opti-
+mizing the activati on of ﬁre suppression systems and
+dynamically adjusting ventilation ( Zeng, 2024). Moreover, 
+digital twins can simulate multiple evacuation scenarios in 
+seconds, identifying the most eﬃcient egress paths and 
+communicating this guidance dynamically to travelers via
+dynamic signage ( Han et al., 2020; Wong et al., 2025 ). 
+Overall, the ability of digital twins for simulation, pre-
+diction, and guidance provides an advantage that enables 
+responders to mitigate the negative impact, protect human 
+life, and restore normal operations with minimized delays. 
+However, to capture changing ﬁre events and support time-
+critical emergency response, low-delay information syn-
+chronization between real tunnels and digital twins is
+required (
+Wolf et al., 2022 ). Most investigations have 
+selected sensors already positioned in tunnels as data 
+sources to implement digital twins, where situational 
+awareness is limited compared to CCTV networks. This
+may cause the critical unreliability of emergency
+information.
+2.3 Vision-based sensing in tunnels
+While the aforementioned applications highlight the 
+potential of digital twins in tunnel management and emer-
+gency response, realizing these capabilities heavily depends
+on real-time data acquisition and sensing ability (
+Liu et al.,
+2025). Situational awareness in digital twins has been lim-
+ited by a reliance on single-point-based sensors, which 
+can cause a critical latency between the emergency occur-
+rence and response. To overcome this sensory bottleneck, 
+recent research has increasingly turned towards vision-
+based sensing. With technical advances in computer vision, 
+it has become increasingly mature to take full advantage of
+widespread CCTV camera networks to sense internal tun-
+nel environments without extra installations of expensive
+LiDARs or motion detectors (
+Diren & Alth en, 2023;
+Rios-Cabrera et al., 2012 ). Meanwhile, vision data pro-
+vides more diverse information than that provided by 
+lasers or millimeter wave s, which supports the real-world
+modeling and awareness of tunnel scenes (
+Attard et al.,
+2018). Some investigations have demonstrated the reliabil-
+ity and eﬃciency of vision data on tunnel construction ( Y. 
+Li et al., 2024 ), 3D digitalization ( Xue et al., 2021 ), defect 
+inspection ( Li et al., 2023 ), traﬃc management ( Lee & 
+Shin, 2019; Tahir et al., 2023 ), and emergency response
+(Cheng et al., 2025; X. Zhang et al., 2024a ). 
+Despite these advancements in single-camera data ana-
+lytics, a critical gap remains in the continuous tracking of 
+dynamic entities across the entire tunnel infrastructure. A 
+signiﬁcant amount of information in the visual data cap-
+tured by CCTV networks has not been used eﬃciently, 
+remaining conﬁned to processing and analysis within a sin-
+gle camera domain. The information isolation between 
+cameras with non-overlapping coverage areas results in dif-
+ﬁculties in real-time visualization and cross-region vehicle
+re-identiﬁcation in tunnels. This limitation directly moti-
+vates the development of the digital twin framework pro-
+posed in this study, which seeks to transform disjointed
+camera feeds into a full-domain perception layer for the
+dynamic digital twin.
+3 System archi tecture
+3.1 Top-level desig n
+The proposed dynamic digital twin adopts CCTV cam-
+eras as the data source for tunnel environment sen sing,
+which can signiﬁcantly minimize hardware dependency.
+As shown in
+Fig. 1 , the digital twin framework employs 
+a multi-stage pipeline to transform multi-source video feeds 
+into a coherent and dynamic representation. It ﬁrst detects 
+and tracks vehicles across real-time streams. A Re-ID mod-
+ule then extracts vehicle features, computes similarity 
+scores against a feature gallery, and assigns a global iden-
+tiﬁer (GID) to each vehicle. In the event of a ﬁre, the frame-
+work rapidly localizes the ﬁre disaster and visualizes it on
+the user interface, providing critical situational awareness
+to initiate swift and targeted emergency responses.
+This dynamic tunnel digital twin consists of multi-
+functional submodules, which support video decoding, 
+vehicle tracking, vehicle Re-ID, ﬁre detection, and model 
+rendering. Ther efore, the architecture is realized through 
+a component-based design that enhances systematic 
+scalability. Uniﬁed Modeling Language (UML) is a useful
+way to illustrate the data interaction between various com-
+ponents (see Fig. 2 ) ( Medvidovic et al., 2002 ). The data 
+ﬂow initiates with the ingestion and decoding of cross-
+region video streams from a network of CCTV cameras 
+distributed throughout the tunnel infrastructure. An object 
+detection and tracking module processes these streams to
+identify and assign transient local identiﬁers (LID) to vehi-
+cle entities within individual camera views.
+380R. Deng et al. / Underground Space 29 (2026) 377–394
+Fig. 1. Conception of the proposed dynamic tunnel digital twin framework.
+The core of the digital twin is the vehicle Re-ID module, 
+which tracks vehicles across non-overlapping camera 
+views. It extracts a feature vector from each detected vehi-
+cle and matches it against a dynamic feature dictionary. By 
+calculating similarity scores, the syst em correlates vehicle
+instances across diﬀerent cameras to assign persistent glo-
+bal identiﬁers. Furthermore, an identity corrector inte-
+grates spatiotemporal data, such as camera layout and
+sequence, to validate these identiﬁers. This module assesses 
+the coherence of each detected vehicle trajectory by verify-
+ing its conformity with the known camera topology and 
+ensuring that the cross-camera transition times are physi-
+cally plausible. Filtering out illogical Re-ID results main-
+tains a high-ﬁdelity representation of the tunnel
+environment and ensures the accuracy of continuous vehi-
+cle tracking.
+Furthermore, the architecture supports functional mod-
+ularization, exempliﬁed by an auxiliary ﬁre detection mod-
+ule. The ﬁre detection task is performed by a ﬁne-tuned 
+YOLOv8 model trained for 150 epochs on 70 000 images. 
+This integration demonstrates the framework’s extensibil-
+ity for concurrent task processing without bottlenecking 
+the primary tracking modules. Crucially, the vehicle
+Re-ID and ﬁre detection modules do not operate in isola-
+tion. They are coupled at the data fusion layer to achieve 
+comprehensive situational awareness. While the ﬁre detec-
+tor yields spatial coordinates and event triggers, the Re-ID 
+workﬂow supplies persistent vehicle identities. By mapping 
+both data streams onto a uniﬁed spatiotemporal frame-
+work, the digital twin inherently links ﬁre events with vehi-
+cle trajectories. Consequently, the system can instantly
+ascertain hazard locations alongside the quantities of
+trapped vehicles. Based on the reserved modular interface,
+this data link can further dictate the scale, priority, and
+urgency of subsequent emergency responses via advanced
+ﬁre prediction technologies.
+R. Deng et al. / Underground Space 29 (2026) 377–394381
+Fig. 2. Component diagram of the digital twin architecture using the UML method.
+3.2 Vehicle Re-ID strategy
+The vehicle re-identiﬁcation strategy is underpinned by a 
+deep learning architecture for extracting high-dimensional 
+features and matching vehicle entities. While convolutional 
+neural networks (CNNs) have been widely adopted for 
+visual tasks, their reliance on local receptive ﬁelds makes
+them vulnerable to the unique challenges of tunnel environ-
+ments, such as cluttered backgrounds, variable illumina-
+tion, a nd p artial occlusions. CNNs often struggle to 
+capture the holistic structure of vehicles and are easily dis-
+tracted by dominant global features like color, resulting in 
+perceptual aliasing among vehicles with high inter-class 
+simila rity. Vision Transformer (ViT) architectures over-
+come these problems through their self-attention mecha-
+nism, which inherently possesses a global awareness
+capability ( He et al., 2021 ). However, universal ViTs often 
+exhibit overly sparse attention, missing ﬁne-grained local 
+details critical for instance-level identiﬁcation. Therefore, 
+a vision-based tunnel re-identiﬁcation model (TRI M) is
+speciﬁcally designed based on the ViT paradigm to solve
+these drawbacks, as presented in Fig. 3.
+Instead of processing the entire vehicle image at once, 
+the model employs a sliding window approach to divide 
+the image into a sequence of overlapping 2D patches. This 
+sequence allows TRIM to convert each patch into a high-
+dimensional vector, with spatial relationships preserved 
+by embedding position information into each patch. A glo-
+bal aggregation function is also included to summarize the 
+entire sequence. Furthermore, a random combination
+strategy aggregates subsets of local features, forcing the
+model to learn discriminative details rather than over-
+relying on a single vehicle part. This strategy can generate 
+a multi-granularity feature representation that captures 
+both the holistic appearance and ﬁne-gra ined local details
+of a vehicle, ensuring reliability against the perceptual chal-
+lenges inherent in tunnel environments.
+382R. Deng et al. / Underground Space 29 (2026) 377–394
+Fig. 3. Architecture of the Transformer-based TRIM feature decoder and matcher.
+Algorithm 1 details the entire procedure of this vehicle 
+identiﬁer assignment strategy. The feature matching proce-
+dure involves maintaining a dynamically updated global
+feature library and a look-up table that links vehicle fea-
+tures to unique global identiﬁers. When a vehicle is 
+detected, its extracted feature vector is compared against 
+the maintained library using cosine similarity. If the highest 
+similarity score exceeds a predeﬁned threshold, the vehicle 
+is recognized as an existing entity, and its spatial location is 
+updated in the look-up table. Conversely, if the score falls 
+below the threshold, the vehicle is recorded as a newly
+appeared target and assigned a new identiﬁer. This is fol-
+lowed by a spatiotemporal correction module based on the 
+camera network topology to ensure the logical consistency
+R. Deng et al. / Underground Space 29 (2026) 377–394383
+of the vehicle trajectory.
+Input: CCTV camera stream
+Output: Global ID of the vehicle look-up table 
+1: Initialization ← {}, 
+← {}, ← 1, ← 0.8; 
+2: for in do 
+3: ImgPatch, = 
+4: QueryFeat = 
+5: if is then 
+6: = 
+7: = 
+8: return 
+9: else 
+Algorithm 1 Main algorithm of the TRIM submodule.
+10: for in do 
+11: ← {}; 
+12: = 
+QeuryFeat VehFeat ; 
+13: = 
+14: end for 
+15: ← a list of all pairs (key, value)
+from
+16: Sort based on the values of each 
+pair in descending order;
+17: = 
+18: if < then 
+19: += 1; 
+20: = 
+21: = 
+LUT CamTopology ;
+22: = 
+23: return 
+24: else 
+25: = 
+26: return 
+27: end if 
+28: end if 
+29: end for 
+4 Demonstrations and analyses
+4.1 Visual ization
+The dynamic digital twin framework features a graphi-
+cal user interface that provides ope rators with comprehe n-
+sive situational awareness (as shown in Fig. 4). It eﬀectively 
+integrates raw visual data with a synthesized representation 
+of the tunnel environment. The surveillance panel displays 
+synchron ized video streams from multiple cameras along
+the tunnel. These live feeds are enriched with real-time
+visual augmentations, including bounding boxes for vehicle 
+tracking and immediate alerts for environmental hazards 
+like ﬁres. By combining direct visual evidence with
+machine-generated annotations, the interface allows tunnel
+operators to rapidly verify and assess emergency events.
+A spatiotemporal replica of the tunnel environment is 
+juxtaposed beneath the video feed, which is the core ele-
+ment of the digital twin. This view abstracts the complex, 
+multi-perspective video data into a single, coherent opera-
+tional map of the entire tunnel length. It plots the precise 
+longitudinal position of every tracked entity, assigning
+each vehicle a persistent identiﬁer and annotating it with
+dynamic attributes such as its current velocity. Crucially,
+this digital twin also visualizes detected events, such as
+the ﬁre, at their exact location within the tunnel
+infrastructure.
+In terms of implementation details, once the ﬁre detec-
+tion module identiﬁes a ﬂame within a camera’s video feed, 
+the system instantly extracts the bounding box parameters 
+and projects these 2D pixel coordinates onto the spatiotem-
+poral operational map of the digital twin. This transforma-
+tion converts a basic visual alert into precise spatial 
+coordinates, visualizing the exact location of the ﬁre along-
+side camera positions, blind zones, and the dynamic trajec-
+tories of surrounding vehicles. By integrating this localized 
+event data with persistent veh icle identiﬁers, the digital
+twin highlights the synergistic data linkage between the ﬁre
+detection and Re-ID modules. Tunnel operators can
+instantly identify which speciﬁc vehicles are trapped
+upstream of the ﬁre disaster. This cooperation translates
+isolated visual detections into a cohesive narrative, empow-
+ering operators to accurately assess the spatial relationship
+between the ﬁre and trapped vehicles.
+4.2 Measur ement
+In order to demonstrate the tracking continuity and 
+accuracy of the TRIM module, speciﬁc metrics are 
+included. Cosine similarity serves as a fundamental metric 
+in feature matching, prized for its eﬀectiveness in measur-
+ing the spatial relatedness of two vectors. This property
+makes it suitable for image retrieval tasks, where variations
+in illumination, contrast, or feature activation levels should
+not detract from the feature similarity (
+Sadbhawna et al.,
+2022). Within a query set the cosine 
+similarity can be derived for each vehicle search query as: 
+sim q i gi 
+qi gi 
+q i gi
+1
+where g is the vehicle feature in the retrieval gallery set
+However, the cosine similarity is an absolute metric that 
+lacks a global context regarding other candidates in the gal-
+lery. Therefore, a normalized probability score (NPS) is 
+introduced to represent the ﬁdelity of the candidate vehicle
+to the reference. By applying a variant of the softmax func-
+tion, the NPS metric ampliﬁes the separation between
+VidMeta 
+GID, LUT 
+FeatLib 
+GID LUT threshold 
+VidMeta VidFrame 
+VehPos, LID, CamID 
+Detection VidFrame ;
+TRIM ImgPatch ;
+FeatLib None 
+FeatLib GID QueryFeat; 
+LUT GID CamID LID ;
+GID, LUT 
+GID, FeatLib VehFeat 
+SimDict
+sim dot QeuryFeat VehF eat
+sim; SimDict GID 
+L 
+SimDict; 
+L 
+bestid, bestscore L 0 ; 
+threshold bestscore 
+GID
+FeatLib GID QeuryFeat; 
+CorrectedGID IDCorrector 
+CamID LID ;LUT CorrectedGID
+LUT CorrectedGID, 
+CamID LID ;LUT bestid
+LUT bestid, 
+Q q1 q2 qm ,
+qi 
+i 
+G g1 g2 gn .
+strong and weak matches. This provides an intuitive, global 
+view of the searching performance and sharpens the deci-
+sion boundary, which is essential for applications requiring
+high-conﬁdence vehicle identiﬁcation. Given a query
+request NPS can be mathematically express ed for each
+retrieval object as follo ws:
+384R. Deng et al. / Underground Space 29 (2026) 377–394
+Fig. 4. Visualization interface of the dynamic tunnel digital twin framework (see Video S1 and Video S2 in the supplementary materials for more details).
+NPS q i gi 
+esim q i gi s 
+n 
+j 1 esimq i gi s
+2
+where is the temperature parameter and is set to 0.05 in 
+this case for a better comparative eﬀect.
+To evaluate multi-round query performance and retrie-
+val ranking quality, the cumulative matching characteris-
+tics (CMC) and precision-based metrics are adopted. The 
+CMC metric at the top-k position (CMC@k) represents 
+the probability of ﬁnding the correct vehicle identity within
+the top-kretrieved matches. The formulation for CMC@k
+over a given query set can be expressed as:
+CMC k 1 
+Q 
+Q 
+i 1 dq i k3
+where is an indicator function that equals one if the 
+true match for the que ry is present in the top-kcandidates,
+and zero otherwise.
+In addition to the hit probability of the CMC metric, the 
+precision score at the top-k position (P@k ) demonstrates
+the proportion of correct matches within the top-ksearch
+results for a single round. The P@kscore for the query
+is deﬁned as:
+P k q i 
+1 
+k 
+k 
+n 1 Rr n 4
+R r n 
+1 if r n T 
+0 otherwise 5
+where determines whether the retrieved item
+belongs to the ground-truth set of all relevant items.
+To account for ranking quality, the average precision at 
+the top-k position (AP@k) is calculated, heavily penalizing 
+models that place correct items at lower ranks. The AP@k 
+is the average of the P@kvalues over all relevant items
+found within the top-kpositions. Formally, it can be
+expressed as
+AP k q i 
+1 
+T 
+k 
+n 1 
+P nq i Rr n 6
+Finally, the mean average precision (mAP@k) summa-
+rizes the AP@k scores across all query rounds. Conse-
+quently, mAP@k serves as the conclusive metric for 
+benchmarking diﬀerent models, reﬂecting their generaliz-
+ability and average eﬃcacy across the entire target domain
+rather than on isolated query tasks. It can be expressed as
+mAP k 1 
+Q 
+Q 
+i 1
+APkq i 7
+qi, 
+gi 
+s 
+d qi k 
+qi 
+R rn rn 
+T 
+R. Deng et al. / Underground Space 29 (2026) 377–394385
+4.3 Quantitative analys is
+The quantitative performance of the TRIM is evaluated 
+through feature-level similarity analysis and practical 
+instance retrieval tasks. A feature confusion matrix pro-
+vides insights into the discriminative power of the TRIM
+for the vehicle feature embeddings (see Fig. 5). Vehicle fea-
+tures are extracted and vectorized from images by the 
+TRIM to calculate the cosine similarity score. This matrix 
+visualizes pairwise similarity scores between vehicles cap-
+tured by three non-overlapping cameras.
+A critical observation is that the intra-class similarity 
+scores are consistently and signiﬁcantly higher than the 
+inter-class similarity scores for diﬀerent vehicles when com-
+paring images of the same vehicle across diﬀerent camera 
+views. For instance, the cross-camera similarity for vehicle 
+GID 2 remains exceptionally high (e.g., a score of 0.957
+between Cam 1 and Cam 2, and 0.942 between Cam 2
+and Cam 3), whereas its similarity to other vehicles is
+markedly lower. This pattern is consistent across all evalu-
+ated vehicle identities, demonstrating that the TRIM model 
+successfully generates a feature representation that is both 
+invariant to the substantial viewpoint and illumination 
+shifts between cameras and highly speciﬁc to each vehicle.
+This conﬁrms its capacity to mitigate feature confusion and
+form a reliable basis for identity persistence.
+Fig. 5. Similarity confusion matrix of vehicle features under three non-overlapping cameras using TRIM.
+A retrieval dataset of 30 images across six non-
+overlapping cameras (comprising 9 vehicle instances) was 
+tested against a query set of four speciﬁc vehicles (GID 1 
+to 4) to evaluate the eﬃcacy of the TRIM component. 
+The gallery included all multi-camera appearances of these 
+que ried vehicles and interference options. As shown in
+Fig. 6, the NPS scores conﬁrmed satisfactory rank-1 iden-
+tiﬁcation accuracy of TRIM. For GID 1 and GID 2, the 
+model successfully assigned the correct targets with an 
+NPS above 0.7 in each camera view, while the scores of dis-
+tractors remained negligi bly low to minimize false match-
+ing. However,
+Fig. 6(c) illustrates an inherent challenge
+that GID 3 was mismatched with GID 4 in Cam 5. They 
+are visually similar light-colored cars, which slightly 
+reduced the discriminative margin. Despite this isolated 
+mismatch, the consistent top-ranked suc cess across most
+vehicle queries validates that TRIM delivers a credible
+retrieval capability for persistent vehicle tracking within
+the dynamic digital twin.
+386R. Deng et al. / Underground Space 29 (2026) 377–394
+Fig. 6. Query results of speciﬁc vehicles from the vehicle gallery by TRIM. (a) GID 1, (b) GID 2, (c) GID 3, and (d) GID 4.
+4.4 Comparative va lidations
+To qualitatively validate the eﬃcacy of the feature 
+extraction strategy employed by the TRIM model, a com-
+parative analysis of its feature extraction mechani sm was
+conducted against two prominent backbone architectures,
+namely a CNN-based ResNet-152 (
+He et al., 2016 ) and a 
+standard Vision Transformer (ViT) ( Dosovitskiy et al.,
+2020). The gradient-weighted class activation mapping 
+(Grad-CAM) algorithm was employed to visualize the 
+attention heatmaps generat ed by each model for a diverse
+set of vehicle images ( Selvaraju et al., 2017 ). It is possible 
+to discern where each architecture focuses its attention to
+extract discriminative cues for vehicle re-identiﬁcation
+(see Fig. 7 ). The results can clearly illustrate the superior 
+and more task-appropriate feature learning of the TRIM
+model.
+The R esNet-152 baseline produced coarse and diﬀuse 
+attention maps that frequently spilled into irrelevant back-
+ground areas, such as roads or tunnel walls. While capable 
+of general vehicle detection, the model struggles to isolate 
+the subject from environmental clutters, which severely 
+compromises its eﬀectiveness of instance-level feature iden-
+tiﬁcation. In contrast, the standard ViT suppressed back-
+ground noise and conﬁned its attention to vehicle 
+instances. However, its focus was overly sparse, concen-
+trating only on high-contrast scattered patches. Although
+it successfully pinpoints discriminative regions, it fails to
+capture the vehicle’s holistic appearance. This reliance on
+a few discrete features renders the ViT model highly vulner-
+able to occlusion, motion blur, and challenging lighting
+conditions.
+The attention mechanism of TRIM synthesizes the 
+strengths of the preceding models while mitigating their
+respective weaknesses. The heatmaps reveal that TRIM 
+learned a feature representation that was simultaneously 
+comprehensive and granular. The attention ﬁeld accurately 
+conformed to the vehicle’s overall contour, eﬀectively seg-
+menting it from the background, yet it also exhibited dense 
+and high-intensity activations across a distributed set of 
+detailed local regions. This included taillight clusters, win-
+dow contours, rooﬂines, and other unique structural ele-
+ments. This visualization implies that the TRIM mo del is
+adept at capturing a rich, multi-scale set of preserving iden-
+tity features across the entire object. This holistic and
+detailed attention strategy explains the enhanced perfor-
+mance of TRIM in reliably reidentifying vehicles under
+the challenging and variable conditions of a real-world tun-
+nel environment.
+R. Deng et al. / Underground Space 29 (2026) 377–394387
+Fig. 7. Feature attention heatmaps of the candidate backbones using Grad-CAM.
+Vehicle retrieval experiments were conducted for the 
+ResNet-152 and ViT models using the same query and
+retrieval datasets as those for TRIM.
+Figure 8 illustrates 
+the performance of the ResNet-152 model, where the net-
+work achieved satisfactory discrimination for GIDs 1, 3, 
+and 4. In these cases, the NPS scores were consistently 
+highest for the correct vehicle inst ances across most camera
+views, indicating that the CNN-based features are suﬃcient
+for these distinct vehicle identities. However, a signiﬁcant
+failure was observed in
+Fig. 8 (b) regarding GID 2. The 
+model exhibited substantial confusion, erroneously assign-
+ing high NP S scores to GID 1 in many camera views (indi-
+cated by the light blue bars) rather than the correct target. 
+It is noticeable that GID 1 and GID 2 are both dark-
+colored vehicles. This suggests that the convolution-based 
+architecture may overﬁt speciﬁc local features and struggle
+to resolve the ﬁne-grained visual diﬀerences between GID 1
+and GID 2, leading to frequent misclassiﬁcation.
+As s hown in Fig. 9 , the ViT model oﬀers an improve-
+ment over the ResNet-152 baseline but falls short of the
+performance established by the TRIM architecture com-
+pared to Fig. 6. While the ViT model successfully corrected 
+the misclassiﬁcation of GID 2, as seen in the CNN-based 
+results, and identiﬁed the correct veh icle in every view, it
+failed to obtain considerably lower conﬁdence margins
+than TRIM. The NPS peaks in
+Fig. 9 typically hovered 
+around 0.2 to 0.6, whereas those that are frequently
+observed in
+Fig. 6 exceed 0.8. Besides these, ViT displays 
+occasional ambiguity, evidenced by the probability scores 
+assigned to the incorrect identity alongside the correct tar-
+get, such as querying GID 1 within the view of Cam 1. This 
+comparison indicates that while standard Vision Trans-
+formers improve global feature capture, the proposed
+TRIM model provides a superior synthesis of features,
+resulting in a more decisive and accurate retrieval system.
+An interesting observation is that the CNN-based model 
+(ResNet-152) retrieved the correct vehicle for GID 3 in 
+Cam 5, while Transformer-based models (TRIM and 
+ViT) both failed. This is considered a reﬂection of the fun-
+damental diﬀerence in feature attention patterns. 
+Transformer-based models prefer global attention, mean-
+ing that they analyze the entire image at once to under-
+stand the relationship between patches. In this speciﬁc 
+case of Cam 5, the speciﬁc feature of GID 3 might be subtle 
+(e.g., a speciﬁc rim or sticker). Transformer models likely 
+over-smooth these small details in favor of the overall 
+shape or background, causing them to conﬁdently misclas-
+sify this vehicle (li ke GID 5). Conversely, ResNet-152 is a
+convolution-based architecture designed with a local induc-
+tive bias. It preferentially extracts high-frequency local fea-
+tures (such as edges and textures) before global
+understanding of the image. This allows CNN-based mod-
+els to capture a subtle but critical feature of GID 3, thereby
+correctly identifying the target.
+388R. Deng et al. / Underground Space 29 (2026) 377–394
+Fig. 8. Query results of speciﬁc vehicles from the vehicle gallery by ResNet-152. (a) GID 1, (b) GID 2, (c) GID 3, and (d) GID 4.
+4.5 Benchmark test ing
+To further validate the generalization of the proposed 
+TRIM model and benchmark its performance agains t con-
+temporary task-speciﬁc models, an extensive evaluation
+was c onducted on the widely adopted VeR i-776 public
+dataset ( Liu et al., 2018 ). This large-scale dataset is specif-
+ically designed for vehicle retrieval tasks in surveillance 
+environments, including high intra-class vehicle diﬀerences 
+and severe variations in illumination, viewpoint, and occlu-
+sion. To be directly compared against task-speciﬁc Re-ID 
+models rather than generic visual backbones, two diﬀerent 
+architectures were introduced as additional baselines. The
+Attention Generalized Mean Pooling with Weighted Tri-
+plet Loss (AGW) baseline is used to leverage advanced fea-
+ture aggregation in metric-learning methods (
+Ye et al.,
+2021). BoTNet is a network that synthesizes the local 
+inductive biases of convolutions with the global self-
+attention of Transfor mer structures, which is selected as
+the baseline of hybrid CNN-Transformer methods
+(
+Srinivas et al., 2021 ). 
+As detailed i nTable 1, the quantitative performance was 
+measured using CMC metrics at ranks 1, 5, and 10, along-
+side mAP metrics at various cut-oﬀ positions. The CNN-
+based ResNet-152 performs moderately better (CMC@1 
+of 0.291); however, it struggles to overcome the perceptual
+can capture a more balanced representation, with a 
+CMC@1 of 0.334 and an mAP@10 of 0.375.
+R. Deng et al. / Underground Space 29 (2026) 377–394389
+Fig. 9. Query results of speciﬁc vehicles from the vehicle gallery by ViT. (a) GID 1, (b) GID 2, (c) GID 3, and (d) GID 4.
+Table 1 
+Complexity and query precision of the candidate models on the vehicle dataset.
+Models Params (106 ) GFLOPs CMC@1 CMC@5 CMC@10 mAP@10 mAP@50 mAP@100 mAP@all 
+ResNet-152 58.14 11.56 0.291 0.484 0.585 0.335 0.262 0.221 0.127 
+ViT 86.39 18.30 0.190 0.378 0.495 0.245 0.197 0.166 0.091 
+AGW 25.08 4.08 0.295 0.495 0.594 0.347 0.276 0.238 0.127 
+BoTNet 10.44 3.43 0.334 0.533 0.619 0.375 0.296 0.250 0.130 
+TRIM 151.49 89.24 0.705 0.855 0.894 0.684 0.549 0.499 0.444 
+aliasing caused by the high inter-class similarities typical in 
+vehicle appearances. The standard ViT exhibits the lowest 
+performance (CMC@1 of 0.190, mAP@10 of 0.245). This 
+is largely attributed to the lack of translation equivariance 
+and local inductive bias, making it prone to overﬁtting or 
+failing to capture structural vehicle semantics. The integra-
+tion of specialized metric-learning-based strategies demon-
+strates measur able beneﬁts. The AGW model slightly
+outperforms the generic ResNet-152 model, illustrating
+that a designed triplet loss space can enhance feature sepa-
+rability. By synthesizing local feature extraction of CNNs
+with the global self-attention of Transformers, BoTNet
+While these task-speciﬁc and hybrid-structure models 
+yielded incremental improvements over the generic vision 
+models, they still displayed limited discriminative power. 
+In contrast, the proposed TRIM model signiﬁcantly out-
+performs all evaluated baselines by a substantial margin, 
+achieving a state-of-the-art CMC@1 of 0.705 and an 
+mAP@10 of 0.684. This performance superiority is driven 
+by its multi-granularity feature extraction. Instead of 
+directly using generated feature representations, the ran-
+dom combination of feature vectors allows TRIM to simul-
+taneously capture both the holistic appearance and ﬁne-
+grained local details of a vehicle. This strategy prevents 
+the model from relying solely on global features (e.g., vehi-
+cle color or main contours) and enforces the recognition of
+discriminative local details (e.g., stickers or distinct taillight
+clusters).
+390R. Deng et al. / Underground Space 29 (2026) 377–394
+The superior discriminative ability of TRIM comes with 
+an increased computational budget, requiring 151.49 mil-
+lion parameters and 89.24 giga ﬂoating -point operations 
+(GFLOPs). This increased computational overhead is 
+necessitated by the multi-granularity self-attention mecha-
+nism, which conducts dense matrix multiplications to con-
+struct a holistic and granular feature representation. 
+However, the architectural cost yields a remarkable 104% 
+relative improvement over ResNet-152 in the mAP@10
+metric. While it is a deliberate trade-oﬀ prioritizing retrie-
+val accuracy, the practical feasibility of deploying the
+TRIM model without bottlenecking the real-time digital
+twin is explicitly veriﬁed in the subsequent section.
+5 Dis cussions
+5.1 System eﬃci ency
+To rigorously substantiate the real-time and dynamic 
+capabilities of the proposed digital twin framework, a com-
+prehensive end-to-end late ncy benchmark was conducted
+under high-load conditions. As shown in Table 2, the sys-
+tem was stress-tested by concurrently processing synchro-
+nized video streams from 19 non-overlapping CCTV 
+cameras. During the evaluation, the tunnel environmen t
+maintained a dense traﬃc ﬂow, yielding an average of
+228 vehicles per system processing step.
+The end-to-end pipeline latency is primarily distributed 
+across four modular stages: vehicle detection, parallel vehi-
+cle tracking, TRIM-based Re-ID, and global map render-
+ing. The vehicle batch detection stage demonstrated its 
+eﬃciency with a mean latency of 78.60 ms. The parallel 
+tracking and the core TRIM-based Re-ID modules 
+recorded mean processing times of 133.11 ms and 
+145.36 ms, respectively. The 95th percentile (P95) and 
+99th percentile (P99) metrics indicate that even under local-
+ized computational spikes caused by sudden increases in
+vehicle entities, the TRIM module consistently completes
+feature extraction and dictionary matching within
+372.43 ms. The rendering of the digital twin interface incurs
+a negligible computational overhead within 1.19 ms.
+Table 2 
+End-to-end latency of the dynamic digital twin framework under concurrent stress testing.
+Processing stage Mean (ms) Median (ms) P95 (ms) P99 (ms) 
+Batch vehicle detection 78.60 78.33 81.77 81.95 
+Parallel vehicle tracking 133.11 158.90 209.64 210.10 
+Vehicle Re-ID 145.36 101.99 355.21 372.43 
+Digital twin map rendering 1.19 0.75 2.37 2.59 
+Total latency 413.50 430.85 651.95 657.12 
+Overall, the end-to-end total latency yielded a mean of 
+413.50 ms and a P95 of 651.95 ms. This means that the 
+framework can still maintain a sub-second refresh interval 
+even under high-density traﬃc conditions and across mul-
+tiple high-resolution video streams. Despite the high model 
+complexity of the TRIM module established in the previ-
+ous benchmark testing, the component-based design eﬀec-
+tively mitigates potential data congestion. The 
+computational overhead of the Re-ID module does not
+translate into an operational delay. It ensures that the dig-
+ital twin promptly reﬂects physical traﬃc ﬂow and emer-
+gency events without perceptible operational lag, thereby
+fulﬁlling the real-time requirements for human-in-the-
+loop emergency response.
+5.2 Implications for smart tunnel operation
+While t his perception pipeline establishes the physical-
+to-virtual data ﬂow, the mature architecture relies on a 
+bidirectional feedback loop. The analytical conclusions 
+derived within the virtual digital twin, such as vehicle posi-
+tions and early ﬁre coordinates, serve as immediate trigger 
+inputs for physical space actuation. This virtual-to-physical
+feedback will guide physical tunnel infrastructure, enabling
+automated facility adjustments and informed human-in-
+the-loop interventions. As shown in
+Fig. 10 , the conver-
+gence of vision-based dynamic digital twins with technolo-
+gies centered on human interaction and emergency 
+response presents profound implications for enhancing
+tunnel safety operation and risk resilience.
+The fusi on with the Artiﬁcial Intelligence of Things 
+(AIoT) creates a symbiotic loop between the physical tun-
+nel and its virtual counterpart, enabling high-ﬁdelity mon-
+itoring and automated control (
+Xie et al., 2 025 ). 
+Concurrently, the incorporation of patrol robots, guided 
+by the digital twin, can facilitate automated inspections 
+of structural integrity and equipment status, mitigating 
+the expense associated with human-led inspecti ons and
+tunnel reconstructions (
+Deng et al., 2 026). The integration 
+of an Intelligent Dynamic Exit Sign (IDES) system can 
+guide occupants to the safest egress path by altering sig-
+nage in real-time according to on-site situations ( Wong 
+et al., 20 25). It is a critical factor in minimizing evacuation 
+time and potential casualties. Large language models 
+(LLMs) provide a natural language interface for interact-
+ing with tunnel sensor data, allowing actionable insights 
+for streamlining maintenance and operational processes
+(Otal et al., 2024 ). This eﬀectively realizes the closed-loop 
+feedback between the virtual digital twin and physical tun-
+nel facilities. The digital twin aggregates physical percep-
+tion data into virtual conclusions, and LLMs
+subsequently translate them into physical execution com-
+mands (
+Xie et al., 2026 ). These integrated approaches also 
+include a shift from reactive to predictive maintenance 
+strategies, such as optimized energy consumption through 
+intelli gent ventilation and lighting control, improving the
+lifecycle management of tunnel infrastructure.
+R. Deng et al. / Underground Space 29 (2026) 377–394391
+Fig. 10. Envisioned coordination with tunnel facilities to achieve intelligent tunnel operation and fast emergency response.
+The primary engineering design of this vision -driven 
+framework is rooted in proactive early intervention. While 
+purely vision-based systems inevitably face severe degrada-
+tion under extreme late-stage ﬁre conditions, such as dense 
+smoke or complete power outage, this digital twin is 
+designed to capitalize on the critical early time window of 
+a ﬁre incident. By providing sub-second situational aware-
+ness during the incipient stages of a ﬁre, the framework
+empowers operators to rapidly execute ﬁreﬁghting proto-
+cols and activate ventilation systems before severe environ-
+mental degradation occurs. This will actively prevent the
+tunnel from deteriorating into an extreme scenario.
+5.3 Limitations and future work
+The current implementation primarily solves the chal-
+lenges of situational perception and data fusion of tunnel
+environments, w hich are the underlayer of a fully opera-
+tional digital twin system. The focus of future research will 
+remain on how to achieve subsequent upper-level intelli-
+gent decision-making and closed-loop facility control based 
+on the proposed framework. This involves establishing a 
+bidirectional interaction mechanism. Digital twins will 
+not only sense the physical world in real-time but also com-
+mand infrastructures based on the decisions made within
+the digital space. This transition will ultimately evolve the
+framework from a passive perception platform into an
+active, automated management agent.
+Although the vision-based vehicle re-identiﬁcation 
+approach designed by this work has proven its eﬃciency 
+and reliability, it may be aﬀected by visual features of 
+vehicles, particularly in handling h igh inter-class similar-
+ities.
+Figure 1 1 provides a similarity matrix across six 
+distinct vehicles that substantiates this challenge. For 
+example, two diﬀerent white vehicles, Veh_2 and 
+Veh_4, exhibit a high similarity score of 0.753. This 
+demonstrates that vision-based models are still limited 
+by over-reliance on dominant, non-unique global features 
+like color and vehicle shape, leading to perceptual alias-
+ing in the feature embedding space. This issue is further 
+compounded by high intra-class variation (e.g., the same 
+vehicle appears diﬀerent due to viewpoint, illumination,
+or occlusion), motion blur, and inappropriate installa-
+tions of cameras.
+392R. Deng et al. / Underground Space 29 (2026) 377–394
+Fig. 11. Similarity confusion matrix of six diﬀerent vehicles.
+The current spatiotemporal identity correction module 
+relies on heuristic assumptions regarding camera topology 
+and expected transition times. While highly eﬀective under 
+normal traﬃc conditions, this purely vision-based 
+approach exhibits inherent physical limitations and failure 
+cases in high-density traﬃc and extreme ﬁre scenarios. For 
+instance, when vehicles break down or stop within a cam-
+era blind zone, or during severe traﬃc congestion, the
+actual inter-camera transition time can vastly exceed the
+algorithm’s permissible temporal window. Under these
+anomalous cases, the failure of visual sensing and heuristic
+topological assumptions inevitably leads to ID switches or
+target loss.
+To fundamentally overcome these limitations, a crucial 
+advancement is to transition towards multi-source data 
+fusion of external perceptive devices, especially LiDARs 
+and millimeter-wave radars. This combination is envi-
+sioned to provide continuous, absolute spatiotemporal 
+coordinates. Unlike purely visual tracking, these data 
+modalities are immune to illumination variations and 
+visual occlusions. By fusing this high-precision physical 
+data with visual ve hicle features, the system enables the
+re-ranking of the visual matching list to prioritize spa-
+tiotemporally most-probable matches. This multi-modal
+synergy will ensure stable identity persistence and high-
+ﬁdelity situational awareness even under extreme traﬃc
+anomalies or heavy congestion.
+Additionally, while the YOLO-based ﬁre detection mod-
+ule demonstrates the extensibility of the proposed frame-
+work, deploying a reliable ﬁre detection system in real-
+world tunnels requires rigorous quantiﬁcation. It is diﬃcult 
+to accurately deﬁne system performance and sensitivity 
+using open-source static datasets due to complex tunnel 
+environments. Therefore, a full-scale ﬁre experiment is cur-
+rently being conducted in a realistic physical tunnel. The
+quantitative results, boundary deﬁnition, false-alarm resis-
+tance (e.g., distinguishing taillights from ﬂames), and ﬁre
+detection sensitivity of this speciﬁc vision-based module
+will be systematically reported in a dedicated follow-up
+study.
+6 Conc lusions
+This study introduced a dynamic digital twin framework 
+designed to enhance the operational management and 
+safety of tunnels by leveraging existing CCTV networks. 
+Quantitative evaluations clearly validated the superior per-
+formance of the TRIM, with an mAP@10 of 0.684, outper-
+forming 0.335 for a CNN structure, 0.245 for a standard 
+Transformer structure, and 0.375 for a hybrid structure. 
+The TRIM model demonstrates a satisfactory ability to 
+generate highly discriminative feature embeddings, which
+remain invariant to shifts in viewpoint and illumination
+while being highly speciﬁc to individual vehicles. This capa-
+bility is proven through retrieval experiments where TRIM
+achieved the highest NPS result for correct vehicles among
+nearly all camera views, which indicates the consistency of
+a speciﬁc vehicle instance.
+A comparative analysis of attention heatmaps reveals 
+the mechanism underpinning this success. Unlike the dif-
+fuse focus of the CNN model or the overly sparse attention 
+of the standard ViT, TRIM presents a feature representa-
+tion that is simultaneously comprehensive and granular. 
+This feature extraction strategy directly translates to reli-
+able re-identiﬁcation, even in challenging scenarios involv-
+ing visually similar vehicles where other models fail. By
+successfully integrating high-ﬁdelity tracking and emergent
+event detection, the proposed digital twin system provides
+an intuitive operational platform that enhances situational
+judgment for tunnel operators without requiring extensive
+hardware reconstruction.
+The outlook lies in evolving this vision-driven digital 
+twin system into a comprehensive perception and control 
+framework. Data from heterogeneous environmental mon-
+itors is envisioned to be combined with this framework for 
+more unambiguous situational awareness. This integration 
+will advance the system from passive monitoring to active 
+closed-loop control. By establishing bidirectional data ﬂows 
+with tunnel facilities, the digital twin will gain the capability
+to intelligently adjust tunnel facilities, such as autono-
+mously activating ventilation systems, dynamically manag-
+ing lighting systems, and coordinating exit signs. It enables
+a truly proactive paradigm for smart operation and auto-
+mated emergency response in tunnel infrastructure.
+Data availabil ity
+Data are made available on https://github.com/ 
+drong37/dynamic_tunnel_digital_twin. 
+CRediT authorship contribution statement
+Rong Deng: Writing – original draft, Visualization, Soft-
+ware, Methodology, Investigation. Siqi Zhu: Validation, 
+Software, Formal analysis. Tong Lu: Validation, Investiga-
+tion. Wei Wang: Investigation, Data curation. Shaojie 
+Gong: Resources, Conceptualization. Yuxin Zhang: Valida-
+tion, Software, Formal analysis. Xinyan Huang: Writing – 
+review & editing, Supervision, Methodology, Conceptual-
+ization.Asif Usmani:Supervision, Funding acquisition.
+R. Deng et al. / Underground Space 29 (2026) 377–394393
+Declaration of competing interest
+The authors declare that they have no known competing 
+ﬁnan cial interests or personal relationships that could have
+appeared to inﬂuence the work reported in this paper.
+Acknowledgement 
+This research is supported by the National Key R&D 
+Program of China (Grant No. 2024YFE0216700), ITC 
+Mainland-Hong Kong Technology Cooperation Funding 
+Scheme (MHP/ 018/24), and PolyU Joint Research Project
+with Sichuan Jiutong Zhilu Technology (Goveste) Co.,
+Ltd.
+Appendix A Supplementary material
+Supplementary material to this article can be found
+online at https://doi.org/10.1016/j.undsp.2026.05.004. 
+References 
+Attard, L., Debono, C. J., Valentino, G., & Di Castro, M. (2018). Tunnel
+inspection using photogrammetric techniques and image processing: A
+review. ISPRS Journal of Photogrammetry and Remote Sensing, 144 , 
+180–188 . 
+Chang, X., Zhang, R., Mao, J., & Fu, Y. (2024). Digital twins in
+transportation infrastructure: An investigation of the key enabling
+technologies, applications, and challenges. IEEE Transactions on
+Intelligent Transportation Systems, 25(7) , 6449–6471 . 
+Cheng, J., Yang, N., Jiang, S., & Xiong, C. (2025). Real-time forecast of
+tunnel ﬁre scenario and hazard based on external smoke images.
+Tunnelling and Underground Space Technology, 158 , 106377. 
+Deng, R., Ding, S., Ding, Y., Wang, M., Huang, X., & Usmani, A. S.
+(2026). Autonomous navigation of non-perceptio n ﬁreﬁghting robot
+through CCTV-informed vision sharing. Expert Systems with Appli-
+cations, 296, 129210. 
+Desai, G., Zhanping, S., Tian, X., Yuwei, Z., & Libo, D. (2022). Coupling
+analysis of tunnel construction risk in complex geology and construc-
+tion factors. Journal of Construction Engineering and Management, 148
+(9), 04022097. 
+Diren, N. S., & Althen, S. (2023). Tunnel 4.0: Managed digital twin for
+tunnel operations. In Expanding underground-knowledg e and passion to
+make a positive impact on the world (pp. 2635–2642). CRC Press . 
+Dosovitskiy, A., Beyer, L., Kolesnikov, A., Weissenborn, D., Zhai, X.,
+Unterthiner, T., Dehghani, M., Minderer, M., Heigold, G., & Gelly, S.
+(2020). An image is worth 16 × 16 words: Transformers for image
+recognition at scale.ArXiv Preprint . 
+Fan, C., Zhang, C., Yahja, A., & Mostafavi, A. (2021). Disaster City
+Digital Twin: A vision for integrating artiﬁcial and human intelligence
+for disaster management. International Journal of Information Man-
+agement, 56, 102049. 
+Fang, W., Chen, W., Love, P. E. D., Luo, H., Zhu, H., & Liu, J. (2024). A
+status digital twin approach for physically monitoring over-and-under
+excavation in large tunnels. Advanced Engineering Informatics, 62 , 
+102648. 
+Gao, Y., Qian, S., Li, Z., Wang, P., Wang, F., & He, Q. (2021). Digital
+Twin and its Application in Transportat ion Infrastructure. In2021
+IEEE 1st international conference on digital twins and parallel intelli-
+gence (DTPI) (pp. 298–301) . 
+Halem, M., Kochanski, A. K., Mandel, J., Sleeman, J., Demoz, B.,
+Bargteil, A., Patil, S., Shivadekar , S., Iorga, A., Dorband, J.,
+Mackinnon, J., Chiao, S., Yang, Z., Yesha, Ya., Sorkin, J., Kalnay,
+E., Safa, S., & Da, C. (2024). Towards a dynamic data driven wildﬁre
+digital twin (WDT): Impacts on deforestation, air quality and
+cardiopulmonary disease. In E. Blasch, F. Darema, & A. Aved
+(Eds.), Dynamic data driven applications systems (pp. 403–410 ).
+Springer Nature Switzerland . 
+Han, T., Zhao, J., & Li, W. (2020). Smart-guided pedestrian emergency
+evacuation in slender-shape infrastructure with digital twin simula-
+tions. Sustainability, 12(22), 9701. 
+He, K., Zhang, X., Ren, S., & Sun, J. (2016). Deep residual learning for
+image recognition. In Proceedings of the IEEE conference on computer
+vision and pattern recognition (pp. 770–778) . 
+He, S., Luo, H., Wang, P., Wang, F., Li, H., & Jiang, W. (2021).
+TransReID: Transformer-based object re-identiﬁcation. In2021 IEEE/
+CVF international conference on computer vision (ICCV)
+(pp. 14993–15002 ) . 
+Huang, X., Wu, X., Zhang, X., & Usmani, A. (2022). Smart tunnel ﬁre
+safety management by sensor network and artiﬁcial intelligence. In
+Leveraging artiﬁcial intelligence in engineering, management, and safety
+of infrastructur e(pp. 423–443). CRC Press . 
+Hyeong-su, K., Jin-Woo, K., Yun, S., & Kim, W.-T. (2019). A novel
+wildﬁre digital-twin framework using interactiv e wildﬁre spread
+simulator. In 2019 Eleventh international conference on ubiquitous and
+future networks (ICUFN ) (pp. 636–638 ) . 
+Khan, M. S. (2025). Data-driven digital twin-based smart tunnel
+maintenance system. Intelligent Geoengineering, 2(4) , 165–183 . 
+Lee, K. B., & Shin, H. S. (2019). An application of a deep learning
+algorithm for automatic detection of unexpected accidents under bad
+CCTV monitoring conditions in tunnels. In 2019 International confer-
+ence on deep learning and machine learning in emerging applications
+(Deep-ML) (pp. 7–11) . 
+Lewis, R. H., Jiao, J., Seong, K., Farahi, A., Navra´til, P., Casebeer, N., &
+Niyogi, D. (2024). Fire and smoke digital twin – a computational
+framework for modeling ﬁre incident outcomes.Computers, Environ-

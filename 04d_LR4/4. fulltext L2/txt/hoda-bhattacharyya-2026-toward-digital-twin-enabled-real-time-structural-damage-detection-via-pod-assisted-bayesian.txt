@@ -1,0 +1,1514 @@
+Original research article
+Structural Health Monitoring
+1–22
+/C211The Author(s) 2026
+Article reuse guidelines:
+sagepub.com/journals-permissions
+DOI: 10.1177/14759217261444391
+journals.sagepub.com/home/shm
+T oward digital twin-enabled real-time
+structural damage detection via
+POD-assisted Bayesian estimation
+Samrul Hoda1 and Biswarup Bhattacharyya1
+Abstract
+Accurate and timely detection of structural damage is essential for ensuring the safety and integrity of civil infrastruc-
+ture. While Bayesian filtering has been widely adopted in structural health monitoring (SHM) for estimating system
+states and parameters, full-scale parameter estimation can often result in biased outcomes and significant computational
+costs. T o overcome these limitations, this study proposes a framework toward digital twin-enabled SHM by integrating
+proper orthogonal decomposition (POD) with Bayesian filtering. The framework uses displacement and excitation mea-
+surements from the system to estimate states in real-time, updated proper orthogonal mode (POM) slopes, and the
+location and severity of damage. Structural damage localization is achieved by continuously monitoring changes in the
+slope of the first POM, which is updated in real time using an online singular value decomposition (SVD) algorithm.
+Simultaneously, the Unscented Kalman Filter (UKF) estimates system states and selectively updates stiffness parameters,
+focusing only on degrees of freedom identified as damaged by comparing the evolving POM slopes with a baseline refer-
+ence derived from the healthy structure. This coordinated operation of online SVD and UKF enables efficient, accurate,
+and robust assessment of structural condition in real time. The proposed framework addresses three critical stages of
+SHM that is, detection, localization, and quantification. Its performance is validated through comprehensive numerical
+simulations on an eight-story shear frame under various damage scenarios, including adjacent-story, non-adjacent, and
+progressive damage cases. Furthermore, validation on a laboratory-scale three-dimensional steel frame confirms its
+practical applicability. The results demonstrate that the proposed approach can reliably localize and quantify multiple
+damage events, offering a scalable solution for real-time SHM.
+Keywords
+Digital twin, system identification, damage detection, reduce order model, online proper orthogonal decomposition,
+Bayesian filtering
+Introduction
+A digital twin (DT) is a virtual replica of a physical
+system that uses real-time sensor data to reflect its
+behavior and evolving state. Advances in the Internet
+of Things (IoT), machine learning, and computational
+modeling have established DTs as transformative tools
+across engineering disciplines. Glaessgen and Stargel
+1
+define a DT as ‘‘an integrated multiphysics, multiscale,
+probabilistic simulation of an as-built system that uses
+the best available physical models, sensor updates, fleet
+history, etc., to mirror the life of its corresponding
+physical twin.’’ A DT typically integrates three
+core components: physical system data, physical or
+surrogate models, and synchronization mechanisms to
+align the virtual and physical domains.
+2,3 Applications
+span manufacturing, 4 healthcare,5 smart cities, 6,7
+environmental monitoring,8 and civil infrastructure.9–11 In
+civil infrastructure, DTs s how significant promise for
+structural health monitoring (SHM), where integrated
+data-driven and physics-based methods enable continuous
+assessment of structural integrity.
+Among various SHM approaches, vibration-based
+techniques are widely adopted in SHM due to their
+non-invasive nature and sensitivity to structural
+changes. These methods rely on dynamic
+1Department of Civil Engineering, Indian Institute of T echnology
+Hyderabad, Hyderabad, India
+Corresponding author:
+Samrul Hoda, Department of Civil Engineering, Indian Institute of
+T echnology Hyderabad, Hyderabad 502285, India.
+Email: samrulhoda22@gmail.com
+
+characteristics such as natural frequencies, mode
+shapes, and damping ratios to detect damage. 12,13
+Modal-based damage detection remains popular for its
+simplicity, interpretability, and effectiveness. While
+shifts in natural frequencies can signal damage by indi-
+cating stiffness loss, their sensitivity is limited for small
+or localized damage,
+14 therefore, mode shapes and
+their spatial derivatives particularly mode shape slope
+and curvature are preferred for accurate localization.
+Early studies 15 demonstrated that curvature mode
+shapes exhibit strong sensitivity to local stiffness reduc-
+tion and can effectively indicate damage location.
+Other studies have validated the effectiveness of
+curvature-based methods through extensive numerical
+and experimental investigations, further establishing
+their robustness for practical damage detection appli-
+cations.
+16 Later investigations 17 compared curvature-
+based indicators with damage locating vector methods
+and confirmed the strong localization capability of cur-
+vature features across different damage scenarios.
+Subsequent research has further refined curvature-
+based approaches through enhanced numerical and
+analytical formulations to improve damage localiza-
+tion accuracy under weak damage scenarios.
+18 Reviews
+have emphasized the importance of such mode-shape-
+based indicators in capturing subtle integrity
+changes.
+19–23 Their use spans various structures,
+including beams, 24–26 shear buildings, 27 laminated
+plates,28 and general plate structures. 29 Techniques
+such as modal strain energy with hybrid optimization
+have enhanced damage detection in steel frames, 30
+while mode shape slope and curvature-based formula-
+tions have enabled localization and severity estimation
+of damaged zones. 31,32 Perturbation-based and slope
+ratio approaches further highlight strong correlations
+between damage and changes in the fundamental mode
+shape.27,32 Although higher modes offer increased sen-
+sitivity to localized damage, 33,34 their extraction in
+real-world conditions remains challenging.35
+Extending the concept of mode shape-based damage
+detection, data-driven methods have been introduced
+that utilize similar spatial indicators such as slope and
+curvature but apply them to statistical vibration modes
+extracted directly from measured data. One such tech-
+nique is proper orthogonal decomposition (POD),
+which yields a set of orthogonal spatial patterns known
+as proper orthogonal modes (POMs). POM derivatives
+(slope and curvature) effectively highlight localized
+damage through abrupt spatial variations. Similar to
+mode shape curvature in traditional analysis, POM
+curvature enhances sensitivity to damage. For instance,
+POD has been integrated with optimization for dam-
+age localization in shear type buildings
+36 and with
+POMs to identify damage in composite beams, 37 treat-
+ing POMs as dynamic invariants to reduce
+environmental influence. POM-based features have
+been implemented in a field-programmable gate array-
+enabled unsupervised SHM framework for a bridge
+structure, demonstrating their effectiveness in identify-
+ing structural damage.
+38 A baseline-free method using
+POM changes in guided wavefields showed high accu-
+racy across damage scenarios. 39 POMs from frequency
+response functions have also proven effective in beam
+damage detection.40 Additionally, POD combined with
+neural networks has enabled damage detection in
+bridges and buildings, demonstrating strong adaptabil-
+ity across structural types and data conditions.
+41–43
+Although modal and POD-based techniques effec-
+tively detect structural damage, their offline nature lim-
+its real-time SHM applications. To overcome this,
+Bayesian filtering methods offer recursive, real-time
+estimation of states and parameters.
+9,44,45 The Kalman
+Filter (KF) 46 provides optimal estimation for linear
+systems with known inputs and sparse measurements
+and is widely applied in response reconstruction and
+state estimation.
+47–49 However, its linearity assumption
+limits use in nonlinear systems. The Extended Kalman
+Filter (EKF) addresses this by linearizing dynamics
+around current estimates.
+50 EKF has been used for
+fatigue life prediction in plates under coupled loading 51
+and for modal identification in systems with tuned
+mass dampers, 52 though its performance degrades in
+strongly nonlinear cases. To improve robustness, the
+Unscented Kalman Filter (UKF) was developed,
+53–55
+employing the unscented transform (UT) to capture
+nonlinearities more accurately without linearization.
+UKF maintains recursive estimation and suits non-
+linear SHM applications. Recent developments include
+DT frameworks using KFs for time-variant model
+identification via GSINDy,
+56 validated on the Lorenz
+system and an industrial hydrotreating unit. Other
+DTs using KFs have been proposed for state monitor-
+ing and anomaly detection,
+57 and for joint input-state-
+parameter estimation via nonlinear minimum variance
+unbiased filters validated with vision-based
+measurements.
+58
+Hierarchical Bayesian filtering using augmented
+Kalman filters (AKF) and particle filters (PF) has been
+integrated with parametric reduced-order models to
+enable joint state, input, and parameter estimation
+under output-only measurements.
+59 AKF has also been
+coupled with a substructuring approach to estimate
+strain responses at unmeasured locations of a roll-
+ercoaster connection for remaining fatigue life predic-
+tion.
+60 Gaussian process latent force models have been
+employed for virtual sensing in wind turbine towers,
+providing stable and accurate estimation of dynamic
+strains and damage-equivalent loads compared with
+conventional KF formulations.
+61 Despite their advan-
+tages, Bayesian filters face challenges as the number of
+2 Structural Health Monitoring 00(0)
+unknown parameters increases, often leading to biased
+and unstable estimates. 62 To address this, POD has
+been integrated with Bayesian filtering for dimension-
+ality reduction. A combined POD–Bayesian filtering
+framework was proposed for real-time SHM in a
+reduced-order space,
+63 where a KF updated the POMs
+and an EKF estimated states and parameters. Damage
+localization relied on visual changes in POMs.
+Similarly, a real-time SHM method using online singu-
+lar value decomposition (SVD) and EKF was devel-
+oped,
+64 with POMs updated via SVD and EKF
+operating in the reduced space. While effective for
+tracking stiffness changes, these approaches estimate in
+a transformed domain, lacking direct physical inter-
+pretability. For practical SHM, especially in real-time
+diagnostics, translating estimates to the physical coor-
+dinate space remains critical.
+Traditional Bayesian filtering techniques, though
+effective for real-time state and parameter estimation,
+are computationally intensive as they track all para-
+meters continuously. Similarly, existing POD Bayesian
+frameworks rely on reduced-order models lacking
+physical interpretability. To overcome these limita-
+tions, this study presents a framework toward DT-
+enabled SHM by combining online POD with Bayesian
+filtering for real-time SHM. Unlike conventional POD
+approaches, the method uses online SVD to extract
+POMs and track their slopes relative to a healthy base-
+line as damage-sensitive features in online manner.
+Damage detection triggers localized Bayesian para-
+meter estimation, reducing computational cost and
+retaining physical interpretability. This adaptive strat-
+egy enables efficient, real-time monitoring and accurate
+localization of structural damage, as demonstrated
+through numerical and experimental validation.
+Problem statement
+A linear dynamic system with N degree of freedom
+(DOF) is described by the following second-order dif-
+ferential equation:
+M tðÞ €x tðÞ + C tðÞ _x tðÞ + K tðÞ x tðÞ = F tðÞ ð 1Þ
+In this equation, M tðÞ , C tðÞ and K tðÞ2 RN 3N repre-
+sent the mass, damping, and stiffness matrices, respec-
+tively, are time-dependent to reflect the changes in the
+system properties caused by damage progression. The
+vectors x tðÞ , _x tðÞ and €x tðÞ2 R
+N 31 denote displacement,
+velocity, and acceleration, while F tðÞ2 RN 31 is the
+external force vector.
+This study assumes that structural damage is intro-
+duced through a reduction in stiffness, while the mass
+and damping matrices remain unchanged throughout
+the analysis. Estimating all stiffness parameters along
+with the full state vector is computationally intensive,
+and Bayesian filters often face challenges in maintain-
+ing accuracy when applied to high-dimensional para-
+meter spaces.
+To overcome these limitations, the proposed frame-
+work integrates online-POD with UKF in an online
+manner. POD enables real-time damage localization by
+analyzing structural response data, while UKF simul-
+taneously estimates system states and updates only the
+stiffness parameters at the identified damage locations.
+This targeted strategy avoids full parameter estimation,
+reduces computational cost, and improves accuracy in
+real-time SHM.
+POD-assisted Bayesian estimation
+Proper orthogonal decomposition
+POD is used to transform high-dimensional structural
+response data into a lower-dimensional form, captur-
+ing the most significant features of the system.
+65–67 For
+structural systems, POD identifies dominant spatial
+patterns in the dynamic response, offering insight into
+how the structure behaves under varying conditions.
+Let the displacement responses from N DOF be repre-
+sented as x
+1 tðÞ , x2 tðÞ , ... , xN tðÞfg , collected and stored
+in the data matrix D:
+D =
+x1 t1ðÞ x1 t2ð Þ /C1/C1/C1 x1 tnðÞ
+x2 t1ðÞ x2 t2ð Þ /C1/C1/C1 x2 tnðÞ
+..
+. ..
+. . .
+. ..
+.
+xN t1ðÞ xN t2ð Þ /C1/C1/C1 xN tnðÞ
+2
+666
+4
+3
+777
+5
+N 3n
+ð2Þ
+where n is the number of snapshots, that is, the discrete
+time samples of the system’s response recorded at suc-
+cessive time instants during a single dynamic simulation
+or experiment.
+The covariance matrix C is computed as:
+C = 1
+n DDT ð3Þ
+By applying eigenvalue decomposition, the dominant
+spatial modes (POMs) can be obtained as:
+C F = FL ð4Þ
+In this study, SVD is used to perform POD, it can
+be given as:
+D = FLVT ð5Þ
+In this decomposition, F = ½f1, f2, ... , fN /C1382 RN 3N is
+the left singular matrix also known as POMs, V 2 Rn3n
+is right singular matrix and L 2 RN 3n is a pseudo-
+Hoda and Bhattacharyya 3
+diagonal matrix of singular values. In practice, it is not
+necessary to retain all N modes. The number of
+retained modes h/C28 N depends on the cumulative
+energy they capture, calculated as:
+Ph
+i = 1
+L2
+ii
+PN
+i = 1
+L2
+ii
+øg ð6Þ
+where g 2½ 0, 1/C138 is the energy threshold; values of g
+approaching one signify that the retained modes con-
+tain most of the system’s dynamic features.
+In an undamaged structure, the POM typically
+shows a smooth spatial pattern, reflecting the uniform
+dynamic properties of the system. When damage is
+present, this uniformity is disturbed. The change alters
+the energy distribution in the system and introduces
+localized irregularities in the POM, such as kinks or
+sharp gradients, near the damaged region.
+63 While these
+irregularities are useful indicators, they may be subtle.
+To improve sensitivity, the slope of the POM is ana-
+lyzed, as it magnifies these local deviations and better
+highlights potential damage locations.
+31,68 The slope of
+aP O M fi is defined as its spatial derivative as ∂fi
+∂y .
+For discrete data, this derivative can be approxi-
+mated using the forward difference method:
+∂fi
+∂y
+/C12/C12/C12
+/C12
+j
+’ fiðyj + 1Þ/C0 fi yj
+/C0/C1
+yj + 1 /C0 yj
+ð7Þ
+Damage in the structure results in sharper gradients or
+noticeable changes in the slope profile. These devia-
+tions are more pronounced than changes in the POM
+itself and serve as effective indicators for identifying
+damage locations. In this study, an online SVD
+approach is employed to compute the POM in real
+time. This enables continuous damage localization as
+the system evolves. The details of the online SVD algo-
+rithm are discussed in the following subsection.
+Online SVD
+When dealing with dynamic data, updating POD or
+recomputing the entire SVD from scratch is computation-
+ally expensive and time-intensive. Traditional SVD also
+requires storing and processing the entire dataset simulta-
+neously, further increasing computational demands. To
+address these challenges, researchers have demonstrated
+that online SVD is an effective solution.
+69–72
+Online SVD initializes the decomposition using a
+small subset of data in the conventional manner. As
+new data become available, it updates existing SVD
+results rather than re-computing them from the begin-
+ning. This incremental approach significantly reduces
+computational costs and resource requirements. This
+sequential updating method has proven effective in var-
+ious applications involving continuous data streams.
+By leveraging prior calculations instead of restarting
+the process for each update, online SVD enhances effi-
+ciency in handling evolving datasets.
+Consider a matrix Xs, which represents a subset of
+the response matrix D, where Xs 2 RN 3nk and nk
+denotes the number of columns used for initializing the
+SVD in offline mode. Notably, nk is significantly
+smaller than nn k /C28 nðÞ . The SVD of Xs is given as:
+Xs = U LV T ð8Þ
+where U 2 RN 3N , L 2 RN 3nk , and V 2 Rnk 3nk .
+Let e 2 RN 31 be a newly added column vector to
+the matrix Xs. Consequently, the updated matrix Xu is
+given by:
+Xu = ½Xs e/C138
+= ½U LV T e/C138
+ð9Þ
+The core concept of online SVD is to make use of the
+existing SVD of the matrixXs to efficiently determine the
+SVD of the updated matrix Xu. In particular, whenever
+new data becomes available, the SVD of the updated
+matrix is computed by utilizing the previously obtained
+SVD. To accomplish this, the new snapshote is projected
+onto the orthogonal complement of the space spanned by
+the columns ofU . This projection is given by:
+p = e /C0 UU T e ð10Þ
+where p represents the projection of e onto the orthogo-
+nal complement of the space spanned by the columns
+of U . The magnitude of p is denoted as h, and the nor-
+malized form of p is expressed as:
+h = pkk , j = p
+h ð11Þ
+Further, Equation (9) can be rewritten in matrix form
+as70:
+Xu = U j
+/C2/C3 L U T e
+0 h
+/C20/C21
+|ﬄﬄﬄﬄﬄﬄﬄ ﬄ{zﬄﬄﬄﬄﬄﬄﬄ ﬄ}
+E
+V 0
+01
+/C20/C21 T
+ð12Þ
+4 Structural Health Monitoring 00(0)
+The SVD of Xu can be determined by computing the
+SVD of the matrix E,70 as shown below:
+E = L U T e
+0 h
+/C20/C21
+= U ELEV T
+E ð13Þ
+Equation (13) denotes the SVD of E. Furthermore, the
+SVD of xu is expressed as follows:
+Xu = U j
+/C2/C3
+U E
+/C0/C1
+|ﬄﬄﬄﬄﬄﬄﬄﬄ ﬄ{zﬄﬄﬄﬄﬄﬄﬄﬄ ﬄ}
+Uu
+LE
+V 0
+01
+/C20/C21
+V E
+/C18/C19 T
+|ﬄﬄﬄﬄﬄﬄﬄﬄﬄﬄﬄﬄ ﬄ{zﬄﬄﬄﬄﬄﬄﬄﬄﬄﬄﬄﬄ ﬄ}
+V T
+u
+ð14Þ
+where U u and V u represent the updated left and right
+singular vector matrices, respectively, while LE denotes
+the updated singular value matrix.
+The procedure for computing POD bases online is
+described in Algorithm 1. 70,72 To reduce the impact of
+round-off errors, any projection h below the tolerance
+threshold eh is discarded. Before initiating the update
+process, the SVD of the matrix E is computed
+(Algorithm 1, line 10 /C0 13). Next, a decision is made
+regarding whether incorporating the snapshot
+column ( e) increases the rank of the updated matrix
+(Algorithm 1, lines 16–21). The number of columns
+retained in U is determined based on energy criteria as.
+Pna
+j = 1
+L2
+Ejj
+Pnk
+j = 1
+L2
+Ejj
+ø EE ð15Þ
+where EE is a constant that varies between 0 and 1. The
+variable na represents the number of required number of
+POM to achieve the desired level of cumulative energy.
+Additionally, any singular value smaller than the
+predefined threshold esv is truncated to improve the
+efficiency of the method. Finally, the updated modes
+are re-orthogonalized using the modified Gram-
+Schmidt method to address any potential non-
+orthogonality that may arise among them.
+70
+UKF for state and parameter estimation
+The UKF has emerged as a powerful tool for state and
+parameter estimation in nonlinear systems, particularly
+for multidegree of freedom structural dynamics appli-
+cations. This mathematical framework enables accurate
+estimation of both system states and parameters simul-
+taneously, which proves invaluable for SHM. When
+applied to MDOF systems, the UKF effectively han-
+dles the complexities of coupled dynamics and nonli-
+nearities while maintaining computational efficiency.
+For state and parameters estimation purpose the
+process equation which is a second-order differential
+equation defined in Equation (1) must be represented
+into a first-order state-space representation. This is
+achieved by defining the state X as the concatenation
+of displacements and velocities as:
+X tðÞ = x tðÞ
+_x tðÞ
+/C20/C21
+ð16Þ
+where X tðÞ2 R2N contains displacement and velocity.
+The resulting state space model becomes:
+_X tðÞ = _x tðÞ
+€x tðÞ
+/C20/C21
+= 0N 3N IN 3N
+/C0 M/C0 1K tðÞ /C0 M/C0 1C
+/C20/C21
+|ﬄﬄﬄﬄﬄﬄﬄﬄﬄﬄﬄﬄﬄﬄﬄﬄﬄﬄﬄﬄ ﬄ{zﬄﬄﬄﬄﬄﬄﬄﬄﬄﬄﬄﬄﬄﬄﬄﬄﬄﬄﬄﬄ ﬄ}
+Ac
+x tðÞ
+_x tðÞ
+/C20/C21
++ 0N 3N
+M/C0 1
+/C20/C21
+|ﬄﬄﬄﬄ ﬄ{zﬄﬄﬄﬄ ﬄ}
+Bc
+F tðÞ
+ð17Þ
+where 0N 3N and IN 3N are null and identity matrix of
+size N 3N , respectively. Ac, Bc, are system and control
+matrix in continuous time domain, respectively. The
+observation equation is given as:
+y tðÞ = HX tðÞ ð 18Þ
+where y tðÞ2 RN is vector of N observables. H 2 RN 32N
+is a Boolean matrix, which links the state matrix of the
+system to observation in y.
+The discretization of Equations (17) and (18) at a
+sampling period Dt, assuming constant intersample
+behavior of the excitations, is given by:
+Xk + 1 = Ad Xk + Bd Fk ð19Þ
+yk = HXk ð20Þ
+The discrete-time matrices Ad and Bd are computed
+using the matrix exponential of the continuous-time
+state matrices Ac and Bc as:
+Ad = eAcDt’I + AcDt + 0:5Dt2½Ac/C138 2 + ... , ð21Þ
+Bd = ½Ac /C0 I/C138½ Ac/C138 /C0 1Bc’BcDt ð22Þ
+To estimate the unknown parameters u of the sys-
+tem, it is necessary to incorporate them into an aug-
+mented state (X
+a), defined as:
+Xa
+k =
+xk
+_xk
+uk
+2
+4
+3
+5 ð23Þ
+Hoda and Bhattacharyya 5
+where u 2 Rnu31, is vector of unknown parameters of
+size nu. The recursive discrete time process equation
+can be defined by assuming zero-order-hold as 73:
+Xa
+k + 1 = g Xa
+k
+/C0/C1
++ Bk Fk + wk ð24Þ
+where g /C1ðÞ is a nonlinear function of augmented state
+that relates augmented state at k-th time instant to the
+k + 1ðÞ -th time instant w =
+/C2wx
+wu
+/C3
+, is a process noise with
+noise covariance Q, modeled as zero mean Gaussian
+with appropriate covariance value, where wx and wu are
+the process noise associated with the state and para-
+meter. Nonlinear function g /C1ðÞ and B can be derived
+with Equation (17) as:
+g Xa
+k
+/C0/C1
+= Ad
+k 0
+0I
+"#
+Xa
+k ,
+Bk = Bd
+k
+0
+"# ð25Þ
+The observation equation at k-th time instant is writ-
+ten as:
+yk = h Xa
+k
+/C0/C1
++ vk ð26Þ
+where vk is the process noise with covariance R mod-
+eled as zero mean Gaussian with appropriate covar-
+iance value, and function h /C1ðÞ is given as:
+h Xa
+k
+/C0/C1
+= HXa
+k ð27Þ
+where H = ½H0 /C138 , selects the measured DOFs.
+The UKF employs the UT to compute the statistical
+moments of states undergoing a nonlinear transforma-
+tion. The UT uses a deterministic sampling technique
+to capture the first (mean) and second (covariance) sta-
+tistical moments through a carefully chosen set of sam-
+ple points, known as sigma points. For an l-
+dimensional augmented state vector X
+a with mean X
+a
+and state estimation error P representing the
+Algorithm 1. Pseudo code online SVD
+1: Input: U 2 RN3nk , L 2 Rk3nk , V 2 Rnk 3nk , e 2 RN31, eh, esv
+2: nk = nColumns UðÞ . Number of columns in U
+3: h = k pk . Refer to Equation 11
+4: if h\eh then
+5: E = L U T e
+00
+/C20/C21
+6: else
+7: E = L U T e
+0 h
+/C20/C21
+8: end if
+9: U E, LE, V E = SVD EðÞ . Refer to Equation 13
+10: if h\ehðÞ OR nk ø NðÞ then
+11: U = UU E 1:nk , 1:nkðÞ , L = LE 1:nk , 1:nkðÞ , V = V 0
+01
+/C20/C21
+V E
+12: else
+13: U = ½U j/C138 U E, L = LE, V = V 0
+01
+/C20/C21
+V E .Refer to Equation 14
+14: nk = nk + 1
+15: end if
+16: if nk.naðÞ then . Refer to Equation 15
+17: L = L 1:na , 1:naðÞ
+18: U = U : , 1 : naðÞ
+19: V = V : , 1 : naðÞ
+20: nk = na
+21: end if
+22: if ðL nk /C0 1, nk /C0 1ðÞ .esv Þ AND ðL nk , nkðÞ \esv Þ then . Singular value truncation
+23: nk = nk /C0 1
+24: L = L 1:nk , 1:nkðÞ
+25: U = U : , 1 : nkðÞ
+26: V = V : , 1 : nkðÞ
+27: end if
+28: if jU T
+:, nkðÞ U :, 1ðÞ j . min eh, E 3NðÞ then
+29: U = ModifiedGramSchmidt UðÞ .Reorthogonalization
+30: end if
+31: Output: U , L, V
+6 Structural Health Monitoring 00(0)
+uncertainty associated with the state equation. The set
+of 2l + 1 sigma points, X , is computed as:
+X 0 = X
+a
+,
+X i = X
+a
++ ð
+ﬃﬃﬃﬃﬃﬃﬃﬃﬃﬃﬃﬃﬃﬃﬃ ﬃ
+l + lðÞ P
+p
+Þi, i = 1, ... , l,
+Xi + l = X
+a
+/C0ð
+ﬃﬃﬃﬃﬃﬃﬃﬃﬃﬃﬃﬃﬃﬃﬃ ﬃ
+l + lðÞ P
+p
+Þi, i = 1, ... , l:
+ð28Þ
+where
+ﬃﬃﬃﬃﬃﬃﬃﬃﬃﬃﬃﬃﬃﬃﬃ ﬃ
+l + lðÞ P
+p/C0/C1
+i represents the i-th column of the
+matrix square root of l + lðÞ P, and l is a scaling para-
+meter defined as l = a2 l + kðÞ /C0 l. a is a parameter that
+controls the spread of sigma points around the mean,
+and k is a secondary scaling parameter, often set to 0
+or 3 /C0 l. The square root of the covariance matrix can
+be computed using methods such as Cholesky decom-
+position or QR decomposition.
+Each sigma point is associated with a weight used to
+compute the mean and covariance of the transformed
+distribution. These weights are calculated as:
+W m
+0 = l
+l + l ,
+W c
+0 = l
+l + l + 1 /C0 a2 + b
+/C0/C1
+,
+W m
+i = W c
+i = 1
+2 l + lðÞ , i = 1, ... ,2 l:
+ð29Þ
+where W m
+i denotes the weights for calculating the mean,
+W c
+i represents the weights for calculating the covar-
+iance, and b is a parameter that incorporates prior
+knowledge of the distribution.
+The UKF propagates sigma points through the non-
+linear process model to predict the next state and its
+associated covariance. The sigma points at k-th time
+are generated as:
+X k = X
+a
+k X
+a
+k
++
+ﬃﬃﬃﬃﬃﬃﬃﬃﬃﬃﬃﬃﬃﬃﬃﬃﬃ ﬃ
+l + lðÞ Pk
+p
+X
+a
+k /C0
+ﬃﬃﬃﬃﬃﬃﬃﬃﬃﬃﬃﬃﬃﬃﬃﬃﬃ ﬃ
+l + lðÞ Pk
+phi
+ð30Þ
+These sigma points are then propagated through the
+nonlinear system dynamics as defined in Equation (24):
+X x
+k = g X kðÞ + Bk Fk ð31Þ
+where X x
+k represents the state computed at the k-th time
+step at the sigma points X .
+The predicted state mean is obtained by computing
+the weighted sum:
+^Xk =
+X2n
+i = 0
+W m
+i X x
+i, k
+ð32Þ
+Similarly, the predicted state covariance is computed
+as:
+Pk =
+X2n
+i = 0
+W c
+i ½X x
+i, k
+/C0 ^Xk /C138½X x
+i, k /C0 ^Xk /C138 T + Qk ð33Þ
+After predicting the state, the UKF updates the estimate
+using the available measurements. The measurement
+sigma points are computed from Equation (26) as:
+Yk = h X x
+k
+/C2/C3
+ð34Þ
+Mean and covariance for y are approximated using a
+weighted sample mean and covariance of the posterior
+sigma points as:
+^yk =
+X2n
+i = 0
+W m
+i Yi, k ð35Þ
+The measurement covariance (also called the innova-
+tion covariance) is:
+Pyk yk =
+X2l
+i = 0
+W c
+i Yi, k /C0 ^yk
+/C2/C3
+Yi, k /C0 ^yk
+/C2/C3 T
++ Rk ð36Þ
+The cross-covariance between the state and measure-
+ment is computed as:
+Pxk yk =
+X2l
+i = 0
+W c
+i ½X x
+i, k
+/C0 ^Xk /C138Y i, k /C0 ^yk
+/C2/C3 T
+ð37Þ
+Kalman gain is computed by using Equations (36) and
+(37) as:
+Gk = Pxk yk P/C0 1
+yk yk ð38Þ
+Finally, the state and covariance are updated as
+follows:
+^Xk = ^Xk + Gy k /C0 ^yk
+/C0/C1
+ð39Þ
+Pk = Pk /C0 Gk Pyk yk GT
+k ð40Þ
+Pseudocode for UKF is presented in Algorithm 2.
+POD-assisted UKF algorithm
+This study proposes a novel methodology that inte-
+grates POD with the UKF for real-time damage locali-
+zation and quantification in dynamic systems. The
+Hoda and Bhattacharyya 7
+overall flow of the proposed approach is illustrated in
+Figure 1. A healthy POM slope is considered as the
+baseline and can be computed using either numerically
+simulated responses or experimental data.
+Although POD is generally considered insensitive to
+loading conditions, 63 minor variations in the POMs
+can still occur due to changes in excitation and system
+uncertainties. To account for this variability, a number
+of simulations are conducted under different realiza-
+tions of zero-mean white Gaussian excitation with unit
+covariance. For each simulation, the first POM is
+extracted and its slope is computed. The baseline POM
+slope ( _f) is then defined as the mean of all computed
+POM slopes plus four times their standard deviation.
+This statistically informed threshold ensures a conser-
+vative and robust reference, allowing clear differentia-
+tion between normal structural variability and changes
+indicative of damage.
+In the online setting, POD is employed to compute
+POMs and compute its spatial derivative in real time
+using an online SVD approach. In this study, only the
+first POM is used, and references to POMs henceforth
+refer specifically to this mode unless otherwise stated.
+Damage localization is achieved by comparing the
+evolving POM slope ( _U ) during system operation with
+the established baseline. Deviations beyond the base-
+line indicate potential damage, and the associated
+DOFs are flagged as affected as shown in Figure 1. The
+UKF operates in parallel with the online SVD, initially
+estimating only the structural states (e.g., displacements
+and velocities). Once damage is detected, the UKF
+dynamically augments its state vector to include stiff-
+ness parameters corresponding only to the affected
+DOFs. This selective augmentation avoids unnecessary
+parameter estimation across all DOFs, thereby reduc-
+ing computational burden and maintaining numerical
+stability. The state dimension increases adaptively
+based on the number of damaged locations detected in
+real time. This adaptive estimation strategy offers sig-
+nificant advantages over conventional approaches. The
+proposed framework significantly reduces computa-
+tional cost by avoiding full-parameter estimation. Its
+real time capability facilitates continuous monitoring
+and timely detection of structural changes. The com-
+bined use of online SVD for damage localization and
+UKF for selective parameter estimation ensures
+Algorithm 2. Unscented Kalman Filter
+1: Initialize:
+2: ^X0 = E½X0/C138
+3: P0 = E½ X0 /C0 ^X0
+/C0/C1
+X0 /C0 ^X0)T /C138
+4: Q = process noise covariance
+5: R = measurement noise covariance
+6: for k = 1, 2, ... do
+7: Xk = X
+a
+k X
+a
+k
++
+ﬃﬃﬃﬃﬃﬃﬃﬃﬃﬃﬃﬃﬃﬃﬃﬃﬃ
+l + lðÞ Pk
+p
+X
+a
+k /C0
+ﬃﬃﬃﬃﬃﬃﬃﬃﬃﬃﬃﬃﬃﬃﬃﬃﬃ
+l + lðÞ Pk
+p/C2/C3
+. Refer Equation 30
+8: Xx
+k = g Xk, FkðÞ . Refer Equation 31
+9: ^Xk = P2n
+i = 0
+Wm
+i X x
+i, k . Refer Equation 32
+10: Pk = P2n
+i = 0
+Wc
+i ½Xx
+i, k /C0 ^Xk/C138½X x
+i, k /C0 ^Xk/C138 T + Qk . Refer Equation 33
+11: Yk = h X x
+k
+/C2/C3
+. Refer Equation 34
+12: ^yk = P2n
+i = 0
+Wm
+i Yi, k . Refer Equation 35
+13: Pyk yk = P2n
+i = 0
+Wc
+i Yi, k /C0 ^yk
+/C2/C3
+Yi, k /C0 ^yk
+/C2/C3 T
++ Rk . Refer Equation 36
+14: Pxk yk = P2n
+i = 0
+Wc
+i )½X x
+i, k /C0 ^Xk/C138Y i, k /C0 ^yk
+/C2/C3 T
+. Refer Equation 37
+15: Gk = Pxk yk P/C0 1
+yk yk . Refer Equation 38
+16: ^Xk = ^Xk + Gk yk /C0 ^yk
+/C0/C1
+. Refer Equation 39
+17: Pk = Pk /C0 GkPyk yk GT
+k . Refer Equation 40
+18: end for
+8 Structural Health Monitoring 00(0)
+efficient and accurate tracking of the structural state.
+This approach effectively addresses three out of the
+four standard stages of SHM: detection, localization,
+and quantification excluding only the prediction of
+remaining useful life. By focusing estimation efforts
+solely on the affected DOFs, the framework strikes a
+compelling balance between computational efficiency
+and accuracy, rendering it highly suitable for real time
+SHM applications. Furthermore, to clarify the effi-
+ciency of the proposed method, we report the computa-
+tional effort of the two main components of the
+framework in the Appendix section. Although both
+components, (i) the online SVD for updating the
+POMs and (ii) the UKF for estimating state and stiff-
+ness parameters, operate simultaneously within the
+proposed framework, they contribute to the total cost
+in different ways. The POMs update requires repeated
+decomposition of the response data; therefore, a com-
+parison of the cost of full SVD with the online SVD is
+presented. The full SVD becomes increasingly expen-
+sive as the response matrix grows, whereas the online
+SVD updates the basis using only the newest snapshot
+and avoids storing past data. The second component is
+the state and parameter-estimation step. The computa-
+tional cost associated with the classical UKF and the
+POD-assisted UKF is presented. The computational
+cost of the UKF increases cubically with the number of
+parameters being estimated. The classical UKF updates
+all stiffness parameters, while the POD-assisted updates
+only those associated with the detected damage. This
+leads to a smaller augmented state and reduction in
+computation cost.
+Numerical study
+A numerical study is conducted using an eight-story
+shear building benchmark problem,
+74 as illustrated in
+Figure 2(a). The structure consists of eight stories, each
+with a floor mass of 6253103 kg and an interstory stiff-
+ness of 106 kN m/C0 1. To incorporate damping effects,
+2% Rayleigh damping is assigned to the structure. To
+establish a reference POM under healthy conditions, a
+Figure 1. Schematic workflow of the proposed POD-assisted
+Bayesian estimation.
+POD: proper orthogonal decomposition.
+Figure 2. An eight-story building with base excitation: (a) Healthy, (b) 30% damage at fourth–fifth stories, (c) third–fifth stories,
+and (d) first story.
+Hoda and Bhattacharyya 9
+total of 13104 numerical simulations are performed.
+In each simulation, the structure retains identical phys-
+ical properties, while the base excitation varies across
+realizations. The excitation is modeled as zero-mean
+white Gaussian noise with unit covariance. Structure is
+subjected to this excitation for 10 s with a time step of
+0:001 s, ensuring a high temporal resolution for captur-
+ing dynamic response variations. This ensemble of
+simulations provides insight into the variation of
+POMs arising from different excitation forces. Further,
+SVD is employed to the displacement response data to
+extract the POM. The POM, along with its mean
+and 64 standard deviation ( s) bounds, is shown in
+Figure 3. Once the POMs are computed, their mean
+slopes, along with the corresponding 64s bounds, are
+also evaluated and shown in Figure 4. Since any struc-
+tural damage would alter the stiffness distribution, it
+would also affect the POM and its slope. Thus, devia-
+tions in the slope of the POM from its baseline beha-
+vior serve as a reliable indicator of structural damage,
+enabling early detection of changes in the dynamic
+properties of the system.
+Damage is simulated by reducing the stiffness of spe-
+cific stories in the structure. Three distinct damage sce-
+narios are considered to assess the effectiveness of the
+proposed framework and are summarized in Table 1.
+The UKF parameters, a, b, and k, are assigned val-
+ues of 1310
+/C0 3, 2, and 0, respectively. 55 The process
+noise covariance is set to 10/C0 11, while the measurement
+noise covariance is set to 10/C0 6. Additionally, the pro-
+cess noise covariance for the parameters is set to 1010.
+It is noteworthy that these UKF parameters remain
+the same across all cases considered. In the following
+subsection, each damage case is discussed in detail.
+Damaged case 1
+In this case, the building is subjected to zero-mean
+white Gaussian base excitation with unit variance for a
+duration of 200 s. The structural response is computed
+using numerical integration with a time step of 0:001 s.
+To simulate realistic measurement, white Gaussian
+noise is added to the displacement response, which has
+made the response data noisy. The variance of the
+added noise is taken as 5% of the variance of the dis-
+placement signal. Double damage is introduced by
+reducing the stiffness of two consecutive stories (fourth
+and fifth) by 30%a t 0:001 s, as shown in Figure 2(b).
+This scenario is considered to evaluate the framework’s
+ability to detect and distinguish between multiple adja-
+cent damage locations.
+In Figure 5, the temporal evolution of the POM
+slope is presented. The shaded black surface represents
+the baseline POM slope, while the colored surface
+depicts the real-time evolution of the POM slope dur-
+ing the monitoring period. It is clear that the POM
+slope begins to change after the damage occurs at
+Figure 3. First POM with mean and standard deviation bound.
+POM: proper orthogonal mode.
+Figure 4. First POM slope with mean and standard deviation
+bound.
+POM: proper orthogonal mode.
+T able 1. Considered damage cases.
+Damaged
+case
+Story
+number Damage
+Damage
+instance
+Case 1 4 & 5 30% 50 s
+Case 2 3 & 5 30% 50 s
+Case 3 1 15%, 30%, 50% 25 s, 80 s, 125 s
+10 Structural Health Monitoring 00(0)
+t = 50 s. However, it took approximately 5 s for the
+POM values at the damaged locations to rise above the
+baseline POM values. This delay is attributed to the
+nature of the online SVD approach, where the POM is
+incrementally updated as more measurement data
+becomes available, allowing the system to capture the
+structural changes caused by the damage in real time.
+Figures 6 and 7 show the predicted displacement and
+velocity responses at the fifth story. As illustrated, the
+predicted displacement and velocity closely matches
+the simulated response, highlighting the high accuracy
+of the proposed estimation framework. Although the
+algorithm identified the structural damage approxi-
+mately 5 s after it occurs at t = 50 s, this slight delay has
+minimal to no effect on the accuracy of the predicted
+responses. This robustness can be attributed to the cap-
+abilities of the UKF, which effectively combines model
+dynamics and measurement data to generate reliable
+state estimates, even as the structure undergoes
+changes. The observed correlation between the pre-
+dicted and actual responses at the damaged fifth story
+further emphasizes the adaptability and reliability of
+the proposed framework in real-time structural moni-
+toring. For brevity, results from other stories are not
+shown, though they exhibit similar trends. The pre-
+dicted stiffness at the fourth and fifth stories is shown
+in Figures 8 and 9, respectively. It is evident that stiff-
+ness prediction does not begin at the initial time step
+but is triggered shortly after the occurrence of damage.
+There is an approximate delay of 5 s between the actual
+damage instant ( t = 50 s) and the initiation of stiffness
+estimation. This delay is consistent with the POM
+slope evolution as shown in Figure 5, where the slope
+corresponding to the fourth and fifth stories begins to
+change immediately after the damage but takes a few
+seconds to fully develop and become distinguishable
+from the baseline.
+As outlined in the methodology section, the frame-
+work omits the need to estimate all stiffness parameters
+continuously. Instead, it initiates stiffness prediction
+only for the affected stories and only after significant
+deviation is detected making the approach both effi-
+cient and focused. Once estimation begins, the
+Figure 5. Evolution of POM slope over time for damage case 1.
+POM: proper orthogonal mode.
+Figure 6. Comparison of predicted and simulated
+displacement at the fifth floor level for damage case 1. T op: Full-
+time comparison. Bottom: Zoomed-in view between 50 s and
+60 s highlighting the damage detection period.
+Figure 7. Comparison of predicted and simulated velocity at
+the fifth floor level for damage case 1. T op: Full-time
+comparison for damage case 1. Bottom: Zoomed-in view
+between 50 s and 60 s highlighting the damage detection period.
+Hoda and Bhattacharyya 11
+predicted stiffness values closely match the true stiff-
+ness, confirming the framework’s capability to accu-
+rately track localized damage.
+Damaged case 2
+This scenario considers a non-consecutive double
+damage condition. The structure is excited using a
+zero-mean white Gaussian base acceleration with unit
+variance for a total duration of 200 s. Numerical inte-
+gration is performed using a fixed time step of 0:001 s
+to compute the structural response. To replicate realis-
+tic measurement conditions, the displacement response
+is corrupted with white Gaussian noise. The noise var-
+iance is set to 5% of the displacement signal’s variance,
+ensuring the simulation reflects practical sensor noise
+levels. Furthermore, damage is introduced by reducing
+the stiffness of the third and fifth stories by 30%a t
+50 s, as illustrated in Figure 2(c). Unlike the first case,
+the damage locations are spatially separated, allowing
+assessment of the framework’s ability to detect and iso-
+late damage when it occurs at non-adjacent stories.
+In Figure 10, the temporal evolution of the POM
+slope is shown. The shaded black surface represents
+the baseline POM slope, while the colored surface illus-
+trates real-time evolution of POM slope over the time.
+A clear deviation in the POM slope starts to appear
+shortly after the damage occurs at t = 50 s. Specifically,
+the slope values for the third and fifth stories, where
+the stiffness was reduced, exhibit a consistent upward
+trend as time progresses, confirming the presence of
+damage at these locations. Figures 11 and 12 present
+the predicted displacement and velocity responses at
+the fifth story, respectively. As observed, the predicted
+responses closely follow the simulated results, indicat-
+ing the high accuracy and robustness of the proposed
+estimation framework. Although a delay of approxi-
+mately 5 s is observed in damage detection relative to
+the actual occurrence at t = 50 s, this slight lag has neg-
+ligible effect on the overall accuracy of the predicted
+structural response. For brevity, results from other
+stories are not included, although they exhibit similar
+behavior. The estimated stiffness for third and fifth
+stories is shown in Figures 13 and 14, respectively. It is
+important to note that the estimation process does not
+begin at the start of the monitoring period. Rather, it
+is initiated a few seconds after the damage occurs. A
+delay of approximately 7 s is observed between the
+moment of damage and the start of stiffness tracking.
+This delay corresponds to the evolution of the POM
+slope in Figure 10, where initial shifts appear after
+damage but take a few seconds to clearly diverge from
+the baseline. The online SVD’s incremental updates
+require this short period of post-damage data to cap-
+ture stable changes in system behavior.
+Damaged case 3
+The third scenario simulates stepwise damage at the
+first story, with k1 being progressively reduced by 15%
+at 25 s, 30%a t 80 s, and 50%a t 125 s, as shown in
+Figure 2(d). This scenario is particularly critical, as the
+ground floor experiences the highest shear forces dur-
+ing base excitation. The structure is excited using a
+zero-mean white Gaussian base acceleration with unit
+variance for a total duration of 200 s. Numerical inte-
+gration is performed using a fixed time step of 0:001 s
+to compute the structural response. To replicate realis-
+tic measurement conditions, the displacement response
+is corrupted with white Gaussian noise. The noise var-
+iance is set to 5% of the displacement signal’s variance,
+Figure 8. Comparison of true and predicted stiffness at the
+fourth story for damage case 1.
+ Figure 9. Comparison of true and predicted stiffness at the
+fifth story for damage case 1.
+12 Structural Health Monitoring 00(0)
+ensuring the simulation reflects practical sensor noise
+levels.
+Figure 15 illustrates the temporal evolution of the
+POM slope. The black shaded surface represents the
+reference POM slope, while the colored surface shows
+POM slope variation over the time. A noticeable shift
+in the POM slope begins shortly after the first damage
+instant occurred at t = 25 s. Specifically, the slope val-
+ues for the first story, where stiffness was reduced,
+exhibit a steady increase over time. Notably, the POM
+slope starts changing its shape around the first damage
+instant at 25 s, stabilizing at a nearly constant value
+from 40 s until the second damage instant at 80 s. A
+similar trend is observed for the third damage instance,
+indicating that the POM slope values are highly depen-
+dent on the damage level. Figures 16 and 17 show the
+predicted displacement and velocity responses at the
+first story. The predicted responses align closely with
+the simulated response, underscoring the reliability of
+the proposed estimation framework. The close match
+between the predicted and actual responses highlights
+the robustness and reliability of the proposed
+Figure 10. Evolution of POM slope over time for damage case 2.
+POM: proper orthogonal mode.
+Figure 11. Comparison of predicted and simulated
+displacement at the fifth floor level for damage case 2. T op: Full-
+time comparison. Bottom: Zoomed-in view between 50 s and
+60 s highlighting the damage detection period.
+Figure 12. Comparison of predicted and simulated velocity at
+the fifth floor level for damage case 2. T op: Full-time
+comparison. Bottom: Zoomed-in view between 50 s and 60 s
+highlighting the damage detection period.
+Figure 13. Comparison of true and predicted stiffness at the
+third story for damage case 2.
+Hoda and Bhattacharyya 13
+framework for real-time structural monitoring. For
+brevity, results from other stories are not included, as
+they follow similar trends.
+Figure 18 depicts the estimated stiffness for the first
+story. The blue line represents the actual stiffness,
+while the red line shows the stiffness prediction over
+time. It is important to note that the estimation process
+does not start from the initial time but is triggered a
+few seconds after the damage occurs. A delay of
+approximately 5 s is observed between the onset of
+damage and when the stiffness tracking starts. This
+delay aligns with the evolution of the POM slope in
+Figure 15, where minor deviations appear shortly after
+the first damage instant but take a few seconds to
+clearly diverge from the baseline. This behavior is
+attributed to the incremental updates in the online
+SVD process, which require a brief period of post-
+damage data to capture stable variations in the
+system’s dynamic properties. However, the further
+reduction in stiffness due to damage is captured accu-
+rately. The evolution of cumulative CPU time for the
+full SVD (using the econ option in MATLAB) and the
+online SVD is shown in Figure 19. The econ option is
+used because it computes only the economy-sized
+SVD, avoiding the unnecessary full factorization and
+significantly reducing the computation. The full SVD
+Figure 14. Comparison of true and predicted stiffness at the
+fifth story for damage case 2.
+Figure 15. Evolution of POM slope over time for damage case 3.
+POM: proper orthogonal mode.
+Figure 16. Comparison of predicted and simulated
+displacement at the first floor level for damage case 3. T op:
+Full-time comparison. Bottom: Zoomed-in view between 25 s
+and 35 s.
+Figure 17. Comparison of predicted and simulated velocity at
+the first floor level for damage case 3. T op: Full-time
+comparison. Bottom: Zoomed-in view between 25 s and 35 s
+14 Structural Health Monitoring 00(0)
+requires almost 3700 s, while the online SVD com-
+pletes the same updates in about 6 s. Furthermore,
+Figure 20 presents the cumulative CPU time compari-
+son between the proposed POD-assisted UKF and the
+classical UKF. In the single-damage and double-
+damage cases, the proposed framework required about
+690 s and 728 s, respectively, whereas the full UKF
+which updates stiffness parameters at all DOFs
+required nearly 1515 s. This demonstrates that the pro-
+posed approach reduces the computational effort by
+more than half, while maintaining accuracy in damage
+localization and parameter estimation. These CPU
+times vary from machine to machine, as they depend
+on the underlying processor, memory, and overall sys-
+tem configuration. All computations in this study were
+carried out in MATLAB R2024b on a HP laptop
+equipped with an 1.6 GHz Intel Core i5 and 8 GB
+RAM.
+A three-dimensional steel building
+This study utilizes experimental data obtained from a
+previously published investigation involving a small
+scale, six-story, three-dimensional steel shear building
+model subjected to free vibration testing.
+75,76 The
+experimental program was conducted at the Structural
+Health Monitoring Laboratory of the Indian Institute
+of Technology Patna. The physical model was con-
+structed at a geometric scale of 1 : 20 using mild steel,
+with a Young’s modulus of 210310
+9 Nm /C0 2, a mass
+density of 2:7 gc m/C0 3, and a Poisson’s ratio of 0:3. Each
+story measured 187:5 mm in height, resulting in a total
+structural height of 1125 mm. The floor plan measured
+250 mm3250 mm. In the undamaged configuration,
+the columns at all stories measured 7:8 mm37:8 mm in
+cross-section. To simulate damage, the columns
+between the third and fourth stories were replaced with
+smaller sections measuring 6:5 mm36:5 mm, corre-
+sponding to an estimated stiffness reduction of approx-
+imately 51:7% at the fourth story. Free vibration tests
+were conducted by applying a lateral displacement to
+the structure and allowing it to oscillate freely.
+Horizontal acceleration responses were recorded at
+each floor using six DeltaTron piezoelectric
+Figure 18. Comparison of true and predicted stiffness for
+damage case 3.
+Figure 19. Comparison of cumulative CPU time: full SVD
+shows quadratic growth, while online SVD exhibits substantially
+lower , linear growth.
+SVD: singular value decomposition.
+Figure 20. Cumulative CPU time for the proposed framework
+versus the full UKF . Updating only damaged parameters yields
+substantially lower computational cost.
+UKF: Unscented Kalman Filter.
+Hoda and Bhattacharyya 15
+accelerometers oriented in the direction of motion. The
+sensors were connected to a multi-channel data acquisi-
+tion system, and the signals were processed using Pulse
+Labshop and Pulse Reflex software. Data were col-
+lected at a sampling interval of 0:00024 s. A total of 25
+acceleration time histories were recorded for each struc-
+tural condition (healthy and damaged).
+75,76
+In this study, the original three-dimensional labora-
+tory building model is simplified into a one-
+dimensional lumped mass system with six DOF, where
+each mass corresponds to an individual floor level as
+shown in Figure 21. The first natural frequency
+and the associated mode shape, extracted from free
+vibration experiments, are used as reference modal
+parameters for calibrating the simplified model. A
+multi-objective genetic algorithm is employed to esti-
+mate the lateral stiffness values of each story. The opti-
+mization process minimizes the discrepancies between
+the numerical and experimental results in terms of both
+the first natural frequency and the first mode shape.
+Following calibration, a numerical study is per-
+formed on the calibrated model to compute the base-
+line POM. A total of 10
+4 simulations is performed,
+where the structure is subjected to zero-mean white
+Gaussian excitation with unit variance. The resulting
+POMs are compared with those obtained from the
+experimental data, including a confidence envelope
+defined by a standard deviation bound ( 64s), as
+shown in Figure 22. As shown in Figure 22, the numer-
+ical and experimental POMs under the undamaged
+condition show close agreement, with minimal discre-
+pancies. The POM corresponding to the damaged con-
+dition exhibits a noticeable kink between the third and
+fourth stories, aligning with the damaged location.
+This localized irregularity becomes even more pro-
+nounced in the slope of the POM (Figure 23), making
+it an effective indicator of damage. Although small dif-
+ferences are observed in the healthy POM slopes
+between the numerical and experimental cases, the
+damaged POM slope displays a significant deviation
+precisely at the fourth story, clearly confirming the
+Figure 21. Representation of a six-story building and its
+equivalent lumped mass model: (a) Three-dimensional structural
+model of the building and (b) simplified lumped mass-spring
+representation.
+Figure 22. First POM with mean and standard deviation
+bound.
+POM: proper orthogonal mode.
+Figure 23. First POM slope with mean and standard deviation
+bound.
+POM: proper orthogonal mode.
+16 Structural Health Monitoring 00(0)
+presence of damage. These observations reinforce the
+capability of the POM slope as a sensitive damage
+indicator.
+To validate the proposed framework, numerical
+simulation is performed on the calibrated model.
+System responses are computed over a duration of
+200 s with a time step of 0:001 s. Damage is introduced
+by reducing the stiffness of the fourth story by 50%a t
+50 s. The parameters for the UKF are set as
+a = 1310
+/C0 3, b = 2, and k = 0. The process noise covar-
+iance is defined as 10/C0 11, and the measurement noise
+covariance is set to 10/C0 6. For stiffness parameter esti-
+mation, the noise covariance is set to 105 to allow for
+adaptive tracking of abrupt changes.
+The temporal evolution of the POM slope is shown
+in Figure 24. The colored surface represents the real-
+time evolution of the POM slope, while the shaded
+black surface corresponds to the baseline slope under
+undamaged conditions. As shown in Figure 24, the
+real-time POM slope closely follows the baseline until
+the damage instant ( t = 50 s). After this point, a sharp
+deviation is observed at the fourth story, indicating the
+structural damage. Further validation of the frame-
+work is presented in Figure 25, which compares the
+predicted and simulated displacement responses at the
+fourth floor. A similarly strong match is observed for
+velocity responses in Figure 26. The evolution of the
+estimated stiffness is shown in Figure 27, where the
+prediction begins shortly after the damage instance. A
+slight delay is evident between the actual and predicted
+damage instances, which is attributed to the online
+SVD that requires a short accumulation window to
+reflect noticeable changes in the POM. This behavior is
+further supported by Figure 24, where the shape of the
+POM slope begins to evolve immediately after damage,
+but becomes distinctly identifiable approximately 3 s
+after the damage instance.
+Figure 24. Evolution of POM slope over time for a three-
+dimensional building frame.
+POM: proper orthogonal mode.
+Figure 25. Comparison of predicted and simulated
+displacement at the fourth floor level for a three-dimensional
+building. T op: Full-time comparison. Bottom Zoomed-in view
+between 50 s and 60 s highlighting the damage detection period.
+Figure 26. Comparison of predicted and simulated velocity at
+the fourth floor level for a three-dimensional steel building. T op:
+Full-time comparison. Bottom: Zoomed-in view between 50 s
+and 60 s highlighting the damage detection period.
+Hoda and Bhattacharyya 17
+Conclusions
+This study presents a real-time framework for struc-
+tural damage detection and state estimation by com-
+bining data-driven damage localization with Bayesian
+filtering, with direct relevance to DT-enabled SHM.
+Specifically, damage was identified by monitoring
+changes in the slope of the first POM, which was
+updated continuously using an online SVD algorithm.
+Simultaneously, UKF was employed to estimate the
+full structural state and update stiffness parameters
+only at the localized damage locations. This parallel
+operation of damage localization and parameter esti-
+mation enabled real time and efficient monitoring of
+the system. Compared to traditional methods that
+required full parameter estimation or relied on prede-
+fined damage models, the proposed approach offered
+several key advantages. First, localizing damage prior
+to estimation reduced computational complexity and
+enhanced numerical stability. Second, selective updat-
+ing of parameters improved robustness in the predic-
+tion of parameters. Lastly, the real-time integration of
+online SVD and UKF supported early detection and
+continuous monitoring, making the framework well-
+suited for real-time SHM applications.
+The effectiveness of the methodology was demon-
+strated through both numerical and calibrated three-
+dimensional steel building studies. The numerical
+investigation included an eight-story shear frame sub-
+jected to various damage scenarios, such as adjacent,
+non-adjacent, and progressi ve stiffness reductions.
+The calibrated study was carried out on a six-degree-of-
+freedom lumped mass model derived from a
+laboratory-scale three-dimensional steel building. To
+emulate realistic field conditions, white Gaussian noise
+was added to the displacement responses, with the noise
+variance set to 5% of the signal’s variance. Despite the
+presence of measurement noise, the framework consis-
+tently achieves accurate damage localization and
+reliable estimation of the system states and stiffness
+parameters, demonstrating its practical relevance for
+continuous structural condition assessment.
+A key limitation of the present framework is the
+assumption that the system is fully observable in terms
+of displacement responses. In real-world applications,
+such complete measurement coverage may be challen-
+ging due to restrictions on sensor deployment, instru-
+mentation cost, and accessibility. Nevertheless,
+emerging non-contact measurement technologies par-
+ticularly computer vision–based methods offer a pro-
+mising pathway to obtain full displacement data with
+minimal physical instrumentation. In addition to this
+measurement limitation, the current implementation
+assumes that the input excitation is known, which may
+not always hold under ambient or operational loading.
+Future work will focus on relaxing both assumptions
+by integrating sparse-sensor strategies, computer
+vision-based displacement acquisition, and input esti-
+mation techniques. Further developments will also
+explore incorporating multiple POMs to enhance loca-
+lization sensitivity and broaden the applicability of the
+framework to more complex structural configurations.
+ORCID iD
+Samrul Hoda https://orcid.org/0000-0002-4809-2739
+Author contributions
+Samrul Hoda: Writing – review & editing, Writing – original
+draft, Visualization, Validation, Software, Methodology,
+Investigation, Formal analysis, Conceptualization.
+Biswarup Bhattacharyya: Writing – review & editing, Writing –
+original draft, Visualization, Validation, Supervision, Software,
+Resources, Project administration, Methodology, Investigation,
+Funding acquisition, Formal analysis, Data curation,
+Conceptualization.
+Funding
+The authors disclosed receipt of the following financial sup-
+port for the research, authorship, and/or publication of this
+article: Biswarup Bhattacharyya acknowledges the funding
+from IIT Hyderabad via grant no.: SG/IITH/F299/2022-23/
+SG-141 to carry out the research work.
+Figure 27. Comparison of true and predicted stiffness for a
+three-dimensional steel building.
+18 Structural Health Monitoring 00(0)
+Declaration of conflicting interests
+The authors declared no potential conflicts of interest with
+respect to the research, authorship, and/or publication of this
+article.
+Data availability statement
+The underlying data supporting the findings of this study are
+available from the corresponding author upon a reasonable
+request.
+References
+1. Glaessgen E and Stargel D. The digital twin paradigm
+for future Nasa and US air force vehicles. In: 53rd AIAA/
+ASME/ASCE/AHS/ASC structures, structural dynamics
+and materials conference 20th AIAA/ASME/AHS adap-
+tive structures conference 14th AIAA, 2012. p. 1818.
+2. Grieves M. Digital twin: manufacturing excellence
+through virtual factory replication. White Paper 2014;
+1(2014): 1–7.
+3. Tripura T, Desai AS, Adhikari S, et al. Probabilistic
+machine learning based predictive and interpretable digi-
+tal twin for dynamical systems. Comput Struct 2023; 281:
+107008.
+4. Cimino C, Negri E and Fumagalli L. Review of digital
+twin applications in manufacturing. Comput Industry
+2019; 113: 103130.
+5. Sun T, He X and Li Z. Digital twin in healthcare: recent
+updates and challenges. Digital Health 2023; 9:
+20552076221149651.
+6. Homa Masoumi, PE Sara Shirowzhan and Pettit CJ.
+City digital twins: their maturity level and differentiation
+from 3d city models. Big Earth Data 2023; 7(1): 1–36.
+7. Lehtola VV, Koeva M, Elberink SO, et al. Digital twin
+of a city: Review of technology serving city needs. Int J
+Appl Earth Observation Geoinform 2022; 114: 102915.
+8. Wang T, Gan VJ, Hu D, et al. Digital twin-enabled

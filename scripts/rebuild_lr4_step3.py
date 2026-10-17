@@ -86,11 +86,11 @@ excl = [r for r in S3L if r not in full]
 L = [
     '# SLR Summary Matrix — Step 3 Deep-Read Coding',
     '',
-    'Review: *A Self-Improving Cognitive Digital Twin for Design-for-Safety and Design-for-Quality in the Built Environment.*',
-    'Coded from verified full text (Prompt B). **%d papers coded** — %d full-coded + %d Stage-2 excluded.' % (len(S3L), len(full), len(excl)),
+    'Review: *A Self-Improving Cognitive Digital Twin for Design-for-Safety in the Built Environment.*',
+    'Coded from verified full text (Prompt B, DfS-only scope). **%d papers coded** — %d full-coded + %d Stage-2 excluded.' % (len(S3L), len(full), len(excl)),
     'Every row carries a `[Full-text source: ...]` mark in AG. AH = strength & gaps filled; AI = deficiencies & future work.',
     '',
-    '| ID | Author | Title | Year | P | Q | R | S | T | U | V | W | X | Z | AA | AB | AC | AC1 | AC2 | AC3 | AD | AE | AF | AG | AH | AI | DOI |',
+    '| ID | Author | Title | Year | P DT subject | Q DfS focus | R Codable | S Decision | T Excl reason | U DT tier | V Design | W Construction | X Operation | Z DfX target | AA Self-improve | AB Method | AC Modality | AC1 Fusion depth | AC2 Fusion evidence | AC3 Fusion confidence | AD Validation | AE QA score | AF Cluster | AG Key evidence | AH Strength/gap | AI Limitations/future | DOI |',
     '| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |',
 ]
 for r in sorted(S3L):

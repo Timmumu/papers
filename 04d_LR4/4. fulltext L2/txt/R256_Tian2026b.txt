@@ -1,0 +1,1882 @@
+Full length article
+Cross-domain adaptive digital twin modelling for dam structures using 
+graph attention networks
+Jichen Tian
+a , b
+, Ruijie Yu
+a , b
+, Chen Chen
+a , b , *
+, Yanling Li
+a , b
+, Huibao Huang
+a , b , c
+, 
+Jiankang Chen
+a , b
+a
+State Key Laboratory of Hydraulics and Mountain River Engineering, Sichuan University, Chengdu 610065, China
+b
+College of Water Resources & Hydropower, Sichuan University, Chengdu 610065, China
+c
+China Yajiang Group Co., Ltd., Beijing, China
+ARTICLE INFO
+Keywords:
+Dam safety monitoring
+Digital twin
+Deep learning
+Transfer learning
+Finite element method
+Domain adaptation
+ABSTRACT
+Digital twin technology has emerged as a promising paradigm for advancing instrumentation and measurement 
+in dam safety monitoring. However, existing models often face significant cross-domain discrepancies between 
+numerical simulations (source domain) and in-situ measurement data (target domain), which constrain pre -
+diction accuracy and generalization under varying operating conditions. To address these challenges, this study 
+proposes a novel cross-domain adaptive digital twin framework that integrates graph attention networks, gating 
+mechanisms, and feature alignment strategies to enhance measurement consistency and predictive reliability. 
+Multi-source numerical simulation domains are systematically constructed to enrich input variability and 
+improve measurement-domain coverage. The proposed framework is comprehensively validated through abla -
+tion studies and comparisons with six state-of-the-art baseline models, achieving superior accuracy with mean 
+errors as low as 0.44 mm and 0.99 %, thereby demonstrating excellent measurement precision. Furthermore, 
+validation under extreme water-level and temperature scenarios confirms strong generalization, with the in -
+clusion of extreme-condition samples further reducing errors and mitigating prediction degradation at critical 
+monitoring points. The results show that the proposed approach provides a physically consistent, generalizable, 
+and robust digital twin measurement framework for dam structures, enabling reliable real-time deformation 
+monitoring and safety evaluation. These findings establish a foundation for intelligent, large-scale, and multi- 
+condition applications of digital twins in civil infrastructure monitoring and measurement science.
+1. Introduction
+With the continuous advancement of digital technologies driving the 
+transformation and upgrading of hydraulic engineering, the construc -
+tion of high dams is facing unprecedented technical challenges and 
+demands [ 1,2 ]. Along with the in-depth implementation of China ’ s 
+Western Development Strategy, a series of ultra-high dams have been 
+successively constructed and put into operation, such as the Jinping-I 
+Arch Dam (305 m), the Lianghekou Dam (292 m), the Baihetan Arch 
+Dam (279 m), and the Shuangjiangkou Dam (305 m) [ 3,4 ]. These pro -
+jects are characterized by massive dam volumes, enormous reservoir 
+capacities, and high stress levels, which impose stringent requirements 
+on real-time monitoring and safety assessment [ 5 – 7 ]. However, as dam 
+structures become increasingly complex and large in scale, the limita -
+tions of traditional monitoring and management approaches in terms of 
+data acquisition, information integration, and state prediction are 
+becoming more prominent. Therefore, the adoption of advanced digital 
+twin technology to achieve comprehensive real-time monitoring and in- 
+depth data analysis is expected to provide strong support for accurate 
+perception of structural states, enhanced safety assurance, and opti -
+mized operational decision-making [ 8,9 ].
+Structural Health Monitoring (SHM) methods have been widely 
+applied in the safety evaluation of dams and can be generally classified 
+into data-driven and mechanism-driven models [10] . Data-driven ap -
+proaches, including Hydrostatic-Seasonal-Time (HST) models and ma -
+chine learning techniques, focus on statistical correlations, while 
+mechanism-driven models rely on finite element analysis and reli -
+ability theory to assess structural risk [11] . Recent advances in deep 
+learning have enhanced the modelling capacity of traditional HST 
+methods [12] , with techniques such as clustering, support vector 
+* Corresponding author..
+E-mail address: laurachen@scu.edu.cn (C. Chen). 
+Contents lists available at ScienceDirect
+Advanced Engineering Informatics
+journal homepag e: www.else vier.com/loc ate/aei
+https://doi.org/10.1016/j.aei.2025.104209
+Received 16 October 2025; Received in revised form 18 November 2025; Accepted 5 December 2025 
+Advanced Engineering Informatics 70 (2026) 104209 
+Available online 9 December 2025 
+1474-0346/© 2025 Elsevier Ltd. All rights are reserved, including those for text and data mining, AI training, and similar technologies. 
+machines, and extreme learning machines applied to spatiotemporal 
+segmentation and displacement prediction [ 13,14 ]. However, shallow 
+models struggle to capture complex nonlinear and temporal de -
+pendencies. Deep networks such as Long Short-Term Memory Network 
+(LSTM) [ 15 ] and Graph Convolutional Networks (GCNs) [ 16 ] can better 
+represent temporal and spatial correlations but remain constrained by 
+data availability and interpretability. Consequently, existing data- 
+driven approaches are limited to localized monitoring points and 
+cannot fully reflect the global behavior of large-scale dams, under -
+scoring the need for an integrated digital twin framework that fuses 
+simulation and monitoring data for comprehensive dam safety 
+assessment.
+In the context of Industry 4.0, digital twin technology provides a 
+novel solution for global real-time monitoring of dams [ 17,18 ]. By 
+integrating Building Information Modelling (BIM) and SHM technolo -
+gies, digital twins enable the construction of high-fidelity virtual rep -
+licas of engineering structures and facilitate the perception of structural 
+states and the prediction of potential damage [ 19 – 21 ]. Through the 
+combination of physical models, sensor data, and artificial intelligence 
+techniques, digital twins realize real-time synchronization of physical 
+system states and trend prediction [ 22,23 ]. The core architecture con -
+sists of physical entities, digital models, data transmission, real-time 
+interaction, and intelligent analysis [24] . The introduction of deep 
+learning and reinforcement learning endows the system with adaptive 
+learning capabilities and enables intelligent decision-making and opti -
+mization [25] . A major advantage of digital twins lies in their ability to 
+perform testing and optimization within a low-cost and low-risk virtual 
+environment, thereby reducing uncertainties during the operation and 
+maintenance of actual engineering projects [ 26,27 ].
+In recent years, the concept of the digital twin has evolved rapidly 
+across various engineering disciplines, highlighting the integration of 
+physical modelling, numerical simulation, and data-driven learning. As 
+noted by de Wilde, the boundaries between building performance 
+simulation, machine learning, and digital twins are conceptually 
+Fig. 1. Utilize the kernel density method and spatial correlation analysis to visualize the cross-domain differences between the numerical simulation source domain 
+and on-site measurement.
+J. Tian et al. Advanced Engineering Informatics 70 (2026) 104209 
+2 
+overlapping rather than distinct [28] . A digital twin is characterized by 
+four essential components: modelling and simulation, data fusion, 
+interaction and collaboration, and service, reflecting the continuous 
+information exchange between physical and virtual entities. In civil and 
+structural engineering, digital twin frameworks have been established in 
+railways [29] , bridges [30] , tunnels [ 31,32 ], and mechanical systems 
+[23] through the combination of physics-based finite element simula -
+tion and machine learning. This hybrid paradigm enhances predictive 
+accuracy and interpretability.
+At present, research on digital twin models for dam structures is still 
+at an early exploratory stage [33] . Existing studies are mainly based on 
+Geographic Information Systems (GIS) and BIM to construct geospatial 
+digital twin models of dams and river systems [34] . Although such 
+methods can achieve high-precision digitalization of engineering 
+structures, their practical application remains limited due to the lack of 
+real-time dynamic responses to environmental changes. Other scholars 
+have applied vision-based stereo camera systems for real-time defor -
+mation monitoring of gates. While such approaches provide significant 
+value for external safety assessment [ 35,36 ], they fail to capture changes 
+in the internal structural state and therefore offer limited support for 
+comprehensive structural health monitoring [ 37 ].
+Some studies have constructed digital twin models based on nu -
+merical simulation within the Finite Element Method (FEM) [ 38,39 ]. 
+However, such approaches often require extensive calibration of mate -
+rial parameters and structural simplifications [ 40,41 ], and involve 
+computationally demanding iterative equation solving [ 42 ], which 
+constrains both efficiency and accuracy. To overcome these challenges, 
+recent studies have proposed FEM-deep learning-coupled digital twin 
+frameworks for analyzing dam deformation, seepage, and stress evolu -
+tion, demonstrating the feasibility of physics-informed digital twins for 
+dam safety monitoring [ 43,44 ]. These models combine data-driven and 
+physics-based approaches. Nevertheless, their accuracy is still restricted 
+by domain discrepancies between the numerical simulation source 
+domain and the monitoring data target domain, as illustrated in Fig. 1
+[45] . Furthermore, the extrapolation and generalization capabilities of 
+data-driven models remain to be validated [44] . Therefore, digital twin 
+methodologies in the field of dam structural safety monitoring still face 
+critical technical bottlenecks, and their construction methods require 
+further investigation.
+At present, cross-domain adaptive modelling from numerical simu -
+lation source domains to monitoring data target domains in dam digital 
+twins remains largely unexplored. Although studies in related subfields, 
+such as dam image recognition, have attempted to employ transfer 
+learning [ 46 – 48 ] and meta -learning [49] to achieve domain adaptation 
+and generalization to mitigate data scarcity, existing work has primarily 
+focused on pre-training and fine-tuning frameworks for cross-site crack 
+detection [ 50,51 ] or condition monitoring [ 52,53 ]. Due to the absence 
+of quantitative characterization of cross-domain discrepancies and high- 
+dimensional feature alignment, the applicability of these methods to 
+cross-domain modelling in digital twins is still limited [54] .
+In summary, current digital twin models of dam structures are pri -
+marily constructed based on numerical simulation and deep learning. 
+The accuracy of these models is affected by cross-domain discrepancies 
+between simulation-based source data and monitoring-based target 
+data. At the same time, the extrapolation and generalization capacity of 
+deep learning approaches remains uncertain. To address these issues, 
+the present study proposes a cross-domain adaptive method to mitigate 
+discrepancies between source and target domains, thereby improving 
+the accuracy of digital twin models established through numerical 
+simulation and deep learning. In addition, the proposed method is 
+Fig. 2. Proposed method network architecture.
+J. Tian et al. Advanced Engineering Informatics 70 (2026) 104209 
+3 
+Fig. 3. The proposed cross domain adaptive modelling architecture.
+Fig. 4. Layout of deformation monitoring and longitudinal displacement process lines for DS dam and PB dam.
+J. Tian et al. Advanced Engineering Informatics 70 (2026) 104209 
+4 
+validated under extreme water level and temperature conditions to 
+evaluate its generalization capability. The main contributions of this 
+study are as follows: 
+• A refined theoretical framework for digital twin modelling of dam 
+structures based on deep transfer learning and the finite element 
+method is established. A new source-domain construction method 
+and cross-domain adaptive strategy are proposed to enhance 
+modelling accuracy and generalization under extreme operating 
+conditions.
+• A novel graph attention-gated network architecture is designed to 
+improve the interpretability and predictive reliability of the digital 
+twin model.
+• The proposed framework is applied to the high arch dam and high 
+earth-rock dam, and its effectiveness is validated through ablation 
+experiments and comparisons with multiple baseline models. 
+Furthermore, the model ’ s generalization performance under extreme 
+water-level and temperature conditions and the influence of neural 
+network architectures on prediction accuracy are systematically 
+analyzed.
+2. Proposed method
+This section proposes a digital twin modelling approach for dam 
+structures. First, a digital twin model network is established based on 
+Graph Attention Networks (GATs) and gating mechanism, and the ad -
+jacency matrix is constructed according to the arrangement of mea -
+surement points. Subsequently, numerical simulations are generated as 
+the source domain based on material parameters and various operating 
+conditions. Cross-domain learning is then achieved through Correlation 
+Alignment (CORAL) and Maximum Mean Discrepancy (MMD) feature 
+alignment between the numerical simulation source domain and the 
+Table 1 
+Datasets specifics table.
+Dams Datasets Period Length Input 
+dimension
+Output 
+points
+DS Source 
+Domain I
+2016 – 2022 2437 18 4902
+Source 
+Domain II
+2016 – 2022 2437 18 4902
+Source 
+Domain III
+2016 – 2022 2437 18 4902
+Source 
+Domain IV
+2016 – 2022 2437 18 4902
+Source 
+Domain V
+2016 – 2022 2437 18 4902
+Target Domain 2016 – 2022 2437 18 4902
+PB Source 
+Domain
+2012 – 2024 4380 16 3238
+Target Domain 2012 – 2024 4380 16 3238
+Fig. 5. Visualization of adaptability between DS dam source domain and target domain. (a) Kernel density estimation (b) Target domain (c) Source Domain I (d) 
+Source Domain II (e) Source Domain III (f) Source Domain IV.
+J. Tian et al. Advanced Engineering Informatics 70 (2026) 104209 
+5 
+monitoring data target domain, enabling the digital twin representation 
+of the high arch dam structure.
+2.1. Neural network architecture
+To efficiently model the spatial correlations among dam monitoring 
+points and to selectively preserve or suppress key information, this study 
+proposes a two-stage graph attention and gating digital twin neural 
+network architecture, as shown in Fig. 2 . The input comprises single- 
+instance (or simultaneous) multi-point observations, which are first 
+processed by a graph attention layer [55] for spatial encoding. The 
+encoded results are subsequently processed by a gating unit, imple -
+mented with LSTM [ 56 ] in a single-step manner, to perform a one-time 
+memory and forgetting operation. This process produces the recon -
+structed full-field features, as illustrated in the figure.
+The feature encoder ϕ (•) is constructed based on a graph attention 
+layer. Suppose there are N monitoring points, and the input is denoted as 
+x ∈ R
+B × N 
+with a batch size of B . The graph attention layer first performs 
+a linear transformation: 
+H = xW (1) 
+where W represents the learnable weights and is implemented using a 
+bias-free linear layer. The aggregation is performed on the given graph 
+structure A ∈ { 0 , 1 }
+N × M
+, which is designed to reflect both the force/ 
+strain propagation range in the context of material mechanics and the 
+geometric relationships among the monitoring points. An inner-product- 
+based attention scoring mechanism is defined, and masking is applied to 
+the zero connections: 
+S = ( HH ) A , S
+ij
+=
+{
+〈 h
+i
+, h
+i
+〉 , A
+ij
+= 1
+  ∞
+(2) 
+where h
+i 
+represents the encoded feature of the i -th monitoring point. 
+Subsequently, a softmax normalization is applied over the neighborhood 
+of each i to obtain the attention coefficients [ 57 ]: 
+α
+ij
+=
+exp ( S
+ij
+)
+∑
+k : A
+ij
+= 1
+exp ( S
+ik
+)
+,
+∑
+j
+α
+ij
+= 1 (3) 
+Table 2 
+The main parameter settings of the models in the paper.
+Model Main Parameter Setting
+Proposed model hidden layer dimension = 32
+Ablation Model 
+I
+hidden layer dimension = 32
+Ablation Model 
+II
+hidden layer dimension = 32
+Ablation Model 
+III
+hidden layer dimension = 32
+Ablation Model 
+III
+hidden layer dimension = 192
+LSTM Hidden layer dimension = 192
+GRU Hidden layer dimension = 192
+Transformer hidden layer dimension = 192, encoder layer = 2, decoder layer 
+= 2, attention head = 4
+GCN Hidden layer dimension = 192
+TGCN Hidden layer dimension = 192
+GAT Hidden layer dimension = 192, attention head = 4
+Fig. 6. Compare the MAE, RMSE, and MAPE of the proposed model with the ablation models at all measurement points.
+J. Tian et al. Advanced Engineering Informatics 70 (2026) 104209 
+6 
+The aggregation yields the feature-encoded output F : 
+̃
+H = α H , F = φ
+(
+̃
+H
+)
+(4) 
+where φ ( • ) denotes the activation function, which is implemented 
+using the Exponential Linear Unit (ELU).
+Let v = { 1 , ..., M } denote the set of finite element nodes (including 
+monitoring points), with spatial coordinates represented by 
+{
+p
+i
+∈ R
+3
+}
+. 
+According to the spatial attenuation law of stress – strain in material 
+mechanics, an influence radius R is introduced to control edge connec -
+tions, and a distance-based weighting function is employed to describe 
+the edge weights. The weighted adjacency matrix A is then defined as: 
+A
+i , j
+=
+{
+w
+ij
+• 1 ,
+⃦
+⃦
+⃦ p
+i
+  p
+j
+⃦
+⃦
+⃦ ⩽ R
+0 , otherwise
+(5) 
+w
+ij
+= exp
+⎛
+⎝
+ 
+⃦
+⃦
+⃦ p
+i
+  p
+j
+⃦
+⃦
+⃦
+κ
+⎞
+⎠
+(6) 
+where w
+ij 
+denotes the distance decay weight, κ represents the propaga -
+tion characteristic length associated with the material and structural 
+scales (which can be calibrated using the elastic modulus, structural 
+dimensions, or numerical sensitivity), and R controls both the sparsity of 
+the graph and the physical adjacency.
+To perform the feature decoder g ( • ) on the encoded feature, the 
+feature encoding F is processed through a single-step LSTMCell for 
+gating. The initial hidden state and cell state are set to h
+0
+= 0 , c
+0
+= 0, 
+and the four gates of the LSTMCell are computed as follows [58] : 
+i = σ ( FW
+i
++ b
+i
+) (7) 
+f = σ
+ 
+FW
+f
++ b
+f
+)
+(8) 
+o = σ ( FW
+o
++ b
+o
+) (9) 
+̃c = tanh ( FW
+c
++ b
+c
+) (10) 
+The single-step update is expressed as follows: 
+c
+1
+= f ⊙ c
+0
++ i ⊙ ̃c , h
+1
+= o ⊙ tanh ( c
+1
+) (11) 
+The result is then linearly mapped to an M   dimensional monitoring 
+point space: 
+̂y = h
+1
+W
+dcc , 1
+∈ R
+B × M
+, y = ̂y W
+dcc , 2
+∈ R
+B × M
+(12) 
+To enhance the fusion of high-dimensional and low-dimensional 
+features, the set of monitoring point indices μ ⊂ { 1 , ..., N } is used with 
+an observation coverage strategy. In the intermediate reconstruction ̂y , 
+the original observations are used to cover the corresponding positions 
+[44] : 
+̂y
+b , i
+← δ
+b , i
+, ∀ i ∈ μ , ∀ b ∈ { 1 , ..., B } (13) 
+2.2. Source domain construction
+In this study, the numerical simulation data obtained from finite 
+element analysis are defined as the source domain D
+S
+=
+{ 
+x
+i
+S
+, y
+i
+S
+) }
+N
+S
+i = 1
+, 
+Fig. 7. Comparison of the measurement process between the proposed model and the ablation models on the test set.
+J. Tian et al. Advanced Engineering Informatics 70 (2026) 104209 
+7 
+while the actual monitoring data are defined as the target domain D
+T
+=
+{ 
+x
+i
+T
+, y
+i
+T
+) }
+N
+T
+i = 1
+.Due to differences in their data generation mechanisms, 
+the two domains exhibit significant discrepancies in feature distribution, 
+temporal scale, and physical consistency. This domain gap can be 
+expressed as the distribution divergence between the marginal and 
+conditional probabilities: 
+Δ
+domain
+= D ( P
+S
+( x ) , P
+T
+( x )) + D ( P
+S
+( y | x ) , P
+T
+( y | x ) ) (14) 
+where D ( ⋅ , ⋅ ) denotes a statistical distance measure (e.g., Maximum 
+Mean Discrepancy, Kullback – Leibler divergence). The goal of cross- 
+domain adaptive modelling is to minimize Δ
+domain 
+through feature- 
+level alignment and multi-source enhancement.
+The formation mechanism of domain discrepancies mainly originates 
+from two aspects: (1) numerical simulation assumptions, including 
+material homogeneity and idealized boundary conditions, which ensure 
+theoretical precision but weaken representation of real operation states; 
+and (2) monitoring uncertainty, arising from uneven sensor placement, 
+environmental noise, and measurement bias, which distort the actual 
+feature distribution. To improve digital twin fidelity, two strategies are 
+considered.
+High-fidelity source-domain reconstruction. The finite element 
+model is refined to approach actual engineering conditions by opti -
+mizing geometric parameters G and material parameters M . The opti -
+mization problem can be formulated as: 
+min
+G , M
+⃦
+⃦
+y
+S
+( G , M )   y
+T
+⃦
+⃦
+2
+2
+(15) 
+where y
+S
+( G , M ) represents simulated responses, and y
+T 
+denotes the 
+measured deformation or stress.
+Multi-source domain construction and cross-domain adaptation. To 
+overcome the limited coverage of a single source domain, a multi-source 
+hybrid domain 
+{
+D
+k
+S
+}
+K
+k = 1 
+is constructed by perturbing key physical pa -
+rameters (material, load, and boundary conditions). Each sub-domain 
+corresponds to a different scenario: 
+D
+k
+S
+=
+{
+x
+i
+S
+( θ
+k
+) , y
+i
+S
+( θ
+k
+)
+}
+, θ
+k
+= { M
+k
+, B
+k
+, L
+k
+} (16) 
+where M
+k
+, B
+k 
+and L
+k 
+denote the material properties, boundary condi -
+tions, and loading states for the k -th domain.
+2.3. Cross-domain adaptive modelling
+To further enhance the modelling performance digital twin model of 
+dam structures, this study proposes a transfer learning framework based 
+on domain adaptation [ 59 – 61 ], as illustrated in Fig. 3 . Specifically, the 
+proposed method employs the Shared Feature Encoder (SFE) ϕ (•) to 
+extract domain-representative features F
+S 
+and F
+T
+, followed by COCAL 
+and MMD to learn domain-invariant representations. The mathematical 
+formulations are as follows [ 62,63 ]: 
+l
+COCAL
+( F
+S
+, F
+T
+) =
+1
+4 d
+2
+‖
+1
+N
+S
+  1
+ 
+F
+T
+S
+F
+S
+  μ
+T
+S
+μ
+S
+)
+ 
+1
+N
+T
+  1
+ 
+F
+T
+T
+F
+T
+  μ
+T
+T
+μ
+T
+)
+‖
+2
+F
+(17) 
+l
+MMD
+( F
+S
+, F
+T
+) =
+⃦
+⃦
+⃦
+⃦
+⃦
+1
+N
+S
+∑
+N
+S
+i = 1
+Φ
+(
+f
+i
+S
+)
+ 
+1
+N
+T
+∑
+N
+T
+i = 1
+Φ
+(
+f
+i
+T
+)
+⃦
+⃦
+⃦
+⃦
+⃦
+2
+(18) 
+where μ
+S
+, μ
+T 
+represents the mean vectors of the corresponding features 
+F
+S
+, F
+T
+, ‖ • ‖
+F 
+is the Frobenius norm, d denotes the dimensionality of the 
+Fig. 8. Comparison of 3D visualization between the proposed model and the ablation models.
+J. Tian et al. Advanced Engineering Informatics 70 (2026) 104209 
+8 
+features, f
+i
+S
+, f
+i
+T 
+refers to the feature from the source domain F
+S 
+or target 
+domain F
+T
+, respectively, Φ ( • ) denotes the feature mapping function, 
+which maps the input features into the RKHS, and ‖ • ‖ represents the 
+norm, typically referring to either the Euclidean norm or the norm in 
+RKHS.
+After completing feature alignment, the target domain feature F
+T 
+are 
+fed into the Shared Feature Decoder (SFD) g ( • ) to achieve full-domain 
+digital twin prediction 
+̂
+δ of the dam structure: 
+̂
+δ = g ( F
+T
+) (19) 
+While learning domain-invariant feature representations is essential, 
+ensuring prediction accuracy for both the source and target domains is 
+equally critical. Therefore, the proposed method employs a total loss 
+function consisting of three components: prediction loss, physics- 
+informed loss, and cross-domain loss. The minimization of the cross- 
+domain loss L
+domain 
+aims to encourage alignment of the shared feature 
+distributions across domains, thereby enabling the learning of more 
+robust domain-invariant representations. 
+L
+domain
+= l
+COCAL
+( F
+S
+, F
+T
+) + l
+MMD
+( F
+S
+, F
+T
+) (20) 
+The minimization of the prediction loss improves the model ’ s ability 
+to fit the deformation response in both the source and target domains: 
+L
+prcd
+= λ
+S
+L
+S
+prcd
++ λ
+T
+L
+T
+prcd
+(21) 
+where L
+S
+prcd 
+and L
+T
+prcd 
+represent the prediction losses for D
+S
+=
+{ 
+x
+i
+S
+, y
+i
+S
+) }
+N
+S
+i = 1 
+and D
+T
+=
+{ 
+x
+i
+T
+, y
+i
+T
+) }
+N
+T
+i = 1
+, respectively. λ
+S 
+and λ
+T 
+are loss 
+balancing parameters.
+To incorporate engineering mechanics constraints into the digital 
+twin, a physics-informed loss L
+phys 
+is designed, comprising two terms: 
+physical smoothness and spatial gradient consistency. Physical 
+smoothness loss constrains the predicted digital twin field 
+̂
+δ to vary 
+smoothly in space, penalizing large local gradients. Spatial gradient 
+variance loss enforces similarity between the spatial gradient patterns of 
+the target-domain prediction 
+̂
+δ and the source-domain ground truth y
+S
+. 
+The total physics-informed loss is then: 
+L
+phys
+= λ
+sm
+L
+smooth
++ λ
+gr
+L
+grad
+(22) 
+L
+smooth
+=
+1
+| ε |
+∑
+i , j ∈ ε
+⃦
+⃦ ̂
+δ
+i
+ 
+̂
+δ
+j
+⃦
+⃦
+2
+2
+(23) 
+L
+prcd
+= ∇
+s
+̂
+δ   ∇
+s
+y
+s
+(24) 
+where λ
+sm 
+and λ
+gr 
+are loss balancing parameters, ε is the set of 
+spatially adjacent finite element nodes (as defined by the adjacency 
+matrix), and ∇
+s 
+denotes the discrete spatial gradient operator defined 
+over ε .
+By jointly optimizing these three losses, high-accuracy digital twin 
+modelling can be achieved under cross-domain scenarios. The total loss 
+function is defined as follows: 
+L
+tatal
+= λ
+1
+L
+prcd
++ λ
+2
+L
+phys
++ λ
+3
+L
+domain
+(25) 
+where λ
+1
+, λ
+2
+, and λ
+3 
+are loss balancing parameters.
+Fig. 9. Comparative analysis of cross-domain transfer of the proposed model, GAT, and TGCN on different source domains.
+J. Tian et al. Advanced Engineering Informatics 70 (2026) 104209 
+9 
+3. Case study
+3.1. Project overview
+In this study, as shown in Fig. 4 , the DS Dam and PB Dam, both 
+located on the mainstream of the Dadu River in Sichuan Province and 
+serving as important components of cascade hydropower projects, are 
+selected as validation cases. The DS Dam is a 210 m-high double- 
+curvature arch dam, forming the 14th cascade hydropower station on 
+the Dadu River and functioning as a daily regulation reservoir. The dam 
+has a total installed capacity of 2,600 MW, with a normal reservoir water 
+level of 1,130.00 m and a dead water level of 1,120.00 m. Safety 
+monitoring is conducted using the plumb-line method, with multiple 
+monitoring points arranged at typical dam sections (#6, #10, #14, #19, 
+#24) as well as in the grout galleries at the dam abutments. Monitoring 
+results show that the reservoir exhibits a high frequency but small 
+amplitude of daily water-level fluctuations. The deformation of the dam 
+is influenced by both the periodic effects of temperature and water level 
+and a long-term gradual trend.
+The PB Dam is a rockfill dam with a gravel-soil core wall, with a 
+maximum height of 186 m and a total storage capacity of 5.337 billion 
+m
+3
+, serving as an annual regulation reservoir. The dam crest elevation is 
+856.00 m, with a crest length of 540.5 m. It adopts a composite slope 
+configuration, with a cross-section consisting of a gravel-soil core wall, 
+filter layers, transition zones, and outer rockfill zones. Cable-type hori -
+zontal displacement meters are installed within the dam body to monitor 
+layered displacement in the downstream transition zone and the rockfill 
+zone of the core wall. A total of 40 sensors, organized into eight sets 
+(CH1-CH40), are deployed, with some installed in Section 210 + at el -
+evations of 808 m, 758 m, and 731 m. Monitoring data reveal a clear 
+periodic horizontal deformation pattern strongly correlated with reser -
+voir water-level fluctuations, as well as an irreversible gradual defor -
+mation trend, reflecting the time-dependent behaviors of the fill 
+materials, such as creep and consolidation.
+3.2. Datasets description
+As shown in Table 1 , this study employs a total of eight datasets. 
+Specifically, the DS Dam includes five source-domain datasets and one 
+target-domain dataset, while the PB Dam includes one source-domain 
+dataset and one target-domain dataset. For the DS Dam, Source 
+Domain I is constructed by inverting only transient parameters. Source 
+Domain II involves inversion of both transient and creep parameters, 
+targeting monitoring points PL10-2, PL10-1, PL14-1, PL14-2, PL14-3, 
+PL14-4, PL19-1, and PL19-2. Source Domain III also inverts both tran -
+sient and creep parameters, but targets monitoring points PL10-1, PL14- 
+1, PL14-2, PL14-3, PL14-4, and PL19-1. Source Domain IV is generated 
+by combining Source Domains I, II, and III, whereas Source Domain V 
+extends Source Domain IV by incorporating extreme hydraulic condi -
+tions (check flood level and dead water level) and extreme temperature 
+conditions (mean temperature ± 20 
+◦
+C). The target-domain dataset for 
+the DS Dam is constructed from longitudinal displacement monitoring 
+data.
+The cross-domain differences between the source and target domains 
+are compared through kernel density estimation and spatial correlation 
+analysis, as shown in Fig. 5 . The results indicate that, except for a few 
+Fig. 10. Comparison of measurement process lines for cross-domain transfer of the proposed model, GAT, and TGCN on different source domains.
+J. Tian et al. Advanced Engineering Informatics 70 (2026) 104209 
+10 
+monitoring points, the two domains are generally adaptable in terms of 
+distribution, although an overall shift still exists. in terms of spatial 
+correlation, the differences between each source domain and the target 
+domain are relatively significant. The source- and target-domain data -
+sets for the PB Dam are built following the same methodology as for the 
+DS Dam, but with only one parameter inversion scheme. All datasets are 
+divided into training, validation, and test sets in a 0.7:0.1:0.2 ratio. The 
+model inputs are deformation monitoring points or their corresponding 
+finite element mesh nodes, and the outputs are the full-domain finite 
+element mesh nodes.
+3.3. Baseline models
+To comprehensively validate the effectiveness of the proposed cross- 
+domain adaptive modelling method, this study selected ten represen -
+tative comparison models, which were categorized into two groups 
+based on task characteristics. The first group consists of four ablation 
+models, designed to evaluate the contribution of each key component: 
+Ablation Model I removes both the CORAL and MMD losses; Ablation 
+Model II removes the GAT-based feature encoder; Ablation Model III 
+removes both the CORAL and MMD losses as well as the GAT-based 
+feature encoder; Ablation Model IV [ 43,44 ] is based on Ablation 
+Model III but uses Source Domain I (while all other models use Source 
+Domain IV). The second group consists of six mainstream baseline 
+models for dam structural health monitoring, including LSTM [58] , GRU 
+[64] , GCN [ 57 ], Transformer [49] , GAT [ 57 ], and TGCN [65] , which 
+serve as benchmarks against traditional machine learning and deep 
+learning approaches. Table 2 presents the parameter configurations of 
+all models, where the baseline model parameters are selected under 
+computational constraints to ensure optimal configurations, thereby 
+guaranteeing fairness and consistency in experimental conditions.
+4. Results
+This experiment is conducted under the Windows 10 system envi -
+ronment using PyCharm IDE and Pytorch2.5.1 based on Python3.10. 
+The server configuration follows: CPU is Intel Core i7-13700, GPU is 
+Nvidia RTX 4070SUPER. In the experiment, the learning rate is set to 
+0.001, the batch size is 64, the optimizer selects the Adam optimizer to 
+update the network parameters, and the number of iterations is set to 
+500. To quantitatively analyze the evaluation performance of each 
+model, three evaluation metrics, Mean Absolute Error (MAE), Root 
+Mean Squared Error (RMSE), and Mean Absolute Percentage Error 
+(MAPE) are chosen in this paper to evaluate the difference between real 
+and predicted flows [43] .
+4.1. Ablation experiments of the proposed model
+To validate the effectiveness of the proposed GAT-based architec -
+ture, domain-adaptive feature alignment method, and source-domain 
+construction approach, four ablation models were designed for 
+comparative analysis, as shown in Fig. 6 , Fig. 7 , and Fig. 8 . Fig. 6 pre -
+sents the comparison of MAE, RMSE, and MAPE across all monitoring 
+points for the proposed model and the ablation models. The results 
+indicate that the proposed model achieves the highest accuracy at the 
+vast majority of monitoring points, with an average MAE of only 0.44 
+mm and an average MAPE of 0.99 %, demonstrating excellent prediction 
+precision and confirming the effectiveness of the proposed method in 
+enhancing digital twin accuracy. In terms of the average MAE, the 
+proposed model outperforms Ablation Models I, II, III, and IV by 22.81 
+Fig. 11. Comparison of 3D visualization of cross-domain transfer of the proposed model, GAT, and TGCN on different source domains.
+J. Tian et al. Advanced Engineering Informatics 70 (2026) 104209 
+11 
+%, 43.59 %, 45.68 %, and 87.02 %, respectively, further validating the 
+contribution of each key component. Comparison with Ablation Model 
+IV shows that source-domain construction contributes more signifi -
+cantly to improving digital twin accuracy than network architecture 
+optimization or feature alignment, highlighting the critical importance 
+of constructing a high-quality source domain in digital twin modelling.
+Fig. 7 presents the comparison of predicted time-series values be -
+tween the proposed model and the ablation models on the test set. The 
+results indicate that the proposed model, as well as Ablation Models I, II, 
+and III, can fit the measured values with high accuracy. However, 
+compared with Ablation Model IV, the proposed model effectively 
+mitigates prediction bias caused by distribution discrepancies between 
+numerical simulations and field measurements. Furthermore, during 
+periods of high water-level fluctuations, the proposed model demon -
+strates superior fitting performance relative to Ablation Models I, II, and 
+III, indicating enhanced generalization capability and accuracy under 
+extreme conditions, and further validating the effectiveness of each 
+ablation module. Fig. 8 shows the three-dimensional visualization re -
+sults of the proposed model and the ablation models on May 1, 2021. 
+Through internal slices at multiple and representative angles, it can be 
+observed that the proposed model adheres to physical principles in the 
+digital twin of the high arch dam, while the other models also exhibit 
+satisfactory performance in terms of fitting physical behavior.
+4.2. Analysis of the impact of source-domain construction methods
+To further investigate the impact of source-domain construction 
+methods on the proposed cross-domain digital twin modelling 
+framework, cross-domain transfer modelling comparisons were con -
+ducted for Source Domains I, II, III, and IV under three neural network 
+architectures (the proposed model, GAT, and TGCN), as shown in Fig. 9 , 
+Fig. 10 , and Fig. 11 . Fig. 9 presents the modelling accuracy of the three 
+models across all monitoring points for different source domains. The 
+results indicate that the overall accuracy of the three models is consis -
+tent across the source domains. Among single-source domains, Source 
+Domain II achieves the best performance, demonstrating that incorpo -
+rating both transient deformation and creep parameters, while 
+increasing the number of inversion target monitoring points, enhances 
+consistency between the source and target domains, thereby improving 
+cross-domain transfer modelling accuracy. More importantly, Source 
+Domain IV exhibits the best performance in cross-domain transfer. For 
+the proposed model, the average MAE on Source Domain IV is reduced 
+by 84.34 %, 82.88 %, and 86.42 % compared with Source Domains I, II, 
+and III, respectively, indicating that multi-source domain transfer can 
+significantly improve digital twin modelling accuracy relative to single- 
+source domains.
+Fig. 10 shows the comparison of predicted time-series values for the 
+three models across different source domains. The results demonstrate 
+that all three models can capture the variation of measured values well 
+for the four source domains. However, only for Source Domain IV do the 
+predicted values at all monitoring points almost perfectly match the 
+measurements, indicating that multi-source domain transfer effectively 
+mitigates distribution shifts between numerical simulation source do -
+mains and monitoring target domains. Fig. 11 presents three- 
+dimensional visualizations of cross-domain modelling of downstream 
+displacement on May 1, 2021, for the three models across different 
+Fig. 12. Comparison of accuracy between the proposed model and the baseline models on DG Dam.
+J. Tian et al. Advanced Engineering Informatics 70 (2026) 104209 
+12 
+source domains. It can be observed that all three models satisfy physical 
+principles across the four source domains, with differences only in the 
+magnitude of predicted values, further validating the effectiveness of 
+multi-source domain transfer for high-accuracy digital twin modelling.
+4.3. Comparison between the proposed model and baseline models
+To further validate the effectiveness of the proposed model, six 
+baseline models, including LSTM, GRU, GCN, Transformer, GAT, and 
+TGCN, were selected for cross-domain transfer modelling on Source 
+Domain IV of the DG Dam and the source domain of the PB Dam. The 
+results are presented in Figs. 12 – 17 . Fig. 12 and Fig. 15 show the com -
+parison of modelling accuracy at each monitoring point between the 
+proposed model and the baseline models for the DG Dam and PB Dam, 
+respectively. The results indicate that the proposed model achieves the 
+highest modelling accuracy for both the concrete and embankment 
+dams, with the average MAE reduced by 29.03 % and 14.05 % compared 
+with GAT, respectively, demonstrating strong cross-domain generaliza -
+tion capability. Additionally, Ablation Model I also performs relatively 
+well on certain metrics, suggesting that the proposed network archi -
+tecture itself contributes positively to modelling effectiveness. The re -
+sults further reveal that GAT and TGCN achieve relatively good accuracy 
+on the DG Dam but perform moderately on the PB Dam, whereas LSTM 
+performs well on the PB Dam but moderately on the DG Dam. These 
+findings indicate that the cross-domain generalization ability of 
+different neural network architectures can be uncertain, while a high- 
+quality source domain can significantly enhance the stability and ac -
+curacy of cross-domain modelling. As presented in Table 3 , the 
+statistical robustness of the findings is further verified by repeating the 
+training five times with different random seeds for the proposed model 
+and the best-performing baselines (Ablation Model I, LSTM, and GAT) 
+on the DG Dam. The proposed model yielded mean ± 95 % confidence 
+intervals of MAE = 0.35 ± 0.09 mm and RMSE = 0.40 ± 0.09 mm on the 
+DG Dam dataset, outperforming all baselines. This indicates that the 
+performance gains are statistically significant and the model exhibits 
+high robustness against random fluctuations in network initialization 
+and optimization. Such repeated experimental validation confirms that 
+the proposed cross-domain adaptive framework maintains consistent 
+accuracy across stochastic trials, reinforcing the model ’ s reliability for 
+real-world digital twin deployment in dam monitoring and safety 
+assessment.
+Fig. 13 and Fig. 16 present the comparison of predicted time-series 
+values between the proposed model and the baseline models on the 
+test sets of the DG Dam and PB Dam, respectively. The results indicate 
+that for the DG Dam, even with multi-source domain construction, 
+baseline models such as GCN and Transformer still exhibit prediction 
+bias, highlighting the significant impact of neural network architecture 
+and feature alignment on cross-domain modelling accuracy and gener -
+alization. The three-dimensional visualization in Fig. 14 further shows 
+that, except for the Transformer, the other models adhere well to 
+physical principles, suggesting that neural network architecture not only 
+affects temporal prediction but may also result in insufficient learning in 
+spatial distributions. For the PB Dam, the comparison of predicted time- 
+series values between the proposed model and the baseline models in -
+dicates that, due to the use of a single-source domain and the complex 
+cross-domain characteristics of the embankment dam structure, the 
+Fig. 13. Comparison of the proposed model and baseline models on the test set process line of DG Dam.
+J. Tian et al. Advanced Engineering Informatics 70 (2026) 104209 
+13 
+predictions deviate more noticeably from measurements. This demon -
+strates that improving neural network architecture alone is insufficient 
+to achieve high-accuracy cross-domain digital twins, and that multi- 
+source domain construction and feature alignment remain key factors 
+for enhancing accuracy. Combined with Fig. 17 , it can be observed that 
+all models generally satisfy physical principles in two-dimensional cross- 
+section predictions. However, GAT exhibits poorer smoothness, indi -
+cating that the generalization capability of the models still requires 
+improvement and that the critical modules affecting generalization 
+performance within the neural network need to be clarified.
+4.4. The proposed model has generalization ability under extreme 
+working conditions
+To further evaluate the generalization capability of the proposed 
+model under extreme conditions, two categories of extreme scenarios 
+were designed in this study. The first category concerns water level 
+conditions, including the check flood level and the dead water level. The 
+second category relates to temperature conditions, in which the average 
+temperature was increased or decreased by 20 ℃ . Based on these set -
+tings, a source domain V that includes extreme conditions was con -
+structed and compared with source domain IV, which does not 
+incorporate extreme conditions. The validation results are shown in 
+Figs. 18 – 20 . As illustrated in Fig. 18 , the model was evaluated under 
+both routine monitoring and extreme conditions for source domain IV 
+and source domain V. The results indicate that after introducing samples 
+from extreme conditions, the model achieved a significant improvement 
+in prediction accuracy under routine conditions, with the average MAE, 
+RMSE, and MAPE reduced by 20.45 %, 13.95 %, and 22.22 %, respec -
+tively. Meanwhile, under source domain IV, the prediction accuracy 
+under extreme conditions decreased at several individual monitoring 
+points such as PL16-1 and PL19-1, suggesting limitations in the model ’ s 
+generalization ability. In contrast, under source domain V, the overall 
+accuracy of the model was further improved, with the average MAE, 
+RMSE, and MAPE reduced by 33.33 %, 23.26 %, and 30.16 %, respec -
+tively, and the improvements under extreme conditions were more 
+pronounced. As shown in Fig. 19 , the predicted process lines under both 
+source domain IV and source domain V were closely aligned with the 
+measured values and the simulated values under extreme conditions, 
+with only minor discrepancies. Furthermore, Fig. 20 presents the three- 
+dimensional visualization results, which demonstrate that the model 
+predictions were consistent with physical laws and that the overall dif -
+ferences remained within a controllable range. In summary, the pro -
+posed model exhibits strong generalization performance under extreme 
+conditions, and the inclusion of extreme condition samples in the source 
+domain can effectively enhance both prediction accuracy and cross- 
+domain adaptability.
+5. Discussion
+Building upon previous LSTM-FEM coupled digital twin models 
+[ 43,44 ] for high arch and earth-rock dams, this study redefines the 
+boundary between data-driven prediction and physics-based simulation 
+by introducing a cross-domain adaptive learning framework. The pri -
+mary limitation of existing dam digital twins lies in the significant 
+discrepancy between numerical simulations and field monitoring data, 
+which constrains prediction accuracy and generalization under extreme 
+or rare operating conditions. To address this, multiple high-fidelity 
+source domains are constructed by systematically varying material 
+properties, boundary conditions, and load scenarios in the finite element 
+Fig. 14. Comparison of 3D visualization between the proposed model and the baseline model on the DG Dam.
+J. Tian et al. Advanced Engineering Informatics 70 (2026) 104209 
+14 
+simulations. This approach effectively expands the feature space of the 
+source domain, reducing the domain gap and enhancing the model ’ s 
+ability to generalize across different structural and operational 
+conditions.
+In addition to improving predictive accuracy, the proposed graph 
+attention-gated network architecture introduces a new level of inter -
+pretability. By capturing spatial dependencies among monitoring points 
+and structural nodes, the attention mechanism quantifies the relative 
+influence of each node on the predicted deformation or stress field, 
+while the gating mechanism regulates the propagation of information 
+over space. This enables the model to maintain stability and physical 
+consistency even under sparse sensing or noisy measurement conditions. 
+Importantly, this interpretable design allows engineers to gain insights 
+into the internal decision-making process of the digital twin, bridging 
+the gap between “ black-box ” neural network predictions and physical 
+understanding.
+From a broader perspective, this study establishes a generalizable 
+framework for physics-informed domain adaptation in dam digital 
+twins, integrating multi-source learning with mechanistic reasoning. 
+The findings demonstrate that high-quality, diversified source domains 
+and adaptive feature alignment are critical for achieving both accuracy 
+and robustness, particularly under extreme loading or failure conditions. 
+Moreover, the framework provides a foundation for future extensions 
+that incorporate emerging technologies. For instance, generative AI 
+methods, such as diffusion-based models, could augment source do -
+mains with synthetic but physically consistent deformation fields, 
+improving robustness in data-scarce or hazardous scenarios. Alignment 
+with Industry 5.0 principles, including human-centric AI and industrial 
+metaverse applications, could transform the digital twin into an inter -
+active, human-in-the-loop decision-support tool, enabling real-time 
+feedback, immersive visualization, and collaborative diagnostics. 
+Finally, the framework may be extended to semi-physical commis -
+sioning environments, allowing real-time, closed-loop validation by 
+integrating live sensor data with simulated responses. These de -
+velopments collectively position the proposed digital twin framework as 
+a scalable, interpretable, and robust approach for next-generation cyber- 
+physical-human systems in hydraulic engineering.
+6. Conclusion
+This study proposes a novel cross-domain adaptive digital twin 
+modelling framework for high arch and earth-rock dams, integrating 
+GAT, gating mechanisms, and feature alignment strategies to improve 
+prediction accuracy and generalization across domains. The main find -
+ings are summarized as follows:
+(1) The proposed model achieves superior prediction accuracy 
+compared with ablation and baseline models. On average, the model 
+reduces MAE by 22.81 %, 43.59 %, 45.68 %, and 87.02 % relative to 
+ablation variants, and by 29.03 % and 14.05 % compared with state-of- 
+the-art baselines on concrete and earth-rock dams, respectively. These 
+results confirm the effectiveness of the GAT-based architecture, source- 
+domain construction, and cross-domain feature alignment in enhancing 
+digital twin accuracy.
+(2) The study demonstrates that constructing high-quality source 
+domains is crucial for cross-domain modelling. Multi-source domain 
+transfer (Source Domain IV) outperforms single-source domains, 
+Fig. 15. Comparison of accuracy between the proposed model and the baseline models on PB Dam.
+J. Tian et al. Advanced Engineering Informatics 70 (2026) 104209 
+15 
+reducing prediction errors by over 80 % and significantly mitigating 
+distribution discrepancies between simulation and monitoring data. 
+This highlights the importance of incorporating diverse simulation 
+scenarios in digital twin modelling.
+(3) Validation under extreme water level and temperature conditions 
+confirms that the proposed model possesses strong generalization 
+capability. Incorporating extreme-condition samples (Source Domain V) 
+further improves accuracy, reducing MAE, RMSE, and MAPE by 33.33 
+%, 23.26 %, and 30.16 %, respectively, and effectively alleviating pre -
+diction degradation at critical monitoring points.
+Overall, the proposed framework provides an effective and physi -
+cally consistent digital twin modelling approach for dam structures, 
+offering robust adaptability across domains and under extreme oper -
+ating conditions. Future research will focus on enhancing the fusion of 
+multi-source monitoring information, quantifying cross-domain differ -
+ences between numerical simulations and actual monitoring, verifying 
+the generalization of structural damage, integrating domain knowledge, 
+and constructing intelligent agents to support large-scale, real-time dam 
+safety monitoring.
+CRediT authorship contribution statement
+Jichen Tian: Writing – review & editing, Writing – original draft, 
+Validation, Methodology, Data curation. Ruijie Yu: Writing – review & 
+Fig. 16. Comparison of the proposed model and baseline models on the test set process line of PB Dam.
+Fig. 17. Comparison of 2D visualization between the proposed model and the baseline model on the PB Dam.
+J. Tian et al. Advanced Engineering Informatics 70 (2026) 104209 
+16 
+Table 3 
+Statistical summary (mean ± 95 % CI) of evaluation metrics across random seeds.
+Model Proposed model Ablation Model ¡ I LSTM GAT
+MAE RMSE MAPE MAE RMSE MAPE MAE RMSE MAPE MAE RMSE MAPE
+PL6-3 0.24 ± 
+0.18
+0.27 ± 
+0.18
+1.34 ± 
+1.03
+0.63 ± 
+0.59
+0.69 ± 
+0.59
+3.55 ± 
+3.28
+0.45 ± 
+0.07
+0.49 ± 
+0.04
+2.49 ± 
+0.41
+0.93 ± 
+0.44
+0.98 ± 
+0.42
+5.2 ± 
+2.44
+PL6-2 0.28 ± 
+0.13
+0.31 ± 
+0.12
+0.9 ± 
+0.43
+0.64 ± 
+0.49
+0.7 ± 
+0.48
+2.06 ± 
+1.55
+0.57 ± 
+0.07
+0.62 ± 
+0.06
+1.81 ± 
+0.24
+0.73 ± 
+0.43
+0.8 ± 0.4 2.36 ± 
+1.39
+PL6-1 0.28 ± 
+0.05
+0.33 ± 
+0.05
+0.78 ± 
+0.15
+0.81 ± 
+0.82
+0.88 ± 
+0.77
+2.26 ± 
+2.29
+0.57 ± 
+0.21
+0.65 ± 
+0.22
+1.56 ± 
+0.58
+0.86 ± 
+0.24
+0.97 ± 
+0.22
+2.41 ± 
+0.68
+PL10- 
+4
+0.3 ± 
+0.08
+0.34 ± 
+0.07
+0.9 ± 
+0.23
+0.3 ± 
+0.07
+0.35 ± 
+0.1
+0.9 ± 
+0.21
+0.58 ± 
+0.15
+0.61 ± 
+0.14
+1.73 ± 
+0.46
+0.47 ± 
+0.54
+0.51 ± 
+0.53
+1.42 ± 
+1.6
+PL10- 
+3
+0.31 ± 
+0.08
+0.33 ± 
+0.07
+0.53 ± 
+0.13
+0.34 ± 
+0.18
+0.38 ± 
+0.19
+0.59 ± 
+0.31
+0.84 ± 
+0.22
+0.9 ± 
+0.17
+1.43 ± 
+0.37
+0.52 ± 
+0.21
+0.53 ± 
+0.2
+0.9 ± 
+0.35
+PL10- 
+2
+0.17 ± 
+0.01
+0.22 ± 
+0.03
+0.23 ± 
+0.02
+0.4 ± 
+0.28
+0.45 ± 
+0.27
+0.57 ± 
+0.4
+0.86 ± 
+0.16
+1 ± 0.11 1.19 ± 
+0.22
+0.55 ± 
+0.25
+0.56 ± 
+0.24
+0.76 ± 
+0.35
+PL10- 
+1
+0.41 ± 
+0.25
+0.46 ± 
+0.24
+0.54 ± 
+0.34
+0.35 ± 
+0.03
+0.42 ± 
+0.02
+0.46 ± 
+0.05
+1.19 ± 
+0.18
+1.31 ± 
+0.17
+1.56 ± 
+0.24
+0.8 ± 
+0.43
+0.82 ± 
+0.42
+1.06 ± 
+0.57
+PL14- 
+4
+0.28 ± 
+0.19
+0.34 ± 
+0.25
+0.49 ± 
+0.34
+0.95 ± 
+0.39
+0.99 ± 
+0.38
+1.67 ± 
+0.68
+1 ± 0.31 1.02 ± 
+0.3
+1.76 ± 
+0.54
+0.83 ± 
+0.6
+0.86 ± 
+0.59
+1.46 ± 
+1.06
+PL14- 
+3
+0.35 ± 
+0.29
+0.38 ± 
+0.31
+0.43 ± 
+0.36
+0.71 ± 
+0.16
+0.75 ± 
+0.17
+0.87 ± 
+0.2
+1.16 ± 
+0.27
+1.21 ± 
+0.25
+1.43 ± 
+0.34
+0.86 ± 
+0.48
+0.87 ± 
+0.47
+1.06 ± 
+0.58
+PL14- 
+2
+0.27 ± 
+0.03
+0.32 ± 
+0.04
+0.3 ± 
+0.03
+0.44 ± 
+0.11
+0.53 ± 
+0.12
+0.47 ± 
+0.12
+0.9 ± 0.2 1.08 ± 
+0.14
+0.95 ± 
+0.22
+0.83 ± 
+0.26
+0.85 ± 
+0.26
+0.89 ± 
+0.28
+PL14- 
+1
+0.67 ± 
+0.24
+0.7 ± 
+0.24
+0.72 ± 
+0.26
+0.84 ± 
+0.31
+0.9 ± 
+0.31
+0.9 ± 
+0.33
+1.48 ± 
+0.26
+1.55 ± 
+0.22
+1.59 ± 
+0.28
+0.88 ± 
+0.51
+0.9 ± 
+0.49
+0.95 ± 
+0.55
+PL19- 
+4
+0.32 ± 
+0.25
+0.36 ± 
+0.23
+1 ± 0.79 0.38 ± 
+0.32
+0.42 ± 
+0.31
+1.18 ± 
+1.02
+0.73 ± 
+0.12
+0.75 ± 
+0.11
+2.29 ± 
+0.38
+0.42 ± 
+0.39
+0.46 ± 
+0.38
+1.31 ± 
+1.22
+PL19- 
+3
+0.36 ± 
+0.14
+0.37 ± 
+0.14
+0.61 ± 
+0.25
+0.63 ± 
+0.38
+0.67 ± 
+0.37
+1.09 ± 
+0.66
+0.92 ± 
+0.19
+0.96 ± 
+0.18
+1.57 ± 
+0.33
+0.34 ± 
+0.06
+0.34 ± 
+0.06
+0.58 ± 
+0.11
+PL19- 
+2
+0.41 ± 
+0.24
+0.47 ± 
+0.22
+0.55 ± 
+0.33
+0.56 ± 
+0.23
+0.65 ± 
+0.26
+0.74 ± 
+0.3
+1.04 ± 
+0.25
+1.12 ± 
+0.24
+1.38 ± 
+0.34
+0.61 ± 
+0.2
+0.62 ± 
+0.2
+0.82 ± 
+0.27
+PL19- 
+1
+0.7 ± 
+0.35
+0.75 ± 
+0.34
+0.88 ± 
+0.44
+1.19 ± 
+0.7
+1.28 ± 
+0.71
+1.49 ± 
+0.88
+1.57 ± 
+0.32
+1.63 ± 
+0.3
+1.98 ± 
+0.4
+0.63 ± 
+0.25
+0.64 ± 
+0.25
+0.79 ± 
+0.32
+PL24- 
+3
+0.41 ± 
+0.15
+0.44 ± 
+0.14
+2.2 ± 
+0.79
+0.54 ± 
+0.42
+0.58 ± 
+0.43
+2.93 ± 
+2.29
+0.18 ± 
+0.05
+0.22 ± 
+0.06
+0.99 ± 
+0.26
+1.07 ± 
+0.64
+1.1 ± 
+0.63
+5.79 ± 
+3.47
+PL24- 
+2
+0.34 ± 
+0.08
+0.41 ± 
+0.08
+1.1 ± 
+0.25
+0.53 ± 
+0.26
+0.61 ± 
+0.26
+1.68 ± 
+0.81
+0.33 ± 
+0.05
+0.43 ± 
+0.05
+1.05 ± 
+0.15
+1.15 ± 
+0.25
+1.23 ± 
+0.24
+3.68 ± 
+0.79
+PL24- 
+1
+0.28 ± 
+0.14
+0.39 ± 
+0.22
+0.75 ± 
+0.37
+0.84 ± 
+0.14
+1 ± 0.1 2.21 ± 
+0.35
+0.92 ± 
+0.18
+1.04 ± 
+0.17
+2.41 ± 
+0.47
+0.88 ± 
+0.19
+1.1 ± 
+0.19
+2.35 ± 
+0.51
+Avg. 0.35 ± 
+0.09
+0.4 ± 
+0.09
+0.79 ± 
+0.17
+0.62 ± 
+0.15
+0.68 ± 
+0.15
+1.42 ± 
+0.56
+0.85 ± 
+0.15
+0.92 ± 
+0.13
+1.62 ± 
+0.26
+0.74 ± 
+0.1
+0.79 ± 
+0.1
+1.88 ± 
+0.51
+J. Tian et al. Advanced Engineering Informatics 70 (2026) 104209 
+17 
+Fig. 18. The generalization of the proposed model in different source domains under extreme operating conditions.
+J. Tian et al. Advanced Engineering Informatics 70 (2026) 104209 
+18 
+Fig. 19. Comparison of the measurement process of the proposed model under extreme and daily operating conditions. Daily operating conditions: (a) PL6-2 (b) PL- 
+10 – 4 (c) PL10-2 (d) PL14-4 (e) PL14-2 (f) PL19-4 (g) PL19-2 (h) PL24-3 Extreme operating conditions: (i) PL6-2 (j) PL-10 – 4 (k) PL10-2 (l) PL14-4 (m) PL14-2 (n) 
+PL19-4 (o) PL19-2 (p) PL24-3.
+J. Tian et al. Advanced Engineering Informatics 70 (2026) 104209 
+19 
+editing, Software, Methodology, Data curation. Chen Chen: Writing – 
+review & editing, Resources, Funding acquisition. Yanling Li: Writing – 
+review & editing, Supervision, Investigation, Funding acquisition. 
+Huibao Huang: Writing – review & editing, Software, Resources, Data 
+curation. Jiankang Chen: Writing – review & editing, Investigation, 
+Funding acquisition.
+Declaration of competing interest
+The authors declare that they have no known competing financial 
+interests or personal relationships that could have appeared to influence 
+the work reported in this paper.
+Acknowledgment
+The author(s) disclosed receipt of the following financial support for 
+the research, authorship, and/or publication of this article. This work 
+was supported by the State Key Program of the National Natural Science 
+Foundation of China (No.52130904), the National Natural Science 
+Foundation of China (No.42277181), and the National Natural Science 
+Foundation of China (No.52309162).
+Data availability
+Data will be made available on request.
+References
+[1] C. Shao, S. Zheng, Y. Xu, et al., A visualization system for dam safety monitoring 
+with application of digital twin platform, Expert Syst. Appl. 271 (2025) Article, 
+https://doi.org/10.1016/j.eswa.2025.126740 .
+[2] X.Z. Zhang, P.J. Yuan, S. Hu, et al., Application Status and Trend of Digital Twin 
+Technology in Intelligent Dam, Water Resources and Power 43 (2025) 168 – 171, 
+https://doi.org/10.20040/j.cnki.1000-7709.2025.20231907 .
+[3] Z. Ai, G. Ma, G. Zhang, et al., Multi-source monitoring data filtering assisted 
+deformation analysis model updating of ultra-high rockfill dam, Comput. Geotech. 
+171 (2024) Article, https://doi.org/10.1016/j.compgeo.2024.106323 .
+[4] Y. Wang, X. Tang, Y. Tan, et al., Investigation of temperature rise after arch closure 
+based on monitoring and numerical analysis: a case study of Baihetan arch dam, 
+Case Stud. Constr. Mater. 20 (2024) Article, https://doi.org/10.1016/j.cscm.2023. 
+e02845 .
+[5] Han Z, Li Y, Zhao Z, et al. An Online safety monitoring system of hydropower 
+station based on expert system. Energy Reports 2022; 8: 1552-1567. Article; 
+Proceedings Paper. DOI: 10.1016/j.egyr.2022.02.040.
+[6] Okur EK, Okur FY, Sunca F, et al. Real-time structural health monitoring of Yusufeli 
+Arch Dam: a detailed analysis of dynamic characteristics during water 
+impoundment. Nondestructive Testing and Evaluation 2025. Article; Early Access. 
+DOI: 10.1080/10589759.2025.2538098.
+[7] J. Tian, J. Chen, J. Wang, et al., Real-time classification model for anomalous 
+sensor data in dam safety monitoring based on convolutional neural networks and 
+transfer learning, Expert Syst. Appl. 129135 (2026) Article, https://doi.org/ 
+10.1016/j.eswa.2025.129135 .
+[8] A. Shi, C. Lyu, X. Fan, et al., Prediction of dam Foundation Displacement due to 
+Excavation unloading based on Digital Twin: Case Study of Baihetan Hydropower 
+Project, J. Eng. Mech. 150 (2024) Article, https://doi.org/10.1061/jenmdt.Emeng- 
+7542 .
+[9] Y. Liu, Y. Gan, Z. Yang, et al., Intelligent construction technology for reservoir 
+dams, Autom. Constr. 175 (2025) Article, https://doi.org/10.1016/j. 
+autcon.2025.106177 .
+[10] Prakash G, Dugalam R, Barbosh M, et al. Recent advancement of concrete dam 
+health monitoring technology: A literature review. Structures 2022; 44: 766-784. 
+Review. DOI: 10.1016/j.istruc.2022.08.021.
+[11] S. Wang, C. Gu, Y. Liu, et al., Displacement observation data-based structural 
+health monitoring of concrete dams: a state-of-art review, Structures 68 (2024) 
+Review, https://doi.org/10.1016/j.istruc.2024.107072 .
+[12] B. Xu, Z.Y. Chen, H.Z. Su, et al., A deep learning method for predicting the 
+displacement of concrete arch dams considering the effect of cracks, Adv. Eng. Inf. 
+62 (2024), https://doi.org/10.1016/j.aei.2024.102574 .
+Fig. 20. Comparison of 3D visualization of the proposed model under extreme and daily operating conditions.
+J. Tian et al. Advanced Engineering Informatics 70 (2026) 104209 
+20 
+[13] Chen X, Sun W, Hu S, et al. Uncertainty-informed regional deformation diagnosis 
+of arch dams. Computer-Aided Civil and Infrastructure Engineering 2024. Article; 
+Early Access. DOI: 10.1111/mice.13395.
+[14] Y. Zhang, W.W. Zhang, Y.L. Li, et al., AF-OS-ELM-MVE: a new online sequential 
+extreme learning machine of dam safety monitoring model for structure 
+deformation estimation, Adv. Eng. Inf. 60 (2024), https://doi.org/10.1016/j. 
+aei.2023.102345.
+[15] M.C. Li, M.H. Li, Q.B. Ren, et al., DRLSTM: a dual-stage deep learning approach 
+driven by raw monitoring data for dam displacement prediction, Adv. Eng. Inf. 51 
+(2022), https://doi.org/10.1016/j.aei.2021.101510.
+[16] Tian J, Li Y, Luo Y, et al. Multisource information fusion model for deformation 
+safety monitoring of earth and rock dams based on deep graph feature fusion. 
+Structural Health Monitoring-an International Journal 2025; 24: 925-940. Article. 
+DOI: 10.1177/14759217241244549.
+[17] M. Asif, G. Naeem, M. Khalid, Digitalization for sustainable buildings: 
+Technologies, applications, potential, and challenges, J. Clean. Prod. 450 (2024) 
+Review, https://doi.org/10.1016/j.jclepro.2024.141814.
+[18] Q. Li, G. Zhao, J. Li, et al., An in-situ predictive method for modulus degradation in 
+composite structures with fatigue damage: applications in digital twin technology, 
+Mech. Syst. Sig. Process. 237 (2025) Article, https://doi.org/10.1016/j. 
+ymssp.2025.113090.
+[19] Gu D, Yue Q, Li L, et al. Vision-Based Digital Shadowing to Reveal Hidden 
+Structural Dynamics of a Real Supertall Building. Engineering 2024; 43: 146-158. 
+Article. DOI: 10.1016/j.eng.2024.10.002.
+[20] A. Revolti, L. Gualtieri, P. Pauwels, et al., From building information modelling to 
+construction digital twin: a conceptual framework, Production and Manufacturing 
+Research-an Open Access Journal 12 (2024) Review, https://doi.org/10.1080/ 
+21693277.2024.2387679.
+[21] Z. Sun, S. Jayasinghe, A. Sidiq, et al., Approach Towards the Development of 
+Digital Twin for Structural Health monitoring of Civil 

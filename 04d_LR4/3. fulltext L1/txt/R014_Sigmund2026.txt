@@ -1,0 +1,847 @@
+Academic Editor: Qiming Li
+Received: 15 February 2026
+Revised: 22 March 2026
+Accepted: 1 April 2026
+Published: 6 April 2026
+Copyright: © 2026 by the authors.
+Licensee MDPI, Basel, Switzerland.
+This article is an open access article
+distributed under the terms and
+conditions of the Creative Commons
+Attribution (CC BY) license.
+Technical Note
+Reducing Latency in Digital Twins: A Framework for
+Near-Real-Time Progress and Quality Reporting
+Zvonko Sigmund 1,*
+ , Ivica Završki 1, Ivan Marovi´ c2
+ and Kristijan Vilibi´ c1
+1 Faculty of Civil Engineering, University of Zagreb, Fra Andrije Kaˇ ci´ ca-Mioši´ ca 26, 10000 Zagreb, Croatia;
+ivica.zavrski@grad.unizg.hr (I.Z.); kristijan.vilibic@grad.unizg.hr (K.V .)
+2 Faculty of Civil Engineering, University of Rijeka, Radmile Matejˇ ci´ c 3, 51000 Rijeka, Croatia;
+ivan.marovic@uniri.hr
+* Correspondence: zvonko.sigmund@grad.unizg.hr
+Abstract
+While Digital Twins offer transformative potential, their efficacy for real-time control
+is constrained by the slow data acquisition and the high computational intensity re-
+quired to process raw datasets like point clouds. This paper identifies these critical
+bottlenecks—specifically the latency between data capture and actionable insight—and
+proposes a refined theoretical framework for near-real-time automated progress monitoring
+and quality reporting. Building on the findings of the NORMENG project and informing
+the subsequent AutoGreenTraC project, this research synthesizes state-of-the-art advance-
+ments in reality capture, including LIDAR, SfM-MVS, and 360-degree vision. The study
+highlights a fundamental divergence in stakeholder requirements: the need for millimeter-
+level precision in quality control versus the demand for high-velocity documentation for
+progress monitoring. A key innovation presented is the shift toward neural rendering
+techniques to bypass the computational delays of traditional photogrammetry and enable
+immediate on-site visualization. By structuring a tiered processing hierarchy that combines
+lightweight edge analysis for immediate safety and progress monitoring with asynchronous
+high-fidelity Digital Twin updates, the framework aims to establish a single source of truth.
+Keywords: Digital Twin; automated progress monitoring; reality capture; computer vision;
+AI; robotics; UAS; point cloud; edge AI
+1. Introduction—The Shift from Manual to Digital and Automated
+The construction industry, a cornerstone of global infrastructure development, fre-
+quently encounters challenges in project management, often stemming from inefficient
+progress monitoring combined with lacking and reactive quality reporting measures and
+rather descriptive productivity assessment techniques [1]. This inefficiency contributes to
+significant cost overruns, schedule delays, and a staggering $570 billion in direct rework
+costs annually within the trillion-dollar construction industry, alongside an additional
+$440 billion in indirect costs [ 2,3]. While the theoretical foundations of Digital Twins
+(DT) and Building Information Modeling (BIM)—pioneered decades ago [ 4,5]—promise
+transformative potential, their practical efficacy for near-real-time construction control has
+been severely constrained by two primary bottlenecks: the slow velocity of physical data
+acquisition, reliant on labor-intensive manual or scanning methods prone to delays and
+errors [1,6,7], and the high computational intensity required for processing vast, unstruc-
+tured datasets like point clouds [ 2,8]. These substantial financial implications highlight
+Buildings 2026, 16, 1448 https://doi.org/10.3390/buildings16071448
+Buildings 2026, 16, 1448 2 of 22
+a critical need for advanced technological integration to enhance project oversight and
+operational efficiency.
+This shift from manual to automated oversight is driven by the need for objective
+performance benchmarks, as seen in the NORMENG project. While the project utilized
+high-tech modalities like LIDAR and UAS photogrammetry to move away from the subjec-
+tive descriptive productivity assessments, it encountered a critical reality: simply capturing
+data is insufficient for real-time control. The “norming” process—calculating constructed
+volumes and labor efficiency—was hindered by the sheer latency of processing these vast
+datasets, effectively turning a high-tech solution back into a slow, reactive one. Conse-
+quently, the rationale for this paper’s focus on processing speed stems directly from these
+field experiences, where the goal of “instantaneous” norming was unmet due to current
+computational constraints.
+It is expected that real-time monitoring technologies will deliver comprehensive oper-
+ational visibility of the construction processes through an integrated digital infrastructure.
+Progress monitoring integrated with DT, IoT sensors, visual-based data collection processes,
+and technologies is expected to enable data-driven decision-making that directly impacts
+schedule and cost control [9]. The development of advanced, automated systems for real-
+time progress monitoring and quality reporting remains a significant challenge within
+the construction industry [6]. Traditional methods, largely reliant on manual inspections
+and reporting, are time-consuming and susceptible to human error, but with the lack of
+educated and reliable expert knowledge, the construction industry is in dire need of a
+switch to digital technologies [6,10].
+Within the scope of this research, “near-real-time” is operationally defined as a spec-
+trum of processing latency dictated by a hybrid edge-cloud architecture, ranging from
+milliseconds for critical on-site safety interventions to minutes and hours for daily progress
+verification. This stands in contrast to the traditional asynchronous processing and manual
+reporting, where the identification of issues depends on the supervisor’s capability to
+detect issues and assess the level of completion without complex assessments or, on the
+other hand, analysis of vast unstructured datasets with currently available data analy-
+sis processes, which frequently require hours to days. Consequently, “reporting” in this
+framework encompasses a multi-modal delivery of insights tailored to these timeframes,
+including instantaneous automated safety alarms, rapid on-site 3D visual deviations, and
+continuous cloud-based DT dashboards.
+Although digital processes are anticipated to provide seamless access to project data
+and facilitate expedited decision-making, their practical implementation frequently encoun-
+ters substantial obstacles in achieving real-time data integration and generating actionable
+insights. This consequently impedes timely and automated progress monitoring, effective
+discrepancy and quality reporting, and accurate productivity assessments. Essentially,
+the current state of digitalization often falls short of its anticipated benefits, particularly
+in delivering the promised swift and precise progress monitoring capable of mitigating
+project schedule delays and cost overruns [7].
+Currently, in the construction industry, there is a paradigm shift occurring. While
+construction monitoring and control are still relying on labor-intensive manual methods,
+they are slowly transitioning to automated, vision-based sensing technologies to improve
+accuracy and timeliness in project management [1], aiming to provide a single source of
+truth. Here, in the paper, the single source of truth is used as a presentable, reviewable,
+and documented result of the construction process, which can be an information provider
+immediately during the construction process but also further on down the line, where the
+construction process is not visible anymore. Still, digitalization technologies are lagging
+behind the expectations of their users.
+https://doi.org/10.3390/buildings16071448
+Buildings 2026, 16, 1448 3 of 22
+This technical note functions as a bridge between empirical observation and frame-
+work development; it utilizes specific data and performance metrics from the NORMENG
+project—specifically involving terrestrial LIDAR, 360-degree cameras, and UASs—to advo-
+cate for a fundamental shift in how these tools are integrated through the tiered processing
+architecture proposed for the AutoGreenTraC project. Here, the paper synthesizes “future
+work” suggestions from the recent literature calling for automated, vision-based solutions
+and proposes a refined theoretical framework for near-real-time automated progress moni-
+toring and quality reporting. Emphasizing rapid data acquisition and analysis to support
+proactive decision-making, this foundational approach will inform research efforts in the
+AutoGreenTraC project.
+With this research paper, we aim to gather currently available relevant scientific
+achievements in the field to guide future research that will bring construction practices
+proactive decision-making capabilities and optimization of project workflows. This re-
+search explores the integration of Structure-from-Motion Multi-View Stereo (SfM-MVS),
+360-degree vision, artificial intelligence, and other innovative data collection and analysis
+processes for near-real-time or real-time construction progress monitoring and quality
+reporting through digitalization of construction processes, thereby mitigating pervasive
+inefficiencies. The integration of these advanced technologies facilitates a more accurate,
+timely, and comprehensive understanding of construction project status, moving beyond
+traditional manual and regular digitalization methods that are prone to assumptions, errors,
+and significant delays in reporting [11,12].
+2. Context and Motivation
+2.1. NORMENG Project as Problem Identification Phase
+The NORMENG project was launched to tackle this urgent requirement by developing
+an automated system for resource standardization in energy-efficient construction. In a
+situation where a standardization framework is missing, discrepancies in productivity and
+material consumption are to be expected. To resolve these challenges, the project comprises
+two primary phases: the initial one conducted in-depth industry studies to evaluate pre-
+vailing practices and devise a reliable method for estimating material quantities, workforce
+demands, and machinery capacities, thereby establishing the groundwork for precise, de-
+pendable, and versatile standards. Specifically, the NORMENG project aimed to transition
+from manual, subjective productivity assessments to objective, data-driven “norming”—the
+calculation of precise labor and material efficiency based on digital evidence. However, the
+practical application of LIDAR, UAS photogrammetry, and continuous monitoring revealed
+a significant disparity between data collection and data utility. While these modalities suc-
+cessfully captured the “as-built” state, the high computational intensity and manual effort
+required to process these results for norming purposes created a feedback loop that was
+too slow for active site management. This technical realization—that the limits of existing
+digital workflows were obstructing the goal of real-time productivity measurement—serves
+as the primary catalyst for the broader technical framework proposed in this research.
+A pivotal component of the second phase entailed the development of a pilot construc-
+tion site in Sošice, Croatia, erected solely for the NORMENG project (Figures 1 and 2). This
+controlled environment facilitated the evaluation of methodologies for progress and quan-
+tity monitoring, alongside norm standardization, with emphasis on real-time tracking of
+on-site activities using various technologies like LIDAR, UASs, handheld cameras, etc. The
+Sošice pilot underscored both the strengths and shortcomings of these approaches in quan-
+tifying constructed volumes and formulating contemporary standards for energy-efficient
+construction. The initiative concluded with practical field trials in collaboration with con-
+https://doi.org/10.3390/buildings16071448
+Buildings 2026, 16, 1448 4 of 22
+struction firms and investors, culminating in the establishment of a robust framework for
+resource standardization in energy-efficient building practices.
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+Figure 1. Pilot construction site—masonry works phase.
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+Figure 2. Pilot construction site—façade works phase.
+2.2. AutoGreenTraC Project as Solution Developing Phase
+The relationship between the NORMENG and AutoGreenTraC projects is one of
+sequential evolution: NORMENG established the empirical requirements for construc-
+tion “norming” but exposed the critical limitations of current digital workflows, while
+AutoGreenTraC serves as the technological response to those limitations. Specifically, NOR-
+MENG demonstrated that while high-precision data could be captured, the latency between
+acquisition and reporting to stakeholders—investors and construction firms—rendered the
+data reactive rather than proactive. Building on these documented limitations, AutoGreen-
+TraC was launched to develop a streamlined data flow strategy. Its primary objective is to
+reduce the temporal gap between site capture and actionable reporting by moving away
+from traditional, heavy computational processes toward the tiered edge-cloud architecture
+described in this framework.
+While the NORMENG project confirmed the capabilities and accuracy of SfM-MVS,
+it also exposed its limitations regarding processing time and the inability to provide
+immediate feedback for active site management. AutoGreenTraC shifts the research focus
+from static resource standardization to dynamic, accelerated transfer of precise information
+from the physical site to the DT.
+The project integrates advanced data acquisition technologies—including autonomous
+UAVs, 360-degree vision, LIDAR, and IoT sensors—with AI-driven computer vision al-
+https://doi.org/10.3390/buildings16071448
+Buildings 2026, 16, 1448 5 of 22
+gorithms designed to automate the detection of construction elements and materials. By
+bypassing manual processing, the project aims to enable near-real-time reporting that
+supports not only schedule and cost control but also the “Green Transition” of the con-
+struction sector. Specifically, the project targets the optimization of production processes to
+minimize waste and the development of methodologies for tracking the carbon footprint
+(CO2) of on-site activities. Through collaboration with industry partners (TVD System
+and PERI), the proposed methodology moves beyond theoretical modeling to validate
+how automated, high-velocity data pipelines can facilitate proactive decision-making and
+sustainable construction practices in real-world environments.
+3. Problem Statement: Digitalization Expectations vs. Reality
+The architecture, engineering, and construction (AEC) industry is currently in a trans-
+formational phase characterized by the need to rapidly digitize physical assets and to
+integrate “Construction 4.0” methodologies [4,5]. Despite these advancements, widespread
+adoption of digital solutions for automated progress monitoring and quality assurance
+remains limited [8].
+The research demonstrates that construction professionals have high expectations for
+digitalization technologies in progress monitoring and quality reporting. Here, the focus is
+on ease of use, real-time monitoring, and data accuracy [13–15]. However, implementation
+challenges, particularly high technological costs for specialized hardware and software,
+complexities in managing voluminous point cloud data [16,17], and organizational resis-
+tance stemming from steep learning curves in data processing [ 18,19] create significant
+gaps between expectations and actual deployment [ 4,8]. The research suggests success-
+ful digitalization requires not merely technology adoption but integrated organizational
+change, comprehensive training, and clear value demonstration.
+The analysis reveals a clear divergence in stakeholder requirements: a rigorous de-
+mand for millimeter-level precision in quality reporting, predominantly addressed by
+terrestrial and mobile LIDAR systems [20–22], contrasts with an escalating need for high-
+velocity, streamlined documentation for progress monitoring, currently dominated by
+360-degree camera solutions [21,23,24]. SfM-MVS provides a hybrid approach that balances
+photorealistic visual fidelity with moderate geometric accuracy (typically sub-centimeter
+under optimal conditions), though its performance remains highly sensitive to environmen-
+tal factors, such as illumination, surface texture, and image overlap, as well as processing
+parameters [25,26].
+To resolve technical ambiguity regarding “real-time” monitoring, this framework
+distinguishes three distinct latency components:
+• Capturing latency: The time required for physical site data acquisition. While contem-
+porary TLS has reduced this from weeks to hours, it remains a bottleneck for daily
+monitoring compared to 360◦ cameras.
+• Processing latency: The time required for data registration, denoising, and AI-driven
+semantic extraction. This includes the “stitching” of point clouds, which can exceed
+the capture time itself (e.g., 5 h of capture vs. 8 h of processing).
+• Integration latency: The “Information Gap”—the time required to align processed
+data with BIM and update the Digital Twin for stakeholder decision-making.
+Our framework specifically targets the reduction in processing and integration latency,
+acknowledging that capturing latency is often dictated by hardware and site accessibility.
+In Section 3.1, the authors present the digitalization process that is currently the
+industry standard with its positive and negative sides, whereas in Section 3.2, the users’
+(construction industry) expectations are presented. These two aspects of the digitalization
+https://doi.org/10.3390/buildings16071448
+Buildings 2026, 16, 1448 6 of 22
+processes are usually not well aligned when it comes to the needs of progress monitoring
+and immediate quality control.
+3.1. Digitalization Process
+3.1.1. Light Detection and Ranging (LIDAR): The Benchmark for Geometric Precision
+LIDAR remains the standard for geometric accuracy in construction. Operating
+on the principle of emitting pulsed laser light and measuring the time-of-flight for its
+return, LIDAR systems generate highly dense point clouds with millimeter-level precision,
+capturing intricate details of “as-built” conditions [2,6].
+Terrestrial laser scanning and manual photogrammetric documentation, while geo-
+metrically precise, are inherently labor-intensive—requiring multiple scan positions and
+setups—discontinuous, and often disruptive to ongoing site operations [ 27–30]. TLS has
+historically been a time-consuming process, often requiring several days for the compre-
+hensive scanning of large facilities [ 27–29]. Solely for the Sošice experimental building,
+a scanning protocol took from 1 to 5 min per scanning position (Figure 3). Here, for the
+scanning protocol, the construction stopped for at least 15–50 min for the scanning session.
+On the other hand, the LIDAR scanning project shown in Figure 4 is a construction site
+stretching over 8000 m 2 with six partially completed houses, which took a solid 5 h of
+recording and more than 8 h of stitching. Nevertheless, recent technological advancements
+have significantly recalibrated expectations regarding the speed of data acquisition. While
+conventional surveying methodologies historically necessitated weeks for extensive site
+documentation, contemporary TLS systems are now capable of achieving equivalent data
+capture within a timeframe ranging from hours to a few days.
+Figure 3. LIDAR scanning stations during the Sošice masonry works phase (red dots—scanning positions).
+https://doi.org/10.3390/buildings16071448
+Buildings 2026, 16, 1448 7 of 22
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+Figure 4. LIDAR scanning result on a construction site.
+Despite its precision, LIDAR faces resistance due to several inherent limitations. The
+most significant is data heaviness [ 16,31]. A 20 GB file(s) for a single section is not un-
+common, creating massive display and transfer issues [17]. Handling these massive point
+clouds requires specialized hardware and software, often creating a bottleneck where only
+a few “power users” can access and manipulate the data.
+Another limitation is occlusion. LIDAR is a line-of-sight technology, meaning it can
+only measure what it can “see.” Complex construction sites with clutter, equipment, and
+temporary structures require many scan positions (setups) to avoid “shadows” in the data,
+increasing field time (Figure 5). Experts often must plan scan locations meticulously to
+ensure complete coverage, adding to the logistical complexity of the operation [30,32].
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+Figure 5. LIDAR scanning result—taken during the Sošice masonry works phase.
+https://doi.org/10.3390/buildings16071448
+Buildings 2026, 16, 1448 8 of 22
+Furthermore, processing LIDAR data involves a steep learning curve. Although data
+acquisition has become easier, scan registration, denoising, and cleaning of point clouds,
+and semantic feature extraction from them remain specialized skills [18,19]. The lack of an
+industry-standard “undo” function in some software packages violates user expectations
+and complicates error correction, adding to user frustration.
+3.1.2. SfM-MVS and Photogrammetry: The Visual-Geometric Hybrid
+SfM-MVS algorithms enable the reconstruction of 3D geometry from 2D image se-
+quences by first estimating camera poses and a sparse point cloud via SfM, followed by
+dense reconstruction via MVS [25,26,33]. This methodology has seen increased adoption,
+driven by the proliferation of unmanned aerial vehicles and high-quality consumer cam-
+eras, which democratize access to 3D data generation [14]. Nevertheless, for expert users,
+SfM-MVS occupies a specialized niche, primarily distinguished by its visual fidelity and
+its capacity for rapid large-area coverage, rather than its absolute geometric precision.
+While photogrammetry offers visual richness and broad coverage, it inherently struggles
+with accurately delineating model boundaries and ground surfaces, particularly impacting
+analyses requiring precise structural information [34,35].
+The quantitative reliability of SfM-MVS exhibits considerably greater variability com-
+pared to Light Detection and Ranging, being largely contingent upon environmental factors
+such as illumination, surface texture, and the degree of image overlap. In controlled bench-
+mark investigations, for instance, mapping a 20 m trench, SfM-MVS utilizing drone imagery
+achieved satisfactory scaling accuracy and horizontal georeferencing when supported by
+robust Global Navigation Satellite System data [36,37]. Nevertheless, vertical translation
+errors can be substantial, potentially reaching up to 8 m in the absence of established
+ground control points [ 38,39]. This intrinsic unpredictability contributes to a cautious
+approach among specialists, particularly regarding the exclusive reliance on SfM-MVS for
+critical vertical measurements or the verification of fabricated components.
+The integration of LIDAR for precise geometric measurements and photogrammetry
+for high-fidelity visual textures is increasingly recognized as an effective hybrid approach
+across diverse construction monitoring applications [2,6,35]. Within this integrated frame-
+work, LIDAR instrumentation provides precise spatial measurements, forming a founda-
+tional geometric representation, while photogrammetric methods contribute rich, detailed
+visual information, thereby augmenting the geometric data with high-resolution texture
+and appearance (Figure 6).
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+Figure 6. SfM-MVS using 360 cameras for underground works progress monitoring.
+A significant challenge for experts employing SfM-MVS pipelines is the high compu-
+tational intensity of the data processing workflow. Unlike LIDAR, which directly acquires
+https://doi.org/10.3390/buildings16071448
+Buildings 2026, 16, 1448 9 of 22
+3D point coordinates via time-of-flight laser ranging, SfM first estimates camera poses and
+a sparse point cloud through feature matching across images, while subsequent MVS den-
+sification derives depth maps algorithmically from pixel disparities (parallax) in numerous
+overlapping views [25,26,40]. This inherent computational demand is considerable [40–42].
+Achieving high-fidelity densification in specialized software, such as Metashape or PIX4D,
+consequently mandates substantial Graphics Processing Unit resources and can incur
+processing durations extending from several hours to multiple days for extensive datasets.
+3.1.3. 360-Degree Cameras: The Velocity of Documentation
+360◦ cameras have emerged as a leading tool for efficient construction progress moni-
+toring, particularly valued for their rapid panoramic image capture from single stations
+despite introducing higher noise and variability in 3D models compared to terrestrial laser
+scanning [43,44].
+In this chapter, 360◦ camera devices are considered as data-capturing devices for 360◦
+SfM-MVS reconstruction, where 360◦ videos or photos are used for the structuring of sparse
+or dense point clouds using SfM-MVS protocols. Besides these, 360◦ cameras can also be
+used for photographic documentation without any complex processing; they are mainly
+used for immediate processing of images or within SLAM-based mapping. These, however,
+are not in the scope of this review.
+Although these cameras do not offer the metrological precision characteristic of LI-
+DAR systems, their rapid data acquisition capabilities, operational simplicity, and cost-
+effectiveness render them exceptionally suitable for the frequent documentation require-
+ments prevalent in general contracting. This technology has fundamentally redefined
+expectations regarding “site visibility,” transitioning industry practices from infrequent
+photographic documentation to extensive, immersive virtual site inspections.
+The primary driver for adopting 360 ◦ cameras is their substantially reduced data
+acquisition time compared to conventional multi-view photogrammetry, which requires
+numerous overlapping images from multiple viewpoints, and terrestrial laser scanning,
+which necessitates multiple stationary positions to ensure comprehensive coverage and
+mitigate occlusions [30,32,43,44]. Empirical investigations demonstrate that 360-camera
+solutions can expedite site documentation by a factor of five relative to other common
+methods and achieve a tenfold increase in speed over manual photographic processes
+(Figure 6).
+This efficiency stems from the device’s capacity to acquire full 360◦ panoramic imagery
+from a single vantage point, thereby substantially minimizing the requisite number of
+acquisitions for comprehensive site coverage [ 44]. Despite their operational simplicity
+and elevated data density, these cameras frequently yield 3D models exhibiting elevated
+noise levels and geometric variability relative to terrestrial laser scanning and multi-view
+photogrammetry [43]. Nevertheless, recent innovations—including AI-augmented 360 ◦
+cameras leveraging wall texture classification, image segmentation, and feature-extraction
+algorithms—have yielded enhanced accuracy and reliability for automated construction
+progress monitoring [23].
+3.2. User Expectations
+In the context of progress monitoring, quality control, and productivity assessment,
+the expectations from the digitalization of construction processes often diverge significantly
+from the observed realities, particularly due to challenges in data acquisition, processing,
+and integration for actionable insights. Contemporary expert practitioners increasingly
+prioritize integrated ecosystems that facilitate a seamless continuum of data capture, analyt-
+ical processing, and actionable output, moving beyond the demand for isolated, standalone
+https://doi.org/10.3390/buildings16071448
+Buildings 2026, 16, 1448 10 of 22
+tools. Investigations into user expectations consistently underscore pivotal requirements
+that extend beyond mere hardware specifications, with a pronounced emphasis on interop-
+erability, user experience, and process automation [45–47].
+3.2.1. The “Single Source of Truth” Expectation
+Users are fatigued by data silos where information is trapped in proprietary formats or
+disconnected platforms. The expectation is that reality capture data (point clouds/meshes)
+must integrate directly into the Common Data Environment (CDE) to enable interoperabil-
+ity [48–50] and clash detection [49,50].
+In this framework, the single source of truth is not merely a collaborative goal but
+a systemic architecture built upon the ISO 19650-2 [ 51] framework for a Common Data
+Environment (CDE). It utilizes a data-centric model where reality capture data and BIM
+objects are linked via unique identifiers (GUIDs), ensuring data is stored exactly once to
+prevent redundancies. Governance is enforced through automated status gateways that
+manage the transition of data from “captured” to “verified,” providing an immutable
+provenance that manual, document-centric methods lack. This architecture ensures that
+“firm” information is always presentable to stakeholders, as every reported metric is directly
+traceable to a verified dataset within the CDE.
+3.2.2. Quick Access to Information and Proactive Quality Reporting
+Construction projects are burdened by complex activity interactions that often lead
+to delays and increased costs. Consequently, there is a growing expectation for artificial
+intelligence to automate the labor-intensive data processing workflows, thereby enhancing
+productivity [47] and enabling experts to focus on advanced analytics and strategic decision-
+making [46,47]. This automation would mitigate the time-consuming and labor-intensive
+nature of manual data analysis, which often involves organizing and localizing raw vi-
+sual data [8], but the requested information often comes with a lag, impeding real-time
+adjustments and proactive interventions necessary for efficient project management [49].
+3.2.3. Ease of Use and Precision of the Information
+The primary challenge lies in the current inability to seamlessly and automatically
+translate complex, dynamic site conditions into structured, actionable data for immedi-
+ate assessment of progress and quality, leading to reactive instead of proactive project
+management [52,53].
+Many studies have focused on applying novel technologies like laser scanning, com-
+puter vision, and radio frequency identification to achieve real-time automated monitoring
+and control, yet significant challenges persist in their practical application within construc-
+tion projects.
+4. Technological Advancements to Data Capture and Analysis
+Rather than suggesting the replacement of existing hardware, this section evaluates
+the specific processing requirements of currently deployed sensors to determine how they
+must be reconfigured within a near-real-time control loop. When it comes to tracking the
+construction process in the digital surroundings (recorded construction), progress moni-
+toring depends exclusively on documented evidence of completed work, whereas quality
+control during the construction process relies on the assessors’ ingenuity in exploiting
+available technologies.
+The present study focuses on advancements in monitoring:
+• Structural element completeness—automated verification that physical components
+(e.g., columns, beams, or masonry walls) have been completed as per design.
+https://doi.org/10.3390/buildings16071448
+Buildings 2026, 16, 1448 11 of 22
+• Material placement verification—confirming that specific materials are correctly posi-
+tioned according to design specifications.
+• Construction accuracy and alignment—ensuring that the physical structure matches
+the geometric design.
+• Surface quality assessment—the inspection of the “as-built” finish, such as checking
+for cracks, flatness, or curing quality.
+• Progress quantification metrics—assigning measurable units, such as cubic meters
+of concrete or square meters of masonry finished, to the raw recorded construction
+site data.
+• Real-time defect detection—detection of construction processes that may cause de-
+fects (i.e., wrong placement of formwork) or detection of faults in the construction
+process (i.e., missing connection elements in the wall formwork or missing supporting
+elements in ceiling formwork).
+• Productivity metrics—tracking the efficiency of labor and machinery in real time,
+providing data-driven insights into the velocity of construction activities.
+This section presents an exhaustive review of the state-of-the-art technological ad-
+vancements engineered to dismantle these bottlenecks. The analysis is bifurcated into
+two primary domains: (1) technologies that accelerate the physical collection of field
+data, moving towards autonomous, ubiquitous, and continuous capture workflows; and
+(2) technologies that accelerate the cognitive processing of this data, leveraging advanced
+artificial intelligence (AI), neural rendering, and edge computing to transform raw sensor
+inputs into actionable semantic understanding in near real time. By examining these do-
+mains, we establish the technological mandate for a modernized, data-driven construction
+control loop.
+4.1. Technologies to Speed Up Data Collection
+4.1.1. Autonomous Mobile Robotics (AMR) and Quadruped Systems
+Mobile ground robots, particularly quadruped platforms such as Boston Dynamics
+Spot and ANYbotics ANYmal, have emerged as promising solutions for autonomous,
+repeatable reality capture on active construction sites. These platforms offer several ad-
+vantages over traditional manual inspection: they can navigate complex terrain, operate
+in hazardous environments, carry multiple sensor payloads, and perform scheduled au-
+tonomous missions without direct human supervision.
+Yang et al. [52] proposed a cyber-physical systems framework for construction progress
+monitoring, employing mobile robots as primary data collectors. It integrates robotic
+platforms into ecosystems, combining reality capture, cloud processing, and automated
+analytics. This work established principles for robot-enabled continuous monitoring.
+Halder et al. [54] developed a quadruped robot system for real-time remote construc-
+tion progress monitoring with AR features. It streams live 360 ◦ images to operators for
+AR-based as-built vs. DT comparisons. This advances near-real-time inspections, but
+high-resolution data strains processing bandwidth. Building on this foundation, Halder
+et al. [54] developed a robotic cyber-physical system for automated reality capture and
+visualization. It integrates quadruped robots, cloud processing, and AR interfaces. Their
+2024 study advances autonomous mission planning and data pipelines, enabling regular
+scans with minimal human input. Challenges persist in dynamic obstacle avoidance and
+coverage optimization.
+Zhao and Cheah [55] created a BIM-enabled robotic system for indoor construction
+progress monitoring. It uses BIM models to generate waypoint navigation paths for
+repeatable, schedule-aligned scans. Integrating SLAM with BIM navigation advances prac-
+tical robotic monitoring. Chen [56] examined rapid robotic scan-to-BIM workflows using
+https://doi.org/10.3390/buildings16071448
+Buildings 2026, 16, 1448 12 of 22
+LIDAR-equipped mobile platforms and AI. Robotic scanning with automated semantic
+parsing reduces manual processing time by 60–70% compared to traditional terrestrial laser
+scanning, though accuracy trade-offs require management.
+The core advantage of robotic inspection lies in the transition from manual, discre-
+tionary data collection to automated, repeatable missions. The recent literature quantifies
+these benefits: quadruped robots reduce repetitive site inspection workloads by 25–90%,
+depending on mission complexity and autonomy level [57].
+4.1.2. Unmanned Aerial Systems (UASs) and Beyond Visual Line of Sight (BVLOS)
+Unmanned Aerial Systems (UASs) have evolved from experimental platforms to in-
+dispensable tools for construction site surveying, earthworks volumetrics, and structural
+inspections. State-of-the-art developments have advanced beyond manual piloting to fully
+autonomous “drone-in-a-box” systems and beyond visual line-of-sight operations, substan-
+tially enhancing the frequency, coverage, and scalability of aerial data acquisition [58,59].
+Huang and Jiang [59] reviewed UAS applications in construction management from
+2016 to 2021, analyzing over 150 papers to identify trends, uses, and gaps. They found
+progress monitoring and inspection to be the most advanced UAS applications, with
+benefits in coverage speed, safety, and data quality.
+Ibrahim et al. [60] optimized UAS reality capture plans to improve photogrammet-
+ric quality while reducing flight time and constraints. Their multi-objective framework
+accounts for coverage redundancy, viewing angles, ground sampling distance, and line-of-
+sight needs to produce Pareto-optimal plans. Vrachnos et al. [61] developed a framework
+integrating UAS capture, neural rendering, and DT for vision-based 3D inspections. It sup-
+ports high-fidelity remote checks of building façades and infrastructure, with automated
+3D defect localization at centimeter-level accuracy for access-free maintenance planning.
+Samsami [58] systematically reviewed automated construction inspection and progress
+monitoring across 200+ papers, covering capabilities, domains, and barriers. UASs perform
+best on large outdoor projects but face challenges indoors due to GPS limitations and
+collision risks.
+UAS photogrammetry enables rapid horizontal site coverage. A single flight can map
+hundreds of acres, yielding high-resolution orthomosaics and digital surface models for
+comprehensive progress views. This excels for earthwork volume tracking, supplanting
+slow, hazardous manual surveys. Here and in other tasks, “drone-in-a-box” systems
+boost autonomy via weatherproof stations with automated battery charging/swapping.
+Nevertheless, regulatory limitations may be restricted here.
+Advancements like onboard Edge AI help cut cloud-upload latency for gigabyte-scale
+imagery. Therefore, flight-time inference detects objects/defects, transmitting compact
+insights (e.g., site logistics maps and safety alerts) instantly for real-time decisions.
+4.1.3. Continuous Monitoring via IoT and Fixed Visual Sensors
+The integration of Internet of Things devices and fixed visual sensors offers a persistent
+data stream, enabling real-time insights into construction progress without the constraints of
+mobile platforms. Internet of Things (IoT) sensor networks provide continuous, automated
+data streams that complement periodic visual and geometric capture. While cameras and
+scanners provide rich spatial information, IoT sensors monitor temporal processes and
+conditions: concrete curing, structural vibration, environmental parameters (temperature,
+humidity), equipment operation, worker safety, and resource consumption. The integration
+of IoT with BIM and AI enables real-time quality reporting, predictive analytics, and
+automated alerting that support proactive project management.
+https://doi.org/10.3390/buildings16071448
+Buildings 2026, 16, 1448 13 of 22
+Han et al. [62] presented a BIM-IoT integrated framework for advanced road com-
+paction quality monitoring and management. Their system combines GPS-equipped
+compaction rollers, embedded sensors, and BIM models to provide real-time visualization
+of compaction coverage and quality, with automated detection of under-compacted areas
+and corrective recommendations, reducing rework by 35% in field trials. Wang et al. [63]
+developed a real-time monitoring system for fresh concrete vibration quality using CNNs
+and IoT. It employs wireless sensors on concrete forms with edge-deployed CNNs for real-
+time classification (94% accuracy), enabling immediate corrections and reducing defects by
+28% versus manual inspection.
+Abdul Nifa and Teong [64] proposed a Digital Twin-based method integrating IoT
+sensors, BIM, and 4D schedules for dynamic project performance monitoring, supporting
+predictive analytics and improved schedule accuracy. Puˇ cko et al. [ 65] demonstrated
+that continuous low-precision 3D scans from active workplaces outperform periodic high-
+precision scans for progress monitoring. AI-enhanced IoT sensors further enable real-
+time monitoring of structural health, energy consumption, and environmental conditions,
+facilitating predictive maintenance and resource optimization [66].
+The most robust monitoring employs sensor fusion of visual and non-visual IoT
+data for cross-validated streams. For example, concrete maturity sensors confirming slab
+strength can align with visual verification of formwork removal, enhancing DT reliability
+as a real-time single source of truth [67,68].
+4.2. Real-Time Construction Quality Reporting
+Acquiring comprehensive, high-fidelity data constitutes only half the challenge in
+digital construction monitoring. The second primary bottleneck entails the expeditious
+processing, analysis, and interpretation of this multimodal data to yield actionable insights
+that inform decision-making. Unprocessed point clouds, imagery, and sensor streams must
+be converted into quantifiable progress metrics, quality assessments, geometric deviation
+reports, and predictive alerts. This section reviews technologies that expedite data analysis
+and afford near-real-time comprehension of on-site conditions.
+4.2.1. From Photogrammetry to Neural Radiance Fields (NeRF) and 3D Gaussian
+Splatting (3DGS)
+3D reconstruction from 2D construction site imagery has relied on the SfM-MVS
+pipeline, which generates sparse point clouds via feature matching followed by dense point
+clouds or meshes via multi-view disparity estimation. SfM-MVS remains computationally
+intensive, often requiring hours or days to process large-scale datasets. Moreover, it strug-
+gles with featureless regions or reflective/transparent surfaces prevalent in construction
+environments, yielding reconstruction artifacts and holes [69,70]. A significant paradigm
+shift is underway with neural rendering techniques.
+Neural Radiance Fields introduced a paradigm shift by representing scenes via mul-
+tilayer perceptrons that parameterize a continuous 5D radiance field—spatial position
+and viewing direction—rather than discrete meshes or point clouds. NeRFs excel at
+synthesizing photorealistic novel views via volume rendering and capturing complex
+view-dependent effects (e.g., specular reflections, transparency) that elude traditional pho-
+togrammetry. However, the original NeRF was prohibitively slow to train and render.
+Recent optimizations, such as Instant Neural Graphics Primitives and NeRFacto, have
+reduced training times from hours to seconds or minutes, making them viable for rapid
+site visualization [69–71].
+3D Gaussian Splatting (3DGS): The most recent advancement in reality capture is
+3D Gaussian Splatting (3DGS). Unlike NeRFs, which require querying a neural network
+for every pixel during rendering, 3DGS represents the scene as a collection of millions
+https://doi.org/10.3390/buildings16071448
+Buildings 2026, 16, 1448 14 of 22
+of 3D Gaussians (anisotropic ellipsoids) that carry color and opacity information and are
+rasterized directly to the screen [72,73].
+4.2.2. AI and Machine Learning for Construction Monitoring
+AI and ML are the transformative advancements in automating the analysis of multi-
+modal construction site data. Deep learning models, such as convolutional neural networks,
+facilitate the automated detection, classification, and quantification of construction elements
+and activities using image analysis and point cloud segmentation [74]. These approaches
+process data orders of magnitude faster than manual methods while attaining equivalent
+or superior accuracy, thereby enabling near-real-time progress monitoring and quality
+assessment [58].
+Modern systems employ state-of-the-art deep learning architectures for visual and 3D
+data, including object detection networks for identifying construction elements, equipment,
+and workers in images and video [ 74], semantic segmentation models for pixel-wise or
+point-wise classification of images and point clouds in rapid scan-to-BIM workflows [74],
+instance segmentation for delineating individual object instances to support accurate
+counting and measurement [58], and transformer-based models that demonstrate improved
+performance on complex scenes with occlusion and clutter, advancing beyond traditional
+CNNs [58].
+Key approaches include end-to-end automated pipelines that integrate data capture,
+AI processing, and reporting into unified cyber-physical systems, minimizing manual
+intervention. Pioneering examples include Golparvar-Fard et al.’s [60] framework, which
+fuses visual/sensor data via deep learning for element detection/classification and auto-
+mated schedule-aligned reporting; Pour Rahimian et al.’s [75] gamified BIM-ML system
+for on-demand monitoring via imagery/point cloud analysis matched to BIM objects; and
+Abreu et al.’s [74] BIM-AI Digital Twins with real-time object detection and point cloud
+segmentation for continuous updates. These pipelines automatically ingest new data,
+run inference, update the DT, and generate stakeholder reports, as validated across 200+
+studies [58].
+T ransfer learning and domain adaptation address data scarcity and poor generalization—
+primary barriers beyond detection tasks [58]—by pre-training on massive general-domain
+datasets, then fine-tuning with limited construction data, cutting training requirements
+and elevating performance across sites.
+Multimodal learning combines imagery, point clouds, BIM models, and IoT sensors
+in unified deep learning models, improving robustness, contextual understanding, and
+accuracy in complex environments [58,67,68]. It leverages complementary strengths, such
+as visual textures from imagery and precise metrics from sensors (e.g., concrete maturity),
+as in sensor fusion for cross-validated DT [67,68].
+Human-in-the-loop and active learning overcome data scarcity, generalization issues,
+and interpretability by engaging experts for AI output validation. Feedback improves
+models, with active learning prioritizing uncertain cases [58]. For instance, Pour Rahimian
+et al.’s [75] system elevated accuracy from 78% to 94% via stakeholder input, with analogous
+refinements in Golparvar-Fard et al. [60] and Abreu et al. [74].
+4.2.3. Edge AI and On-Device Processing
+Three aspects are identified as the key ones: latency elimination and bandwidth
+efficiency, on-device photogrammetry and SLAM, and hybrid edge-cloud architectures.
+By executing optimized inference models (Edge AI) directly on local edge hardware,
+the framework reduces latency for safety-critical tasks like worker helmet detection to
+approximately 30–50 milliseconds per frame. This allows the information on the critical
+https://doi.org/10.3390/buildings16071448
+Buildings 2026, 16, 1448 15 of 22
+issue to be transferred almost instantaneously, bypassing round-trip data transmission
+delays [58]. This empowers instantaneous safety interventions critical to construction
+sites, such as real-time detection of worker falls, PPE non-compliance, or crane proximity
+hazards using edge-enabled cameras, which can immediately activate alarms and avert
+accidents [58,74]. Moreover, by preprocessing and filtering data at the source—uploading
+only compressed metadata, alerts, or key events rather than full raw video feeds—edge
+AI achieves dramatic bandwidth reductions (often >90%) essential for unreliable, low-
+connectivity environments prevalent in remote or urban construction settings [58].
+Hardware advancements in mobile SoCs and AI accelerators enable the execution
+of lightweight photogrammetry and visual SLAM algorithms directly on edge devices
+such as smartphones, drones, and site cameras [58]. Although on-device outputs typically
+yield lower resolution and density compared to cloud-based counterparts, they deliver
+critical real-time capabilities: immediate verification of scan coverage, preliminary 3D
+reconstructions for basic progress monitoring, and on-site quality checks before operators
+depart—averting costly revisits and enabling proactive adjustments in dynamic construc-
+tion environments [58–74].
+Hybrid edge-cloud architectures distribute computing tasks across hierarchical tiers—
+on-device, edge servers, and cloud data centers—to optimize latency, bandwidth, pri-
+vacy, and scalability [ 58]. Time-critical inferences, such as real-time safety monitoring
+(e.g., worker falls, PPE non-compliance, or equipment hazards) and preliminary progress
+monitoring, execute locally to enable instantaneous responses and eliminate transmis-
+sion delays [58,74]. Conversely, resource-intensive tasks like detailed 3D reconstructions,
+multimodal data fusion, or long-term analytics are offloaded to the cloud for superior
+computational power and storage [58,67,68].
+Emerging developments in hybrid frameworks, federated learning for decentralized
+model training without raw data sharing, and microservices for modular, scalable de-
+ployments have propelled responsive construction monitoring systems, as evidenced in
+integrated pipelines fusing edge AI with cloud BIM updates across diverse sites [58,74,75].
+4.2.4. BIM Integration and Digital Twins
+Building Information Modeling furnishes structured semantic, geometric, and spa-
+tiotemporal context—encompassing as-planned models with element hierarchies, precise
+geometries, and schedule linkages—that converts heterogeneous raw construction data
+streams into coherent, actionable project intelligence [ 58]. Digital Twins extend BIM by
+instantiating dynamic, perpetually synchronized virtual replicas of physical construc-
+tion states, assimilating multimodal real-time data from imagery, point clouds, sensors,
+and IoT [ 58,74,75]. Contemporary research outlines key advancements, including au-
+tomated Scan-to-BIM workflows via point cloud segmentation and procedural model-
+ing [58,74,76], BIM-guided data acquisition with optimized robotic paths [58,60,74], and
+extensible DT platforms enabling predictive analytics, discrepancy detection, and scenario
+simulation [58,75].
+A primary innovation lies in automated Scan-to-BIM workflows [74,76], which inte-
+grate point cloud processing from laser scans [76], AI-based semantic segmentation [75],
+and procedural geometric modeling [ 74] to generate accurate as-built BIM models [ 58].
+Studies confirm these reduce manual effort by 50–70% versus traditional methods [ 58],
+enabling seamless updates to the DT as in Pour Rahimian et al.’s BIM-ML system [75] and
+Abreu et al.’s segmentation pipelines [74].
+Building on this, BIM-guided data collection leverages BIM models to automatically
+generate optimized capture missions for robots, drones, and scanners, minimizing cov-
+erage gaps, redundant scans, and occlusions through path optimization and viewpoint
+https://doi.org/10.3390/buildings16071448
+Buildings 2026, 16, 1448 16 of 22
+planning [58,60,74]. By providing semantic contexts—such as element locations, visibility
+constraints, and required inspection points—BIM improves capture planning, automates
+data interpretation and registration to as-planned models, and supports seamless DT
+updates [58,75,76].
+Furthermore, semantic data linking to BIM enables automated mapping of detected
+elements and sensor measurements to corresponding BIM objects. This helps spatial aware-
+ness, context-aware analytics, real-time detection of discrepancies between as-planned and
+as-built conditions, and proactive quality assurance [58,75,76].
+In addition, 4D/5D DT integration combines geometric BIM with time and cost di-
+mensions to create comprehensive, dynamic DT that supports predictive analytics, scenario
+simulation, and resource optimization [58]. By linking as-planned DT models with real-
+time sensor data—such as scans, IoT measurements, and AI-detected deviations—these
+twins enable continuous re-forecasting of schedules and budgets, facilitating proactive
+adjustments to mitigate delays, cost overruns, and discrepancies [58,74,75,77].
+Finally, cloud-based collaborative platforms provide scalable, web-based DT interfaces
+that enable multi-stakeholder access to fused project data from the DT, sensors, and AI
+analyses, facilitating real-time distributed decision-making, collaborative oversight, and on-
+demand monitoring [58,74,75]. These platforms leverage cloud infrastructure for seamless
+scalability, secure data sharing without raw data exposure, robust storage, and advanced
+cross-project analytics—enabling performance benchmarking, predictive insights, and
+knowledge transfer across sites [58,74,75].
+5. Discussion and Challenges: AutoGreenTraC Research Framework
+While the literature demonstrates that individual data acquisition technologies—
+specifically UAS photogrammetry, LIDAR, and 360◦ vision—have reached technological
+maturity, their isolated application fails to address the construction industry’s urgent need
+for real-time optimization. The review exposed the critical gap: latency between data
+acquisition and the generation of actionable insight. Bridging this gap is not merely a
+technical convenience but a prerequisite for the AutoGreenTraC project goals.
+The literature review reveals three fundamental bottlenecks that align directly with the
+AutoGreenTraC project’s core mission of accelerating information transfer from physical
+construction sites to digital environments:
+• Data acquisition speed vs. accuracy trade-offs.
+• Computational latency lacking near-real-time feedback.
+• Integration gaps and a single source of truth deficit.
+Building on the literature synthesis, a conceptual framework for AutoGreenTraC
+was structured around three interconnected pillars that directly respond to identified
+technological gaps:
+• Autonomous data acquisition.
+• Accelerated processing through edge computing.
+• Semantic integration, DT, and actionable intelligence.
+The literature review demonstrates that single-modality techniques are insufficient
+for thorough construction monitoring. Using autonomous mobile robots cuts repetitive
+inspection tasks by 25% to 90% and boosts safety by slashing human exposure to hazards
+by 72% [58]. BVLOS drone flights can reduce data collection time by up to 90% compared
+to ground-based approaches [ 60]. IoT sensor networks complement these by enabling
+continuous temporal monitoring of processes imperceptible to visual sensors, such as
+concrete curing, structural vibrations, and equipment operations [67,68]. AutoGreenTraC
+must design an integrated data acquisition strategy that:
+https://doi.org/10.3390/buildings16071448
+Buildings 2026, 16, 1448 17 of 22
+• Deploys autonomous UASs and/or ground robots for scheduled, repeatable site
+documentation.
+• Integrates 360-degree cameras and surveillance systems for continuous visual monitoring.
+• Embeds IoT sensors for process-level insights.
+Attaining near-real-time responsiveness in construction monitoring necessitates a
+profound reconfiguration of processing architectures, as underscored by systematic reviews
+identifying computational latency as a critical bottleneck [58]. Scholarly emphasis on edge
+AI and revolutionary neural rendering innovations—chief among them 3D Gaussian Splat-
+ting (3DGS)—provides a robust pathway for the AutoGreenTraC computational paradigm,
+building on AI-driven semantic segmentation and BIM integration advances [74,75]. Unlike
+established SfM-MVS or NeRF workflows, which impose substantial processing delays
+ranging from minutes to hours [58], 3DGS enables real-time rendering of photorealistic
+3D scenes by explicitly modeling them as millions of rasterizable Gaussian primitives,
+achieving speeds orders of magnitude faster while maintaining high fidelity. Consequently,
+AutoGreenTraC’s theoretical formulation must incorporate a tiered processing hierarchy:
+• First tier: Lightweight CNNs or IoT analyses performed locally and continuously to
+perform immediate reporting and warning. Reporting output includes safety alerts,
+preliminary progress verification, and basic element counting.
+• Second tier: More sophisticated models run on construction site edge servers for tasks
+requiring moderate computational resources. Reporting outputs include material
+classification, element detection and segmentation, preliminary scan-to-BIM alignment,
+and 3DGS-based rapid visualization. This tier targets near-real-time feedback within
+hours from the work being recorded with sufficient accuracy for daily decision-making.
+• Third tier: High-fidelity processing occurs asynchronously for tasks demanding max-
+imum accuracy. Reporting outputs include detailed point cloud registration and
+meshing, comprehensive DT updates, long-term analytics, multimodal data fusion,
+and 4D/5D DT maintenance. This tier operates on longer timescales (days of pro-
+cessing) but provides the single source of truth for project-wide coordination and the
+as-built documentation.
+This proposed architecture directly responds to the literature’s advocacy for hy-
+brid edge-cloud frameworks while acknowledging that AutoGreenTraC’s green transi-
+tion goals—particularly CO 2 footprint tracking—demand both real-time feedback and
+comprehensive analysis.
+Raw sensor data has limited value without semantic context and automated translation
+into project-relevant insights. The literature consistently highlights automated scan-to-
+BIM [58,74,76], DT-guided capture planning [60,75], and 4D/5D DT integration [58,67,75]
+as essential for transforming data into actionable intelligence. These approaches enable
+precise progress monitoring, reduce discrepancies between as-planned and as-built models
+by up to 90% [58], and support predictive analytics for optimized decision-making [ 75].
+Thus, the AutoGreenTraC framework must be implemented, which includes:
+• Automated Element Detection and Semantic Linking.
+• Material and Quantity Tracking for Carbon Accounting.
+• DT-Guided Mission Planning.
+• 4D/5D DT with Predictive Analytics.
+This pillar directly addresses the critical single source of truth deficit identified in the
+literature [58,76], alongside the industry’s pressing demand for seamless integration from
+data capture to actionable output, which enables up to 90% reductions in as-planned vs.
+as-built discrepancies [58] and empowers advanced decision-making tools [75].
+https://doi.org/10.3390/buildings16071448
+Buildings 2026, 16, 1448 18 of 22
+6. Conclusions
+The construction sector continues to grapple with substantial cost overruns and sched-
+ule slippages, primarily attributable to the delays and inefficiencies inherent in conventional
+manual methods and nascent digital approaches to progress monitoring and quality assur-
+ance. This study bridges this pivotal shortfall through an exhaustive review of cutting-edge
+vision-based sensing modalities—namely, Light Detection and Ranging, SfM-MVS, and
+panoramic (360-degree) imaging—to formulate a robust theoretical foundation for near-
+real-time automated project monitoring.
+The review illuminated a fundamental tension between the metrological exactitude
+demanded for stringent quality reporting and the elevated data throughput essential for
+real-time progress monitoring. LIDAR still holds supremacy in geometric precision, but
+the overwhelming data volumes, vulnerability to occlusions, and excessively prolonged
+processing times render it impractical for frequent site surveillance. On the other hand,
+360-degree cameras furnish the crucial speed and cost-effectiveness essential for routine
+captures, albeit sacrificing the precision demanded for high-stakes applications. SfM-
+MVS delivers a compelling balance of photorealistic quality and geometric reliability yet
+persists as hindered by exorbitant computational demands and persistent inaccuracies in
+vertical measurements.
+The principal advancement herein lies in distil

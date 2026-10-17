@@ -1,0 +1,1388 @@
+Digital twin-driven intelligent structural fault diagnosis and 
+decision-making for earth-rock dams using large language models
+Jichen Tian
+a , b
+, Chen Chen
+a , b , *
+, Yanling Li
+a , b
+, Huibao Huang
+a , b , c
+, Jiankang Chen
+a , b
+a
+State Key Laboratory of Hydraulics and Mountain River Engineering, Sichuan University, Chengdu 610065, China
+b
+College of Water Resources & Hydropower, Sichuan University, Chengdu 610065, China
+c
+China Yajiang Group Co., Ltd., Beijing 100038, China
+ARTICLE INFO
+Keywords:
+Earth-rock dams
+Digital twin
+Structural health monitoring
+Fault diagnosis
+ABSTRACT
+Structural health monitoring of high earth-rock dams is essential for ensuring operational safety under complex 
+hydro-mechanical conditions. However, existing digital twin approaches mainly focus on state prediction and 
+lack capabilities for intelligent fault reasoning and engineering decision-making. To address this issue, this study 
+proposes a digital twin-driven intelligent fault diagnosis framework integrated with Large Language Models 
+(LLMs). Multi-source monitoring data, finite element simulations, and transfer learning are combined to 
+construct multi-physics digital twins of deformation, seepage, and stress fields. A robust gradient estimation 
+method and a real-time slope stability model are developed to identify critical failure indicators, including 
+seepage anomalies, cracking risks, hydraulic fracturing, and slope instability. Furthermore, a data semantici -
+zation engine is introduced to transform numerical fault information into engineering-oriented natural-language 
+descriptions, which are subsequently analyzed by a dam-specific LLM for root-cause reasoning and mitigation 
+recommendation generation. The proposed framework is validated using a 186 m-high core-wall rockfill dam 
+with long-term monitoring data. The results demonstrate that the method can accurately reconstruct multi- 
+physics fields, effectively identify potential structural risks, and provide interpretable decision-support infor -
+mation, showing strong potential for intelligent safety management of large hydraulic infrastructures.
+1. Introduction
+Earth-rock dams have been widely constructed and applied world -
+wide due to their strong adaptability to complex foundation conditions, 
+the possibility of using locally available materials, and their excellent 
+seismic performance [1] . In recent years, China has successively con -
+structed or planned several high earth-rock dams with heights on the 
+order of 300 m, such as Shuangjiangkou, Lianghekou, and Rumei [2,3] . 
+However, during long-term operation, high earth-rock dams are sub -
+jected to complex working conditions, including high water pressure, 
+high stress, and particle crushing [4] . Structural failures induced by 
+seepage and deformation still occur from time to time [5 – 7] . Therefore, 
+carrying out Structural Health Monitoring (SHM) for high earth rock 
+dams is of great engineering significance and can effectively safeguard 
+public safety and property [8,9] .
+As illustrated in Fig. 1 , with the continuous advancement of moni -
+toring technologies, dam operation has generated massive volumes of 
+monitoring data characterized by multiple types and scales [10 – 12] . In 
+this context, digital twins of high earth-rock dams can effectively predict 
+full-field responses [13,14] , such as deformation and seepage fields, 
+thereby enabling multi-source data fusion. However, current SHM 
+methods for high earth-rock dams based on digital twins still face the 
+following challenges: (1) Existing digital twin-based multi-physical-field 
+fault diagnosis approaches remain largely undeveloped. Traditional 
+fault diagnosis methods are limited in their ability to perform real-time 
+and full-field multi-physical-field diagnosis [15] . (2) Fault analysis and 
+response planning still heavily rely on the knowledge and experience of 
+human engineers, lacking systematic approaches for automated fault 
+cause identification and decision-making [16] .
+To improve the automation of SHM for high earth-rock dams, this 
+study proposes a data-mechanism-knowledge-driven framework based 
+on digital twins and Large Language Models (LLMs). The framework is 
+built on multi-source monitoring data, uses digital twins to achieve full 
+domain mapping of multi-field coupled states, and relies on LLMs to 
+accomplish fault type diagnosis, cause analysis, and mitigation recom -
+mendation generation. In this way, interpretable and interactive 
+* Corresponding author at: State Key Laboratory of Hydraulics and Mountain River Engineering, Sichuan University, Chengdu 610065, China.
+E-mail address: laurachen@scu.edu.cn (C. Chen). 
+Contents lists available at ScienceDirect
+Engineering Structures
+journal homepage: www.else vier.com/loc ate/engstruc t
+https://doi.org/10.1016/j.engstruct.2026.123298
+Received 12 April 2026; Received in revised form 29 May 2026; Accepted 28 June 2026 
+Engineering Structures 366 (2026) 123298 
+Available online 2 July 2026 
+0141-0296/© 2026 Elsevier Ltd. All rights are reserved, including those for text and data mining, AI training, and similar technologies. 
+intelligent monitoring and decision support are realized, significantly 
+reducing manual burden and improving the safety and efficiency of high 
+earth-rock dam operation and management. The proposed framework is 
+a high-level cognitive framework, grounded in physics-based models 
+and expert knowledge, that systematically integrates multi-source data 
+fusion, anomaly detection, and logical reasoning to generate interpret -
+able, real-time diagnostics and decision-support for dam operation 
+without directly controlling physical infrastructure. The main contri -
+butions of this study are as follows: 
+• A hybrid framework for earth-rock dams based on digital twins and 
+LLMs is proposed. It bridges data-driven approaches and knowledge 
+reasoning for the first time, effectively integrates multi-source het -
+erogeneous data, and improves dam management efficiency while 
+reducing reliance on engineers.
+• A robust gradient calculation model for twin fields and a high- 
+accuracy real-time slope stability calculation model based on 
+deformation twin fields, seepage twin fields, stress twin fields, and 
+time-varying parameters are proposed, effectively improving the 
+fault diagnosis capability of digital twins for earth-rock dams.
+• A data semanticization engine that combines monitoring data and 
+structural mechanisms is proposed, which can effectively transform 
+numerical information into highly abstract natural language and, 
+together with a domain-specific LLM, enables intelligent reasoning, 
+human-machine interaction, and engineering measure generation.
+2. Relevant work
+Existing SHM methods for high earth-rock dams can be broadly 
+classified into data-driven models and mechanism-driven models [17] . 
+Data-driven approaches, such as statistical models based on the 
+Hydrostatic-Seasonal-Time (HST) theory and various machine learning 
+and deep learning methods, have achieved notable progress in defor -
+mation time-series feature extraction [18] . Mechanism-driven ap -
+proaches rely on finite element models to perform stress, seepage, and 
+stability analyses, often combined with engineering reliability methods 
+to quantify failure risks [19,20] . Recurrent neural networks, including 
+Long Short-Term Memory (LSTM) and Gated Recurrent Unit (GRU), are 
+capable of capturing nonlinear temporal dependencies in high-dam 
+deformation [21 – 23] , while Graph Neural Networks (GNN) can model 
+spatial relationships among monitoring points [24,25] . However, these 
+methods are primarily dependent on limited monitoring data and are 
+unable to achieve full-domain state characterization of dams. They are 
+further constrained by cross-domain discrepancies, limited interpret -
+ability, and insufficient engineering operability. As a result, their 
+application in identifying complex multi-field coupling behaviors and 
+failure modes of earth-rock dams remains limited.
+With the advancement of Industry 4.0 and intelligent infrastructure 
+concepts [26,27] , digital twin technology has provided a new paradigm 
+for full-domain perception and multi-field coupling analysis of high 
+earth-rock dams [13,28] . Digital twins establish a dynamic connection 
+between physical and virtual systems through the integration of physical 
+entities, Building Information Modelling (BIM), and Finite Element 
+Method (FEM) simulations, thereby enabling full-domain and 
+multi-physics analysis [29] . In recent studies, BIM models have been 
+increasingly adopted as centralized information carriers for geometry, 
+material properties, monitoring layouts, and operation records, while 
+FEM models provide physically interpretable responses for deformation, 
+seepage, and stress evolution under complex hydro-mechanical condi -
+tions [30] . The interoperability between BIM and FEM further improves 
+Fig. 1. Functional overview of the data-mechanism-knowledge-driven framework.
+J. Tian et al. Engineering Structures 366 (2026) 123298 
+2 
+data consistency and facilitates the integration of monitoring informa -
+tion with physics-based numerical analysis, thereby enhancing the 
+interpretability and reliability of structural health monitoring systems 
+[31,32] .
+By integrating physical entities, numerical simulation models, sensor 
+observations, and artificial intelligence algorithms [33,34] , digital twins 
+enable synchronized mapping and predictive analysis between physical 
+and virtual systems [35,36] . This paradigm has been validated in 
+structures such as bridges, tunnels, and hydraulic infrastructures 
+[37 – 40] . Nevertheless, numerical models still rely heavily on extensive 
+calibration of material properties and boundary conditions, and 
+cross-domain discrepancies between numerical simulations and field 
+monitoring data persist, which limits the accuracy of twin fields [14,41] . 
+Moreover, current digital twin frameworks remain insufficient in se -
+mantic understanding, fault interpretation, knowledge reasoning, and 
+engineering measure recommendation, and thus cannot yet achieve true 
+intelligent decision making.
+Meanwhile, LLMs, with their robust capabilities in natural language 
+understanding and logical reasoning, are rapidly emerging as core 
+technologies for intelligent infrastructure monitoring [42,43] . When 
+fine-tuned with domain-specific knowledge bases, LLMs can transform 
+high-dimensional digital twin outputs into engineering-oriented se -
+mantic descriptions, automatically generating fault inferences and 
+mitigation recommendations [44,45] . By incorporating 
+retrieval-augmented generation or knowledge graphs [46] , compliance 
+with industry standards and engineering logic is significantly enhanced, 
+enabling digital twins to transition from numerically driven analysis to 
+knowledge-driven reasoning [47 – 49] . However, a critical review reveals 
+that these emerging digital twin-LLM integrated frameworks are pre -
+dominantly applied to structures with relatively straightforward 
+boundary conditions, such as standard building frames or logistical site 
+operations [50,51] , or treat the LLMs merely as an external 
+natural-language chatbot for database querying, rather than a deeply 
+coupled reasoning engine for multi-physics interpretation [52,53] . For 
+high earth-rock dams, which are characterized by multi-physics and 
+multi-scale coupling, the integration of digital twins and LLMs is still at 
+an early exploratory stage, and systematic framework design and engi -
+neering validation remain lacking.
+Overall, digital twins provide high-precision virtual representations 
+of multi-field coupled states in dams, while LLMs offer engineering 
+knowledge, natural language reasoning, and human-machine interac -
+tion capabilities. How to construct a deeply integrated intelligent agent 
+that unifies data, physical mechanisms, and knowledge to enable intel -
+ligent decision making for the structural safety of earth-rock dams re -
+mains a critical research gap and constitutes the core problem addressed 
+in this study.
+3. Proposed method
+To enhance the knowledge, reasoning, automation, and intelligence 
+of existing earth-rock dam digital twin models and to improve the 
+timeliness and effectiveness of structural fault response, this study 
+proposes a hybrid framework integrating digital twins with LLMs. The 
+overall framework consists of three interconnected stages, as illustrated 
+in Fig. 2 , where the output of each stage serves as the input for the 
+subsequent analysis and reasoning process. First, a multi-physics digital 
+twin predictive model is developed by combining deep transfer learning 
+with physics-based finite element simulations. By integrating moni -
+toring data, hydraulic conditions, and numerical simulation results, the 
+model reconstructs coupled multi-field states of the dam, including 
+deformation, seepage, and stress fields. The generated multi-physics 
+responses provide both data-driven and mechanically interpretable 
+representations of the structural state, which serve as the foundational 
+input for subsequent fault diagnosis. Second, an intelligent fault 
+Fig. 2. Workflow of the proposed method.
+J. Tian et al. Engineering Structures 366 (2026) 123298 
+3 
+diagnosis model is established based on the predicted multi-physics 
+states obtained from the digital twin model. Critical safety-related in -
+dicators, including deformation rates, deformation gradients, hydraulic 
+gradients, effective stress, and slope stability factors, are extracted and 
+further processed through gradient computation and real-time slope 
+stability analysis. These indicators are subsequently transformed into 
+structural safety feature representations for fault identification, anomaly 
+assessment, and risk characterization. Finally, the identified fault fea -
+tures and safety assessment results, together with contextual engineer -
+ing information such as structural components, spatial locations, 
+hydraulic loads, and operational conditions, are fed into the LLM-based 
+reasoning module. By incorporating external knowledge bases and task- 
+oriented fine-tuning, the LLM performs knowledge-driven reasoning, 
+root cause analysis, and mitigation strategy generation, thereby 
+enabling intelligent decision support for earth-rock dam safety 
+management.
+3.1. Multi-physics digital twin prediction
+The multi-physics digital twin relies on the dam sensor network for 
+real-time acquisition of multi-field information, including deformation, 
+seepage, and stress monitoring data, as shown in Fig. 3 . In combination 
+with the structural characteristics of earth-rock dams and existing 
+monitoring technologies, the perceptual information is categorized into 
+three types: deformation perception, seepage perception, and stress 
+perception. To further achieve the reconstruction of physical fields from 
+local monitoring points to the entire dam body, this study employs 
+source domain data obtained from finite element numerical simulations 
+and target domain data from sensor monitoring. A digital twin model is 
+constructed by integrating these data with transfer learning techniques.
+The model takes multi-source real-time monitoring data as input and 
+outputs the twin fields for deformation, seepage, and stress across the 
+entire dam. The input-output mapping of the multi-field twin prediction 
+model is defined as follows: 
+̂
+Z
+ 
+v , t
+)
+= ϒ
+ 
+δ
+ 
+v
+δ
+, t
+)
+, q
+ 
+v
+q
+, t
+)
+, σ ( v
+σ
+, t )
+)
+(1) 
+where δ ( v
+δ
+, t ) denotes the displacement observation vector measured by 
+deformation sensors at spatial position v
+δ 
+and at time t , p ( v
+p
+, t ) represents 
+the monitored seepage data, such as pore pressure, hydraulic head, or 
+flow rate, σ ( v
+σ
+, t ) corresponds to the stress monitoring data, including 
+stress or strain measurements. ϒ ( ⋅ ) is the multi-field twin mapping 
+Fig. 3. Workflow of multi-physics digital twin.
+J. Tian et al. Engineering Structures 366 (2026) 123298 
+4 
+function based on Graph Attention Networks (GAT) [14] . 
+̂
+Z ( v , t ) in -
+dicates the predicted twin field at spatial position x and time t , 
+comprising the twin deformation field δ ( v , t ) , the twin seepage field p ( v ,
+t ) , and the twin stress field σ ( v , t ) .
+During the cross-domain mapping between the source domain (nu -
+merical simulations) D
+S
+=
+{
+( δ
+s
+i
+, p
+s
+i
+, σ
+s
+i
+) , z
+s
+i
+}
+and the target domain 
+(monitoring data) D
+T
+=
+{
+( δ
+t
+j
+, p
+t
+j
+, σ
+t
+j
+) , z
+t
+j
+}
+, a joint constraint is imposed 
+through three types of loss functions: accuracy loss, mechanistic loss, 
+and domain alignment loss. The overall optimization objective can be 
+expressed as follows [14] : 
+L = λ
+1
+L
+acc
++ λ
+2
+L
+phys
++ λ
+3
+L
+align
+(2) 
+L
+acc
+=
+∑
+j
+⃦
+⃦
+⃦
+̂z
+j
+  z
+t
+j
+⃦
+⃦
+⃦
+2
+2
+(3) 
+L
+phys
+= ‖ L
+δ
+(
+̂
+δ )‖
+2
+2
++
+⃦
+⃦
+L
+p
+( ̂p )
+⃦
+⃦
+2
+2
++ ‖ L
+σ
+( ̂σ )‖
+2
+2
+(4) 
+L
+align
+= D ( z
+s
+, z
+t
+) (5) 
+where L
+acc 
+denotes the accuracy loss, which ensures consistency between 
+the twin prediction and the target domain monitoring data. L
+phys 
+denotes 
+the mechanistic loss, which enforces physical consistency by con -
+straining deviations from the governing equations. L
+align 
+denotes the 
+domain alignment loss, which maintains consistency between the data 
+distributions of the source and target domains. The coefficients λ
+1
+, λ
+2
+, 
+and λ
+3 
+are weighting factors used to balance the relative importance of 
+the different loss terms. ̂z
+j 
+represents the predicted physical quantity of 
+the twin model, and z
+t
+j 
+is the corresponding monitored value. ‖ ⋅ ‖
+2 
+de -
+notes the Euclidean norm. z
+s 
+and z
+t 
+represent the feature representations 
+of the source and target domains, respectively, which are used to ach -
+ieve consistency in the feature space between the two domains.
+3.2. Intelligent structural fault diagnosis
+The structural fault diagnosis primarily processes the deformation 
+twin field, seepage twin field, and stress twin field transmitted from the 
+multi-physics digital twin and transforms them into corresponding fault 
+types, as shown in Fig. 4 . Based on statistical analysis of typical failure 
+types in earth-rock dams and structural mechanistic reasoning, struc -
+tural faults in earth-rock dams can be classified into two categories: the 
+impervious zone and the rockfill zone. In the impervious zone, the main 
+fault types include seepage failure, uneven deformation, and hydraulic 
+fracturing, which are evaluated using hydraulic gradient, deformation 
+gradient, and effective stress, respectively. In the rockfill zone, the pri -
+mary fault type concerns slope stability, with evaluation indicators 
+including deformation rate and the factor of safety for slope stability. To 
+achieve high-precision analysis of these structural safety indicators, this 
+study develops real-time gradient computation models based on the 
+deformation twin field, seepage twin field, and stress twin field, as well 
+as a real-time slope stability computation model. These models support 
+accurate identification of fault types and risk assessment, which can be 
+expressed as follows: 
+f
+F
+( δ , p , σ ) = Φ (∇ δ ( t ) , ∇ p ( t ) , ̃σ , R
+δ
+( t ) , FS ( t )) (6) 
+where f
+F
+( ⋅ ) denotes the fault type identified in the previous stage, ∇
+represents the gradient computation results, ̃σ denotes the effective 
+stress, R
+δ
+( t ) denotes the deformation rate, and FS ( t ) denotes the slope 
+stability factor.
+Gradient computation serves as a core procedure for obtaining the 
+local distributions of deformation and seepage fields in the dam. 
+Fig. 4. Workflow of structural fault diagnosis.
+J. Tian et al. Engineering Structures 366 (2026) 123298 
+5 
+Traditional gradient estimation methods based on finite difference or 
+finite element techniques are susceptible to locally abnormal observa -
+tions and the sparse arrangement of sensors, which can result in unstable 
+gradient estimates. To address this issue, this study proposes a robust 
+gradient estimation method. By incorporating large-neighborhood 
+sampling, outlier detection, and distance-weighted least squares 
+fitting, the method achieves high-precision and robust estimation of 
+displacement gradients and hydraulic head gradients. Let v
+i 
+= ( x
+i
+, y
+i
+, h
+i
+)
+denote the spatial coordinates of the i -th monitoring point, and let u ( v
+i
+)
+represent its corresponding twin value, such as deformation or hydraulic 
+head. For each point v
+i
+, its k nearest neighboring points 
+{
+v
+j
+}
+in three- 
+dimensional space are first selected to construct the local neighbor -
+hood N
+i
+: 
+N
+i
+=
+{
+v
+j
+| j ∈ KNN ( v
+i
+, k )
+}
+(7) 
+where KNN ( ⋅ ) denotes the k-nearest neighbor search operator. k pro -
+vides a balance between estimation stability and locality under typical 
+dam monitoring densities. To enhance robustness against outliers, the 
+observational differences within the neighborhood are expressed as 
+follows: 
+Δ u
+j
+= u ( v
+i
+)   u
+ 
+v
+j
+)
+(8) 
+The values are then screened using Z-score based outlier detection, 
+and the twin estimates with absolute Z-scores exceeding the threshold τ 
+are removed: 
+N
+valid
+i
+=
+{
+j ∈ N
+i
+⃒
+⃒
+⃒
+⃒
+⃒
+⃒
+Δ u
+j
+  Δ u
+σ ( Δ u )
+⃒
+⃒
+⃒ < τ
+}
+(9) 
+where Δ u denotes the mean of the twin increments within the neigh -
+borhood, and σ ( Δ u ) represents their standard deviation. τ is set following 
+the conventional three-sigma criterion, which effectively filters statis -
+tically significant outliers while preserving normal structural variability. 
+Within the valid neighborhood N
+valid
+i
+, a three-dimensional distance- 
+weighted least squares model is employed to obtain the gradient esti -
+mation: 
+min
+∇ u
+i
+∑
+j ∈ N
+valid
+i
+w
+j
+( Δ u
+j
+  ∇ u
+i
+⋅ ( v
+j
+  v
+i
+))
+2
+(10) 
+where ∇ u
+i
+= [ ∂ u / ∂ x , ∂ u / ∂ y , ∂ u / ∂ d ] represents the three-dimensional 
+gradient vector at point i , and the weight w
+j 
+is inversely proportional 
+to the distance between points. The least squares solution yields the 
+robust gradient estimates 
+ 
+̂u
+x , i
+, ̂u
+y , i
+, ̂u
+h , i
+)
+and the gradient magnitude: 
+|∇ u
+i
+| =
+̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅ ̅̅̅̅̅̅ ̅
+̂u
+2
+x , i
++ ̂u
+2
+y , i
++ ̂u
+2
+h , i
+√
+(11) 
+Both the deformation-field gradient and seepage-field gradient are 
+calculated using the proposed gradient estimation model described in 
+Eqs. (7)-(11) . The method is applied to different physical fields by 
+assigning the corresponding twin values, such as displacement or hy -
+draulic head, as the input variables for gradient computation.
+In the safety evaluation of earth-rock dams, slope stability is a core 
+indicator. Its assessment depends not only on the dam cross-sectional 
+geometry and material properties but also needs to reflect, in real 
+time, the evolution of internal stresses, pore pressures, and local 
+deformation fields. The proposed slope stability indicator model is based 
+on a multi-physics digital twin and the Swedish circular arc method. By 
+continuously updating the real-time geometry of dam blocks, as well as 
+the time-varying pore pressure, compressive stress, and material pa -
+rameters, the model accurately integrates the driving and resisting 
+forces in sliding mechanics, enabling real-time calculation of the global 
+factor of safety.
+Let the dam sliding arc in a two-dimensional cross section be defined 
+by the circle center 
+ 
+x
+c
+, y
+c
+)
+and radius R , with starting and ending angles 
+θ
+s 
+and θ
+e
+. The arc is discretized into m blocks. The original midpoint 
+coordinates of each block are 
+ 
+x
+0
+n
+, y
+0
+n
+)
+, and their positions are updated in 
+real time according to the digital twin deformation field as follows: 
+x
+n
+= x
+0
+n
++ Δ x
+n
+( t ) , y
+n
+= y
+0
+n
++ Δ y
+n
+( t ) (12) 
+where Δ x
+n
+( t ) and Δ y
+n
+( t ) represent the lateral and vertical displacements 
+at the midpoint of each block in the digital twin deformation field, 
+calculated in real time over time t . The block height h
+n
+( t ) , length dl
+n
+( t ) , 
+and toe position α
+n
+( t ) are updated in real time. The normal force ac -
+counts N
+n
+( t ) for the real-time effects of the digital twin stress field σ ( v , t )
+and the seepage pore pressure p ( v , t ) : 
+N
+n
+( t ) = ( σ
+n
+( t )   p
+n
+( t ) ⋅ sec ( α
+n
+( t ))) ⋅ dl
+n
+( t ) (13) 
+where the friction angle ϕ
+n
+( t ) and cohesion c
+n
+( t ) are generated as time- 
+varying curves by parameter inversion fitting of historical and real-time 
+data. Unlike traditional static methods, which assume constant material 
+properties based on design or laboratory values, this approach captures 
+the time-dependent behavior of high earth-rock dam materials, such as 
+particle crushing and consolidation. Modelling these parameters as 
+time-varying improves the accuracy and timeliness of stability assess -
+ments under changing operational conditions. The real-time sliding 
+resistance R
+n
+( t ) of each block is expressed as: 
+R
+n
+( t ) = c
+n
+( t ) ⋅ dl
+n
+( t ) ⋅ sec ( α
+n
+( t )) + N
+n
+( t ) ⋅ tan ( ϕ
+n
+( t )) (14) 
+The overall factor of safety FS ( t ) satisfies the iterative equilibrium 
+condition: 
+FS ( t ) =
+∑
+m
+n = 1
+R
+n
+( t )
+∑
+m
+n = 1
+T
+n
+( t )
+(15) 
+where T
+n
+( t ) represents the driving force along the slope direction.
+3.3. Intelligent decision-making for fault
+The intelligent decision-making module processes fault information 
+F = { f
+F
+( δ , p , σ )
+i
+} transmitted from the structural fault diagnosis stage 
+and converts it into structured semantic representations, as shown in 
+Fig. 5 . Based on a dam-specific LLM, this process enables knowledge- 
+driven reasoning to generate targeted engineering recommendations, 
+thereby facilitating effective interaction between engineers and the 
+digital twin-based diagnostic system. The data semanticization engine 
+serves as a critical bridging component within the proposed framework. 
+Its primary role is to map heterogeneous fault-related information, 
+including structural failure types, hydraulic loads, spatial coordinates, 
+and dam segments, into structured variables that are explicitly associ -
+ated with physically meaningful entities of the dam system. In this sense, 
+it is not a simple text conversion module, but a constrained semantic 
+mapping process. The generated variables are required to satisfy pre -
+defined physical and engineering consistency constraints, ensuring 
+alignment with structural mechanics interpretations and monitoring 
+system definitions. Only such standardized and physically interpretable 
+representations are passed to the subsequent reasoning stage. In this 
+study, the LLM module is not used as a general-purpose conversational 
+chatbot. Instead, it is configured as a task-oriented reasoning engine that 
+accepts structured semantic inputs and outputs constrained engineering 
+interpretations, including fault diagnosis explanations and correspond -
+ing mitigation suggestions. The model operates on structured inputs 
+rather than free-form dialogue, ensuring consistency with engineering 
+semantics. Overall, the data semanticization engine ensures that multi- 
+source monitoring data are consistently anchored to the dam ’ s phys -
+ical structure, enabling reliable downstream reasoning and decision- 
+making.
+By considering hydraulic load, spatial position, dam segments, and 
+fault type, it maps numerical anomalies into readable and inferable se -
+mantic descriptions, such as “ seepage anomaly at the base of the core 
+J. Tian et al. Engineering Structures 366 (2026) 123298 
+6 
+wall ” or “ slope displacement anomaly in the downstream rockfill zone ” , 
+as shown in Fig. 5 . The data semanticization engine can be defined as the 
+following mapping: 
+s
+i
+= f
+s
+( H
+t
+, L
+i
+, F
+i
+, St
+k
+) (16) 
+where S = { s
+i
+}
+N
+i = 1 
+represents the high-level semantic output corre -
+sponding to each twin node, St
+k 
+indicates specific dam segments such as 
+the core wall, transition zone, or rockfill zone. H
+t 
+represents hydraulic 
+load. L
+i 
+denotes the spatial position of the monitoring point, and F
+i 
+in -
+dicates the fault type, such as hydraulic fracturing, seepage failure, 
+cracking, or landslide.
+The dam-specific LLM serves as the core intelligent unit for fault type 
+identification, root cause analysis, and mitigation strategy generation. 
+This model consists of two main components: a domain knowledge base 
+and a Low-Rank Adaptation (LoRA)-based fine-tuning module. The 
+knowledge base provides structured domain expertise, while the LoRA- 
+based fine-tuning ensures consistency in the input-output formats and 
+improves the model ’ s ability to generate task-specific responses. At the 
+knowledge construction level, the LLM relies on a systematically inte -
+grated, dedicated dam knowledge base K , including engineering design, 
+construction, and monitoring reports. In addition to project-specific 
+documentation from the case study dam, the knowledge base also in -
+corporates authoritative industry standards, including Specifications for 
+Rolled Earth-Rockfill Dam Construction (SL/T 848 – 2025), Design 
+Specification for Rolled Earth-Rock Fill Dams (NB/T 10872 – 2021), and 
+Technical Specification for Earth-Rock Fill Dam Safety Monitoring (SL/T 
+551 – 2024). Formally, this can be expressed as: 
+K = { k
+i
+}
+M
+j = 1
+, k
+i
+= { Designreport , Constructionreport , Monitoringreport }
+(17) 
+In terms of model construction, this study builds a dam-specific LLM 
+based on the general-purpose DeepSeek, employing a parameter sharing 
+Fig. 5. Workflow of intelligent decision-making.
+J. Tian et al. Engineering Structures 366 (2026) 123298 
+7 
+θ
+DS 
+and fine-tuning strategy using LoRA [44,45] . The fine-tuning dataset 
+D
+tune 
+consists of a high-quality dam safety monitoring corpus, including 
+abnormal event handling records and a collection of domain-specific 
+terminology. During actual inference, given an input semantic query S 
+= { s
+i
+}
+N
+i = 1
+, the LLM performs real-time retrieval from the external 
+knowledge base K to identify the most relevant standard entries and case 
+excerpts. The inference process can be formally represented by the 
+following mapping function: 
+f
+LLM
+( s
+i
+, K
+⃒
+⃒
+θ
+update
+) = { C
+i
+, M
+i
+} (18) 
+θ
+update
+= arg max
+θ
+∑
+( s
+i
+, C
+i
+, M
+i
+)∈ D tune
+log ( f
+LLM
+( s
+i
+| θ
+DS
+) , ( C
+i
+, M
+i
+)) (19) 
+where θ
+update 
+denotes the optimized parameters obtained via domain- 
+specific fine-tuning, C
+i
+is the fault cause analysis and M
+i 
+is the mitiga -
+tion measures. Furthermore, the inference process can be elaborated as a 
+composite function form encompassing fault diagnosis and knowledge 
+generation: 
+( C
+i
+, M
+i
+) = f
+LLM
+(
+f
+s
+(
+f
+F
+(
+Z
+⌢
+(
+v , t
+))
+, H
+t
+, L
+i
+, St
+k
+)
+, K
+)
+(20) 
+3.4. Case study
+To validate the effectiveness of the proposed method, this study se -
+lects a high-core-wall rockfill dam with comprehensive monitoring data 
+as the research subject. The dam is located in the Dadu River basin and is 
+a large-scale hydropower project primarily used for power generation, 
+while also serving flood control, sediment retention, and other inte -
+grated functions.
+3.5. Project description
+The PB Dam is a gravel-core rockfill dam with a maximum structural 
+height of 186 m, defined as the elevation difference between the foun -
+dation level (670 m) and the dam crest (856 m). The normal reservoir 
+water level is 850 m, the flood-season operating limit is 841 m, and the 
+dead water level is 790 m, resulting in a maximum drawdown depth of 
+60 m. The total reservoir capacity is 5.337 billion m³ , and it functions as 
+a partially regulated reservoir. As shown in Fig. 6 A , the layered dis -
+placements of the downstream transition material and the upstream and 
+downstream directions of the rockfill body are monitored using hori -
+zontal extensometers. In the cross-section at chainage 0 + 240 m, 
+sixteen monitoring points are arranged at elevations of 808 m, 758 m, 
+and 731 m, numbered CH1 to CH16. Piezometers P10 to P32 are 
+installed at the junctions between the core wall, downstream dam body, 
+Fig. 6. Monitoring point arrangements for deformation, seepage, and stress at the PB Dam, material zoning of the numerical model, and the time-varying curves of 
+material parameters.
+J. Tian et al. Engineering Structures 366 (2026) 123298 
+8 
+and foundation to monitor pore pressure, while six earth pressure cells, 
+E4 to E16, are installed at the core wall to support the construction of the 
+PB Dam digital twin model.
+A numerical model is established using the finite element method in 
+ABAQUS. A two-dimensional plane strain model is adopted based on the 
+dam design drawings, with material zoning implemented as shown in 
+Fig. 6 B . The geometry of the model is directly derived from engineering 
+design documents, ensuring consistency with the actual dam configu -
+ration. The simulation domain extends to twice the dam height in the 
+upstream, downstream, and foundation directions to minimize bound -
+ary effects. Appropriate boundary conditions are applied, including 
+prescribed hydraulic head boundaries at the upstream and downstream 
+reservoirs and flux-controlled seepage boundaries at the foundation. The 
+finite element mesh consists of 6572 elements and 13,348 nodes. Ma -
+terial parameters [13] are determined based on design values and 
+further refined using time-varying parameter inversion, and multiple 
+parameter sets are used to construct the source-domain simulation 
+dataset.
+The transient deformation behavior is modeled using the Duncan- 
+Chang constitutive model, while time-dependent creep effects are rep -
+resented using a seven-parameter creep model. The creep model cap -
+tures the macroscopic time-dependent deformation caused by particle 
+rearrangement and crushing, although it does not explicitly describe the 
+progressive degradation of strength-related parameters. To account for 
+this limitation, the internal friction angles of the zoned materials used in 
+the slope stability analysis are represented as time-varying parameters 
+through period-based parameter inversion [54,55] . In this process, the 
+parameter evolution is fitted using an appropriate degradation function, 
+such as an exponential function, according to the historical inversion 
+results and monitoring trends. This approach does not involve real-time 
+parameter adjustment of the numerical model, but rather provides a 
+formalized description of long-term material degradation. As a result, 
+the model can better reflect irreversible processes such as particle 
+crushing and consolidation, thereby improving its ability to capture 
+long-term slope stability evolution, as shown in Fig. 6 C .
+3.6. Dataset description
+Based on the actual monitoring configuration of deformation, 
+seepage, and stress at the PB Dam (as summarized in Table 1 ), this study 
+constructed the target-domain dataset using the monitoring records 
+from extensometers, piezometers, and earth pressure cells collected 
+between 28 May 2012 and 23 May 2024. The measured data from 
+various monitoring instruments were used as inputs, while the digital- 
+twin predictions of the full-domain physical fields of the PB Dam were 
+used as outputs. The dataset was randomly divided into training, vali -
+dation, and test sets with a ratio of 0.7:0.1:0.2. Meanwhile, a series of 
+operating-condition simulations was generated using the established 
+finite element model, incorporating both design parameters and 
+parameter-inversion results. These simulations formed the source- 
+domain dataset, which was employed to enhance the model ’ s general -
+ization capability and improve the reconstruction accuracy of the twin 
+fields. The dam-specific LLM was fine-tuned based on DeepSeek-V2.5. A 
+total of 108 high-quality samples were used for the fine-tuning process. 
+The input to the model is a semantic query S = { s
+i
+}
+N
+i = 1
+, while the output 
+includes fault cause analysis C
+i 
+and corresponding mitigation measures 
+M
+i
+. In addition, the GAT was employed in the construction of the multi- 
+physics digital twin model. The hidden layer dimension of the GAT was 
+set to 192, and the attention head was set to 4. Based on the finite 
+element mesh density, the number of nearest neighboring points k used 
+in the gradient calculation was set to 20, and the Z-score threshold τ was 
+set to 2.5.
+4. Results and analysis
+The experiments were conducted in a Windows 10 operating system 
+environment using the PyCharm IDE and the PyTorch 2.5.1 platform 
+based on Python 3.10. The server hardware configuration included an 
+Intel Core i7 – 13700 CPU and an NVIDIA RTX 4070 SUPER GPU. During 
+the digital twin modelling process, the learning rate was set to 0.001, the 
+batch size was 64, and the Adam optimizer was used to update the 
+network parameters. The training was performed for 500 iterations. To 
+quantitatively evaluate the accuracy and performance of the digital twin 
+model, three metrics were selected: Mean Absolute Error (MAE), Root 
+Mean Squared Error (RMSE), and Mean Absolute Percentage Error 
+(MAPE) [56] .
+4.1. Accuracy of the digital twin model
+To evaluate the accuracy of the proposed method in digital twin 
+modelling, the test set from December 31, 2021, to May 23, 2024, was 
+selected to systematically compare the predicted deformation, seepage, 
+and stress twin fields with the corresponding measured monitoring data. 
+By examining the consistency with physical mechanisms, the variation 
+trends of monitoring time histories, and quantitative indicators such as 
+MAE, MAPE, and RMSE, the model accuracy was thoroughly assessed. 
+Fig. 7 A presents the deformation, seepage, and stress twin fields of PB 
+Dam at the time instant of December 31, 2021. The results indicate that 
+all three twin fields accurately capture the actual deformation patterns, 
+hydraulic gradient distribution, and stress transfer behavior, and their 
+spatial characteristics are consistent with the theoretical trends of nu -
+merical simulation. This demonstrates that the model can effectively 
+reconstruct the internal physical evolution of the dam. Fig. 7 B compares 
+the predicted twin curves with the measured time histories at selected 
+monitoring points. It can be observed that the deformation prediction of 
+CH4 matches the measured data well; although other deformation 
+points, such as CH1, exhibit certain deviations, their overall trends 
+remain consistent, and the discrepancies mainly arise from cross-domain 
+differences. Nevertheless, the prediction accuracy is significantly 
+improved compared with traditional numerical simulation methods [28, 
+13,14] . The fitting performance of seepage and stress points is generally 
+good, with the variation trends closely following the measured data, 
+except for slight deviations near E16.
+Fig. 7 C presents the statistical results of MAE, RMSE, and MAPE for 
+all monitoring points in the test set. The average MAE values for 
+deformation, seepage, and stress points are 6.63 mm, 1.88 m, and 13.72 
+kPa, respectively. Since the pore pressure is close to zero at certain 
+times, the MAPE of seepage points is not representative; however, the 
+average MAPE of deformation and stress points reaches 1.12% and 
+1.80%, indicating low overall prediction errors. In summary, the digital 
+twin model developed using the proposed method exhibits high accu -
+racy and can meet the requirements for real-time full-domain structural 
+safety assessment of dams.
+Table 1 
+Datasets specifics table.
+Datasets Period Length Input dimension Output dimension
+Deformation Seepage Stress
+Source Domain/ 
+Target Domain
+2012 – 2024 4372 16 9 6 6470 × 3
+J. Tian et al. Engineering Structures 366 (2026) 123298 
+9 
+4.2. Fault diagnosis results
+To evaluate the effectiveness of the fault diagnosis in the proposed 
+method for high earth-rock dams based on deformation, seepage, and 
+stress twin fields, a systematic examination was conducted on all twin 
+prediction points by visualizing key indicators, including hydraulic 
+gradient, deformation gradient, effective stress, deformation rate, and 
+slope stability. In addition, the rationality of the fault diagnosis results 
+was verified by considering the spatial distribution of the most critical 
+zones, their temporal evolution, and coupling with water levels. As 
+shown in Fig. 8 to Fig. 13 , the spatial distribution of all indicators across 
+the full domain of the PB Dam digital twin from January to November 
+2023 is presented, along with their dynamic evolution from December 
+31, 2021, to May 23, 2024.
+As shown in Fig. 8 , the evaluation results of the hydraulic gradient in 
+the PB Dam digital twin are presented. The results indicate that the 
+hydraulic gradient in the rockfill zones is approximately zero, while the 
+core wall experiences relatively high seepage pressure, around 2.0, with 
+the maximum values occurring at the junction between the concrete 
+cutoff wall and the core wall ( Fig. 8 C ). The downstream rockfill zone 
+exhibits an almost negligible phreatic line, with seepage occurring only 
+at the interface with the dam foundation. Fig. 8 B shows the temporal 
+variation of the maximum pore pressure, which demonstrates a certain 
+coupling with the water level fluctuations. The maximum value reaches 
+approximately 5.5, remaining within the allowable design hydraulic 
+gradient range of the cutoff wall and core wall. The observed patterns 
+are consistent with the seepage behavior of high-core rockfill dams and 
+adequately reflect the dam ’ s seepage failure assessment.
+As shown in Fig. 9 , the evaluation results of the deformation gradient 
+in the PB Dam digital twin are presented. The results indicate that the 
+deformation gradient in the upstream rockfill zone is approximately 
+1.5%, while the core wall exhibits relatively minor differential defor -
+mation, which may be influenced by seepage pressure. The crest shows 
+larger differential deformation, with the maximum values concentrated 
+near the dam top ( Fig. 9 C ). Considering the allowable limits of PB Dam, 
+the predicted longitudinal cracking at the crest is highly consistent with 
+Fig. 7. Accuracy analysis of the proposed digital twin model.
+J. Tian et al. Engineering Structures 366 (2026) 123298 
+10 
+actual operational conditions [57] . In addition, significant differential 
+deformation is also observed in the downstream rockfill zone near the 
+dam foundation, which is closely related to the presence of thick over -
+lying layers. Fig. 9 B presents the temporal evolution of the maximum 
+deformation gradient, showing a certain coupling with water level 
+fluctuations, with a maximum value of approximately 3.1%. The control 
+of differential deformation mainly relies on empirical estimates. Overall, 
+the deformation patterns predicted by the twin model are consistent 
+with the typical deformation characteristics of high-core rockfill dams, 
+effectively reflecting the development of cracking failure and providing 
+Fig. 8. Evaluation results of hydraulic gradient in the PB Dam digital twin.
+Fig. 9. Evaluation results of deformation gradient in the PB Dam digital twin.
+J. Tian et al. Engineering Structures 366 (2026) 123298 
+11 
+a reliable basis for structural safety assessment.
+To further investigate the parameter sensitivity of the proposed 
+method, a series of tests was conducted. When the Z-score threshold was 
+fixed at τ = 2.5, the number of nearest neighboring points was set to 
+k = 10, 15, 20, and 25. Conversely, when the number of nearest neigh -
+boring points was fixed at k = 20, the Z-score threshold was varied as 
+τ = 1, 1.5, 2.5, and 4. The corresponding maximum deformation gradient 
+evolution curves are shown in Fig. 10 . The results indicate that the 
+maximum deformation point identified under all parameter combina -
+tions is located at the same position, demonstrating the good robustness 
+of the proposed method. Although the evolution trends of the curves are 
+generally consistent, differences in the numerical values can be 
+observed. The variations are more pronounced when the number of 
+nearest neighboring points changes, whereas the influence of the Z-score 
+threshold is relatively small. This phenomenon is mainly attributed to 
+the influence of the computational neighborhood size, which is related 
+to the finite element mesh density and element spacing. These factors 
+affect the selection of the deformation gradient-based failure indicator, 
+while the overall evolution pattern remains consistent across different 
+parameter settings.
+As shown in Fig. 11 , the evaluation results of the effective stress in 
+the core wall of the PB Dam digital twin are presented. The results 
+indicate that the effective stress is relatively low on the upstream side of 
+the core wall and higher on the downstream side, primarily influenced 
+by the seepage pressure distribution. The minimum effective stress 
+points are mainly located on the upstream side near the top of the core 
+wall ( Fig. 11 D ), where hydraulic fracturing is more likely to occur. 
+Fig. 11 B shows the temporal variation of the minimum effective stress. 
+Due to its location at the dam crest, the coupling with the water level is 
+relatively weak. Fig. 11 C also presents the temporal evolution of the 
+maximum effective stress, which is mainly concentrated at the down -
+stream base of the core wall and exhibits a strong coupling with water 
+level fluctuations. Overall, the effective stress distribution and its dy -
+namic evolution predicted by the digital twin model are consistent with 
+the typical characteristics of high-core rockfill dams and effectively 
+reflect the development trend of hydraulic fracturing in the core wall 
+zone.
+As shown in Fig. 12 , the evaluation results of the deformation rate of 
+the PB Dam digital twin are presented. The results indicate that the 
+deformation rate is relatively high in the mid-section of the upstream 
+rockfill zone, reaching approximately 0.01 mm/day, while the down -
+stream rockfill zone exhibits smaller deformation rates, mainly influ -
+enced by the seepage process. The maximum deformation rates are 
+primarily distributed in the central region of the upstream rockfill zone 
+( Fig. 12 C ), with a relatively scattered spatial pattern, suggesting that 
+this area is more susceptible to locally induced sliding triggered by 
+seepage. Fig. 12 B illustrates the temporal evolution of the maximum 
+deformation rate. Due to the randomness and spatial dispersion of the 
+peak locations, their coupling with water level variation is relatively 
+weak. Nevertheless, the overall deformation-rate response of the PB 
+Dam digital twin still shows a clear correlation with water level fluc -
+tuations. In general, the spatial distribution and dynamic evolution of 
+deformation rates predicted by the digital twin model align well with the 
+typical deformation characteristics of high-core rockfill dams and can 
+accurately reflect the development trend of dam deformation rates.
+As shown in Fig. 13 , the evaluation results of slope stability in the PB 
+Dam digital twin are presented. The results indicate that the upstream 
+slope exhibits relatively low stability factors (with a minimum of 
+approximately 1.4), while the downstream slope shows higher stability, 
+largely influenced by the distribution of the seepage field. The most 
+critical slip surfaces are all located on the upstream side of the dam. 
+According to the minimum safety factor of 1.3 recommended by relevant 
+guidelines, this region remains within the acceptable safety threshold; 
+however, its overall stability is relatively weak, suggesting a moderate 
+landslide risk. Fig. 13 B illustrates the temporal evolution of the mini -
+mum slope stability factor. A strong coupling with water level can be 
+observed, accompanied by pronounced fluctuations, indicating that 
+hydraulic loading and seepage processes exert a significant influence on 
+slope stability. Overall, the spatial distribution and dynamic evolution of 
+slope stability factors predicted by the digital twin model align well with 
+the typical characteristics of high-core rockfill dams and can accurately 
+capture the changing trend of slope stability.
+4.3. Intelligent decision-making results
+To evaluate the effectiveness of the proposed method, the digital 
+twin results of hydraulic gradient, deformation gradient, effective stress, 
+deformation rate, and slope stability generated by the fault diagnosis 
+from 31 December 2021 – 23 April 2024 are input into the intelligent 
+decision-making for comprehensive analysis. The data semanticization 
+engine converts the twin-field outputs into high-level semantic infor -
+mation, and its diagnostic results are shown in the Fig. 14 . The dam- 
+specific LLM then performs reasoning and diagnosis based on the 
+semanticized information, and its final outputs are also illustrated in 
+Fig. 15 .
+In the structural safety assessment, explicitly defined diagnostic 
+thresholds are adopted to support reliable and automated identification 
+of potential failure modes in earth-rock dams. The selection of thresh -
+olds is based on a combination of engineering design codes and data- 
+driven statistical criteria. For hydraulic gradients, the allowable design 
+values are used as control thresholds (6.0 for the core wall and 10.0 for 
+the concrete cutoff wall), consistent with dam design specifications and 
+seepage control principles. Deformation-related indicators, including 
+deformation gradients and deformation rates, are evaluated using a 
+data-driven three-sigma (3 σ ) criterion derived from long-term moni -
+toring data. This approach enables objective identification of abnormal 
+Fig. 10. Comparison of the influence of hyperparameters in the gradient calculation model on deformation gradient estimation.
+J. Tian et al. Engineering Structures 366 (2026) 123298 
+12 
+structural responses by distinguishing statistically significant deviations 
+from normal operational variability. Effective stress is assessed using 
+tensile stress as the control indicator, as the occurrence of tensile stress 
+in earth-rock dam materials indicates a potential loss of structural 
+integrity and is therefore treated as a critical warning condition. Slope 
+stability is evaluated based on the recommended safety factor of 1.3 
+specified in relevant engineering standards (NB/T 10872 – 2021), with 
+values below this threshold indicating insufficient stability reserves. 
+Based on the above criteria, the real-time operating condition of PB Dam 
+is assessed. All monitored indicators remain within their respective 
+threshold ranges, indicating that the dam is currently in an overall safe 
+state. This diagnostic conclusion is consistent with observed monitoring 
+data trends and actual operational conditions.
+In the structural safety assessment, explicitly defined diagnostic 
+thresholds are employed to enable reliable and automated identification 
+of potential failure modes in earth-rock dams. These thresholds are 
+determined based on national engineering design codes, empirical safety 
+criteria, and long-term statistical analyses of monitoring data. For hy -
+draulic gradients, the allowable limits specified in seepage control 
+design standards are adopted, with threshold values of 6.0 for the core 
+wall and 10.0 for the concrete cutoff wall. These criteria are widely 
+applied in seepage safety evaluation to prevent internal erosion and 
+hydraulic instability during long-term operation. Deformation-related 
+indicators, including deformation gradients and deformation rates, are 
+evaluated using a data-driven three-sigma (3 σ ) criterion derived from 
+historical monitoring data under normal operating conditions. This 
+approach facilitates objective anomaly detection by distinguishing 
+abnormal structural responses from natural fluctuations in monitoring 
+measurements. Effective stress is assessed using tensile stress as the 
+primary control indicator, since the occurrence of tensile stress in earth- 
+rock dam materials may indicate crack initiation or localized structural 
+deterioration. Accordingly, tensile stress is regarded as an important 
+warning signal in the fault diagnosis process. Slope stability is evaluated 
+according to the minimum safety factor of 1.3 recommended in the 
+engineering standard NB/T 10872 – 2021. Values below this threshold 
+indicate insufficient stability reserves and potential slope instability 
+risks. Based on these criteria, the real-time operating condition of PB 
+Dam is comprehensively evaluated. All monitored indicators remain 
+within their respective allowable ranges, indicating that the dam is 
+currently operating in a safe condition. Furthermore, the diagnostic 
+results are consistent with long-term monitoring trends and field oper -
+ational observations.
+To further verify the diagnostic capability of the proposed method, 
+the thresholds are adjusted to conduct predictive simulations of different 
+potential failure modes. The outputs of the data semanticization engine, 
+corresponding to seepage failure, slope instability, crack development, 
+Fig. 11. Evaluation results of effective stress in the PB Dam digital twin.
+J. Tian et al. Engineering Structures 366 (2026) 123298 
+13 
+and landslide modes, are shown in Fig. 14 A , Fig. 14 B , Fig. 14 C , and 
+Fig. 14 D . The results show that the data semanticization engine effec -
+tively integrates multisource information from the deformation, 
+seepage, and stress twin fields and, with the support of dam structural 
+mechanics, transforms this information into natural-language 
+descriptions that are aligned with engineering semantics. These findings 
+demonstrate that the proposed reasoning framework provides strong 
+capability for structural failure identification and intelligent diagnosis.
+Fig. 15 presents the highly abstract natural-language information 
+generated by the data semanticization engine and the reasoning results 
+Fig. 12. Evaluation results of deformation rate in the PB Dam digital twin.
+Fig. 13. Evaluation results of slope stability in the PB Dam digital twin.
+J. Tian et al. Engineering Structures 366 (2026) 123298 
+14 
+produced by the dam-specific LLM. To evaluate the effectiveness of the 
+proposed method, the predictive results of seepage failure were input 
+separately into commonly used LLMs, including the dam-specific LLM, 
+DeepSeek-V3.1, and ChatGPT (GPT   5.1 Thinking), for comparative 
+analysis. The evaluation criteria were defined based on engineering 
+standards and practical implementability, including: (1) terminological 
+accuracy according to NB/T 10872 – 2021 “ Design specification for rol -
+led earth-rock fill dams ” ; (2) compliance with monitoring and safety 
+assessment requirements in SLT551 – 2024 “ Technical specification for 
+earth-rock fill dam safety monitoring ” ; and (3) feasibility and opera -
+bility of the proposed mitigation measures in real-world dam engi -
+neering practice.
+The results indicate that the DeepSeek model, fine-tuned with a 
+comprehensive dam engineering knowledge base, demonstrates supe -
+rior performance. Its reasoning on failure causes and recommended 
+mitigation measures aligns closely with both engineering practice and 
+regulatory requirements. For instance, the term “ deep overburden layer ” 
+corresponds accurately to the actual structure of PB Dam, while the 
+“ junction of the concrete cutoff wall and core wall ” precisely identifies 
+potential damage locations. Recommendations such as “ enhanced 
+monitoring ” and “ digital twin measures ” satisfy the relevant re -
+quirements of SLT551 – 2024. Further comparison shows that the engi -
+neering measures generated by DeepSeek outperform those of ChatGPT 
+in terms of operability, effectiveness, and real-time applicability. Spe -
+cifically, DeepSeek distinguishes between short-term emergency re -
+sponses and long-term remedial measures, prioritizing monitoring 
+enhancement, early warning, and digital twin-based evaluation for im -
+mediate risk control. In contrast, ChatGPT tends to recommend long- 
+term engineering interventions, such as downstream drainage 
+improvement or grouting, without explicitly emphasizing monitoring- 
+based measures that can be implemented in real time. This advantage 
+is attributed to the integration of extensive Chinese dam engineering 
+standards, technical manuals, and relevant literature into DeepSeek ’ s 
+training. Overall, fine-tuning DeepSeek with a dam-specific knowledge 
+base significantly enhances the LLM ’ s ability to interpret the outputs of 
+the data semanticization engine, resulting in higher logical consistency, 
+practical applicability, and engineering effectiveness.
+5. Discussions
+The hybrid framework integrating digital twin and LLM technologies 
+proposed in this study provides a practical solution for SHM and oper -
+ational management of high earth-rock dams. By combining multi- 
+physics digital twin prediction with knowledge-driven reasoning, the 
+framework improves the analysis capability for complex monitoring 
+data and enhances the interpretability of diagnostic results. In engi -
+neering practice, the framework can continuously integrate monitoring 
+data with digital twin simulation outputs to identify abnormal structural 
+behavior, generate interpretable diagnostic reports, and support routine 
+dam safety assessment and maintenance management. During emer -
+gency conditions, such as abnormal seepage or deformation evolution, 
+the system can rapidly infer potential failure modes and provide tar -
+geted mitigation recommendations, thereby assisting engineers in 
+timely operational decision-making. Owing to its modular architecture 
+and compatibility with monitoring systems and numerical simulation 
+models, the proposed framework also shows potential for broader 
+application to other large hydraulic infrastructures and intelligent 
+infrastructure monitoring scenarios.
+Digital twin methods, as advanced monitoring tools in dam engi -
+neering, can, through the combination of finite element analysis and 
+Fig. 14. Data semanticization engine diagnostic outputs and typical fault simulation.
+J. Tian et al. Engineering Structures 366 (2026) 123298 
+15 
+neural network-based transfer learning, accurately reproduce dam 
+deformation, seepage, and stress behaviors [13,28] . However, there 
+remains a significant gap in the analysis and intelligent diagnosis of twin 
+outputs [14,48] . To address this issue, the study establishes a fault-type 
+diagnosis model for high earth-rock dams based on digital twin outputs. 
+This model, relying on gradient computation and slope stability analysis, 
+develops a robust gradient estimation method and is capable of per -
+forming high-precision calculations in real time by integrating defor -
+mation twin, seepage twin, stress twin, and time-varying parameter 
+information, thereby significantly improving the real-time performance 
+and effectiveness of fault diagnosis. Nevertheless, diagnostic results in 
+conventional methods still heavily depend on human expert operation 
+and judgment. To overcome this limitation, the study introduces, for the 
+first time, the conversion of multisource data into natural-language in -
+formation and implements intelligent suggestions and human-machine 
+interaction through a reasoning model. Furthermore, by constructing a 
+dam engineering knowledge base and fine-tuning the LLM, the 
+reasoning and predictive outputs of the model are constrained, making 
+them more reliable and controllable in engineering applications.
+Although the proposed framework has been validated and analyzed 
+through a fully monitored high-core rockfill dam case study, several 
+aspects still require further investigation and optimization. For instance, 
+the accuracy of digital twin modelling may be affected under less 
+comprehensive monitoring layouts or for different dam types, such as 
+concrete face rockfill dams and concrete dams. While the overall 
+framework remains applicable to concrete dams, the corresponding 
+structural failure assessment methods and safety evaluation indicators 
+require further refinement to better capture the distinct mechanical 
+behavior and damage character

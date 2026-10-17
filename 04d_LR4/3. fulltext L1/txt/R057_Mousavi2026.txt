@@ -1,0 +1,1242 @@
+Deep reinforcement learning-based decision support system for optimal 
+maintenance planning in bridge digital twins
+Vahid Mousavi
+a , *
+, Maria Rashidi
+a , b , **
+, Shayan Ghazimoghadam
+c
+, Masoud Mohammadi
+a
+, 
+Bijan Samali
+a
+a
+Centre for Infrastructure Engineering (CIE), Western Sydney University, Penrith, NSW, 2751, Australia
+b
+Urban Transformations Research Centre (UTRC), Western Sydney University, Parramatta, NSW, 2150, Australia
+c
+Department of Civil Engineering, Sha.C, Islamic Azad University, Shahrood, Iran
+ARTICLE INFO
+Keywords:
+Bridge management system
+Bridge maintenance planning
+Decision support system
+Reinforcement learning
+Multi-objective reinforcement learning
+Markov decision process
+Digital twins
+ABSTRACT
+Bridge infrastructures are inevitably exposed to a wide range of deterioration mechanisms and external damages 
+over their service life, which can gradually impair structural integrity, compromise functionality, and increase 
+safety risks. These challenges, coupled with the growing complexity of infrastructure systems and limited 
+financial resources, highlight the need for implementing intelligent and proactive asset management solutions. 
+To address these needs, this paper presents a Reinforcement Learning-based Decision Support System (RL-DSS) 
+framework for bridge maintenance optimization, leveraging a Multi-Objective Deep Centralized Multi-Agent 
+Actor-Critic (MO-DCMAC) algorithm that is designed for application within bridge Digital Twin environments. 
+The proposed RL-DSS implements a three-objective MO-DCMAC framework that models maintenance cost, 
+structural failure risk, and serviceability as separate objectives within a vector-valued reward formulation, while 
+employing a fixed linear utility function for policy optimization. The proposed framework was evaluated through 
+three real-world bridge case studies, each representing different service conditions, to demonstrate its capability 
+in providing long-term maintenance planning. Its performance was benchmarked against multiple established 
+rule-based policies commonly used in practice. The results revealed that the MO-DCMAC agent achieved the 
+highest overall utility score, demonstrating superiority by generating more refined and practical maintenance 
+policies. By actively penalizing high-frequency site visits and strategically balancing intervention costs with risk 
+mitigation, the RL agent prioritizes fewer but more impactful repair actions. The proposed RL-DSS reflects an 
+adaptive, informed, and cost-effective decision-making process that captures the complexity of real-world 
+maintenance scenarios, surpassing the limitations of traditional rule-based approaches.
+1. Introduction
+Sustainable transportation systems are widely recognized as critical 
+foundations for the development of resilient and sustainable societies, 
+and are closely aligned with the principles of smart cities ( Moslem et al., 
+2024 ; Saha et al., 2024 ). Achieving these sustainability objectives relies 
+heavily on the implementation of effective infrastructure asset man -
+agement systems, which enable decision-makers to apply, data-driven, 
+timely and predictive maintenance strategies supported by advanced 
+intelligent control and autonomous management approaches ( G ¨orçün 
+et al., 2025 ; Sood, 2024 ; Tang et al., 2025 ). In this context, bridges 
+serve as fundamental components of transportation infrastructure and 
+the broader built environment. However, their structural condition de -
+teriorates over time due to various factors, including environmental 
+exposure, traffic-induced loading, material degradation and aging. 
+Without appropriate monitoring and management, these factors can 
+lead to reduced structural capacity and serviceability, which may 
+necessitate major rehabilitation, repair, or even demolition, resulting in 
+increased costs, prolonged traffic disruptions, and elevated safety risks 
+( Wu et al., 2021 ). Therefore, considerable attention has been directed 
+This article is part of a special issue entitled: AI in Control published in Engineering Applications of Artificial Intelligence.
+* Corresponding author.
+** Corresponding author. Centre for Infrastructure Engineering (CIE), Western Sydney University, Penrith, NSW, 2751, Australia.
+E-mail addresses: v.mousavi@westernsydney.edu.au (V. Mousavi), m.rashidi@westernsydney.edu.au (M. Rashidi), Shayan.ghazimoghadam@iau.ir
+(S. Ghazimoghadam), Masoud.Mohammadi@westernsydney.edu.au (M. Mohammadi), b.samali@westernsydney.edu.au (B. Samali). 
+Contents lists available at ScienceDirect
+Engineering Applications of Artificial Intelligence
+journal homepag e: www.else vier.com/loc ate/engap pai
+https://doi.org/10.1016/j.engappai.2026.115649
+Received 3 September 2025; Received in revised form 10 June 2026; Accepted 6 July 2026 
+Engineering Applications of Artiϧcial Intelligence 181 (2026) 115649 
+Available online 10 July 2026 
+0952-1976/© 2026 The Authors. Published by Elsevier Ltd. This is an open access article under the CC BY license ( http://creativecommons.org/licenses/by/4.0/ ). 
+toward evaluating the structural health and implementing proactive 
+maintenance strategies for critical infrastructure assets ( Wei et al., 
+2020 ).
+Over the years, a range of maintenance approaches has been devel -
+oped to enhance infrastructure longevity and reliability. Proactive 
+maintenance strategies aim to prevent deterioration through timely and 
+planned interventions. One common approach is time-based mainte -
+nance, which involves performing scheduled repairs at predetermined 
+intervals, regardless of the structure's actual condition. Although 
+straightforward to implement, time-based methods often lead to in -
+efficiencies by triggering unnecessary maintenance actions ( de Jonge 
+et al., 2017 ). In contrast, condition-based maintenance, which relies 
+on observed or predicted structural states derived from inspection data 
+or analytical models, tends to be more efficient than time-based main -
+tenance due to its reliance on inspection information and tailoring in -
+terventions to the asset's actual condition and performance needs ( Zonta 
+et al., 2020 ).
+However, the rapid expansion of transportation infrastructure and 
+advances in technology have considerably reshaped the landscape of 
+bridge management. Preventive maintenance, particularly for bridges 
+with different structural forms, could be a challenge for engineers, 
+especially in the absence of a structured, data-informed decision-making 
+frameworks ( Brighenti et al., 2024 ; Rashidi et al., 2016a ). This is mainly 
+because strategic bridge management and maintenance extends beyond 
+routine preventive maintenance needs; it requires prioritizing long-term 
+safety, operational functionality, and economic sustainability 
+( Frangopol and Kim, 2022 ). Given the substantial financial and envi -
+ronmental implications associated with replacing deteriorating bridge 
+structures, extending the service life of existing bridges has become a 
+more cost-effective and sustainable alternative.
+In recent decades, decision-making in bridge asset management has 
+become progressively more complex, largely due to structural com -
+plexities and the integration of advanced digital and communication 
+technologies. These advancements have expanded the range of potential 
+management solutions, complicating the identification of optimal stra -
+tegies for asset managers. As a result, a number of specialized Bridge 
+Management Systems (BMSs), such as PONTIS ( Thompson et al., 1998 ), 
+DANBRO( Andersen, 1990 ) and BRIDGIT ( Hawk and Small, 1998 ), have 
+been developed to support systematic maintenance planning and asset 
+preservation. These systems integrate data inputs, regulatory standards, 
+and specialized software tools to facilitate tasks such as maintenance 
+planning, prioritization of interventions, and lifecycle cost optimization 
+( Brighenti et al., 2024 ; Rashidi, 2013 ).
+Emerging technologies including Bridge Information Modelling 
+(BrIM), Digital Twins (DTs) and Deep Learning (DL) are further 
+advancing the BMS capabilities. By enabling the digital representation of 
+assets and integrating real-time monitoring data with predictive models, 
+these technologies allow for reliable assessment of structural health and 
+more informed decisions regarding the timing and scope of maintenance 
+activities ( Mousavi et al., 2025a , 2025b ). Consequently, transportation 
+authorities around the world are increasingly adopting these systems to 
+address the growing complexity of infrastructure management and 
+improve the efficiency and effectiveness of bridge maintenance practices 
+( Shahrivar et al., 2025 ).
+Despite significant advancements in development of bridge DTs, 
+application of Decision Support Systems (DSS) into bridge management 
+systems has been rarely considered in bridge DTs ( Mousavi et al., 2024 ). 
+Whereas they can provide powerful capabilities for enhancing mainte -
+nance efficiency, improving decision-making quality, and reducing the 
+time and cost associated with planning interventions. Therefore, when 
+effectively integrated, they could serve as the core of a DT, synthesizing 
+the data gleaned from monitoring, predictive modelling, simulation, and 
+lifecycle analysis into actionable insights. Nonetheless, the current 
+implementations of bridge DTs often lack robust bidirectional strategies 
+capable of translating analytical outputs into actionable maintenance 
+interventions.
+Reinforcement learning (RL) has emerged as a promising method -
+ology for enhancing prescriptive maintenance strategies ( Saifullah et al., 
+2024 ). In the context of infrastructure management, RL formulates the 
+maintenance planning problem as a sequential decision-making prob -
+lem, where each decision influences both immediate outcomes and 
+future system performance. RL algorithms learn optimal strategies 
+through iterative interactions with the environment, guided by reward 
+signals that quantify the effectiveness of decisions. The primary goal is 
+to maximize cumulative rewards over time, reflecting long-term per -
+formance and cost efficiency ( Sutton and Barto, 1998 ). The ability of RL 
+to accommodate complex infrastructure portfolios, support long-term 
+optimization over extended planning horizons, and operate effectively 
+under uncertainty highlights its potential to transform infrastructure 
+maintenance and asset management practices. While RL offers a theo -
+retically sound framework for intelligent maintenance planning under 
+uncertainty, existing methodologies are often limited by the absence of 
+effective algorithms for deriving optimal policies. A critical review of the 
+literature reveals persistent limitations in achieving key operational 
+objectives, as most existing RL-based approaches predominantly focus 
+on single objective optimization ( Heng et al., 2024 ). In practice, how -
+ever, maintenance optimization problems inherently involve multiple, 
+and often conflicting, objectives that must be considered simulta -
+neously. These limitations emphasize the necessity for dedicated 
+research efforts that bridge the gap between theoretical RL constructs 
+and their practical implementation in real-world asset management 
+systems.
+This study introduces an advanced RL-based Decision Support Sys -
+tem (RL-DSS) for bridge maintenance optimization using Multi- 
+Objective Deep Centralized Multi-Agent Actor-Critic (MO-DCMAC). 
+The framework employs MO-DCMAC to simultaneously handle un -
+certainties and incorporating multiple, distinct penalty signals through a 
+weighted linear utility formulation. In the proposed framework, the 
+environment produces a vector-valued reward corresponding to main -
+tenance cost, structural risk, and serviceability, while the weighted 
+utility function is applied during policy optimization to derive the scalar 
+decision signal used for policy improvement. This approach enables 
+intelligent agents to learn effective maintenance policies while consid -
+ering component interactions, and multiple criteria, including material 
+properties, bridge age, traffic loading, environmental conditions, and 
+long-term structural health. A multi-criteria decision-making process is 
+integrated into the framework to balance cost, risk, and performance 
+objectives. The main contributions and novelties of this study are as 
+follows: 
+1. Development of a multi-objective RL-based Decision Support System 
+(RL-DSS) for bridge maintenance, designed to operate as a decision- 
+making module within DT-based bridge management environments.
+2. The bridge maintenance problem is formulated as a Multi-Objective 
+Markov Decision Process (MOMDP), with maintenance cost, struc -
+tural risk, and serviceability represented as separate reward com -
+ponents. A fixed linear utility function is used for policy 
+optimization, while the vector-valued representation is retained to 
+preserve detailed per-objective analysis.
+3. The MO-DCMAC framework is adapted from two to three objectives 
+as an implementation-level contribution. A vectorized joint distri -
+butional critic and a multi-dimensional Bellman projection are 
+developed to ensure computationally efficient learning in the three- 
+objective setting.
+4. Empirical validation across multiple real-world bridge case studies 
+and comparison of the proposed RL-DSS performance with the 
+multiple established rule-based policies.
+A series of case study evaluations were conducted using real-world 
+bridge case studies to assess the effectiveness of the proposed frame -
+work in long-term maintenance planning. The results demonstrate that 
+RL-DSS, powered by the MO-DCMAC algorithm, can effectively balance 
+V. Mousavi et al. Engineering Applications of Artiϧcial Intelligence 181 (2026) 115649 
+2 
+multiple objectives such as cost efficiency, risk mitigation, and struc -
+tural performance. These findings highlight the potential of the pro -
+posed framework to enhance decision-making in bridge management 
+systems and serve as a foundation for future advancements in intelligent 
+infrastructure maintenance.
+The remainder of this paper is organized as follows: Section 2 re -
+views related works and outlines the motivation of the proposed 
+approach. Section 3 provides a brief overview on the RL, multi-objective 
+RL and MO-DCMAC methods. Section 4 introduces the proposed RL-DSS 
+solution, while Section 5 details the deep RL methodology and the MO- 
+DCMAC model. Section 6 reports real bridge case study results. Section 7
+compares the results against established maintenance policies, Section 8
+presents a parameter analysis, while Section 9 discusses potential limi -
+tations. Finally, Section 10 concludes the paper with final remarks and 
+future research directions.
+2. Related works and motivations
+In bridge maintenance optimization, decision-making can be struc -
+tured at either the network level or the individual asset level. Network- 
+level strategies optimize maintenance across multiple assets, typically 
+applying uniform interventions to all structures ( Jaafaru and Agbelie, 
+2022 ; Lei et al., 2022 ; Xu and Guo, 2022 ). SHM data and sustainabil -
+ity criteria could also be combined into a single utility-based reward to 
+enable efficient life-cycle maintenance policies across multiple bridges 
+at network level ( Lei et al., 2023 , 2025 ). In contrast, bridge-level opti -
+mization, which is the focus of this study, targets a single structure and 
+concentrates on the strategic maintenance of its internal components. 
+Although the scale is smaller, bridge-level optimization introduces its 
+own complexities, particularly the compounded risks that arise when 
+multiple critical subsystems degrade simultaneously.
+A review of existing literature reveals that many bridge-level main -
+tenance strategies have been proposed. These methods are predomi -
+nantly grounded in classical optimization approaches, rule-based 
+systems, or supervised machine learning techniques. For example, Wang 
+et al. (2024) proposed a data-driven maintenance optimization frame -
+work for bridge infrastructure that integrates reliability-based deterio -
+ration, intervention, and financial models. Similarly, Ghafoori et al. 
+(2024) introduced a system that integrates ML techniques and binary 
+linear programming to predict the condition of concrete bridge elements 
+and optimize maintenance interventions. Using historical data, the 
+system models deterioration and generates long-term plans under 
+budget constraints. Other frameworks, such as the ontology-driven 
+smart contract system for bridge preservation decision-making pro -
+posed by He et al. (2025) , focus on the gap in formalizing and applying 
+implicit rules derived from expert judgment. Their method integrates 
+domain ontology with smart contracts to enable transparent rule 
+execution and decentralized data sharing. While these approaches offer 
+valuable contributions, they are limited in their capacity to adapt 
+dynamically to evolving bridge conditions and uncertain operational 
+environments.
+In contrast, RL methods have emerged as promising tools for adap -
+tive and intelligent infrastructure maintenance planning. These tech -
+niques formulate maintenance as a sequential decision-making process, 
+enabling agents to learn optimal policies through environmental inter -
+action. For instance, Wei et al. (2020) developed a DRL-based frame -
+work using the Deep Q-Network (DQN) algorithm to optimize bridge 
+maintenance decisions. The model considered five system states and 
+four possible actions per component, with rewards based on mainte -
+nance costs and structural risks. In another research, Xin et al. (2023)
+proposed a dynamic programming-based intelligent agent to optimize 
+component level bridge maintenance decisions using regular inspection 
+data. A two-parameter Weibull distribution predicts the duration of 
+bridge elements in various states, enhancing cost estimation and 
+tailoring decisions to specific defects.
+However, a critical observation from the literature shows that Multi- 
+Objective Reinforcement Learning (MORL) methods tailored for bridge 
+maintenance planning remain relatively scarce. While most existing RL 
+applications in bridge management focus on optimizing single-objective 
+reward structures, real-world maintenance scenarios inherently involve 
+multiple, often conflicting objectives. Only a few studies have explicitly 
+formulated the problem within a MORL framework. For example, Du 
+and Ghavidel (2022) proposed a parameterized RL framework that 
+generates a unified maintenance policy for diverse highway bridges. The 
+framework simultaneously optimizes multiple objectives by integrating 
+a time- and policy-dependent life-cycle risk assessment, balancing 
+maintenance cost and structural risk over time. In another study, van 
+Remmerden et al. (2025) presented a Multi-Objective Deep Reinforce -
+ment Learning (MODRL) framework for infrastructure maintenance that 
+directly optimizes policies under nonlinear utility functions. The method 
+is tested using threshold-based and FMECA-based utility functions 
+across multiple maintenance environments, including historical quay 
+walls in Amsterdam. Results show MO-DCMAC significantly out -
+performs conventional heuristic rule-based policies, demonstrating its 
+effectiveness in balancing cost and structural safety.
+Beyond the MORL, limited research integrates intelligent DSS 
+methods within DTs frameworks for predictive and data-driven bridge 
+management. For example, Heng et al. (2024) proposed a DT-based 
+maintenance framework for ageing steel bridge hangers, integrating 
+monitoring data, inspections, and predictive modelling. Their method 
+integrates Partially Observable Markov Decision Process (POMDP), 
+Asynchronous Advantage Actor Critic, and Bayesian Dynamic Linear 
+Model algorithms to guide proactive interventions such as early repairs 
+and strategic replacements, thereby improving maintenance efficiency 
+through coordinated, condition-based, and cost-effective decision- -
+making. Table 1 presents the comparison of solutions reported in recent 
+literature for bridge maintenance optimization problem. The gaps in 
+these methods include the limited application of MORL tailored for 
+bridge infrastructure maintenance, the lack of application of RL-based 
+approaches within DT technologies, and the insufficient ability of 
+existing models to dynamically adapt to real-time structural conditions 
+and evolving operational demands. This study aims to address these key 
+challenges through the development of a novel RL-DSS framework that 
+can be seamlessly integrated with bridge digital twins to provide a 
+robust and adaptive decision-making tool.
+3. Theoretical background
+This section provides a brief overview of the fundamental concepts 
+and background related to the DL algorithms employed in the proposed 
+RL-DSS. It begins with an introduction to RL, followed by a brief 
+explanation of MORL and DCMAC.
+3.1. Brief overview on reinforcement learning
+RL involves an autonomous agent that learns optimal strategies for 
+achieving predefined objectives through continuous interaction with its 
+environment. RL does not require prior data for training; instead, the 
+agent iteratively explores its environment, evaluates the outcomes of its 
+actions through a reward-based feedback mechanism, and refines its 
+decision-making policy. The primary objective in RL is to maximize the 
+cumulative reward over time, enabling the agent to identify and execute 
+actions that yield the most beneficial long-term outcomes. This problem 
+can be systematically modelled using a Markov Decision Process (MDP) 
+( Sutton and Barto, 1998 ), which provides a mathematical framework for 
+decision-making under uncertainty and over extended time horizons.
+In an MDP, the state transitions and rewards are defined by a tuple ( S ,
+A , P , R , γ ) , where S is the state space, A is the action space, P defines 
+transition probabilities, R is the reward function, and γ ∈ [0,1] is the 
+discount factor that determines the importance of future rewards. The 
+Bellman expectation equation provides a recursive definition for the 
+state-action value function Q under a policy π : 
+V. Mousavi et al. Engineering Applications of Artiϧcial Intelligence 181 (2026) 115649 
+3 
+Q
+π
+( s , a ) = E ( R ( s , a ) + γ Q
+π
+( s
+ʹ
+, a
+ʹ
+)| s , a ) (1) 
+Using MDP, at each time, the agent selects an action and receives a 
+corresponding reward. The reward function provides feedback on action 
+quality. The objective of the RL agent is to maximize the expected cu -
+mulative reward over time, with future rewards discounted by a factor 
+γ ∈ [0,1] to reflect their relative importance to the present decision- 
+making context.
+A widely used model-free RL method is Q-learning ( Watkins and 
+Dayan, 1992 ), where the Q-function is updated iteratively as: 
+Q ( s , a ) ← Q ( s , a ) + α
+[
+r + γ max
+a
+ʹ
+( s
+ʹ
+, a
+ʹ
+)   Q ( s , a )
+]
+(2) 
+The optimal policy maximizes the expected return from each state- 
+action pair: 
+Q
+∗
+( s , a ) = arg max E ( R
+t
+| S
+t
+= s , a
+t
+= a , π ) = arg max E
+(
+∑
+H
+k = 1
+γ
+k
+r
+k
+⃒
+⃒
+⃒
+⃒
+⃒
+S
+t
+= s , a
+t
+= a , π
+)
+(3) 
+RL methods are classified as model-based, which uses a known model 
+of the environment to plan actions efficiently but can be sensitive to 
+model inaccuracies, and model-free approaches, which learn optimal 
+behaviour through trial and error without a predefined model.
+RL has experienced significant advancements due to the emergence 
+of novel algorithms capable of tackling increasingly complex problems. 
+In this context, complexity is primarily associated with high- 
+dimensional state and action spaces, which often pose limitations for 
+traditional RL methods. DL techniques have effectively mitigated these 
+challenges through Deep Reinforcement Learning (DRL) that leverages 
+deep neural networks to manage and learn from complex, high- 
+dimensional environments.
+In DRL, neural networks are used to approximate value functions, 
+such as Q ( s , a ; θ ) where θ are the parameters of the Q-network. One 
+example is the DQN, where the temporal difference error is minimized 
+by adjusting θ through backpropagation, enabling generalization across 
+large, continuous state spaces.
+3.2. Multi-objective reinforcement learning (MORL)
+Traditional RL approaches are inherently designed to optimize pol -
+icies for single-objective tasks. However, many real-world problems 
+involve the simultaneous consideration of multiple objectives, which 
+often differ fundamentally in nature and cannot be readily combined 
+into a single scalar reward. These objectives represent diverse di -
+mensions of system performance that are neither directly comparable 
+nor easily reducible to a unified metric. Consequently, addressing the 
+complex and multi-dimensional nature of infrastructure maintenance 
+demands more advanced and flexible learning frameworks.
+To address this, MORL extends the RL framework to accommodate 
+multiple goals. MORL models are formalized through a multi-objective 
+MDP, where the key distinction from a conventional MDP lies in the 
+reward function which yields a vector of rewards across multiple ob -
+jectives rather than a single scalar.
+Unlike conventional RL, assessing policy performance in MORL 
+presents inherent complexity. This arises from the presence of multiple, 
+often conflicting, objectives. For instance, one policy may improve one 
+objective while another improves a different one, making comparisons 
+ambiguous without understanding of the relative importance of objec -
+tives. This challenge is particularly evident in bridge maintenance 
+planning, where decision-makers must weigh trade-offs.
+In such cases, a key concept is Pareto optimality. A policy is 
+considered Pareto-optimal if no other policy can improve one objective 
+without worsening another. The set of all such non-dominated policies 
+forms the Pareto front, providing a visual and analytical tool for eval -
+uating trade-offs.
+To address this, utility-based approaches are commonly employed to 
+aggregate the vector of cumulative rewards into a single scalar utility 
+value using a predefined function. This scalarization enables consistent 
+evaluation and comparison of policies within the multi-objective 
+framework. A common form of scalarization is the linear scalarization 
+method, where: 
+u ( R ) = W
+T
+R =
+∑
+n
+i = 1
+w
+i
+R
+i
+(4) 
+where w represents the weight vector that reflects the relative impor -
+tance of each objective.
+For effective optimization, the utility function must exhibit strict 
+monotonicity, which ensures that improvements in any objective always 
+increase overall utility, enabling continuous policy optimization and 
+preventing convergence to suboptimal solutions.
+One approach for optimizing policies in MORL under a known utility 
+function is the Expected Scalarized Return (ESR) criterion ( Hayes et al., 
+2022a ). The ESR criterion evaluates the utility of the cumulative return 
+associated with each trajectory prior to computing the expectation 
+across trajectories. Formally, the ESR criterion seeks to find a policy that 
+maximizes: 
+π
+∗
+= arg max E
+(
+u
+(
+∑
+H
+k = 1
+γ
+k
+r
+k
+) ⃒
+⃒
+⃒
+⃒
+⃒
+S
+t
+= s , π
+)
+(5) 
+In Eq. ( 5 ), the utility function u is applied to the total return vector of a 
+single trajectory before the expectation is taken across multiple trajec -
+tories. This means that the evaluation reflects the performance of each 
+run individually, rather than averaging rewards first and then 
+computing utility.
+Two evaluation criteria are commonly distinguished in MORL. Sca -
+larized Expected Return (SER) first computes the expected vector return 
+and then applies the utility function, while ESR applies the utility 
+function to each trajectory return before taking the expectation. It 
+should be noted that this distinction between ESR and SER becomes 
+relevant only when the utility function is nonlinear. Under a fixed linear 
+utility function, however, the two criteria yield mathematically 
+Table 1 
+Comparison of the recent solutions for bridge maintenance optimization problem.
+Ref Approach RL 
+Applied?
+Multi-Objectivity 
+Integrated?
+DT application 
+Capability
+Heng et al. (2024) Combines inspection data with a DT for fatigue and corrosion prediction and 
+maintenance scheduling
+✕✕ ✓ ✓
+Xin et al. (2023) Agent-based sequential decision model to optimize bridge component actions ✕✕ ✓ ✕✕
+He et al. (2025) Ontology-driven smart contract for rule-based decision automation ✕✕ ✕✕ ✕✕
+Wang et al. (2024) Improved Electric Fish Optimization for reliability-based maintenance ✕✕ ✓ ✕✕
+van Remmerden et al. 
+(2025)
+Multi-objective Deep actor – critic framework (MO-DCMAC) for utility-based 
+maintenance policy learning
+✓ ✓ ✕✕
+Ghafoori et al. (2024) ML model optimizing performance under annual budget constraints ✕✕ ✓ ✕✕
+Du and Ghavidel (2022) Parameterized DRL to generate a unified maintenance policy for bridge portfolio by 
+integrating a time and life-cycle risk
+✓ ✓ ✕✕
+V. Mousavi et al. Engineering Applications of Artiϧcial Intelligence 181 (2026) 115649 
+4 
+equivalent policy optimization objectives, as linearity commutes with 
+the expectation operator ( Hayes et al., 2022b ). Therefore, both criteria 
+yield identical policy optimization objectives in the present formulation.
+3.3. Deep Centralized Multi-Agent Actor-Critic (DCMAC)
+DCMAC is a RL framework designed for multi-agent systems that 
+combines centralized training with decentralized execution. This 
+approach addresses the key challenges of multi-agent (MA) RL, partic -
+ularly the non-stationarity problem that arises when multiple agents 
+learn simultaneously in a shared environment ( Lowe et al., 2017 ). This 
+setup follows the Centralized Training with Decentralized Execution 
+paradigm, allowing agents to learn coordinated strategies during 
+training while acting independently during deployment. DCMAC uses a 
+centralized critic with global information for training, while agents 
+execute local actor policies, enabling coordinated learning alongside 
+independent action.
+Considering n control units, each capable of taking individual ac -
+tions. These units may represent either components or sub-systems. The 
+key assumption in DCMAC is conditional independence of actions, given 
+the system state s . This allows the joint policy π ( a | s ) to be factorized as: 
+π ( a | s ) =
+∏
+n
+i = 1
+π
+i
+( a
+i
+| s ) (6) 
+where π
+i
+( a
+i
+| s ) is the probability of action a
+i 
+for the i-th control unit, based 
+on the shared system state s .
+The actor network in DCMAC is centralized in the sense that it re -
+ceives the entire system state as input and outputs action distributions 
+for all control units. The policy gradient for updating the actor network 
+is computed as: 
+∇
+θ
+J ( θ ) = E
+s , a ∼ μ
+[
+∑
+n
+i = 1
+∇
+θ
+log π
+i
+( a
+i
+| s ) ⋅ A ( s , a )
+]
+(7) 
+where θ are the parameters of the centralized actor network and A ( s , a )
+is the advantage function, representing how much better an action is 
+compared to the expected value.
+The advantage function is defined as A ( s , a ) = Q ( s , a )   V ( s ) , which 
+reduces variance during learning and stabilizes updates.
+The critic is trained to minimize the loss: 
+L ( ϕ ) = E
+[ 
+Q
+ϕ
+( s , a )   y
+)
+2
+]
+(8) 
+where y = r + γ Q
+ϕ
+ʹ ( s
+ʹ
+, a
+ʹ
+) , and ϕ represents the parameters of the critic 
+network. Q
+ϕ
+ʹ is also the target network used for stable updates.
+By leveraging centralized critics and decentralized actors, DCMAC 
+facilitates scalable and coordinated learning in complex, MA environ -
+ments, making it suitable for applications in infrastructure management, 
+robotic teams, and distributed control systems.
+4. Proposed RL-DSS framework
+The application of deep RL and DSS within digital twinning enhances 
+bridge optimal maintenance planning by enabling informed and pre -
+dictive decision-making. To fully exploit these advantages, a RL-based 
+DSS reference framework is essential.
+The proposed RL-DSS is designed to be integrated into data-driven 
+DT environments, where data from diverse sensors are processed using 
+advanced techniques to provide a real-time representation of the 
+bridge's condition. In this framework, the DT utilizes its internal state- 
+estimation and data assimilation algorithms to process, filter, and fuse 
+real-time structural health monitoring data, thereby generating an 
+updated and reliable system-state representation that is subsequently 
+supplied to the RL-DSS for decision making. This continuously updated 
+bridge state information serves as the input for decision-making within 
+the proposed RL-DSS framework in this study. As the condition of bridge 
+elements changes based on real-time data streams, the decision-making 
+process within the RL-DSS dynamically selects actions according to the 
+updated system states using a pre-trained policy, without online 
+retraining or parameter updating. The primary focus of this research is 
+on the RL-based decision-making process, designed to be integrated into 
+data-driven DTs, while detailed explanations of damage detection stra -
+tegies within DTs are beyond the scope of this study and can be found in 
+recent related works such as Mousavi et al. (2025b) .
+The proposed framework, shown in Fig. 1 , presents a simulation- 
+based methodology to optimize bridge maintenance strategies using a 
+Multi-Objective Deep Reinforcement Learning (MODRL) framework. 
+This approach addresses the complexity of infrastructure management 
+decisions where multiple conflicting objectives must be balanced 
+simultaneously. The primary objectives include minimizing mainte -
+nance costs, managing expected failure consequences, and maintaining 
+structural serviceability (penalizing poor DS). The framework employs a 
+MA architecture where individual agents manage distinct bridge com -
+ponents, enabling distributed decision-making within a unified learning 
+structure. This design captures interdependencies between structural 
+elements while maintaining computational efficiency across complex 
+bridge systems.
+As illustrated in Fig. 1 , the methodology follows an iterative process 
+beginning with bridge condition initialization, incorporating damage 
+indices, material properties, environmental factors, and component 
+ages. The system operates within a dynamic simulation environment 
+that continuously reflects evolving infrastructure states, accounting for 
+both maintenance interventions and natural deterioration processes.
+The decision-making process involves systematic observation 
+collection where agents gather state information representing current 
+bridge conditions. Based on these observations and learned policies, 
+agents select maintenance actions from a predefined set ranging from no 
+action to complete component replacement. Selected actions are applied 
+within the simulation environment, triggering state updates that reflect 
+immediate maintenance effects and ongoing deterioration.
+A reward calculation mechanism evaluates outcomes across the 
+three primary objectives. This multi-objective penalty-based system 
+quantifies trade-offs between direct cost expenditure, risk thresholds, 
+and serviceability penalties. The framework incorporates a distribu -
+tional network that estimates long-term consequences by predicting 
+probability distributions over future returns, providing comprehensive 
+evaluation of policy decisions.
+Policy optimization integrates calculated rewards and network 
+evaluations through a utility function that enables multi-objective 
+outcome integration. This approach allows the system to learn mainte -
+nance strategies aligned with long-term infrastructure management 
+goals while adapting to the complex, time-dependent nature of struc -
+tural deterioration.
+The iterative framework enables continuous learning and adaptation 
+where agents progressively refine decision-making capabilities through 
+repeated simulation interactions. This methodology specifically ad -
+dresses long-term infrastructure planning challenges where current de -
+cisions have consequences extending over decades of operational life. 
+The details of the proposed framework will be discussed in the next 
+sections.
+5. Workflow of multi-objective deep RL
+This section presents the detailed methodology for the RL-DSS 
+designed for bridge maintenance optimization. It integrates a MO- 
+DCMAC algorithm to balance cost, risk, and serviceability objectives. 
+The following subsections detail the framework's components and 
+technical implementation.
+V. Mousavi et al. Engineering Applications of Artiϧcial Intelligence 181 (2026) 115649 
+5 
+Fig. 1. The overall flowchart of the proposed RL-DSS methodology.
+V. Mousavi et al. Engineering Applications of Artiϧcial Intelligence 181 (2026) 115649 
+6 
+5.1. Bridge condition assessment
+As the initial step of the proposed framework, the current bridge 
+condition state is required. The bridge condition or health index is a 
+critical metric for evaluating the structural and functional performance 
+of bridge infrastructure. These general qualitative condition indices are 
+commonly derived from the condition assessment of bridge elements 
+considering the level of service the bridge provides. It plays a pivotal 
+role in identifying deteriorated components and informing the prioriti -
+zation of maintenance and rehabilitation activities ( Chase et al., 2016 ). 
+The overall condition of each structural element is evaluated using a 
+five-level Damage State (DS) rating scale during the inspection process, 
+as outlined in Table 2 .
+Traditionally, DS is determined through on-site inspections con -
+ducted by qualified inspectors. However, for bridges that are equipped 
+with actively managed DTs, condition assessments can also be derived 
+from these digital models through continuous monitoring and data 
+evaluations. In cases where neither DT systems nor recent inspection 
+reports are available, expert judgment can serve as a valuable alterna -
+tive for estimating the current condition of the bridge elements. This 
+flexible approach ensures that bridge condition data can still be lever -
+aged to support informed decision-making in asset management, even 
+under data-limited circumstances.
+Beyond the assessment of element-level damage states, this study 
+also incorporates two additional technical factors into the evaluation 
+framework, following methodologies established in previous research 
+( Mohammadi et al., 2023 ; Rashidi et al., 2016a ). These include material 
+vulnerability, element importance factor and associated causal factors. 
+Integrating these variables allows for a more comprehensive and reliable 
+bridge maintenance strategy by addressing technical uncertainties and 
+reflecting the differential significance and susceptibility of various 
+components within the overall structural system. The following sub -
+sections provide a detailed explanation of each of these factors.
+5.1.1. Material vulnerability (MV)
+The MV quantifies the susceptibility of different construction mate -
+rials to environmental degradation and aging. Material type plays a 
+crucial role in determining the durability and long-term performance of 
+bridge components, particularly under harsh service conditions.
+While a detailed vulnerability model of bridge elements across all 
+hazard types requires extensive investigations, existing literature and 
+expert assessments indicate that steel components are generally more 
+prone to deterioration than precast reinforced concrete elements under 
+harsh environmental conditions, whereas timber components are 
+particularly vulnerable to biological degradation and moisture-related 
+damage ( Rashidi and Gibson, 2011 ; Valenzuela et al., 2010 ). Table 3
+presents the vulnerability classification of commonly used bridge con -
+struction materials.
+5.1.2. Causal factors (CF)
+Bridge components deteriorate progressively over time and the rate 
+of deterioration is influenced by multiple interacting parameters, 
+including pre-existing conditions, such as original design specifications 
+and construction quality, and post-existing variables related to opera -
+tional environments, usage patterns, and quality of inspection practices. 
+To systematically capture the impact of these variables on structural 
+degradation, CF criterion is utilized, which is composed of four primary 
+dimensions including environmental exposure, structural age, road 
+type/loading, and inspection quality. 
+• Environmental Aggression (EA) : Environmental factors signifi -
+cantly affect material durability, especially in concrete structures 
+through both chemical and physical processes induced by climatic 
+variables, pollutants, and human activity. These factors can trigger 
+or accelerate deterioration like carbonation, chloride corrosion, and 
+alkali – silica reaction, with early construction defects further facili -
+tating harmful ingress ( Rashidi et al., 2016a ).
+• Structural Age (A): The age of a bridge indicates its integrity and 
+fatigue performance. While many bridges have a nominal 50-year 
+design life, some continue to operate up to 100 years, though ele -
+ments like bearings may need replacement in 25 years. Extended 
+service necessitates re-evaluating safety and durability against 
+original design and current performance standards ( Rashidi and 
+Gibson, 2012 ).
+• Road Type and Loading (R) : The intensity and nature of traffic 
+loading vary according to a bridge's functional role within the 
+transportation network. In this study, traffic load intensity is 
+approximated using the Average Annual Daily Traffic (AADT) 
+metric. Higher AADT values, characteristic of arterial or highway 
+bridges, are associated with increased structural demand and more 
+rapid wear, whereas bridges on local roads typically experience 
+lower traffic volumes and consequently slower deterioration.
+• Inspection Level (I) : The quality and consistency of condition as -
+sessments are influenced by human factors and inspection practices, 
+including inspector expertise, environment, components accessi -
+bility, and adequacy of inspection tools ( Ellenberg et al., 2016 ). In 
+this regard, four distinct levels of bridge inspections have been 
+considered. The initial inspection is conducted after construction. 
+Routine inspections monitor the general condition of the bridge by 
+regular visual evaluations. Detailed inspections use non-destructive 
+testing for potential structural issues, and special inspections are 
+performed following incidents or observed anomalies to support 
+structural analysis for interventions guide ( Mohammadi et al., 2023 ).
+Each of the above factors is categorized into four discrete levels, as 
+presented in Table 4 .
+Table 2 
+Bridge condition indices.
+Index DS Description
+0 Healthy No visible deterioration. The element is in as-new condition or 
+defects have no significant structural or functional impact.
+1 Minor Minor defects or early signs of deterioration, with no reduction 
+in the element's functionality.
+2 Moderate Moderate defects and deterioration, resulting in some loss of 
+expected functionality.
+3 Severe Severe defects with significant loss of functionality, or the 
+element is nearing structural failure.
+4 Critical Extensive deterioration or structural damage posing an 
+immediate safety risk; urgent intervention required
+Table 3 
+Material Vulnerability (MV) adopted from Valenzuela et al. (2010) .
+MV Index Material Type
+1 Precast concrete (non-structural)
+2 Reinforced concrete
+3 Clay Brick
+4 Steel, iron, and alloys
+5 Timber
+Table 4 
+Causal Factor (CF) Classification adopted from Rashidi and Gibson (2012) .
+Level Environment 
+(EA)
+Age (A) Traffic Load (R) Inspection 
+Type (I)
+1 Mild 0 – 25 years 
+(recent)
+AADT ≤ 150 
+(minor)
+Initial
+2 Moderate 25 – 50 years 
+(new)
+150 < AADT 
+≤ 1000
+Routine
+3 Harsh 50 – 75 years 
+(old)
+1000 < AADT 
+≤ 3000
+Detailed
+4 Very Harsh 75 – 100 years 
+(very old)
+AADT > 3000 
+(arterial)
+Special
+V. Mousavi et al. Engineering Applications of Artiϧcial Intelligence 181 (2026) 115649 
+7 
+The weighted formulation used to compute the CF is expressed as: 
+CF = 0 . 12 EA + 0 . 41 A + 0 . 11 R + 0 . 36 I (9) 
+This equation, provided in our research team study conducted by 
+Rashidi and Gibson (2012) ; Rashidi et al. (2016a) , reflects the relative 
+importance of each contributing factor, with structural age and inspec -
+tion level criteria receiving the highest weights.
+5.1.3. Importance factor (IF)
+The IF is used to represent the relative criticality of each bridge 
+element to overall structural safety and service. IF expresses how 
+strongly a component's failure would influence system performance. In 
+practice, IF values are assigned per component based on engineering 
+judgment about structural role, redundancy, and consequence of failure. 
+Within the risk formulation, IF is used as a weight to combine 
+component-level failure probabilities into the probability of system 
+collapse. After each action, updated component failure probabilities are 
+aggregated using normalized IF values, ensuring that failures of more 
+critical elements have a stronger impact on the system-level risk signal.
+5.2. Bridge maintenance simulation environment
+The bridge maintenance problem is formulated as a MOMDP in this 
+study to provide a structured foundation for implementing sequential 
+decision-making under uncertainties, where multiple conflicting objec -
+tives must be optimized over time.
+However, the implementation of such frameworks in real-world 
+bridge maintenance encounters data paradox challenge. RL agents 
+require large volumes of diverse data that represent a wide range of 
+system states and the outcomes of various actions in order to learn 
+effective policies. In practice, however, comprehensive and longitudinal 
+real-world data for bridge maintenance is exceptionally scarce and 
+inherently unsuitable for exploratory learning. The reasons for this are 
+threefold: 
+• Missing Alternative Outcomes : Historical records only show what 
+maintenance actions were actually taken, not what would have 
+happened with different choices. Since RL systems learn by 
+comparing different possible actions, this creates a fundamental gap 
+in the available data.
+• Impractical Learning Requirements : Bridges operate over de -
+cades, but RL systems need millions of trial-and-error experiments to 
+learn effectively. Testing different maintenance strategies on real, 
+operational bridges would be both impossible to complete within 
+reasonable timeframes and dangerously risky.
+• Poor Data Quality : Existing maintenance records are often incom -
+plete, inconsistent, or stored in incompatible formats. This makes 
+them unsuitable for training RL systems, which require reliable and 
+standardized information about system conditions, actions taken, 
+and outcomes achieved.
+To overcome these limitations, this study introduces a high-fidelity 
+simulation-based training environment to enable safe, repeatable, and 
+scalable learning for long-term bridge maintenance planning. This dig -
+ital environment enables the RL agent to interact with a virtual repre -
+sentation of a bridge over countless simulated life cycles, allowing it to 
+develop and refine policies without the risks and constraints associated 
+with real-world testing. The validity of this simulation-based approach 
+hinges on the quality of its underlying models and parameters. The 
+environment for this study is not built on arbitrary rules but is param -
+eterized based on established engineering principles, empirical models, 
+and data reported in existing literature.
+Within this simulated framework, the MOMDP is implemented by 
+explicitly defining its fundamental components including the state 
+space, action space, stochastic transition functions and reward structure. 
+Therefore, MOMDP can be defined by a tuple ( S , A , P , R , γ ) , where S is a set 
+of states representing the condition of the bridge. A is set of actions 
+corresponding to maintenance interventions. P is a transition function 
+defining the probability of moving from one state to another given an 
+action. R is a multi-objective reward function that provides feedback on 
+the action's outcome. γ is discount factor for future rewards. In following 
+subsections, the detailed definitions of each component in the proposed 
+framework implementation are presented.
+5.2.1. State representation
+The primary state variables for each bridge component include a 
+discrete DS, as described in Section 5.1 and Table 2 , which quantifies the 
+level of deterioration from Healthy to Critical , and the component's age, 
+defined as the time elapsed since its last major repair or replacement. 
+These variables are fundamental for assessing the current structural 
+condition and projecting future maintenance requirements. DS values 
+are typically derived from systematic assessments of individual struc -
+tural elements based on standardized inspection criteria, such as the 
+five-level DS rating scale, which reflects the severity of material defects 
+and the extent of cross-sectional or surface area loss. Together, these 
+state indicators provide a robust foundation for modelling bridge con -
+dition dynamics and informing effective maintenance decision-making.
+5.2.2. Maintenance action space
+The decision-making process for maintenance interventions was 
+structured through a discrete action space designed to enable systematic 
+and interpretable strategies. For each bridge component, the agent can 
+choose from a standardized set of four distinct maintenance actions. 
+When the agent selects an action, the environment applies deterministic 
+changes to the corresponding component's state: 
+1. No Action signifies deferring active maintenance, allowing compo -
+nents to continue operating under current conditions subject to 
+ongoing deterioration and the component's state is only affected by 
+the stochastic deterioration model for that time step. No Action 
+signifies deferring active maintenance. This option enables cost- 
+effective strategies by avoiding unnecessary interventions when 
+structural performance remains acceptable.
+2. Minor Repair actions address moderate deterioration levels through 
+limited restoration. They reduce the component's DS by one level 
+without significantly altering its age or long-term service life tra -
+jectory. These interventions represent routine, low-cost maintenance 
+activities managing localized damage or slowing deterioration 
+progression.
+3. Major Repair actions provide substantial restoration capabilities. 
+They improve the component's condition by reducing its DS by two 
+levels while also rejuvenating the component by reducing its effec -
+tive age by a predefined period which is considered fixed across all 
+components for simplicity. This action extends service life through 
+more comprehensive intervention.
+4. Replacement is the most intensive intervention, completely renew -
+ing a component by restoring its DS to " Healthy " (DS = 0) and reset -
+ting its age to zero. Unlike traditional rule-based models that 
+explicitly mask or restrict this action to advanced DS, the proposed 
+framework allows the agent unrestricted access to all actions. 
+Instead, the agent learns to avoid premature replacements through 
+strict economic "overkill" penalties, fostering a robust and naturally 
+learned decision-making process.
+5.2.3. Environment transition dynamics
+Component deterioration is modelled as a probabilistic process. The 
+probability of a component's DS increasing during a time step is deter -
+mined by a hazard rate λ calculated as: 
+λ = β
+0
++ c
+1
+⋅ CF + c
+2
+⋅
+Age
+Age
+max
+(10) 
+V. Mousavi et al. Engineering Applications of Artiϧcial Intelligence 181 (2026) 115649 
+8 
+where β
+0 
+is the base deterioration rate dependent on the component's 
+MV. c
+1 
+and c
+2 
+are weighting coefficients. In this study, to accurately 
+capture the accelerating degradation of aging infrastructure, the causal 
+factor coefficient c
+1
+, and the age coefficient c
+2 
+are used to ensure that 
+older bridges deteriorate faster, forcing the agent to intervene strategi -
+cally in later life stages.
+The systemic risk of collapse is recalculated after each action. It is 
+derived from the failure probability of individual components, which is 
+a function of their current DS, MV, and CF. These individual probabili -
+ties are aggregated using predefined IF that reflect each component's 
+criticality to overall structural stability, providing a direct feedback 
+signal for the risk-minimization objective.
+The systemic risk of collapse is recalculated at each time step to 
+provide a direct feedback signal for one of the primary optimization 
+objectives. This is a two-step process that first evaluates the failure 
+probability of individual components and then aggregates them to 
+determine the overall system collapse probability.
+First, the failure probability for each individual component i , deno -
+ted as P ( F
+i
+) , is calculated based on its current condition. This model 
+incorporates a base probability derived from its damage state, which is 
+then amplified by multipliers for material vulnerability and causal 
+factors: 
+P ( F
+i
+) = min
+[
+P
+base
+( DS
+i
+) × ( 1 + c
+MV
+( MV
+i
+  MV
+min
+))
+×
+(
+1 +
+( CF
+i
+  CF
+min
+)
+( CF
+max
+  CF
+min
+)
+)
+, P
+max
+] (11) 
+where DS
+i
+, MV
+i
+. CF
+i 
+are the damage state, material vulnerability index, 
+and causal factor for component i . P
+base
+( DS
+i
+) is the base failure proba -
+bility corresponding to the component's damage state. c
+MV 
+is the mate -
+rial vulnerability risk coefficient. MV
+min
+, CF
+min
+, and CF
+max 
+are 
+normalization constants. P
+max 
+is a predefined cap on the maximum 
+failure probability for any single component. While Equations ( 10 ) and 
+( 11 ) are simplified probabilistic models created to facilitate the exten -
+sive simulation required for RL training, their structures are not arbi -
+trary. They incorporate established engineering variables, such as MV 
+and CF, which are widely used in existing infrastructure management 
+literature to model deterioration rates and failure probabilities ( Rashidi 
+et al., 2016a , 2016b ; Valenzuela et al., 2010 ).This ensures a logical and 
+engineering-consistent environment for the agent to learn optimal 
+maintenance policies.
+Second, these individual probabilities are aggregated to compute the 
+system-level collapse probability, P ( Collapse ) , using a weighted model 
+based on each component's importance: 
+P ( Collapse ) = 1  
+∏
+n
+i = 1
+( 1   w
+i
+P ( F
+i
+)) (12) 
+where n is the total number of components and w
+i 
+is the normalized IF 
+for component i . The final risk component for the reward vector is the 
+negative of P ( Collapse ) , thus incentivizing the agent to select actions that 
+maintain or reduce the probability of systemic failure.
+5.2.4. Multi-objective reward structure and utility integration
+The agent's learning is guided by a multi-objective reward signal 
+designed to balance the competing goals of bridge maintenance. At each 
+time step t the agent receives an immediate reward vector r
+t
+= [ r
+cost
+, r
+risk
+,
+r
+serv
+] , which is calculated after a maintenance action is executed but 
+before the application of stochastic deterioration models. This ensures 
+that the reward directly reflects the consequence of the agent's decision 
+and unfair penalties from random deterioration events is avoided. 
+• The Cost Objective ( r
+cost
+) represents the direct financial expenditure 
+associated with maintenance interventions. It incorporates the base 
+costs of individual actions along with a fixed mobilization fee. This 
+fee is applied once per time step whenever any maintenance occurs, 
+which inherently incentivizes the agent to consolidate repairs across 
+multiple components rather than performing isolated interventions 
+year after year. Additionally, explicit economic penalties are 
+assigned for disproportionate actions, such as executing major 
+structural repairs on components with only minor damage or inter -
+vening on fully healthy elements. These economic constraints ensure 
+that the agent learns an optimal, proportionate maintenance strategy 
+without relying on rigid, pre-programmed rules.
+• The Risk Objective ( r
+risk
+) models the expected consequence of fail -
+ure rather than a raw probability. A tolerable risk threshold τ is 
+established to represent acceptable operational safety margins. If the 
+system-level probability of collapse P ( Collapse ) , exceeded τ , the 
+agent incurs a severe penalty proportional to an expected failure 
+consequence value C
+fail
+. The risk reward is formulated as:
+r
+risk
+=   max ( 0 , P ( Collapse )   τ ) × C
+fail
+(13) 
+• The Serviceability Objective ( r
+serv
+) is designed to maintain the 
+bridge components within acceptable operational conditions by 
+strictly penalizing severe structural degradation. Rather than 
+rewarding maintenance actions directly, this objective evaluates the 
+ongoing physical state of the infrastructure. Components that remain 
+in healthy, minor, or moderate DS operate without penalty. 
+Conversely, if a component is allowed to deteriorate to a severe or 
+critical DS, the system imposes a substantial financial penalty. This 
+penalty is mathematically scaled by the component's IF, ensuring that 
+the agent learns to prioritize the preservation and timely repair of the 
+bridge's most structurally critical elements.
+To resolve the multi-objective signal into a single learning target, a 
+fixed weighted linear sum utility function is employed. Because all ob -
+jectives are formulated as negative penalties, a linear scalarization 
+provides consistent gradients and effectively captures the trade-offs 
+between cost, risk, and serviceability without the need for complex 
+logarithmic transformations. At any given time-step t , the utility func -
+tion u applied to the immediate reward vector r
+t
+= [ r
+cost
+, r
+risk
+, r
+serv
+] is 
+formulated as: 
+u ( r
+t
+) = w
+cost
+(
+r
+cost
+S
+cost
+)
++ w
+risk
+(
+r
+risk
+S
+risk
+)
++ w
+serv
+(
+r
+serv
+S
+serv
+)
+(14) 
+where w
+cost
+, w
+risk
+, and w
+serv 
+represent the relative preference weights 
+assigned to the cost, risk, and serviceability objectives, respectively. To 
+prevent any single dimension with naturally larger numerical values 
+from dominating the learning process, the raw penalties are divided by 
+their corresponding normalization scaling factors ( S
+cost
+, S
+risk
+, and S
+serv
+).
+In the context of sequential decision-making, the RL agent does not 
+merely optimize for the immediate step. Instead, it seeks to maximize 
+the expected cumulative utility over the entire planning horizon. This is 
+defined by the expected scalarized return G
+t
+, which incorporates a dis -
+count factor γ ∈ [ 0 , 1 ] to balance the importance of immediate versus 
+future consequences: 
+G
+t
+=
+∑
+∞
+k = 0
+γ
+k
+u ( r
+t + k
+) (15) 
+This linear and discounted formulation ensures a stable optimization 
+landscape, guiding the agent to learn long-term, proactive maintenance 
+strategies while allowing decision-makers to easily encode strategic 
+priorities by adjusting the preference weights.
+5.3. Multi-Objective Deep Centralized Multi-Agent Actor-Critic algorithm
+The MODRL framework in this study aims to address the complex 
+bridge maintenance optimization challenges, where multiple competing 
+objectives must be balanced simultaneously. The framework adapts the 
+V. Mousavi et al. Engineering Applications of Artiϧcial Intelligence 181 (2026) 115649 
+9 
+MO-DCMAC algorithm, originally proposed by van Remmerden et al. 
+(2025) . This algorithm serves as the core decision-making engine of 
+the RL-DSS, extending traditional actor-critic architectures to represent 
+vector-valued reward signals rather than scalar rewards, which enables 
+learning coherent policies that optimally balance competing objectives 
+through utility functions. Despite the implementation by van 
+Remmerden et al. (2025) which is limited to two objectives, our pro -
+posed method expands t

@@ -1,0 +1,1254 @@
+Advanced Engineering Informatics 59 (2024) 102269
+Available online 23 November 2023
+1474-0346/© 2023 Elsevier Ltd. All rights reserved.
+Full length article 
+Digital twin-enabled collision early warning system for marine piling: 
+Application to a wharf project in China 
+Minghao Li
+a
+, Qiubing Ren
+a
+, Mingchao Li
+a , *
+, Ting Kong
+b
+, Heng Li
+b
+, Huijing Tian
+c
+, Shiyuan Liu
+c 
+a
+State Key Laboratory of Hydraulic Engineering Intelligent Construction and Operation, Tianjin University, Tianjin 300350, China 
+b
+Department of Building and Real Estate, The Hong Kong Polytechnic University, Hong Kong, China 
+c
+CCCC (Tianjin) Eco-Environmental Protection Design & Research Institute Co., Ltd., Tianjin 300461, China 
+ARTICLE INFO 
+Keywords: 
+Marine piling 
+Collision early warning 
+Digital twin 
+Pile positioning 
+System development 
+ABSTRACT 
+The safety and effectiveness of marine piling construction are hindered by the display of imprecise spatial in -
+formation and the potential for collisions due to the complexity of pile positions and attitudes. Digital twin (DT) 
+can solve the above problems in piling construction because of their inherent three-dimensionality and real-time 
+feedback. The present study proposes a system that utilizes the DT framework to construct a collision early 
+warning system intended for marine piling. A five-dimensional model is used to introduce the overall archi -
+tecture. The main twin objects are piles. To maximize the effectiveness of DT, the five-dimensional model is 
+composed of four independently maintainable development modules. Consequently, a prototype of the system is 
+created. The core of the system comprises an algorithm for pile positioning and an algorithm for collision early 
+warning, especially for complex pile groups. Two distinct implementations are identified: one involves con -
+trolling the virtual with the real, while the other involves controlling the real with the virtual. Field experiments 
+are conducted with the aim of establishing a benchmark for collision early warning during the construction 
+process. The prototype of the system is capable of producing a simulated environment through a dual-layer 
+mapping approach, which involves pile-boat mapping and early-warning feedback mapping. The presented 
+system in a practical wharf project showcases both the capacity for three-dimensional visualization of collision 
+warning and the ability to provide feedback for boat control. The research enables more intuitive and effective 
+pile positioning. 
+1. Introduction 
+Pile foundations have emerged as a crucial component in the 
+development of viaducts, high-rise buildings, offshore ports, and water 
+transport wharves. Based on the characteristics of the construction 
+environment, piling can be divided into two categories: land piling and 
+marine piling. The conventional approach for piling involves the utili -
+zation of a total station, or theodolite, which is measured by construc -
+tion personnel [1] . In contrast to piling on land, marine piling is 
+vulnerable to external influences, including the swinging of the piling 
+boat, fluctuations in the water surface, and the effects of wind [2] . The 
+efficiency of manual construction positioning is low, and its precision is 
+limited [3] . 
+Global navigation satellite systems (GNSS) and real-time kinematic 
+(RTK) positioning are getting more mature, and their costs are steadily 
+decreasing. These tools find extensive application in the domain of civil 
+engineering, including but not limited to construction machinery con -
+trol [4,5] , high-rise buildings [6] , bridges [7] , and dam structural health 
+monitoring [8] . The level of accuracy in positioning has reached a res -
+olution of millimeters. The initial implementation of the GNSS in piling 
+was documented by Seward et al. in their publication [1] . The automatic 
+land drilling positioning was achieved through the utilization of the 
+advanced PC1O4 processor. The positioning of piles on land was 
+investigated by Takeshi et al. [2,9,10] through the utilization of a line 
+laser range finder. Yao et al. [3] and Tserng et al. [11] have presented 
+models for marine piling that address the challenge of computing the 
+coordinates of the pile center in real time. The proposed model utilizes a 
+combination of multiple GNSS receivers, inclinometers, and range 
+finders to develop diverse algorithms for pile positioning calculations. 
+The algorithms use three types of coordinate systems, namely geodetic 
+coordinate system, engineering coordinate system, and ship-fixed co -
+ordinate system. The geodetic coordinate system is used to measure the 
+* Corresponding author. 
+E-mail address: lmc@tju.edu.cn (M. Li). 
+Contents lists available at ScienceDirect 
+Advanced Engineering Informatics 
+journal homepag e: www.else vier.com/loc ate/aei 
+https://doi.org/10.1016/j.aei.2023.102269 
+Received 31 May 2023; Received in revised form 9 October 2023; Accepted 13 November 2023 
+Advanced Engineering Informatics 59 (2024) 102269
+2
+position of a certain point on the earth, that is, the longitude, latitude, 
+and elevation coordinates received by the GNSS receivers [12]. The 
+engineering coordinate system is used to measure the position of a 
+certain point in the construction area. Different engineering projects 
+have different engineering coordinate systems [13]. The ship-fixed co -
+ordinate system is used to measure the position of a certain point relative 
+to the hull. Different ships also have different ship-fixed coordinate 
+systems. The projection transformation method can be used to convert 
+the geodetic coordinate system into an engineering coordinate system, 
+allowing GNSS to be used in engineering. Using the three-dimensional 
+datum transformation model [14], the ship-fixed coordinate system 
+can be converted into an engineering coordinate system, so that the boat 
+can be used in marine piling construction. The algorithms are utilized to 
+determine the ship-fixed coordinates that describe the pile center. These 
+coordinates are subsequently converted into engineering coordinates 
+through the utilization of a parameter that facilitates the transformation 
+of ship-fixed coordinates into their corresponding engineering co -
+ordinates. The utilization of charge coupled device (CCD) cameras in the 
+above algorithms was recently investigated by Yao et al. [15]. A two- 
+dimensional software for marine pile positioning was developed utiliz -
+ing the pile positioning model mentioned above. This software has been 
+adopted by Shanghai Huace Navigation Technology Ltd., Guangzhou 
+Zhonghaida Satellite Navigation Technology Co., Ltd., and China 
+Communications Construction Co., Ltd. for the purpose of pile posi -
+tioning in China’s offshore foundation construction. It directs the piling 
+boat to detect the pile location and torsion angle, and it controls the pile 
+frame to tilt forward and backward to establish the pile slope ratio. Thus, 
+it achieves the positioning of marine piling without the involvement of a 
+total station or theodolite. 
+The algorithm for pile positioning utilizes a combination of GNSS 
+receivers, inclinometers, and rangefinders to facilitate accurate posi -
+tioning across a variety of working conditions. Although positioning 
+technology has been improved, the two-dimensional thinking that 
+originated from manual drawings still continues. The pile is represented 
+as an ellipse at the point where the engineering design elevation plane 
+intersects with the axis of the pile. This replacement of the pile results in 
+the loss of information regarding the three-dimensional staggered 
+arrangement of the piles in space. Practical engineering experience in 
+marine piling construction tells us that the layout of the pile body is a 
+staggered arrangement of straight piles and inclined piles. Considering 
+that the objects below the water surface cannot be foreseen during 
+construction, the positioning challenge is further increased. Also, it is 
+challenging for construction personnel to acquire precise spatial posi -
+tion data for complex construction conditions. They must rely on their 
+experience to steer the boat. In addition, unexpected pile positions and 
+attitudes may occur during construction. There are two reasons for this 
+unexpectedness. On the one hand, while the design phase has success -
+fully addressed the potential for pile collision, the limitations imposed 
+by the vessel’s configuration and the load-bearing capacity of the pile 
+framework during construction have not been taken into account. On 
+the other hand, the physical act of construction can lead to a minor 
+deviation in both the torsion and inclination angles of the pile. The angle 
+deviation is determined by the inclination of the pile, the frame of the 
+boat, and the weight of the pile. Small changes in angle can cause large 
+changes in the position and attitude of the pile in three-dimensional 
+space. Therefore, the current two-dimensional marine piling posi -
+tioning software is unable to intuitively and in real-time map the actual 
+construction conditions for construction operation feedback. The actual 
+construction pile position does not match the one specified in the design. 
+The difficulty of construction and the risk of collision increased. This 
+collision refers to the collision between two pile bodies. The collision 
+between piles under construction and piles that have been completed is 
+something that should be avoided during construction and is the main 
+purpose for establishing the digital twin (DT). 
+Therefore, based on the current pile positioning technology, marine 
+piling urgently needs intuitive and precise technology to reduce the 
+challenges and risks of pile sinking construction. The DT has natural 
+three-dimensional properties. It is a real-time twin of reality. Grieves 
+first proposed the concept of the DT as a “product life cycle management 
+model” [16]. Despite the fact that many research results have surfaced 
+after two decades of development and implementation, 96% of them 
+have emerged since 2016 [17], with 50% of these results pertaining to 
+manufacturing and production [18]. Only 5% are associated with the 
+built environment [19]. The absence of comprehensive theoretical 
+frameworks and construction techniques for unified DT models is 
+evident, even within the context of manufacturing and production. Tao 
+et al. described in detail the essential technologies, enabling technolo -
+gies [20,21], and instruments for establishing DT models [22]. Jia et al. 
+[23,24] constructed a DT model with multiple scales and scenes in two 
+sections. In recent years, hardware and algorithm iterations have 
+resulted in the emergence of new technologies like 5G [26], the Internet 
+of things [27], and mixed reality [28], which have been integrated with 
+DT to adapt to modern Industry 4.0 development with the concept of 
+“combining the virtual and the real, controlling the real with the vir -
+tual.” The implementation of this technology is progressively being 
+observed in various sectors such as manufacturing and production 
+[29,30], construction, energy, and medical domains [31]. The civil en -
+gineering is currently in the early stages of conducting research on DTs, 
+which means implementing a DT is extremely challenging [25]. In 
+addition to the complexity of DTs mentioned above, there exists some 
+confusion and its potential overlap with similar technological research, 
+including building information modeling and cyber-physical systems 
+[25]. 
+DTs can provide real-time mapping of the real physical world. This is 
+important for marine piling construction. Because it requires intuitive 
+and precise technology to solve three problems: (1) two-dimensional 
+representation that lacks spatial information, for example, ellipse 
+replacement for inclined piles; (2) the position of piles under the water 
+surface is not visible; (3) actual construction machinery limitations and 
+the physical act of construction cause it to deviate from design and in -
+crease the risk of collisions. The utilization of intuitive three- 
+dimensional displays and real-world control over virtual counterparts 
+has proven to be an effective solution for piling. At this stage, marine 
+piling construction applies GNSS receivers, inclinometers, and range -
+finders. An increasing volume of data has been produced, encompassing 
+both structured data, such as time series that incorporate positional 
+data, and unstructured data, such as audio and video. These data are 
+important and necessary conditions for building a DT system. Real-time 
+and rich data can establish a practical DT-enabled collision early 
+warning system for marine piling. The construction of a DT and its 
+paradigm consists of at least three essential components: the entity, the 
+twin virtual body, and the twin data [21]. This study represents the 
+inaugural application of the DT in the context of collision early warning 
+for marine piling. 
+The aforementioned issues have prompted the investigation and 
+development of algorithms for pile positioning and collision early 
+warning in challenging pile construction. One algorithm offers precise 
+positioning, while the other algorithm supplies collision warning data 
+during the initial piling phase. Subsequently, a virtual model that 
+accurately corresponds with the entity in real-time is generated to 
+simulate the process of piling. Piles serve as main DT objects. At the 
+actual construction site, the DT-enabled collision early warning system 
+was used. The utilization of the system has the potential to facilitate the 
+management of the boat and pile frame through a simulated model that 
+provides timely feedback. The construction process is systematically 
+monitored and achieved a collision early warning between piles under 
+construction and completed piles. At the same time, the intuitiveness 
+and accuracy of pile positioning are enhanced. 
+M. Li et al. 
+Advanced Engineering Informatics 59 (2024) 102269
+3
+2. Framework of the system 
+2.1. Basic process and collision probability of piling 
+The marine pile positioning is achieved by first striking the pile body 
+with the boat and then driving it with a pile hammer. The primary hull, 
+cockpit, and pile frame make up the main part of the boat. The cockpit 
+regulates the movement of the hull, pile hanging, and pile hammering. 
+The holder and the pile hammer make up the pile frame. The hammering 
+and hanging are handled by the pile frame. There are four significant 
+steps in the piling process: 
+(1) Hanging. The pile frame leans slightly forward to lift the pile 
+body. As the holder is stabilized, gradually move the hull closer to 
+its intended position. The pile is then locked by the holder to 
+reduce shaking. 
+(2) Adjusting angles. The angles are determined by the designated 
+torsion, slope ratio, the actual weight, and the pile frame bearing 
+capacity. During this time, the pile positioning algorithm adjusts 
+the pile ’ s position in accordance with the design. 
+(3) Fine positioning. The pile is gradually fine-tuned to the design 
+position. At the same time, move the boat so that it is at a spec -
+ified safe angle from the cable. Then, sink the pile into the water 
+until it reaches the bottom and stabilizes the hull for a period of 
+time. 
+(4) Start piling. The diesel hammer on the pile frame is placed at the 
+proper height so that the force of the pile is even. Evacuate 
+workers after installation and plumbing. The cockpit gives in -
+structions to complete the construction via pile driving. 
+Fig. 1 shows the four important steps of the piling process, where 
+changing the angles and fine-tuning the position in the middle photo -
+graph can easily lead to a collision. It is also the fundamental reason for 
+establishing a DT-based collision early warning system for marine piling. 
+The construction difficulty increases when piles are relatively dense and 
+arranged in a staggered manner. Suppose the bearing capacity of the pile 
+frame is insufficient to elevate the pile to the design slope ratio. In this 
+case, there will be a non-negligible deviation between the constructed 
+and designed pile positions. 
+2.2. Challenges of collision 
+The main function of the DT-enabled collision early warning system 
+is to indicate possible collisions and then avoid them. The collision here 
+refers to the collision between piles under construction and completed 
+piles. In marine piling construction, especially in wharves, the 
+arrangement of piles is relatively complicated. Straight piles and in -
+clined piles are arranged crosswise to meet the bearing capacity re -
+quirements. In the design stage, collision has been avoided, but the hull, 
+construction personnel, and construction environment have not been 
+considered. They are factors that determine whether the final project 
+conforms to the design. Based on actual construction experience, our 
+designs may be subject to change due to insufficient geological survey. 
+For example, increase pile density or increase the inclination angle of 
+inclined piles to improve the overall bearing capacity of a wharf. 
+Embedding the piles to be constructed around the piles that have already 
+been constructed increases the challenges of construction and the pos -
+sibility of collisions. It is rare when designs change. What is more 
+common is that construction personnel relax the implementation of 
+design requirements due to the constraints of the hull shape and con -
+struction environment. For example, because the angle of the inclined 
+pile is too large, the weight of the pile body exceeds the bearing capacity 
+of the pile frame of the boat, making it impossible to lift the pile body 
+during piling. In this situation, the angle of the inclined pile must be 
+reduced. Therefore, construction deviations occur. The inclination and 
+position that will not cause collision are no longer the design values, 
+when the construction of the next pile is carried out. Therefore, both 
+inclination and displacement cannot be warned before collision takes 
+place. The closer the piles are, the more challenging it is to avoid 
+collisions. 
+However, two-dimensional drawings of pile bodies and hulls are 
+used to guide piling construction. Planar images inevitably lose spatial 
+information, so the possibility of detecting collisions is very small. 
+Almost all solutions rely on the experience of construction personnel. 
+Any carelessness may cause a collision. Therefore, collisions are difficult 
+to avoid relying on construction personnel. Avoiding collisions is 
+challenging. 
+2.3. Closed-loop data flow in piling 
+The acquisition of monitoring data takes place initially during the 
+construction phase. The global positioning data obtained through the 
+Fig. 1. The significant four steps and on-site pictures of pile positioning and the causes of collision risk. 
+M. Li et al. 
+Advanced Engineering Informatics 59 (2024) 102269
+4
+GNSS receiver provides information on the longitude, latitude, and 
+altitude of the receiver. Primary data is crucial for accurately deter -
+mining the positioning of piles. The rangefinder is utilized to determine 
+the distance between the measuring instrument and the pile. The incli -
+nometer is utilized for the direct measurement of the forward and 
+backward inclination of the pile frame, with the aim of achieving slope 
+ratio specifications. The inclinometer is utilized to gauge the roll and 
+trim of the hull, with the aim of ascertaining the extent of oscillation and 
+rectifying minor discrepancies. The pile positioning algorithm and 
+collision early warning algorithm rely on calculations based on global 
+positioning data, distances, and angles. Consequently, in the digital- 
+enabled collision early warning system, the data regarding the colli -
+sion between the pile that is currently under construction and the one 
+that has already been constructed is displayed to the construction 
+personnel in both two and three dimensions. Simultaneously, the system 
+interface receives early warning information and hull operation data to 
+facilitate collision avoidance and steer the vessel ’ s trajectory. 
+Fig. 2 shows the flow of data during pile positioning, encompassing 
+the acquisition of global positioning data, distances, and angles, as well 
+as the analyses and calculations of positioning and collision warning. 
+Additionally, real-time construction information, two-dimensional and 
+three-dimensional graphics rendering displays, early warning informa -
+tion, and boat operation information are included in this process. The 
+green arrows in the figure illustrate this data flow that is a closed-loop 
+data flow for pile positioning. The system achieves the integration of 
+real-time mapping and data fusion between the physical and virtual 
+environments. 
+2.4. Digital twin-enabled collision early warning system for marine piling 
+This system combines three fundamental elements, namely a DT 
+entity, a twin virtual body, and twin data, with the requirement for 
+collision early warning in pile positioning under complex pile positions. 
+The main purpose of the DT is to prompt and avoid collisions between 
+pile bodies, so the main object of the twin is piles. The proposed model 
+shown in Fig. 3 is a five-dimensional model of marine piling, comprising 
+a physical environment, a virtual environment, a feedback service, a 
+connection, and twin data. 
+(1) Physical environment 
+The five-dimensional model is based on the physical environment 
+and includes GNSS receivers, inclinometers, rangefinders, terrain, water 
+surface, and physical entities of pile and boat. Our analysis involves the 
+examination of torsion and slope ratio, as well as the amplitude of water 
+surface fluctuation. The accuracy of pile positioning is directly influ -
+enced by factors such as the degree of terrain undulation, tide level, pile 
+attitude, and boat position. Piles refer to both piles that are currently 
+under construction and those that have already been constructed. In the 
+design phase, particular emphasis is placed on spatial information such 
+as torsion, slope ratio, and spatial location within the design elevation 
+plane. For the boat, the focus is on swing and spatial position, especially 
+the shape of the hull. 
+(2) Twin data 
+Fig. 2. Generation, collection, analysis, and processing of closed-loop data flow in pile positioning. 
+M. Li et al. 
+Advanced Engineering Informatics 59 (2024) 102269
+5
+The basis of a five-dimensional model is twin data, which primarily 
+consists of data regarding the physical environment, the virtual envi -
+ronment, and feedback service data. The physical environment data 
+mainly includes the process of dynamic positioning, which is comprised 
+of global positioning data, distance, and angles. Additionally, it de -
+scribes the attribute information of several physical elements, including 
+terrain, water surface, pile, and hull shape. The aforementioned data has 
+the potential to accurately depict the current state of the physical 
+environment. It is measured on-site and acquired via equipments. The 
+virtual environment data mainly includes geometric models, physical 
+models, and behavior models. The computing feedback service data 
+encompasses various components such as algorithms, early warning 
+feedback, database operations, and interactive data. 
+(3) Feedback service 
+The main body of the five-dimensional model is the feedback service. 
+It supports three-dimensional modeling and human – computer interac -
+tion. Feedback services can be categorized into functional services and 
+business services according to various requirements. Business services 
+are built on functional services. 
+Functional services: The proposed tasks are as follows: (a) Perform 
+the construction and rendering of models and virtual scenes for virtual 
+environments; (b) Execute data cleaning, storage, packaging, mining, 
+fusion, and analysis; (c) Provide interface services for connection as well 
+as protocol services. 
+Business services: (a) Provide various monitoring methods for pile 
+positioning, such as status display, information prompts, and operation 
+feedback; (b) Provide real-time data for functional services; (c) Provide 
+decision-making rules to construction personnel through human -
+– computer interaction. 
+(4) Virtual environment 
+The virtual environment is characterized by its ability to replicate the 
+geometric properties of the physical environment, including its shape, 
+size, position, and other relevant parameters, through the use of three- 
+dimensional modeling techniques. As such, it bears a strong resem -
+blance to its physical counterpart. The utilization of model rendering 
+technology enhances geometric modeling, while the incorporation of 
+essential lighting, materials, and special effects imbues the virtual 
+environment with a natural texture. Simultaneously, the ability to 
+navigate through scenes is achieved through the development of a 
+human – computer interaction interface and corresponding external 
+input event response mechanisms. 
+(5) Connection 
+Fig. 3. Five-dimensional model of DT-enabled marine piling. 
+M. Li et al. 
+Advanced Engineering Informatics 59 (2024) 102269
+6
+Real-time mapping of DT-enabled marine piling requires a reliable 
+connection. The primary components of this system comprise the 
+acquisition of real-time data through a diverse range of sensors, the 
+mapping of real-time data onto the virtual model, the mapping of the 
+actual physical environment onto the virtual environment, and the 
+establishing of a connection between the physical and virtual environ -
+ments. Twin data is formed through the utilization of conventional 
+hardware interfaces and data transmission protocols, which are 
+employed to facilitate the processes of data collection, transmission, and 
+storage. Thus, a bidirectional linkage is established between the tangible 
+object and the computational feedback mechanism. The utilization of 
+GNSS receivers, inclinometers, and rangefinders facilitates the reflection 
+of hull and pile data, thereby enabling the establishment of a correlation 
+between the physical environment and twin data. The aforementioned 
+fundamental connections enable the implementation of the pile posi -
+tioning algorithm and collision early warning algorithm. 
+The DT-based collision early warning system for marine piling can be 
+facilitated through the utilization of the above five-dimensional model. 
+For piles, the main twin objects, the precise spatial attitude is indis -
+pensable data to the actual physical environment of the pile into a DT. 
+These data were obtained with three kinds of instruments. GNSS re -
+ceivers obtain the longitude and latitude coordinates during construc -
+tion, the inclinometer obtains the inclination angle of the pile, and the 
+rangefinder obtains the distance between the pile and the hull. Three 
+kinds of instruments are used to convert piles into DTs. During the steps 
+of adjusting the angle and positioning the pile, it is possible to generate a 
+real-time map of the physical environment and receive collision warning 
+feedback from the virtual environment. Upon receipt of the warning 
+information, the construction personnel shall proceed to implement the 
+system feedback operation in order to make the necessary adjustments 
+to the boat position. At this point, the virtual environment will evaluate 
+the collision risk in real-time and render the updated risk information, 
+which can be used to visually locate the risk in order to prevent potential 
+safety issues. 
+3. Procedures for pile positioning with collision early warning 
+A methodology has been devised to assess the suitability of the five- 
+dimensional model, which aligns with the concept of controlling the 
+virtual with the real. It comprises four distinct modules, namely the data 
+management module, feedback module, motion drive module, and 
+system management module. Each module may be developed and 
+maintained independently. 
+The interconnection among the modules of the aforementioned five- 
+dimensional model is shown in Fig. 4 . The physical environment of the 
+method is accessed through the data management module, which pri -
+marily relates to different forms of instrument interfaces that represent 
+physical reality, such as GNSS receivers, inclinometers, and range -
+finders. Three kinds of instruments are used to convert piles into DTs. 
+Additionally, it creates and stores twin data, such as dynamic process 
+data and attribute data for physical elements. The motion-driven mod -
+ule is a virtual environment implementation that incorporates twin data 
+real-time mapping, including real-time sensor data display, two- 
+dimensional and three-dimensional graphic rendering, human -
+– computer interaction, and other related functionalities. The feed back 
+module that responsibles for command feedback is associated with the 
+feedback service, which facilitates the implementation of the virtual 
+control function. This function encompasses the pile positioning algo -
+rithm and collision early warning algorithm, both of which are designed 
+to operate effectively in complex pile positions. The system management 
+module coordinates the connection of all modules pertaining to the five- 
+dimensional model. 
+3.1. Data management module 
+This module is responsible for governing the entirety of the system ’ s 
+data, including the refreshing of external data, driving model move -
+ment, and conducting data analysis. It comprises two distinct modules, 
+namely a data transmission module and a data visualization module, as 
+shown in Fig. 5 . 
+The primary function of the data transmission module is to oversee 
+the management of information obtained by the data portal while 
+simultaneously addressing data requests from each module. The data is 
+generated by real-time measurements of the instrument. GNSS receivers 
+receive latitude and longitude coordinates, inclinometers measure the 
+angle of the pile, and rangefinders measure the distance between the pile 
+and the hull. These data are sent to the computer via RS232 or RS485 
+protocol. DT-enabled collision early warning systems can receive these 
+data by setting the same protocol parameters. The software interface 
+structure is defined by the Serial Port class in .NET. The Serial Port class 
+contains many core methods for controlling hardware devices. It is the 
+main way to realize twin data and data flow from physical to virtual. The 
+information is transmitted to the program in the form of dictionary data 
+pairs. After the above data is received, it is processed by other modules 
+to form twin data. The Viewport3D class in .NET is utilized by the data 
+visualization module to offer a display scene that effectively presents 
+comprehensive details regarding the functioning of the construction site 
+through an intuitive visualization. It depicts a hierarchical structure of 
+terrain, water, piles, and vessel objects, which are organized and labeled 
+for content display management. 
+3.2. Motion drive module 
+The motion driving module is responsible for controlling the virtual 
+environment, including both dynamic and static data driving. Dynamic 
+data drive pertains to the fluctuation of torsion angle, slope ratio, water 
+surface, and spatial boat position. This ensures conformity with reality 
+by promptly updating the data based on the twin data, thereby enabling 
+control of the virtual and the real. The static data includes terrain, pile 
+size, hull shape, and other three-dimensional model information related 
+to a given scene. 
+The motion driven module is accountable for the construction of 
+scenes in the program. The flow of this module is illustrated in Fig. 6 and 
+primarily encompasses geometric modeling such as piles, boats, water, 
+terrain, etc. In order to effectively execute collision warnings, it is 
+imperative to utilize high-fidelity models. The high-fidelity model rep -
+resents an enhanced version of the geometric model, while the realistic 
+texture incorporates the lighting, materials, and special effects, as per 
+the twin data-driven approach. The field of human – computer 
+Fig. 4. Interconnection between the four modules and the five- 
+dimensional model. 
+M. Li et al. 
+Advanced Engineering Informatics 59 (2024) 102269
+7
+interaction encompasses the design of interfaces for human – computer 
+interaction as well as the response to external input events in order to 
+facilitate the navigation of a three-dimensional virtual environment. 
+Additionally, the collision warning information data is updated in order 
+to accurately reflect the real-world conditions of the construction site 
+within the virtual environment. 
+The achievement of collision warnings is contingent upon the real- 
+time mapping of the physical environment onto the virtual environ -
+ment. Throughout the process of construction, the positions of both the 
+pile and boat are established in accordance with the blueprint. This 
+process involves notable dynamic changes in the attitudes of the pile as 
+well as the spatial positions of both the pile and the boat. A dual-layer 
+mapping approach has been established in order to accurately depict 
+the dynamic behavior. Fig. 7 provides a depiction of the pile-boat 
+mapping and the early-warning feedback mapping. 
+Fig. 5. Transmission module and visualization module in the data management module for capturing, transmitting, and data processing. 
+Fig. 6. Construction sense of collision early warning model for marine piling. 
+Fig. 7. Dual-layer mapping approach in the motion drive module. 
+M. Li et al. 
+Advanced Engineering Informatics 59 (2024) 102269
+8
+3.3. Feedback module 
+The contents of the feedback service, which are essential for 
+achieving the concept of “ controlling the virtual with the real ” , are 
+encompassed within the feedback module. The algorithm for pile posi -
+tioning is utilized to compute the boat and pile attitude. This informa -
+tion is then employed to provide advanced warning regarding potential 
+collisions between the under-construction pile and the piles that have 
+been constructed. The feedback is relayed to the construction personnel, 
+who can then adjust the pile attitude or move the boat accordingly. This 
+process enables the control of virtual elements in reality. The procedure 
+incorporates crucial components such as the pile positioning algorithm 
+and the collision early warning algorithm, particularly in situations 
+where pile positions are intricate. 
+3.3.1. Pile positioning algorithm 
+GNSS receivers are a crucial tool for acquiring precise location data 
+during the process of pile driving in marine environments. It is designed 
+to receive latitude and longitude coordinates, which can subsequently 
+be transformed into specific engineering coordinates using seven pa -
+rameters [14] . These parameters provide guidance to the boat, enabling 
+it to navigate with precision within the construction area. Global posi -
+tioning and navigation technology is now very mature. GPS, GLONASS, 
+BeiDou, and Galileo are the four major GNSS in the world [34] . The 
+GNSS receiver we use can receive all GNSS satellite signals and uses 
+mature RTK technology. Therefore, in terms of positioning theory and 
+hardware, its positioning accuracy can reach the millimeter level. In 
+Sections 4.2 and Section 4.4 , we list in detail the results of positioning 
+calculations and collision calculations involved in actual piling projects. 
+Ultimately, it is shown that global position data provide the required 
+accuracies for the purpose of application. The use of a rangefinder or 
+inclinometer can establish the appropriate orientation for the pile. The 
+collection of measurement data in the physical environment is con -
+ducted in real-time, and the formation of twin data is achieved through 
+the data management module. The motion drive module is responsible 
+for achieving the rendering of piles. 
+As a result of the unique nature of pile construction, a hydraulic or 
+diesel hammer is utilized to strike the pile body. After construction is 
+completed, most of the piles are embedded in the soil. Consequently, the 
+installation of a positioning device at any stage of the pile construction 
+process is challenging due to cost considerations. The soil will squeeze or 
+damage the device attached to the pile. 
+The task of determining the engineering coordinates of the point of 
+intersection between the pile axis and the engineering design elevation 
+plane, commonly known as the target point coordinates, is referred to as 
+the positioning problem. Typically, as shown in Fig. 8 [3,11] , a boat is 
+equipped with two or three GNSS receivers. Two rangefinders are 
+mounted either on the pile frame or the deck. The pile frame is equipped 
+with an inclinometer. An O-XYZ Cartesian coordinate system is estab -
+lished, which is considered a ship-fixed coordinate system as it remains 
+relatively stationary with the boat. The longitudinal axis of the boat is 
+aligned with the OX axis, while the OY axis is perpendicular to the OX 
+axis. Additionally, the OZ axis is perpendicular to both the OX and OY 
+axes and intersects point O. 
+The pile positioning algorithm can be derived when the ship-fixed 
+coordinates of the GNSS receiver, the center ( X
+F
+, 0
+F
+, Z
+F
+) of the pile 
+frame rotation axis, and the target point in the straight pile state ( X
+S
+, 0 ,
+0 ) are established. By utilizing two range finders, it is possible to 
+accurately determine the inclination angle of the pile based on its dis -
+tance. Alternatively, the inclination angle can be directly obtained 
+through the use of an inclinometer. Subsequently, the stationary co -
+ordinates of the target point on the boat can be computed. By applying 
+the conversion parameters that relate the ship-fixed coordinate system 
+to the engineering coordinate system, it is possible to transform the ship- 
+fixed coordinates of the target point into engineering coordinates. The 
+specific calculation steps are shown in Fig. 9 . 
+Fig. 10 illustrates the marine pile positioning process under the 
+assumption that the pile frame remains stationary. Following eq. (1) is 
+the calculation that is used to determine the coordinates of the target 
+Fig. 8. Instrument installation arrangement and a ship-fixed coordinate system in a boat of marine piling. 
+Fig. 9. Transformation steps of the ship-fixed coordinates of the target point 
+into engineering coordinates. 
+M. Li et al. 
+Advanced Engineering Informatics 59 (2024) 102269
+9
+point ( X
+D
+, Y
+D
+, Z
+D
+) in the ship-fixed coordinate system. Therefore, α is 
+measured by the inclinometer, h is calculated from the coordinates 
+measured by the GNSS Receiver. Other parameters are quantitative and 
+not measured by the instrument in real time. 
+X
+D
+= X
+F
++
+X
+S
+  X
+F
+sin ( γ   α )
+ 
+H
+F
+tan ( γ   α )
++
+h
+D
+  h
+sin γ
+cos ( γ   α ) , Y
+D
+= 0 , H
+D
+=
+h
+D
+  h
+sin γ
+sin ( γ   α ) (1) 
+In the above equation, γ is the inclination angle of the pile, which can 
+transform to the slope ratio. When it is a straight pile, γ = π /2. α is the 
+trim angle of the hull. It is measured by an inclinometer. h
+D 
+is the 
+elevation value of the design elevation plane. h is the elevation of the 
+intersection plane of the pile axis and the OX axis in the engineering 
+coordinate system. 
+3.3.2. Collision early warning algorithm 
+The DT-enable early collision warning system provides alerts for 
+potential collisions between piles that are under construction and those 
+that have already been constructed. Several collision detection methods 
+exist. The advancement of computer graphics and building information 
+modeling (BIM) technology in recent years has led to significant prog -
+ress in the field of collision detection [32] . The utilization of BIM has 
+been extensively employed in various situations, including metro and 
+underground pipelines [33] . In ArcGIS and AutoCAD software, collision 
+detection necessitates a pre-existing three-dimensional model. 
+Currently, the correct positioning of piles claims a greater emphasis on 
+collision avoidance, whereby there is no spatial overlap between the 
+two. In the event that the distance between the two entities falls below 
+the established safety threshold, a prompt notification is generated, 
+furnishing details regarding the closest proximity point and offering 
+corrective measures for distance regulation. 
+The algorithms for detecting collisions in spatial geometry exhibit a 
+greater degree of complexity and diversity. The process of collision 
+detection involves assessing the positional relationship between the 
+center lines of two cylindrical objects, specifically determining whether 
+they are co-linear, parallel, intersecting, or dissimilar. Additionally, the 
+position of the standard plumb line and the center lines of the two pipes 
+are taken into consideration. In cases where the central axis of a pipe 
+deviates and the two pendants of its standard plumb line do not fall 
+within the line segment concurrently, the algorithm may yield inaccu -
+rate results, indicating imprecision in the judgment condition. The 
+precise characterization of the bus bar and the criteria for the junction of 
+its ends are inadequate. Furthermore, there is a tendency to overlook 
+computations or scenarios that have not been taken into account. 
+Most of these methods involve calculating cylinder-shaped spatial 
+distances. Assuming diverse pile categories, such as square piles, are 
+being contemplated within the simulated setting. Under such circum -
+stances, the level of complexity is likely to escalate swiftly, rendering the 
+task of devising a consistent and precise computational methodology 
+arduous. Marine pile positioning has a vast spatial extent, and the 
+number of piles designed is typically in the hundreds. An increase in the 
+number of piles results in a significant rise in computational demands, 
+thereby exerting a considerable processing burden on the data man -
+agement and motion drive modules of the system. The operational ef -
+ficiency of the DT system may be diminished as a result of this. Ensuring 
+worldwide expeditiousness and optimal levels of exactitude and preci -
+sion in collision detection is imperative. Consequently, the system in -
+corporates a collision early warning algorithm that exhibits high 
+efficiency. The procedural steps are as follows: 
+(1) Acquiring real-time twin data in the data management module. 
+Pile ’ s parameters consist of the engineering coordinates of piles 
+that are currently under construction and those that have already 
+been constructed, the inclination, the torsion angle, the type, the 
+length, the width, and the radius. 
+(2) Utilizing parameters for virtual environment prejudgment. For 
+round piles, the spatial geometry algorithm calculates the pre -
+judgment distance as the distance between the axes of piles and 
+the difference between the sum of the radii of two piles. Deter -
+mine next whether the pile pair ’ s axes are parallel. If the axes are 
+parallel, the calculation procedure terminates, and the estimated 
+distance is the actual distance. If it is not parallel and the pre- 
+estimated distance is less than the predetermined safety dis -
+tance, the pile pair may collide, and precise calculations must be 
+performed. To calculate the pile pair axes, the vector method is 
+used. Calculating the common normal vector of the two axes is 
+the initial step. The projection length of the connecting line 
+segment between any two points on the two axes is then calcu -
+lated based on the common normal vector, i.e., the distance be -
+tween the pile and the axis. Using the cross-product, the common 
+normal vector can be found. Suppose that the vector connected by 
+any two points is m
+→
+, and the included angle with the common 
+normal vector n
+→
+is θ , then the distance between pile and axis d
+z 
+is: 
+d
+z
+= | m
+→
+|| cos θ | = | m
+→
+|
+| m
+→
+⋅ n
+→
+|
+| m
+→
+|| n
+→
+|
+=
+| m
+→
+⋅ n
+→
+|
+| n
+→
+|
+(2) 
+Thus, the prejudgment distance is: 
+d
+pre
+= d
+z
+  ( r
+a
++ r
+b
+) (3) 
+where, r
+a 
+and r
+b 
+are the radii of each pile in the pile pair, respectively. 
+If it is determined to be a square pile or a hull, the convex hull of the 
+square pile is used to represent the three-dimensional space equation of 
+the pile: 
+A =
+{
+a
+⃒
+⃒
+⃒
+⃒
+⃒
+a =
+∑
+4
+i = 1
+λ
+i
+a
+i
+,
+∑
+4
+i = 1
+λ
+i
+= 1 , λ
+i
+⩾0
+}
+(4) 
+A is the dots set on the surface of a square pile or hull; a is a point of pile 
+body; a
+i
+( i = 1 , 2 , 3 , 4 ) represents the vertex coordinates of A ; λ
+i
+( i = 1 , 2 ,
+3 , 4 ) is a geometric parameter variable such as a shape parameter. 
+(3) Creating the distance function between pile pairs. The mathe -
+matical expression for determining the distance between two 
+points is commonly referred to as the distance formula. The co -
+ordinates of the two points are represented by equation (4) . The 
+initial step involves computing the partial derivative of each 
+variable in the distance function. Subsequently, a non-linear 
+programming model is formulated, with the objective function 
+being the minimization of the distance function and the 
+constraint being the range of values for the independent variable 
+in the pile space equation. The mathematical formula in question 
+is presented below: 
+Fig. 10. Calculation diagram of the ship-fixed coordinates of the target point. 
+M. Li et al. 
+Advanced Engineering Informatics 59 (2024) 102269
+10
+Assuming the calculation of the distance between two round piles. 
+The prescribed values for u
+a
+, u
+b
+, v
+a
+, v
+b 
+are determined based on the 
+respective pile shape parameters. Subsequently, the constraint in ques -
+tion pertains to the box of the variable range. The objective function is 
+derived by utilizing equations (2) and (3) , resulting in: 
+min D = ( x
+a
+  x
+b
+)
+2
++ ( y
+a
+  y
+b
+)
+2
++ ( z
+a
+  z
+b
+)
+2
+gra =
+d ( D )
+d u
+a
+,
+d ( D )
+d v
+a
+,
+d ( D )
+d u
+b
+,
+d ( D )
+d v
+b
+.
+[ u
+a
+]
+min
+⩽ u
+a
+⩽ [ u
+a
+]
+max
+, [ v
+a
+]
+min
+⩽ v
+a
+⩽ [ v
+a
+]
+max
+[ u
+b
+]
+min
+⩽ u
+b
+⩽ [ u
+b
+]
+max
+, [ v
+b
+]
+min
+⩽ v
+b
+⩽ [ v
+b
+]
+max
+(5) 
+where D is the objective function value; gra is the gradient function 
+value; x
+a
+, x
+b
+, x
+c
+, y
+a
+, y
+b
+, y
+c 
+are the coordinate values of the points on each 
+pile in the pile pair, respectively. u
+a 
+and u
+b 
+are the included angles 
+projected on the underside of a point on each pile face in the middle of a 
+round pile. v
+a 
+and v
+b 
+are the length of a point on each pile face along the 
+long direction of the pile. 
+If the distance between the round pile and square pile or round pile 
+and hull is calculated, the constraint condition is a combination of a box 
+constraint and a nonlinear constraint, and the objective function is as 
+follows: 
+min D = ( x
+a
+  x
+b
+)
+2
++ ( y
+a
+  y
+b
+)
+2
++ ( z
+a
+  z
+b
+)
+2
+gra =
+d ( D )
+d λ
+i
+( i = 1 , 2 , 3 , 4 ) ,
+d ( D )
+du
+,
+d ( D )
+dv
+s . t .
+∑
+4
+i = 1
+λ
+i
+= 1 , λ
+i
+⩾0 , i = 1 , 2 , 3 , 4
+[ u ]
+min
+⩽ u ⩽ [ u ]
+max
+, [ v ]
+min
+⩽ v ⩽ [ v ]
+max
+(6) 
+where u and v are geometric parameter variables such as the shape 
+parameter of the pile-to-central round pile. 
+If the distance between square piles is calculated, the constraint 
+condition is a nonlinear constraint, and the objective function is: 
+min D = ( x
+a
+  x
+b
+)
+2
++ ( y
+a
+  y
+b
+)
+2
++ ( z
+a
+  z
+b
+)
+2
+gra =
+d ( D )
+d λ
+i
+,
+d ( D )
+d σ
+j
+( i , j = 1 , 2 , 3 , 4 )
+s . t .
+∑
+4
+i = 1
+λ
+i
+= 1 ,
+∑
+4
+j = 1
+σ
+j
+= 1
+λ
+i
+⩾0 , σ
+j
+⩾0 i , ( j = 1 , 2 , 3 , 4 )
+(7) 
+where, λ
+i
+( i = 1 , 2 , 3 , 4 ) and σ
+i
+( i = 1 , 2 , 3 , 4 ) are geometric parameter 
+variables such as the square pile or hull shape parameters, respectively. 
+(4) The non-linear programming problem is addressed through the 
+utilization of either the sequential quadratic programming 
+algorithm or the box-constrained quasi-Newton algorithm. This 
+enables the determination of the minimum distance between 
+pairs of piles that are at risk of colliding. If the minimum distance 
+is less than the predetermined safety distance, a collision warning 
+will be issued in the data visualization module of the data man -
+agement module. Simultaneously, the feedback pertaining to 
+construction is furnished within the module for instructional 
+feedback. 
+3.4. System management module 
+Data transmission, interface calling, signal transmission, etc. are all 
+processed between modules via the system management module. It 
+mainly has three functions, namely real-time data flow update, file and 
+log management, and inter-module coordination. Fig. 11 shows these 
+three functions and the specific contents they contain. 
+For real-time data flow updates, the data management module sends 
+requests to the data transmission module, and the system management 
+module provides a response based on the data management module ’ s 
+mapped data list to obtain data in real time. At last, the data is updated 
+in the request-response cycle, allowing the data visualization module to 
+update the appropriate graphical user interface. 
+For file and log management, first, implement the hardware device 
+data archiving of the data management module. These data are original 
+monitoring data during construction. They are first-hand information on 
+the construction site directly measured by various monitoring in -
+struments. Then, the virtual environment data archiving of the motion 
+drive module is implemented. The evolution process of the virtual 
+environment is recorded to facilitate subsequent analysis and tracing. 
+Finally, the two algorithm calculation processes and result archiving in 
+the feedback module are implemented. This is the purpose and core of 
+the entire piling construction, and it is also the most valuable data in the 
+DT system proposed in this study. 
+For inter-module coordination, in order to achieve the normal 
+operation of various functions, coordination between modules is 
+necessary. In particular, the DT-enabled collision eraly warning system 
+uses a method that encompasses four modules and sets up relatively 
+independent modules based on the topological relationship of modular 
+subsystems, allowing for rapid updates to the iterative module subsys -
+tem based on the needs of field operations and access to the real-time 
+data trigger procedure. The functionality of other modules will not be 
+adversely affected by maintenance on any one module ’ s subsystem. For 
+instance, it is possible to iterate the data visualization module ’ s function 
+while maintaining reliable motion driving and data transfer. Therefore, 
+the system management module must undertake the coordination work 
+between modules. 
+Fig. 11. Functions and specific contents of the system management module. 
+M. Li et al. 
+Advanced Engineering Informatics 59 (2024) 102269
+11
+4. Case study 
+4.1. Project overview and procedure introduction 
+Two 10,000-ton general berths are planned as part of a wharf project 
+to accommodate the rising need for shipping components for wind 
+power generators, as well as steel, minerals, and other general cargo. 
+The overall dimensions are 337 m long, 55 m wide, and 36 m wide at the 
+bearing platform. Round piles with a diameter of 1,200 mm are used for 
+the pile foundation. There are 10 transverse rows of piles, each having 
+five straight piles and five inclined piles ranging in length from 54 m to 
+60 m, with a transverse spacing of 6 m between each row. A typical row 
+frame has five straight piles, two 15:1 inclined piles at an angle of 3.8
+◦
+, 
+two 5:1 inclined piles at an angle of 11.3
+◦
+, and one 4.5:1 inclined pile at 
+an angle of 12.5
+◦
+, with a bottom elevation of around   50.61 m to 
+  54.85 m. The pile weighs around 75 metric tons on average. A 
+complicated and dense cap is formed by several of the inclined piles. 
+Fig. 12 (a) shows the three-dimensional drawing. Fig. 12 (c) shows a part 
+of sectional view of the wharf ’ s structure. The 2.5 m thick superstructure 
+is made of cast-in-place concrete piers. 
+The Rushan Shipbuilding Co., Ltd. built Yunzhuang No. 1 boat is 
+being used for the project. The maximum load-bearing capacity while 
+the pile is straight is 80 t, and the main body measures 64.6 m in length 
+and 26.00 m in width. The amplitude range of the pile frame is ± 25
+◦
+. 
+The full pile length is 70.00 m, and the maximum pile diameter is 2500 
+mm for the building. Pile frame load-bearing capability and construction 
+requirements dictate a maximum variation range of ± 11
+◦
+for pile frame 
+inclination angle during the construction of 75-ton inclined piles, which 
+cannot reach the design value of 12.5
+◦
+. Consequently, construction er -
+rors are inevitable. 
+The DT-enabled collision early warning system is developed using 
+Visual Studio 2022 communite version and Helix Toolkit as the three- 
+dimensional geometric model image display engine, as per the previ -
+ous five-dimensional model. Visual Studio 2022 is an integrated devel -
+opment editor developed by Microsoft. It is a rich development tool. 
+Helix Toolkit is a collection of three-dimensional components for .NET 
+Framework [35] . It provides many high-level API interfaces, making 
+development easy. Consequently, the virtual environment of marine 
+piling is established utilizing the .NET 6.0, which is a free, open-source, 
+cross-platform framework. The combination of this framework, Visual 
+Studio 2022, and the Helix Toolkit allows us to build the DT-enabled 
+system quickly and cost-effectively. Fig. 13 shows the comprehensive 
+functions of the system. The static information of the virtual environ -
+ment is extracted from the boat shape and construction pile information 
+files before actual construction commences. The three-dimensional 
+geometric model of the pile and the boat shape is automatically gener -
+ated by the virtual environment upon input of the control point and the 
+pile information file, as illustrated in Fig. 13 (b). Fig. 13 (c) shows a 3D 
+virtual scene that can be manipulated via human – computer interaction 
+to enable the user to view the real-time status of construction from 
+various perspectives of the three-dimensional view and the plan layout. 
+The information pertaining to the current position of the construction 
+pile, torsion angle, and inclination is displayed on the left-hand side. The 
+preliminary alert data provides insight into the likelihood of a collision 
+between the present pile and the constructed piles following the 
+completion of construction based on the current boat position and pile 
+inclination angle. This information is updated in real-time and syn -
+chronized with the virtual environment displayed on the right-hand 
+side. Real-time data is utilized to display instrument monitoring infor -
+mation in textual format in the lower section of the system. Additionally, 
+twin models of the pile, boat, water surface, and terrain are presented in 
+the three-dimensional view. The plan layout displays pertinent infor -
+mation regarding the placement of piles in relation to the engineering 
+design elevation plane. The feedback operation beneath the system is 
+based on the distance between the construction pile position and the 
+design pile position, as well as early warning information. The system 
+provides information regarding the current orientation of the boat in 
+terms of fore and aft, left and right, and boat direction, with reference to 
+the bow view. Additionally, it utilizes virtual environment simulation to 
+guide the positioning of piles and achieve real-time visualization. 
+Fig. 12. Project overview. (a) practical construction site in the physical environment, (b) Yunzhuang No. 1 boat, and (c) wharf structure section of a complex pile 
+position consisting of some inclined piles. 
+M. Li et al. 
+Advanced Engineering Informatics 59 (2024) 102269
+12
+4.2. Positioning accuracy 
+We deployed this system in practical on-site construction and ob -
+tained process data. Differences in post-construction coordinates for 15 
+inclined and 15 straight piles are listed in Tables 1 and 2 . The post- 
+construction coordinates are measured by the construction crew using 
+a total station. These coordinates represent the actual geographical 
+location of the completed pile. The difference between it and the design 
+coordinates represents a construction error. The difference between the 
+coordinates of A2Q58 in the inclined pile is greater than 20 cm, which 
+exceeds the maximum deviation of ± 15 cm allowed by the specifica -
+tion. Additionally, the X-engineering coordinates of BQ48 and the Y- 
+engineering coordinates of BQ41 in the straight pile exceed the 
+maximum deviation of ± 10 cm allowed by the specification, indicating 
+that there is a significant deviation in the actual construction. By 
+comparing the system positioning coordinates to the actual geographical 
+location, it can be seen that the errors are within 0.1 cm, which means 
+that the pile positioning algorithm of the system feedback module is 
+doing very well. 
+4.3. Collision early warning under complex pile position 
+Complex pile position is a common occurrence in wharf construction 
+projects. Here, we use A2Q53 to illustrate the collision early warning 
+Fig. 13. Comprehensive functions of DT-enabled collision early warning system. (a) Interface of boat shape parameters, (b) pile information file inputting interface, 
+and (c) essential componets of the system. 
+Table 1 
+The difference between the design and actucal coordinates and the difference 
+between the proposed system and actucal coordinates of inclined piles. The 
+actual coordinates are measured by the construction crew with a total station. 
+(unit: m). 
+Pile Design to actual System to actual 
+X Y X Y 
+A2Q58 0.280 0.138   0.003 0.001 
+A2Q59 0.036   0.007   0.004   0.005 
+C1Q52 0.158 0.063 0.007   0.001 
+C1Q57 0.097 0.029 0.002   0.006 
+C1Q58 0.049   0.004   0.002   0.002 
+C2Q48 0.117   0.019 0.007   0.009 
+C2Q49 0.044 0.099 0.005   0.010 
+C2Q50 0.179 0.095 0.010 0.005 
+C2Q51 0.167   0.114 0.010   0.008 
+C2Q52 0.113 0.060 0.000   0.007 
+C2Q53   0.011   0.051 0.010 0.006 
+C2Q54 0.169   0.002 0.002 0.008 
+C2Q55 0.138   0.057   0.006 0.010 
+C2Q56   0.077 0.061   0.005   0.008 
+C2Q57   0.014 0.025   0.003 0.001 
+M. Li et al. 
+Advanced Engineering Informatics 59 (2024) 102269
+13
+shown in Fig. 14 (a). The A2Q53 is an inclined pile with a slope ratio of 
+4.5:1 and a torsion angle of 20
+◦
+. From the design drawing, it appears that 
+the arrangement of surrounding piles is suitable for field construction, as 
+there is sufficient space for pile driving. However, the spatial position 
+must be considered during field construction. C1Q52 and BQ53 may 
+collide with them. In the design phase, the closest distance between 
+A2Q53 and other piles is approximately 0.74 m. Due to a construction 
+error in pile C1Q52, which is documented in Table 1 , this distance was 
+reduced to 0.65 m, resulting in a small distance between piles. The risk 
+of collision can be clearly indicated in the system. 
+When the collision distance is less than the predetermined safe dis -
+tance, the system will send a warning consisting of text and graphics 
+about the virtual environment. The system has determined that a safe 
+distance of 3.0 m should be maintained and that the pile name is A2Q53. 
+All of the nearby piles are finished. Fig. 14 (d)(e) shows the early 
+warning information and a three-dimensional view of the system 
+interface. When collisions occur, the system will pop up a warning 
+window to remind workers to operate with caution. After confirming the 
+information, it will not pop up again to avoid interference with the 
+operation. Warning details will be displayed on the system ’ s early 
+warning panel. The system provides the following warning information: 
+the nearest pile ’ s name, BQ53; the nearest distance, 0.567 m; the 
+number of collision points, 5, and a table of all piles that may collide at a 
+given safe distance. The unconstructed mass is depicted in gray in the 
+three-dimensional view. The constructed piles are co

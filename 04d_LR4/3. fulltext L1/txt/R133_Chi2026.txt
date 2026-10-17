@@ -1,0 +1,1405 @@
+Full length article
+Physics-guided multi-fidelity framework for probabilistic deformation 
+prediction of concrete arch dams under digital twin-based monitoring
+Yingfan Chi
+a
+, Bowen Wei
+a , *
+, Yating Hu
+a , *
+, Dongyang Yuan
+a , b , c
+, Zhaoxing Lei
+a
+a
+School of Infrastructure Engineering, Nanchang University, Nanchang 330031, China
+b
+Key Laboratory of Reservoir and Dam Safety Ministry of Water Resources, Nanjing Hydraulic Research Institute, Nanjing 210029, China
+c
+Key Laboratory of Construction and Safety of Water Engineering of the Ministry of Water Resources, China Institute of Water Resources and Hydropower Research, 
+Beijing 100038, China
+ARTICLE INFO
+Keywords:
+Concrete arch dam
+Digital twin
+Probabilistic deformation prediction
+Multi-fidelity modeling
+Transfer learning
+MIMO modeling
+ABSTRACT
+Digital twin-enabled safety monitoring of concrete arch dams requires deformation prediction models that are 
+continuously updateable, physically informed, and uncertainty-aware. Nevertheless, existing approaches often 
+struggle to effectively integrate simulation knowledge with monitoring data, especially under the dual con -
+straints of limited response time and previously unseen real operating conditions. To overcome these challenges, 
+this study proposes a physics-guided multi-fidelity Bayesian neural network (PGMF-BNN) framework for digital 
+twin-oriented probabilistic deformation prediction. Low-fidelity data are generated from a three-dimensional 
+finite element model to represent the dominant deformation behavior under hydrostatic loading initially. A 
+multi-input multi-output (MIMO) architecture is constructed to capture spatial dependencies among monitoring 
+points and enable collaborative prediction. The model is subsequently pre-trained using low-fidelity data to learn 
+a mechanically consistent response skeleton, followed by a two-stage transfer learning process using prototype 
+monitoring data to achieve virtual – physical alignment. Finally, Bayesian inference is incorporated to quantify 
+epistemic and aleatoric uncertainties and to produce calibrated prediction intervals. The effectiveness of the 
+proposed framework is demonstrated using a real concrete arch dam case. The results indicate that the proposed 
+method achieves superior predictive performance, with coefficients of determination exceeding 0.90 at five of 
+the six representative monitoring points (reaching 0.975 at PLA2) and mean absolute percentage errors below 
+7%. The model successfully reconstructs the spatial correlation structure of multi-point deformation and dem -
+onstrates robust performance under limited-data conditions and moderate noise levels (0% – 10%). These findings 
+confirm that the proposed framework delivers accurate, physically consistent, and uncertainty-aware deforma -
+tion predictions under both normal and disturbed operating conditions, providing a reliable and extensible so -
+lution for digital twin-based dam safety monitoring and risk early warning.
+1. Introduction
+Concrete arch dams are critical hydraulic infrastructures character -
+ized by high structural efficiency, strong adaptability to complex 
+geological conditions, and long service lifetimes [1 – 4] . Ensuring their 
+operational safety requires accurate characterization and prediction of 
+structural responses under continuously evolving environmental and 
+loading conditions [5 – 8] . In recent years, the emergence of digital twin 
+technologies has fundamentally transformed dam safety management 
+from conventional offline assessment to real-time and model-integrated 
+monitoring paradigms [9 – 12] . Under this condition, deformation pre -
+diction is no longer limited to retrospective fitting, but is expected to 
+support continuous real-time state awareness, trend inference, and early 
+warning under nonstationary operating conditions [13,14] .
+Among the various monitoring indicators, deformation provides a 
+direct and sensitive measure of the structural response to external loads. 
+However, the deformation behavior of concrete arch dams is governed 
+by the coupled effects of hydrostatic pressure, temperature variation, 
+and time-dependent material properties, resulting in highly nonlinear, 
+path-dependent, and temporally evolving characteristics [15,16] . These 
+intrinsic complexities pose significant challenges to the development of 
+predictive models that are simultaneously accurate, physically consis -
+tent, and robust under diverse operating scenarios.
+Existing approaches for dam deformation prediction can be broadly 
+* Corresponding authors.
+E-mail addresses: bwwei@ncu.edu.cn (B. Wei), yating.hu@ncu.edu.cn (Y. Hu). 
+Contents lists available at ScienceDirect
+Advanced Engineering Informatics
+journal homepag e: www.else vier.com/loc ate/aei
+https://doi.org/10.1016/j.aei.2026.105009
+Received 24 April 2026; Received in revised form 2 June 2026; Accepted 24 June 2026 
+Advanced Engineering Informatics 76 (2026) 105009 
+Available online 29 June 2026 
+1474-0346/© 2026 Elsevier Ltd. All rights are reserved, including those for text and data mining, AI training, and similar technologies. 
+classified into statistical models, deterministic numerical models, and 
+data-driven methods. Statistical models are widely used due to their 
+computational efficiency and interpretable parameterization of engi -
+neering factors. For example, Mata et al. [17] proposed a water lev -
+el – temperature – time (HTT) statistical model based on principal 
+component analysis (PCA), designed to replace the seasonal sine func -
+tion in the traditional water level – season – time (HST) model with 
+measured temperature data from within the dam body, thereby more 
+accurately capturing the influence of thermal effects on the deformation 
+of arch dams. Studies have shown that this model significantly out -
+performs traditional models in terms of displacement prediction accu -
+racy and reduction of residual standard deviation. Sigtryggsd ´ottir et al. 
+[18] developed an HST multi-source linear statistical model for pre -
+dicting in-service settlement of concrete-faced rock-fill dams (CFRDs), 
+correlating each statistical component with a viscoelastic-plastic 
+constitutive model. The model innovatively accounts for unloa -
+ding – reloading behavior caused by water level fluctuations and the 
+creep effects of rock fill. These studies demonstrate how empirical 
+monitoring knowledge can be formalized through physically meaningful 
+statistical components. Nevertheless, their reliance on predefined 
+functional forms and linear assumptions limits their capability in rep -
+resenting complex nonlinear interactions among influencing factors
+[19] . To address this limitation, some researchers have opted to employ 
+deterministic numerical simulation models, such as the finite element 
+method, which offers an alternative formalized approach to engineering 
+knowledge by directly embedding structural mechanics and boundary 
+conditions into the prediction process. For example, Xiong et al. [20]
+built upon traditional deterministic displacement models by introducing 
+a residual sequence correction approach. They first decomposed the 
+residuals using CEEMDAN and multiscale permutation entropy; the 
+high-frequency components were denoised using wavelets and then 
+predicted by a GRU-LSTM, while the low-frequency components were 
+predicted by an ARIMA model. Finally, these results were combined 
+with those from the deterministic model to form a hybrid prediction 
+model. Results demonstrate that this model better captures the chaotic 
+and uncertain information within the residuals, thereby improving the 
+prediction accuracy of arch dam displacement. Yang et al. [21]
+addressed the shortcoming of traditional HST models in adequately 
+characterizing the combined effects of “ structure-topography-geology- 
+high water pressure ” in high-arch dams. They proposed a hybrid HST 
+model that couples water pressure-induced deformation obtained from 
+elastic three-dimensional finite element simulations with seasonal and 
+temporal terms. They performed full-parameter optimization using an 
+improved PSO algorithm that incorporates stochastic inertia weights 
+and dynamic learning factors. Case studies demonstrate that this model 
+achieves higher fitting and prediction accuracy compared to traditional 
+models. These studies indicate that numerical simulations can 
+strengthen the mechanical interpretability of dam response prediction. 
+However, their practical application in real-time prediction is con -
+strained by high computational cost, model simplifications, and un -
+certainties in material parameters and boundary conditions, which often 
+lead to systematic discrepancies between simulated and measured re -
+sponses [22,23] .
+To further enhance the characterization ability of complex nonlinear 
+responses of dams and improve the shortcomings of traditional models 
+in real-time performance, data-driven models represented by deep 
+learning have gradually become an important research direction for dam 
+safety prediction. This type of model, with its excellent feature extrac -
+tion ability, can efficiently and accurately capture the nonlinear features 
+of structural deformation. For example, Jia et al. [24] used a PSO- 
+optimized XGBoost model and SHAP values to analyze the contribu -
+tions of water pressure, temperature, and time-effect factors, thereby 
+achieving mechanistic clustering of monitoring points. Based on this, 
+they employed a PSO-optimized iTransformer to construct a panel data 
+prediction model capable of capturing spatiotemporal correlations 
+across multiple monitoring points. This method overcomes the 
+shortcomings of traditional clustering that ignores factor contribution 
+and single point prediction that cannot reflect overall deformation. Yang 
+et al. [25] utilized an improved cloud model to extract digital features 
+from displacement sequences and employed Agglomerative Hierarchical 
+Clustering (AHC) to partition monitoring points with similar deforma -
+tion patterns; subsequently, based on the partitioning results, they 
+constructed a deep learning multi-input multi-output (MIMO) predic -
+tion framework that integrates CNN and BiLSTM to simultaneously 
+predict the displacements of multiple monitoring points within each 
+partition, while further enhancing model performance through batch 
+normalization, dropout, and early stopping mechanisms, providing an 
+efficient and practical new method for dam structural health moni -
+toring. These studies show that deep learning can transform monitoring 
+data into high-dimensional feature representations and capture spatially 
+coordinated deformation patterns. However, purely data-driven ap -
+proaches still suffer from several critical limitations in engineering 
+practice. In particular, the scarcity and noise of monitoring data, the lack 
+of extrapolation capability under unseen operating conditions, and the 
+absence of physical constraints may result in predictions that violate 
+fundamental mechanical principles, thereby undermining their reli -
+ability in safety – critical applications [26,27] .
+In response to these challenges, multi-fidelity surrogate modeling 
+has emerged as a hot research topic in recent years. Multi-fidelity 
+modeling seeks to balance physical laws and prediction accuracy by 
+integrating low-fidelity numerical simulation data with high-fidelity 
+experimental data. Its core concept involves using simulation data to 
+construct a fundamental mechanical framework and then applying 
+nonlinear corrections based on experimental data sequences [28] . For 
+example, Guo et al. [29] used spatial mapping techniques to integrate 
+numerical simulations from low-fidelity extended finite element models 
+(XFEM) with high-fidelity in-situ monitoring data. By employing multi- 
+fidelity surrogate models to establish complex mappings between 
+damage parameters and structural responses in their predictions, they 
+significantly improved identification accuracy and computational effi -
+ciency while avoiding repetitive grid division. Multi-fidelity approaches 
+provide an effective pathway toward balancing physical interpretability 
+and predictive accuracy [30] . However, when applied to complex dam 
+systems, several key challenges remain unresolved. First, the discrep -
+ancy between virtual simulation models and real structural responses is 
+difficult to eliminate, particularly under time-varying operational con -
+ditions. Second, most existing studies focus on single-point prediction 
+and fail to explicitly model the spatial coupling and collaborative 
+behavior of deformation across the dam body. Third, uncertainty 
+quantification is often treated in a simplified manner, without dis -
+tinguishing between epistemic uncertainty arising from model structure 
+and parameter limitations, and aleatoric uncertainty induced by envi -
+ronmental variability and measurement noise. These limitations hinder 
+the construction of reliable probabilistic prediction boundaries and 
+restrict the applicability of existing methods in digital twin-based real- 
+time monitoring and risk assessment.
+To address the above challenges, this study proposes a physics- 
+guided multi-fidelity Bayesian neural network (PGMF-BNN) frame -
+work for probabilistic deformation prediction of concrete arch dams in a 
+digital twin-based monitoring. The proposed framework integrates 
+physical simulation, monitoring data, and probabilistic learning within 
+a unified modeling architecture. Specifically, low-fidelity data gener -
+ated from a three-dimensional finite element model are utilized to guide 
+the pre-training of the neural network, enabling it to learn the funda -
+mental mechanical response patterns of the dam. A two-stage transfer 
+learning strategy is then introduced to systematically reduce the 
+discrepancy between simulated and measured responses under opera -
+tional conditions. Furthermore, a multi-input multi-output (MIMO) ar -
+chitecture is constructed to explicitly capture the spatial coupling 
+characteristics among multiple monitoring points. To enhance predic -
+tion reliability, Bayesian inference combined with MC Dropout is 
+employed to jointly quantify epistemic and aleatoric uncertainties, 
+Y. Chi et al. Advanced Engineering Informatics 76 (2026) 105009 
+2 
+thereby providing calibrated probabilistic prediction intervals for digital 
+twin applications.
+It should be pointed out that the novelty of this study does not lie in 
+the separate use of multi-fidelity learning, transfer learning, MIMO 
+modeling, or Bayesian inference. On the contrary, its main contribution 
+lies in integrating these technologies into a digital twin framework 
+guided by dam mechanisms. In this framework, low-fidelity finite 
+element simulations are used to understand mechanical response skel -
+eton dominated by hydrostatic pressure, high-fidelity monitoring data 
+are used to correct residual responses related to temperature and time- 
+effect, MIMO modeling is used to represent spatially coordinated de -
+formations, and Bayesian inference is used to construct probabilistic 
+monitoring boundaries.
+The main contributions of this study are summarized as follows: 
+• A physics-guided multi-fidelity learning framework is developed to 
+integrate finite element simulation data with monitoring data, 
+enabling consistent representation of dam deformation under 
+evolving operating conditions.
+• A two-stage transfer learning strategy is proposed to bridge the gap 
+between virtual simulation models and real structural responses, 
+improving model adaptability and accuracy.
+• A Bayesian neural network with MC Dropout is introduced to achieve 
+unified quantification of epistemic and aleatoric uncertainties, 
+enhancing the credibility of probabilistic prediction.
+• A MIMO-based collaborative prediction architecture is established to 
+capture spatial coupling relationships among monitoring points and 
+improve multi-point prediction performance.
+Unlike purely data-driven approaches, the proposed framework le -
+verages multi-fidelity modeling to construct a mechanically consistent 
+response skeleton with full operating-condition coverage, which is 
+subsequently refined using monitoring data to enable real-time adaptive 
+prediction under evolving and previously unseen operating conditions.
+The remainder of this paper is organized as follows. Section 2 pre -
+sents the overall research framework of the proposed digital twin- 
+oriented deformation prediction approach. Section 3 describes the 
+methodology, including deformation mechanism decomposition, the 
+physics-guided multi-fidelity modeling framework, the multi-input 
+multi-output (MIMO) architecture for spatial collaborative prediction, 
+the two-stage transfer learning strategy for virtual – physical alignment, 
+and the Bayesian neural network formulation with uncertainty quanti -
+fication based on MC Dropout. Section 4 validates the proposed method 
+through a real engineering case, with emphasis on predictive perfor -
+mance under normal operating conditions, ablation analysis, spatial 
+collaborative verification across multiple monitoring points, physical 
+consistency interpretation, probabilistic reliability assessment, and 
+robustness evaluation under non-ideal operating conditions. Ultimately, 
+Section 5 summarizes the main conclusions and outlines potential di -
+rections for future research.
+2. Research framework
+To address the challenges of virtual – physical inconsistency, adaptive 
+monitoring under evolving operating conditions, and the lack of unified 
+representation of multi-point structural responses in digital twin appli -
+cations of concrete arch dams, a physics-guided multi-fidelity Bayesian 
+neural network (PGMF-BNN) framework is developed for online state 
+monitoring. As illustrated in Fig. 1 , the proposed framework integrates 
+physical simulation, monitoring data, and probabilistic learning within 
+a unified digital twin paradigm. It follows a closed-loop modeling 
+mechanism that combines multi-source data fusion, physics-informed 
+initialization, data-driven correction, uncertainty-aware prediction, 
+and spatial collaborative perception. Through this integration, the 
+framework enables continuous alignment between virtual models and 
+real structural responses, while dynamically updating monitoring 
+benchmarks under changing operational conditions.
+Specifically, the framework consists of five key components: 
+(1) Multi-source heterogeneous data integration
+Low-fidelity simulation data generated from finite element models 
+and high-fidelity field monitoring data are integrated within a unified 
+data representation space. This integration establishes a transferable 
+mapping between virtual simulations and real structural observations, 
+providing the foundation for multi-fidelity learning and digital twin 
+updating. 
+(2) Physics-guided initialization of the virtual mechanical 
+representation
+A physics-guided pre-training strategy is employed using low-fidelity 
+simulation data to encode the dominant mechanical behavior of the 
+dam, particularly the deformation response driven by hydrostatic 
+loading. This process embeds structural mechanics knowledge into the 
+model initialization, forming a physically consistent baseline represen -
+tation for subsequent data-driven refinement. 
+(3) Virtual – physical discrepancy correction via residual learning
+To bridge the gap between simulated and observed responses, high- 
+fidelity monitoring data are incorporated through a residual learning 
+mechanism. This component captures complex effects that are difficult 
+to model explicitly, such as temperature variation and time-dependent 
+behavior, enabling the digital twin model to evolve from a static simu -
+lation surrogate to a dynamically updated representation of the real 
+Fig. 1. Diagram of research framework.
+Y. Chi et al. Advanced Engineering Informatics 76 (2026) 105009 
+3 
+structure. 
+(4) Probabilistic boundary construction and reliability quantification
+To enhance prediction reliability, the framework extends determin -
+istic outputs to probabilistic representations by introducing Bayesian 
+inference. By modeling network parameters as random variables, both 
+epistemic and aleatoric uncertainties are jointly quantified. The result -
+ing probabilistic prediction intervals serve as dynamic health envelopes 
+of the structure, providing a quantitative basis for anomaly detection 
+and risk-aware decision-making. 
+(5) Multi-point collaborative state perception
+Considering the strong spatial coupling characteristics of arch dam 
+deformation, a multi-input multi-output (MIMO) architecture is adopted 
+to jointly model multiple monitoring points. Through shared latent 
+representations, the framework captures spatial correlation and collab -
+orative response patterns across different dam regions, enabling system- 
+level state perception beyond isolated single-point predictions.
+Overall, the proposed framework establishes a scalable methodo -
+logical foundation for intelligent monitoring and risk early warning of 
+large-scale hydraulic structures.
+3. Methodology
+This section presents the methodology of the proposed physics- 
+guided multi-fidelity digital twin framework for dam deformation pre -
+diction. A physically interpretable decomposition of deformation 
+mechanisms is first introduced to establish the basis for model devel -
+opment. Building on this foundation, a physics-guided multi-fidelity 
+framework is constructed, in which two-stage transfer learning is used 
+for virtual – physical alignment and MIMO-based modeling is adopted to 
+characterize spatial collaborative responses. The deterministic formu -
+lation is further extended to probabilistic prediction and uncertainty 
+quantification by incorporating Bayesian modeling and MC Dropout. 
+Finally, the implementation details are provided.
+3.1. Decomposition mechanisms of deformation of concrete arch dams
+Due to the coupled effects of multiple factors, such as reservoir water 
+level fluctuations and cyclic temperature variations, the radial 
+displacement of a concrete arch dam is difficult to characterize accu -
+rately using conventional mathematical formulations. To establish a 
+physically interpretable basis for subsequent multi-fidelity modeling, 
+the dam displacement response at time t is decomposed into the super -
+position of the hydrostatic-pressure component, the temperature- 
+induced component, the time-effect component, and a random distur -
+bance term, as illustrated in Fig. 2 . This decomposition is consistent with 
+the conventional understanding of water level, temperature, and time 
+effects in dam safety monitoring [31,32] , while also providing a struc -
+tured physical basis for the subsequent learning of the dominant 
+response and residual correction within the proposed dual-branch 
+framework. 
+y ( t ) = y
+H
+( t ) + y
+T
+( t ) + y
+C
+( t ) + ε ( t ) (1) 
+where y ( t ) represents the total displacement response at time t . For 
+multi-point monitoring, y ( t ) can be extended from a scalar quantity to a 
+displacement vector. Here, y
+H
+( t ) denotes the displacement component 
+caused by hydrostatic pressure; y
+T
+( t ) represents the displacement 
+component caused by temperature; y
+C
+( t ) corresponds to the time-effect 
+component associated with long-term material aging and rheological 
+evolution. To better characterize thermal inertia, both the current 
+temperature and the moving-average temperature are introduced in the 
+subsequent modeling process. In addition, considering the long-term 
+creep behavior of dam materials during operation, the logarithmic 
+time factor ln ( t + 1) is adopted to describe the time effect, where t 
+denotes the elapsed monitoring time interval from the initial monitoring 
+date. This definition avoids the singularity of ln t at t = 0 and is 
+consistent with the long-term convergent evolution of dam deformation. 
+ε ( t ) represents observation noise and other random errors.
+Based on the above decomposition, the total displacement response 
+is incorporated into a dual-branch learning architecture with explicitly 
+differentiated functional roles. The physical branch is intended to learn 
+the dominant hydrostatic-pressure-induced response and thereby 
+establish the fundamental mechanical representation of dam deforma -
+tion. In contrast, the residual branch focuses on modeling the defor -
+mation components associated with temperature variation and time- 
+dependent effects, while simultaneously correcting the mismatch be -
+tween the physics-based response and the actual monitored response. 
+Furthermore, to enable a unified formulation for the multi-point 
+collaborative prediction task, the scalar displacement response at a 
+single monitoring point is extended to a multi-output displacement 
+Fig. 2. Decomposition of deformation components and structural degradation mechanism.
+Y. Chi et al. Advanced Engineering Informatics 76 (2026) 105009 
+4 
+vector corresponding to the ten monitoring points considered in this 
+study: 
+y ( t ) ∈ R
+N
+(2) 
+where N denotes the number of monitoring points.
+3.2. Physics-guided multi-fidelity MIMO framework of deformation 
+prediction for concrete arch dams
+3.2.1. Overall framework of the physics-guided multi-fidelity model
+Conventional deterministic finite element models provide a well- 
+established mechanical basis for describing dam behavior. However, 
+within the context of dam safety monitoring and digital twin modeling, 
+they are more appropriately treated as low-fidelity data sources. Here, 
+the term “ low-fidelity ” (LF) does not imply that the numerical solutions 
+themselves are inaccurate. Rather, it indicates that a non-negligible 
+discrepancy may exist between simulation-based responses and the 
+actual structural behavior, owing to uncertainties in material parameter 
+identification, simplifications of boundary conditions, approximations 
+in time-dependent constitutive modeling, and the omission of complex 
+environmental disturbances [33] . Therefore, finite element models are 
+more suitable for providing mechanistic prior knowledge and virtual 
+prototypes within a digital twin framework. While, on-site monitoring 
+data directly reflect the actual operating state of the dam and therefore 
+constitute high-fidelity (HF) observations. Nevertheless, such data are 
+often constrained by limited sample size, measurement noise, and 
+incomplete coverage of extreme operating conditions. Moreover, purely 
+data-driven models trained only on monitoring data may generate pre -
+dictions that lack physical plausibility when extrapolated beyond the 
+historical data domain.
+To simultaneously ensure physical consistency and engineering ac -
+curacy, this study develops a physics-guided multi-fidelity Bayesian 
+neural network (PGMF-BNN) framework, in which low-fidelity data are 
+first used to establish a fundamental mechanical response skeleton, and 
+high-fidelity data are subsequently introduced to correct the discrep -
+ancy between simulation and reality. On this basis, Bayesian inference is 
+incorporated to generate probabilistic predictions for adaptive moni -
+toring benchmarks.
+The low-fidelity dataset D
+LF 
+is defined as: 
+D
+LF
+=
+{(
+x
+( i )
+phy
+, y
+( i )
+LF
+)}
+N
+LF
+i = 1
+(3) 
+where i is the index of the LF sample, i = 1 , 2 , ⋯ , N
+LF
+; N
+LF 
+is the total 
+number of LF samples; x
+( i )
+phy 
+is the physical input vector of the i   th LF 
+sample, used to describe the mechanical state dominated by water 
+pressure; y
+( i )
+LF
+∈ R
+N 
+represents the displacement response vector corre -
+sponding to the i   th LF sample, which is calculated by the FEM, and its 
+dimension n matches that of the multi-point output. The purpose of this 
+dataset is to provide an initial mechanically informed representation for 
+the digital twin model, rather than to serve directly as the final moni -
+toring truth.
+The high-fidelity dataset D
+HF 
+is defined as: 
+D
+HF
+=
+{(
+x
+( j )
+phy
+, x
+( j )
+env
+, y
+( j )
+HF
+)}
+N
+HF
+j = 1
+(4) 
+where j is the index of the HF sample, j = 1 , 2 , ⋯ , N
+HF
+; N
+HF 
+is the total 
+number of HF samples; x
+( j )
+phy 
+is the physical input vector of the j   th HF 
+sample; x
+( j )
+env 
+is the environmental/time-effect input vector of the j   th HF 
+sample, which characterizes temperature, aging, and other sources of 
+deviation; y
+( j )
+HF
+∈ R
+N 
+represents the measured displacement vector of the 
+j   th HF sample, sourced from on-site monitoring data. High-fidelity 
+data serve to correct deviation and update the true state.
+Accordingly, the overall digital twin prediction model is formulated 
+as an additive mapping consisting of a physics-based main-response 
+branch f
+phy 
+and a residual-correction branch f
+res
+, the expression is 
+exhibited as 
+̂y ( t ) = f
+phy
+ 
+x
+phy
+( t ) ; θ
+p
+)
++ f
+res
+( x
+env
+( t ) ; θ
+e
+) + b (5) 
+where t is the time index, consistent with the monitoring time series; 
+̂y ( t ) represents the model-predicted displacement vector at time t ; 
+x
+phy
+( t ) , x
+env
+( t ) have the same definitions as previously described. The 
+function f
+phy
+ 
+⋅ ; θ
+p
+)
+denotes the nonlinear mapping implemented by the 
+physical branch, whose objective is to learn the fundamental deforma -
+tion response skeleton governed by structural mechanics. The function 
+f
+res
+( ⋅ ; θ
+e
+) denotes the nonlinear mapping implemented by the residual 
+branch, which is designed to compensate for the systematic discrepancy 
+between the finite element-based physical response and the actual 
+monitored response. b ∈ R
+N 
+is a learnable bias vector introduced to 
+account for the overall baseline deviation.
+Eq. (5) defines an additive digital twin mapping that integrates a 
+physics-based main-response component with a data-driven residual- 
+correction component. The formulation is built upon a two-stage 
+knowledge transfer process, in which low-fidelity data are used to 
+establish a mechanically meaningful response skeleton at first, and high- 
+fidelity monitoring data are subsequently introduced to correct the 
+virtual – physical discrepancy. As a result, the proposed framework en -
+ables physically interpretable predictions while maintaining adaptive 
+updating capability under evolving operating conditions.
+3.2.2. Physics-guided two-stage transfer learning for virtual – physical 
+alignment
+To address the discrepancy between simulation-based representa -
+tions and real structural responses, a physics-guided two-stage transfer 
+learning strategy is developed for virtual – physical alignment. Based on 
+the additive digital twin formulation in Section 3.2 , the proposed 
+approach separates the learning process into two sequential stages with 
+clearly differentiated yet complementary roles. In Stage I, low-fidelity 
+simulation data are used to establish a mechanically consistent 
+response skeleton, providing a physics-informed initialization of the 
+model. In Stage II, high-fidelity monitoring data are introduced to cor -
+rect the virtual – physical discrepancy through residual learning, 
+enabling adaptive refinement toward real operating conditions. This 
+staged learning mechanism ensures that physical consistency is pre -
+served while allowing data-driven correction under evolving conditions.
+The detailed formulations of the two stages are presented in Sections 
+3.2.2.1 and 3.2.2.2 , respectively.
+3.2.2.1. Stage I: Physics-guided pre-training. The objective of Stage I is to 
+establish a mechanically consistent response representation. Specif -
+ically, low-fidelity simulation data are employed to learn a fundamental 
+response skeleton in the virtual space that conforms to the governing 
+laws of structural mechanics [34,35] . To prevent the residual branch 
+from learning non-transferable bias from low-fidelity data, only the 
+physical branch is optimized in this stage. The residual branch associ -
+ated with environmental variables is kept frozen, and only the param -
+eters of the physical branch θ
+p 
+and the bias term b are updated. Under 
+this setting, the model output can be interpreted as the baseline theo -
+retical response of the digital twin under dominant loading conditions: 
+̂y
+( i )
+LF
+= f
+phy
+(
+x
+( i )
+phy
+; θ
+p
+)
++ b (6) 
+In Stage I, the mean squared error ( MSE ) was used as the training loss 
+to optimize the physical branch and the bias term, and the corre -
+sponding loss function is defined as: 
+L
+P 1
+ 
+θ
+p
+, b
+)
+=
+1
+N
+LF
+N
+∑
+N
+LF
+i = 1
+⃦
+⃦
+y
+( i )
+LF
+  ̂y
+( i )
+LF
+⃦
+⃦
+2
+2
+(7) 
+Y. Chi et al. Advanced Engineering Informatics 76 (2026) 105009 
+5 
+where N denotes the number of monitoring points.
+3.2.2.2. Stage II: Residual correction and virtual – physical alignment. In 
+Stage II, high-fidelity monitoring data are introduced to refine the model 
+by correcting the discrepancy between the virtual representation and the 
+actual structural response. Unlike Stage I, both the physical branch and 
+the residual branch participate in the training process. The residual 
+branch is primarily responsible for learning the environmental and time- 
+dependent effects, while the physical branch is retained to preserve the 
+established mechanical response skeleton.
+To achieve effective correction without degrading the learned 
+physical representation, a differential learning rate strategy is adopted: 
+η
+phy
+≪ η
+res
+(8) 
+where the smaller learning rate η
+phy 
+is used solely to update the pa -
+rameters θ
+p 
+of the physical branch, while the larger learning rate η
+res 
+is 
+used to update the parameters θ
+e 
+of the residual branch; b is updated 
+alongside η
+res
+. This strategy allows the residual branch to take the 
+dominant role in correcting the virtual – physical mismatch, while the 
+physical branch is adjusted only incrementally to maintain mechanical 
+consistency.
+In Stage II, the mean squared error ( MSE ) was also used as the data- 
+fitting loss for virtual – physical alignment, and the corresponding loss 
+function L
+P 2 
+is defined as: 
+L
+P 2
+ 
+θ
+p
+, θ
+e
+, b
+)
+=
+1
+N
+HF
+N
+∑
+N
+HF
+j = 1
+⃦
+⃦
+⃦ y
+( j )
+HF
+  ̂y
+( j )
+⃦
+⃦
+⃦
+2
+2
+(9) 
+To further avoid non-physical predictions under complex or extreme 
+operating conditions, a parameter regularization constraint L is intro -
+duced for the physical branch: 
+L = L
+P 2
++ λ
+⃦
+⃦
+⃦ θ
+p
+  θ
+( P 1 )
+p
+⃦
+⃦
+⃦
+2
+2
+(10) 
+where λ represents the weighting coefficient, which is selected based on 
+the validation set; θ
+( P 1 )
+p 
+denotes the converged physical branch param -
+eters obtained from Stage I. This constraint prevents the physical branch 
+from deviating excessively from the learned mechanical skeleton, 
+thereby reducing the risk of non-physical predictions.
+Through the above two-stage transfer learning process, the model 
+achieves a balance between physical consistency and data-driven 
+adaptability, enabling accurate and physically interpretable prediction 
+of dam deformation under evolving operating conditions.
+3.2.3. Mimo-based spatial collaborative modeling
+To characterize the spatial coupling among deformation responses at 
+multiple monitoring points of a concrete arch dam, a multi-input multi- 
+output (MIMO) [25,36] collaborative prediction architecture is further 
+introduced. The input layer incorporates multi-source variables, 
+including hydraulic loading, thermal conditions, time-effect factors, and 
+material parameters of different dam sections, while the output layer 
+corresponds to the radial displacement responses at multiple monitoring 
+points. In contrast to conventional single-point regression, this archi -
+tecture is designed to capture the overall structural response pattern of 
+the dam through joint modeling of spatially distributed observations.
+Based on the additive digital twin formulation in Eq. (5) , the input 
+variables are partitioned into two categories according to their physical 
+semantics and are fed into the physical branch and the residual branch, 
+respectively. 
+(1) Physical branch input
+The input of the physical branch, denoted by x
+phy
+( t ) consists of the 
+dominant loading and material-related variables: 
+x
+phy
+( t ) = [ H ( t ) , E
+1
+, E
+2
+, E
+3
+, E
+4
+]
+T
+∈ R
+5
+(11) 
+where H ( t ) represents the upstream water level, and E
+1
+∼ E
+4 
+denote the 
+elastic moduli of the four dam sections. These parameters are introduced 
+to reflect the influence of material heterogeneity on the global defor -
+mation mode of the dam. Other structural and foundation parameters 
+are treated as fixed according to the design and numerical simulation 
+settings. 
+(2) Residual branch input
+The input of the residual branch, denoted by x
+env
+( t ) , is used to 
+characterize environmental and time-dependent effects: 
+x
+env
+( t ) =
+[
+T
+cur
+( t ) , T
+lag 30
+( t ) , ln ( t + 1 )
+]
+T
+∈ R
+3
+(12) 
+where T
+cur
+( t ) represents the current temperature, T
+lag 30
+( t ) denotes the 
+30-day moving-average temperature used to characterize thermal 
+inertia, and ln t + 1 is the logarithmic time factor used to represent long- 
+term convergent evolution. Here, t denotes the elapsed monitoring time 
+interval from the initial monitoring date, with t = 0 corresponding to 
+October 25, 2013.
+Accordingly, the total input at time t can be written as: 
+x ( t ) =
+[
+x
+phy
+( t ) , x
+env
+( t )
+]
+(13) 
+For the output side, the radial displacements at the ten monitoring 
+points are organized into a unified displacement vector: 
+y ( t ) =
+[
+y
+1
+( t ) , y
+2
+( t ) , … , y
+10
+( t )
+]
+T
+∈ R
+N
+(14) 
+where y
+k
+( t )( k = 1 , 2 , ⋯ , N ) represents the observed radial displacement 
+at the k   th monitoring point at time t . In this study, the MIMO output 
+dimension was set as N = 10, including six plumb line monitoring points 
+and four inverted plumb line monitoring points. Therefore, the proposed 
+model learns a ten-point deformation response vector at each time step.
+Unlike conventional approaches that model each monitoring point 
+independently, the proposed MIMO architecture employs a unified 
+output layer to perform joint regression over all monitoring points. This 
+design allows the network to learn shared latent representations of the 
+structural deformation field, thereby capturing both the global defor -
+mation pattern induced by hydraulic loading and the spatially varying 
+responses associated with thermal and time-dependent effects. As a 
+result, the model is able to describe the coordinated evolution of the 
+overall structural state, rather than generating a set of isolated local 
+predictions.
+3.3. Probabilistic prediction and uncertainty quantification
+3.3.1. Bayesian neural network for deformation prediction
+In practical dam operation, deformation prediction is affected not 
+only by the uncertainty of model parameters and network structure, but 
+also by measurement noise and environmental disturbances. Conse -
+quently, deterministic models that provide only point estimates cannot 
+fully satisfy the requirements of digital twin-based safety monitoring, 
+where both predictive accuracy and reliability assessment are essential
+[37 – 39] . To address this issue, the proposed framework adopts a 
+Bayesian neural network (BNN) [40,41] to extend deterministic predic -
+tion to probabilistic inference. By treating network weights as random 
+variables, the BNN provides a rigorous mathematical framework for 
+capturing both epistemic uncertainties associated with model parame -
+ters and aleatoric uncertainty arising from observation noise, thereby 
+enabling the construction of reliable prediction intervals for dam 
+deformation monitoring.
+In a deterministic neural network, the model parameters θ =
+ 
+θ
+p
+, θ
+e
+,
+b
+)
+are treated as fixed values, and the output is a point prediction ̂y ( t ) . 
+Y. Chi et al. Advanced Engineering Informatics 76 (2026) 105009 
+6 
+By contrast, in the Bayesian formulation, the network weights are 
+modeled as random variables w , and the prediction is conditioned on 
+their posterior distribution. Given the input x ( t ) =
+[
+x
+phy
+( t ) , x
+env
+( t )
+]
+, the 
+model output can be written as 
+̂y ( t ) = f ( x ( t ) ; w ) (15) 
+where f ( ⋅ ) denotes the dual-branch additive network defined in Eq. (5) .
+Assuming that the observation noise follows a Gaussian distribution, 
+the multi-output likelihood function can be expressed as 
+p ( y ( t ) , x ( t ) , w ) = N
+ 
+y ( t ) ; f ( x ( t ) ; w ) , σ
+2
+n
+I
+)
+(16) 
+where y ( t ) ∈ R
+N 
+denotes the observed displacement vector, σ
+2
+n 
+is the 
+noise variance; I is the identity matrix of size N × N .
+The objective of Bayesian inference is to estimate the posterior dis -
+tribution of the network weights conditioned on the observed data D , 
+which can be written as: 
+p ( w | D ) ∝ p ( D | w ) p ( w ) (17) 
+However, because the exact posterior distribution p ( w | D ) in 
+Bayesian neural networks is generally intractable, direct Bayesian 
+inference is not feasible in practice. To address this issue, a tractable 
+variational distribution q
+ϕ
+( w ) is introduced to approximate the true 
+posterior, and the approximation is obtained by minimizing the Kull -
+back – Leibler (KL) [42] divergence between the two distributions. 
+KL
+ 
+q
+ϕ
+( w )‖ p ( w | D
+))
+(18) 
+where KL denotes the Kullback-Leibler divergence, which measures the 
+difference between two probability distributions. The KL divergence 
+term plays a regularization role, which will punish the situation that the 
+variational distribution deviates too much from the prior distribution, 
+thus effectively preventing the model from overfitting and capturing the 
+uncertainty.
+3.3.2. Uncertainty quantification via MC Dropout
+To achieve a practical balance between computational efficiency and 
+probabilistic inference in engineering applications, MC Dropout [43] is 
+adopted to approximate the Bayesian prediction process described 
+above. The essential idea of MC Dropout is to retain dropout activation 
+during inference, such that each stochastic forward pass corresponds to 
+sampling a set of effective network weights from the approximate pos -
+terior distribution q
+ϕ
+( w ) . In this way, the predictive distribution can be 
+efficiently estimated via Monte Carlo sampling without substantial 
+modification of the network architecture or excessive computational 
+overhead, thereby making MC Dropout particularly suitable for large- 
+scale digital twin applications involving multi-point prediction and 
+online updating.
+For a given input x ( t ) at time t , T stochastic forward passes yield a set 
+of predictive samples: 
+̂y
+( s )
+( t ) = f ( x ( t ) ; w
+( s )
+) , s = 1 , 2 , ⋯ , T (19) 
+̂y
+( s )
+( t ) ∈ R
+N 
+The predicted mean for multi-output vectors ̂μ ( t ) is: 
+̂μ ( t ) =
+1
+T
+∑
+T
+s = 1
+̂y
+( s )
+( t ) ∈ R
+D out
+(20) 
+For the multi-output prediction case considered in this study, 
+epistemic uncertainty is characterized by the sample covariance of the 
+stochastic predictions as: 
+∑
+epi
+( t ) =
+1
+T
+∑
+T
+s = 1
+ 
+̂y
+( s )
+( t )   ̂μ ( t )
+) 
+̂y
+( s )
+( t )   ̂μ ( t )
+)
+T
+(21) 
+∑
+epi
+( t ) ∈ R
+N × N 
+Assuming homoscedastic observation noise, the aleatoric uncer -
+tainty is represented as 
+∑
+ale
+( t ) = σ
+2
+n
+I (22) 
+The total uncertainty 
+∑
+tot
+( t ) is: 
+∑
+tot
+( t ) =
+∑
+epi
+( t ) +
+∑
+ale
+( t ) (23) 
+In the case of point-by-point output, the confidence interval for the 
+k   th monitoring point CI
+95% , k
+( t ) is represented as 
+CI
+95% , k
+( t ) : ̂μ
+k
+( t ) ± 1 . 96
+̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅ ̅
+∑
+tot , kk
+( t )
+√
+(24) 
+where 
+∑
+tot , kk
+( t ) represents the diagonal elements of 
+∑
+tot
+( t ) . The above 
+formulation provides dynamic prediction intervals for each monitoring 
+point and thus enables the construction of state-dependent probabilistic 
+monitoring benchmarks.
+3.4. Implementation and deployment of the digital twin prediction 
+framework
+To illustrate the implementation procedure of the proposed frame -
+work, the technical route for digital twin-based deformation prediction 
+of concrete arch dams is summarized in Fig. 3 .
+The procedure consists of seven interconnected stages. First, low- 
+fidelity simulation data and high-fidelity monitoring data are con -
+structed to form a multi-source heterogeneous dataset. Second, a dual- 
+branch additive mapping model is established, in which the physical 
+branch captures the dominant mechanical response and the residual 
+branch corrects the virtual – physical discrepancy. Third, the physical 
+branch is pre-trained using low-fidelity data to establish a mechanically 
+meaningful response skeleton. Fourth, high-fidelity monitoring data are 
+introduced for transfer learning, where the residual branch is activated 
+and the virtual model is aligned with actual operating conditions 
+through differential learning rates and physical regularization. Fifth, a 
+MIMO-based collaborative prediction mechanism is constructed to 
+capture the spatial coupling among multiple monitoring points. Sixth, 
+Bayesian inference with MC Dropout is incorporated to achieve proba -
+bilistic prediction and uncertainty quantification. Finally, dynamic 
+monitoring benchmarks are generated from the predictive mean and 
+uncertainty intervals to support online trend inference, anomaly 
+detection, and risk early warning. Overall, the proposed framework 
+provides an integrated technical route for physically interpretable, 
+adaptively updated, and uncertainty-aware digital twin prediction of 
+arch dams.
+To further improve the reproducibility of the proposed framework, 
+the implementation details and key hyperparameters used in model 
+training and probabilistic inference are summarized in Table 1 . The 
+hyperparameters include the network architecture, optimizer, loss 
+function, learning rates in the two-stage training process, dropout 
+setting, batch size, and the number of MC Dropout samples. These set -
+tings were adopted consistently in the following case study and model 
+comparison experiments.
+Full-batch training was adopted in both stages because the sample 
+size of the low-fidelity simulation data and high-fidelity monitoring data 
+was relatively limited. In Stage I, all low-fidelity samples were used in 
+each epoch to learn the mechanically consistent response skeleton. In 
+Stage II, all high-fidelity training samples were used in each epoch for 
+virtual – physical alignment and residual correction.
+4. Project examples
+The proposed framework was validated using a real concrete arch 
+Y. Chi et al. Advanced Engineering Informatics 76 (2026) 105009 
+7 
+dam project, namely the Shankouyan Reservoir in Jiangxi Province, 
+China. The reservoir is located in Shankouyan Village, Pingxiang City, in 
+the upper reaches of the Yuan River, which controls a catchment area of 
+230 km
+2
+, with a total storage capacity of 1.05 × 10
+8
+m
+3
+. The dam adopts 
+a roller-compacted concrete (RCC) double-curvature arch dam scheme, 
+with a maximum dam height of 99.1 m. Construction started in 
+November 2007, and the reservoir began impoundment in June 2012. 
+The installed hydropower capacity is 13.26 MW, with an average annual 
+power generation of 3.36 × 10
+7 
+kWh and a daily water supply capacity 
+of 2.0 × 10
+5 
+m
+3
+.
+4.1. Engineering background, FEM modeling and data correlation 
+analysis
+To support long-term safety monitoring, a comprehensive instru -
+mentation system has been deployed within the dam, including plumb 
+lines, inverted plumb lines, and temperature sensors. The spillway sec -
+tion is the key area for displacement monitoring, where two plumb-line 
+monitoring points (PLA1 and PLA2) and two inverted plumb-line 
+monitoring points (IPA1 and IPA2) have been installed, as shown in 
+Fig. 4 (a). These measurements provide the high-fidelity monitoring 
+data used in this study for model calibration and validation.
+To generate the low-fidelity simulation data required for physics- 
+guided pre-training, a three-dimensional finite element model of the 
+dam – foundation system was established, as shown in Fig. 4 (b)~(c). The 
+coordinate system of the model was defined such that the radial direc -
+tion corresponds to the x -axis, with the downstream direction taken as 
+positive; the tangential direction corresponds to the y -axis, with the left 
+bank taken as positive and the vertical direction corresponds to the z - 
+axis, with upward taken as positive. To reduce boundary effects, the 
+computational domain of the foundation extended to a depth of twice 
+the dam height, and to distances of 1.0 and 1.5 times the dam height in 
+the upstream and downstream directions, respectively. The finite 
+element model was discretized primarily using hexahedral and tetra -
+hedral elements, with a total of 151,200 mesh cells. Since the dam uti -
+lized in this research is an RCC arch dam constructed by layered 
+compaction, the dam body exhibits evident zoning characteristics after 
+construction. To better represent the material heterogeneity of the 
+Fig. 3. Flowchart of the proposed prediction framework for digital twin monitoring.
+Y. Chi et al. Advanced Engineering Informatics 76 (2026) 105009 
+8 
+dam – foundation system, the foundation was divided into two zones 
+according to the geological survey data of the site, while the dam body 
+was partitioned into four zones based on construction and material re -
+cords. The subsequent forward simulations were conducted on this basis 
+to provide low-fidelity displacement samples for the proposed multi- 
+fidelity digital twin framework.
+To characterize the effects of key environmental variables on dam 
+deformation, the temporal evolution and statistical distributions of up -
+stream water level, average temperature, and radial displacement at 
+representative monitoring points were analyzed, as shown in Fig. 5 .
+As exhibited in Fig. 5 (a), the upstream water level fluctuated mainly 
+within the range of approximately 205 – 245 m during the study period. A 
+relatively low-water stage occurred in early 2014, followed by a rapid 
+increase, after which the reservoir generally operated within a stable 
+interval. The cumulative frequency distribution further indicates that 
+the middle water-level range (231.1 – 242.5 m) accounts for nearly 80% 
+of the observations, whereas both low- and high-water conditions each 
+account for only about 10%. In Fig. 5 (b), it is presented that the average 
+temperature exhibits a pronounced annual periodic pattern, with higher 
+values in and lower values in winter, indicating a stable seasonal ther -
+mal regime throughout the observation period. No evident long-term 
+drift or abnormal fluctuation is observed. The cumulative distribution 
+shows that the middle temperature range (8.9 – 29.3 
+◦
+C) accounts for 
+approximately 79.3% of the samples, while low- and high-temperature 
+conditions represent relatively small proportions. This distribution in -
+dicates that the thermal boundary conditions during the study period 
+were also concentrated mainly within the normal seasonal range.
+The radial displacement responses of the six key monitoring points, 
+shown in Fig. 5 (c), display clear periodic fluctuations over time. The 
+displacement curves exhibit similar temporal patterns across different 
+points, although their amplitudes differ noticeably. In particular, the 
+monitoring points in the PLA zone show larger displacement amplitudes 
+than those in the PLB and PLC zones, suggesting that the deformation 
+response is spatially heterogeneous. Nevertheless, the consistency in 
+temporal variation among the monitoring points indicates that the dam 
+deformation field retains a strong degree of overall coordination.
+The Pearson correlation analysis in Fig. 6 further reveals the domi -
+nant relationships among hydraulic, thermal, and deformation vari -
+ables. Upstream water level shows a generally positive correlation with 
+radial displacement, with correlation coefficients ranging from 0.30 to 
+0.74, confirming that hydraulic loading is an important driver of 
+structural deformation, although its influence varies across locations. In 
+contrast, average temperature exhibits an overall negative correlation 
+with the displacement responses, with coefficients approximately 
+ranging from   0.01 to   0.56, reflecting the cooling – warming effect 
+associated with temperature-induced deformation. More importantly, 
+the deformation responses among different monitoring points are highly 
+correlated, with most correlation coefficients exceeding 0.75 and several 
+approaching 0.98, which demonstrates strong spatial coherence and 
+coordinated structural behavior. These observations provide direct ev -
+idence for the necessity of introducing a multi-point collaborative pre -
+diction framework in subsequent modeling.
+4.2. Results of physics-guided multi-fidelity MIMO framework of 
+deformation prediction
+4.2.1. Physics-guided two-stage transfer learning
+The proposed PGMF-BNN was trained in a MIMO manner with ten 
+monitoring points as outputs. For quantitative performance evaluation, 
+six representative plumb line monitoring points located at the dam crest 
+and dam waist were selected, namely PLA2, PLB2, PLC2, PLA1, PLB1, 
+and PLC1. The inverted plumb line points, including IPA2, IPA1, IPB1, 
+and IPC1, were retained in the MIMO output but were not used for 
+regression-based quantitative evaluation because their displacement 
+amplitudes are comparatively small and more susceptible to measure -
+ment noise.
+To accommodate the two-stage training strategy of PGMF-BNN, the 
+model inputs were divided into two groups according to the physical 
+causes of dam deformation, namely physics-related drivers and 
+deviation-correction variables. The first group was used primarily in 
+Stage I for physical pre-training, with the objective of enabling the 
+model to learn the fundamental mechanical response governed by 
+structural mechanics. Since the upstream water level H is the dominant 
+external load, its admissible range was first determined from historical 
+monitoring records 
+[
+H
+history
+min
+, H
+history
+max
+]
+. To improve the model ’ s ability to 
+cover operating conditions beyond the historical range, additional 
+boundary values, design flood level, crest elevation, and historical 
+extreme water levels were incorporated. Accordingly, the final water- 
+level interval [ H
+min
+, H
+max
+] was established. In addition, the elastic 
+moduli E
+1
+∼ E
+4 
+of the four material zones in the dam body were selected 
+as the key physical parameters in Stage I, and their variation ranges were 
+defined according to design values and related engineering data. These 
+parameters determine the deformation resistance of the dam in the finite 
+element simulations and therefore provide essential physical informa -
+tion for learning the nonlinear mapping between stiffness and 
+displacement during pre-training. The corresponding ranges of the key 
+variables are listed in Table 2 . In this study, the Latin hypercube sam -
+pling (LHS) method was used to generate 1,000 low-fidelity samples for 
+Table 1 
+Hyperparameter settings of the proposed PGMF-BNN model.
+Category Hyperparameter Value/setting
+General setting Programming 
+framework
+PyTorch
+General setting Optimizer Adam
+General setting Loss function Mean squared error
+General setting Random seed 42
+Network architecture Physical branch input H ( t ) , E
+1
+, E
+2
+, E
+3
+, E
+4
+Network architecture Residual branch input T
+cur
+( t ) , T
+lag 30
+( t ) , ln ( t + 1 )
+Network architecture Output dimension 10 monitoring points
+Network architecture Physical branch 
+structure
+5 – 128 – 64 – 10
+Network architecture Physical branch 
+activation
+Tanh
+Network architecture Residual branch 
+structure
+3 – 64 – 10
+Network architecture Residual branch 
+activation
+ReLU
+Bayesian approximation Dropout rate 0.05
+Bayesian approximation Number of MC Dropout 
+samples
+100
+Stage I: physics-guided 
+pre-training
+Optimized parameters Physical branch and bias 
+term
+Stage I: physics-guided 
+pre-training
+Learning rate 0.005
+Stage I: physics-guided 
+pre-training
+Epochs 2000
+Stage I: physics-guided 
+pre-training
+Batch size Full-batch training
+Stage II: residual 
+correction and fine- 
+tuning
+Optimized parameters Physical branch, residual 
+branch, and bias term
+Stage II: residual 
+correction and fine- 
+tuning
+Learning rate of 
+physical branch
+0.0005
+Stage II: residual 
+correction and fine- 
+tuning
+Learning rate of 
+residual branch
+0.002
+Stage II: residual 
+correction and fine- 
+tuning
+Learning rate of bias 
+term
+0.002
+Stage II: residual 
+correction and fine- 
+tuning
+Epochs 3000
+Stage II: residual 
+correction and fine- 
+tuning
+Batch size Full-batch training
+Y. Chi et al. Advanced Engineering Informatics 76 (2026) 105009 
+9 
+Fig. 4. Layout of monitoring points and 3D finite element model of Shankouyan RCC arch dam.
+Fig. 5. Spatio-temporal correlation analysis of environmental factors and displacement.
+Y. Chi et al. Advanced Engineering Informatics 76 (2026) 105009 
+10 
+Stage I training. Other parameters with relatively minor influence on 
+dam deformation, such as the deformation modulus of the foundation, 
+the Poisson ’ s ratios of the dam and foundation materials, and the unit 
+weight, were treated as fixed values in this stage. The specific values are 
+shown in Table 3 .
+To visually examine the ability of the finite element model to capture 
+the macroscopic mechanical response of the dam, representative simu -
+lation results under typical operating conditions were selected for con -
+tour analysis. As shown in Fig. 7 , the radial displacement contours of the 
+upstream dam surface are arranged in a 3 × 3 layout. From top to bot -
+tom, the three rows correspond to typical low-, medium-, and high- 
+water conditions, i.e., 205 m, 225 m, and 245 m, respectively. From 
+left to right, the three columns correspond to three representative 
+combinations of elastic moduli, reflecting relatively soft, normal, and 
+stiff material states. To facilitate visual comparison of global deforma -
+tion patterns under different conditions, each contour plot adopts the 
+same viewing perspective, while its color scale is adjusted individually 
+to ensure adequate sensitivity to displacement variations under both 
+mild and unfavorable conditions.
+As shown in Fig. 7 , the radial displacement of the arch dam increases 
+markedly with increasing water level and decreases with increasing 
+elastic modulus, which is consistent with the expected mechanical 
+behavior of the structure. The combination of high water level and 
+relatively low elastic modulus produces the maximum overall 
+displacement response, corresponding to the most unfavorable defor -
+mation state among the selected cases. By contrast, the combination of 
+low water level and high elastic modulus yields the minimum 
+displacement response. These results indicate that the low-fidelity finite 
+element samples can effectively characterize the deformation evolution 
+of the dam under different hydraulic and material conditions, thereby 
+providing a physically meaningful response skeleton for subsequent 
+multi-fidelity learning.
+The second group of variables was introduced in Stage II to charac -
+terize environmental disturbances and long-term time-dependent effects 
+that cannot be explicitly represented by the physics-based branch. In 
+addition to the current ambient temperature T
+cur
+, which reflects the 
+instantaneous thermal boundary condition, the 30-day moving-average 
+temperature T
+lag 30 
+was further introduced to account for the pronounced 
+thermal inertia of the concrete dam body, thereby describing the lagged 
+and cumulative influence of ambient temperature variation on the in -
+ternal thermal state of the structure. To justify the selection of the 
+moving-average temperature window, a sensitivity analysis was con -
+ducted using candidate windows of 15, 30, 45, 60, and 90 days. The 
+validation-set performance under different window lengths is summa -
+rized in Table 4 .
+As shown in Table 4 , the 30-day moving-average temperature ach -
+ieved the best validation performance, with the lowest average RMSE of 
+1.3421 mm and the highest average R
+2 
+of 0.9281. Although the 15-day 
+window also produced comparable results, longer windows of 45 – 90 
+days led to a noticeab

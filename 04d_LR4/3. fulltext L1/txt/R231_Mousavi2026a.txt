@@ -1,0 +1,1246 @@
+A data-driven digital twin model for bridge health monitoring using feature 
+fusion and unsupervised deep learning
+Vahid Mousavi
+a , *
+, Maria Rashidi
+a , b , *
+, Shayan Ghazimoghadam
+c
+, Bijan Samali
+a
+a
+Centre for Infrastructure Engineering (CIE), Western Sydney University, Penrith NSW 2751, Australia
+b
+Urban Transformations Research Centre (UTRC), Western Sydney University, Parramatta 2150, NSW, Australia
+c
+Department of Civil Engineering, Sha.C, Islamic Azad University, Shahrood, Iran
+ARTICLE INFO
+Keywords:
+Bridge monitoring
+Digital twins
+Structural health monitoring
+Data fusion
+Feature extraction
+Generative adversarial network
+Unsupervised deep learning
+Damage detection
+ABSTRACT
+The progressive degradation of bridge infrastructure poses significant risks to transportation safety, necessitating 
+advanced monitoring and management strategies. Digital Twins (DTs) have emerged as a transformative tech -
+nology for real-time structural monitoring, offering a dynamic and data-driven representation of physical assets. 
+When combined with Deep Learning (DL), DTs enhance predictive capabilities by leveraging vast amounts of 
+sensor data to detect structural anomalies, optimize maintenance strategies, and improve decision-making 
+processes. This synergy enables a more accurate, automated, and cost-effective approach to infrastructure 
+health monitoring, ensuring timely interventions and prolonged service life. This paper presents a novel data- 
+driven DT framework for real-time bridge damage detection, incorporating two key innovations. First, a 
+Multi-Domain Fusion Autoencoder (MDFA) that integrates raw acceleration data with feature fusion from time, 
+frequency, and wavelet domains. Second, a synthetic anomaly simulation approach for evaluation. The frame -
+work employs a transformer-based Generative Adversarial Network (GAN) to generate realistic synthetic signals, 
+which are modified to simulate various damage scenarios. Evaluations on Australia ’ s Werrington Bridge 
+demonstrate the MDFA ’ s ability to detect subtle anomalies often overlooked by conventional unsupervised DL 
+methods. A comparative analysis confirms its superior detection capabilities. Further validation on Austria ’ s 
+S101 Bridge using real damage data successfully identifies and localizes all damage scenarios without requiring 
+additional optimization. These results highlight the efficiency of feature fusion techniques in improving anomaly 
+detection accuracy and suggest that synthetic anomaly simulation offers a cost-effective alternative to laboratory 
+testing for evaluating unsupervised damage detection approaches.
+1. Introduction
+Bridge infrastructures, as a critical component of the transportation 
+network, are experiencing significant deterioration due to increasing 
+traffic volume and service load, ageing, and the impacts of aggressive 
+environmental factors associated with climate change. The progressive 
+deterioration of bridge elements results in extensive damage, leading to 
+significantly increased repair or replacement costs. If left unaddressed, it 
+may ultimately cause catastrophic structural failure, resulting in severe 
+economic losses and, tragically, the loss of human lives. Therefore, the 
+proper inspection and maintenance of bridge infrastructure through 
+Structural Health Monitoring (SHM) approaches have become increas -
+ingly important for ensuring structural reliability and safety [ 1 – 3 ].
+SHM systems play a crucial role in ensuring the safety and reliability 
+of bridge infrastructures by detecting damage and evaluating structural 
+conditions. SHM approaches can be broadly categorized into model- 
+driven and data-driven methods. Model-driven approaches rely on 
+physics-based models and finite element analysis to predict structural 
+behaviour, while data-driven methods leverage sensor data and statis -
+tical techniques to identify patterns indicative of deterioration [ 4 , 5 ]. 
+The increasing complexity of structural systems and the vast amount of 
+monitoring data have led to a growing reliance on data-driven methods, 
+particularly those incorporating Machine Learning (ML) techniques.
+ML techniques have significantly transformed SHM by enhancing the 
+ability to analyse large-scale monitoring data and have become a 
+cornerstone of modern SHM systems, offering powerful tools for 
+* Corresponding authors.
+E-mail addresses: v.mousavi@westernsydney.edu.au (V. Mousavi), m.rashidi@westernsydney.edu.au (M. Rashidi), Shayan.ghazimoghadam@iau.ir
+(S. Ghazimoghadam), b.samali@westernsydney.edu.au (B. Samali). 
+Contents lists available at ScienceDirect
+Information Fusion
+journal homepage: www.elsevi er.com/loc ate/inffus
+https://doi.org/10.1016/j.inffus.2025.103534
+Received 31 March 2025; Received in revised form 6 July 2025; Accepted 15 July 2025 
+Information Fusion 126 (2026) 103534 
+Available online 18 July 2025 
+1566-2535/© 2025 The Authors. Published by Elsevier B.V. This is an open access article under the CC BY license ( http://creativecommons.org/licenses/by/4.0/ ). 
+detecting and diagnosing structural damages. Previous studies have 
+developed approaches to detect damage in bridges using both super -
+vised and unsupervised ML techniques [ 6–8 ]. Supervised ML studies 
+have demonstrated strong performance in controlled scenarios; how -
+ever, their practical applicability to real-world cases remains limited [ 9 ,
+10 ]. In contrast, unsupervised learning provides a flexible and adaptive 
+method for extracting valuable insights, as it operates on unlabelled 
+data. Its ability to dynamically adjust to variations in data distributions 
+and detect emerging trends makes it efficient for real-time monitoring 
+applications. Several research studies have explored unsupervised 
+techniques for the real time analysis of structural monitoring data. 
+Despite the extensive progress made in unsupervised damage detection 
+in bridges, the extraction of meaningful results from extensive real-time 
+measurement data is a significant challenge, which affects the timely 
+assessment of structural conditions and the implementation of appro -
+priate remedial measures [ 9 ].
+Digital Twins (DTs), as a powerful tool for online monitoring and 
+predictive maintenance, have gained significant popularity in bridge 
+infrastructure management. Various approaches, such as big data 
+analysis, ML, and cloud/edge computing can be employed in DT plat -
+forms to manage the increasing volume of input data, and facilitate 
+continuous, and ideally real-time, monitoring, which is crucial in iden -
+tifying defects or problems at an early stage [ 11 ]. By analysing the 
+collected data, DTs can identify potential issues within a system, 
+enabling bridge management teams to make informed predictive 
+maintenance decisions. This enhances reliability, increases efficiency, 
+and optimizes the use of available resources [ 12 ]. The development of 
+DTs mechanisms within Bridge Management Systems (BMS) in recent 
+years has provided valuable opportunities to address real time moni -
+toring challenge, particularly through advancements in applying ML 
+algorithms within DTs framework [ 13 ].
+A DT model serves as a dynamic virtual representation of physical 
+infrastructure, providing a real-time reflection of its behaviour, current 
+condition, and performance. This synchronization between the virtual 
+and physical entities is facilitated by advanced systems with high-speed 
+communication capabilities. These intelligent systems, encompassing 
+advanced technologies such as Deep Learning (DL) and data analytics, 
+enable computers to execute tasks that usually demand human intelli -
+gence. They achieve this by collecting and analysing large volumes of 
+data from IoT-enabled (Internet of Things) data collection methods and 
+other sensors, to identify patterns in data structure and make predictions 
+with minimal human oversight [ 14 ].
+Data-driven simulation models in DTs are developed based on the 
+validated data obtained from experiments/measurements on the actual 
+structure and produce a model to analyse the status of the bridge in real 
+time. In data-driven models, data from the physical bridge is collected 
+using emerging sensor technologies and IoT devices. This data is then 
+processed using Big Data analytics and advanced ML techniques, to 
+simulate the exact functionality of the bridge [ 15 ]. Consequently, bridge 
+DT is equipped with dynamic ML-based data-driven models that 
+continuously updates using real-time data analysis enabling the damage 
+detection in real time.
+While significant advancements have been made in developing of 
+different virtual models within bridge DTs, such as geometric modelling 
+via unmanned aerial vehicles [ 16 , 17 ] and terrestrial laser scanning [ 18 ,
+19 ], as well as Finite Element Method (FEM) models for numerical 
+analysis [ 20 , 21 ], the incorporation of robust data-driven DT frameworks 
+for long-term monitoring remains a challenge. Current DT imple -
+mentations often lack comprehensive data-driven models for processing 
+long-term bridge data [ 11 , 22 , 23 ].
+Additionally, the use of real measured data and unsupervised DL 
+methods for real-time damage detection in bridges still remains under -
+explored [ 24 , 25 ]. A key challenge is the lack of historical damage data in 
+existing operational bridges. While laboratory and benchmark struc -
+tures provide controlled environments for testing, they do not fully 
+represent real-world complexities due to differences in scale and 
+dynamic behaviour, environmental conditions, and operational 
+variability.
+Data fusion is a well-known technique in SHM, enabling the inte -
+gration of heterogeneous data sources to enhance damage detection and 
+structural assessment. By combining multiple data modalities, data 
+fusion improves the reliability and accuracy of monitoring systems. 
+Feature fusion, as a specific type of data fusion, plays a critical role in 
+extracting meaningful insights from complex bridge data using real 
+measured data and unsupervised DL techniques. Given the complexity of 
+bridge dynamics, relying on a single domain limits the ability to capture 
+intricate damage signatures in data-driven models within DTs frame -
+works [ 26 , 27 ].This limitation hinders the ability to detect structural 
+deterioration promptly, leading to increased maintenance costs and 
+potential safety risks.
+This study introduces an advanced data-driven DT model for real- 
+time bridge damage detection, leveraging feature fusion and novel un -
+supervised DL techniques. The proposed AI-enabled DT employs a Multi- 
+Domain Fusion Auto encoder (MDFA) to integrate complementary fea -
+tures extracted from time, frequency, and wavelet domains to provide 
+unique insights into structural responses. This framework enhances the 
+DT applications for robust, real-time analysis and damage detection, 
+owing to its capabilities to integrate extensive amount of sensor data 
+which provide a comprehensive understanding of the structure’s 
+behaviour, performance, and status [ 11 , 28 ]. Moreover, the real time 
+data processing provides the opportunity for early detection of struc -
+tural issues, enabling timely interventions to prevent failures [ 29 ] and 
+implement proactive maintenance strategies to extend the structure’s 
+life, reduce downtime, and lower maintenance costs [ 30 ].
+The primary contributions and novelties of this study include: 
+1. Introducing a data-driven DT framework with a real-time data 
+analysis and processing modules to prolong service life of bridges, 
+advancing BMS toward faster and adaptable performance.
+2. Integrating feature fusion techniques with DL within DT framework, 
+which leverages complementary strengths to enhance real-time 
+damage detection through adaptive unsupervised learning on real- 
+world bridge data.
+3. Developing a novel MDFA model that integrates raw acceleration 
+data with features from time, frequency, and wavelet domains, 
+significantly enhancing the detection of subtle structural anomalies 
+often missed by conventional methods.
+4. Proposing an innovative synthetic anomaly simulation approach 
+using transformer-based Generative Adversarial Networks (GANs) to 
+generate realistic synthetic signals for evaluation, providing a cost- 
+effective alternative to laboratory testing for unsupervised damage 
+detection methods.
+5. Comparison of the performance with the state-of-the-art unsuper -
+vised deep learning methods in the literature.
+6. Applying real-world bridge case studies for real-time damage 
+detection, including simulating new data points and alert generation.
+Several experimental tests have been carried out on a real bridge case 
+study. Results show that the proposed framework significantly enhances 
+early damage detection and predictive maintenance capabilities, 
+demonstrating its potential to revolutionize bridge health monitoring 
+and ensure long-term infrastructure safety.
+The outline of this paper is as follows: Section 2 provides the related 
+work and outlines the motivation and objectives of the proposed 
+approach. Section 3 presents the proposed solution with a focus on 
+feature extraction and fusion, and the MDFA model. Section 4 describes 
+the complete evaluation strategy including synthetic data generation, 
+anomaly scenarios and applied metrics. Section 5 reports the results of 
+the proposed framework on the first real bridge case study. Section 6
+compares the proposed approach with an existing well-preforming 
+method. In Section 7 the results of the second case study were dis -
+cussed. Finally, Section 8 concludes the paper with final remarks and 
+V. Mousavi et al. Information Fusion 126 (2026) 103534 
+2 
+suggestions for future work.
+2. Related works and motivations
+DL models have proven to be efficient in real-time SHM applications, 
+enabling to process streaming data from different sensors. DL models 
+automatically extract features through their hidden layers, and typically 
+demand large volumes of data to perform effectively. Bayane et al. [ 9 ] 
+proposed an approach for real-time detection of damage in bridges by 
+leveraging unsupervised anomaly detection algorithms applied to strain 
+and acceleration measurements. Li et al. [ 31 ] proposed an unsupervised 
+damage detection method designed for real-time application during 
+vehicle crossings over a bridge. Teng et al. [ 24 ] proposed an unsuper -
+vised damage detection method that employs an attention-based con -
+volutional auto encoder to detect progressive damage in bridges. Kang 
+et al. [ 32 ] proposed a DL-based anomaly detection method has been 
+developed for both historical data mining and real-time alerting. Fer -
+nandez et al. [ 33 ] also employed a hybrid methodology that in -
+corporates Finite Element simulations to enrich the training phase of a 
+DL with synthetic damage scenarios for damage identification in bridge 
+structures.
+The rapid evolution of infrastructure management has led to the 
+adoption DL methods within DT framework for efficient bridge health 
+monitoring. The integration of DL algorithms has further advanced the 
+capabilities of DTs by identifying hidden patterns within the large vol -
+umes of data and automating anomaly detection, predictive analytics, 
+and model calibration. This capability allows for the application of AI- 
+enabled DTs in different tasks including railway maintenance activ -
+ities [ 34 , 35 ], building predictive maintenance [ 36 ] and smart 
+manufacturing and advanced robotics[ 37 ].
+DL methods have also been utilized for synthetic data generation to 
+support anomaly detection in bridge DTs, particularly when real-world 
+datasets are limited or incomplete. Jim ´enez Rios et al. [ 38 ] proposed a 
+synthetic data generation framework to enhance the training of ML 
+models for damage detection in bridge structures. In another research 
+from the same authors, Jim ´enez Rios et al. [ 39 ] examined the un -
+certainties within synthetic data generation frameworks and the po -
+tential application of these methodologies as efficient and cost-effective 
+alternatives to real monitoring, supporting the rapid development DTs. 
+Similarly, Mousavi et al. [ 40 ] proposed a data augmentation approach to 
+generate synthetic acceleration data in bridge DTs, aiming to mitigate 
+the challenges of substantial training data requirements in DL models, 
+which are often costly and time-intensive to collect. However, Limited 
+research has explored the integration of DL methods within DTs 
+frameworks for the real time analysis of bridge monitoring data. Table 1
+presents the comparison of AI-enabled DT solutions (or related frame -
+works) for real ‑ time bridge health monitoring as reported in recent 
+literature.
+The gaps in these methods include real-time performance con -
+straints, technical scalability and optimized DL techniques. This study 
+aims to address these key challenges through feature fusion, advanced 
+pre-processing techniques, and optimized DL architectures to develop 
+robust and efficient SHM system capable of managing the complexities 
+of real-world environments.
+3. Proposed data-driven DT framework
+The integration of data analytics and DL within digital twinning 
+enhances bridge monitoring and maintenance by enabling real-time 
+structural assessment and predictive decision-making. To fully exploit 
+these advantages, a data-driven reference framework is essential.
+The proposed framework, depicted in Fig. 1 , presents a layered ar -
+chitecture for efficient data analytics in bridge DTs. The process begins 
+with sensor networks collecting real-time structural data. While this 
+study specifically focuses on vibration data, the proposed data-driven 
+framework is designed to be adaptable and can be extended to 
+incorporate other structural parameters such as strain and temperature. 
+This data is then transmitted through communication technologies and 
+enters the data analysis layer, where different Artificial Intelligence 
+models, statistical analyses, and mathematical approaches construct a 
+data-driven digital representation of the bridge. The Artificial Intelli -
+gence section of the framework also incorporates other data-driven 
+techniques, including synthetic data generation, which is used to 
+generate realistic signals for structural health assessment in our work -
+flow implementation ( Section 5.1 ). To ensure structural integrity and 
+safety, raw sensor data undergoes pre-processing, such as data cleaning, 
+filtering, and feature extraction, before analysis using DL and feature 
+fusion techniques. This enables bridge behaviour simulation, structural 
+health assessment (including damage localization and severity estima -
+tion), and visualization to support decision-making. Ultimately, this 
+data-driven digital twin framework facilitates proactive maintenance, 
+improves operational efficiency, and extends bridge service life by 
+providing actionable insights.
+4. Workflow of bridge health monitoring via data-driven DT 
+framework
+Fig. 2 illustrates the detailed workflow of the proposed data-driven 
+DT framework for real-time bridge health monitoring. The framework 
+consists of four main phases: data acquisition, preprocessing, training, 
+and evaluation.
+The data acquisition phase begins with bridge instrumentation, 
+where acceleration responses are collected through a network of accel -
+erometers ( A
+1
+to A
+n
+) installed at various locations on the bridge struc -
+ture. These sensors capture ambient excitation responses. The collected 
+dataset is then systematically divided into training, validation, and test 
+data subsets to ensure comprehensive model development and 
+evaluation.
+The preprocessing phase involves several important operations to 
+prepare the raw data for effective analysis. Initially, the signal pro -
+cessing module performs detrending and denoising operations on both 
+Table 1 
+Comparison of AI-enabled DT methods or frameworks for bridge health 
+monitoring.
+Approach Description Limitations Ref
+Cloud-Based DT 
+with DL
+Uses IoT sensors for 
+strain, vibration, and 
+environmental data. 
+Implements DL for 
+anomaly detection. 
+Integrates real-time cloud 
+analytics for dynamic DT 
+updates.
+1. Using simplified 
+supervised 1D CNN 
+model
+2. Requires stable cloud 
+connectivity.
+[ 41 ]
+ML-based DT 
+model for 
+SHM
+Uses fiber-optic sensor 
+and deep neural networks 
+to convert strain output 
+into an interactive DT 
+visualization
+1. Using simple ML model 
+to generate the 
+relevant baseline data.
+2. Requires accurate and 
+detailed FEM models
+3. Not applicable to all 
+type of bridge 
+structures
+[ 42 ]
+DT and support 
+vector 
+machine 
+(SVM) in SHM 
+of bridges
+ML and DT model are 
+merged to predict 
+damage or collapse of the 
+bridge
+1. Using supervised SVM 
+model
+2. Real-time performance 
+constraints
+[ 43 ]
+DT and Transfer 
+learning for 
+bridge 
+damage 
+detection
+A Large number of 
+damage samples of the 
+numerical models were 
+obtained by using the DT 
+and used to train a CNN 
+as a pre-trained network. 
+Transfer learning was 
+used to test on a real 
+bridge.
+1. Implementation 
+complexity may be 
+high
+2. Not applicable to all 
+type of bridge damages
+3. Real-time performance 
+constraints
+[ 44 ]
+V. Mousavi et al. Information Fusion 126 (2026) 103534 
+3 
+training and validation datasets to remove irrelevant noise and bias 
+error in acceleration signals. Subsequently, feature extraction is per -
+formed across multiple domains, to capture complementary aspects of 
+the signals. Lastly, the input configuration module prepares the data 
+through scaling, windowing, batching, and structuring techniques to 
+prepare the data for the model and training phase.
+The training phase focuses on the core of the proposed methodology, 
+the MDFA model. This specialized DL model integrates raw signals with 
+extracted features from multiple domains to capture complex patterns 
+within the data effectively. The MDFA comprises distinct encoders for 
+each domain, which extract relevant features that are then fused 
+together in a fusion model. Following feature fusion, dimensionality 
+reduction techniques further refine these features, enabling the 
+autoencoder to reconstruct the original inputs accurately. Training this 
+model involves optimizing it to minimize reconstruction errors, 
+enhancing its ability to detect anomalies through subtle deviations in 
+signal patterns.
+During the evaluation phase, synthetic data generation is performed 
+using a transformer-based GAN model. The GAN model is trained using 
+the test data, which is the same as the validation data. This innovative 
+approach addresses data scarcity challenges common in SHM by pre -
+serving more real data for model training while still enabling thorough 
+evaluation with unseen signals. The GAN generates two synthetic 
+datasets: one representing normal structural conditions and another that 
+served as a foundation for simulating various anomaly scenarios. This 
+strategy is particularly valuable given the critical challenge in SHM 
+regarding the lack of real-world datasets representing the damage state 
+of civil infrastructure. The synthetic signals, which maintain the same 
+characteristics as real data, undergo processing through the pre -
+processing algorithm, the same procedure applied in the preprocessing 
+phase.
+The trained MDFA model then reconstructs both normal and 
+abnormal synthetic signals, and the reconstruction loss is calculated. A 
+statistical assessment method evaluates the differences between original 
+and reconstructed signals, determining the damage index for each sensor 
+location. The outcome is visualized as an index across different sensor 
+locations, identifying areas of potential structural damage
+4.1. Data preparation
+The dataset preparation process begins with the instrumentation of a 
+bridge structure using an array of accelerometers ( A
+1
+to A
+n
+) positioned 
+at strategic locations. These sensors continuously measure and record 
+the acceleration responses of the bridge under ambient excitation. In this 
+study, the measured acceleration signals were organized to facilitate the 
+training and evaluation of the proposed methodology. The collected 
+dataset was divided into two parts, where 70 % of the data was allocated 
+for training and the remaining 30 % designated for validation and 
+testing purposes. To maintain a large training set while ensuring thor -
+ough model evaluation, an innovative approach was adopted. Rather 
+than further dividing the data into separate validation and test sets, 
+which would reduce the available training data, the 30 % portion was 
+utilized in two ways. This portion was employed as validation data in its 
+original form, while also being used to train a GAN that produced syn -
+thetic samples for testing. This strategy enabled more real data to be 
+preserved for training while sufficient data for both validation and 
+testing phases was maintained.
+4.2. Signal processing
+Prior to feature extraction, the acceleration signals undergo two 
+essential pre-processing steps, including detrending and low-pass 
+Fig. 1. The data-driven framework for AI-based bridge DT.
+V. Mousavi et al. Information Fusion 126 (2026) 103534 
+4 
+filtering. These steps are crucial for ensuring the quality and reliability 
+of the extracted features.
+Detrending is implemented to address inherent sensor errors that 
+commonly occur in bridge monitoring applications. Accelerometers are 
+susceptible to bias and drift errors due to environmental factors such as 
+temperature fluctuations and humidity changes. While bias manifests as 
+a constant offset from the true mean value, drift presents as a gradual, 
+time-varying deviation in the measurements. Both errors negatively 
+impact the performance of DL models by introducing artificial trends. To 
+mitigate these effects, ordinary least squares regression (OLSR) [ 45 ] is 
+Fig. 2. The overall flowchart of the proposed methodology.
+V. Mousavi et al. Information Fusion 126 (2026) 103534 
+5 
+applied to identify and remove these errors from the acceleration sig -
+nals, ensuring the subsequent analysis focuses on the structural response 
+characteristics rather than sensor errors [ 25 ].
+A low-pass filter is subsequently applied to the detrended signals to 
+eliminate high-frequency noise components while preserving the 
+meaningful structural response frequencies. The filter design in -
+corporates a fourth-order Butterworth filter, chosen for its maximally 
+flat frequency response in the passband [ 46 ]. The cut-off frequency is 
+dynamically determined based on the signal ’ s bandwidth, which is 
+estimated using Welch ’ s method for power spectral density estimation. 
+The bandwidth calculation considers the frequency at which 90 % of the 
+signal ’ s power is contained, ensuring that the filter preserves the 
+essential structural response components while effectively removing 
+noise.
+4.3. Feature extraction
+Feature extraction is a critical step in the proposed methodology, as 
+it transforms raw acceleration signals into meaningful representations 
+that characterize the structural behaviour. To achieve this, features are 
+extracted from three complementary domains, including time, fre -
+quency, and wavelet. This multi-domain approach ensures a compre -
+hensive analysis by capturing both localized and global behavioural 
+changes, which are essential for detecting subtle anomalies and struc -
+tural damage and its location in bridge structures [ 47 ]. The process 
+begins with a sliding window approach applied to the pre-processed 
+signals. The window size and overlap are configurable to balance 
+computational efficiency and temporal resolution. The features are 
+computed for each window and subsequently interpolated to match the 
+original signal length, providing continuous feature patterns.
+In the time domain, features such as Root Mean Square (RMS), Crest 
+Factor, and Shannon Entropy characterize the vibration signal ’ s in -
+tensity, impulsiveness, and complexity, respectively. RMS quantifies the 
+overall vibration energy, Crest Factor identifies transient peaks linked to 
+localized damage, and Shannon Entropy reflects the randomness of the 
+signal, capturing irregularities caused by structural changes. The fre -
+quency domain features, including Spectral Centroid, Spectral Spread, 
+and Spectral Kurtosis, provide insights into the spectral distribution of 
+the signal. These features track shifts in dominant frequencies, energy 
+dispersion, and transient events, which are often indicative of changes in 
+structural stiffness or localized damage. Lastly, wavelet-domain features 
+are derived using a three-level decomposition with Daubechies-4 
+wavelets, enabling a multi-resolution analysis of the signal. Energy ra -
+tios at different levels capture the distribution of vibrational energy 
+across high, mid, and low frequencies, effectively identifying localized 
+and global anomalies at varying time scales. By combining features from 
+these three domains, the proposed methodology creates a robust and 
+diverse representation of the structural response.
+The parameters utilized in the formulas are defined as follows, as 
+detailed in Table 2 . In the time domain, x
+i 
+represents the i -th sample of 
+the signal, where i = 1 , 2 , … , N and N is the total number of samples in 
+the signal. The RMS of the signal is denoted as x
+RMS
+, which is calculated 
+by taking the square root of the average of the squared values of the 
+signal. The crest factor, CF , is defined as the ratio of the maximum ab -
+solute value of the signal to its RMS value. Shannon entropy, H , is 
+computed based on the probability distribution p
+j
+, which is derived from 
+the signal histogram. In the frequency domain, the spectral centroid, C , 
+represents the center of the mass of the power spectral density P
+ 
+f
+k
+)
+at 
+frequency f
+k
+, where f
+k 
+is the frequency corresponding to the k -th spectral 
+component. Spectral kurtosis, K
+f
+, measures the sharpness of the fre -
+quency distribution and quantifies the dispersion of the frequency 
+components around the centroid, calculated as the standard deviation of 
+the frequency distribution. In the wavelet domain, the energy ratio ER
+j 
+is 
+computed for each decomposition level j . The energy at level j , denoted 
+as E
+j
+, is the sum of the squared wavelet coefficients at that level, while 
+the total energy, 
+∑
+k
+E
+k
+, is the sum of the energies across all decompo -
+sition levels.
+4.4. Multi-Domain fusion auto encoder (MDFA) model
+The MDFA model provides a new multi-modal data integration 
+approach to extract and fuse hidden representations from different 
+sources. In this model, as shown in Fig.3 , each data domain is processed 
+through a dedicated encoder that transforms the input data into a 
+domain-specific representation. This is an important step in order to 
+preserve essential domain-specific features and capturing the intrinsic 
+characteristics of input data.
+Following the encoding stage, a fusion layer combines these indi -
+vidual latent representations into a shared latent space. The fusion 
+process is designed to capture both general and specific aspects of 
+different data domains. Attention mechanisms or constraint-based ag -
+gregation techniques are employed to ensure that the shared represen -
+tation is both coherent and discriminative. The reconstruction phase 
+involves a set of domain-specific decoders tasked with reconstructing 
+the original inputs from the fused latent space. The MDFA model is 
+trained by minimizing a composite loss function that balances recon -
+struction fidelity and fusion consistency.
+4.4.1. Input configuration
+The pre-processing phase transforms the input data into a structured 
+format suitable for training the MDFA network. This phase consists of 
+four main steps, including data scaling, sliding window segmentation, 
+batch preparation and data structuring.
+To normalize the data, a sensor-wise scaling method is used to handle 
+potential outliers while preserving the relative relationships between 
+features from each accelerometer. Sensor-wise scaling refers to applying 
+normalization independently to each accelerometer ’ s data rather than 
+globally across all sensors. This approach scales the features based on 
+robust statistical measures, ensuring that the influence of outliers is 
+minimized. The normalization is performed independently for each 
+sensor ’ s features across all domains. The temporal relationships in the 
+processed features are preserved through a fine-grained sliding window 
+technique. Each feature sequence is further segmented into overlapping 
+windows, allowing for comprehensive capture of temporal patterns 
+while maintaining sufficient data resolution for training. This window -
+ing process is applied uniformly across all feature domains, ensuring 
+consistent temporal representation of the structural behaviour. To 
+facilitate efficient model training, the pre-processed data is organized 
+into a structured format using Tensor Flow ’ s data pipeline. The data is 
+Table 2 
+Mathematical formulas for feature extraction.
+Domain Feature Mathematical Definition Mathematical Formula
+Time Root Mean 
+Square
+Quantifies signal energy 
+content
+x
+RMS
+=
+̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅ ̅
+1
+N
+∑
+N
+i = 1
+x
+2
+i
+√
+Crest Factor Ratio of peak amplitude 
+to RMS value
+CF =
+max (| x
+i
+|)
+x
+RMS
+Shannon 
+Entropy
+Measure of signal 
+complexity and 
+randomness
+H =  
+∑
+j
+p
+j
+log
+2
+(
+p
+j
+)
+Frequency Spectral 
+Centroid
+Centre of mass of the 
+frequency spectrum
+C =
+∑
+N
+k = 1
+f
+k
+P
+ 
+f
+k
+)
+∑
+N
+k = 1
+P
+ 
+f
+k
+)
+Spectral 
+Kurtosis
+Measure of sharpness in 
+frequency distribution
+K
+f
+=
+∑
+N
+k = 1
+ 
+f
+k
+  C
+)
+4
+P
+ 
+f
+k
+)
+σ
+4
+f
+∑
+N
+k = 1
+P
+ 
+f
+k
+)
+Spectral 
+Spread
+Dispersion of frequency 
+components around 
+centroid
+σ
+f
+=
+̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅̅ ̅
+∑
+N
+k = 1
+ 
+f
+k
+  C
+)
+2
+P
+ 
+f
+k
+)
+∑
+N
+k = 1
+P
+ 
+f
+k
+)
+√
+√
+√
+√
+Wavelet Wavelet 
+Energy 
+Ratios
+Represents frequency 
+variations
+ER
+j
+=
+E
+j
+∑
+k
+E
+k
+V. Mousavi et al. Information Fusion 126 (2026) 103534 
+6 
+batched with a size of 512 samples and configured with prefetching to 
+optimize training performance. Subsequently, the data structuring step 
+organizes the processed data into corresponding input and output dic -
+tionaries for each accelerometer and feature domain (raw, time, fre -
+quency, and wavelet), creating the multimodal input configuration 
+required by the MDFA network architecture. By following these pre- 
+processing steps, the data was transformed into a format that is both 
+normalized and structured, making it suitable for direct input into the 
+model for training or prediction.
+4.4.2. CNN-BiLSTM-MHA model architecture
+The proposed model architecture employs a novel multi-stream 
+hybrid approach that processes both raw acceleration signals and their 
+domain-transformed representations simultaneously. While raw accel -
+eration data contains the original structural response patterns, domain- 
+transformed features (time, frequency, and wavelet domains) offer 
+Fig. 3. The MDFA model Architecture.
+V. Mousavi et al. Information Fusion 126 (2026) 103534 
+7 
+complementary perspectives of the signal characteristics. The simulta -
+neous processing of these complementary features enables the model to 
+capture a more comprehensive representation of the structural health 
+state. The architecture consists of three main components, including an 
+encoder with multi-stream processing, a feature fusion mechanism, and 
+a decoder for multi-domain reconstruction, as illustrated in Fig. 3 . In this 
+Figure, (B, T, C) refers to batch size, time step, and channel, respectively, 
+while (B, T, F) also represents batch size, time step, and features, 
+respectively and the dimensions of each layer are explicitly shown.
+Each stream implements a CNN-BiLSTM-MHA (Convolutional Neural 
+Network-Bidirectional Long Short-Term Memory-Multi-Head Attention) 
+hybrid model [ 48 ]. To address the inherent uncertainties in real-world 
+structural data, Gaussian noise layer has been added during the 
+training process, which serves as a regularization technique and signif -
+icantly enhances the generalization capabilities of the model. The raw 
+signal stream processes the original acceleration data through a 
+multi-scale Conv1D layer with varying kernel sizes (3, 5, 7, 11) to cap -
+ture temporal patterns at different scales, while all other Conv1D op -
+erations throughout the streams utilize a kernel size of 3. After each 
+convolution, Layer Normalization and an ELU activation are applied to 
+stabilize training dynamics and introduce nonlinearity.
+4.4.3. Feature fusion
+This research focuses on integrating and collectively analysing fea -
+tures obtained from different domains using DL techniques to enhance 
+real-time damage detection through adaptive, unsupervised learning on 
+real-world bridge data. Instead of relying on only raw sensor data, 
+combining meaningful information from data and the raw data itself 
+provides a more comprehensive understanding of the structure behav -
+iour. In this study, the feature fusion was conducted after feature 
+extraction from signals.
+A crucial component of the architecture is the Feature Fusion 
+mechanism, which employs cross-modal attention blocks to intelligently 
+combine information from different domains. The cross-modal attention 
+operates by learning relationships between domain pairs (Raw-Time, 
+Raw-Frequency, Raw-Wavelet), enabling the model to identify correla -
+tions and dependencies across different signal representations. This 
+fusion approach allows the model to: (1) Learn complex relationships 
+between features across different domains, (2) Automatically weight the 
+importance of different domain representations, (3) Capture comple -
+mentary information that might be missed when domains are processed 
+independently and (4) Enhance the model’s sensitivity to subtle anom -
+alies that manifest across multiple domains
+The global fusion bottleneck serves as a crucial integration point 
+where features from all accelerometers are combined and compressed. 
+The process begins by concatenating features from all accelerometers. 
+This concatenated feature set undergoes progressive dimension reduc -
+tion through two 1D convolution layers with kernel sizes of 1, first 
+reducing to 128 filters and then to the final bottleneck dimension of 32 
+filters. This bottleneck design ensures that the model learns to preserve 
+the most essential characteristics of the structural response while 
+establishing relationships between different sensor locations, enabling 
+the detection of global structural behaviour patterns and anomalies.
+4.4.4. Decoder
+The decoder architecture implements a reconstruction pathway that 
+progressively expands the compressed features back to the original 
+domain dimensions. The decoder is a branched architecture, creating 
+separate reconstruction pathways for each accelerometer and domain 
+combination. Each pathway concludes with a domain-specific projection 
+layer that maps the features to the appropriate output dimensions 
+through a time distributed dense layer. The time distribution layer in the 
+final output ensures proper temporal alignment of the reconstructed 
+signals across all domains and accelerometers. This comprehensive 
+reconstruction approach enables the model to validate its learned rep -
+resentations and provide multiple perspectives for anomaly detection 
+through reconstruction error analysis.
+5. Evaluation strategy
+5.1. Synthetic data generation
+To overcome the limitation of insufficient real-world data in bridge 
+health monitoring for training and evaluation of unsupervised DL 
+models, a transformer-based time-series Wasserstein generative adver -
+sarial network with gradient penalty (TTS-WGAN-GP) was employed 
+[ 49 ]. This model demonstrated its capacity to generate realistic syn -
+thetic acceleration signals representative of the bridge’s structural 
+responses.
+The synthetic data generation process was structured to create two 
+distinct datasets. The first dataset was generated to represent the normal 
+operating conditions of the bridge, capturing the typical dynamic re -
+sponses under ambient excitation. The second dataset served as a 
+foundation for simulating various anomaly scenarios, providing a 
+controlled environment for evaluating the proposed methodology’s 
+ability to detect structural anomalies.
+5.1.1. TTS-WGAN-GP architecture
+The TTS-WGAN-GP architecture, illustrated in Fig. 4 , consists of two 
+primary components: a generator and a critic, both leveraging trans -
+former encoder blocks to effectively capture temporal dependencies in 
+acceleration time-series data.
+The generator component begins with a random noise vector input 
+(z) which undergoes latent expansion to create a foundation for the 
+synthetic signal. This expanded representation then receives positional 
+encoding, which injects sequential information that helps the model 
+understand temporal relationships within the data. The core of the 
+generator consists of multiple transformer encoder blocks arranged in 
+sequence. Each block contains layer normalization, multi-head attention 
+mechanisms, and feed-forward neural networks with residual connec -
+tions. These components work in concert to transform the noise input 
+into meaningful temporal patterns that mimic real acceleration signals. 
+The final output produces synthetic acceleration signals. The Critic 
+component evaluates both real acceleration signals and the generator’s 
+synthetic outputs. After an initial input projection layer that maps the 
+signals to a higher-dimensional space, the data flows through parallel 
+transformer encoder blocks. Similar to the generator, these blocks 
+contain layer normalization, multi-head attention, and feed-forward 
+components with residual connections. The transformer blocks enable 
+the critic to analyse the data at multiple temporal scales, capturing both 
+local vibration patterns and global structural response characteristics. 
+The processed features are then condensed through an attention pooling 
+mechanism, which produces a context-aware representation of the input 
+signals.
+Finally, a Wasserstein score is computed, quantifying the distribu -
+tional distance between the real and synthetic data distributions. The 
+model’s configuration included several key hyper-parameters: a 
+sequence length of 600 time steps, a latent dimension of 128, and a 
+hidden dimension of 256 for both generator and critic networks. The 
+generator utilized 4 transformer layers with 4 attention heads, while the 
+critic employed 3 transformer layers with 8 attention heads, allowing it 
+to evaluate signals from multiple perspectives. A consistent dropout rate 
+of 0.1 was applied throughout the network to prevent overfitting. Dur -
+ing training, the generator used a learning rate of 5e
+-5 
+while the critic 
+used 2e
+-4
+, with a gradient penalty coefficient of 10 to ensure training 
+stability. The critic was updated 5 times for each generator update, 
+following standard practices for WGAN training.
+The TTS-WGAN-GP model is trained on real-world validation data, 
+enabling it to inherently learn and replicate the uncertainties and vari -
+abilities present in these actual signals. Thus, the generated synthetic 
+data naturally embodies these real-world characteristics, with the GAN’s 
+noise input facilitating diverse sampling from this learned distribution.
+V. Mousavi et al. Information Fusion 126 (2026) 103534 
+8 
+5.1.2. TTS-WGAN-GP data validation
+To ensure the quality and reliability of the synthetically generated 
+acceleration signals, a comprehensive validation approach was 
+employed using multiple similarity metrics across both time and fre -
+quency domains. This validation process was crucial to verify that the 
+synthetic data accurately represented the statistical and physical char -
+acteristics of real bridge vibration responses [ 50 ].
+In the time domain, two primary metrics were utilized to evaluate 
+the similarity between real and synthetic signals. The Fr ´echet Inception 
+Distance (FID) was adopted to quantify the statistical distance between 
+the distributions of real and synthetic data. This metric calculates the 
+differences between the means and standard deviations of the feature 
+representations, providing a scalar value where lower scores indicate 
+greater similarity. Additionally, Average Cosine Similarity was imple -
+mented to measure the directional similarity between feature vectors 
+extracted from real and synthetic signals. This approach involved 
+extracting statistical features (including median, mean, standard devi -
+ation, variance, root mean square, maximum, and minimum values) 
+from both datasets and computing the normalized dot product between 
+these feature vectors.
+For frequency domain validation, two complementary methods were 
+employed to ensure that the synthetic signals accurately captured the 
+spectral characteristics of bridge vibrations. Power Spectral Density 
+(PSD) Cosine Similarity compared the frequency content of the signals 
+by calculating the cosine similarity between the power spectral density 
+estimates of real and synthetic data. This metric specifically evaluates 
+how well the synthetic signals replicate the energy distribution across 
+different frequencies, which is particularly important for structural vi -
+bration analysis. The second frequency domain metric, Magnitude 
+Correlation, assessed the linear correlation between the magnitude 
+spectra of the Fourier transforms from both datasets, providing insight 
+into how well the synthetic signals preserved the dominant frequency 
+components characteristic of the bridge ’ s dynamic behaviour.
+These four validation metrics collectively provided a robust frame -
+work for assessing the TTS-WGAN-GP model ’ s performance in gener -
+ating realistic bridge acceleration signals. By validating similarity in 
+both time and frequency domains, the approach ensured that the syn -
+thetic data captured not only the statistical properties of the signals but 
+also the underlying physical dynamics of the structural system.
+5.2. Synthetic anomaly simulation
+SHM primarily relies on accurately identifying changes in structural 
+behaviour that indicate potential damage or deterioration. A critical 
+challenge in SHM lies in the lack of real-world datasets representing the 
+damage state of civil infrastructure. This scarcity of damaged-state data 
+creates a fundamental obstacle for developing robust anomaly detection 
+algorithms, particularly when employing unsupervised DL approaches. 
+To overcome this limitation, a comprehensive framework is proposed for 
+simulating various structural anomalies using acceleration data ob -
+tained from a real-world bridge under ambient excitation. The proposed 
+method enables systematic evaluation of anomaly detection models by 
+introducing controlled modifications to the structural response charac -
+teristics. These modifications are designed to replicate specific anomaly 
+patterns commonly associated with different types of structural damage 
+[ 51 – 53 ]. By creating a diverse set of simulated anomaly scenarios with 
+varying characteristics, we can evaluate the sensitivity and accuracy of 
+detection algorithms across different damage modalities. The proposed 
+methodology enables systematic evaluation of anomaly detection 
+models by introducing controlled modifications to the structural 
+response characteristics. These modifications are designed to replicate 
+specific anomaly patterns commonly associated with different types of 
+structural damage. By creating a diverse set of simulated anomaly sce -
+narios with varying characteristics, the sensitivity and accuracy of 
+Fig. 4. The TTS-WGAN-GP Architecture.
+V. Mousavi et al. Information Fusion 126 (2026) 103534 
+9 
+detection algorithms across different damage modalities can be evalu -
+ated. Table 3 presents the mathematical formulations for each imple -
+mented anomaly scenario along with brief descriptions of the physical 
+phenomena they represent.
+The parameters used in the mathematical formulations presented in 
+Table 3 are defined as follows. The original and modified acceleration 
+signals in the time domain are denoted as x ( t ) and ̃x ( t ) , respectively, 
+while their frequency-domain counterparts are x ( f ) and ̃x ( f ) . The 
+Fourier transform and its inverse are represented by F and F
+  1
+. 
+Amplitude-related modifications are controlled by the scaling factor S
+f 
+and the drop percentage D
+p
+, which determine amplitude amplification 
+and localized reductions, respectively. The frequency shift parameter f
+s 
+alters the modal properties, while damping changes are characterized by 
+δ , modifying spectral amplitude near the dominant frequency. The mean 
+value of the signal segment is given by μ , serving as a reference for 
+amplitude drop and gradual degradation. In the combined anomaly 
+scenario, transformations are represented by T
+D
+, T
+F
+, and T
+A
+, corre -
+sponding to damping change, frequency shift, and amplitude scaling, 
+respectively.
+Following the generation of a set of simulated anomaly scenarios 
+with varying characteristics, the corresponding synthetic acceleration 
+signals undergo two essential processing stages: pre-processing and 
+feature extraction. In the pre-processing stage, the signals are first 
+detrended and then subjected to low-pass filtering, as detailed in Section 
+4.2 . Subsequently, feature extraction is performed to transforms 
+anomaly simulation signals into meaningful representations. Therefore, 
+features are extracted across three complementary domains including 
+time, frequency, and wavelet, as described in Section 4.3 .
+5.3. Damage evaluation metric
+After training of the MDFA model, the model is then employed to 
+reconstruct the signals, and the reconstruction error ( E ) is calculated 
+using the Mean Squared Error (MSE) of the input input ( x ) and recon -
+structed ( ̂x ) signals, as follows: 
+E = ( x   ̂x ) (1) 
+This error typically follows a Gaussian distribution, with the Prob -
+ability Density Function (PDF) expressed as follows: 
+f
+x
+( E ) =
+1
+σ
+̅̅̅̅̅ ̅
+2 π
+√ exp
+(
+ 
+( E   μ )
+2
+2 σ
+2
+)
+(2) 
+where σ and μ are the mean and standard deviation of E , respectively. To 
+evaluate the amount of information represented by the PDF computed 
+using Eq. (2) , a measure of entropy, specifically R ´enyi entropy, is 
+commonly used [ 54 ]. This entropy measure helps quantify the level of 
+uncertainty within the set of descriptors. The definition of R ´enyi entropy 
+is outlined below.
+Assuming X as a random variable with a constant distribution 
+of f
+x
+( x ) , the R ´enyi entropy of order α (where α ≥ 0 , α ∕= 1 and α ∕= 0) 
+can be calculated as follows: 
+Renyi ( X ) =
+1
+1   α
+log
+( ∫
+( f
+X
+( x ))
+α
+dx
+)
+(3) 
+The entropy of a PDF can be interpreted as a measure of both un -
+certainty and information content. As α approaches infinity, the R ´enyi 
+entropy is dominated by the events with the highest probabilities. The 
+R ´enyi entropy of order α places greater emphasis on less probable data, 
+making it a useful tool to measure the information content in each re -
+cord. Thus, it can be utilized to distinguish between special differences 
+and normal ones in our damage detection task.
+By substituting Eq. (3) into Eq. (2) , the R ´enyi entropy with α =
+2 could be calculated by: 
+Reiny ( E ) =   log
+[
+∫ (
+1
+σ
+̅̅̅̅̅ ̅
+2 π
+√ exp
+(
+ 
+( E   μ )
+2
+2 σ
+2
+))
+2
+dx
+]
+(4) 
+It is important to note that the analytical form of R ´enyi entropy is not 
+derived in Eq (4) . Instead, a non-parametric formulation of R ´enyi en -
+tropy is used to evaluate the full error distribution in the latent space. 
+The applied R ´enyi entropy is more efficient in comparison to widely 
+used Damage-Sensitive Features (DSF) applied in previous studies [ 25 ,
+55 ], as it considers the full error distribution rather than only the peak 
+and variance, allowing detection of subtle changes (even minor damage) 
+that might be overlooked by Standard deviation to peak PDF ratio 
+(SDPP) method [ 55 ]. R ´enyi entropy captures higher-order statistical 
+characteristics of the error distribution and enables the detection of 
+subtle yet systematic deviations in signal reconstruction error. These 
+variations are often overlooked by conventional metrics and affect the 
+sensitivity of early-stage anomaly detection. In comparison to tradi -
+tional loss functions, such as standard MSE, Kullback – Leibler (KL) 
+divergence [ 56 ], and the SDPP, R ´enyi entropy provides a more holistic 
+representation of the underlying distribution [ 57 ]. MSE is limited to 
+pointwise amplitude differences, while KL divergence relies on a 
+well-defined reference distribution and is particularly sensitive to re -
+gions of low probability. SDPP, on the other hand, reduces the distri -
+bution to a single moment ratio, thereby losing significant distributional 
+details. By contrast, R ´enyi entropy provides a robust statistical measure 
+capable of capturing complex distributional shifts and its sensitivity in 
+detection of subtle variations makes it particularly effective for identi -
+fying early-stage or small-scale damages. The threshold for anomaly 
+detection was determined using a percentile-based approach applied to 
+R ´enyi entropy values calculated from the normal data. After computing 
+the R ´enyi entropy for each accelerometer under normal operating con -
+ditions, a statistical threshold was established at a high percentile 
+(typically the 99th percentile) of this distribution. This methodology 
+ensures that values exceeding the threshold represent statistically sig -
+nificant deviations from the normal pattern.
+6. Case Study I: Werrington Bridge, NSW Australia
+6.1. Dataset
+For the first case study, the acceleration data from the Werrington 
+bridge have been utilized. This bridge, as shown in Figure 5 (a), crosses 
+the Great Western Highway and connects the north and south Penrith 
+campuses of Western Sydney University in Sydney. This Bridge is a 
+cable-stayed structure with a 46.2 m span, with a structural system 
+consists of a composite steel-concrete deck supported by an A-shaped 
+steel pylon. The deck, with a uniform width of 6.3 m, is supported by 
+four longitudinal girders, which are internally connected by seven 
+transverse cross girders. Additionally, steel corrugated sheets are 
+embedded within the deck to enhance its composite structural perfor -
+mance. The deck is also supported by three lines of four bearings and is 
+Table 3 
+Simulated anomaly scenarios and their specifications.
+Anomaly 
+Scenario
+Mathematical 
+Formulation
+Simulated Effect
+Amplitude 
+Scaling
+̃x ( t ) =
+ 
+1 + 0 . 5 S
+f
+)
+⋅ x ( t ) Stiffness reduction or mass 
+changes
+Frequency 
+Shifting
+̃x ( t ) =
+F
+  1
+{
+F { x ( t )} ⋅ e
+  j 2 π f s t
+}
+Changes in natural frequencies or 
+modal shift
+Amplitude Drop ̃x ( t ) = μ + [ x ( t )   μ ] ⋅
+ 
+1  
+D
+p
+)
+Localized reductions or abrupt 
+changes
+Gradual 
+Degradation
+̃x ( t ) = μ + [ x ( t )   μ ] ⋅ x ( t ) Progressive deterioration such as 
+fatigue or corrosion
+Damping 
+Change
+̃x ( f ) = x ( f ) ⋅ δ Damping variations
+Combined 
+Anomalies
+̃x ( t ) =
+T
+D
+( T
+F
+( T
+A
+( x ( t ))))
+Complex damage scenarios
+V. Mousavi et al. Information Fusion 126 (2026) 103534 
+10 
+stabilized using two sets of eight stay cables: one set anchored to the 
+upper end of the pylon and another to a concrete block at the southern 
+end.
+To monitor the bridge ’ s structural vibrations, a network of high- 
+precision accelerometers was installed at different locations across the 
+bridge, as depicted in Figure 5 (b). These sensors consistently recorded 
+acceleration data, reflecting the vibrational characteristics of the 
+structure. The detailed descriptions of the instrumentation and data 
+collection procedures are provided in [ 58 ]. In this case study, 5 minutes 
+of vibration measurements were used for training, and 2 minutes for 
+validation and testing.
+6.2. Extracted Features from Bridge Acceleration Data
+The acceleration signals obtained from the bridge monitoring system 
+required pre-processing to ensure data quality before feature extraction. 
+As described in Section 4.2 , the raw signals exhibited bias error, which 
+was eliminated using OLSR method. Following detrending, a low-pass 
+Butterworth filter was applied to remove high-frequency noise compo -
+nents while preserving the essential structural response characteristics. 
+The selection of an appropriate cut-off frequency for the low-pass filter 
+was determined through bandwidth estimation using the Welch method. 
+The bandwidth analysis revealed that at least 90% of the signal power 
+for all accelerometers was concentrated below 200 Hz, which was sub -
+sequently chosen as the cut-off frequency. This filtering approach 
+effectively preserved the meaningful structural frequencies while 
+attenuating noise components. It is important to note that this filtering 
+process was specifically applied to the feature extraction procedure and 
+did not affect the detrended raw signals, which retained their original 
+frequency content for damage detection analysis. This approach avoids 
+losing any potentially valuable information and prevents overfitting 
+during model training by allowing the raw data to retain its full dynamic 
+range.
+Figure 6 presents the pre-processed acceleration signals and their 
+corresponding extracted features across multiple domains. All signals 
+and features were scaled for better visualization and comparison. The 
+top panel shows the detrended raw acceleration measurements from all 
+four sensors (A1-A4), revealing bridge ’ s dynamic response patterns. The 
+subsequent panels illustrate the extracted features in time, frequency, 
+and wavelet domains for each sensor, computed according to the 
+equations presented in Table 3 . The extraction process employed a 
+sliding window approach with a window size of 300 samples and 50% 
+overlap, striking a balance between computational efficiency and tem -
+poral resolution. These extracted features formed the foundation for 
+training the MDFA model, providing a comprehensive representation of 
+bridge ’ s dynamic behaviour under normal operating conditions.
+6.3. MDFA Model Training Performance
+The MDFA model was trained using an unsupervised learning 
+approach with real-world acceleration data collected from the Wer -
+rington Bridge under normal operating conditions. This approach 
+allowed the model to learn the typical patterns of a healthy structural 
+state without requiring data from damaged conditions.
+The training process began with thorough data preparation, as 
+described in Section 4.4.1 . Sensor-wise scaling was applied to normalize 
+the data from each accelerometer independently while preserving the 
+relationships among features. The pre-processed data was then 
+Fig. 5. (a): Werrington bridge, (b) Schematic illustration of sensor placement.
+V. Mousavi et al. Information Fusion 126 (2026) 103534 
+11 
+organized using a sliding window of size 10 and grouped into batches of 
+512 samples via Tensor Flow ’ s data pipeline. The input structure was 
+configured to accept raw acceleration data with dimensions (512, 10, 1) 
+and domain-specific features with dimensions (512, 10, 3), ensuring 
+consistency in data format.
+The model was trained by minimizing the mean squared error be -
+tween the input signals and their reconstructions across all domains. A 
+domain-specific loss weighting strategy was applied by assigning a 
+weight of 1.0 to the reconstruction of raw acceleration signals and a 
+weight of 0.8 to the reconstruction of extracted features (time, fre -
+quency, and wavelet). This scheme prioritized the accurate reconstruc -
+tion of raw signals while incorporating the complementary information 
+provided by the derived features. Optimization was performed using the 
+Adam optimizer, which was initialized with a learning rate of 0.0001. 
+Training was conducted for 100 epochs. To prevent overfi

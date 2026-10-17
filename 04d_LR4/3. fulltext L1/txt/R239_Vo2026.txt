@@ -1,0 +1,1047 @@
+ 
+Contents lists available at ScienceDirect
+Automation in Construction
+journal homepage: www.elsevier.com/locate/autcon 
+Camera-relocalization-driven monocular 3D safety monitoring system for 
+crane operationsI
+Tran Dang Khoa Vo a, Yuntae Jeon a, Tan-Dat Pham a, Pa Pa Win Aung a, Dongyoung Ko a, 
+Seunghee Park a,b
+ ,∗
+a Department of Global Smart City, Sungkyunkwan University, Suwon, 16419, South Korea
+b School of Civil, Architectural Engineering and Landscape Architecture, Sungkyunkwan University, Suwon, 16419, South Korea
+A R T I C L E I N F O
+Keywords:
+Camera relocalization
+Monocular depth estimation
+Computer vision
+3D object localization
+Safety monitoring
+NVIDIA omniverse
+ A B S T R A C T
+Construction remains one of the most hazardous industries, with tower crane operations posing significant 
+risks under limited visibility and dynamic site conditions. This paper proposes a calibration-free vision-
+based framework for safety-oriented 3D localization using crane-mounted monocular cameras. The D2S-MDE 
+framework recovers metric-scale 3D worker positions from a single RGB image by enforcing geometric 
+consistency between camera relocalization and monocular depth estimation. Sparse metric depth anchors 
+from scene coordinate regression are used to align dense monocular depth, enabling robust metric depth 
+reconstruction under dynamic viewpoints. The estimated 3D positions are integrated into a BIM-aligned digital 
+twin in NVIDIA Omniverse for real-time safety monitoring and risk assessment. Experiments demonstrate 
+decimeter-level camera pose accuracy (0.012 m/0.019◦) in real scenes and achieve a Height-Normalized 
+Localization Score of up to 92.67% at 14 m, with risk assessment accuracy reaching 94.19%. This performance 
+highlights the framework effectiveness for practical deployment in real construction environments.
+1. Introduction
+Construction is one of the most hazardous industries, accounting 
+for a disproportionate share of occupational injuries and fatalities [1]. 
+According to the statistics from the Bureau of Labor Statistics (BLS), the 
+fatal injuries in construction sectors in 2023 were 1075 cases, leading 
+to the top fatal rate among industries. Beyond the tragic human losses, 
+such accidents also lead to economic burdens. For example, the Occu-
+pational Safety and Health Administration (OSHA) estimated that the 
+workplace injuries cost almost $1 billion per week in 2023 [2]. These 
+statistics underscore the critical need for effective safety management 
+and proactive hazard monitoring on construction sites.
+In the construction areas, the safety of workers working around 
+heavy constructions machines, specifically tower crane, is particularly 
+critical because these machines have very large sizes and their opera-
+tors normally have limited visibility. Therefore, it would be a thorny 
+problem for people to avoid potential hazards from these kinds of 
+machinery while maintaining the continuous operations, especially 
+in a crowded and dynamic environment. As a result, developing an 
+advanced monitoring system for real-time visualization and safety risk 
+awareness should be taken into account as priorities.
+I This article is part of a Special issue entitled: ‘Next-Gen Construction’ published in Automation in Construction.
+∗ Corresponding author.
+E-mail address: shparkpc@skku.edu (S. Park).
+In the past decade, vision-based hazard monitoring has gained 
+significant attention due to advances in computer vision. Early studies 
+primarily focused on 2D worker and equipment detection for con-
+struction safety monitoring using CCTV and crane-view imagery. For 
+example, Price et al. [3] developed a multisensor crane monitoring 
+system for blind lift operations, while Sutjaritvorakul et al. [4] pro-
+posed a data-driven worker detection framework using crane-view 
+cameras. Recent studies further addressed challenging construction 
+scenarios such as overlapping worker detection [5], long-tailed object 
+detection under domain-shifted environments [6], and multiview tra-
+jectory analysis for construction-object monitoring [7]. Other studies 
+extended safety monitoring to the 3D level. For example, Kulinan 
+et al. [8] estimated 3D worker coordinates within a BIM platform, 
+while Lee et al. [9] employed stereo vision for multi-worker localization 
+and tracking. To support dynamic camera systems, Wang et al. [10] 
+combined visual odometry and monocular depth estimation for crane 
+monitoring, whereas Fu et al. [11] proposed a 2D–3D matching pipeline 
+for crane boom-end localization. Han et al. [12] further integrated 
+UAV monitoring with digital twin environments for large-scale worker 
+management. In parallel, BIM- and digital-twin-based safety manage-
+ment has attracted increasing attention. Tak et al. [13] and Shahnavaz 
+https://doi.org/10.1016/j.autcon.2026.107057
+Received 13 October 2025; Received in revised form 19 May 2026; Accepted 23 May 2026
+Automation in Construction 189 (2026) 107057 
+Available online 2 June 2026 
+0926-5805/© 2026 Elsevier B.V. All rights are reserved, including those for text and data mining, AI training, and similar technologies. 
+T.D.K. Vo et al.
+et al. [14] simulated crane operations within BIM environments for 
+clash detection and motion-path analysis, while Kulinan et al. [15] 
+extended BIM integration toward dynamic hazard analysis using CCTV 
+data.
+Despite the remarkable progress in advancing safety monitoring 
+technologies, several limitations persist. Firstly, there is fragility and 
+computational inefficiency in image-reference-based 2D–2D and 2D–
+3D matching. A reference-based method retrieves candidate reference 
+frames from the entire video, establishes 2D–2D correspondences, and 
+then lifts inliers to 2D–3D using a prebuilt SfM point cloud followed by 
+PnP. Construction-site imagery often contains repetitive structural tex-
+tures (rebar and scaffolding), environmental disturbances (dust or rain), 
+and motion-induced blur, which can degrade the reliability of 2D–2D 
+feature matching. Moreover, pipelines that perform 2D–2D match-
+ing prior to 2D–3D lifting typically incur substantial computational 
+overhead, posing challenges for real-time edge deployment. In this 
+paper, we suggest bypass reference-frame retrieval by directly matching 
+the 2D query image to a pre-stored 3D point cloud, achieving more 
+noise-robust localization with markedly lower computational overhead. 
+Beyond matching-based localization, recovering reliable depth infor-
+mation from monocular cameras remains another challenge. Existing 
+monocular depth estimation methods often depend on externally pro-
+vided camera poses and heuristic pixel filtering strategies, which can 
+lead to inaccurate depth prediction and scale ambiguity. As a conse-
+quence, object-level 3D localization becomes unstable when 2D detec-
+tions are projected using mismatched scaled depth values. Although 
+sparse 3D descriptors are sometimes reconstructed in these pipelines, 
+they are rarely exploited as geometric constraints to regularize dense 
+depth estimation. In addition, most existing 3D localization paradigms 
+are built upon multi-view or stereo vision assumptions, where depth 
+is inferred from synchronized cameras or temporally adjacent frames. 
+While effective for static surveillance systems, these assumptions break 
+down in crane-mounted or mobile camera scenarios, where fixed stereo 
+baselines are unavailable and temporal multi-view reconstruction in-
+troduces latency and instability due to insufficient viewpoint variation 
+between consecutive frames. In parallel, existing multi-object 3D safety 
+monitoring systems typically visualize workers, machinery, and safety 
+zones independently, without explicitly modeling their spatial inter-
+actions within a unified environment. Furthermore, although digital 
+twin technologies have been widely applied in civil engineering ap-
+plications such as Structural Health Monitoring (SHM) [16,17], few 
+studies integrate real-time 3D localization with interactive digital twin 
+environments capable of rule-based hazard evaluation and spatial risk 
+visualization.
+As a result, 3D localization for dynamic construction cameras must 
+be reformulated as a per-frame inference problem that jointly reasons 
+about camera pose and scene depth from a single RGB image. However, 
+this reformulation introduces two fundamental challenges: (i) camera 
+relocalization must be lightweight and robust without relying on expen-
+sive point-cloud-based matching pipelines, and (ii) depth information 
+must be inferred in metric scale despite the inherent ambiguity of 
+monocular depth estimation. Addressing these challenges is essen-
+tial for enabling real-time, calibration-free 3D safety monitoring with 
+dynamically mounted cameras.
+Unlike conventional multi-view or calibration-based pipelines,
+crane-mounted safety monitoring requires per-frame metric 3D local-
+ization under continuously changing viewpoints. In this setting, neither 
+fixed stereo geometry nor repeated manual calibration is practical. To 
+address this challenge, we formulate crane-mounted safety monitoring 
+as a geometric consistency problem between scene coordinate regres-
+sion and monocular depth estimation. Specifically, scene coordinate 
+regression provides sparse metric geometric anchors through camera 
+relocalization, whereas monocular depth estimation provides dense but 
+scale-ambiguous depth predictions. By reconciling these two repre-
+sentations at inference time, the proposed framework enables metric 
+3D localization from a single moving crane-mounted camera without 
+explicit camera calibration. We propose a calibration-free deep-learning 
+framework that enables 3D localization from a single crane-mounted 
+RGB camera by enforcing coordinate consistency at inference time, 
+as summarized in Table 1. The key contributions of this study are 
+summarized as follows:
+• We introduce a calibration-free vision framework for crane-
+mounted cameras that enables metric 3D worker localization un-
+der dynamically changing viewpoints without requiring manual 
+camera calibration or additional sensing hardware.
+• We propose a scale-consistent depth recovery strategy that rec-
+onciles dense monocular depth predictions with sparse metric 
+depth anchors derived from camera relocalization. This approach 
+provides a practical mechanism to recover metric-scale depth 
+under dynamic camera conditions commonly encountered on con-
+struction sites.
+• We validate the proposed framework through experiments on 
+real construction site data and demonstrate its integration with 
+a digital-twin environment for rule-based safety monitoring and 
+hazard evaluation.
+2. Related work
+This section reviews previous studies on camera relocalization, 
+3D vision-based localization, and digital-twin-based safety monitoring 
+in construction environments. Existing approaches and their limita-
+tions are discussed to position the proposed framework within current 
+research trends.
+2.1. Camera relocalization on safety monitoring
+Camera relocalization is the task of estimating a camera’s 6-DoF 
+pose from a single RGB image and can generally be categorized into 
+three groups. The first category is image-retrieval-based localization, 
+where query images are matched against geo-referenced image data-
+bases using global descriptors or place-recognition methods [19,20]. 
+Subsequent studies improved retrieval robustness using synthesized 
+views and learned global representations [21,22]. The retrieved ref-
+erence images are then used to approximate the camera pose [23]. 
+Although this approach is computationally efficient, it depends heavily 
+on dense reference-image coverage and often struggles under unseen 
+viewpoints or environmental changes. Structure-based approaches in-
+stead estimate camera poses through explicit 2D–3D correspondences 
+between query images and reconstructed scene geometry. Representa-
+tive methods include feature metric localization [24], pixel-level pose 
+refinement [25], hierarchical localization [26], and graph-based fea-
+ture matching frameworks such as SuperGlue and SuperPoint [27,28]. 
+These methods generally achieve high localization accuracy by lever-
+aging geometric constraints, but they require dense 3D maps and com-
+putationally expensive feature matching during inference. To address 
+these limitations, end-to-end deep learning methods based on Scene 
+Coordinate Regression (SCR) have been introduced. Early SCR ap-
+proaches employed lightweight regression networks to directly predict 
+scene coordinates from RGB images [29,30], while more recent studies 
+improved robustness and scalability for large-scale environments [31,
+32]. Since SCR-based methods estimate camera poses directly from 
+predicted scene coordinates without explicit image retrieval or dense 
+point-cloud matching, they provide a lightweight and practical solution 
+for dynamic-camera scenarios in hazard monitoring.
+Camera relocalization has been widely applied in robotics and au-
+tonomous vehicles for navigation. Recognizing its potential, researchers 
+have also explored its application in heavy construction equipment, 
+particularly tower cranes. One early approach is proposed by Jing 
+et al. [33], who align live camera frames with a point cloud map 
+to approximate the crane camera pose. They generate a wide-angle 
+synthetic reference image from the point cloud and employ 2D feature 
+Automation in Construction 189 (2026) 107057 
+2 
+T.D.K. Vo et al.
+Table 1
+Comparison of current studies on safety monitoring using camera calibration.
+ Research Output Sensors Approach Auto 
+Relocalization
+Risk 
+Assessment
+DT
+Integration
+ 
+ Chian et al [18] 2D safety 
+zone, worker 
+positions
+Static CCTV Manual 2D spatial mapping 
+and object detection for 
+load fall zone calculation
+x o x 
+ Kulinan et al [8] 3D worker 
+position
+Static CCTV Single-camera position 
+estimation; BIM 
+visualization
+x o o 
+ Lee et al [9] 3D worker 
+tracks
+Multiple CCTV Stereo vision worker 
+identification and tracking
+x x x 
+ Wang et al [10] 3D camera 
+poses, WAL
+Dynamic camera Semi-direct Visual 
+Odometry (SVO) and 
+REMODE for spatial 
+mapping
+o x x 
+ Ling et al [11] 3D camera 
+poses
+Dynamic camera 2D–3D matching; sparse 
+point cloud localization
+o x x 
+ Han et al [12] 3D worker 
+position
+Drone GPS; camera GPS-based localization; ID 
+data matching; WHSC 
+Drone Intelligent 
+Inspection System
+o x o 
+ Ours 3D worker 
+positions; 
+dynamic 
+safety zone
+Dynamic camera Scene Coordinate 
+Regression (SCR) 
+relocalizer; Depth Anything 
+V2 for depth estimation; 
+NVIDIA Omniverse 
+visualization
+o o o 
+matching (SIFT) with RANSAC to estimate a 2D transformation of 
+the camera view. While this method is computationally efficient, it 
+only provides 2D pose alignment and becomes less reliable when the 
+camera moves, as the overlap with the static reference image decreases. 
+Consequently, its accuracy drops during fast crane operations. Another 
+approach for safety monitoring is Semi-Visual-Odometry-based relocal-
+ization, demonstrated by Wang et al. [10]. This method employs SVO 
+for real-time pose estimation and geometric reconstruction, and then 
+performs online relocalization of new images via 2D–3D SIFT feature 
+matching. While the method achieves low errors in field tests, its 
+performance is evaluated under relatively static conditions. Therefore, 
+its adaptability to construction sites with frequent changes or moving 
+objects remains uncertain. More recently, Fu et al. [11] introduce a 
+structure-based technique to localize a crane boom tip using a sparse 
+point cloud reconstructed via Structure-from-Motion. They employ im-
+age retrieval to enhance 2D–3D feature matching between crane images 
+and the point cloud, and accurately determine the 3D position of the 
+boom tip through geometric alignment. However, localization errors 
+may increase when query images differ significantly from the reference 
+set, resulting in insufficient feature correspondences between images 
+and the sparse point cloud. As a result, the method requires highly 
+overlapping images in the dataset to ensure full scene coverage and 
+reliable localization.
+2.2. 3D vision-based localization in safety monitoring
+Compared with 2D visual detection, the use of 3D spatial infor-
+mation is widely acknowledged to better represent the interactions 
+between workers and machinery on construction sites. The most com-
+mon approaches introduce spatial localization frameworks based on 
+stereo vision systems, among which Lee et al. [9], Cai et al. [34], and 
+Zhang et al. [35] are representative examples. Generally, the method 
+relies on the intersection view of at least two cameras simultaneously 
+and includes four steps: camera calibration to estimate intrinsic and ex-
+trinsic parameters, 2D object localization to obtain image coordinates, 
+object matching where visual information is associated across images 
+based on epipolar geometry constraints, and triangulation which inte-
+grates the previous results to recover 3D coordinates of target entities. 
+Despite their effectiveness, these methods still require significant man-
+ual calibration effort and accurate multi-view data association, which 
+remains challenging in complex construction environments. In addi-
+tion, existing stereo camera systems primarily focus on ground-level 
+hazards rather than overhead risks, making them less suitable for crane 
+operations.
+To address this gap, the use of single camera, in collaboration 
+with other sensors and AI-driven techniques, is a potential solution to 
+estimate 3D entity coordinates from dynamic cameras. For instance, 
+Zhang et al. [36] used a single monocular camera and geometry 
+feeded from drone. After estimating the drone camera poses by Semi-
+Direct Visual Odometry, they combine adjacent frames with Multi-View 
+Stereo method to generate depth map to ground plane, enabling back-
+projection of 2D detections into 3D coordinates based on known camera 
+height and ground geometry. Meanwhile, Shen et al. [37] propose 
+a direct approach, namely the Self-supervised Monocular Depth Es-
+timation Network (SNDEU), which predicts both depth maps and 
+unknown camera intrinsics from raw video sequences. The detected 2D 
+results, including bounding boxes and instance segmentation masks, are 
+projected into 3D space to form a pseudo-LiDAR point cloud, which 
+is subsequently filtered using a density-based clustering algorithm to 
+extract object-level 3D coordinates. Another method introduced by Han 
+et al. [12] who links 2D detection results across UAV-captured video 
+frames using multi-object tracking and maps them onto a coarse 3D 
+photogrammetry model using UAV GPS data. However, unlike UAV 
+systems equipped with accurate GPS, crane-mounted cameras lack 
+predefined camera parameters, and their motion is often non-ideal, 
+as intermittent stops during operation can negatively affect localiza-
+tion performance. Although depth estimation has shown promise for 
+addressing these challenges [38], monocular depth predictions often 
+suffer from scale ambiguity [39], particularly at long distances. There-
+fore, by incorporating sparse scene descriptors obtained from Scene 
+Coordinate Regression (SCR), the proposed framework has the potential 
+to overcome these limitations and provide more robust 3D localization 
+in dynamic construction environments.
+Automation in Construction 189 (2026) 107057 
+3 
+T.D.K. Vo et al.
+Fig. 1. Overall framework of D2S-MDE and 3D safety monitoring.
+2.3. Digital twin-based hazards visualization
+Digital Twins (DTs) are increasingly recognized as a bridge that 
+integrates real-time data from sensors and other sources with man-
+agement systems, enabling dynamic monitoring, risk assessment, and 
+decision-making support. In construction safety management, DTs can 
+be combined with computer vision and Building Information Modeling 
+(BIM) to digitize risk assessment, facilitating real-time monitoring of 
+workers’ locations and safety compliance within a virtual environ-
+ment [8]. Moreover, DTs provide an effective means not only for 
+visualizing site operations but also for supporting task assignment and 
+resource allocation [12,40].
+DTs have significant potential to improve crane operation safety 
+due to their ability to provide diverse types of data. Although it had 
+been applied in certain cases, for example as analysis stability of tower 
+crane hoisting, the most powerful feature is to provide the interaction 
+throughout entities has not been properly utilized. To address this 
+gap, we extend these concepts by integrating camera relocalization 
+and monocular depth estimation outputs into a digital twin workspace 
+developed in NVIDIA Omniverse, which has been shown effectively 
+in progress monitoring [41] but in safety management. By mapping 
+relocalized camera poses and depth-derived 3D coordinates of detected 
+entities onto a virtual site model, the DT enables real-time visualiza-
+tion of spatial relationships among the crane boom, site workers, and 
+hazardous zones. This spatial context is critical for assessing potential 
+collision risks.
+3. Methodology
+This study proposes a vision-based framework for estimating the 
+3D positions of workers operating around crane zones by integrating 
+camera relocalization and monocular depth estimation, as illustrated 
+in Fig. 1. First, a top-down query image (a) is provided as input to the 
+D2S camera relocalization module (b), which utilizes a graph attention 
+network with scene coordinate regression to estimate the camera pose. 
+Sparse scene descriptors obtained from this module are reprojected 
+into the image plane to generate sparse depth anchors. In parallel, 
+the same image is processed by a vision transformer-based monocular 
+depth estimation module (c) to produce a dense relative depth map. 
+The sparse depth anchors are then used to perform geometric scale 
+reconciliation (d), aligning the relative depth map with metric scale 
+to obtain a metric depth map. Subsequently, objects of interest are 
+detected using the real-time object detection model RTMDet (e), which 
+extracts 2D bounding boxes of workers in the image. By retrieving 
+depth values from the metric depth map and applying back-projection 
+using camera intrinsic parameters, the corresponding 3D positions 
+of the detected entities are computed (g). Finally, the estimated 3D 
+positions are spatially registered with the preloaded BIM model within 
+the NVIDIA Omniverse environment (f). This enables digital twin-based 
+visualization and real-time safety assessment for crane operations (h).
+3.1. D2S-based camera relocalization
+This section describes the proposed D2S-based camera relocalization 
+framework for estimating crane-mounted camera poses from monocular 
+images. The overall process includes data collection, scene coordi-
+nate regression training, and camera pose estimation using 2D–3D 
+correspondences.
+3.1.1. Data collection
+To estimate new camera poses in a specific environment, a scene 
+coordinate regression model requires two types of input data for train-
+ing. First, 2D images with known camera intrinsic parameters and a 
+sparse reconstruction point cloud are required. Top-down view images 
+Automation in Construction 189 (2026) 107057 
+4 
+T.D.K. Vo et al.
+Fig. 2. Visualization of camera re-localization using D2S.
+of the construction site are captured both from a camera mounted on 
+the trolley of a tower crane during operation and from a drone-mounted 
+camera during surveying activities. The images, with a resolution of 
+1920 × 1080, are suitable for extracting detailed features of large-scale 
+construction projects, while intrinsic parameters may vary depending 
+on the specific camera used on site. To construct a reference scene 
+for supervised learning, we leverage the Structure-from-Motion (SfM) 
+pipeline in COLMAP and carefully filter out frames affected by ex-
+cessive motion blur or dynamic obstructions. Keyframes are selected 
+based on visual overlap, feature density, and motion stability to ensure 
+accurate 3D reconstruction. The resulting SfM model provides 3D point 
+clouds and camera poses, which are used to extract ground-truth 2D–3D 
+keypoint correspondences for D2S training.
+3.1.2. D2S training
+Extrinsic parameters play a crucial role because they provide in-
+formation about the camera position (𝑥𝑐𝑎𝑚, 𝑦𝑐𝑎𝑚, 𝑧𝑐𝑎𝑚 ) and orientation 
+(𝜃, 𝜙, 𝛹 ) of relative to the scene, enabling the estimation of the 
+spatial layout of 3D entities. In practice, the orientation is represented 
+by quaternions, which are later converted to rotation matrices for 
+coordinate transformation, as described in Section 3.2.3. To determine 
+6-DoF camera poses from crane-mounted images, we adopt the D2S 
+framework [42], a lightweight regression-based relocalization method 
+that directly maps sparse 2D keypoints to their corresponding 3D scene 
+coordinates. Instead of relying on dense 3D point clouds and descriptor 
+matching as in traditional feature-matching pipelines, D2S is trained to 
+predict 3D coordinates from keypoint descriptors using a compact neu-
+ral network. The network architecture consists of a multi-layer graph 
+attention module that allows descriptors to communicate and model 
+spatial context, followed by a shared multi-layer perceptron (MLP) 
+that regresses both 3D coordinates and reliability scores for each key-
+point. Each descriptor predicts exactly one 3D point, and the reliability 
+score is trained using a supervised loss function to distinguish robust 
+and stable features from unreliable ones, such as dynamic objects or 
+blurred regions. Ground-truth 2D–3D correspondences are obtained 
+from a Structure-from-Motion (SfM) model built on the training data, 
+and losses are computed by comparing predicted 3D points with the 
+corresponding SfM coordinates, as shown in Fig. 2. Images and SfM 
+point clouds are used to train the D2S model offline. During inference, 
+the pretrained model extracts 2D image features and regresses their 
+corresponding 3D scene coordinates. The predicted correspondences 
+are then solved using a PnP-based algorithm to estimate the camera 
+position 𝐭 = [ 𝑥, 𝑦, 𝑧] and orientation represented by the quaternion 
+𝐪 = [𝑞𝑤, 𝑞𝑥, 𝑞𝑦, 𝑞𝑧].
+The trained D2S model is then used to estimate new camera poses 
+from unseen query images. Given an input image, keypoints are ex-
+tracted using SuperPoint, and their descriptors are passed through 
+the trained D2S network to predict their 3D locations and confidence 
+scores. A subset of high-confidence 2D–3D correspondences is selected 
+based on the predicted reliability, and the camera pose is estimated 
+using a RANSAC-based Perspective-n-Point (PnP) algorithm. This in-
+ference process avoids the need to store or access dense 3D models, 
+enabling fast and scalable pose estimation. The lightweight nature of 
+the model makes it highly suitable for deployment in tower crane 
+applications, where fast and accurate localization is essential for safe 
+operation.
+In the proposed framework, scene coordinate regression is not 
+only used for camera pose estimation, but also serves as the geomet-
+ric anchor of the overall pipeline. The scene coordinates predicted 
+by the relocalization module define a sparse metric reference space 
+that is later exploited to resolve the scale ambiguity of monocular 
+depth estimation. This role is critical in crane-mounted monitoring, 
+where camera viewpoints vary continuously and explicit recalibration 
+is impractical.
+3.2. 3D object localization
+This section outlines the processing steps to recover metrically 
+consistent 3D object positions from crane-mounted monocular im-
+ages, including depth prediction, object detection, and geometric back-
+projection into the world coordinate system.
+3.2.1. Monocular depth map estimation
+To estimate the 3D position of detected objects, it is necessary to 
+obtain depth information that relates image observations to the camera 
+coordinate system. Unlike static camera systems where stereo or multi-
+view geometry can be exploited, crane-mounted monitoring operates 
+under continuously changing viewpoints. Therefore, the system re-
+quires a mechanism to infer per-frame depth information from a single 
+image. The Depth Anything model [43] is adopted as the monocular 
+depth estimation backbone to generate dense relative depth predictions 
+for each input image. However, monocular depth estimation inherently 
+suffers from scale ambiguity, meaning the predicted depth values are 
+relative rather than metric. While the model was not explicitly trained 
+on crane-mounted datasets, its training set includes drone and elevated-
+view images, making it suitable for similar top-down perspectives. 
+As a result, this model allows the system to recover generalized per-
+pixel depth information without the need for stereo cameras or LiDAR 
+sensors, making it well-suited for crane-mounted monocular setups.
+Automation in Construction 189 (2026) 107057 
+5 
+T.D.K. Vo et al.
+Algorithm 1 Sparse-Anchor depth scale alignment.
+Require: Dense relative depth map 𝐷𝑟𝑒𝑙, sparse metric depth anchors 
+𝐷𝑠𝑝𝑎𝑟𝑠𝑒, RGB image 𝐼
+Ensure: Metric-consistent dense depth map 𝐷𝑓 𝑖𝑛𝑎𝑙, global scale factor 
+𝑠
+1: Identify valid overlapping pixels 𝛺 between 𝐷𝑟𝑒𝑙 and 𝐷𝑠𝑝𝑎𝑟𝑠𝑒
+2: Compute scale ratios 𝑟𝑖 = 𝐷𝑠𝑝𝑎𝑟𝑠𝑒(𝑖)∕𝐷𝑟𝑒𝑙(𝑖) for all 𝑖 ∈ 𝛺
+3: Estimate the global scale factor 𝑠 using the median of {𝑟𝑖}
+4: Align the dense depth map to metric scale: 𝐷𝑠𝑐𝑎𝑙𝑒 = 𝑠 ⋅ 𝐷𝑟𝑒𝑙
+5: Initialize fused depth map 𝐷𝑚𝑒𝑡𝑟𝑖𝑐 ← 𝐷𝑠𝑐𝑎𝑙𝑒
+6: Replace values in 𝐷𝑚𝑒𝑡𝑟𝑖𝑐 at 𝑖 ∈ 𝛺 with 𝐷𝑠𝑝𝑎𝑟𝑠𝑒(𝑖)
+7: 𝐷𝑓 𝑖𝑛𝑎𝑙 ← GuidedFilter(𝐷𝑚𝑒𝑡𝑟𝑖𝑐, 𝐼)
+A key challenge of monocular depth estimation is the inherent 
+ambiguity of absolute scale. As a result, the predicted depth map pro-
+vides only relative depth values and cannot be directly used for metric 
+3D localization. This limitation becomes particularly critical in crane-
+mounted monitoring scenarios, where accurate spatial relationships 
+between workers and suspended loads must be computed in metric 
+space. The scale ambiguity problem in monocular depth estimation 
+has been extensively studied in prior work. Early approaches such as 
+Eigen et al. [44] learn depth relationships using scale-invariant training 
+objectives, while later methods estimate depth jointly with camera 
+motion through self-supervised learning frameworks [45,46]. These 
+approaches have demonstrated that reliable dense depth structures 
+can be recovered from monocular imagery. However, the predicted 
+depth values are typically defined only up to an unknown global scale, 
+which limits their direct use for metric 3D localization in real-world 
+environments.
+To recover metric scale required for spatial reasoning, the proposed 
+framework augments the monocular depth prediction with geometric 
+constraints derived from the reconstructed scene. Specifically, sparse 
+3D points obtained from the SfM reconstruction are reprojected into 
+the image plane using the estimated camera pose. This reprojection 
+produces sparse but metrically accurate depth anchors at selected pixel 
+locations. These anchors serve as reliable geometric references that 
+allow the dense monocular depth map to be aligned with the metric 
+scene coordinate system, enabling absolute-scale depth recovery while 
+preserving the dense spatial structure predicted by the monocular depth 
+estimator.
+Let 𝐷𝑟𝑒𝑙 denote the dense relative depth predicted by the monocular 
+depth estimator, and 𝐷𝑠𝑝𝑎𝑟𝑠𝑒 denote the sparse metric depth anchors 
+obtained through reprojection of 3D scene points.
+We first define the set of valid overlapping pixels. 
+𝛺 = {𝑖 ∣ 𝐷𝑠𝑝𝑎𝑟𝑠𝑒(𝑖) > 0 ∧ 𝐷𝑟𝑒𝑙(𝑖) > 0} (1)
+which represent reliable geometric correspondences between the sparse 
+metric depth and dense relative depth predictions.
+A global scale factor 𝑠 is then estimated as 
+𝑠 = median 𝑖∈𝛺
+( 𝐷𝑠𝑝𝑎𝑟𝑠𝑒(𝑖)
+𝐷𝑟𝑒𝑙(𝑖)
+)
+(2)
+The dense depth map is subsequently aligned to the metric scale 
+𝐷𝑠𝑐𝑎𝑙𝑒 = 𝑠 ⋅ 𝐷𝑟𝑒𝑙 (3)
+Finally, sparse metric anchors are fused with the scaled dense depth 
+map to preserve geometric consistency while maintaining dense spatial 
+coverage.
+This reprojection-based scaling strategy enables the dense monocu-
+lar depth predictions to be transformed into metric space while main-
+taining geometric consistency with the reconstructed scene coordinates. 
+The complete reprojection-based depth scale alignment procedure is 
+summarized in Algorithm 1.
+Fig. 3. Results of 2D detection from RTMDet.
+3.2.2. 2D object detection with top-down view camera
+Object detection is a fundamental step in 3D estimation, as it 
+provides object classes, identities, and pixel-level locations, which 
+are subsequently transformed into 3D coordinates. Detecting workers 
+or construction machinery from a crane-mounted camera presents 
+unique challenges due to the elevated top-down viewpoint, scale dis-
+tortion, and frequent occlusions. While most object detection models 
+are trained on horizontal or vehicle-mounted perspectives, recent stud-
+ies have shown that modern detectors based on RetinaNet [36,47] 
+and YOLO [12,48] can perform effectively on aerial and top-down 
+views captured by crane-mounted cameras or drones . In this study, 
+we adopt a one-stage detector, Real-Time Model of Object Detection 
+(RTMDet) [49], to achieve a balance between detection accuracy 
+and inference efficiency. Compared with existing one-stage detectors, 
+RTMDet leverages large-kernel convolutions and a more balanced com-
+putational design between the backbone and neck, enabling efficient 
+contextual feature extraction while maintaining high inference speed 
+without sacrificing accuracy. Therefore, it is well suited for detecting 
+small and occluded objects in top-down construction scenarios.
+The RTMDet model is trained on a large-scale dataset constructed 
+from images collected from crane-mounted cameras and drones,
+along with publicly available surveillance data from the VisDrone 
+dataset [50]. To further enhance data diversity, a synthetic dataset 
+representing realistic construction environments is generated under 
+varying weather and lighting conditions, simulating different object 
+scales and noise patterns observed on actual construction sites. The 
+model is then trained on a hybrid dataset comprising both real and 
+synthetic images.
+After training, the model outputs bounding boxes in the form of 
+(𝑥𝑐𝑒𝑛𝑡𝑒𝑟 , 𝑦𝑐𝑒𝑛𝑡𝑒𝑟, 𝑤, ℎ) in pixel coordinates. Given the top-down view-
+point, the positions of workers and lifted objects are approximated 
+using the center points of the bounding boxes (𝑥𝑐𝑒𝑛𝑡𝑒𝑟 , 𝑦𝑐𝑒𝑛𝑡𝑒𝑟), as il-
+lustrated in Fig. 3. These points are used as representative image 
+coordinates (u, v) for subsequent back-projection, as described in Sec-
+tion 3.2.3.
+3.2.3. 3D localization
+Building upon the detected 2D object locations, most existing meth-
+ods [8,51,52] estimate 3D worker locations (𝑥𝑤, 𝑦𝑤, 𝑧𝑤) by simplifying 
+the computation and assuming a fixed object elevation 𝑧𝑤 in world 
+coordinates, followed by projecting 2D observations into 3D space. In 
+this study, we propose a method inspired by Han et al. [12] that enables 
+direct estimation of all three coordinates (x, y, z) without requiring any 
+assumption about object elevation. Our method incorporates a depth 
+Automation in Construction 189 (2026) 107057 
+6 
+T.D.K. Vo et al.
+Table 2
+Risk assessment matrix.
+Status Explanation Risk assessment level
+d ≤ 𝑟𝑐𝑟𝑖𝑡
+Worker is located within the fall zone and must 
+immediately vacate the area Warning
+𝑟𝑐𝑟𝑖𝑡 < d ≤ 𝑟𝑚𝑒𝑑
+Worker is in close proximity to the fall zone and may 
+enter a hazardous region Caution
+d > 𝑟 𝑚𝑒𝑑
+Worker is positioned in a safe zone with minimal risk 
+exposure Safety
+map for each frame as an additional cue, where each pixel value repre-
+sent the distance to the corresponding object. Subsequently, monocular 
+depth estimation, camera calibration, and geometric reprojection are 
+combined to recover full 3D positions of detected objects in the world 
+coordinate system. In addition, when images are captured from a large 
+distance, lens distortion factors 𝑘1 and 𝑘2 should be considered, as 
+they may bend and stretch objects near image boundaries, leading to 
+inaccurate localization in subsequent steps. To mitigate this effect, a 
+Region of Interest (ROI) is defined around the image center to exclude 
+distorted detections. According to photogrammetric and optical stan-
+dards [53,54], distortion is considered non-negligible when the relative 
+distortion threshold 𝜀 exceeds 0.5%–1% of the image height. Therefore, 
+in this study, a conservative threshold of 0.3% is adopted, and the ROI 
+dimensions are defined as follows: 
+𝑊𝑅𝑂𝐼 =
+2
+√√√√√ −𝑘1 +
+√
+𝑘2
+1 + 4𝑘2𝜀
+2𝑘2
+√
+1
+𝑓 2𝑥
++ 1
+𝛼2𝑓 2𝑦
+, 𝐻 𝑅𝑂𝐼 = 𝑊𝑅𝑂𝐼
+𝛼 . (4)
+where 𝑊𝑅𝑂𝐼 , 𝐻𝑅𝑂𝐼 are the width and height of ROI, and 𝛼 is the aspect 
+ratio.
+The camera intrinsic matrix is first modeled to define the relation-
+ship between pixels in the image plane and camera-centered coordi-
+nates. The intrinsic 𝐊 ∈ R3×3 matrix is determined from camera spec-
+ifications, including focal lengths (𝑓𝑥, 𝑓𝑦) and principal point offsets 
+(𝑐𝑥, 𝑐𝑦) and then is expressed as: 
+𝐊 =
+⎡
+⎢
+⎢⎣
+𝑓𝑥 0 𝑐𝑥
+0 𝑓𝑦 𝑐𝑦
+0 0 1
+⎤
+⎥
+⎥⎦
+(5)
+For each target object detected in Section 3.2.2, the corresponding 
+depth value is estimated as a median depth of pixels within each bound-
+ing box. Once the depth value is obtained, we use the camera intrinsic 
+matrix K to back-project representative pixel points p = [𝑢, 𝑣, 1]⊤ to 
+normalized camera coordinates, and apply the depth w to scale the 
+point along the camera ray to its actual 3D location: 
+𝐗𝑐𝑎𝑚 = 𝐰 ⋅ 𝐊−1𝐩 (6)
+Because the recovered depth values are aligned with the metric 
+scene coordinate space, the back-projection process yields metrically 
+consistent 3D object locations in the world coordinate system. This 
+property is essential for crane-mounted monitoring, where dynamic 
+viewpoint changes make repeated calibration impractical.
+To convert the points into the global world system, both intrin-
+sic and extrinsic parameters are applied. While the intrinsic matrix 
+represents the internal properties of an image and its mapping from 
+image pixels to the local camera coordinate system, the extrinsic matrix 
+provides spatial information about the camera coordinate system in the 
+world reference frame. These parameters are essential for accurately 
+converting object positions from local camera coordinates to global 
+world coordinates. From the D2S relocalization model, we extract the 
+rotation and translation of each frame. The rotation is represented as a 
+quaternion 𝑞 = [𝑞𝑤, 𝑞𝑥, 𝑞𝑦, 𝑞𝑧], as illustrated in Fig. 2, while 𝑡 = [𝑥, 𝑦, 𝑧]
+describes the position of the camera in world coordinates. Based on 
+these values, the extrinsic components of the frame are computed as 
+follows: 
+𝐑 =
+⎡
+⎢
+⎢⎣
+1 − 2(𝑞2
+𝑦 + 𝑞2
+𝑧 ) 2( 𝑞𝑥𝑞𝑦 − 𝑞𝑤𝑞𝑧) 2( 𝑞𝑥𝑞𝑧 + 𝑞𝑤𝑞𝑦)
+2(𝑞𝑥𝑞𝑦 + 𝑞𝑤𝑞𝑧) 1 − 2( 𝑞2
+𝑥 + 𝑞2
+𝑧 ) 2( 𝑞𝑦𝑞𝑧 + 𝑞𝑤𝑞𝑥)
+2(𝑞𝑦𝑞𝑧 + 𝑞𝑤𝑞𝑦) 2( 𝑞𝑦𝑞𝑧 + 𝑞𝑤𝑞𝑥) 2( 𝑞2
+𝑥 + 𝑞2
+𝑦 )
+⎤
+⎥
+⎥⎦
+∈ R3×3 (7)
+𝐭 =
+⎡
+⎢
+⎢⎣
+𝑥
+𝑦
+𝑧
+⎤
+⎥
+⎥⎦
+∈ R3×1 (8)
+With the extrinsic transformation obtained from the D2S module 
+and the defined intrinsic matrix, the formula to transform a 3D point 
+from the local camera system to the global world space is: 
+𝐗𝑐𝑎𝑚 = 𝐑𝐗𝑤𝑜𝑟𝑙𝑑 + 𝐭 (9)
+This transformation moves the 3D point from the camera coordinate 
+system into the global world frame by first translating it relative to the 
+camera’s position and then rotating it into the world orientation using 
+the inverse rotation matrix. The process is repeated for each detection, 
+allowing us to recover complete 3D positions (x, y, z) of all objects in 
+a unified world coordinate system.
+3.3. Digital twin visualization
+After recovering metrically consistent 3D object positions, the pro-
+posed framework establishes a digital-twin-based safety monitoring 
+pipeline for spatial registration, hazard-zone estimation, and rule-based 
+risk assessment.
+3.3.1. Spatial registration
+Although 3D worker coordinates can be recovered from camera 
+re-localization and depth maps, these positions are originally defined 
+in the local reference frame of the SfM-based D2S space. In contrast, 
+the BIM model imported via the Revit–Omniverse connector preserves 
+its own global metric coordinate system with real-world orientation, 
+unit scale, and origin definition. Therefore, a synchronization step is 
+introduced to establish a transformation between the SfM coordinate 
+system and the BIM coordinate system. Through this transformation, 
+both the estimated camera poses and the reconstructed 3D worker 
+coordinates can be consistently represented in the BIM-based real-
+world space, enabling subsequent safety monitoring and validation as 
+described in Section 3.3.4 and Section 4.
+The registration problem can be formulated as estimating a rigid 
+transformation matrix 𝐓 ∈ R4×4 that minimizes the discrepancy be-
+tween the point cloud generated by D2S and the BIM geometry. 
+To achieve this, salient geometric features are extracted from both 
+datasets. Candidate correspondences are then established using fea-
+ture descriptors and matched via nearest-neighbor search. Since these 
+matches may contain outliers, a RANSAC-based estimator is first used 
+to compute a robust initial alignment. Finally, the transformation 
+is refined using the Iterative Closest Point (ICP) algorithm, which 
+iteratively minimizes point-to-plane distances until convergence. The 
+resulting matrix 𝐓 is subsequently applied to transform all relocalized 
+worker positions and safety zones into the BIM coordinate system, 
+enabling spatial synchronization within the digital twin. The relation-
+ship between the transformation matrix, the reconstructed point cloud 
+space, and the BIM coordinate space is illustrated in Fig. 4.
+Automation in Construction 189 (2026) 107057 
+7 
+T.D.K. Vo et al.
+Fig. 4. Spatial registration between point cloud and BIM model using a transformation matrix.
+Fig. 5. Illustration of dangerous fall zone of tower crane (a), maximum swing angle of object oscillation (b) and projection of dangerous areas on ground (c).
+3.3.2. Crane safety area estimation
+In the following step, overhead regions with high and medium risk 
+due to falling objects during tower crane operation are determined. 
+These regions are modeled as conical zones, whose projections on 
+the ground define controlled areas to prevent accidents. Based on the 
+dimensions and lifting elevation of the object, the critical dangerous 
+radius can be calculated as follows: 
+𝑟𝑜
+𝑟𝑐𝑟𝑖𝑡
+= ℎℎ𝑜𝑜𝑘
+ℎ𝑔𝑟𝑜𝑢𝑛𝑑
+(10)
+Here, 𝑟𝑜 is the maximum geometric radius of the object, ℎℎ𝑜𝑜𝑘 is the 
+metric depth value extracted from 2D detection in Fig. 5, while ℎ𝑔𝑟𝑜𝑢𝑛𝑑
+is the 𝑧𝑤 obtained from the camera relocalization process. The critical 
+dangerous radius varies dynamically with respect to the elevation; 
+that is, the hazard zone expands when the object is lifted higher and 
+decreases as the object approaches the ground.
+In addition, the medium-risk zone is estimated based on the oscilla-
+tion amplitude during operation. In practice, this factor is influenced 
+by various conditions in real-world environments. Therefore, in this 
+study, a fixed value is adopted for the maximum allowable swing angle 
+𝛩 = 2.5◦, as suggested by Dutta et al. [55], to simplify the calculation. 
+Accordingly, the medium-risk area is defined as follows: 
+𝑟𝑚𝑒𝑑 = ℎ𝑔𝑟𝑜𝑢𝑛𝑑 ⋅ tan(𝛼 + 𝛩) (11)
+where
+• 𝛼 = tan −1
+( 𝑟𝑜
+ℎhook
+)
+ is the critical fall angle
+• 𝛩 = 2.5◦ is the maximum allowable swing angle due to oscillation
+Finally, the safety zones are not only revealed in 3D space but also are 
+back-projected onto each image frame based on the Eq. (9).
+3.3.3. Omniverse-based deployment
+After achieving synchronization, the 3D localization data are di-
+rectly integrated into NVIDIA Omniverse to enable Digital Twin (DT) 
+functionality. NVIDIA Omniverse is a state-of-the-art development plat-
+form for building and operating 3D applications and services at scale 1u 
+[56], and has been proven to be a potential solution for digital integra-
+tion among various types of data [41]. In this study, we adopt NVIDIA 
+Omniverse USD Composer [57] as the runtime environment for inter-
+active site visualization and safety assessment. USD Composer provides 
+advanced scene assembly, high-fidelity RTX rendering, and Python 
+scripting support, enabling seamless mapping of camera poses and 
+depth-derived 3D worker positions into the digital twin environment. 
+This capability not only facilitates accurate spatial synchronization but 
+also supports dynamic simulation of worker movements and potential 
+collision scenarios.
+In NVIDIA USD Composer (version 2023.2.5) [57], the prebuilt 3D 
+BIM model is directly imported while its original coordinate reference 
+and scale are preserved through the Omniverse Revit Connector. This 
+ensures a one-to-one spatial correspondence between the real-world 
+construction site and the digital twin environment. Subsequently, all 
+3D entities, including worker positions and projections of hazard fall 
+zones, are aligned from the D2S relocalization space to the Omniverse 
+USD Composer environment by applying the transformation matrix 
+𝐓. Simultaneously, the Replicator API, supported by the Omniverse 
+Automation in Construction 189 (2026) 107057 
+8 
+T.D.K. Vo et al.
+Fig. 6. Digital Twin-based decision-support pipeline for rule-based safety risk assessment and visualization.
+extension package, is used to read and record object attributes such as 
+class, translation, and risk level, whose calculation process is described 
+in Section 3.3.4. In addition, a visualization window displaying live 
+video with 2D detections is implemented, enabling a double-check 
+procedure between recorded data and visualization results.
+3.3.4. Risk assessment
+In the final stage of digital twin illustration, risk level assessment 
+is performed to quantify safety conditions around the crane opera-
+tion zone. Beyond visualization, the digital twin performs rule-based 
+spatial reasoning and risk evaluation on vision-derived 3D data. In-
+stead of computing safety distances externally and re-importing the 
+results, a Decision-Support Layer is established via the Python API 
+in USD Composer to compute Euclidean distances and perform rule-
+based risk evaluation directly within the digital twin environment, 
+thereby reducing latency and data transfer overhead. These distances 
+are then compared with the critical dangerous radius 𝑟𝑐𝑟𝑖𝑡 and medium 
+dangerous radius 𝑟𝑚𝑒𝑑 to define the risk level for each entity, as detailed 
+in Table 2. In addition, each worker is annotated with a specific color 
+based on the defined risk level using the Material Definition Language 
+(MDL) extension in NVIDIA Omniverse USD Composer, while a Python 
+script is used to summarize all hazard classification results and report 
+the current safety status. In parallel, the risk assessment is also updated 
+in the 2D detection camera window, ensuring consistent visualization 
+in both 2D and 3D. In the final step, a historical report is automatically 
+generated; this file records all worker information in hazard zones, 
+including date, time, positions, and safety status for further analysis. 
+The process is repeated whenever data from a new frame are updated, 
+ensuring real-time monitoring capability, as illustrated in Fig. 6.
+4. Experiments
+In this section, we conduct multiple experiments to evaluate the 
+performance of camera relocalization in the D2S-MDE framework and 
+2D object detection using RTMDet under top-down views with small 
+and overlapping entities on construction sites. Finally, the proposed 
+framework is applied in a case study of crane safety operations, where 
+workers are detected from a dynamic trolley-mounted camera, localized 
+in 3D space, and integrated into a digital twin for combined detection, 
+localization, and automated risk assessment reporting. All procedures 
+are performed on a computer equipped with an NVIDIA RTX 4090 GPU, 
+an Intel i9-13900KF processor, and 64 GB of RAM.
+Fig. 7. Visualization of training and testing camera path.
+4.1. Scene coordinates regression model performance
+In order evaluate the performance of camera relocalization, we con-
+duct experiment by training multiple datasets including both simulation 
+and a real construction project using D2S-based platform [42], as listed 
+in Fig. 8. In the first experiment, we set up a testbed at a construc-
+tion site located in Miryang-si, Gyeongsangnam-do, Republic of Korea. 
+Aerial-view videos of the scene were captured using a DJI Mini 2 Pro 
+drone with a resolution of 1920 × 1080, and the dataset was divided 
+into 75% training data and 25% testing data. In the second experiment, 
+we evaluate model performance on synthetic datasets representing 
+construction activities generated by Twinmotion. This software can 
+replicate realistic structural elements and visual variations under differ-
+ent weather conditions, making it suitable as a testbed for vision-based 
+deep learning models. In this study, we simulate a camera trajectory 
+that mimics drone-based surveying to generate synthetic datasets under 
+daytime conditions with clear skies, ensuring that D2S can capture 
+as many scene features as possible (Fig. 7). After that, the testbed 
+includes videos recorded from trolley-mounted cameras in varied time 
+milestones and three basic weather conditions. This experimental setup 
+reflects real construction scenarios, where site surveying activities are 
+typically conducted once or twice per week, while heavy machinery 
+operations occur more frequently. The principle of the second experi-
+ment is that the datasets used for training and testing in both real and 
+synthetic scenarios are recorded along independent trajectories, where 
+the training set is used for scene reconstruction and the testing set is 
+applied for safety-related evaluation. Therefore, the model performance 
+must generalize across varying conditions on construction sites.
+Automation in Construction 189 (2026) 107057 
+9 
+T.D.K. Vo et al.
+Fig. 8. Visualization of different datasets for D2S relocalizer evaluation.
+Furthermore, in this study, reference camera poses are obtained 
+from the same SfM reconstruction used to generate sparse 3D point 
+cloud labels for the D2S training process. The camera trajectories esti-
+mated by the COLMAP SfM pipeline are treated as pseudo ground truth 
+and serve as reference poses for evaluating the camera relocalization 
+performance. COLMAP has been shown to achieve state-of-the-art per-
+formance in large-scale scene reconstruction [58]. Specifically, during 
+SfM reconstruction, all 4500 input images were successfully registered, 
+producing a sparse point cloud with 72,890 3D points. The reconstruc-
+tion achieved a mean track length of 117.99 and a mean reprojection 
+error of 0.81 pixels (median 0.61 pixels), indicating stable image reg-
+istration and strong geometric consistency of the reconstructed camera 
+poses and 3D structure. These statistics suggest that the reconstructed 
+camera poses are sufficiently stable to serve as reference poses for 
+evaluating the relocalization accuracy.
+4.1.1. Qualitative results
+Figs. 9, 10, and 11 illustrate the qualitative performance of the 
+D2S-MDE framework under both real and synthetic environments. As 
+shown in Fig. 9, the camera relocalization results on a real construction 
+site demonstrate that the predicted camera poses (red) are almost 
+identical to the ground-truth trajectory (green). Despite the inherent 
+complexity of construction environments, including dynamic workers 
+and equipment, the framework is able to reconstruct a continuous 
+camera path with minimal drift. This confirms that the proposed D2S-
+MDE framework is well suited for clear-visibility conditions within the 
+same domain, which correspond to the primary operational settings 
+of crane-mounted and aerial cameras on construction sites. Fig. 10 
+illustrates performance under moderately degraded conditions, includ-
+ing day-rain, day-fog, and night-clear scenarios. In the rain scenario, 
+most predicted camera poses remain close to the ground truth in both 
+position and orientation, indicating moderate robustness to visual noise 
+caused by rain streaks and surface reflections. Under foggy daytime 
+conditions, larger pose deviations are observed, likely due to reduced 
+visibility of structural features, which weakens the reliability of scene 
+coordinate regression. Nevertheless, for a subset of frames, the overall 
+trajectory structure is still preserved, suggesting partial robustness 
+when degradation is not severe. Similarly, in night-clear scenes, the 
+system is able to recover camera poses for the majority of frames, 
+confirming that sufficient illumination alone can still support reliable 
+localization.
+Fig. 11 highlights the most challenging conditions, characterized 
+by both low illumination and severely reduced visibility. In night-fog 
+scenarios, localization performance degrades substantially, with fre-
+quent pose failures and large deviations from the reference trajectory. 
+This behavior indicates that the proposed vision-based relocalization 
+pipeline reaches its operational limits when critical visual constraints 
+are lost. These results emphasize that, while the framework performs 
+reliably under clear or moderately degraded conditions, its applicability 
+under extreme weather and lighting conditions remains limited.
+Overall, these qualitative results highlight a clear relationship be-
+tween training data characteristics and deployment performance. As 
+described in the data preparation stage, the D2S relocalizer is pri-
+marily trained using drone-captured and synthetic overhead videos 
+recorded under clear daytime conditions, which provide rich struc-
+tural features and stable illumination. Consequently, the framework 
+achieves its highest accuracy and trajectory consistency when tested 
+on scenes that share similar visual conditions, such as real construction 
+sites and synthetic day-clear scenarios. When applied to out-of-domain 
+environments, including different weather or illumination conditions, 
+the pipeline can still function under certain constraints. In particular, 
+night-clear scenes remain partially compatible with the learned scene 
+representations, as sufficient structural visibility is preserved despite 
+the absence of daylight. However, scenes involving severe visibility 
+degradation, such as dense fog or combined night-fog conditions, lead 
+to substantial performance degradation due to the loss of reliable 
+visual cues required for scene coordinate regression. These observa-
+tions indicate that the proposed pipeline inherently favors clear-sky 
+conditions and performs most reliably when the training and testing 
+domains are visually consistent. While limited generalization to unseen 
+domains is possible under clear visibility, the results confirm that 
+clear-weather scenes represent the preferred operational regime of the 
+current D2S-MDE framework.
+4.1.2. Quantitative results
+Table 3 presents a comprehensive quantitative evaluation of camera 
+relocalization performance across different environmental conditions. 
+Automation in Construction 189 (2026) 107057 
+10 
+T.D.K. Vo et al.
+Fig. 9. Visualization of camera relocalization results from real construction site and simulation day-clear scenes.
+Fig. 10. Visualization of evaluation results from simulation day-rain, day-fog and night-clear scenes respectively.
+Fig. 11. Visualization of evaluation results from simulation night-rain and night-fog scenes.
+To characterize both typical accuracy and robustness, we report the 
+median (P50) and P75 translational and rotational errors, together 
+with explicit success and failure rates. The median (P50) reflects the 
+typical localization accuracy achieved under a given condition, while 
+the P75 error captures a robustness margin by indicating the error level 
+below which the majority of successfully localized frames fall. This 
+choice avoids overemphasizing extreme tail values that are often dom-
+inated by degenerate PnP solutions, and instead provides a stable and 
+interpretable summary of localization performance for safety-critical 
+deployment. A frame is considered successfully localized if a valid 
+camera pose can be recovered via PnP using the predicted scene 
+coordinates with at least 20 inlier correspondences. Otherwise, the 
+frame is classified as a failure and excluded from error statistics. 
+Higher error percentiles are therefore not explicitly reported, as such 
+cases are more appropriately reflected by the reported failure rates 
+rather than by large numerical error values that do not correspond 
+to usable camera poses. On the real construction site, the proposed 
+framework achieves a median translation error of 0.012 m and a 
+median rotation error of 0.019◦, with a P75 translation error of 0.017 m 
+and a 100% localization success rate. These results confirm that the 
+system can reliably recover camera poses from real-world data captured 
+under practical deployment conditions. Similarly, under synthetic day–
+clear conditions, performance remains highly consistent, with errors of 
+0.016 m/0.030◦ at P50, indicating strong generalization between real 
+and simulated domains when visual conditions are favorable.
+As environmental conditions degrade, localization accuracy nat-
+urally decreases. In the day-rain scenario, the median translation 
+error increases to 0.379 m with a rotation error of 0.858◦, while 
+day-fog conditions present further degraded localization performance, 
+with 0.973 m/2.396◦ at P50. Nevertheless, the P75 errors remain 
+within a controlled range, suggesting that a substantial portion of 
+successfully localized frames still preserve usable geometric accuracy. 
+Nighttime sequences exhibit a similar trend, with moderate deviations 
+of 0.321 m/0.724◦ under night-clear conditions. Meanwhile, adverse 
+weather leads to more pronounced degradation, particularly in night-
+rain and night-fog scenarios. In these cases, failure rates increase 
+significantly, reflecting insufficient visual constraints for reliable PnP 
+estimation rather than silently producing erroneous poses.
+The observed behavior is consistent with the original D2S frame-
+work [42], which demonstrated robustness to viewpoint changes by 
+training and testing on disjoint trajectories in datasets such as 7-
+Scenes, Cambridge Landmarks, and BKA. This property is particularly 
+relevant to our setting, where training data are collected from top-
+down crane-mounted cameras or drone-like aerial viewpoints during 
+daytime surveys, while testing may occur along different paths and 
+under distinct environmental conditions. The strong real-site perfor-
+mance, together with controlled degradation under out-of-distribution 
+scenarios, indicates that the proposed system inherits D2S’s ability to 
+generalize across trajectories and viewpoints. However, these error val-
+ues also reinforce the limitations discussed in Section 4.1.1. While the 
+Automation in Construction 189 (2026) 107057 
+11 
+T.D.K. Vo et al.
+ 
+(a) Training loss curves of RTMDet
+ 
+(b) Normalized confusion matrix
+ 
+Fig. 12. Training and evaluation results of the RTMDet model on the custom dataset.
+Fig. 13. Samples of qualitative detection results from RTMDet.
+framework achieves strong performance under favorable conditions, 
+degradation in camera pose predictions in more challenging scenarios 
+can negatively affect the depth scaling procedure and subsequent 3D 
+localization.
+Overall, these results show that the scene coordinate regression-
+based relocalization model can achieve high accuracy for both crane 
+CCTV and aerial drone perspectives, validating its applicability under 
+clear-weather conditions. At the same time, the explicit reporting of 
+P50–P75 error ranges and failure rates highlights the system’s sensi-
+tivity to severe weather and lighting changes. The rapid increase in 
+error magnitude and failure rates under foggy and nighttime scenarios 
+quantitat

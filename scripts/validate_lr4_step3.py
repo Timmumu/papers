@@ -31,7 +31,7 @@ TIERS = {
     'Tier 4 - Cognitive / Self-improving',
     'Unclear',
 }
-DFX = {'Design for Safety (DfS)', 'Design for Quality (DfQ)', 'Both', 'Other'}
+DFX = {'Design for Safety (DfS)', 'Other'}
 AA = {'None', 'Mentioned only', 'Implemented', 'Convergence-characterised'}
 AB = {
     'Computer Vision / CNN / object-detection', 'Perception / Computer Vision',
